@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -67,27 +68,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             var op = options as ChoiceInputOptions;
             if (op == null || op.Choices == null || op.Choices.Count == 0)
             {
-                if (this.Choices != null && this.Choices.Count > 0)
+                if (op == null)
                 {
-                    if (op == null)
-                    {
-                        op = new ChoiceInputOptions();
-                    }
-                    op.Choices = this.Choices;
+                    op = new ChoiceInputOptions();
                 }
 
-                if (!string.IsNullOrEmpty(this.ChoicesProperty))
-                {
-                    if (op == null)
-                    {
-                        op = new ChoiceInputOptions();
-                    }
-                    var choicesMemory = dc.State.GetValue<List<Choice>>(this.ChoicesProperty);
-                    if (choicesMemory != null && choicesMemory.Count > 0)
-                    {
-                        op.Choices = choicesMemory;
-                    }
-                }
+                var choices = GetChoices(dc);
+                op.Choices = choices;
             }
 
             return base.OnInitializeOptions(dc, op);
@@ -154,16 +141,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             var choicePrompt = new ChoicePrompt();
             var choiceOptions = this.ChoiceOptions ?? ChoiceInput.DefaultChoiceOptions[locale];
 
-            var choices = this.Choices ?? new List<Choice>();
-
-            if (!string.IsNullOrEmpty(this.ChoicesProperty))
-            {
-                var choicesMemory = dc.State.GetValue<List<Choice>>(this.ChoicesProperty);
-                if (choicesMemory != null && choicesMemory.Count > 0)
-                {
-                    choices = choicesMemory;
-                }
-            }
+            var choices = GetChoices(dc);
 
             return this.AppendChoices(prompt.AsMessageActivity(), channelId, choices, this.Style, choiceOptions);
         }
@@ -181,6 +159,40 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             }
 
             return English;
+        }
+
+        private List<Choice> GetChoices(DialogContext dc)
+        {
+            var choices = this.Choices ?? new List<Choice>();
+
+            if (!string.IsNullOrEmpty(this.ChoicesProperty))
+            {
+                var choicesMemory = dc.State.GetValue<object>(this.ChoicesProperty).ToString();
+
+                try
+                {
+                    choices = JsonConvert.DeserializeObject<List<Choice>>(choicesMemory);
+                }
+                catch
+                {
+
+                }
+
+                if (choices == null || choices.Count == 0)
+                {
+                    try
+                    {
+                        var strList = JsonConvert.DeserializeObject<List<string>>(choicesMemory);
+                        choices = strList.Select(item => new Choice(item)).ToList();
+                    }
+                    catch
+                    {
+
+                    }
+                }
+            }
+
+            return choices;
         }
     }
 }

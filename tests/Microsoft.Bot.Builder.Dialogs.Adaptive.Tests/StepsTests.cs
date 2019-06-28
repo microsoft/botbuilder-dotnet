@@ -424,7 +424,65 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
-        public async Task Step_ChoiceInputInMemory()
+        public async Task Step_ChoiceStringInMemory()
+        {
+            var testDialog = new AdaptiveDialog("planningTest")
+            {
+                AutoEndDialog = false,
+                Steps = new List<IDialog>()
+                {
+                    new SetProperty()
+                    {
+                        Value = new ExpressionEngine().Parse("json('[\"red\", \"green\", \"blue\"]')"),
+                        Property = "user.choices"
+                    },
+                    new ChoiceInput()
+                    {
+                        Property = "user.color",
+                        Prompt = new ActivityTemplate("Please select a color:"),
+                        UnrecognizedPrompt = new ActivityTemplate("Not a color. Please select a color:"),
+                        ChoicesProperty = "user.choices",
+                        Style = ListStyle.Inline
+                    },
+                    new SendActivity("{user.color}"),
+                    new ChoiceInput()
+                    {
+                        Property = "user.color",
+                        Prompt = new ActivityTemplate("Please select a color:"),
+                        UnrecognizedPrompt = new ActivityTemplate("Please select a color:"),
+                        ChoicesProperty = "user.choices",
+                        AlwaysPrompt = true,
+                        Style = ListStyle.Inline
+                    },
+                    new SendActivity("{user.color}"),
+                    new ChoiceInput()
+                    {
+                        Property = "user.color",
+                        Prompt = new ActivityTemplate("Please select a color:"),
+                        UnrecognizedPrompt = new ActivityTemplate("Please select a color:"),
+                        ChoicesProperty = "user.choices",
+                        AlwaysPrompt = true,
+                        Style = ListStyle.Inline
+                    },
+                    new SendActivity("{user.color}"),
+                }
+            };
+
+            await CreateFlow(testDialog)
+            .Send("hi")
+                .AssertReply("Please select a color: (1) red, (2) green, or (3) blue")
+            .Send("asdasd")
+                .AssertReply("Not a color. Please select a color: (1) red, (2) green, or (3) blue")
+            .Send("3")
+                .AssertReply("blue")
+                .AssertReply("Please select a color: (1) red, (2) green, or (3) blue")
+            .Send("red")
+                .AssertReply("red")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task Step_ChoicesInMemory()
         {
             var testDialog = new AdaptiveDialog("planningTest")
             {
