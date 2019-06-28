@@ -126,6 +126,19 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core
             return services;
         }
 
+        /// <summary>
+        /// Adds and configures services for Application Insights to the <see cref="IServiceCollection" />.
+        /// </summary>
+        /// <param name="services">The <see cref="IServiceCollection"/> which specifies the contract for a collection of service descriptors.</param>
+        /// <returns>A reference to this instance after the operation has completed.</returns>
+        public static IServiceCollection AddBotApplicationInsights(this IServiceCollection services)
+        {
+            services.AddApplicationInsightsTelemetry();
+            services.AddSingleton<IBotTelemetryClient, BotTelemetryClient>();
+            CreateBotTelemetry(services);
+            return services;
+        }
+
         private static void CreateBotTelemetry(IServiceCollection services)
         {
             // Enables Bot Telemetry to save user/session id's as the bot user id and session

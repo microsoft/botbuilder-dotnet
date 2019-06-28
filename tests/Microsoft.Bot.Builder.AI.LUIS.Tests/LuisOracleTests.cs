@@ -22,15 +22,12 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RichardSzalay.MockHttp;
 
-namespace Microsoft.Bot.Builder.FunctionalTests
+namespace Microsoft.Bot.Builder.AI.Luis.Tests
 {
     [TestClass]
-#if !FUNCTIONALTESTS
-    [Ignore("These integration tests run only when FUNCTIONALTESTS is defined")]
-#endif
 
-    // The LUIS application used in these unit tests is in TestData/TestLuistApp.json
-    public class LuisRecognizerTests
+    // The LUIS application used in these unit tests is in TestData/Contoso App.json
+    public class LuisOracleTests
     {
         // Access the checked-in oracles so that if they are changed you can compare the changes and easily modify them.
         private const string _testData = @"../../../TestData/";
@@ -62,7 +59,7 @@ namespace Microsoft.Bot.Builder.FunctionalTests
         // 5) Run the review.cmd file to review each file if approved the new oracle file will replace the old one.
         // Changing this to false will cause running against the actual LUIS service.
         // This is useful in order to see if the oracles for mocking or testing have changed.
-        private readonly bool _mock = true;
+        private bool _mock = true;
 
         [TestMethod]
         public void LuisRecognizerConstruction()
@@ -88,7 +85,6 @@ namespace Microsoft.Bot.Builder.FunctionalTests
         public void LuisRecognizer_Timeout()
         {
             var endpoint = "https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/b31aeaf3-3511-495b-a07f-571fc873214b?verbose=true&timezoneOffset=-360&subscription-key=048ec46dc58e495482b0c447cfdbd291&q=";
-            var fieldInfo = typeof(LuisRecognizer).GetField("_application", BindingFlags.NonPublic | BindingFlags.Instance);
             var optionsWithTimeout = new LuisPredictionOptions()
             {
                 Timeout = 300,
@@ -132,7 +128,7 @@ namespace Microsoft.Bot.Builder.FunctionalTests
             Assert.AreEqual("https://westus.api.cognitive.microsoft.com", app.Endpoint);
         }
 
-        // [TestMethod] Commented out due to test failing.
+        [TestMethod]
         public async Task LuisRecognizer_Configuration()
         {
             GetEnvironmentVarsLuis();
@@ -437,6 +433,39 @@ namespace Microsoft.Bot.Builder.FunctionalTests
             Assert.AreEqual(1, result.Entities["$instance"]["datetime_time"].Count());
         }
 
+        public async Task TestEndpoint<T>(string expectedPath, JToken oracle, string version)
+            where T : IRecognizerConvert, new()
+        {
+            var newPath = expectedPath + ".new";
+            using (var mockResponse = new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(oracle[version]))))
+            {
+                var text = oracle["text"] ?? oracle["Text"];
+                var query = text.ToString();
+                var context = GetContext(query);
+
+                var mockHttp = GetMockHttpClientHandlerObject(query, mockResponse);
+                var luisRecognizer = GetLuisRecognizer(mockHttp, true, new LuisPredictionOptions { IncludeAllIntents = true });
+                var typedResult = await luisRecognizer.RecognizeAsync<T>(context, CancellationToken.None);
+                var typedJson = Json(typedResult);
+                typedJson[version] = typedJson["luisResult"];
+                typedJson.Remove("luisResult");
+
+                if (!WithinDelta(oracle, typedJson, 0.1))
+                {
+                    using (var writer = new StreamWriter(newPath))
+                    {
+                        writer.Write(typedJson);
+                    }
+
+                    Assert.Fail($"Returned JSON in {newPath} != expected JSON in {expectedPath}");
+                }
+                else
+                {
+                    File.Delete(expectedPath + ".new");
+                }
+            }
+        }
+
         // To create a file to test:
         // 1) Create a <name>.json file with an object { Text:<query> } in it.
         // 2) Run this test which will fail and generate a <name>.json.new file.
@@ -445,38 +474,13 @@ namespace Microsoft.Bot.Builder.FunctionalTests
             where T : IRecognizerConvert, new()
         {
             var expectedPath = GetFilePath(file);
-            var newPath = expectedPath + ".new";
 
             GetEnvironmentVarsLuis();
 
             using (var expectedJsonReader = new JsonTextReader(new StreamReader(expectedPath)))
             {
                 var expectedJson = await JToken.ReadFromAsync(expectedJsonReader);
-                using (var mockResponse = new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(expectedJson["luisResult"]))))
-                {
-                    var text = expectedJson["text"] ?? expectedJson["Text"];
-                    var query = text.ToString();
-                    var context = GetContext(query);
-
-                    var mockHttp = GetMockHttpClientHandlerObject(query, mockResponse);
-                    var luisRecognizer = GetLuisRecognizer(mockHttp, true, new LuisPredictionOptions { IncludeAllIntents = true });
-                    var typedResult = await luisRecognizer.RecognizeAsync<T>(context, CancellationToken.None);
-                    var typedJson = Json(typedResult);
-
-                    if (!WithinDelta(expectedJson, typedJson, 0.1))
-                    {
-                        using (var writer = new StreamWriter(newPath))
-                        {
-                            writer.Write(typedJson);
-                        }
-
-                        Assert.Fail($"Returned JSON in {newPath} != expected JSON in {expectedPath}");
-                    }
-                    else
-                    {
-                        File.Delete(expectedPath + ".new");
-                    }
-                }
+                await TestEndpoint<T>(expectedPath, expectedJson, "v2");
             }
         }
 
@@ -536,6 +540,9 @@ namespace Microsoft.Bot.Builder.FunctionalTests
 
         [TestMethod]
         public async Task Composite3() => await TestJson<RecognizerResult>("Composite3.json");
+
+        [TestMethod]
+        public async Task GeoPeopleOrdinal() => await TestJson<RecognizerResult>("GeoPeopleOrdinal.json");
 
         [TestMethod]
         public async Task PrebuiltDomains() => await TestJson<RecognizerResult>("Prebuilt.json");
@@ -683,6 +690,7 @@ namespace Microsoft.Bot.Builder.FunctionalTests
             var result = await recognizer.RecognizeAsync(turnContext, additionalProperties).ConfigureAwait(false);
 
             // Assert
+            Assert.IsNotNull(result);
             Assert.AreEqual(telemetryClient.Invocations.Count, 1);
             Assert.AreEqual(telemetryClient.Invocations[0].Arguments[0].ToString(), "LuisResult");
             Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("test"));
@@ -729,6 +737,7 @@ namespace Microsoft.Bot.Builder.FunctionalTests
             var result = await recognizer.RecognizeAsync(turnContext, null).ConfigureAwait(false);
 
             // Assert
+            Assert.IsNotNull(result);
             Assert.AreEqual(telemetryClient.Invocations.Count, 1);
             Assert.AreEqual(telemetryClient.Invocations[0].Arguments[0].ToString(), "LuisResult");
             Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).Count == 8);
@@ -775,6 +784,7 @@ namespace Microsoft.Bot.Builder.FunctionalTests
             var result = await recognizer.RecognizeAsync(turnContext, null).ConfigureAwait(false);
 
             // Assert
+            Assert.IsNotNull(result);
             Assert.AreEqual(telemetryClient.Invocations.Count, 1);
             Assert.AreEqual(telemetryClient.Invocations[0].Arguments[0].ToString(), "LuisResult");
             Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).Count == 7);
@@ -826,6 +836,7 @@ namespace Microsoft.Bot.Builder.FunctionalTests
             var result = await recognizer.RecognizeAsync(turnContext, additionalProperties).ConfigureAwait(false);
 
             // Assert
+            Assert.IsNotNull(result);
             Assert.AreEqual(telemetryClient.Invocations.Count, 2);
             Assert.AreEqual(telemetryClient.Invocations[0].Arguments[0].ToString(), "LuisResult");
             Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("MyImportantProperty"));
@@ -883,6 +894,7 @@ namespace Microsoft.Bot.Builder.FunctionalTests
             var result = await recognizer.RecognizeAsync(turnContext, additionalProperties, additionalMetrics).ConfigureAwait(false);
 
             // Assert
+            Assert.IsNotNull(result);
             Assert.AreEqual(telemetryClient.Invocations.Count, 2);
             Assert.AreEqual(telemetryClient.Invocations[0].Arguments[0].ToString(), "LuisResult");
             Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("MyImportantProperty"));
@@ -935,6 +947,7 @@ namespace Microsoft.Bot.Builder.FunctionalTests
             var result = await recognizer.RecognizeAsync(turnContext, CancellationToken.None).ConfigureAwait(false);
 
             // Assert
+            Assert.IsNotNull(result);
             Assert.AreEqual(telemetryClient.Invocations.Count, 1);
             Assert.AreEqual(telemetryClient.Invocations[0].Arguments[0].ToString(), "LuisResult");
             Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("applicationId"));
@@ -978,6 +991,7 @@ namespace Microsoft.Bot.Builder.FunctionalTests
             var result = await recognizer.RecognizeAsync<TelemetryConvertResult>(turnContext, CancellationToken.None).ConfigureAwait(false);
 
             // Assert
+            Assert.IsNotNull(result);
             Assert.AreEqual(telemetryClient.Invocations.Count, 1);
             Assert.AreEqual(telemetryClient.Invocations[0].Arguments[0].ToString(), "LuisResult");
             Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("applicationId"));
@@ -1032,6 +1046,7 @@ namespace Microsoft.Bot.Builder.FunctionalTests
             var result = await recognizer.RecognizeAsync<TelemetryConvertResult>(turnContext, additionalProperties, additionalMetrics, CancellationToken.None).ConfigureAwait(false);
 
             // Assert
+            Assert.IsNotNull(result);
             Assert.AreEqual(telemetryClient.Invocations.Count, 1);
             Assert.AreEqual(telemetryClient.Invocations[0].Arguments[0].ToString(), "LuisResult");
             Assert.IsTrue(((Dictionary<string, string>)telemetryClient.Invocations[0].Arguments[1]).ContainsKey("test"));
@@ -1168,9 +1183,7 @@ namespace Microsoft.Bot.Builder.FunctionalTests
         }
 
         private MockedHttpClientHandler GetMockHttpClientHandler(string example, string responsePath)
-        {
-            return GetMockHttpClientHandler(example, GetResponse(responsePath));
-        }
+            => GetMockHttpClientHandler(example, GetResponse(responsePath));
 
         private MockedHttpClientHandler GetMockHttpClientHandler(string example, Stream response)
         {
@@ -1207,6 +1220,7 @@ namespace Microsoft.Bot.Builder.FunctionalTests
                 throw new Exception("Environment variable 'LuisAppId' not found.");
             }
 
+            // NOTE: This is required only if not mocking
             if (string.IsNullOrWhiteSpace(_subscriptionKey))
             {
                 _subscriptionKey = Environment.GetEnvironmentVariable("LUISSUBSCRIPTIONKEY");
@@ -1214,7 +1228,7 @@ namespace Microsoft.Bot.Builder.FunctionalTests
 
             if (string.IsNullOrWhiteSpace(_subscriptionKey))
             {
-                throw new Exception("Environment variable 'LuisSubscriptionKey' not found.");
+                _subscriptionKey = Guid.Empty.ToString();
             }
 
             if (string.IsNullOrWhiteSpace(_endpoint))
@@ -1225,6 +1239,12 @@ namespace Microsoft.Bot.Builder.FunctionalTests
             if (string.IsNullOrWhiteSpace(_endpoint))
             {
                 throw new Exception("Environment variable 'LuisEndPoint' not found.");
+            }
+
+            var mock = Environment.GetEnvironmentVariable("LUISMOCK");
+            if (mock != null)
+            {
+                _mock = bool.Parse(mock);
             }
         }
     }
