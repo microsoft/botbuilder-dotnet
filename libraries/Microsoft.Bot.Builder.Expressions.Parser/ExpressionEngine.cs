@@ -20,6 +20,7 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
         {
             { "#", ExpressionType.Intent },
             { "@", ExpressionType.Entity },
+            { "@@", ExpressionType.Entity }
             { "$", ExpressionType.Dialog },
             { "^", ExpressionType.Callstack },
             { "%", ExpressionType.Option },

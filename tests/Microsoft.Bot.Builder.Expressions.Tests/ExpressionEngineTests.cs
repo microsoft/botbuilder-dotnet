@@ -491,9 +491,10 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("^x", 3),
             Test("^y", 2),
             Test("^z", 1),
-            # endregion
+            Test("count(@@CompositeList1) == 1 && count(@@CompositeList1[0]) == 1", true, new HashSet<string> {"turn.recognized.entities.CompositeList1" }),
+            #endregion
 
-            # region  Memory access
+            #region  Memory access
             Test("getProperty(bag, concat('na','me'))","mybag"),
             Test("items[2]", "two", new HashSet<string> { "items[2]" }),
             Test("bag.list[bag.index - 2]", "blue", new HashSet<string> {"bag.list", "bag.index" }),
