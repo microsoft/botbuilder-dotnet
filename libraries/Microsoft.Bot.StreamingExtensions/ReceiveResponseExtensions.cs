@@ -61,7 +61,7 @@ namespace Microsoft.Bot.StreamingExtensions
         }
 
         /// <summary>
-        /// Serializes the body of this <see cref="ReceiveResponse"/> as a <see cref="string"/>. 
+        /// Serializes the body of this <see cref="ReceiveResponse"/> as a <see cref="string"/>.
         /// as an asynchronus <see cref="Task"/>.
         /// </summary>
         /// <param name="response">The current instance of <see cref="ReceiveResponse"/>.</param>
