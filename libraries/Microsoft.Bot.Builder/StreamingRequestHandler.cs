@@ -26,15 +26,15 @@ namespace Microsoft.Bot.Builder
 #else
         private
 #endif
-        string userAgent;
+        string _userAgent;
 
-        private IBot bot;
+        private readonly IBot _bot;
 
-        private IServiceProvider services;
+        private readonly IServiceProvider _services;
 
-        private IList<IMiddleware> middlewareSet;
+        private readonly IList<IMiddleware> _middlewareSet;
 
-        private Func<ITurnContext, Exception, Task> onTurnError;
+        private Func<ITurnContext, Exception, Task> _onTurnError;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="StreamingRequestHandler"/> class.
@@ -48,10 +48,10 @@ namespace Microsoft.Bot.Builder
         /// <param name="middlewareSet">An optional set of middleware to register with the bot.</param>
         public StreamingRequestHandler(Func<ITurnContext, Exception, Task> onTurnError, IBot bot, IList<IMiddleware> middlewareSet = null)
         {
-            this.bot = bot ?? throw new ArgumentNullException(nameof(bot));
-            this.middlewareSet = middlewareSet;
-            userAgent = GetUserAgent();
-            this.onTurnError = onTurnError;
+            _onTurnError = onTurnError;
+            _bot = bot ?? throw new ArgumentNullException(nameof(bot));
+            _middlewareSet = middlewareSet ?? new List<IMiddleware>();
+            _userAgent = GetUserAgent();
         }
 
         /// <summary>
@@ -65,10 +65,10 @@ namespace Microsoft.Bot.Builder
         /// <param name="middlewareSet">An optional set of middleware to register with the bot.</param>
         public StreamingRequestHandler(Func<ITurnContext, Exception, Task> onTurnError, IServiceProvider serviceProvider, IList<IMiddleware> middlewareSet = null)
         {
-            services = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
-            this.middlewareSet = middlewareSet;
-            userAgent = GetUserAgent();
-            this.onTurnError = onTurnError;
+            _onTurnError = onTurnError;
+            _services = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
+            _middlewareSet = middlewareSet ?? new List<IMiddleware>();
+            _userAgent = GetUserAgent();
         }
 
         /// <summary>
@@ -80,8 +80,8 @@ namespace Microsoft.Bot.Builder
         public IStreamingTransportServer Server { get; set; }
 
         /// <summary>
-        /// Processes incoming requests and returns the response, if any.
-        /// Checks the validity of the request and invokes the bot.
+        /// Checks the validity of the request and attempts to map it the correct virtual endpoint,
+        /// then generates and returns a response if appropriate.
         /// </summary>
         /// <param name="request">A ReceiveRequest from the connected channel.</param>
         /// <param name="context">Optional context to operate within. Unused in bot implementation.</param>
@@ -91,117 +91,110 @@ namespace Microsoft.Bot.Builder
         {
             var response = new Response();
 
-            try
+            if (request == null || string.IsNullOrEmpty(request.Verb) || string.IsNullOrEmpty(request.Path))
             {
-                if (request == null ||
-                    string.IsNullOrEmpty(request.Verb) ||
-                    string.IsNullOrEmpty(request.Path))
-                {
-                    response.StatusCode = (int)HttpStatusCode.BadRequest;
-                    logger?.LogInformation("Request missing verb and/or path.");
-                }
-                else if (string.Equals(request.Verb, Request.GET, StringComparison.InvariantCultureIgnoreCase) &&
+                response.StatusCode = (int)HttpStatusCode.BadRequest;
+                logger?.LogInformation("Request missing verb and/or path.");
+
+                return response;
+            }
+
+            if (string.Equals(request.Verb, Request.GET, StringComparison.InvariantCultureIgnoreCase) &&
                          string.Equals(request.Path, "/api/version", StringComparison.InvariantCultureIgnoreCase))
-                {
-                    response.StatusCode = (int)HttpStatusCode.OK;
-                    response.SetBody(new VersionInfo() { UserAgent = userAgent });
-                }
-                else if (string.Equals(request.Verb, Request.POST, StringComparison.InvariantCultureIgnoreCase) &&
-                         string.Equals(request.Path, "/api/messages", StringComparison.InvariantCultureIgnoreCase))
-                {
-                    var body = request.ReadBodyAsString();
-                    if (string.IsNullOrEmpty(body) || request.Streams?.Count == 0)
-                    {
-                        response.StatusCode = (int)HttpStatusCode.BadRequest;
-                        logger?.LogInformation("Request missing body and/or streams.");
-                        return response;
-                    }
-
-                    try
-                    {
-                        var adapter = new BotFrameworkStreamingExtensionsAdapter(Server, middlewareSet, logger);
-                        var bot = services?.GetService<IBot>() ?? this.bot;
-
-                        if (bot == null)
-                        {
-                            throw new Exception("Unable to find bot when processing request.");
-                        }
-
-                        if (onTurnError != null)
-                        {
-                            adapter.OnTurnError = onTurnError;
-                        }
-
-                        var invokeResponse = await adapter.ProcessActivityAsync(body, request.Streams, new BotCallbackHandler(bot.OnTurnAsync), CancellationToken.None).ConfigureAwait(false);
-
-                        if (invokeResponse == null)
-                        {
-                            response.StatusCode = (int)HttpStatusCode.OK;
-                        }
-                        else
-                        {
-                            response.StatusCode = invokeResponse.Status;
-                            if (invokeResponse.Body != null)
-                            {
-                                response.SetBody(invokeResponse.Body);
-                            }
-                        }
-
-                        invokeResponse = null;
-                    }
-                    catch (Exception ex)
-                    {
-                        response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                        logger?.LogError(ex.Message);
-                    }
-                }
-                else
-                {
-                    response.StatusCode = (int)HttpStatusCode.NotFound;
-                    logger?.LogInformation($"Unknown verb and path: {request.Verb} {request.Path}");
-                }
-            }
-            catch (Exception e)
             {
-                response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                logger?.LogError(e.Message);
+                response.StatusCode = (int)HttpStatusCode.OK;
+                response.SetBody(new VersionInfo() { UserAgent = _userAgent });
+
+                return response;
             }
+
+            if (string.Equals(request.Verb, Request.POST, StringComparison.InvariantCultureIgnoreCase) &&
+                         string.Equals(request.Path, "/api/messages", StringComparison.InvariantCultureIgnoreCase))
+            {
+                return await ProcessStreamingRequestAsync(request, response, logger).ConfigureAwait(false);
+            }
+
+            response.StatusCode = (int)HttpStatusCode.NotFound;
+            logger?.LogInformation($"Unknown verb and path: {request.Verb} {request.Path}");
 
             return response;
         }
 
-        private static string GetUserAgent()
+        /// <summary>
+        /// Build and return versioning information used for telemetry, including:
+        /// The Schema version is 3.1, put into the Microsoft-BotFramework header,
+        /// Protocol Extension Info,
+        /// The Client SDK Version
+        ///  https://github.com/Microsoft/botbuilder-dotnet/blob/d342cd66d159a023ac435aec0fdf791f93118f5f/doc/UserAgents.md,
+        /// Additional Info.
+        /// https://github.com/Microsoft/botbuilder-dotnet/blob/d342cd66d159a023ac435aec0fdf791f93118f5f/doc/UserAgents.md.
+        /// </summary>
+        /// <returns>A string containing versioning information.</returns>
+        private static string GetUserAgent() =>
+            string.Format(
+                "Microsoft-BotFramework/3.1 Streaming-Extensions/1.0 BotBuilder/{0} ({1}; {2}; {3})",
+                ConnectorClient.GetClientVersion(new ConnectorClient(new Uri("http://localhost"))),
+                ConnectorClient.GetASPNetVersion(),
+                ConnectorClient.GetOsVersion(),
+                ConnectorClient.GetArchitecture());
+
+        /// <summary>
+        /// Performs the actual processing of a request, handing it off to the adapter and returning the response.
+        /// </summary>
+        /// <param name="request">A ReceiveRequest from the connected channel.</param>
+        /// <param name="response">The response to update and return, ultimately sent to client.</param>
+        /// <param name="logger">Optional logger.</param>
+        /// <returns>The response ready to send to the client.</returns>
+        private async Task<Response> ProcessStreamingRequestAsync(ReceiveRequest request, Response response, ILogger<RequestHandler> logger = null)
         {
-            var client = new HttpClient();
-            var userAgentHeader = client.DefaultRequestHeaders.UserAgent;
-
-            // The Schema version is 3.1, put into the Microsoft-BotFramework header
-            var botFwkProductInfo = new ProductInfoHeaderValue("Microsoft-BotFramework", "3.1");
-            if (!userAgentHeader.Contains(botFwkProductInfo))
+            var body = request.ReadBodyAsString();
+            if (string.IsNullOrEmpty(body) || request.Streams?.Count == 0)
             {
-                userAgentHeader.Add(botFwkProductInfo);
+                response.StatusCode = (int)HttpStatusCode.BadRequest;
+                logger?.LogInformation("Request missing body and/or streams.");
+
+                return response;
             }
 
-            // The Client SDK Version
-            //  https://github.com/Microsoft/botbuilder-dotnet/blob/d342cd66d159a023ac435aec0fdf791f93118f5f/doc/UserAgents.md
-            var botBuilderProductInfo = new ProductInfoHeaderValue("BotBuilder", ConnectorClient.GetClientVersion(new ConnectorClient(new Uri("http://localhost"))));
-            if (!userAgentHeader.Contains(botBuilderProductInfo))
+            try
             {
-                userAgentHeader.Add(botBuilderProductInfo);
-            }
+                var adapter = new BotFrameworkStreamingExtensionsAdapter(Server, _middlewareSet, logger);
+                var bot = _services?.GetService<IBot>() ?? this._bot;
 
-            // Additional Info.
-            // https://github.com/Microsoft/botbuilder-dotnet/blob/d342cd66d159a023ac435aec0fdf791f93118f5f/doc/UserAgents.md
-            var userAgent = $"({ConnectorClient.GetASPNetVersion()}; {ConnectorClient.GetOsVersion()}; {ConnectorClient.GetArchitecture()})";
-            if (ProductInfoHeaderValue.TryParse(userAgent, out var additionalProductInfo))
-            {
-                if (!userAgentHeader.Contains(additionalProductInfo))
+                if (bot == null)
                 {
-                    userAgentHeader.Add(additionalProductInfo);
+                    throw new Exception("Unable to find bot when processing request.");
                 }
+
+                if (_onTurnError != null)
+                {
+                    adapter.OnTurnError = _onTurnError;
+                }
+
+                var invokeResponse = await adapter.ProcessActivityAsync(body, request.Streams, new BotCallbackHandler(bot.OnTurnAsync), CancellationToken.None).ConfigureAwait(false);
+
+                if (invokeResponse == null)
+                {
+                    response.StatusCode = (int)HttpStatusCode.OK;
+                }
+                else
+                {
+                    response.StatusCode = invokeResponse.Status;
+                    if (invokeResponse.Body != null)
+                    {
+                        response.SetBody(invokeResponse.Body);
+                    }
+                }
+
+                invokeResponse = null;
+            }
+            catch (Exception ex)
+            {
+                response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                logger?.LogError(ex.Message);
             }
 
-            return userAgentHeader.ToString();
+            return response;
         }
     }
 }

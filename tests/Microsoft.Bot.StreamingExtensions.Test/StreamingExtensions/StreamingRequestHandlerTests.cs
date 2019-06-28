@@ -5,8 +5,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
+using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.StreamingExtensions.UnitTests.Mocks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -35,7 +37,51 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.StreamingExtensions
         public void StreamingRequestHandler_UserAgentSet()
         {
             var s = new StreamingRequestHandler(null, new MockBot(), null);
-            Assert.IsNotNull(s.userAgent);
+            Assert.IsNotNull(s._userAgent);
+        }
+
+        [TestMethod]
+        public void StreamingRequestHandler_UserAgent_Matches_Standard_Format()
+        {
+            var s = new StreamingRequestHandler(null, new MockBot(), null);
+
+            var client = new HttpClient();
+            var userAgentHeader = client.DefaultRequestHeaders.UserAgent;
+
+            // The Schema version is 3.1, put into the Microsoft-BotFramework header
+            var botFwkProductInfo = new ProductInfoHeaderValue("Microsoft-BotFramework", "3.1");
+            if (!userAgentHeader.Contains(botFwkProductInfo))
+            {
+                userAgentHeader.Add(botFwkProductInfo);
+            }
+
+            // Info on Streaming Extensions Version
+            var streamingExtensionsVersion = new ProductInfoHeaderValue("Streaming-Extensions", "1.0");
+            if (!userAgentHeader.Contains(streamingExtensionsVersion))
+            {
+                userAgentHeader.Add(streamingExtensionsVersion);
+            }
+
+            // The Client SDK Version
+            //  https://github.com/Microsoft/botbuilder-dotnet/blob/d342cd66d159a023ac435aec0fdf791f93118f5f/doc/UserAgents.md
+            var botBuilderProductInfo = new ProductInfoHeaderValue("BotBuilder", ConnectorClient.GetClientVersion(new ConnectorClient(new System.Uri("http://localhost"))));
+            if (!userAgentHeader.Contains(botBuilderProductInfo))
+            {
+                userAgentHeader.Add(botBuilderProductInfo);
+            }
+
+            // Additional Info.
+            // https://github.com/Microsoft/botbuilder-dotnet/blob/d342cd66d159a023ac435aec0fdf791f93118f5f/doc/UserAgents.md
+            var userAgent = $"({ConnectorClient.GetASPNetVersion()}; {ConnectorClient.GetOsVersion()}; {ConnectorClient.GetArchitecture()})";
+            if (ProductInfoHeaderValue.TryParse(userAgent, out var additionalProductInfo))
+            {
+                if (!userAgentHeader.Contains(additionalProductInfo))
+                {
+                    userAgentHeader.Add(additionalProductInfo);
+                }
+            }
+
+            Assert.AreEqual(s._userAgent, userAgentHeader.ToString());
         }
 
         [TestMethod]
