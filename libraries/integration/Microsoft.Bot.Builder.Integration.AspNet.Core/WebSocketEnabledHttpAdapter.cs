@@ -120,7 +120,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.StreamingExtensions
             }
             else
             {
-                bool _ = _ensureMiddlewareSet.Value;
+                bool check = _ensureMiddlewareSet.Value;
                 await _botFrameworkHttpAdapter.ProcessAsync(httpRequest, httpResponse, bot, cancellationToken).ConfigureAwait(false);
             }
         }
