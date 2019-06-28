@@ -11,21 +11,6 @@ namespace Microsoft.BotBuilder.Adapters.Slack
     public class DialogData
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="DialogData"/> class.
-        /// </summary>
-        /// <param name="title">title for the Dialog.</param>
-        /// <param name="callback">callback id for the Dialog.</param>
-        /// <param name="submit">submit label for the Dialog.</param>
-        /// <param name="elements">List of elements for the Dialog.</param>
-        public DialogData(string title, string callback, string submit, List<DialogElement> elements)
-        {
-            this.Title = title;
-            this.CallbackId = callback;
-            this.SubmitLabel = submit;
-            this.Elements = elements;
-        }
-
-        /// <summary>
         /// Gets or Sets the tittle of the dialog.
         /// </summary>
         /// <value>The tittle of the dialog.</value>
@@ -47,7 +32,7 @@ namespace Microsoft.BotBuilder.Adapters.Slack
         /// Gets or Sets a list of elements contained by the dialog.
         /// </summary>
         /// <value>The elements of the dialog.</value>
-        public List<DialogElement> Elements { get; set; }
+        public List<DialogElement> Elements { get; set; } = new List<DialogElement>();
 
         /// <summary>
         /// Gets or Sets the state of the dialog.
