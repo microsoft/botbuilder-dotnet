@@ -19,8 +19,8 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
         private static readonly Dictionary<string, string> ShorthandFunctionMap = new Dictionary<string, string>()
         {
             { "#", ExpressionType.Intent },
-            { "@", ExpressionType.Entity },
-            { "@@", ExpressionType.Entity }
+            { "@", ExpressionType.SimpleEntity },
+            { "@@", ExpressionType.Entity },
             { "$", ExpressionType.Dialog },
             { "^", ExpressionType.Callstack },
             { "%", ExpressionType.Option },

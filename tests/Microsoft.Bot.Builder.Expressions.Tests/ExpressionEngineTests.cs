@@ -119,7 +119,6 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
 
         public static IEnumerable<object[]> Data => new[]
        {
-            Test("@CompositeList1", "firstItem"),
             # region Operators test
             Test("1 + 2", 3),
             Test("- 1 + 2", 1),
@@ -491,7 +490,10 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("^x", 3),
             Test("^y", 2),
             Test("^z", 1),
-            Test("count(@@CompositeList1) == 1 && count(@@CompositeList1[0]) == 1", true, new HashSet<string> {"turn.recognized.entities.CompositeList1" }),
+            Test("@@CompositeList1", "firstItem"),
+            Test("count(@@CompositeList1) == 1 && count(@@CompositeList1[0]) == 1", true),
+            Test("@CompositeList1", "firstItem"),
+            Test("count(@CompositeList2)", 2),
             #endregion
 
             #region  Memory access
@@ -513,8 +515,6 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("count(user.lists.todo) >= int(@ordinal[0]))", true),
             Test("user.lists.todo[int(@ordinal[0]) - 1]", "todo1"),
             Test("user.lists[user.listType][int(@ordinal[0]) - 1]", "todo1"),
-            Test("@CompositeList1", "firstItem"),
-            Test("count(@CompositeList2)", 2),
             #endregion
 
             # region Regex

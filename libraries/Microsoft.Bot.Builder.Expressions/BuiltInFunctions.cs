@@ -3040,6 +3040,7 @@ namespace Microsoft.Bot.Builder.Expressions
                 new ExpressionEvaluator(ExpressionType.Dialog, ApplyShorthand(ExpressionType.Dialog), ReturnType.Object, ValidateUnaryString),
                 new ExpressionEvaluator(ExpressionType.Instance, ApplyShorthand(ExpressionType.Instance), ReturnType.Object, ValidateUnaryString),
                 new ExpressionEvaluator(ExpressionType.Option, ApplyShorthand(ExpressionType.Option), ReturnType.Object, ValidateUnaryString),
+                new ExpressionEvaluator(ExpressionType.Callstack, Callstack, ReturnType.Object, ValidateUnaryString),
                 new ExpressionEvaluator(ExpressionType.Entity, ApplyShorthand(ExpressionType.Entity), ReturnType.Object, ValidateUnaryString),
                 new ExpressionEvaluator(
                     ExpressionType.SimpleEntity,
