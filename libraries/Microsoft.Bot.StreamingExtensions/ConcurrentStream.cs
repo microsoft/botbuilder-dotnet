@@ -18,7 +18,6 @@ namespace Microsoft.Bot.StreamingExtensions
         private readonly SemaphoreSlim dataAvailable = new SemaphoreSlim(0, int.MaxValue);
         private readonly object syncLock = new object();
 
-        private long _producerLength = 0;       // total length
         private long _consumerPosition = 0;     // read position
 
         private byte[] _active = null;
@@ -37,9 +36,9 @@ namespace Microsoft.Bot.StreamingExtensions
 
         public override bool CanWrite => true;
 
-        public override long Length => _producerLength;
-
         public override long Position { get => _consumerPosition; set => throw new NotSupportedException(); }
+
+        public override long Length => throw new NotSupportedException();
 
         public override void Flush()
         {
@@ -157,7 +156,6 @@ namespace Microsoft.Bot.StreamingExtensions
             lock (syncLock)
             {
                 _bufferQueue.Enqueue(buffer);
-                _producerLength += count;
             }
 
             dataAvailable.Release();
