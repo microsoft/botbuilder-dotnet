@@ -490,10 +490,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("^x", 3),
             Test("^y", 2),
             Test("^z", 1),
-            Test("@@CompositeList1", "firstItem"),
             Test("count(@@CompositeList1) == 1 && count(@@CompositeList1[0]) == 1", true),
-            Test("@CompositeList1", "firstItem"),
-            Test("count(@CompositeList2)", 2),
             #endregion
 
             #region  Memory access
@@ -545,7 +542,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             # endregion
         };
 
-        [DataTestMethod]
+        [DataTestMethod()]
         [DynamicData(nameof(Data))]
         public void Evaluate(string input, object expected, HashSet<string> expectedRefs)
         {
