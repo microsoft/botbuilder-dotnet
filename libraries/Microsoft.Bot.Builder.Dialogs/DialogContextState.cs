@@ -145,7 +145,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 // switch to parent stack and enumerate it's state objects
                 if (this.dialogContext.Parent != null)
                 {
-                    foreach (var state in dialogContext.State.CallStack)
+                    foreach (var state in dialogContext.Parent.State.CallStack)
                     {
                         yield return state;
                     }

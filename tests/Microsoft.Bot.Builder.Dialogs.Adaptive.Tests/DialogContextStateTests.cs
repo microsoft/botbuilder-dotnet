@@ -384,5 +384,68 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         .AssertReply("newName3")
                     .StartTestAsync();
         }
+
+        [TestMethod]
+        public async Task DialogContextState_CallstackScope()
+        {
+            var testDialog = new AdaptiveDialog("testDialog")
+            {
+                AutoEndDialog = false,
+                Steps = new List<IDialog>()
+                {
+                    new SetProperty() { Property = "$xxx", Value = "'xxx'" },
+                    new SetProperty() { Property = "$aaa", Value = "'d1'" },
+                    new SendActivity("{$aaa}"),
+                    new BeginDialog()
+                    {
+                        Dialog = new AdaptiveDialog("d2")
+                        {
+                            Steps = new List<IDialog>()
+                            {
+                                new SetProperty() { Property = "$yyy", Value = "'yyy'" },
+                                new SendActivity("{$aaa == null}"),
+                                new SendActivity("{^aaa}"),
+                                new BeginDialog()
+                                {
+                                    Dialog = new AdaptiveDialog("d3")
+                                    {
+                                        Steps = new List<IDialog>()
+                                        {
+                                            new SetProperty() { Property = "$zzz", Value = "'zzz'" },
+                                            new SetProperty() { Property = "$aaa", Value = "'d3'" },
+                                            new SendActivity("{$aaa}"),
+                                            new SendActivity("{^aaa}"),
+                                            new SendActivity("{$zzz}"),
+                                            new SendActivity("{$yyy==null}"),
+                                            new SendActivity("{$xxx==null}"),
+                                            new SendActivity("{^yyy}"),
+                                            new SendActivity("{^xxx}"),
+                                        }
+                                    }
+                                },
+                            }
+                        }
+                    },
+                }
+            };
+
+            await CreateFlow(testDialog)
+                    .SendConversationUpdate()
+                        // d1
+                        .AssertReply("d1")
+                        // d2
+                        .AssertReply("True")
+                        .AssertReply("d1")
+                        // d3
+                        .AssertReply("d3")
+                        .AssertReply("d3")
+                        .AssertReply("zzz")
+                        .AssertReply("True")
+                        .AssertReply("True")
+                        .AssertReply("yyy")
+                        .AssertReply("xxx")
+                    .StartTestAsync();
+        }
+
     }
 }

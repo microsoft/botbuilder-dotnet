@@ -488,6 +488,35 @@ namespace Microsoft.Bot.Builder.Expressions
                 return (value, error);
             };
 
+        private static (object value, string error) Callstack(Expression expression, object state)
+        {
+            var result = state;
+            string error = null;
+
+            // get collection
+            (result, error) = AccessProperty(state, "callstack");
+            if (result != null)
+            {
+                var items = (IEnumerable<object>)result;
+                var property = (expression.Children[0] as Constant).Value.ToString();
+
+                foreach (var item in items)
+                {
+                    // get property off of item
+                    (result, error) = AccessProperty(item, property);
+
+                    // if not null
+                    if (error == null && result != null)
+                    {
+                        // return it
+                        return (result, null);
+                    }
+                }
+            }
+
+            return (null, error);
+        }
+
         public static EvaluateExpressionDelegate ApplyShorthand(string functionName, Func<object, (object, string)> function = null)
             =>
             (expression, state) =>
@@ -3010,6 +3039,7 @@ namespace Microsoft.Bot.Builder.Expressions
                 new ExpressionEvaluator(ExpressionType.Dialog, ApplyShorthand(ExpressionType.Dialog), ReturnType.Object, ValidateUnaryString),
                 new ExpressionEvaluator(ExpressionType.Instance, ApplyShorthand(ExpressionType.Instance), ReturnType.Object, ValidateUnaryString),
                 new ExpressionEvaluator(ExpressionType.Option, ApplyShorthand(ExpressionType.Option), ReturnType.Object, ValidateUnaryString),
+                new ExpressionEvaluator(ExpressionType.Callstack, Callstack, ReturnType.Object, ValidateUnaryString),
                 new ExpressionEvaluator(
                     ExpressionType.Entity,
                     ApplyShorthand(

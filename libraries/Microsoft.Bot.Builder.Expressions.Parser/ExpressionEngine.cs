@@ -21,8 +21,9 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
             { "#", ExpressionType.Intent },
             { "@", ExpressionType.Entity },
             { "$", ExpressionType.Dialog },
-            { "%", ExpressionType.Instance },
-            { "^", ExpressionType.Option },
+            { "^", ExpressionType.Callstack },
+            { "%", ExpressionType.Option },
+            { "~", ExpressionType.Instance },
         };
 
         private readonly EvaluatorLookup _lookup;

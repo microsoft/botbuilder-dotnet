@@ -109,6 +109,12 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
                 title = "Dialog Title",
                 subTitle = "Dialog Sub Title"
             },
+            callstack = new object[]
+            {
+                new {x = 3 },
+                new {x = 2, y = 2 },
+                new {x = 1, y = 1, z = 1 },
+            }
         };
 
         public static IEnumerable<object[]> Data => new[]
@@ -480,8 +486,11 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("exists(#BookFlight)", true, new HashSet<string> {"turn.recognized.intents.BookFlight"}),
             Test("$title", "Dialog Title", new HashSet<string> {"dialog.title"}),
             Test("$subTitle", "Dialog Sub Title", new HashSet<string> {"dialog.subTitle"}),
-            Test("%xxx", "instance", new HashSet<string> {"dialog.instance.xxx"}),
-            Test("^xxx", "options", new HashSet<string> {"dialog.options.xxx"}),
+            Test("~xxx", "instance", new HashSet<string> {"dialog.instance.xxx"}),
+            Test("%xxx", "options", new HashSet<string> {"dialog.options.xxx"}),
+            Test("^x", 3),
+            Test("^y", 2),
+            Test("^z", 1),
             # endregion
 
             # region  Memory access
