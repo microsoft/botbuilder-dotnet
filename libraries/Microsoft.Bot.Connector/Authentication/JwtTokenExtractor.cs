@@ -106,7 +106,7 @@ namespace Microsoft.Bot.Connector.Authentication
             // Make our own copy so we can edit it
             _tokenValidationParameters = tokenValidationParameters.Clone();
             _tokenValidationParameters.RequireSignedTokens = true;
-            _allowedSigningAlgorithms = allowedSigningAlgorithms;            
+            _allowedSigningAlgorithms = allowedSigningAlgorithms;
 
             _openIdMetadata = _openIdMetadataCache.GetOrAdd(metadataUrl, key =>
             {

@@ -16,8 +16,8 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// <summary>
     /// Creates a new prompt that asks the user to sign in using the Bot Frameworks Single Sign On (SSO)
     /// service.
-    ///
-    /// @remarks
+    /// </summary>
+    /// <remarks>
     /// The prompt will attempt to retrieve the users current token and if the user isn't signed in, it
     /// will send them an `OAuthCard` containing a button they can press to signin. Depending on the
     /// channel, the user will be sent through one of two possible signin flows:
@@ -32,21 +32,25 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// careful of is that you don't block the `event` and `invoke` activities that the prompt might
     /// be waiting on.
     ///
-    /// > [!NOTE]
-    /// > You should avoid persisting the access token with your bots other state. The Bot Frameworks
-    /// > SSO service will securely store the token on your behalf. If you store it in your bots state
-    /// > it could expire or be revoked in between turns.
-    /// >
-    /// > When calling the prompt from within a waterfall step you should use the token within the step
-    /// > following the prompt and then let the token go out of scope at the end of your function.
+    /// <blockquote>
+    /// **Note**:
+    /// You should avoid persisting the access token with your bots other state. The Bot Frameworks
+    /// SSO service will securely store the token on your behalf. If you store it in your bots state
+    /// it could expire or be revoked in between turns.
     ///
-    /// #### Prompt Usage
+    /// When calling the prompt from within a waterfall step you should use the token within the step
+    /// following the prompt and then let the token go out of scope at the end of your function.
+    /// </blockquote>
     ///
-    /// When used with your bots `DialogSet` you can simply add a new instance of the prompt as a named
-    /// dialog using `DialogSet.add()`. You can then start the prompt from a waterfall step using either
-    /// `DialogContext.begin()` or `DialogContext.prompt()`. The user will be prompted to signin as
-    /// needed and their access token will be passed as an argument to the callers next waterfall step.
-    /// </summary>
+    /// ## Prompt Usage
+    ///
+    /// When used with your bot's <see cref="DialogSet"/> you can simply add a new instance of the prompt as a named
+    /// dialog using <see cref="DialogSet.Add(Dialog)"/>. You can then start the prompt from a waterfall step using either
+    /// <see cref="DialogContext.BeginDialogAsync(string, object, CancellationToken)"/> or
+    /// <see cref="DialogContext.PromptAsync(string, PromptOptions, CancellationToken)"/>. The user
+    /// will be prompted to signin as needed and their access token will be passed as an argument to
+    /// the callers next waterfall step.
+    /// </remarks>
     public class OAuthPrompt : Dialog
     {
         private const string PersistedOptions = "options";
@@ -62,6 +66,15 @@ namespace Microsoft.Bot.Builder.Dialogs
         private OAuthPromptSettings _settings;
         private PromptValidator<TokenResponse> _validator;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OAuthPrompt"/> class.
+        /// </summary>
+        /// <param name="dialogId">The ID to assign to this prompt.</param>
+        /// <param name="settings">Additional OAuth settings to use with this instance of the prompt.</param>
+        /// <param name="validator">Optional, a <see cref="PromptValidator{FoundChoice}"/> that contains additional,
+        /// custom validation for this prompt.</param>
+        /// <remarks>The value of <paramref name="dialogId"/> must be unique within the
+        /// <see cref="DialogSet"/> or <see cref="ComponentDialog"/> to which the prompt is added.</remarks>
         public OAuthPrompt(string dialogId, OAuthPromptSettings settings, PromptValidator<TokenResponse> validator = null)
             : base(dialogId)
         {
@@ -69,6 +82,16 @@ namespace Microsoft.Bot.Builder.Dialogs
             _validator = validator;
         }
 
+        /// <summary>
+        /// Called when a prompt dialog is pushed onto the dialog stack and is being activated.
+        /// </summary>
+        /// <param name="dc">The dialog context for the current turn of the conversation.</param>
+        /// <param name="options">Optional, additional information to pass to the prompt being started.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        /// <remarks>If the task is successful, the result indicates whether the prompt is still
+        /// active after the turn has been processed by the prompt.</remarks>
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (dc == null)
@@ -130,6 +153,17 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
+        /// <summary>
+        /// Called when a prompt dialog is the active dialog and the user replied with a new activity.
+        /// </summary>
+        /// <param name="dc">The dialog context for the current turn of conversation.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        /// <remarks>If the task is successful, the result indicates whether the dialog is still
+        /// active after the turn has been processed by the dialog.
+        /// <para>The prompt generally continues to receive the user's replies until it accepts the
+        /// user's reply as valid input for the prompt.</para></remarks>
         public override async Task<DialogTurnResult> ContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (dc == null)
@@ -190,12 +224,14 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// Get a token for a user signed in.
+        /// Attempts to get the user's token.
         /// </summary>
-        /// <param name="turnContext">Context for the current turn of the conversation with the user.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <param name="code">(Optional) login code received from the user.</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        /// <param name="turnContext">Context for the current turn of conversation with the user.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>If the task is successful and user already has a token or the user successfully signs in,
+        /// the result contains the user's token.</remarks>
         public async Task<TokenResponse> GetUserTokenAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (!(turnContext.Adapter is IUserTokenProvider adapter))
@@ -207,11 +243,12 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// Sign Out the User.
+        /// Signs out the user.
         /// </summary>
-        /// <param name="turnContext">Context for the current turn of the conversation with the user.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        /// <param name="turnContext">Context for the current turn of conversation with the user.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
         public async Task SignOutUserAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (!(turnContext.Adapter is IUserTokenProvider adapter))

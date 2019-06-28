@@ -19,12 +19,14 @@ namespace Microsoft.Bot.Configuration
         /// <summary>
         /// Gets or sets url for deep link to service.
         /// </summary>
+        /// <value>The Url to Service.</value>
         [JsonProperty("url")]
         public string Url { get; set; }
 
         /// <summary>
         /// Gets or sets configuration.
         /// </summary>
+        /// <value>The service configuration.</value>
         [JsonProperty("configuration")]
         public Dictionary<string, string> Configuration { get; set; } = new Dictionary<string, string>();
 
