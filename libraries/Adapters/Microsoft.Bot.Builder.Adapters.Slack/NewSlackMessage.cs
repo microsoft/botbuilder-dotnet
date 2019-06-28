@@ -1,4 +1,7 @@
-﻿using SlackAPI.WebSocketMessages;
+﻿// Copyright(c) Microsoft Corporation.All rights reserved.
+// Licensed under the MIT License.
+
+using SlackAPI.WebSocketMessages;
 
 namespace Microsoft.BotBuilder.Adapters.Slack
 {
