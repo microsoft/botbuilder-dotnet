@@ -150,7 +150,7 @@ namespace Microsoft.Bot.StreamingExtensions.PayloadTransport
                         // give the full payload buffer to the contentStream if it's a stream
                         if (contentStream != null && PayloadTypes.IsStream(header))
                         {
-                            ((ConcurrentStream)contentStream).GiveBuffer(buffer, length);
+                            ((PayloadStream)contentStream).GiveBuffer(buffer, length);
                         }
                     }
 

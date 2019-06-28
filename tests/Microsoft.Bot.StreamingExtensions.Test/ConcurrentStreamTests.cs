@@ -54,7 +54,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
             var random = new Random();
             random.NextBytes(producerBuffer);
 
-            using (var stream = new ConcurrentStream(null))
+            using (var stream = new PayloadStream(null))
             {
                 await stream.WriteAsync(producerBuffer, 0, producerBuffer.Length);
 
@@ -76,7 +76,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
             var random = new Random();
             random.NextBytes(producerBuffer);
 
-            using (var stream = new ConcurrentStream(null))
+            using (var stream = new PayloadStream(null))
             {
                 await stream.WriteAsync(producerBuffer, 0, producerBuffer.Length);
 
@@ -98,7 +98,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
             var random = new Random();
             random.NextBytes(producerBuffer);
 
-            using (var stream = new ConcurrentStream(null))
+            using (var stream = new PayloadStream(null))
             {
                 await stream.WriteAsync(producerBuffer, 0, producerBuffer.Length);
 
@@ -121,7 +121,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
             var random = new Random();
             random.NextBytes(producerBuffer);
 
-            using (var stream = new ConcurrentStream(null))
+            using (var stream = new PayloadStream(null))
             {
                 // write 200
                 await stream.WriteAsync(producerBuffer, 0, producerBuffer.Length);
@@ -149,7 +149,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
             var random = new Random();
             random.NextBytes(producerBuffer);
 
-            using (var stream = new ConcurrentStream(null))
+            using (var stream = new PayloadStream(null))
             {
                 await stream.WriteAsync(producerBuffer, 0, producerBuffer.Length);
                 await stream.WriteAsync(producerBuffer, 0, producerBuffer.Length);
@@ -174,7 +174,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
             var random = new Random();
             random.NextBytes(producerBuffer);
 
-            using (var stream = new ConcurrentStream(null))
+            using (var stream = new PayloadStream(null))
             {
                 await stream.WriteAsync(producerBuffer, 0, producerBuffer.Length);
                 await stream.WriteAsync(producerBuffer, 0, producerBuffer.Length);
@@ -193,7 +193,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
         [TestMethod]
         public void CanRead_IsTrue()
         {
-            using (var stream = new ConcurrentStream(null))
+            using (var stream = new PayloadStream(null))
             {
                 Assert.IsTrue(stream.CanRead);
             }
@@ -202,7 +202,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
         [TestMethod]
         public void CanWrite_IsTrue()
         {
-            using (var stream = new ConcurrentStream(null))
+            using (var stream = new PayloadStream(null))
             {
                 Assert.IsTrue(stream.CanWrite);
             }
@@ -211,7 +211,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
         [TestMethod]
         public void CanSeek_IsFalse()
         {
-            using (var stream = new ConcurrentStream(null))
+            using (var stream = new PayloadStream(null))
             {
                 Assert.IsFalse(stream.CanSeek);
             }
@@ -220,7 +220,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
         [TestMethod]
         public void PositionSetter_Throws()
         {
-            using (var stream = new ConcurrentStream(null))
+            using (var stream = new PayloadStream(null))
             {
                 Assert.ThrowsException<NotSupportedException>(() =>
                 {
@@ -232,7 +232,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
         [TestMethod]
         public void SetLength_Throws()
         {
-            using (var stream = new ConcurrentStream(null))
+            using (var stream = new PayloadStream(null))
             {
                 Assert.ThrowsException<NotSupportedException>(() =>
                 {
@@ -244,7 +244,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
         [TestMethod]
         public void GetLength_Throws()
         {
-            using (var stream = new ConcurrentStream(null))
+            using (var stream = new PayloadStream(null))
             {
                 Assert.ThrowsException<NotSupportedException>(() =>
                 {
@@ -256,7 +256,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
         [TestMethod]
         public void Seek_Throws()
         {
-            using (var stream = new ConcurrentStream(null))
+            using (var stream = new PayloadStream(null))
             {
                 Assert.ThrowsException<NotSupportedException>(() =>
                 {
@@ -272,7 +272,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
             var consumerBuffer = new byte[expectedReadCount];
             int readCount = 0;
 
-            using (var stream = new ConcurrentStream(null))
+            using (var stream = new PayloadStream(null))
             {
                 stream.DoneProducing();
 
@@ -294,7 +294,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
             var random = new Random();
             random.NextBytes(producerBuffer);
 
-            using (var stream = new ConcurrentStream(null))
+            using (var stream = new PayloadStream(null))
             {
                 await stream.WriteAsync(producerBuffer, 0, producerBuffer.Length);
                 stream.DoneProducing();
@@ -324,7 +324,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
 
             using (var ct = new CancellationTokenSource())
             {
-                using (var s = new ConcurrentStream(null))
+                using (var s = new PayloadStream(null))
                 {
                     Func<Task> reader = async () =>
                     {

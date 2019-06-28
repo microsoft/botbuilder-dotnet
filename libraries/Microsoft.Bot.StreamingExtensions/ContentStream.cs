@@ -10,7 +10,7 @@ namespace Microsoft.Bot.StreamingExtensions
     internal class ContentStream : IContentStream
     {
         private readonly ContentStreamAssembler _assembler;
-        private ConcurrentStream _stream;
+        private PayloadStream _stream;
 
         internal ContentStream(Guid id, ContentStreamAssembler assembler)
         {
@@ -28,7 +28,7 @@ namespace Microsoft.Bot.StreamingExtensions
         {
             if (_stream == null)
             {
-                _stream = (ConcurrentStream)_assembler.GetPayloadStream();
+                _stream = (PayloadStream)_assembler.GetPayloadStream();
             }
 
             return _stream;

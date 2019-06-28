@@ -159,7 +159,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.Payloads
             var transport = new MockTransportSender();
             sender.Connect(transport);
 
-            var stream = new ConcurrentStream(new ContentStreamAssembler(null, Guid.NewGuid(), "blah", 100));
+            var stream = new PayloadStream(new ContentStreamAssembler(null, Guid.NewGuid(), "blah", 100));
 
             var content = new HttpContentStream(Guid.NewGuid())
             {

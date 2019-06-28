@@ -31,7 +31,7 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
 
         public override Stream CreatePayloadStream()
         {
-            return new ConcurrentStream(this);
+            return new PayloadStream(this);
         }
 
         public override void OnReceive(Header header, Stream stream, int contentLength)
@@ -40,7 +40,7 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
 
             if (End)
             {
-                ((ConcurrentStream)stream).DoneProducing();
+                ((PayloadStream)stream).DoneProducing();
             }
         }
 
