@@ -7,12 +7,13 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Bot.Connector.Authentication;
 using Microsoft.IdentityModel.Protocols;
 using Moq;
 using RichardSzalay.MockHttp;
 using Xunit;
 
-namespace Microsoft.Bot.Connector.Authentication.Tests
+namespace Microsoft.Bot.Connector.Tests.Authentication
 {
     public class EndorsementsRetrieverTests
     {

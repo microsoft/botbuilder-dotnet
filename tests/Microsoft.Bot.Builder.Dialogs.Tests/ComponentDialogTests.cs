@@ -360,13 +360,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         private static WaterfallDialog CreateWaterfall()
         {
             var steps = new WaterfallStep[]
-                {
+            {
                 WaterfallStep1,
                 WaterfallStep2,
             };
-            return new WaterfallDialog(
-                "test-waterfall",
-                steps);
+            return new WaterfallDialog("test-waterfall", steps);
         }
 
         private static async Task<DialogTurnResult> WaterfallStep1(WaterfallStepContext stepContext, CancellationToken cancellationToken)

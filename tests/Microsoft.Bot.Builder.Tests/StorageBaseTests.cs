@@ -219,10 +219,10 @@ namespace Microsoft.Bot.Builder.Tests
 
             var storeItemsList = new List<Dictionary<string, object>>(new[]
                 {
-                new Dictionary<string, object> { ["createPoco"] = new PocoItem() { Id = "1", Count = 0, ExtraBytes = stringArray } },
-                new Dictionary<string, object> { ["createPoco"] = new PocoItem() { Id = "1", Count = 1, ExtraBytes = stringArray } },
-                new Dictionary<string, object> { ["createPoco"] = new PocoItem() { Id = "1", Count = 2, ExtraBytes = stringArray } },
-            });
+                    new Dictionary<string, object> { ["createPoco"] = new PocoItem() { Id = "1", Count = 0, ExtraBytes = stringArray } },
+                    new Dictionary<string, object> { ["createPoco"] = new PocoItem() { Id = "1", Count = 1, ExtraBytes = stringArray } },
+                    new Dictionary<string, object> { ["createPoco"] = new PocoItem() { Id = "1", Count = 2, ExtraBytes = stringArray } },
+                });
 
             // TODO: this code as a generic test doesn't make much sense - for now just eliminating the custom exception
             // Writing large objects in parallel might raise an InvalidOperationException

@@ -6,10 +6,11 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Xunit;
 
-namespace Microsoft.Bot.Connector.Authentication.Tests
+namespace Microsoft.Bot.Connector.Tests.Authentication
 {
     public class JwtTokenValidationTests
     {
@@ -201,9 +202,9 @@ namespace Microsoft.Bot.Connector.Authentication.Tests
             var identity = new SimpleClaimsIdentity(
                 new List<Claim>()
                 {
-                new Claim(AuthenticationConstants.AudienceClaim, appId, null, GovernmentAuthenticationConstants.ToBotFromChannelTokenIssuer),
-                new Claim(AuthenticationConstants.ServiceUrlClaim, serviceUrl, null),
-            }, true);
+                    new Claim(AuthenticationConstants.AudienceClaim, appId, null, GovernmentAuthenticationConstants.ToBotFromChannelTokenIssuer),
+                    new Claim(AuthenticationConstants.ServiceUrlClaim, serviceUrl, null),
+                }, true);
             await GovernmentChannelValidation.ValidateIdentity(identity, credentials, serviceUrl);
         }
 
@@ -216,9 +217,9 @@ namespace Microsoft.Bot.Connector.Authentication.Tests
             var identity = new SimpleClaimsIdentity(
                 new List<Claim>()
                 {
-                new Claim(AuthenticationConstants.AudienceClaim, appId, null, GovernmentAuthenticationConstants.ToBotFromChannelTokenIssuer),
-                new Claim(AuthenticationConstants.ServiceUrlClaim, serviceUrl, null),
-            }, false);
+                    new Claim(AuthenticationConstants.AudienceClaim, appId, null, GovernmentAuthenticationConstants.ToBotFromChannelTokenIssuer),
+                    new Claim(AuthenticationConstants.ServiceUrlClaim, serviceUrl, null),
+                }, false);
 
             await Assert.ThrowsAsync<UnauthorizedAccessException>(
                 async () => await GovernmentChannelValidation.ValidateIdentity(identity, credentials, serviceUrl));
@@ -233,8 +234,8 @@ namespace Microsoft.Bot.Connector.Authentication.Tests
             var identity = new SimpleClaimsIdentity(
                 new List<Claim>()
                 {
-                new Claim(AuthenticationConstants.ServiceUrlClaim, serviceUrl, null),
-            }, true);
+                  new Claim(AuthenticationConstants.ServiceUrlClaim, serviceUrl, null),
+                }, true);
 
             await Assert.ThrowsAsync<UnauthorizedAccessException>(
                 async () => await GovernmentChannelValidation.ValidateIdentity(identity, credentials, serviceUrl));
@@ -249,9 +250,9 @@ namespace Microsoft.Bot.Connector.Authentication.Tests
             var identity = new SimpleClaimsIdentity(
                 new List<Claim>()
                 {
-                new Claim(AuthenticationConstants.AudienceClaim, "abc", null, GovernmentAuthenticationConstants.ToBotFromChannelTokenIssuer),
-                new Claim(AuthenticationConstants.ServiceUrlClaim, serviceUrl, null),
-            }, true);
+                    new Claim(AuthenticationConstants.AudienceClaim, "abc", null, GovernmentAuthenticationConstants.ToBotFromChannelTokenIssuer),
+                    new Claim(AuthenticationConstants.ServiceUrlClaim, serviceUrl, null),
+                }, true);
 
             await Assert.ThrowsAsync<UnauthorizedAccessException>(
                 async () => await GovernmentChannelValidation.ValidateIdentity(identity, credentials, serviceUrl));
@@ -266,9 +267,9 @@ namespace Microsoft.Bot.Connector.Authentication.Tests
             var identity = new SimpleClaimsIdentity(
                 new List<Claim>()
                 {
-                new Claim(AuthenticationConstants.AudienceClaim, appId, null, "wrongissuer"),
-                new Claim(AuthenticationConstants.ServiceUrlClaim, serviceUrl, null),
-            }, true);
+                    new Claim(AuthenticationConstants.AudienceClaim, appId, null, "wrongissuer"),
+                    new Claim(AuthenticationConstants.ServiceUrlClaim, serviceUrl, null),
+                }, true);
 
             await Assert.ThrowsAsync<UnauthorizedAccessException>(
                 async () => await GovernmentChannelValidation.ValidateIdentity(identity, credentials, serviceUrl));
@@ -283,9 +284,9 @@ namespace Microsoft.Bot.Connector.Authentication.Tests
             var identity = new SimpleClaimsIdentity(
                 new List<Claim>()
                 {
-                new Claim(AuthenticationConstants.AudienceClaim, string.Empty, null, GovernmentAuthenticationConstants.ToBotFromChannelTokenIssuer),
-                new Claim(AuthenticationConstants.ServiceUrlClaim, serviceUrl, null),
-            }, true);
+                    new Claim(AuthenticationConstants.AudienceClaim, string.Empty, null, GovernmentAuthenticationConstants.ToBotFromChannelTokenIssuer),
+                    new Claim(AuthenticationConstants.ServiceUrlClaim, serviceUrl, null),
+                }, true);
 
             await Assert.ThrowsAsync<UnauthorizedAccessException>(
                 async () => await GovernmentChannelValidation.ValidateIdentity(identity, credentials, serviceUrl));
@@ -300,9 +301,9 @@ namespace Microsoft.Bot.Connector.Authentication.Tests
             var identity = new SimpleClaimsIdentity(
                 new List<Claim>()
                 {
-                new Claim(AuthenticationConstants.AudienceClaim, appId, null, GovernmentAuthenticationConstants.ToBotFromChannelTokenIssuer),
-                new Claim(AuthenticationConstants.ServiceUrlClaim, string.Empty, null),
-            }, true);
+                    new Claim(AuthenticationConstants.AudienceClaim, appId, null, GovernmentAuthenticationConstants.ToBotFromChannelTokenIssuer),
+                    new Claim(AuthenticationConstants.ServiceUrlClaim, string.Empty, null),
+                }, true);
 
             await Assert.ThrowsAsync<UnauthorizedAccessException>(
                 async () => await GovernmentChannelValidation.ValidateIdentity(identity, credentials, serviceUrl));
@@ -317,9 +318,9 @@ namespace Microsoft.Bot.Connector.Authentication.Tests
             var identity = new SimpleClaimsIdentity(
                 new List<Claim>()
                 {
-                new Claim(AuthenticationConstants.AudienceClaim, appId, null, GovernmentAuthenticationConstants.ToBotFromChannelTokenIssuer),
-                new Claim(AuthenticationConstants.ServiceUrlClaim, "other", null),
-            }, true);
+                    new Claim(AuthenticationConstants.AudienceClaim, appId, null, GovernmentAuthenticationConstants.ToBotFromChannelTokenIssuer),
+                    new Claim(AuthenticationConstants.ServiceUrlClaim, "other", null),
+                }, true);
 
             await Assert.ThrowsAsync<UnauthorizedAccessException>(
                 async () => await GovernmentChannelValidation.ValidateIdentity(identity, credentials, serviceUrl));
@@ -334,9 +335,9 @@ namespace Microsoft.Bot.Connector.Authentication.Tests
             var identity = new SimpleClaimsIdentity(
                 new List<Claim>()
                 {
-                new Claim(AuthenticationConstants.AudienceClaim, appId, null, AuthenticationConstants.ToBotFromChannelTokenIssuer),
-                new Claim(AuthenticationConstants.ServiceUrlClaim, serviceUrl, null),
-            }, true);
+                    new Claim(AuthenticationConstants.AudienceClaim, appId, null, AuthenticationConstants.ToBotFromChannelTokenIssuer),
+                    new Claim(AuthenticationConstants.ServiceUrlClaim, serviceUrl, null),
+                }, true);
             await EnterpriseChannelValidation.ValidateIdentity(identity, credentials, serviceUrl);
         }
 
@@ -349,9 +350,9 @@ namespace Microsoft.Bot.Connector.Authentication.Tests
             var identity = new SimpleClaimsIdentity(
                 new List<Claim>()
                 {
-                new Claim(AuthenticationConstants.AudienceClaim, appId, null, AuthenticationConstants.ToBotFromChannelTokenIssuer),
-                new Claim(AuthenticationConstants.ServiceUrlClaim, serviceUrl, null),
-            }, false);
+                    new Claim(AuthenticationConstants.AudienceClaim, appId, null, AuthenticationConstants.ToBotFromChannelTokenIssuer),
+                    new Claim(AuthenticationConstants.ServiceUrlClaim, serviceUrl, null),
+                }, false);
 
             await Assert.ThrowsAsync<UnauthorizedAccessException>(
                 async () => await EnterpriseChannelValidation.ValidateIdentity(identity, credentials, serviceUrl));
@@ -366,8 +367,8 @@ namespace Microsoft.Bot.Connector.Authentication.Tests
             var identity = new SimpleClaimsIdentity(
                 new List<Claim>()
                 {
-                new Claim(AuthenticationConstants.ServiceUrlClaim, serviceUrl, null),
-            }, true);
+                    new Claim(AuthenticationConstants.ServiceUrlClaim, serviceUrl, null),
+                }, true);
 
             await Assert.ThrowsAsync<UnauthorizedAccessException>(
                 async () => await EnterpriseChannelValidation.ValidateIdentity(identity, credentials, serviceUrl));
@@ -382,9 +383,9 @@ namespace Microsoft.Bot.Connector.Authentication.Tests
             var identity = new SimpleClaimsIdentity(
                 new List<Claim>()
                 {
-                new Claim(AuthenticationConstants.AudienceClaim, "abc", null, AuthenticationConstants.ToBotFromChannelTokenIssuer),
-                new Claim(AuthenticationConstants.ServiceUrlClaim, serviceUrl, null),
-            }, true);
+                    new Claim(AuthenticationConstants.AudienceClaim, "abc", null, AuthenticationConstants.ToBotFromChannelTokenIssuer),
+                    new Claim(AuthenticationConstants.ServiceUrlClaim, serviceUrl, null),
+                }, true);
 
             await Assert.ThrowsAsync<UnauthorizedAccessException>(
                 async () => await EnterpriseChannelValidation.ValidateIdentity(identity, credentials, serviceUrl));
@@ -399,9 +400,9 @@ namespace Microsoft.Bot.Connector.Authentication.Tests
             var identity = new SimpleClaimsIdentity(
                 new List<Claim>()
                 {
-                new Claim(AuthenticationConstants.AudienceClaim, appId, null, "wrongissuer"),
-                new Claim(AuthenticationConstants.ServiceUrlClaim, serviceUrl, null),
-            }, true);
+                    new Claim(AuthenticationConstants.AudienceClaim, appId, null, "wrongissuer"),
+                    new Claim(AuthenticationConstants.ServiceUrlClaim, serviceUrl, null),
+                }, true);
 
             await Assert.ThrowsAsync<UnauthorizedAccessException>(
                 async () => await EnterpriseChannelValidation.ValidateIdentity(identity, credentials, serviceUrl));
@@ -416,9 +417,9 @@ namespace Microsoft.Bot.Connector.Authentication.Tests
             var identity = new SimpleClaimsIdentity(
                 new List<Claim>()
                 {
-                new Claim(AuthenticationConstants.AudienceClaim, string.Empty, null, AuthenticationConstants.ToBotFromChannelTokenIssuer),
-                new Claim(AuthenticationConstants.ServiceUrlClaim, serviceUrl, null),
-            }, true);
+                    new Claim(AuthenticationConstants.AudienceClaim, string.Empty, null, AuthenticationConstants.ToBotFromChannelTokenIssuer),
+                    new Claim(AuthenticationConstants.ServiceUrlClaim, serviceUrl, null),
+                }, true);
 
             await Assert.ThrowsAsync<UnauthorizedAccessException>(
                 async () => await EnterpriseChannelValidation.ValidateIdentity(identity, credentials, serviceUrl));
@@ -433,9 +434,9 @@ namespace Microsoft.Bot.Connector.Authentication.Tests
             var identity = new SimpleClaimsIdentity(
                 new List<Claim>()
                 {
-                new Claim(AuthenticationConstants.AudienceClaim, appId, null, AuthenticationConstants.ToBotFromChannelTokenIssuer),
-                new Claim(AuthenticationConstants.ServiceUrlClaim, string.Empty, null),
-            }, true);
+                    new Claim(AuthenticationConstants.AudienceClaim, appId, null, AuthenticationConstants.ToBotFromChannelTokenIssuer),
+                    new Claim(AuthenticationConstants.ServiceUrlClaim, string.Empty, null),
+                }, true);
 
             await Assert.ThrowsAsync<UnauthorizedAccessException>(
                 async () => await EnterpriseChannelValidation.ValidateIdentity(identity, credentials, serviceUrl));
@@ -450,9 +451,9 @@ namespace Microsoft.Bot.Connector.Authentication.Tests
             var identity = new SimpleClaimsIdentity(
                 new List<Claim>()
                 {
-                new Claim(AuthenticationConstants.AudienceClaim, appId, null, AuthenticationConstants.ToBotFromChannelTokenIssuer),
-                new Claim(AuthenticationConstants.ServiceUrlClaim, "other", null),
-            }, true);
+                    new Claim(AuthenticationConstants.AudienceClaim, appId, null, AuthenticationConstants.ToBotFromChannelTokenIssuer),
+                    new Claim(AuthenticationConstants.ServiceUrlClaim, "other", null),
+                }, true);
 
             await Assert.ThrowsAsync<UnauthorizedAccessException>(
                 async () => await EnterpriseChannelValidation.ValidateIdentity(identity, credentials, serviceUrl));
@@ -475,7 +476,7 @@ namespace Microsoft.Bot.Connector.Authentication.Tests
 
         private async Task JwtTokenValidation_ValidateAuthHeader_WithChannelService_Throws(string appId, string pwd, string channelService)
         {
-            string header = $"Bearer {await new MicrosoftAppCredentials(appId, pwd).GetTokenAsync()}";
+            var header = $"Bearer {await new MicrosoftAppCredentials(appId, pwd).GetTokenAsync()}";
             await JwtTokenValidation_ValidateAuthHeader_WithChannelService_Succeeds(header, appId, pwd, channelService);
         }
 
@@ -496,18 +497,13 @@ namespace Microsoft.Bot.Connector.Authentication.Tests
 
         private class SimpleClaimsIdentity : ClaimsIdentity
         {
-            private bool _isAuthenticated;
-
             public SimpleClaimsIdentity(IEnumerable<Claim> claims, bool isAuthenticated)
                 : base(claims)
             {
-                _isAuthenticated = isAuthenticated;
+                IsAuthenticated = isAuthenticated;
             }
 
-            public override bool IsAuthenticated
-            {
-                get { return _isAuthenticated; }
-            }
+            public override bool IsAuthenticated { get; }
         }
     }
 }

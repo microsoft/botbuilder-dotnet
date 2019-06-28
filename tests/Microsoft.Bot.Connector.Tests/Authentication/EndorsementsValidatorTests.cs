@@ -4,9 +4,10 @@
 using System;
 using System.Collections.Generic;
 using FluentAssertions;
+using Microsoft.Bot.Connector.Authentication;
 using Xunit;
 
-namespace Microsoft.Bot.Connector.Authentication.Tests
+namespace Microsoft.Bot.Connector.Tests.Authentication
 {
     public class EndorsementsValidatorTests
     {
