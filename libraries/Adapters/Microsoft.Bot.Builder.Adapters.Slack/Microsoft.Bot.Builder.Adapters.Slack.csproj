@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <RootNamespace>botbuilder_slack_adapter</RootNamespace>
+    <RootNamespace>Microsoft.BotBuilder.Adapters.Slack</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
