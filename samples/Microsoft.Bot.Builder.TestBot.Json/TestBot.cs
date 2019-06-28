@@ -65,7 +65,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
 
             var handleChoice = new SwitchCondition()
             {
-                Condition = new ExpressionEngine().Parse("conversation.dialogChoice"),
+                Condition = "conversation.dialogChoice",
                 Cases = new List<Case>()
             };
 
@@ -74,7 +74,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                 var name = Path.GetFileNameWithoutExtension(Path.GetFileNameWithoutExtension(resource.Id));
                 choiceInput.Choices.Add(new Choice(name));
                 var dialog = DeclarativeTypeLoader.Load<IDialog>(resource, this.resourceExplorer, DebugSupport.SourceRegistry);
-                handleChoice.Cases.Add(new Case($"'{name}'", new List<IDialog>() { dialog }));
+                handleChoice.Cases.Add(new Case($"{name}", new List<IDialog>() { dialog }));
             }
             choiceInput.Style = ListStyle.Auto;
             rootDialog.Steps.Add(choiceInput);

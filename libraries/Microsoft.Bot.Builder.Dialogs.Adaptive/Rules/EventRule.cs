@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
         public List<string> Events { get; set; }
 
         [JsonConstructor]
-        public EventRule(List<string> events = null, List<IDialog> steps = null, Expression constraint = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public EventRule(List<string> events = null, List<IDialog> steps = null, string constraint = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base(constraint: constraint, steps: steps, callerPath: callerPath, callerLine: callerLine)
         {
             this.Events = events ?? new List<string>();
@@ -62,7 +62,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
                 expressions.Add(factory.Parse($"turn.dialogEvent.name == '{evt}'"));
             }
 
-            return Expression.AndExpression(Expression.OrExpression(expressions.ToArray()), base.BuildExpression(factory));
+            return Expression.AndExpression(Expression.OrExpression(expressions.ToArray()), 
+                base.BuildExpression(factory));
         }
 
         public override string GetIdentity()

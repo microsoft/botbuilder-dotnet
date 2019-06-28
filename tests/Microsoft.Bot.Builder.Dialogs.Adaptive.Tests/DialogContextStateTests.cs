@@ -248,12 +248,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     new SetProperty()
                     {
                         Property = "dialog.name",
-                        Value = Expression.ConstantExpression("testDialog")
+                        Value = "'testDialog'"
                     },
                     new SendActivity("{dialog.name}"),
                     new IfCondition()
                     {
-                        Condition= new ExpressionEngine().Parse("{dialog.name} == 'testDialog'"),
+                        Condition= "{dialog.name} == 'testDialog'",
                         Steps = new List<IDialog>()
                         {
                             new SendActivity("nested dialogCommand {dialog.name}")
@@ -277,7 +277,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 AutoEndDialog = false,
                 Steps = new List<IDialog>()
                 {
-                    new SetProperty() { Property = "dialog.name", Value = Expression.ConstantExpression("testDialog") },
+                    new SetProperty() { Property = "dialog.name", Value = "'testDialog'" },
                     new SendActivity("{dialog.name}"),
                     new AdaptiveDialog("d1")
                     {
@@ -309,6 +309,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         .AssertReply("nested begindialog testDialog")
                     .StartTestAsync();
         }
+
         [TestMethod]
         public async Task DialogContextState_OutputBinding()
         {
@@ -317,17 +318,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 AutoEndDialog = false,
                 Steps = new List<IDialog>()
                 {
-                    new SetProperty() { Property = "dialog.name", Value = Expression.ConstantExpression("testDialog") },
+                    new SetProperty() { Property = "dialog.name", Value = "'testDialog'" },
                     new SendActivity("{dialog.name}"),
                     new AdaptiveDialog("d1")
                     {
                         InputBindings = new Dictionary<string, string>() { { "$xxx", "dialog.name" } },
                         OutputBinding = "dialog.name",
-                        ResultProperty = "$xxx",
+                        DefaultResultProperty = "$xxx",
                         Steps = new List<IDialog>()
                         {
                             new SendActivity("nested dialogCommand {$xxx}"),
-                            new SetProperty() { Property = "dialog.xxx", Value = Expression.ConstantExpression("newName") },
+                            new SetProperty() { Property = "dialog.xxx", Value = "'newName'" },
                             new SendActivity("nested dialogCommand {$xxx}"),
                         }
                     },
@@ -337,13 +338,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         Dialog = new AdaptiveDialog("d2")
                         {
                             InputBindings = new Dictionary<string, string>() { { "$zzz", "dialog.name" } },
-                            ResultProperty = "$zzz",
+                            DefaultResultProperty = "$zzz",
                             // test output binding from adaptive dialog
                             OutputBinding = "dialog.name",
                             Steps = new List<IDialog>()
                             {
                                 new SendActivity("nested begindialog {$zzz}"),
-                                new SetProperty() { Property = "dialog.zzz", Value = Expression.ConstantExpression("newName2") },
+                                new SetProperty() { Property = "dialog.zzz", Value = "'newName2'" },
                                 new SendActivity("nested begindialog {$zzz}"),
                             }
                         }
@@ -356,11 +357,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         Dialog = new AdaptiveDialog("d3")
                         {
                             InputBindings = new Dictionary<string, string>() { { "$qqq", "dialog.name" } },
-                            ResultProperty = "$qqq",
+                            DefaultResultProperty = "$qqq",
                             Steps = new List<IDialog>()
                             {
                                 new SendActivity("nested begindialog2 {$qqq}"),
-                                new SetProperty() { Property = "dialog.qqq", Value = Expression.ConstantExpression("newName3") },
+                                new SetProperty() { Property = "dialog.qqq", Value = "'newName3'" },
                                 new SendActivity("nested begindialog2 {$qqq}"),
                             }
                         }

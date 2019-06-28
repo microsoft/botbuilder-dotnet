@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Builder.Expressions;
+using Microsoft.Bot.Builder.Expressions.Parser;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 using static Microsoft.Bot.Builder.Dialogs.DialogContext;
@@ -28,17 +29,28 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
     public abstract class InputDialog : Dialog
     {
+        private Expression value;
+        private Expression defaultValue;
+
         public bool AlwaysPrompt { get; set; } = false;
 
         public bool AllowInterruptions { get; set; } = true;
 
-        public Expression Value { get; set; }
+        /// <summary>
+        /// Initial value for the prompt
+        /// </summary>
+        [JsonProperty("value")]
+        public string Value
+        {
+            get { return value?.ToString(); }
+            set {this.value = (value != null) ? new ExpressionEngine().Parse(value) : null; }
+        }
 
         /// <summary>
         /// Activity to send to the user
         /// </summary>
         public ITemplate<Activity> Prompt { get; set; }
-        
+
         /// <summary>
         /// Activity template for retrying prompt
         /// </summary>
@@ -49,11 +61,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// </summary>
         public ITemplate<Activity> InvalidPrompt { get; set; }
 
-        public List<Expression> Validations { get; set; } = new List<Expression>();
+        public List<string> Validations { get; set; } = new List<string>();
 
+        /// <summary>
+        /// Maximum number of times to ask the user for this value before the dilog gives up.
+        /// </summary>
         public int? MaxTurnCount { get; set; }
 
-        public Expression DefaultValue { get; set; }
+        /// <summary>
+        /// Default value for the input dialog
+        /// </summary>
+        public string DefaultValue
+        {
+            get { return defaultValue?.ToString(); }
+            set { lock(this) defaultValue = (defaultValue != null) ? new ExpressionEngine().Parse(value) : null; }
+        }
 
         /// <summary>
         /// The property from memory to pass to the calling dialog and to set the return value to.
@@ -133,9 +155,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             }
             else
             {
-                if (this.DefaultValue != null)
+                if (this.defaultValue != null)
                 {
-                    var (value, error) = this.DefaultValue.TryEvaluate(dc.State);
+                    var (value, error) = this.defaultValue.TryEvaluate(dc.State);
                     return await dc.EndDialogAsync(value);
                 }
             }
@@ -271,7 +293,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             dynamic input = null;
             if (this.Value != null)
             {
-                var (temp, error) = this.Value.TryEvaluate(dc.State);
+                var (temp, error) = this.value.TryEvaluate(dc.State);
                 input = temp;
             }
 
@@ -303,7 +325,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 {
                     foreach (var validation in this.Validations)
                     {
-                        var (value, error) = validation.TryEvaluate(dc.State);
+                        var exp = new ExpressionEngine().Parse(validation);
+                        var (value, error) = exp.TryEvaluate(dc.State);
                         if (value == null || (value is bool && (bool)value == false))
                         {
                             return InputState.Invalid;

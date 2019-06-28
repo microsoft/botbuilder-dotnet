@@ -162,7 +162,13 @@ namespace Microsoft.Bot.Builder.Expressions
         /// <param name="children">Child clauses.</param>
         /// <returns>New expression.</returns>
         public static Expression AndExpression(params Expression[] children)
-            => Expression.MakeExpression(ExpressionType.And, children);
+        {
+            if (children.Count() > 1)
+            {
+                return Expression.MakeExpression(ExpressionType.And, children);
+            }
+            return children.Single();
+        }
 
         /// <summary>
         /// Construct and validate an Or expression.
@@ -170,7 +176,13 @@ namespace Microsoft.Bot.Builder.Expressions
         /// <param name="children">Child clauses.</param>
         /// <returns>New expression.</returns>
         public static Expression OrExpression(params Expression[] children)
-            => Expression.MakeExpression(ExpressionType.Or, children);
+        {
+            if (children.Count() > 1)
+            {
+                return Expression.MakeExpression(ExpressionType.Or, children);
+            }
+            return children.Single();
+        }
 
         /// <summary>
         /// Construct and validate a Not expression.

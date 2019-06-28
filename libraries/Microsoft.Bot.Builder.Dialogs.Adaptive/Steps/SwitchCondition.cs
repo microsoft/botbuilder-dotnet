@@ -73,11 +73,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
     {
         private Dictionary<string, Expression> caseExpressions = null;
 
+        private Expression condition;
+
         /// <summary>
         /// Condition expression against memory Example: "user.age > 18"
         /// </summary>
         [JsonProperty("condition")]
-        public Expression Condition { get; set; }
+        public string Condition
+        {
+            get { return condition?.ToString(); }
+            set {condition = (value != null) ? new ExpressionEngine().Parse(value) : null; }
+        }
 
         /// <summary>
         /// Cases
@@ -114,7 +120,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                         foreach (var c in this.Cases)
                         {
                             // Values for cases are always coerced to string
-                            var caseCondition = Expression.EqualsExpression(this.Condition, c.CreateValueExpression());
+                            var caseCondition = Expression.EqualsExpression(this.condition, c.CreateValueExpression());
 
                             // Map of expression to steps
                             this.caseExpressions[c.Value] = caseCondition;

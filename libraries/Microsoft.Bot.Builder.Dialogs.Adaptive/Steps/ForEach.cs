@@ -20,9 +20,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
     /// </summary>
     public class Foreach : DialogCommand, IDialogDependencies
     {
+        private Expression listProperty;
+
         // Expression used to compute the list that should be enumerated.
         [JsonProperty("listProperty")]
-        public Expression ListProperty { get; set; }
+        public string ListProperty
+        {
+            get { return listProperty?.ToString(); }
+            set {this.listProperty = (value != null) ? new ExpressionEngine().Parse(value) : null; }
+        }
 
         // In-memory property that will contain the current items index. Defaults to `dialog.index`.
         [JsonProperty("indexProperty")]
@@ -64,7 +70,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
 
                 if (listProperty == null)
                 {
-                    listProperty = this.ListProperty;
+                    listProperty = new ExpressionEngine().Parse(this.ListProperty);
                 }
 
                 var (itemList, error) = listProperty.TryEvaluate(dc.State);
