@@ -425,7 +425,7 @@
                     "description": "If this is true the dialog will automatically end when there are no more steps to run.  If this is false it is the responsbility of the author to call EndDialog at an appropriate time.",
                     "default": "true"
                 },
-                "defaultRresultProperty": {
+                "defaultResultProperty": {
                     "type": "string",
                     "title": "Default Result Property",
                     "description": "Property path to the memory to return as the result of this dialog ending because AutoEndDialog is true and there are no more steps to execute.",
