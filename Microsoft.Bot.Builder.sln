@@ -96,11 +96,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Adapters", "Adapters", "{B7
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Adapters.Twilio", "libraries\Adapters\Microsoft.Bot.Builder.Adapters.Twilio\Microsoft.Bot.Builder.Adapters.Twilio.csproj", "{1D1AD39B-EBCF-4960-930E-84246DEF6AAE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.BotKit", "libraries\Adapters\Microsoft.BotKit\Microsoft.BotKit.csproj", "{C756BAD8-12A4-4BB6-B444-B8220A581A84}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.BotKit", "libraries\Adapters\Microsoft.Bot.Builder.BotKit\Microsoft.Bot.Builder.BotKit.csproj", "{C756BAD8-12A4-4BB6-B444-B8220A581A84}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Adapters", "Adapters", "{E8CD434A-306F-41D9-B67D-BFFF3287354D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.BotKit.Adapters.Slack", "libraries\Adapters\Microsoft.BotKit.Adapters.Slack\Microsoft.BotKit.Adapters.Slack.csproj", "{15AD271F-321B-4C98-B319-EC04FBF5C75B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Adapters.Slack", "libraries\Adapters\Microsoft.Bot.Builder.Adapters.Slack\Microsoft.Bot.Builder.Adapters.Slack.csproj", "{15AD271F-321B-4C98-B319-EC04FBF5C75B}"
+EndProject
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Adapters.Twilio.Tests", "tests\Adapters\Microsoft.Bot.Builder.Adapters.Twilio.Tests\Microsoft.Bot.Builder.Adapters.Twilio.Tests.csproj", "{6B51F54F-86E8-4FBC-8FDD-3C386E97D0E1}"
 EndProject
