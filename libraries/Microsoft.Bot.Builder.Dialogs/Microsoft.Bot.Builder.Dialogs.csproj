@@ -20,6 +20,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Description>This library implements .NET Simple Dialog classes </Description>
     <Summary>This library implements .NET Simple Dialog classes </Summary>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>

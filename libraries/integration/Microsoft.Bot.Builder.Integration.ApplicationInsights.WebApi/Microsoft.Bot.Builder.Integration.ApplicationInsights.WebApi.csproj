@@ -24,6 +24,7 @@
 	<PropertyGroup>		
 		<AssemblyName>Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi</AssemblyName>
 		<RootNamespace>Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi</RootNamespace>
+		<LangVersion>latest</LangVersion>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
