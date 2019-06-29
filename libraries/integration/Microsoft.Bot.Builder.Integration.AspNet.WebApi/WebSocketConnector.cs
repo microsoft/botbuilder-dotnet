@@ -10,9 +10,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web.WebSockets;
 using Microsoft.Bot.Connector.Authentication;
-using Microsoft.Bot.StreamingExtensions.Transport;
-using Microsoft.Bot.StreamingExtensions.Transport.WebSockets;
-using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.StreamingExtensions
 {
@@ -31,7 +28,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.StreamingExtensions
         /// </summary>
         /// <param name="credentialProvider">Used for validating channel credential authentication information.</param>
         /// <param name="channelProvider">Used for validating channel authentication information.</param>
-        /// <param name="logger">Set in order to enable logging.</param>
         internal WebSocketConnector(ICredentialProvider credentialProvider, IChannelProvider channelProvider = null)
         {
             _credentialProvider = credentialProvider;
@@ -121,18 +117,17 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.StreamingExtensions
 
             Func<AspNetWebSocketContext, Task> processWebSocketSessionFunc = async (context) =>
             {
-                IStreamingTransportServer server = new WebSocketServer(context.WebSocket, handler);
-
-                if (server == null)
+                try
+                {
+                    await handler.StartAsync(context.WebSocket).ConfigureAwait(false);
+                }
+                catch (Exception ex)
                 {
                     httpResponse.StatusCode = HttpStatusCode.InternalServerError;
                     httpResponse.Content = new StringContent("Unable to create transport server.");
 
-                    return;
+                    throw ex;
                 }
-
-                handler.Server = server;
-                await server.StartAsync().ConfigureAwait(false);
             };
 
             // set the status code first , since the next call might have a chance to block the thread.

@@ -10,6 +10,7 @@ using System.Web;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.StreamingExtensions
 {
@@ -23,12 +24,9 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.StreamingExtensions
 
         public WebSocketEnabledHttpAdapter(ICredentialProvider credentialProvider, IChannelProvider channelProvider = null, ILoggerFactory loggerFactory = null)
         {
-            if (credentialProvider == null)
-            {
-                throw new ArgumentNullException(nameof(credentialProvider));
-            }
-
-            _botFrameworkHttpAdapter = new BotFrameworkHttpAdapter(credentialProvider, channelProvider, loggerFactory?.CreateLogger<BotFrameworkHttpAdapter>());
+            credentialProvider = credentialProvider ?? new SimpleCredentialProvider();
+            loggerFactory = loggerFactory ?? NullLoggerFactory.Instance;
+            _botFrameworkHttpAdapter = new BotFrameworkHttpAdapter(credentialProvider, channelProvider, loggerFactory.CreateLogger<BotFrameworkHttpAdapter>());
             _webSocketConnector = new WebSocketConnector(credentialProvider, channelProvider);
             _ensureMiddlewareSet = new Lazy<bool>(() =>
             {

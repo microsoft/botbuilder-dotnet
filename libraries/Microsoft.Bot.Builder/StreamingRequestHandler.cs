@@ -4,15 +4,17 @@
 using System;
 using System.Collections.Generic;
 using System.Net;
-using System.Net.Http;
-using System.Net.Http.Headers;
+using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.StreamingExtensions;
 using Microsoft.Bot.StreamingExtensions.Transport;
+using Microsoft.Bot.StreamingExtensions.Transport.NamedPipes;
+using Microsoft.Bot.StreamingExtensions.Transport.WebSockets;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Microsoft.Bot.Builder
 {
@@ -21,20 +23,27 @@ namespace Microsoft.Bot.Builder
     /// </summary>
     public class StreamingRequestHandler : RequestHandler
     {
+        private readonly IBot _bot;
+
+        private readonly IList<IMiddleware> _middlewareSet;
+
+        private Func<ITurnContext, Exception, Task> _onTurnError;
+
+        private readonly IServiceProvider _services;
+
+#if DEBUG
+        public
+#else
+        private
+#endif
+        IStreamingTransportServer _transportServer;
+
 #if DEBUG
         public
 #else
         private
 #endif
         string _userAgent;
-
-        private readonly IBot _bot;
-
-        private readonly IServiceProvider _services;
-
-        private readonly IList<IMiddleware> _middlewareSet;
-
-        private Func<ITurnContext, Exception, Task> _onTurnError;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="StreamingRequestHandler"/> class.
@@ -72,12 +81,28 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
-        /// Gets or sets the <see cref="IStreamingTransportServer"/> this handler listens for incoming messages on.
+        /// Connects the handler to a WebSocket server and begins listening for incoming requests.
         /// </summary>
-        /// <value>
-        /// The <see cref="IStreamingTransportServer"/> this handler listens for incoming messages on.
-        /// </value>
-        public IStreamingTransportServer Server { get; set; }
+        /// <param name="socket">The socket to use when creating the server.</param>
+        /// <returns>A task that runs until the server is disconnected.</returns>
+        public Task StartAsync(WebSocket socket)
+        {
+            _transportServer = new WebSocketServer(socket, this);
+
+            return _transportServer.StartAsync();
+        }
+
+        /// <summary>
+        /// Connects the handler to a Named Pipe server and begins listening for incoming requests.
+        /// </summary>
+        /// <param name="pipeName">The name of the named pipe to use when creating the server.</param>
+        /// <returns>A task that runs until the server is disconnected.</returns>
+        public Task StartAsync(string pipeName)
+        {
+            _transportServer = new NamedPipeServer(pipeName, this);
+
+            return _transportServer.StartAsync();
+        }
 
         /// <summary>
         /// Checks the validity of the request and attempts to map it the correct virtual endpoint,
@@ -89,12 +114,13 @@ namespace Microsoft.Bot.Builder
         /// <returns>A response created by the BotAdapter to be sent to the client that originated the request.</returns>
         public override async Task<Response> ProcessRequestAsync(ReceiveRequest request, object context = null, ILogger<RequestHandler> logger = null)
         {
+            logger = logger ?? NullLogger<RequestHandler>.Instance;
             var response = new Response();
 
             if (request == null || string.IsNullOrEmpty(request.Verb) || string.IsNullOrEmpty(request.Path))
             {
                 response.StatusCode = (int)HttpStatusCode.BadRequest;
-                logger?.LogInformation("Request missing verb and/or path.");
+                logger.LogInformation("Request missing verb and/or path.");
 
                 return response;
             }
@@ -115,7 +141,7 @@ namespace Microsoft.Bot.Builder
             }
 
             response.StatusCode = (int)HttpStatusCode.NotFound;
-            logger?.LogInformation($"Unknown verb and path: {request.Verb} {request.Path}");
+            logger.LogInformation($"Unknown verb and path: {request.Verb} {request.Path}");
 
             return response;
         }
@@ -145,20 +171,20 @@ namespace Microsoft.Bot.Builder
         /// <param name="response">The response to update and return, ultimately sent to client.</param>
         /// <param name="logger">Optional logger.</param>
         /// <returns>The response ready to send to the client.</returns>
-        private async Task<Response> ProcessStreamingRequestAsync(ReceiveRequest request, Response response, ILogger<RequestHandler> logger = null)
+        private async Task<Response> ProcessStreamingRequestAsync(ReceiveRequest request, Response response, ILogger<RequestHandler> logger)
         {
             var body = request.ReadBodyAsString();
             if (string.IsNullOrEmpty(body) || request.Streams?.Count == 0)
             {
                 response.StatusCode = (int)HttpStatusCode.BadRequest;
-                logger?.LogInformation("Request missing body and/or streams.");
+                logger.LogInformation("Request missing body and/or streams.");
 
                 return response;
             }
 
             try
             {
-                var adapter = new BotFrameworkStreamingExtensionsAdapter(Server, _middlewareSet, logger);
+                var adapter = new BotFrameworkStreamingExtensionsAdapter(_transportServer, _middlewareSet, logger);
                 var bot = _services?.GetService<IBot>() ?? this._bot;
 
                 if (bot == null)
@@ -191,7 +217,7 @@ namespace Microsoft.Bot.Builder
             catch (Exception ex)
             {
                 response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                logger?.LogError(ex.Message);
+                logger.LogError(ex.Message);
             }
 
             return response;

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.Bot.StreamingExtensions.Transport;
 using Microsoft.Bot.StreamingExtensions.Transport.NamedPipes;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Microsoft.Bot.Builder
 {
@@ -23,20 +24,18 @@ namespace Microsoft.Bot.Builder
 
         internal NamedPipeConnector(ILogger logger = null, string pipeName = DefaultPipeName)
         {
-            _logger = logger;
+            _logger = logger ?? NullLogger.Instance;
             _pipeName = pipeName;
         }
 
         internal void InitializeNamedPipeServer(IBot bot, IList<IMiddleware> middleware = null, Func<ITurnContext, Exception, Task> onTurnError = null)
         {
+            middleware = middleware ?? new List<IMiddleware>();
             var handler = new StreamingRequestHandler(onTurnError, bot, middleware);
 
             try
             {
-                IStreamingTransportServer server = new NamedPipeServer(_pipeName, handler);
-                handler.Server = server;
-
-                Task.Run(() => server.StartAsync());
+                Task.Run(() => handler.StartAsync(_pipeName));
             }
             catch (Exception ex)
             {
@@ -50,7 +49,7 @@ namespace Microsoft.Bot.Builder
                  * a bot will check for a named pipe connection, find that one does not exist, and
                  * simply continue to serve as an HTTP and/or WebSocket bot, none the wiser.
                  */
-                _logger?.LogInformation(string.Format("Failed to create server: {0}", ex));
+                _logger.LogInformation(string.Format("Failed to create server: {0}", ex));
             }
         }
     }

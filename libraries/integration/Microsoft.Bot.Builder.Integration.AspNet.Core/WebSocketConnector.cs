@@ -9,9 +9,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Connector.Authentication;
-using Microsoft.Bot.StreamingExtensions.Transport;
-using Microsoft.Bot.StreamingExtensions.Transport.WebSockets;
-using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.Core.StreamingExtensions
 {
@@ -30,7 +27,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.StreamingExtensions
         /// </summary>
         /// <param name="credentialProvider">Used for validating channel credential authentication information.</param>
         /// <param name="channelProvider">Used for validating channel authentication information.</param>
-        /// <param name="logger">Set in order to enable logging.</param>
         internal WebSocketConnector(ICredentialProvider credentialProvider, IChannelProvider channelProvider = null)
         {
             _credentialProvider = credentialProvider;
@@ -117,18 +113,18 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.StreamingExtensions
         {
             var handler = new StreamingRequestHandler(onTurnError, httpContext.RequestServices, middlewareSet);
             var socket = await httpContext.WebSockets.AcceptWebSocketAsync().ConfigureAwait(false);
-            IStreamingTransportServer server = new WebSocketServer(socket, handler);
 
-            if (server == null)
+            try
+            {
+                await handler.StartAsync(socket).ConfigureAwait(false);
+            }
+            catch (Exception ex)
             {
                 httpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 await httpContext.Response.WriteAsync("Unable to create transport server.").ConfigureAwait(false);
 
-                return;
+                throw ex;
             }
-
-            handler.Server = server;
-            await server.StartAsync().ConfigureAwait(false);
         }
     }
 }
