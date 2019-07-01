@@ -44,6 +44,16 @@ namespace Microsoft.Bot.Builder.Expressions
         /// </summary>
         public static readonly string DefaultDateTimeFormat = "yyyy-MM-ddTHH:mm:ss.fffZ";
 
+        public static readonly Dictionary<string, string> PrefixsOfShorthand = new Dictionary<string, string>()
+        {
+            { ExpressionType.Intent, "turn.recognized.intents." },
+            { ExpressionType.Entity, "turn.recognized.entities." },
+            { ExpressionType.Dialog, "dialog." },
+            { ExpressionType.SimpleEntity, "turn.recognized.entities." },
+            { ExpressionType.Instance, "dialog.instance." },
+            { ExpressionType.Option, "dialog.options." },
+        };
+
         /// <summary>
         /// Verify the result of an expression is of the appropriate type and return a string if not.
         /// </summary>
@@ -442,6 +452,9 @@ namespace Microsoft.Bot.Builder.Expressions
                         error = e.Message;
                     }
                 }
+
+                value = ResolveValue(value);
+
                 return (value, error);
             };
 
@@ -470,7 +483,73 @@ namespace Microsoft.Bot.Builder.Expressions
                         error = e.Message;
                     }
                 }
+
+                value = ResolveValue(value);
+
                 return (value, error);
+            };
+
+        private static (object value, string error) Callstack(Expression expression, object state)
+        {
+            var result = state;
+            string error = null;
+
+            // get collection
+            (result, error) = AccessProperty(state, "callstack");
+            if (result != null)
+            {
+                var items = (IEnumerable<object>)result;
+                var property = (expression.Children[0] as Constant).Value.ToString();
+
+                foreach (var item in items)
+                {
+                    // get property off of item
+                    (result, error) = AccessProperty(item, property);
+
+                    // if not null
+                    if (error == null && result != null)
+                    {
+                        // return it
+                        return (result, null);
+                    }
+                }
+            }
+
+            return (null, error);
+        }
+
+        public static EvaluateExpressionDelegate ApplyShorthand(string functionName, Func<object, (object, string)> function = null)
+            =>
+            (expression, state) =>
+            {
+                var result = state;
+                string error = null;
+
+                var property = (expression.Children[0] as Constant).Value.ToString();
+                var prefixStr = PrefixsOfShorthand[functionName];
+                var prefixs = prefixStr.Split('.').Where(x => !string.IsNullOrEmpty(x)).ToList();
+                foreach (var prefix in prefixs)
+                {
+                    (result, error) = AccessProperty(result, prefix);
+                    if (error != null)
+                    {
+                        break;
+                    }
+                }
+
+                if (error == null)
+                {
+                    (result, error) = AccessProperty(result, property);
+                }
+
+                if (error == null && function != null)
+                {
+                    (result, error) = function(result);
+                }
+
+                result = ResolveValue(result);
+
+                return (result, error);
             };
 
         /// <summary>
@@ -1108,6 +1187,57 @@ namespace Microsoft.Bot.Builder.Expressions
             return (result, error);
         }
 
+        private static (object value, string error) Where(Expression expression, object state)
+        {
+            object result = null;
+            string error;
+
+            dynamic collection;
+            (collection, error) = expression.Children[0].TryEvaluate(state);
+            if (error == null)
+            {
+                // 2nd parameter has been rewrite to $local.item
+                var iteratorName = (string)(expression.Children[1].Children[0] as Constant).Value;
+
+                if (TryParseList(collection, out IList ilist))
+                {
+                    result = new List<object>();
+                    for (var idx = 0; idx < ilist.Count; idx++)
+                    {
+                        var local = new Dictionary<string, object>
+                        {
+                            { iteratorName, AccessIndex(ilist, idx).value },
+                        };
+                        var newScope = new Dictionary<string, object>
+                        {
+                            { "$global", state },
+                            { "$local", local },
+                        };
+
+                        (var r, var e) = expression.Children[2].TryEvaluate(newScope);
+                        if (e != null)
+                        {
+                            return (null, e);
+                        }
+                        if ((bool)r)
+                        {
+                            // add if only if it evaluates to true
+                            ((List<object>)result).Add(local[iteratorName]);
+                        }
+                    }
+                }
+                else
+                {
+                    error = $"{expression.Children[0]} is not a collection to run where";
+                }
+            }
+            return (result, error);
+        }
+
+        private static void ValidateWhere(Expression expression)
+        {
+            ValidateForeach(expression);
+        }
         private static void ValidateForeach(Expression expression)
         {
             if (expression.Children.Count() != 3)
@@ -1127,6 +1257,17 @@ namespace Microsoft.Bot.Builder.Expressions
             // rewrite the 2nd, 3rd paramater
             expression.Children[1] = RewriteAccessor(expression.Children[1], iteratorName);
             expression.Children[2] = RewriteAccessor(expression.Children[2], iteratorName);
+        }
+
+        private static void ValidateIsMatch(Expression expression)
+        {
+            ValidateArityAndAnyType(expression, 2, 2, ReturnType.String);
+
+            var second = expression.Children[1];
+            if (second.ReturnType == ReturnType.String && second.Type == ExpressionType.Constant)
+            {
+                CommonRegex.CreateRegex((second as Constant).Value.ToString());
+            }
         }
 
         private static Expression RewriteAccessor(Expression expression, string localVarName)
@@ -1396,7 +1537,7 @@ namespace Microsoft.Bot.Builder.Expressions
                 var ts = (DateTime)parsed;
                 var startOfDay = ts.Date;
                 var days = ts.Day;
-                var startOfMonth = startOfDay.AddDays(1-days);
+                var startOfMonth = startOfDay.AddDays(1 - days);
                 (result, error) = ReturnFormatTimeStampStr(startOfMonth, format);
             }
 
@@ -2865,9 +3006,61 @@ namespace Microsoft.Bot.Builder.Expressions
                         }),
                     ReturnType.Object,
                     (expr) => ValidateOrder(expr, null, ReturnType.Object, ReturnType.String)),
+                new ExpressionEvaluator(ExpressionType.Select, Foreach, ReturnType.Object, ValidateForeach),
                 new ExpressionEvaluator(ExpressionType.Foreach, Foreach, ReturnType.Object, ValidateForeach),
+                new ExpressionEvaluator(ExpressionType.Where, Where, ReturnType.Object, ValidateWhere),
                 new ExpressionEvaluator(ExpressionType.Coalesce, Apply(args => Coalesce(args.ToArray<object>())), ReturnType.Object, ValidateAtLeastOne),
                 new ExpressionEvaluator(ExpressionType.XPath, ApplyWithError(args => XPath(args[0], args[1])), ReturnType.Object, (expr) => ValidateOrder(expr, null, ReturnType.Object, ReturnType.String)),
+
+                // Regex expression
+                new ExpressionEvaluator(
+                    ExpressionType.IsMatch,
+                    ApplyWithError(args =>
+                        {
+                            var value = false;
+                            string error = null;
+
+                            if (string.IsNullOrEmpty(args[0]))
+                            {
+                                value = false;
+                                error = "regular expression is empty.";
+                            }
+                            else
+                            {
+                                var regex = CommonRegex.CreateRegex(args[1]);
+                                value = regex.IsMatch(args[0]);
+                            }
+                            return (value, error);
+                        }),
+                    ReturnType.Boolean,
+                    ValidateIsMatch),
+
+                // Shorthand functions
+                new ExpressionEvaluator(ExpressionType.Intent, ApplyShorthand(ExpressionType.Intent), ReturnType.Object, ValidateUnaryString),
+                new ExpressionEvaluator(ExpressionType.Dialog, ApplyShorthand(ExpressionType.Dialog), ReturnType.Object, ValidateUnaryString),
+                new ExpressionEvaluator(ExpressionType.Instance, ApplyShorthand(ExpressionType.Instance), ReturnType.Object, ValidateUnaryString),
+                new ExpressionEvaluator(ExpressionType.Option, ApplyShorthand(ExpressionType.Option), ReturnType.Object, ValidateUnaryString),
+                new ExpressionEvaluator(ExpressionType.Callstack, Callstack, ReturnType.Object, ValidateUnaryString),
+                new ExpressionEvaluator(ExpressionType.Entity, ApplyShorthand(ExpressionType.Entity), ReturnType.Object, ValidateUnaryString),
+                new ExpressionEvaluator(
+                    ExpressionType.SimpleEntity,
+                    ApplyShorthand(
+                        ExpressionType.SimpleEntity,
+                        entity =>
+                            {
+                                IList list;
+                                var result = entity;
+
+                                // fix issue: https://github.com/microsoft/botbuilder-dotnet/issues/1969
+                                while (TryParseList(result, out list) && list.Count == 1)
+                                {
+                                    result = list[0];
+                                }
+
+                                return (result, null);
+                        }),
+                    ReturnType.Object,
+                    ValidateUnaryString),
             };
 
             var lookup = new Dictionary<string, ExpressionEvaluator>();

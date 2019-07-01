@@ -35,6 +35,8 @@ fragment T: 't' | 'T';
 fragment U: 'u' | 'U';
 fragment W: 'w' | 'W';
 
+fragment STRING_LITERAL : ('\'' (~['\r\n])* '\'') | ('"' (~["\r\n])* '"');
+
 COMMENTS
   : ('>'|'$') ~('\r'|'\n')+ -> skip
   ;
@@ -153,7 +155,7 @@ INVALID_ESCAPE
   ;
 
 EXPRESSION
-  : '@'? '{' ~[\r\n{}]* '}'  { ignoreWS = false; expectKeywords = false;}
+  : '@'? '{' (~[\r\n{}] | STRING_LITERAL)*  '}'  { ignoreWS = false; expectKeywords = false;}
   ;
 
 TEMPLATE_REF

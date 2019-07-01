@@ -1,0 +1,5 @@
+﻿# wPhrase
+- IF: @{name && isMatch(name, '^[a-z]{1,5}$')}
+    - Hi {name}
+- ELSE:
+    - Hi

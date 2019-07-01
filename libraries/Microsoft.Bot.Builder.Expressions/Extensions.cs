@@ -188,6 +188,18 @@ namespace Microsoft.Bot.Builder.Expressions
                         references.Add(idxPath);
                     }
                 }
+                else if (BuiltInFunctions.PrefixsOfShorthand.ContainsKey(expression.Type))
+                {
+                    // Shorthand
+                    var shorthandName = (children[0] as Constant)?.Value?.ToString();
+                    if (shorthandName != null)
+                    {
+                        var prefixStr = BuiltInFunctions.PrefixsOfShorthand[expression.Type];
+                        var reference = prefixStr + shorthandName;
+
+                        references.Add(reference);
+                    }
+                }
                 else
                 {
                     foreach (var child in expression.Children)

@@ -70,7 +70,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             timestampObj = DateTime.Parse("2018-03-15T13:00:00.000Z").ToUniversalTime(),
             unixTimestamp = 1521118800,
             xmlStr = "<?xml version='1.0'?> <produce> <item> <name>Gala</name> <type>apple</type> <count>20</count> </item> <item> <name>Honeycrisp</name> <type>apple</type> <count>10</count> </item> </produce>",
-        turn = new
+            turn = new
             {
                 recognized = new
                 {
@@ -78,10 +78,16 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
                     {
                         city = "Seattle",
                         ordinal = new[]
-                    {
+                        {
                             "1",
                             "2",
                             "3"
+                        },
+                        CompositeList1 = new[] {
+                            new[]{ "firstItem" }
+                        },
+                        CompositeList2 = new[] {
+                            new[]{ "firstItem", "secondItem" }
                         }
                     },
                     intents = new
@@ -103,6 +109,12 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
                 title = "Dialog Title",
                 subTitle = "Dialog Sub Title"
             },
+            callstack = new object[]
+            {
+                new {x = 3 },
+                new {x = 2, y = 2 },
+                new {x = 1, y = 1, z = 1 },
+            }
         };
 
         public static IEnumerable<object[]> Data => new[]
@@ -432,6 +444,11 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("join(foreach(items, item, item), ',')", "zero,one,two"),
             Test("join(foreach(nestedItems, i, i.x + first(nestedItems).x), ',')", "2,3,4", new HashSet<string>{ "nestedItems"}),
             Test("join(foreach(items, item, concat(item, string(count(items)))), ',')", "zero3,one3,two3", new HashSet<string>{ "items"}),
+            Test("join(select(items, item, item), ',')", "zero,one,two"),
+            Test("join(select(nestedItems, i, i.x + first(nestedItems).x), ',')", "2,3,4", new HashSet<string>{ "nestedItems"}),
+            Test("join(select(items, item, concat(item, string(count(items)))), ',')", "zero3,one3,two3", new HashSet<string>{ "items"}),
+            Test("join(where(items, item, item == 'two'), ',')", "two"),
+            Test("join(foreach(where(nestedItems, item, item.x > 1), result, result.x), ',')", "2,3", new HashSet<string>{ "nestedItems"}),
             Test("last(items)", "two"),
             Test("last('hello')", "o"),
             Test("last(createArray(0, 1, 2))", 2),
@@ -468,11 +485,15 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("exists(#BookFlight)", true, new HashSet<string> {"turn.recognized.intents.BookFlight"}),
             Test("$title", "Dialog Title", new HashSet<string> {"dialog.title"}),
             Test("$subTitle", "Dialog Sub Title", new HashSet<string> {"dialog.subTitle"}),
-            Test("%xxx", "instance", new HashSet<string> {"dialog.instance.xxx"}),
-            Test("^xxx", "options", new HashSet<string> {"dialog.options.xxx"}),
-            # endregion
+            Test("~xxx", "instance", new HashSet<string> {"dialog.instance.xxx"}),
+            Test("%xxx", "options", new HashSet<string> {"dialog.options.xxx"}),
+            Test("^x", 3),
+            Test("^y", 2),
+            Test("^z", 1),
+            Test("count(@@CompositeList1) == 1 && count(@@CompositeList1[0]) == 1", true),
+            #endregion
 
-            # region  Memory access
+            #region  Memory access
             Test("getProperty(bag, concat('na','me'))","mybag"),
             Test("items[2]", "two", new HashSet<string> { "items[2]" }),
             Test("bag.list[bag.index - 2]", "blue", new HashSet<string> {"bag.list", "bag.index" }),
@@ -492,10 +513,36 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("user.lists.todo[int(@ordinal[0]) - 1]", "todo1"),
             Test("user.lists[user.listType][int(@ordinal[0]) - 1]", "todo1"),
             #endregion
-            
+
+            # region Regex
+            Test("isMatch('abc', '^[ab]+$')", false), // simple character classes ([abc]), "+" (one or more)
+            Test("isMatch('abb', '^[ab]+$')", true), // simple character classes ([abc])
+            Test("isMatch('123', '^[^abc]+$')", true), // complemented character classes ([^abc])
+            Test("isMatch('12a', '^[^abc]+$')", false), // complemented character classes ([^abc])
+            Test("isMatch('123', '^[^a-z]+$')", true), // complemented character classes ([^a-z])
+            Test("isMatch('12a', '^[^a-z]+$')", false), // complemented character classes ([^a-z])
+            Test("isMatch('a1', '^[a-z]?[0-9]$')", true), // "?" (zero or one)
+            Test("isMatch('1', '^[a-z]?[0-9]$')", true), // "?" (zero or one)
+            Test("isMatch('1', '^[a-z]*[0-9]$')", true), // "*" (zero or more)
+            Test("isMatch('abc1', '^[a-z]*[0-9]$')", true), // "*" (zero or more)
+            Test("isMatch('ab', '^[a-z]{1}$')", false), // "{x}" (exactly x occurrences)
+            Test("isMatch('ab', '^[a-z]{1,2}$')", true), // "{x,y}" (at least x, at most y, occurrences)
+            Test("isMatch('abc', '^[a-z]{1,}$')", true), // "{x,}" (x occurrences or more)
+            Test("isMatch('Name', '^(?i)name$')", true), // "(?i)x" (x ignore case)
+            Test("isMatch('FORTUNE', '(?i)fortune|future')", true), // "x|y" (alternation)
+            Test("isMatch('FUTURE', '(?i)fortune|future')", true), // "x|y" (alternation)
+            Test("isMatch('A', '(?i)fortune|future')", false), // "x|y" (alternation)
+            Test("isMatch('abacaxc', 'ab.+?c')", true), // "+?" (lazy versions)
+            Test("isMatch('abacaxc', 'ab.*?c')", true), // "*?" (lazy versions)
+            Test("isMatch('abacaxc', 'ab.??c')", true), // "??" (lazy versions)
+            Test("isMatch('12abc34', '([0-9]+)([a-z]+)([0-9]+)')", true), // "(...)" (simple group)
+            Test("isMatch('12abc', '([0-9]+)([a-z]+)([0-9]+)')", false), // "(...)" (simple group)
+            Test(@"isMatch('a', '\\w{1}')", true), // "\w" (match [a-zA-Z0-9_])
+            Test(@"isMatch('1', '\\d{1}')", true), // "\d" (match [0-9])
+            # endregion
         };
 
-        [DataTestMethod]
+        [DataTestMethod()]
         [DynamicData(nameof(Data))]
         public void Evaluate(string input, object expected, HashSet<string> expectedRefs)
         {

@@ -43,5 +43,29 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// LG imports.
         /// </value>
         public IList<LGImport> Imports { get; set; }
+
+        /// <summary>
+        /// Override the Equals function for LGResource comparison.
+        /// </summary>
+        /// <param name="obj">The LGResource object.</param>
+        /// <returns>True if the ids are same.</returns>
+        public override bool Equals(object obj)
+        {
+            if (obj is LGResource lgResourceObj)
+            {
+                return this.Id.Equals(lgResourceObj.Id);
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Override the GetHashCode function for LGResource comparison.
+        /// </summary>
+        /// <returns>Hash code.</returns>
+        public override int GetHashCode()
+        {
+            return this.Id.GetHashCode();
+        }
     }
 }

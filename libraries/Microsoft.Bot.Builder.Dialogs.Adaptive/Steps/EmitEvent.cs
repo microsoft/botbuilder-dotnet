@@ -36,19 +36,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
             }
         }
 
-        public string ResultProperty
-        {
-            get
-            {
-                return OutputBinding;
-            }
+        //public string ResultProperty
+        //{
+        //    get
+        //    {
+        //        return OutputBinding;
+        //    }
 
-            set
-            {
-                InputBindings["value"] = value;
-                OutputBinding = value;
-            }
-        }
+        //    set
+        //    {
+        //        InputBindings[DialogContextState.DIALOG_VALUE] = value;
+        //        OutputBinding = value;
+        //    }
+        //}
 
         [JsonConstructor]
         public EmitEvent(string eventName = null, object eventValue = null, bool bubble = true, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)

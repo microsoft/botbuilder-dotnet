@@ -76,7 +76,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             },
                             new IfCondition()
                             {
-                                Condition = new ExpressionEngine().Parse("conversation.addTodo.cancelConfirmation == true"),
+                                Condition = "conversation.addTodo.cancelConfirmation == true",
                                 Steps = new List<IDialog>()
                                 {
                                     new SendActivity("canceling"),
@@ -127,7 +127,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 },
                 Steps = new List<IDialog>()
                 {
-                    new TextInput() { Prompt = new ActivityTemplate("Hello, what is your name?"), OutputBinding = "user.name", AllowInterruptions = true , Value = new ExpressionEngine().Parse("user.name")},
+                    new TextInput() { Prompt = new ActivityTemplate("Hello, what is your name?"), OutputBinding = "user.name", AllowInterruptions = true , Value = "user.name"},
                     new SendActivity("Hello {user.name}, nice to meet you!"),
                     new NumberInput() { Prompt = new ActivityTemplate("What is your age?"), OutputBinding = "user.age" },
                     new SendActivity("{user.age} is a good age to be!"),
@@ -142,7 +142,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             new SetProperty()
                             {
                                 Property = "user.name",
-                                Value = new ExpressionEngine().Parse("@name")
+                                Value = "@name"
                             }
                         }
                     }
