@@ -17,7 +17,7 @@ namespace Microsoft.Bot.StreamingExtensions
 
         private readonly SemaphoreSlim dataAvailable = new SemaphoreSlim(0, int.MaxValue);
         private readonly object syncLock = new object();
-
+        private long _producerLength = 0;       // total length
         private long _consumerPosition = 0;     // read position
 
         private byte[] _active = null;
@@ -38,21 +38,20 @@ namespace Microsoft.Bot.StreamingExtensions
 
         public override long Position { get => _consumerPosition; set => throw new NotSupportedException(); }
 
-        public override long Length => throw new NotSupportedException();
+        public override long Length => _producerLength;
 
         public override void Flush()
         {
+            /*
+             No-op. PayloadStreams should never be flushed, so
+             we override Stream's Flush to make sure no caller
+             attempts to flush a PayloadStream.
+            */
         }
 
-        public override void SetLength(long value)
-        {
-            throw new NotSupportedException();
-        }
+        public override void SetLength(long value) => throw new NotSupportedException();
 
-        public override long Seek(long offset, SeekOrigin origin)
-        {
-            throw new NotSupportedException();
-        }
+        public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
 
         public override async Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
         {
@@ -156,6 +155,7 @@ namespace Microsoft.Bot.StreamingExtensions
             lock (syncLock)
             {
                 _bufferQueue.Enqueue(buffer);
+                _producerLength += count;
             }
 
             dataAvailable.Release();
