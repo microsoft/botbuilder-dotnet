@@ -3,6 +3,7 @@
 		<TargetFramework>netcoreapp2.1</TargetFramework>
     <IsPackable>false</IsPackable>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <LangVersion>latest</LangVersion>
 	</PropertyGroup>
 
 	<ItemGroup>
