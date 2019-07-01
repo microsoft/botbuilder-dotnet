@@ -37,9 +37,10 @@ namespace Microsoft.Bot.Builder
     /// <seealso cref="IActivity"/>
     /// <seealso cref="IBot"/>
     /// <seealso cref="IMiddleware"/>
-    public class BotFrameworkStreamingExtensionsAdapter : BotAdapter
+    public class BotFrameworkStreamingExtensionsAdapter : BotAdapter, IBotFrameworkStreamingChannelConnector
     {
         private const string InvokeReponseKey = "BotFrameworkStreamingExtensionsAdapter.InvokeResponse";
+        private const string StreamingChannelPrefix = "/v3/conversations/";
         private readonly ILogger _logger;
         private readonly IStreamingTransportServer _server;
 
@@ -60,16 +61,13 @@ namespace Microsoft.Bot.Builder
             ILogger logger = null)
         {
             _server = streamingTransportServer ?? throw new ArgumentNullException(nameof(streamingTransportServer));
-
-            if (middlewares != null)
-            {
-                foreach (var item in middlewares)
-                {
-                    Use(item);
-                }
-            }
-
+            middlewares = middlewares ?? new List<IMiddleware>();
             _logger = logger ?? NullLogger.Instance;
+
+            foreach (var item in middlewares)
+            {
+                Use(item);
+            }
         }
 
         /// <summary>
@@ -124,6 +122,13 @@ namespace Microsoft.Bot.Builder
 
             var activity = JsonConvert.DeserializeObject<Activity>(body, SerializationSettings.DefaultDeserializationSettings);
 
+            /*
+             * Any content sent as part of a StreamingRequest, including the request body
+             * and inline attachments, appear as streams added to the same collection. The first
+             * stream of any request will be the body, which is parsed and passed into this method
+             * as the first argument, 'body'. Any additional streams are inline attachents that need
+             * to be iterated over and added to the Activity as attachments to be sent to the Bot.
+             */
             if (streams.Count > 1)
             {
                 var streamAttachments = new List<Attachment>();
@@ -322,7 +327,7 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentNullException(nameof(activity));
             }
 
-            var requestPath = $"/v3/conversations/{activity.Conversation.Id}/activities/{activity.Id}";
+            var requestPath = $"{StreamingChannelPrefix}{activity.Conversation.Id}/activities/{activity.Id}";
             var request = StreamingRequest.CreatePut(requestPath);
             request.SetBody(activity);
 
@@ -352,7 +357,7 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentNullException(nameof(reference));
             }
 
-            var requestPath = $"/v3/conversations/{reference.Conversation.Id}/activities/{reference.ActivityId}";
+            var requestPath = $"{StreamingChannelPrefix}{reference.Conversation.Id}/activities/{reference.ActivityId}";
             var request = StreamingRequest.CreateDelete(requestPath);
 
             await SendRequestAsync<ResourceResponse>(request, cancellationToken).ConfigureAwait(false);
@@ -371,8 +376,7 @@ namespace Microsoft.Bot.Builder
         /// </remarks>
         public async Task<ConversationsResult> GetConversationsAsync(string continuationToken = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var route = "/v3/conversations/";
-            var request = StreamingRequest.CreateGet(route);
+            var request = StreamingRequest.CreateGet(StreamingChannelPrefix);
 
             return await SendRequestAsync<ConversationsResult>(request, cancellationToken).ConfigureAwait(false);
         }
@@ -391,8 +395,7 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentNullException(nameof(parameters));
             }
 
-            var route = "/v3/conversations/";
-            var request = StreamingRequest.CreatePost(route);
+            var request = StreamingRequest.CreatePost(StreamingChannelPrefix);
             request.SetBody(parameters);
 
             return await SendRequestAsync<ConversationResourceResponse>(request, cancellationToken).ConfigureAwait(false);
@@ -418,7 +421,7 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentNullException(nameof(activity));
             }
 
-            var route = string.Format("/v3/conversations/{0}/activities", conversationId);
+            var route = $"{StreamingChannelPrefix}{conversationId}/activities";
             var request = StreamingRequest.CreatePost(route);
             request.SetBody(activity);
 
@@ -445,7 +448,7 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentNullException(nameof(transcript));
             }
 
-            var route = string.Format("/v3/conversations/{0}/activities/history", conversationId);
+            var route = $"{StreamingChannelPrefix}{conversationId}/activities/history";
             var request = StreamingRequest.CreatePost(route);
             request.SetBody(transcript);
 
@@ -472,7 +475,7 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentNullException(nameof(activity));
             }
 
-            var route = string.Format("/v3/conversations/{0}/activities/{1}", activity.Conversation.Id, activity.Id);
+            var route = $"{StreamingChannelPrefix}{activity.Conversation.Id}/activities/{activity.Id}";
             var request = StreamingRequest.CreatePut(route);
             request.SetBody(activity);
 
@@ -493,7 +496,7 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentNullException(nameof(activity));
             }
 
-            var route = string.Format("/v3/conversations/{0}/activities/{1}", activity.Conversation.Id, activity.Id);
+            var route = $"{StreamingChannelPrefix}{activity.Conversation.Id}/activities/{activity.Id}";
             var request = StreamingRequest.CreatePost(route);
             request.SetBody(activity);
 
@@ -523,7 +526,7 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentNullException(nameof(activityId));
             }
 
-            var route = string.Format("/v3/conversations/{0}/activities/{1}", conversationId, activityId);
+            var route = $"{StreamingChannelPrefix}{conversationId}/activities/{activityId}";
             var request = StreamingRequest.CreateDelete(route);
 
             return await SendRequestAsync<HttpOperationResponse>(request, cancellationToken).ConfigureAwait(false);
@@ -543,7 +546,7 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentNullException(nameof(conversationId));
             }
 
-            var route = string.Format("/v3/conversations/{0}/members", conversationId);
+            var route = $"{StreamingChannelPrefix}{conversationId}/members";
             var request = StreamingRequest.CreateGet(route);
 
             return await SendRequestAsync<IList<ChannelAccount>>(request, cancellationToken).ConfigureAwait(false);
@@ -564,7 +567,7 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentNullException(nameof(conversationId));
             }
 
-            var route = string.Format("/v3/conversations/{0}/pagedmembers", conversationId);
+            var route = $"{StreamingChannelPrefix}{conversationId}/pagedmembers";
             var request = StreamingRequest.CreateGet(route);
 
             return await SendRequestAsync<PagedMembersResult>(request, cancellationToken).ConfigureAwait(false);
@@ -590,7 +593,7 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentNullException(nameof(memberId));
             }
 
-            var route = string.Format("/v3/conversations/{0}/members/{1}", conversationId, memberId);
+            var route = $"{StreamingChannelPrefix}{conversationId}/members/{memberId}";
             var request = StreamingRequest.CreateDelete(route);
 
             return await SendRequestAsync<HttpOperationResponse>(request, cancellationToken).ConfigureAwait(false);
@@ -616,7 +619,7 @@ namespace Microsoft.Bot.Builder
                 throw new ArgumentNullException(nameof(activityId));
             }
 
-            var route = string.Format("/v3/conversations/{0}/activities/{1}/members", conversationId, activityId);
+            var route = $"{StreamingChannelPrefix}{conversationId}/activities/{activityId}/members";
             var request = StreamingRequest.CreateGet(route);
 
             return await SendRequestAsync<IList<ChannelAccount>>(request, cancellationToken).ConfigureAwait(false);
