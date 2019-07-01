@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -23,7 +24,10 @@ namespace Microsoft.Bot.StreamingExtensions
         /// </returns>
         public static T ReadBodyAsJson<T>(this ReceiveRequest request)
         {
-            var contentStream = request.Streams?.FirstOrDefault();
+            // The first stream attached to a ReceiveRequest is always the ReceiveRequest body.
+            // Any additional streams must be defined within the body or they will not be
+            // attached properly when processing activities.
+            var contentStream = request.Streams.FirstOrDefault();
             if (contentStream != null)
             {
                 var stream = contentStream.GetStream();
@@ -37,7 +41,7 @@ namespace Microsoft.Bot.StreamingExtensions
                 }
             }
 
-            return default(T);
+            throw new ArgumentNullException("Request has no streams to read.");
         }
 
         /// <summary>
@@ -49,7 +53,7 @@ namespace Microsoft.Bot.StreamingExtensions
         /// </returns>
         public static string ReadBodyAsString(this ReceiveRequest request)
         {
-            var contentStream = request.Streams?.FirstOrDefault();
+            var contentStream = request.Streams.FirstOrDefault();
             if (contentStream != null)
             {
                 var stream = contentStream.GetStream();
@@ -59,7 +63,7 @@ namespace Microsoft.Bot.StreamingExtensions
                 }
             }
 
-            return null;
+            return string.Empty;
         }
     }
 }

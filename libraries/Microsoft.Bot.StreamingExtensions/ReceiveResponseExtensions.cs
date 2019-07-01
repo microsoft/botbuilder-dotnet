@@ -24,7 +24,7 @@ namespace Microsoft.Bot.StreamingExtensions
         /// </returns>
         public static T ReadBodyAsJson<T>(this ReceiveResponse response)
         {
-            var contentStream = response.Streams?.FirstOrDefault();
+            var contentStream = response.Streams.FirstOrDefault();
             if (contentStream != null)
             {
                 var stream = contentStream.GetStream();
@@ -50,7 +50,7 @@ namespace Microsoft.Bot.StreamingExtensions
         /// </returns>
         public static string ReadBodyAsString(this ReceiveResponse response)
         {
-            var contentStream = response.Streams?.FirstOrDefault();
+            var contentStream = response.Streams.FirstOrDefault();
 
             if (contentStream != null)
             {
@@ -70,7 +70,7 @@ namespace Microsoft.Bot.StreamingExtensions
         /// </returns>
         private static async Task<string> ReadBodyAsStringAsync(this ReceiveResponse response)
         {
-            var contentStream = response.Streams?.FirstOrDefault();
+            var contentStream = response.Streams.FirstOrDefault();
 
             if (contentStream != null)
             {

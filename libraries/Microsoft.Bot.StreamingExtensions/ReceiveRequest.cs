@@ -32,6 +32,6 @@ namespace Microsoft.Bot.StreamingExtensions
         /// <value>
         /// A <see cref="List{T}"/> of <see cref="IContentStream"/> items associated with this request.
         /// </value>
-        public List<IContentStream> Streams { get; set; }
+        public List<IContentStream> Streams { get; set; } = new List<IContentStream>();
     }
 }

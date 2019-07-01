@@ -24,6 +24,6 @@ namespace Microsoft.Bot.StreamingExtensions
         /// <value>
         /// A <see cref="List{T}"/> of type <see cref="IContentStream"/> containing information on streams attached to this response.
         /// </value>
-        public List<IContentStream> Streams { get; set; }
+        public List<IContentStream> Streams { get; set; } = new List<IContentStream>();
     }
 }

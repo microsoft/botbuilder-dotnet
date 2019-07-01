@@ -176,7 +176,7 @@ namespace Microsoft.Bot.Builder
         private async Task<StreamingResponse> ProcessStreamingRequestAsync(ReceiveRequest request, StreamingResponse response, ILogger<RequestHandler> logger, CancellationToken cancellationToken)
         {
             var body = request.ReadBodyAsString();
-            if (string.IsNullOrEmpty(body) || request.Streams?.Count == 0)
+            if (string.IsNullOrEmpty(body) || request.Streams.Count == 0)
             {
                 response.StatusCode = (int)HttpStatusCode.BadRequest;
                 logger.LogInformation("Request missing body and/or streams.");
