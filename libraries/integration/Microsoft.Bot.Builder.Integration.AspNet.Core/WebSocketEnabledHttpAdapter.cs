@@ -12,7 +12,7 @@ using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
-namespace Microsoft.Bot.Builder.Integration.AspNet.Core.StreamingExtensions
+namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 {
     /// <summary>
     /// An adapter meant for subclassing and injecting custom implementation of BotFrameworkHttpAdapter for handling Http requests.

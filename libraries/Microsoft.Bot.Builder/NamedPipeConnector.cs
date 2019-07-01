@@ -4,14 +4,12 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Bot.StreamingExtensions.Transport;
-using Microsoft.Bot.StreamingExtensions.Transport.NamedPipes;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Microsoft.Bot.Builder
 {
-    internal class NamedPipeConnector
+    public class NamedPipeConnector
     {
         /*  The default named pipe all instances of DL ASE listen on is named bfv4.pipes
             Unfortunately this name is no longer very discriptive, but for the time being
@@ -22,13 +20,25 @@ namespace Microsoft.Bot.Builder
         private readonly ILogger _logger;
         private readonly string _pipeName;
 
-        internal NamedPipeConnector(ILogger logger = null, string pipeName = DefaultPipeName)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NamedPipeConnector"/> class.
+        /// </summary>
+        /// <param name="logger">Optional logger.</param>
+        /// <param name="pipeName">The named pipe to use for incoming and outgoing traffic.</param>
+        public NamedPipeConnector(ILogger logger = null, string pipeName = DefaultPipeName)
         {
             _logger = logger ?? NullLogger.Instance;
             _pipeName = pipeName;
         }
 
-        internal void InitializeNamedPipeServer(IBot bot, IList<IMiddleware> middleware = null, Func<ITurnContext, Exception, Task> onTurnError = null)
+        /// <summary>
+        /// Attaches a  <see cref="StreamingRequestHandler"/> to process requests via the connected named pipe
+        /// and begins listening for incoming traffic.
+        /// </summary>
+        /// <param name="bot">The bot to use when processing messages.</param>
+        /// <param name="middleware">The middleware the bot will execute as part of the pipeline.</param>
+        /// <param name="onTurnError">Callback to execute when an error occurs while executing the pipeline.</param>
+        public void InitializeNamedPipeServer(IBot bot, IList<IMiddleware> middleware = null, Func<ITurnContext, Exception, Task> onTurnError = null)
         {
             middleware = middleware ?? new List<IMiddleware>();
             var handler = new StreamingRequestHandler(onTurnError, bot, middleware);
