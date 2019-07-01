@@ -111,8 +111,9 @@ namespace Microsoft.Bot.Builder
         /// <param name="request">A ReceiveRequest from the connected channel.</param>
         /// <param name="context">Optional context to operate within. Unused in bot implementation.</param>
         /// <param name="logger">Optional logger used to log request information and error details.</param>
+        /// /// <param name="cancellationToken">Optional cancellation token.</param>
         /// <returns>A response created by the BotAdapter to be sent to the client that originated the request.</returns>
-        public override async Task<StreamingResponse> ProcessRequestAsync(ReceiveRequest request, object context = null, ILogger<RequestHandler> logger = null)
+        public override async Task<StreamingResponse> ProcessRequestAsync(ReceiveRequest request, object context = null, ILogger<RequestHandler> logger = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             logger = logger ?? NullLogger<RequestHandler>.Instance;
             var response = new StreamingResponse();
@@ -137,7 +138,7 @@ namespace Microsoft.Bot.Builder
             if (string.Equals(request.Verb, StreamingRequest.POST, StringComparison.InvariantCultureIgnoreCase) &&
                          string.Equals(request.Path, "/api/messages", StringComparison.InvariantCultureIgnoreCase))
             {
-                return await ProcessStreamingRequestAsync(request, response, logger).ConfigureAwait(false);
+                return await ProcessStreamingRequestAsync(request, response, logger, cancellationToken).ConfigureAwait(false);
             }
 
             response.StatusCode = (int)HttpStatusCode.NotFound;
@@ -170,8 +171,9 @@ namespace Microsoft.Bot.Builder
         /// <param name="request">A ReceiveRequest from the connected channel.</param>
         /// <param name="response">The response to update and return, ultimately sent to client.</param>
         /// <param name="logger">Optional logger.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>The response ready to send to the client.</returns>
-        private async Task<StreamingResponse> ProcessStreamingRequestAsync(ReceiveRequest request, StreamingResponse response, ILogger<RequestHandler> logger)
+        private async Task<StreamingResponse> ProcessStreamingRequestAsync(ReceiveRequest request, StreamingResponse response, ILogger<RequestHandler> logger, CancellationToken cancellationToken)
         {
             var body = request.ReadBodyAsString();
             if (string.IsNullOrEmpty(body) || request.Streams?.Count == 0)
@@ -185,19 +187,11 @@ namespace Microsoft.Bot.Builder
             try
             {
                 var adapter = new BotFrameworkStreamingExtensionsAdapter(_transportServer, _middlewareSet, logger);
-                var bot = _services?.GetService<IBot>() ?? this._bot;
 
-                if (bot == null)
-                {
-                    throw new Exception("Unable to find bot when processing request.");
-                }
-
-                if (_onTurnError != null)
-                {
-                    adapter.OnTurnError = _onTurnError;
-                }
-
-                var invokeResponse = await adapter.ProcessActivityAsync(body, request.Streams, new BotCallbackHandler(bot.OnTurnAsync), CancellationToken.None).ConfigureAwait(false);
+                // Check for dependency injected bot first, then check for bot passed as parameter, throw if neither is found.
+                var bot = _services?.GetService<IBot>() ?? this._bot ?? throw new Exception("Unable to find bot when processing request.");
+                adapter.OnTurnError = _onTurnError;
+                var invokeResponse = await adapter.ProcessActivityAsync(body, request.Streams, new BotCallbackHandler(bot.OnTurnAsync), cancellationToken).ConfigureAwait(false);
 
                 if (invokeResponse == null)
                 {
@@ -218,6 +212,8 @@ namespace Microsoft.Bot.Builder
             {
                 response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 logger.LogError(ex.Message);
+
+                throw ex;
             }
 
             return response;

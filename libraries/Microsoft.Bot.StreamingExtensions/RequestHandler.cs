@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
@@ -17,7 +18,8 @@ namespace Microsoft.Bot.StreamingExtensions
         /// <param name="request">A <see cref="ReceiveRequest"/> for this handler to process.</param>
         /// <param name="context">Optional context to process the request within.</param>
         /// <param name="logger">Optional logger.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>A <see cref="Task"/> that will produce a <see cref="StreamingResponse"/> on successful completion.</returns>
-        public abstract Task<StreamingResponse> ProcessRequestAsync(ReceiveRequest request, object context = null, ILogger<RequestHandler> logger = null);
+        public abstract Task<StreamingResponse> ProcessRequestAsync(ReceiveRequest request, object context = null, ILogger<RequestHandler> logger = null, CancellationToken cancellationToken = default(CancellationToken));
     }
 }
