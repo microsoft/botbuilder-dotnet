@@ -1,0 +1,21 @@
+{
+    "$schema": "../../app.schema",
+    "$type": "Microsoft.AdaptiveDialog",
+    "inputBindings": {
+        "name": "dialog.name"
+    },
+    "resultProperty": "dialog.name",
+    "steps": [
+        {
+            "$type": "Microsoft.TextInput",
+            "property": "dialog.name",
+            "prompt": "what is your name?",
+            "unrecognizedPrompt": "prompt again",
+            "invalidPrompt": "that's wrong"
+        },
+        {
+            "$type": "Microsoft.SendActivity",
+            "activity": "Hello {$name}, nice to meet you!"
+        }
+    ]
+}

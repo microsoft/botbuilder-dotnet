@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Expressions;
+using Microsoft.Bot.Builder.Expressions.Parser;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
@@ -48,6 +49,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
             Clear
         }
 
+        private Expression value;
+
         [JsonConstructor]
         public EditArray([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base()
@@ -82,10 +85,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
         /// <summary>
         /// The expression of the item to put onto the array
         /// </summary>
-        [JsonProperty("Value")]
-        public Expression Value { get; set; }
+        [JsonProperty("value")]
+        public string Value
+        {
+            get { return value?.ToString(); }
+            set {this.value = (value != null) ? new ExpressionEngine().Parse(value) : null; }
+        }
 
-        public EditArray(ArrayChangeType changeType, string arrayProperty = null, Expression value = null, string resultProperty = null)
+        public EditArray(ArrayChangeType changeType, string arrayProperty = null, string value = null, string resultProperty = null)
             : base()
         {
 
@@ -137,7 +144,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                     break;
                 case ArrayChangeType.Push:
                     EnsureValue();
-                    var (itemResult, error) = this.Value.TryEvaluate(dc.State);
+                    var (itemResult, error) = this.value.TryEvaluate(dc.State);
                     if (error == null && itemResult != null)
                     {
                         array.Add(itemResult);
@@ -154,15 +161,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                     break;
                 case ArrayChangeType.Remove:
                     EnsureValue();
-                    (itemResult, error) = this.Value.TryEvaluate(dc.State);
+                    (itemResult, error) = this.value.TryEvaluate(dc.State);
                     if (error == null && itemResult != null)
                     {
                         result = false;
-                        if (array.Values<string>().Contains<object>(itemResult))
+                        for (var i = 0; i < array.Count(); ++i)
                         {
-                            result = true;
-                            array.Where(x => x.Value<string>() == itemResult.ToString()).First().Remove();
-                        }                        
+                            if (array[i].ToString() == itemResult.ToString() || JToken.DeepEquals(array[i], JToken.FromObject(itemResult)))
+                            {
+                                result = true;
+                                array.RemoveAt(i);
+                                break;
+                            }
+                        }
                     }
                     break;
                 case ArrayChangeType.Clear:

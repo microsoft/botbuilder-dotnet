@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Expressions;
+using Microsoft.Bot.Builder.Expressions.Parser;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
 {
@@ -15,11 +16,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
     {
         private IReadOnlyList<IRule> _rules;
         private bool _evaluate;
+        private Expression condition;
 
         /// <summary>
         /// Expression that determines which selector to use.
         /// </summary>
-        public Expression Condition { get; set; }
+        public string Condition
+        {
+            get { return condition?.ToString(); }
+            set {this.condition = (value != null) ? new ExpressionEngine().Parse(value) : null; }
+        }
 
         /// <summary>
         /// Selector if <see cref="Condition"/> is true.
@@ -39,7 +45,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
 
         public async Task<IReadOnlyList<int>> Select(SequenceContext context, CancellationToken cancel = default(CancellationToken))
         {
-            var (value, error) = Condition.TryEvaluate(context.State);
+            var (value, error) = condition.TryEvaluate(context.State);
             var eval = error == null && (bool)value;
             IRuleSelector selector;
             if (eval)

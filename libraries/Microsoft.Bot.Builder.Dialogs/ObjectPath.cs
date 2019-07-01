@@ -42,8 +42,9 @@ namespace Microsoft.Bot.Builder.Dialogs
                 return false;
             }
 
+            // if JPath expression
             JToken result = null;
-            if (pathExpression.StartsWith("$"))
+            if (pathExpression.StartsWith("$."))
             {
                 // jpath
                 if (o != null && o.GetType() == typeof(JArray))
