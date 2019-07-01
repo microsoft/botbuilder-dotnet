@@ -36,25 +36,15 @@ namespace Microsoft.Bot.StreamingExtensions
             _payloadReceiver.Subscribe(_assemblerManager.GetPayloadStream, _assemblerManager.OnReceive);
         }
 
-        public async Task<ReceiveResponse> SendRequestAsync(StreamingRequest request, CancellationToken cancellationToken)
+        public async Task<ReceiveResponse> SendRequestAsync(StreamingRequest request, CancellationToken cancellationToken = default(CancellationToken))
         {
             var requestId = Guid.NewGuid();
-
-            // wait for the response befores sending the request , so that we dont hit the case
-            // where response is received before request is sent. This would lead to no tcs
-            // being signaled
             var responseTask = _requestManager.GetResponseAsync(requestId, cancellationToken);
-
             var requestTask = _sendOperations.SendRequestAsync(requestId, request);
-
-            if (cancellationToken != null)
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-            }
-
+            cancellationToken.ThrowIfCancellationRequested();
             await Task.WhenAll(requestTask, responseTask).ConfigureAwait(false);
 
-            return await responseTask;
+            return responseTask.Result;
         }
 
         private async Task OnReceiveRequest(Guid id, ReceiveRequest request)
