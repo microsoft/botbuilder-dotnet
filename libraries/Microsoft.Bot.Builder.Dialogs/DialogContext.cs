@@ -10,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json.Linq;
 using static Microsoft.Bot.Builder.Dialogs.Debugging.DebugSupport;
 
 namespace Microsoft.Bot.Builder.Dialogs
@@ -62,16 +63,34 @@ namespace Microsoft.Bot.Builder.Dialogs
             State.SetValue(DialogContextState.TURN_ACTIVITY, Context.Activity);
         }
 
+        /// <summary>
+        /// Parent context.
+        /// </summary>
         public DialogContext Parent { get; set; }
 
+        /// <summary>
+        /// Set of dialogs which are active for the current dialog container.
+        /// </summary>
         public DialogSet Dialogs { get; private set; }
 
+        /// <summary>
+        /// Turn context.
+        /// </summary>
         public ITurnContext Context { get; private set; }
 
+        /// <summary>
+        /// Stack of active dialogs and their dialog state.
+        /// </summary>
         public List<DialogInstance> Stack { get; private set; }
 
+        /// <summary>
+        /// Current active scoped state with (user|conversation|dialog|settings scopes).
+        /// </summary>
         public DialogContextState State { get; private set; }
 
+        /// <summary>
+        /// Dialog context for child if there is an active child.
+        /// </summary>
         public DialogContext Child
         {
             get
@@ -160,6 +179,9 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
+        /// <summary>
+        /// The current dialog state for the active dialog.
+        /// </summary>
         public Dictionary<string, object> DialogState
         {
             get
@@ -194,11 +216,24 @@ namespace Microsoft.Bot.Builder.Dialogs
                 throw new Exception($"DialogContext.BeginDialogAsync(): A dialog with an id of '{dialogId}' wasn't found.");
             }
 
+            // Process dialogs input bindings
+            var bindings = new JObject();
+            foreach (var binding in dialog.InputBindings)
+            {
+                var bindingKey = binding.Key;
+                var bindingValue = binding.Value;
+
+                if (State.TryGetValue<object>(bindingValue, out var value))
+                {
+                    bindings[bindingKey] = JToken.FromObject(value);
+                }
+            }
+
             // Check for inherited state
             // Local stack references are positive numbers and negative numbers are references on the
             // parents stack.
             Dictionary<string, object> state = null;
-            int stateIndex = 0;
+            int? stateIndex = null;
 
             if (dialog is DialogCommand)
             {
@@ -223,7 +258,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 }
             }
 
-            if (state == null)
+            if (state == null && !stateIndex.HasValue)
             {
                 state = new Dictionary<string, object>();
             }
@@ -239,28 +274,20 @@ namespace Microsoft.Bot.Builder.Dialogs
             Stack.Insert(0, instance);
             activeTags = null;
 
-            // Process dialogs input bindings
-            // - If the stack is empty, any 'dialog.*' bindings will be pulled from the active dialog on
-            //   the parents stack.
-            if (!State.TryGetValue<Dictionary<string, object>>(DialogContextState.DIALOG_RESULT, out var stateBindings))
+            // take the bindings (dialog.xxx => dialog.yyy) 
+            foreach (var property in bindings)
             {
-                stateBindings = new Dictionary<string, object>();
-            }
-
-            foreach (var option in dialog.InputBindings)
-            {
-                var bindingKey = option.Key;
-                var bindingValue = option.Value;
-
-                if (State.TryGetValue<object>(bindingValue, out var value))
+                // make sure the key is a dialog property this is only used for dialog bindings
+                if (!property.Key.StartsWith("$") && !property.Key.ToLower().StartsWith("dialog."))
                 {
-                    stateBindings[bindingKey] = value;
+                    throw new ArgumentOutOfRangeException($"{property.Key} is not a dialog property");
                 }
+
+                // Set the dialog property in the current state to the value from the bindings
+                State.SetValue(property.Key, property.Value);
             }
 
             // set dialog result
-            State.SetValue(DialogContextState.DIALOG_RESULT, stateBindings);
-
             if (dialog is DialogCommand)
             {
                 State.SetValue(DialogContextState.STEP_OPTIONS_PROPERTY, options);
@@ -620,18 +647,15 @@ namespace Microsoft.Bot.Builder.Dialogs
                 // the parent DC.
                 int stackIndex = stackIdx.Value;
 
-                if (stackIndex >= 0)
+                for (int iStack = stackIndex; iStack < dialogContext.Stack.Count && iStack >= 0; iStack--)
                 {
-                    if (stackIndex < dialogContext.Stack.Count)
+                    if (dialogContext.Stack[iStack].State != null)
                     {
-                        return this.GetActiveDialogState(dialogContext, dialogContext.Stack[stackIndex].State, null);
-                    }
-                    else
-                    {
-                        throw new Exception("DialogContext.ActiveDialog: Can't find inherited state. Index out of range.");
+                        return dialogContext.Stack[iStack].State;
                     }
                 }
-                else if (dialogContext.Parent != null)
+
+                if (dialogContext.Parent != null)
                 {
                     return this.GetActiveDialogState(dialogContext.Parent, null, -stackIndex - 1);
                 }
@@ -643,5 +667,6 @@ namespace Microsoft.Bot.Builder.Dialogs
                 return state;
             }
         }
+
     }
 }

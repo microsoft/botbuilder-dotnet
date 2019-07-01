@@ -46,28 +46,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
 
         protected override Expression BuildExpression(IExpressionParser factory)
         {
-            List<Expression> constraints = new List<Expression>();
 
             // add constraints for the intents property
-            if (!String.IsNullOrEmpty(this.Intent))
+            if (String.IsNullOrEmpty(this.Intent))
             {
-                constraints.Add(factory.Parse($"turn.dialogEvent.value.intents.{this.Intent}.score > 0.0"));
+                throw new ArgumentNullException(nameof(this.Intent));
             }
 
-            //TODO
-            //foreach (var entity in this.Entities)
-            //{
-            //    constraints.Add($"CONTAINS(DialogEvent.Entities, '{entity}')");
-            //}
 
-            var baseExpression = base.BuildExpression(factory);
-            if (baseExpression != null)
-            {
-                constraints.Add(baseExpression);
-            }
-
-            return Expression.AndExpression(constraints.ToArray());
-
+            return Expression.AndExpression(factory.Parse($"turn.dialogEvent.value.intents.{this.Intent}.score > 0.0"),
+                base.BuildExpression(factory));
         }
 
         protected override StepChangeList OnCreateChangeList(SequenceContext planning, object dialogOptions = null)

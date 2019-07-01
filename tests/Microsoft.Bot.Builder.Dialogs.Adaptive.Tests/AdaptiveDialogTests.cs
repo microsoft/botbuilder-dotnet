@@ -23,6 +23,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
     public class AdaptiveDialogTests
     {
         public TestContext TestContext { get; set; }
+        public ExpressionEngine expressionEngine = new ExpressionEngine();
 
         private TestFlow CreateFlow(AdaptiveDialog ruleDialog)
         {
@@ -121,7 +122,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     Property = "dialog.todo"
                 },
                 new InitProperty() { Property = "user.todos", Type = "array" },
-                new EditArray(EditArray.ArrayChangeType.Push, "user.todos", new ExpressionEngine().Parse("dialog.todo")),
+                new EditArray(EditArray.ArrayChangeType.Push, "user.todos", "dialog.todo"),
                 new SendActivity() { Activity = new ActivityTemplate("Your todos: {join(user.todos, ',')}") },
                 new TextInput()
                 {
@@ -130,7 +131,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     Property = "dialog.todo"
 
                 },
-                new EditArray(EditArray.ArrayChangeType.Push, "user.todos", new ExpressionEngine().Parse("dialog.todo")),
+                new EditArray(EditArray.ArrayChangeType.Push, "user.todos", "dialog.todo"),
                 new SendActivity() { Activity = new ActivityTemplate("Your todos: {join(user.todos, ',')}") },
 
                 // Remove item
@@ -139,7 +140,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     Prompt = new ActivityTemplate("Enter a item to remove."),
                     Property = "dialog.todo"
                 },
-                new EditArray(EditArray.ArrayChangeType.Remove, "user.todos", new ExpressionEngine().Parse("dialog.todo")),
+                new EditArray(EditArray.ArrayChangeType.Remove, "user.todos", "dialog.todo"),
                 new SendActivity() { Activity = new ActivityTemplate("Your todos: {join(user.todos, ',')}") },
 
                 // Add item and pop item
@@ -148,14 +149,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     Prompt = new ActivityTemplate("Please add an item to todos."),
                     Property = "dialog.todo"
                 },
-                new EditArray(EditArray.ArrayChangeType.Push, "user.todos", new ExpressionEngine().Parse("dialog.todo")),
+                new EditArray(EditArray.ArrayChangeType.Push, "user.todos", "dialog.todo"),
                 new TextInput()
                 {
                     AlwaysPrompt = true,
                     Prompt = new ActivityTemplate("Please add an item to todos."),
                     Property = "dialog.todo"
                 },
-                new EditArray(EditArray.ArrayChangeType.Push, "user.todos", new ExpressionEngine().Parse("dialog.todo")),
+                new EditArray(EditArray.ArrayChangeType.Push, "user.todos", "dialog.todo"),
                 new SendActivity() { Activity = new ActivityTemplate("Your todos: {join(user.todos, ',')}") },
 
                 new EditArray(EditArray.ArrayChangeType.Pop, "user.todos"),
@@ -201,7 +202,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     {
                         new IfCondition()
                         {
-                            Condition = new ExpressionEngine().Parse("user.name == null"),
+                            Condition = "user.name == null",
                             Steps = new List<IDialog>()
                             {
                                 new TextInput() {
@@ -230,7 +231,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 {
                     new IfCondition()
                     {
-                        Condition = new ExpressionEngine().Parse("user.name == null"),
+                        Condition = "user.name == null",
                         Steps = new List<IDialog>()
                         {
                             new TextInput()
@@ -268,7 +269,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         {
                             new IfCondition()
                             {
-                                Condition = new ExpressionEngine().Parse("user.name == null"),
+                                Condition = "user.name == null",
                                 Steps = new List<IDialog>()
                                 {
                                     new TextInput()
@@ -281,7 +282,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             new IfCondition()
                             {
                                 // Check comparison with string literal
-                                Condition = new ExpressionEngine().Parse("user.name == 'Carlos'"),
+                                Condition = "user.name == 'Carlos'",
                                 Steps = new List<IDialog>()
                                 {
                                     new SendActivity("Hello carlin")
@@ -322,7 +323,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 {
                     new IfCondition()
                     {
-                        Condition = new ExpressionEngine().Parse("user.name == null"),
+                        Condition = "user.name == null",
                             Steps = new List<IDialog>()
                             {
                                 new TextInput()
@@ -388,7 +389,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     {
                         new IfCondition()
                         {
-                            Condition = new ExpressionEngine().Parse("user.name == null"),
+                            Condition = "user.name == null",
                             Steps = new List<IDialog>()
                             {
                                 new TextInput()
@@ -458,7 +459,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 {
                     new IfCondition()
                     {
-                        Condition = new ExpressionEngine().Parse("user.name == null"),
+                        Condition = "user.name == null",
                         Steps = new List<IDialog>()
                         {
                             new TextInput()
@@ -571,7 +572,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     {
                         new IfCondition()
                         {
-                            Condition = new ExpressionEngine().Parse("user.name == null"),
+                            Condition = "user.name == null",
                             Steps = new List<IDialog>()
                             {
                                 new TextInput()

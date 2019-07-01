@@ -380,7 +380,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         private List<Diagnostic> CheckTemplateParameters(string templateName, int argsNumber, ParserRuleContext context)
         {
             var result = new List<Diagnostic>();
-            var parametersNumber = templateMap[templateName].Paramters.Count;
+            var parametersNumber = templateMap[templateName].Parameters.Count;
 
             if (argsNumber != parametersNumber)
             {

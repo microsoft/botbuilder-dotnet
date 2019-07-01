@@ -13,8 +13,14 @@
                 "autoEndDialog": {
                     "type": "boolean",
                     "title": "Auto End Dialog",
-                    "description": "IF this is true the dialog will automatically end when there are no more steps to run.  If this is false it is the responsbility of the author to call EndDialog at an appropriate time.",
+                    "description": "If this is true the dialog will automatically end when there are no more steps to run.  If this is false it is the responsbility of the author to call EndDialog at an appropriate time.",
                     "default": "true"
+                },
+                "defaultResultProperty": {
+                    "type": "string",
+                    "title": "Default Result Property",
+                    "description": "Property path to the memory to return as the result of this dialog ending because AutoEndDialog is true and there are no more steps to execute.",
+                    "default": "dialog.result"
                 },
                 "recognizer": {
                     "$type": "Microsoft.IRecognizer",

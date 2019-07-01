@@ -149,7 +149,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                                         },
                                         new IfCondition()
                                         {
-                                             Condition = new ExpressionEngine().Parse("turn.LastResult == false"),
+                                             Condition = "turn.LastResult == false",
                                              Steps =   new List<IDialog>()
                                              {
                                                  new SendActivity("I didn't understand that.")

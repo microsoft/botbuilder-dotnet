@@ -15,20 +15,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
     public class DeleteProperty : DialogCommand
     {
         /// <summary>
-        /// Property which is bidirectional property for input and output.  Example: user.age will be passed in, and user.age will be set when the dialog completes
+        /// Property to path to remove Example: user.age will remove "age" from "user"
         /// </summary>
-        public string Property
-        {
-            get
-            {
-                return OutputBinding;
-            }
-            set
-            {
-                InputBindings["value"] = value;
-                OutputBinding = value;
-            }
-        }
+        public string Property { get; set; }
 
         [JsonConstructor]
         public DeleteProperty([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0) : base()
