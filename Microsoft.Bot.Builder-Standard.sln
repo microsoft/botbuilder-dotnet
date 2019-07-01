@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.28803.202
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.645
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{4269F3C3-6B42-419B-B64A-3E6DC0F1574A}"
 EndProject
@@ -60,7 +60,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.ApplicationIn
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.ApplicationInsights.Tests", "tests\Microsoft.Bot.Builder.ApplicationInsights.Tests\Microsoft.Bot.Builder.ApplicationInsights.Tests.csproj", "{D790A4BB-D8AC-4AAE-B3FE-0CF432CA8031}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Dialogs.Composition", "libraries/Microsoft.Bot.Builder.Dialogs.Composition/Microsoft.Bot.Builder.Dialogs.Composition.csproj", "{2255FF5B-8010-4C8D-897E-BDDEBB629967}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Dialogs.Composition", "libraries\Microsoft.Bot.Builder.Dialogs.Composition\Microsoft.Bot.Builder.Dialogs.Composition.csproj", "{2255FF5B-8010-4C8D-897E-BDDEBB629967}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Dialogs.Composition.Tests", "tests\Microsoft.Bot.Builder.Dialogs.Composition.Tests\Microsoft.Bot.Builder.Dialogs.Composition.Tests.csproj", "{78D16CCC-6184-4678-87D8-E8C4299317CE}"
 EndProject
@@ -99,6 +99,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.LanguageGeneration.Tests", "tests\Microsoft.Bot.Builder.LanguageGeneration.Tests\Microsoft.Bot.Builder.LanguageGeneration.Tests.csproj", "{72EE26E2-E8BE-4169-82AD-93E021539C34}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.LanguageGeneration.Renderer.Tests", "tests\Microsoft.Bot.Builder.LanguageGeneration.Renderer.Tests\Microsoft.Bot.Builder.LanguageGeneration.Renderer.Tests.csproj", "{240646C5-EFCB-4CF1-AF8E-7036558CD78C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EchoBot", "..\..\scratch\code\botbuilder-samples\experimental\adaptive-dialog\declarative\10.EchoBot\EchoBot.csproj", "{1DE08958-5FD8-4B02-BCD3-0F44632544A2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -451,6 +453,14 @@ Global
 		{240646C5-EFCB-4CF1-AF8E-7036558CD78C}.Documentation|Any CPU.Build.0 = Debug|Any CPU
 		{240646C5-EFCB-4CF1-AF8E-7036558CD78C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{240646C5-EFCB-4CF1-AF8E-7036558CD78C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1DE08958-5FD8-4B02-BCD3-0F44632544A2}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{1DE08958-5FD8-4B02-BCD3-0F44632544A2}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
+		{1DE08958-5FD8-4B02-BCD3-0F44632544A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1DE08958-5FD8-4B02-BCD3-0F44632544A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1DE08958-5FD8-4B02-BCD3-0F44632544A2}.Documentation|Any CPU.ActiveCfg = Debug|Any CPU
+		{1DE08958-5FD8-4B02-BCD3-0F44632544A2}.Documentation|Any CPU.Build.0 = Debug|Any CPU
+		{1DE08958-5FD8-4B02-BCD3-0F44632544A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1DE08958-5FD8-4B02-BCD3-0F44632544A2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -502,6 +512,7 @@ Global
 		{F59673EA-2D0D-441A-BB85-CD343DE6BE45} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{72EE26E2-E8BE-4169-82AD-93E021539C34} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{240646C5-EFCB-4CF1-AF8E-7036558CD78C} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
+		{1DE08958-5FD8-4B02-BCD3-0F44632544A2} = {1DEDDC46-F2F4-448F-A0B7-FD48682EEC80}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7173C9F3-A7F9-496E-9078-9156E35D6E16}

@@ -65,7 +65,7 @@ namespace Microsoft.Bot.Connector.Authentication
             // Make our own copy so we can edit it
             _tokenValidationParameters = tokenValidationParameters.Clone();
             _tokenValidationParameters.RequireSignedTokens = true;
-            _allowedSigningAlgorithms = allowedSigningAlgorithms;            
+            _allowedSigningAlgorithms = allowedSigningAlgorithms;
 
             _openIdMetadata = _openIdMetadataCache.GetOrAdd(metadataUrl, key =>
             {
@@ -146,7 +146,7 @@ namespace Microsoft.Bot.Connector.Authentication
 
             // Update the signing tokens from the last refresh
             _tokenValidationParameters.IssuerSigningKeys = config.SigningKeys;
-
+            Console.WriteLine($"signingKeys: {string.Join(",", config.SigningKeys.Select(x => x.KeyId))}");
             var tokenHandler = new JwtSecurityTokenHandler();
             try
             {

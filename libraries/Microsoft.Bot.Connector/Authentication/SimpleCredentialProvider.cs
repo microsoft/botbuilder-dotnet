@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Threading.Tasks;
+using Microsoft.Rest;
 
 namespace Microsoft.Bot.Connector.Authentication
 {
@@ -75,6 +76,11 @@ namespace Microsoft.Bot.Connector.Authentication
         public Task<bool> IsAuthenticationDisabledAsync()
         {
             return Task.FromResult(string.IsNullOrEmpty(AppId));
+        }
+
+        public ServiceClientCredentials GetCredentials()
+        {
+            return null;
         }
     }
 }

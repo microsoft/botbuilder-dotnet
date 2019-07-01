@@ -4,11 +4,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
 using Microsoft.Azure.Documents.Linq;
+using Microsoft.Azure.Services.AppAuthentication;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
@@ -33,13 +35,14 @@ namespace Microsoft.Bot.Builder.Azure
         private readonly RequestOptions _databaseCreationRequestOptions = null;
         private readonly IDocumentClient _client;
         private string _collectionLink = null;
+        private readonly AzureServiceTokenProvider _tokenProvider;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CosmosDbStorage"/> class.
         /// using the provided CosmosDB credentials, database ID, and collection ID.
         /// </summary>
         /// <param name="cosmosDbStorageOptions">Cosmos DB storage configuration options.</param>
-        public CosmosDbStorage(CosmosDbStorageOptions cosmosDbStorageOptions)
+        public CosmosDbStorage(CosmosDbStorageOptions cosmosDbStorageOptions, AzureServiceTokenProvider tokenProvider)
         {
             if (cosmosDbStorageOptions == null)
             {
@@ -51,10 +54,11 @@ namespace Microsoft.Bot.Builder.Azure
                 throw new ArgumentNullException(nameof(cosmosDbStorageOptions.CosmosDBEndpoint), "Service EndPoint for CosmosDB is required.");
             }
 
+            /*
             if (string.IsNullOrEmpty(cosmosDbStorageOptions.AuthKey))
             {
                 throw new ArgumentException("AuthKey for CosmosDB is required.", nameof(cosmosDbStorageOptions.AuthKey));
-            }
+            }*/
 
             if (string.IsNullOrEmpty(cosmosDbStorageOptions.DatabaseId))
             {
@@ -66,6 +70,7 @@ namespace Microsoft.Bot.Builder.Azure
                 throw new ArgumentException("CollectionId is required.", nameof(cosmosDbStorageOptions.CollectionId));
             }
 
+            _tokenProvider = tokenProvider;
             _databaseId = cosmosDbStorageOptions.DatabaseId;
             _collectionId = cosmosDbStorageOptions.CollectionId;
             _documentCollectionCreationRequestOptions = cosmosDbStorageOptions.DocumentCollectionRequestOptions;
@@ -77,7 +82,21 @@ namespace Microsoft.Bot.Builder.Azure
 
             // Invoke CollectionPolicy delegate to further customize settings
             cosmosDbStorageOptions.ConnectionPolicyConfigurator?.Invoke(connectionPolicy);
-            _client = new DocumentClient(cosmosDbStorageOptions.CosmosDBEndpoint, cosmosDbStorageOptions.AuthKey, connectionPolicy);
+
+            var keyOrToken = cosmosDbStorageOptions.AuthKey;
+
+            if (keyOrToken == null)
+            {
+                keyOrToken = _tokenProvider.GetAccessTokenAsync("https://management.azure.com/").Result;
+                keyOrToken = Convert.ToBase64String(Encoding.UTF8.GetBytes(keyOrToken));
+            }
+
+            //_client = new DocumentClient(cosmosDbStorageOptions.CosmosDBEndpoint, keyOrToken, connectionPolicy);
+            _client = new DocumentClient(cosmosDbStorageOptions.CosmosDBEndpoint, new Dictionary<string, string> {
+                {  UriFactory.CreateDocumentCollectionUri(_databaseId, _collectionId).ToString(),
+                   "type=resource&ver=1&sig=MAId4n3bZN4fYxG7Nk3xUg==;5IXkef5FsSljxmMpeZpBl5wbzIHWv1JOdm/pDMTGRPtYl2hJYJLYeRostn8Ae38U2c/qfK+/S7peAhP+FAaUtc2IhUPe+t/tFLiMcycyCUgl2fOHsYd8Vog5zeZlkuIMBdAQp17wPmPQt/exSGVi4W5GHTbdZLgZTONPFtQ31j169a7cgCU+lB4yZy+pdtWAB9w9IM42WGmPbdJgVJjp1v7LKt6/mAahXgvAv/9eD0jcg4OKyQwALTGA9Qs4J9P/EGyzhno1NWLIRLmA+Mxw6A==;" }
+            });
+            var permission = SetPermissionAsync("abh-repo").Result;
         }
 
         /// <summary>
@@ -320,6 +339,32 @@ namespace Microsoft.Bot.Builder.Azure
                     _semaphore.Release();
                 }
             }
+        }
+
+        private async Task<string> SetPermissionAsync(string botId)
+        {
+            var userUri = UriFactory.CreateUserUri(_databaseId, botId);
+            var collectionUri = UriFactory.CreateDocumentCollectionUri(_databaseId, _collectionId);
+
+            var user = (await _client.ReadUserAsync(userUri).ConfigureAwait(false)).Resource;
+            if (user == null)
+            {
+                user = new User
+                {
+                    Id = botId
+                };
+                await _client.CreateUserAsync(UriFactory.CreateDatabaseUri(_databaseId), user).ConfigureAwait(false);
+            }
+
+            var permFeed = await _client.ReadPermissionFeedAsync(userUri).ConfigureAwait(false);
+            var result = await _client.CreatePermissionAsync(userUri, new Permission
+            {
+                PermissionMode = PermissionMode.All,
+                ResourceLink = collectionUri.ToString(),
+                Id = $"user-{botId}"
+            }).ConfigureAwait(false);
+
+            return result.Resource.Token;
         }
 
         /// <summary>

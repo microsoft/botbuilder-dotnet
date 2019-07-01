@@ -32,6 +32,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         {
         }
 
+        public ResourceExplorer(ResourceExplorer source, Func<IResourceProvider, IResourceProvider> transform)
+        {
+            foreach (var resourceProvider in source.resourceProviders.Select(transform))
+            {
+                if (resourceProvider != null)
+                {
+                    AddResourceProvider(resourceProvider);
+                }
+            }
+        }
+
         public IEnumerable<IResourceProvider> ResourceProviders { get { return this.resourceProviders; } }
 
         public event ResourceChangedEventHandler Changed;
@@ -111,11 +122,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             foreach (XmlNode node in xmlDoc.SelectNodes("//ProjectReference"))
             {
                 var path = Path.Combine(projectFolder, PlatformPath(node.Attributes["Include"].Value));
+
                 path = Path.GetFullPath(path);
                 path = Path.GetDirectoryName(path);
-                explorer.AddResourceProvider(new FolderResourceProvider(path, includeSubFolders: true, monitorChanges: monitorChanges));
-            }
+                if (Directory.Exists(path))
+                {
+                    explorer.AddResourceProvider(new FolderResourceProvider(path, includeSubFolders: true, monitorChanges: monitorChanges));
+                }
+                else
+                {
 
+                }
+            }
             var packages = Path.GetFullPath("packages");
             var relativePackagePath = Path.Combine(@"..", "packages");
             while (!Directory.Exists(packages) && Path.GetDirectoryName(packages) != Path.GetPathRoot(packages))
