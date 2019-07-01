@@ -16,10 +16,10 @@ namespace Microsoft.Bot.StreamingExtensions
         /// The method that must be implemented in order to handle incoming requests.
         /// </summary>
         /// <param name="request">A <see cref="ReceiveRequest"/> for this handler to process.</param>
+        /// <param name="logger">Logger.</param>
         /// <param name="context">Optional context to process the request within.</param>
-        /// <param name="logger">Optional logger.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>A <see cref="Task"/> that will produce a <see cref="StreamingResponse"/> on successful completion.</returns>
-        public abstract Task<StreamingResponse> ProcessRequestAsync(ReceiveRequest request, object context = null, ILogger<RequestHandler> logger = null, CancellationToken cancellationToken = default(CancellationToken));
+        public abstract Task<StreamingResponse> ProcessRequestAsync(ReceiveRequest request, ILogger<RequestHandler> logger, object context = null, CancellationToken cancellationToken = default(CancellationToken));
     }
 }

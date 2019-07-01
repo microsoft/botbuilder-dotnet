@@ -52,7 +52,7 @@ namespace Microsoft.Bot.StreamingExtensions
             // request is done, we can handle it
             if (_requestHandler != null)
             {
-                var response = await _requestHandler.ProcessRequestAsync(request, _handlerContext).ConfigureAwait(false);
+                var response = await _requestHandler.ProcessRequestAsync(request, null, context: _handlerContext).ConfigureAwait(false);
 
                 if (response != null)
                 {

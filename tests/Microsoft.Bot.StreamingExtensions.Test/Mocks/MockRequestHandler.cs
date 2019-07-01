@@ -25,7 +25,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.Mocks
             _responseAction = null;
         }
 
-        public override async Task<StreamingResponse> ProcessRequestAsync(ReceiveRequest request, object context = null, ILogger<RequestHandler> logger = null, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task<StreamingResponse> ProcessRequestAsync(ReceiveRequest request, ILogger<RequestHandler> logger, object context = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (_responseAction != null)
             {

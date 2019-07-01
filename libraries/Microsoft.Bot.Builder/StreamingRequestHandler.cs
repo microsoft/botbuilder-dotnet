@@ -109,11 +109,11 @@ namespace Microsoft.Bot.Builder
         /// then generates and returns a response if appropriate.
         /// </summary>
         /// <param name="request">A ReceiveRequest from the connected channel.</param>
-        /// <param name="context">Optional context to operate within. Unused in bot implementation.</param>
         /// <param name="logger">Optional logger used to log request information and error details.</param>
+        /// <param name="context">Optional context to operate within. Unused in bot implementation.</param>
         /// /// <param name="cancellationToken">Optional cancellation token.</param>
         /// <returns>A response created by the BotAdapter to be sent to the client that originated the request.</returns>
-        public override async Task<StreamingResponse> ProcessRequestAsync(ReceiveRequest request, object context = null, ILogger<RequestHandler> logger = null, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task<StreamingResponse> ProcessRequestAsync(ReceiveRequest request, ILogger<RequestHandler> logger, object context = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             logger = logger ?? NullLogger<RequestHandler>.Instance;
             var response = new StreamingResponse();

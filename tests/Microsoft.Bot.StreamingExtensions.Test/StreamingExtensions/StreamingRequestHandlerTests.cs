@@ -91,7 +91,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.StreamingExtensions
             var s = new StreamingRequestHandler(null, new MockBot());
             s._transportServer = new MockStreamingTransportServer();
 
-            var response = await s.ProcessRequestAsync(new ReceiveRequest() { Path = "/api/messages" });
+            var response = await s.ProcessRequestAsync(new ReceiveRequest() { Path = "/api/messages" }, null);
 
             Assert.AreEqual((int)HttpStatusCode.BadRequest, response.StatusCode);
         }
@@ -102,7 +102,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.StreamingExtensions
             var s = new StreamingRequestHandler(null, new MockBot());
             s._transportServer = new MockStreamingTransportServer();
 
-            var response = await s.ProcessRequestAsync(new ReceiveRequest() { Verb = "POST" });
+            var response = await s.ProcessRequestAsync(new ReceiveRequest() { Verb = "POST" }, null);
 
             Assert.AreEqual((int)HttpStatusCode.BadRequest, response.StatusCode);
         }
@@ -113,7 +113,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.StreamingExtensions
             var s = new StreamingRequestHandler(null, new MockBot());
             s._transportServer = new MockStreamingTransportServer();
 
-            var response = await s.ProcessRequestAsync(new ReceiveRequest() { Verb = "Delete", Path = "/api/messages" });
+            var response = await s.ProcessRequestAsync(new ReceiveRequest() { Verb = "Delete", Path = "/api/messages" }, null);
 
             Assert.AreEqual((int)HttpStatusCode.NotFound, response.StatusCode);
         }
@@ -124,7 +124,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.StreamingExtensions
             var s = new StreamingRequestHandler(null, new MockBot());
             s._transportServer = new MockStreamingTransportServer();
 
-            var response = await s.ProcessRequestAsync(new ReceiveRequest() { Verb = "Post", Path = "/api/messagesV3" });
+            var response = await s.ProcessRequestAsync(new ReceiveRequest() { Verb = "Post", Path = "/api/messagesV3" }, null);
 
             Assert.AreEqual((int)HttpStatusCode.NotFound, response.StatusCode);
         }
@@ -135,7 +135,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.StreamingExtensions
             var s = new StreamingRequestHandler(null, new MockBot());
             s._transportServer = new MockStreamingTransportServer();
 
-            var response = await s.ProcessRequestAsync(new ReceiveRequest() { Verb = "GET", Path = "/api/version" });
+            var response = await s.ProcessRequestAsync(new ReceiveRequest() { Verb = "GET", Path = "/api/version" }, null);
 
             Assert.AreEqual((int)HttpStatusCode.OK, response.StatusCode);
             Assert.AreEqual(1, response.Streams.Count);
@@ -150,7 +150,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.StreamingExtensions
             var s = new StreamingRequestHandler(null, new MockBot());
             s._transportServer = new MockStreamingTransportServer();
 
-            var response = await s.ProcessRequestAsync(new ReceiveRequest() { Verb = "POST", Path = "/api/messages" });
+            var response = await s.ProcessRequestAsync(new ReceiveRequest() { Verb = "POST", Path = "/api/messages" }, null);
 
             Assert.AreEqual((int)HttpStatusCode.BadRequest, response.StatusCode);
         }
@@ -177,7 +177,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.StreamingExtensions
                 new MockContentStream(stream, "application/json"),
             };
 
-            var response = await s.ProcessRequestAsync(request);
+            var response = await s.ProcessRequestAsync(request, null);
 
             Assert.AreEqual((int)HttpStatusCode.OK, response.StatusCode);
         }
@@ -204,7 +204,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.StreamingExtensions
                 new MockContentStream(stream, "application/json"),
             };
 
-            var response = await s.ProcessRequestAsync(request);
+            var response = await s.ProcessRequestAsync(request, null);
 
             Assert.AreEqual((int)HttpStatusCode.InternalServerError, response.StatusCode);
         }
@@ -232,7 +232,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.StreamingExtensions
                 new MockContentStream(stream, "application/json"),
             };
 
-            var response = await s.ProcessRequestAsync(request);
+            var response = await s.ProcessRequestAsync(request, null);
 
             Assert.AreEqual((int)HttpStatusCode.InternalServerError, response.StatusCode);
 
@@ -250,7 +250,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.StreamingExtensions
                 new MockContentStream(stream, "application/json"),
             };
 
-            response = await s.ProcessRequestAsync(request);
+            response = await s.ProcessRequestAsync(request, null);
             Assert.AreEqual((int)HttpStatusCode.OK, response.StatusCode);
         }
     }
