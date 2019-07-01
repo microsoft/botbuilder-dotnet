@@ -20,8 +20,7 @@
 		<PackageId>Microsoft.Bot.Builder.AI.Luis</PackageId>
 		<Description>LUIS Middleware and Recognizers for the Microsoft Bot Builder SDK</Description>
 		<Summary>This library implements C# classes for building bots using LUIS.</Summary>
-		<LangVersion>latest</LangVersion>  
-	</PropertyGroup>
+  </PropertyGroup>
 
 	<ItemGroup>
 		<PackageReference Include="AsyncUsageAnalyzers" Version="1.0.0-alpha003" PrivateAssets="all" />

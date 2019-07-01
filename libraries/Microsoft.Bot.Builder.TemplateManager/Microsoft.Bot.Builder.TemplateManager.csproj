@@ -19,7 +19,6 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Description>This library implements .NET TemplateManager classes to manage libraries of template renderers in Microsoft Bot Builder SDK v4</Description>
     <Summary>This library implements .NET TemplateManager classes to manage libraries of template renderers in Microsoft Bot Builder SDK v4</Summary>
-    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>

@@ -11,7 +11,6 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Description>This library integrates the Microsoft Bot Builder SDK with ASP.NET Core. It offers idiomatic configuration APIs in addition to providing all the plumbing to direct incoming bot messages to a configured bot.</Description>
     <Summary>This library provides integration between the Microsoft Bot Builder SDK and ASP.NET Core.</Summary>
-    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">

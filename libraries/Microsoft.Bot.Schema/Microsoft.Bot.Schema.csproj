@@ -19,7 +19,6 @@
 		<TargetFramework>netstandard2.0</TargetFramework>		
 		<Description>This library implements C# schema classes for using the Bot Framework.</Description>
 		<Summary>This library implements C# schema classes for using the Bot Framework.</Summary>
-    <LangVersion>latest</LangVersion>
 	</PropertyGroup>
 
   <PropertyGroup>
