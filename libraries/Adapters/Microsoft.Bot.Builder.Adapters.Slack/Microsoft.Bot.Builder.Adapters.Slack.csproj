@@ -12,15 +12,11 @@
     <RootNamespace>Microsoft.BotBuilder.Adapters.Slack</RootNamespace>
   </PropertyGroup>
 
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU' ">
     <SignAssembly>true</SignAssembly>
     <DelaySign>true</DelaySign>
-    <AssemblyOriginatorKeyFile>..\..\build\35MSSharedLib1024.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>..\..\..\build\35MSSharedLib1024.snk</AssemblyOriginatorKeyFile>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Builder.Adapters.Slack.xml</DocumentationFile>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Builder.Adapters.Slack.xml</DocumentationFile>
   </PropertyGroup>
 

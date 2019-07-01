@@ -11,11 +11,13 @@ namespace Microsoft.Bot.Builder.BotKit.Conversation
         /// <summary>
         /// Gets or Sets the Key.
         /// </summary>
+        /// <value>The key of the collect.</value>
         public string Key { get; set; }
 
         /// <summary>
         /// Gets or Sets the Options.
         /// </summary>
+        /// <value>The options of the collect.</value>
         public IBotkitConvoTrigger Options { get; set; }
     }
 }
