@@ -62,7 +62,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
                 expressions.Add(factory.Parse($"turn.dialogEvent.name == '{evt}'"));
             }
 
-            return Expression.AndExpression(Expression.OrExpression(expressions.ToArray()), base.BuildExpression(factory));
+            return Expression.AndExpression(Expression.OrExpression(expressions.ToArray()), 
+                base.BuildExpression(factory));
         }
 
         public override string GetIdentity()

@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Expressions;
+using Microsoft.Bot.Builder.Expressions.Parser;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -16,6 +17,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
     /// </summary>
     public class SetProperty : DialogCommand
     {
+        private Expression value;
+
         [JsonConstructor]
         public SetProperty([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0) : base()
         {
@@ -25,23 +28,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
         /// <summary>
         /// Value expression
         /// </summary>
-        public Expression Value { get; set; }
+        [JsonProperty("value")]
+        public string Value
+        {
+            get { return value?.ToString(); }
+            set {this.value = (value != null) ? new ExpressionEngine().Parse(value) : null; }
+        }
 
         /// <summary>
-        /// Property which is bidirectional property for input and output.  Example: user.age will be passed in, and user.age will be set when the dialog completes
+        /// Property to put the value in
         /// </summary>
-        public string Property
-        {
-            get
-            {
-                return OutputBinding;
-            }
-            set
-            {
-                InputBindings["value"] = value;
-                OutputBinding = value;
-            }
-        }
+        [JsonProperty("property")]
+        public string Property { get; set; }
 
         protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -54,10 +52,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
             if (dc is SequenceContext planning)
             {
                 // SetProperty evaluates the "Value" expression and returns it as the result of the dialog
-                var (value, error) = Value.TryEvaluate(dc.State);
+                var (value, error) = this.value.TryEvaluate(dc.State);
 
                 if (error == null)
                 {
+                    dc.State.SetValue(Property, value);
+
                     var sc = dc as SequenceContext;
 
                     // If this step interrupted a step in the active plan
@@ -68,7 +68,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                     }
                 }
 
-                return await planning.EndDialogAsync(value, cancellationToken: cancellationToken).ConfigureAwait(false);
+                return await planning.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
             else
             {

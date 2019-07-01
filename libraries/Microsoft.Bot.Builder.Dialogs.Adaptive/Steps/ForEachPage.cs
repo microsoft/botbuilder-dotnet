@@ -21,18 +21,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
     public class ForeachPage : DialogCommand, IDialogDependencies
     {
         // Expression used to compute the list that should be enumerated.
-        [JsonProperty("ListProperty")]
+        [JsonProperty("listProperty")]
         public Expression ListProperty { get; set; }
 
-        [JsonProperty("PageSize")]
+        [JsonProperty("pageSize")]
         public int PageSize { get; set; } = 10;
 
         // In-memory property that will contain the current items value. Defaults to `dialog.value`.
-        [JsonProperty("ValueProperty")]
-        public string ValueProperty { get; set; } = "dialog.value";
+        [JsonProperty("valueProperty")]
+        public string ValueProperty { get; set; } = DialogContextState.DIALOG_VALUE;
 
         // Steps to be run for each of items.
-        [JsonProperty("Steps")]
+        [JsonProperty("steps")]
         public List<IDialog> Steps { get; set; } = new List<IDialog>();
 
         [JsonConstructor]

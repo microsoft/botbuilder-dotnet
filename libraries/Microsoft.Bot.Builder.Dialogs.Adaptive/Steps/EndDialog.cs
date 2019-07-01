@@ -15,20 +15,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
     public class EndDialog : DialogCommand
     {
         /// <summary>
-        /// Property which is bidirectional property for input and output.  Example: user.age will be passed in, and user.age will be set when the dialog completes
+        /// Gets or sets the property to return as the result ending the dialog.
         /// </summary>
-        public string ResultProperty
-        {
-            get
-            {
-                return OutputBinding;
-            }
-            set
-            {
-                InputBindings["value"] = value;
-                OutputBinding = value;
-            }
-        }
+        public string ResultProperty { get; set; } = "dialog.result";
 
         [JsonConstructor]
         public EndDialog(string resultProperty = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)

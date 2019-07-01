@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             Source = source;
 
             Name = ExtractName(parseTree);
-            Paramters = ExtractParameters(parseTree);
+            Parameters = ExtractParameters(parseTree);
             Body = ExtractBody(parseTree);
         }
 
@@ -33,12 +33,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public string Name { get; }
 
         /// <summary>
-        /// Gets paramter list of this template.
+        /// Gets parameter list of this template.
         /// </summary>
         /// <value>
-        /// Paramter list of this template.
+        /// Parameter list of this template.
         /// </value>
-        public List<string> Paramters { get; }
+        public List<string> Parameters { get; }
 
         /// <summary>
         /// Gets or sets text format of Body of this template. All content except Name and Parameters.

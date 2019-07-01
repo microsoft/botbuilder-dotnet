@@ -27,19 +27,30 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         Valid
     }
 
-    public abstract class InputDialog : DialogCommand
+    public abstract class InputDialog : Dialog
     {
+        private Expression value;
+        private Expression defaultValue;
+
         public bool AlwaysPrompt { get; set; } = false;
 
         public bool AllowInterruptions { get; set; } = true;
 
-        public Expression Value { get; set; }
+        /// <summary>
+        /// Initial value for the prompt
+        /// </summary>
+        [JsonProperty("value")]
+        public string Value
+        {
+            get { return value?.ToString(); }
+            set {this.value = (value != null) ? new ExpressionEngine().Parse(value) : null; }
+        }
 
         /// <summary>
         /// Activity to send to the user
         /// </summary>
         public ITemplate<Activity> Prompt { get; set; }
-        
+
         /// <summary>
         /// Activity template for retrying prompt
         /// </summary>
@@ -50,11 +61,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// </summary>
         public ITemplate<Activity> InvalidPrompt { get; set; }
 
-        public List<Expression> Validations { get; set; } = new List<Expression>();
+        public List<string> Validations { get; set; } = new List<string>();
 
+        /// <summary>
+        /// Maximum number of times to ask the user for this value before the dilog gives up.
+        /// </summary>
         public int? MaxTurnCount { get; set; }
 
-        public Expression DefaultValue { get; set; }
+        /// <summary>
+        /// Default value for the input dialog
+        /// </summary>
+        public string DefaultValue
+        {
+            get { return defaultValue?.ToString(); }
+            set { lock(this) defaultValue = (defaultValue != null) ? new ExpressionEngine().Parse(value) : null; }
+        }
 
         /// <summary>
         /// The property from memory to pass to the calling dialog and to set the return value to.
@@ -67,15 +88,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             }
             set
             {
-                InputBindings["value"] = value;
+                InputBindings[DialogContextState.DIALOG_VALUE] = value;
                 OutputBinding = value;
             }
         }
 
-        public static readonly string OPTIONS_PROPERTY = "dialog._input";
-        public static readonly string INITIAL_VALUE_PROPERTY = "dialog._input.value";
-        public static readonly string TURN_COUNT_PROPERTY = "dialog._input.turnCount";
-        public static readonly string INPUT_PROPERTY = "turn._input";
+        public const string TURN_COUNT_PROPERTY = "dialog.turnCount";
+        public const string INPUT_PROPERTY = "turn.value";
 
         private const string PersistedOptions = "options";
         private const string PersistedState = "state";
@@ -88,7 +107,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             }
 
             var op = OnInitializeOptions(dc, options);
-            dc.State.SetValue(OPTIONS_PROPERTY, op);
+            dc.State.SetValue(DialogContextState.DIALOG_OPTIONS, op);
             dc.State.SetValue(TURN_COUNT_PROPERTY, 0);
             dc.State.SetValue(INPUT_PROPERTY, null);
 
@@ -112,7 +131,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 return Dialog.EndOfTurn;
             }
 
-            var stepCount = dc.State.GetValue<int>("turn.stepCount", 0);
+            var stepCount = dc.State.GetValue<int>(DialogContextState.TURN_STEPCOUNT, 0);
 
             if (stepCount > 0)
             {
@@ -136,9 +155,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             }
             else
             {
-                if (this.DefaultValue != null)
+                if (this.defaultValue != null)
                 {
-                    var (value, error) = this.DefaultValue.TryEvaluate(dc.State);
+                    var (value, error) = this.defaultValue.TryEvaluate(dc.State);
                     return await dc.EndDialogAsync(value);
                 }
             }
@@ -149,11 +168,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             return await this.PromptUser(dc, InputState.Missing);
-        }
-
-        protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            return Dialog.EndOfTurn;
         }
 
         protected abstract Task<InputState> OnRecognizeInput(DialogContext dc, bool consultation);
@@ -286,7 +300,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
             if (this.Value != null)
             {
-                var (temp, error) = this.Value.TryEvaluate(dc.State);
+                var (temp, error) = this.value.TryEvaluate(dc.State);
                 input = temp;
             }
 
@@ -295,7 +309,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 var turnCount = dc.State.GetValue<int>(TURN_COUNT_PROPERTY);
                 if (turnCount == 0)
                 {
-                    input = dc.State.GetValue<object>(INITIAL_VALUE_PROPERTY, null);
+                    input = dc.State.GetValue<object>(DialogContextState.DIALOG_VALUE, null);
                 }
                 else
                 {
@@ -318,7 +332,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 {
                     foreach (var validation in this.Validations)
                     {
-                        var (value, error) = validation.TryEvaluate(dc.State);
+                        var exp = new ExpressionEngine().Parse(validation);
+                        var (value, error) = exp.TryEvaluate(dc.State);
                         if (value == null || (value is bool && (bool)value == false))
                         {
                             return InputState.Invalid;
