@@ -17,8 +17,8 @@ namespace Microsoft.Bot.StreamingExtensions
         /// and assigns an unique guid as its Id.
         /// </summary>
         public HttpContentStream()
+            : this(Guid.NewGuid())
         {
-            Id = Guid.NewGuid();
         }
 
         /// <summary>
