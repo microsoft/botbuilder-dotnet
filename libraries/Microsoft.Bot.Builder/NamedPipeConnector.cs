@@ -40,6 +40,11 @@ namespace Microsoft.Bot.Builder
         /// <param name="onTurnError">Callback to execute when an error occurs while executing the pipeline.</param>
         public void InitializeNamedPipeServer(IBot bot, IList<IMiddleware> middleware = null, Func<ITurnContext, Exception, Task> onTurnError = null)
         {
+            if (bot == null)
+            {
+                throw new ArgumentNullException(nameof(bot));
+            }
+
             middleware = middleware ?? new List<IMiddleware>();
             var handler = new StreamingRequestHandler(onTurnError, bot, middleware);
 
