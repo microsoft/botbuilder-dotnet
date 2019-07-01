@@ -14,10 +14,6 @@
   <ItemGroup>
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" PrivateAssets="all" />
   </ItemGroup>
-  
-    <PropertyGroup>
-    <LangVersion>latest</LangVersion>
-  </PropertyGroup>
 
   <PropertyGroup>
     <Company>Microsoft</Company>

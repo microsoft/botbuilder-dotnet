@@ -15,21 +15,25 @@ namespace Microsoft.Bot.Builder.BotKit
         /// <summary>
         /// Gets or Sets the DialogContext of the BotWorkerConfiguration.
         /// </summary>
+        /// <value>The Dialog Context.</value>
         public DialogContext DialogContext { get; set; }
 
         /// <summary>
         /// Gets or Sets the TurnContext of the BotWorkerConfiguration.
         /// </summary>
+        /// <value>The instance of Turn Context.</value>
         public TurnContext TurnContext { get; set; }
 
         /// <summary>
         /// Gets or Sets the ConversationReference of the BotWorkerConfiguration.
         /// </summary>
+        /// <value>The Conversarion Reference.</value>
         public ConversationReference ConversationReference { get; set; }
 
         /// <summary>
         /// Gets or Sets the Activity of the BotWorkerConfiguration.
         /// </summary>
+        /// <value>The Activity.</value>
         public Activity Activity { get; set; }
     }
 }

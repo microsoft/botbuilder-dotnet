@@ -22,11 +22,13 @@ namespace Microsoft.Bot.Builder.BotKit
         /// <summary>
         /// Gets or Sets the Id.
         /// </summary>
+        /// <value>The id of the channel.</value>
         public string Id { get; set; }
 
         /// <summary>
         /// Gets or Sets the Name.
         /// </summary>
+        /// <value>The name of the channel.</value>
         public string Name { get; set; }
     }
 }
