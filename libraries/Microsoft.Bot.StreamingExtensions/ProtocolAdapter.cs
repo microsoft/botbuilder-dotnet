@@ -36,7 +36,7 @@ namespace Microsoft.Bot.StreamingExtensions
             _payloadReceiver.Subscribe(_assemblerManager.GetPayloadStream, _assemblerManager.OnReceive);
         }
 
-        public async Task<ReceiveResponse> SendRequestAsync(Request request, CancellationToken cancellationToken)
+        public async Task<ReceiveResponse> SendRequestAsync(StreamingRequest request, CancellationToken cancellationToken)
         {
             var requestId = Guid.NewGuid();
 

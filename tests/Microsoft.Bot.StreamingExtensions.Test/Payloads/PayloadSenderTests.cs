@@ -182,7 +182,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.Payloads
             var transport = new MockTransportSender();
             sender.Connect(transport);
 
-            var disassembler = new RequestDisassembler(sender, Guid.NewGuid(), Request.CreateGet("/a/b/c"));
+            var disassembler = new RequestDisassembler(sender, Guid.NewGuid(), StreamingRequest.CreateGet("/a/b/c"));
 
             await disassembler.Disassemble();
 
@@ -196,7 +196,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.Payloads
             var transport = new MockTransportSender();
             sender.Connect(transport);
 
-            var disassembler = new ResponseDisassembler(sender, Guid.NewGuid(), Response.OK());
+            var disassembler = new ResponseDisassembler(sender, Guid.NewGuid(), StreamingResponse.OK());
 
             await disassembler.Disassemble();
 

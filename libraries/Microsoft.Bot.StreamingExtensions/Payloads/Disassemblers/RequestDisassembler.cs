@@ -11,13 +11,13 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
 {
     internal class RequestDisassembler : PayloadDisassembler
     {
-        public RequestDisassembler(IPayloadSender sender, Guid id, Request request)
+        public RequestDisassembler(IPayloadSender sender, Guid id, StreamingRequest request)
             : base(sender, id)
         {
             Request = request;
         }
 
-        public Request Request { get; private set; }
+        public StreamingRequest Request { get; private set; }
 
         public override char Type => PayloadTypes.Request;
 

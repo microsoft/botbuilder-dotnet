@@ -264,7 +264,7 @@ namespace Microsoft.Bot.Builder
                 }
 
                 var streamAttachments = UpdateAttachmentStreams(activity);
-                var request = Request.CreatePost(requestPath);
+                var request = StreamingRequest.CreatePost(requestPath);
                 request.SetBody(activity);
                 if (streamAttachments != null)
                 {
@@ -323,7 +323,7 @@ namespace Microsoft.Bot.Builder
             }
 
             var requestPath = $"/v3/conversations/{activity.Conversation.Id}/activities/{activity.Id}";
-            var request = Request.CreatePut(requestPath);
+            var request = StreamingRequest.CreatePut(requestPath);
             request.SetBody(activity);
 
             return await SendRequestAsync<ResourceResponse>(request, cancellationToken).ConfigureAwait(false);
@@ -353,7 +353,7 @@ namespace Microsoft.Bot.Builder
             }
 
             var requestPath = $"/v3/conversations/{reference.Conversation.Id}/activities/{reference.ActivityId}";
-            var request = Request.CreateDelete(requestPath);
+            var request = StreamingRequest.CreateDelete(requestPath);
 
             await SendRequestAsync<ResourceResponse>(request, cancellationToken).ConfigureAwait(false);
         }
@@ -372,7 +372,7 @@ namespace Microsoft.Bot.Builder
         public async Task<ConversationsResult> GetConversationsAsync(string continuationToken = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             var route = "/v3/conversations/";
-            var request = Request.CreateGet(route);
+            var request = StreamingRequest.CreateGet(route);
 
             return await SendRequestAsync<ConversationsResult>(request, cancellationToken).ConfigureAwait(false);
         }
@@ -392,7 +392,7 @@ namespace Microsoft.Bot.Builder
             }
 
             var route = "/v3/conversations/";
-            var request = Request.CreatePost(route);
+            var request = StreamingRequest.CreatePost(route);
             request.SetBody(parameters);
 
             return await SendRequestAsync<ConversationResourceResponse>(request, cancellationToken).ConfigureAwait(false);
@@ -419,7 +419,7 @@ namespace Microsoft.Bot.Builder
             }
 
             var route = string.Format("/v3/conversations/{0}/activities", conversationId);
-            var request = Request.CreatePost(route);
+            var request = StreamingRequest.CreatePost(route);
             request.SetBody(activity);
 
             return await SendRequestAsync<ResourceResponse>(request, cancellationToken).ConfigureAwait(false);
@@ -446,7 +446,7 @@ namespace Microsoft.Bot.Builder
             }
 
             var route = string.Format("/v3/conversations/{0}/activities/history", conversationId);
-            var request = Request.CreatePost(route);
+            var request = StreamingRequest.CreatePost(route);
             request.SetBody(transcript);
 
             return await SendRequestAsync<ResourceResponse>(request, cancellationToken).ConfigureAwait(false);
@@ -473,7 +473,7 @@ namespace Microsoft.Bot.Builder
             }
 
             var route = string.Format("/v3/conversations/{0}/activities/{1}", activity.Conversation.Id, activity.Id);
-            var request = Request.CreatePut(route);
+            var request = StreamingRequest.CreatePut(route);
             request.SetBody(activity);
 
             return await SendRequestAsync<ResourceResponse>(request, cancellationToken).ConfigureAwait(false);
@@ -494,7 +494,7 @@ namespace Microsoft.Bot.Builder
             }
 
             var route = string.Format("/v3/conversations/{0}/activities/{1}", activity.Conversation.Id, activity.Id);
-            var request = Request.CreatePost(route);
+            var request = StreamingRequest.CreatePost(route);
             request.SetBody(activity);
 
             return await SendRequestAsync<ResourceResponse>(request, cancellationToken).ConfigureAwait(false);
@@ -524,7 +524,7 @@ namespace Microsoft.Bot.Builder
             }
 
             var route = string.Format("/v3/conversations/{0}/activities/{1}", conversationId, activityId);
-            var request = Request.CreateDelete(route);
+            var request = StreamingRequest.CreateDelete(route);
 
             return await SendRequestAsync<HttpOperationResponse>(request, cancellationToken).ConfigureAwait(false);
         }
@@ -544,7 +544,7 @@ namespace Microsoft.Bot.Builder
             }
 
             var route = string.Format("/v3/conversations/{0}/members", conversationId);
-            var request = Request.CreateGet(route);
+            var request = StreamingRequest.CreateGet(route);
 
             return await SendRequestAsync<IList<ChannelAccount>>(request, cancellationToken).ConfigureAwait(false);
         }
@@ -565,7 +565,7 @@ namespace Microsoft.Bot.Builder
             }
 
             var route = string.Format("/v3/conversations/{0}/pagedmembers", conversationId);
-            var request = Request.CreateGet(route);
+            var request = StreamingRequest.CreateGet(route);
 
             return await SendRequestAsync<PagedMembersResult>(request, cancellationToken).ConfigureAwait(false);
         }
@@ -591,7 +591,7 @@ namespace Microsoft.Bot.Builder
             }
 
             var route = string.Format("/v3/conversations/{0}/members/{1}", conversationId, memberId);
-            var request = Request.CreateDelete(route);
+            var request = StreamingRequest.CreateDelete(route);
 
             return await SendRequestAsync<HttpOperationResponse>(request, cancellationToken).ConfigureAwait(false);
         }
@@ -617,12 +617,12 @@ namespace Microsoft.Bot.Builder
             }
 
             var route = string.Format("/v3/conversations/{0}/activities/{1}/members", conversationId, activityId);
-            var request = Request.CreateGet(route);
+            var request = StreamingRequest.CreateGet(route);
 
             return await SendRequestAsync<IList<ChannelAccount>>(request, cancellationToken).ConfigureAwait(false);
         }
 
-        private async Task<T> SendRequestAsync<T>(Request request, CancellationToken cancellation = default(CancellationToken))
+        private async Task<T> SendRequestAsync<T>(StreamingRequest request, CancellationToken cancellation = default(CancellationToken))
         {
             try
             {

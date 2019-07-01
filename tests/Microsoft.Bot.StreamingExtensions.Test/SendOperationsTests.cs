@@ -36,7 +36,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
             {
                 using (var stream = GetMockedStream(TransportConstants.MaxPayloadLength * 4))
                 {
-                    var request = new Request();
+                    var request = new StreamingRequest();
                     request.AddStream(new StreamContent(stream));
                     await sendOperations.SendRequestAsync(Guid.NewGuid(), request);
                 }
@@ -57,7 +57,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
             sender.Connect(transport);
             var ops = new SendOperations(sender);
 
-            var request = Request.CreatePost("/a/b");
+            var request = StreamingRequest.CreatePost("/a/b");
             var stream = new PayloadStream(new ContentStreamAssembler(null, Guid.NewGuid(), "blah", 100));
             stream.Write(new byte[100], 0, 100);
             request.AddStream(new StreamContent(stream));
@@ -75,7 +75,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
             sender.Connect(transport);
             var ops = new SendOperations(sender);
 
-            var request = Request.CreatePost("/a/b");
+            var request = StreamingRequest.CreatePost("/a/b");
             request.AddStream(new StringContent("abc", Encoding.ASCII));
 
             await ops.SendRequestAsync(Guid.NewGuid(), request);

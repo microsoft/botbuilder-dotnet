@@ -112,10 +112,10 @@ namespace Microsoft.Bot.Builder
         /// <param name="context">Optional context to operate within. Unused in bot implementation.</param>
         /// <param name="logger">Optional logger used to log request information and error details.</param>
         /// <returns>A response created by the BotAdapter to be sent to the client that originated the request.</returns>
-        public override async Task<Response> ProcessRequestAsync(ReceiveRequest request, object context = null, ILogger<RequestHandler> logger = null)
+        public override async Task<StreamingResponse> ProcessRequestAsync(ReceiveRequest request, object context = null, ILogger<RequestHandler> logger = null)
         {
             logger = logger ?? NullLogger<RequestHandler>.Instance;
-            var response = new Response();
+            var response = new StreamingResponse();
 
             if (request == null || string.IsNullOrEmpty(request.Verb) || string.IsNullOrEmpty(request.Path))
             {
@@ -125,7 +125,7 @@ namespace Microsoft.Bot.Builder
                 return response;
             }
 
-            if (string.Equals(request.Verb, Request.GET, StringComparison.InvariantCultureIgnoreCase) &&
+            if (string.Equals(request.Verb, StreamingRequest.GET, StringComparison.InvariantCultureIgnoreCase) &&
                          string.Equals(request.Path, "/api/version", StringComparison.InvariantCultureIgnoreCase))
             {
                 response.StatusCode = (int)HttpStatusCode.OK;
@@ -134,7 +134,7 @@ namespace Microsoft.Bot.Builder
                 return response;
             }
 
-            if (string.Equals(request.Verb, Request.POST, StringComparison.InvariantCultureIgnoreCase) &&
+            if (string.Equals(request.Verb, StreamingRequest.POST, StringComparison.InvariantCultureIgnoreCase) &&
                          string.Equals(request.Path, "/api/messages", StringComparison.InvariantCultureIgnoreCase))
             {
                 return await ProcessStreamingRequestAsync(request, response, logger).ConfigureAwait(false);
@@ -171,7 +171,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="response">The response to update and return, ultimately sent to client.</param>
         /// <param name="logger">Optional logger.</param>
         /// <returns>The response ready to send to the client.</returns>
-        private async Task<Response> ProcessStreamingRequestAsync(ReceiveRequest request, Response response, ILogger<RequestHandler> logger)
+        private async Task<StreamingResponse> ProcessStreamingRequestAsync(ReceiveRequest request, StreamingResponse response, ILogger<RequestHandler> logger)
         {
             var body = request.ReadBodyAsString();
             if (string.IsNullOrEmpty(body) || request.Streams?.Count == 0)

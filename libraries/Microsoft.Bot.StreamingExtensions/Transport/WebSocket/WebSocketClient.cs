@@ -121,10 +121,10 @@ namespace Microsoft.Bot.StreamingExtensions.Transport.WebSockets
         /// Throws <see cref="InvalidOperationException"/> if called when the client is disconnected.
         /// Throws <see cref="ArgumentNullException"/> if message is null.
         /// </summary>
-        /// <param name="message">The <see cref="Request"/> to send.</param>
+        /// <param name="message">The <see cref="StreamingRequest"/> to send.</param>
         /// <param name="cancellationToken">An optional <see cref="CancellationToken"/> used to signal this operation should be cancelled.</param>
         /// <returns>A <see cref="Task"/> that will produce an instance of <see cref="ReceiveResponse"/> on completion of the send operation.</returns>
-        public Task<ReceiveResponse> SendAsync(Request message, CancellationToken cancellationToken = default(CancellationToken))
+        public Task<ReceiveResponse> SendAsync(StreamingRequest message, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (message == null)
             {

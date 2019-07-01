@@ -31,7 +31,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
         [TestMethod]
         public void Response_NullProperties()
         {
-            var r = new Response();
+            var r = new StreamingResponse();
             Assert.AreEqual(0, r.StatusCode);
             Assert.IsNull(r.Streams);
         }
@@ -39,7 +39,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
         [TestMethod]
         public void Response_AddStream_Null_Throws()
         {
-            var r = new Response();
+            var r = new StreamingResponse();
 
             Assert.ThrowsException<ArgumentNullException>(() =>
             {
@@ -50,7 +50,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
         [TestMethod]
         public void Response_AddStream_Success()
         {
-            var r = new Response();
+            var r = new StreamingResponse();
             var s = new StringContent("hi");
 
             r.AddStream(s);
@@ -63,7 +63,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
         [TestMethod]
         public void Response_AddStream_ExistingList_Success()
         {
-            var r = new Response();
+            var r = new StreamingResponse();
             var s = new StringContent("hi");
             var s2 = new StringContent("hello");
 
@@ -80,7 +80,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
         [TestMethod]
         public void Response_NotFound_Success()
         {
-            var r = Response.NotFound();
+            var r = StreamingResponse.NotFound();
 
             Assert.AreEqual((int)HttpStatusCode.NotFound, r.StatusCode);
             Assert.IsNull(r.Streams);
@@ -89,7 +89,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
         [TestMethod]
         public void Response_Forbidden_Success()
         {
-            var r = Response.Forbidden();
+            var r = StreamingResponse.Forbidden();
 
             Assert.AreEqual((int)HttpStatusCode.Forbidden, r.StatusCode);
             Assert.IsNull(r.Streams);
@@ -98,7 +98,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
         [TestMethod]
         public void Response_OK_Success()
         {
-            var r = Response.OK();
+            var r = StreamingResponse.OK();
 
             Assert.AreEqual((int)HttpStatusCode.OK, r.StatusCode);
             Assert.IsNull(r.Streams);
@@ -107,7 +107,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
         [TestMethod]
         public void Response_InternalServerError_Success()
         {
-            var r = Response.InternalServerError();
+            var r = StreamingResponse.InternalServerError();
 
             Assert.AreEqual((int)HttpStatusCode.InternalServerError, r.StatusCode);
             Assert.IsNull(r.Streams);
@@ -117,7 +117,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
         public void Response_Create_WithBody_Success()
         {
             var s = new StringContent("hi");
-            var r = Response.CreateResponse(HttpStatusCode.OK, s);
+            var r = StreamingResponse.CreateResponse(HttpStatusCode.OK, s);
 
             Assert.AreEqual((int)HttpStatusCode.OK, r.StatusCode);
             Assert.IsNotNull(r.Streams);
@@ -128,7 +128,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
         [TestMethod]
         public async Task ResponseExtensions_SetBodyString_Success()
         {
-            var r = new Response();
+            var r = new StreamingResponse();
             r.SetBody("123");
 
             Assert.IsNotNull(r.Streams);
@@ -142,7 +142,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
         [TestMethod]
         public void ResponseExtensions_SetBodyString_Null_Does_Not_Throw()
         {
-            var r = new Response();
+            var r = new StreamingResponse();
             Exception ex = null;
 
             try
@@ -162,7 +162,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
         [TestMethod]
         public async Task ResponseExtensions_SetBody_Success()
         {
-            var r = new Response();
+            var r = new StreamingResponse();
             var a = new Activity() { Text = "hi", Type = "message" };
             r.SetBody(a);
 
@@ -178,7 +178,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
         [TestMethod]
         public void ResponseExtensions_SetBody_Null_Does_Not_Throw()
         {
-            var r = new Response();
+            var r = new StreamingResponse();
             Exception ex = null;
 
             try

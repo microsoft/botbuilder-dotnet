@@ -12,14 +12,14 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.Mocks
     {
         public event DisconnectedEventHandler Disconnected;
 
-        public Dictionary<Request, ReceiveResponse> Messages { get; set; } = new Dictionary<Request, ReceiveResponse>();
+        public Dictionary<StreamingRequest, ReceiveResponse> Messages { get; set; } = new Dictionary<StreamingRequest, ReceiveResponse>();
 
         public void Disconnect()
         {
             Disconnected?.Invoke(this, DisconnectedEventArgs.Empty);
         }
 
-        public Task<ReceiveResponse> SendAsync(Request request, CancellationToken cancellationToken = default(CancellationToken))
+        public Task<ReceiveResponse> SendAsync(StreamingRequest request, CancellationToken cancellationToken = default(CancellationToken))
         {
             return Task.FromResult(Messages[request]);
         }

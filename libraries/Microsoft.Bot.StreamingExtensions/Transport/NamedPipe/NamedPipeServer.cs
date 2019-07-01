@@ -92,10 +92,10 @@ namespace Microsoft.Bot.StreamingExtensions.Transport.NamedPipes
         /// Throws <see cref="InvalidOperationException"/> if called when server is not connected.
         /// Throws <see cref="ArgumentNullException"/> if request is null.
         /// </summary>
-        /// <param name="request">The <see cref="Request"/> to send.</param>
+        /// <param name="request">The <see cref="StreamingRequest"/> to send.</param>
         /// <param name="cancellationToken">Optional <see cref="CancellationToken"/> used to signal this operation should be cancelled.</param>
         /// <returns>A <see cref="Task"/> of type <see cref="ReceiveResponse"/> handling the send operation.</returns>
-        public async Task<ReceiveResponse> SendAsync(Request request, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<ReceiveResponse> SendAsync(StreamingRequest request, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (request == null)
             {

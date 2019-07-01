@@ -7,7 +7,7 @@ using System.Net.Http;
 namespace Microsoft.Bot.StreamingExtensions
 {
     /// <summary>
-    /// An attachment contained within a <see cref="Request"/>'s stream collection,
+    /// An attachment contained within a <see cref="StreamingRequest"/>'s stream collection,
     /// which itself contains any form of media item.
     /// </summary>
     public class HttpContentStream

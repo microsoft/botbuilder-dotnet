@@ -32,7 +32,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.Utilities
             var t2 = Task.Run(_client.ConnectAsync);
         }
 
-        public void SendToServer(Request request, Response expectedResponse, Func<Request, Response, ReceiveResponse, Task> validate, Func<ReceiveRequest, Task> validateRequest = null)
+        public void SendToServer(StreamingRequest request, StreamingResponse expectedResponse, Func<StreamingRequest, StreamingResponse, ReceiveResponse, Task> validate, Func<ReceiveRequest, Task> validateRequest = null)
         {
             _responses.Add(GetRequestKey(request), new PendingRequest() { Response = expectedResponse, ValidateRequest = validateRequest });
             _sendToServer.Add(new PendingAction()
@@ -44,7 +44,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.Utilities
             });
         }
 
-        public void SendToClient(Request request, Response expectedResponse, Func<Request, Response, ReceiveResponse, Task> validate, Func<ReceiveRequest, Task> validateRequest = null)
+        public void SendToClient(StreamingRequest request, StreamingResponse expectedResponse, Func<StreamingRequest, StreamingResponse, ReceiveResponse, Task> validate, Func<ReceiveRequest, Task> validateRequest = null)
         {
             _responses.Add(GetRequestKey(request), new PendingRequest() { Response = expectedResponse, ValidateRequest = validateRequest });
 
@@ -112,13 +112,13 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.Utilities
             }
         }
 
-        private async Task<Response> ProcessRequest(ReceiveRequest request)
+        private async Task<StreamingResponse> ProcessRequest(ReceiveRequest request)
         {
-            Response response = null;
+            StreamingResponse response = null;
 
             if (!_responses.TryGetValue(GetRequestKey(request), out PendingRequest pendingRequest))
             {
-                response = new Response()
+                response = new StreamingResponse()
                 {
                     StatusCode = 500,
                 };
@@ -135,7 +135,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.Utilities
             return response;
         }
 
-        private string GetRequestKey(Request request)
+        private string GetRequestKey(StreamingRequest request)
         {
             return $"{request.Verb}: {request.Path}";
         }
@@ -147,31 +147,31 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.Utilities
 
         private class PendingRequest
         {
-            private Response response;
+            private StreamingResponse response;
             private Func<ReceiveRequest, Task> validateRequest;
 
-            public Response Response { get => response; set => response = value; }
+            public StreamingResponse Response { get => response; set => response = value; }
 
             public Func<ReceiveRequest, Task> ValidateRequest { get => validateRequest; set => validateRequest = value; }
         }
 
         private class PendingAction
         {
-            private Request request;
-            private Response expectedResponse;
-            private Func<Request, Response, ReceiveResponse, Task> validate;
+            private StreamingRequest request;
+            private StreamingResponse expectedResponse;
+            private Func<StreamingRequest, StreamingResponse, ReceiveResponse, Task> validate;
             private bool toClient;
             private TaskCompletionSource<string> done = new TaskCompletionSource<string>();
 
             public bool ToClient { get => toClient; set => toClient = value; }
 
-            public Func<Request, Response, ReceiveResponse, Task> Validate { get => validate; set => validate = value; }
+            public Func<StreamingRequest, StreamingResponse, ReceiveResponse, Task> Validate { get => validate; set => validate = value; }
 
             public TaskCompletionSource<string> Done { get => done; set => done = value; }
 
-            public Response ExpectedResponse { get => expectedResponse; set => expectedResponse = value; }
+            public StreamingResponse ExpectedResponse { get => expectedResponse; set => expectedResponse = value; }
 
-            public Request Request { get => request; set => request = value; }
+            public StreamingRequest Request { get => request; set => request = value; }
         }
     }
 }

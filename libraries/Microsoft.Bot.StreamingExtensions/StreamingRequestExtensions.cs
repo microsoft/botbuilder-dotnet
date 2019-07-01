@@ -8,17 +8,17 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.StreamingExtensions
 {
     /// <summary>
-    /// Helper methods for use with instances of the <see cref="Request"/> class.
+    /// Helper methods for use with instances of the <see cref="StreamingRequest"/> class.
     /// </summary>
-    public static class RequestExtensions
+    public static class StreamingRequestExtensions
     {
         /// <summary>
-        /// Adds a new stream to this <see cref="Request"/> containing the passed in body.
+        /// Adds a new stream to this <see cref="StreamingRequest"/> containing the passed in body.
         /// Noop on null body or null request.
         /// </summary>
-        /// <param name="request">The <see cref="Request"/> instance to attach this body to.</param>
+        /// <param name="request">The <see cref="StreamingRequest"/> instance to attach this body to.</param>
         /// <param name="body">A string containing the data to insert into the stream.</param>
-        public static void SetBody(this Request request, string body)
+        public static void SetBody(this StreamingRequest request, string body)
         {
             if (request == null || string.IsNullOrWhiteSpace(body))
             {
@@ -29,12 +29,12 @@ namespace Microsoft.Bot.StreamingExtensions
         }
 
         /// <summary>
-        /// Adds a new stream to this <see cref="Request"/> containing the passed in body.
+        /// Adds a new stream to this <see cref="StreamingRequest"/> containing the passed in body.
         /// Noop on null body or null request.
         /// </summary>
-        /// <param name="request">The <see cref="Request"/> instance to attach this body to.</param>
+        /// <param name="request">The <see cref="StreamingRequest"/> instance to attach this body to.</param>
         /// <param name="body">An object containing the data to insert into the stream.</param>
-        public static void SetBody(this Request request, object body)
+        public static void SetBody(this StreamingRequest request, object body)
         {
             if (request == null || body == null)
             {

@@ -8,17 +8,17 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.StreamingExtensions
 {
     /// <summary>
-    /// Extends the <see cref="Response"/> class with additional methods.
+    /// Extends the <see cref="StreamingResponse"/> class with additional methods.
     /// </summary>
-    public static class ResponseExtensions
+    public static class StreamingResponseExtensions
     {
         /// <summary>
-        /// Adds a new stream to this <see cref="Response"/> containing the passed in body.
+        /// Adds a new stream to this <see cref="StreamingResponse"/> containing the passed in body.
         /// Noop on empty body or null response.
         /// </summary>
-        /// <param name="response">The <see cref="Response"/> instance to attach this body to.</param>
+        /// <param name="response">The <see cref="StreamingResponse"/> instance to attach this body to.</param>
         /// <param name="body">A string containing the data to insert into the stream.</param>
-        public static void SetBody(this Response response, string body)
+        public static void SetBody(this StreamingResponse response, string body)
         {
             if (response == null || string.IsNullOrWhiteSpace(body))
             {
@@ -29,12 +29,12 @@ namespace Microsoft.Bot.StreamingExtensions
         }
 
         /// <summary>
-        /// Adds a new stream to this <see cref="Response"/> containing the passed in body.
+        /// Adds a new stream to this <see cref="StreamingResponse"/> containing the passed in body.
         /// Noop on null body or null response.
         /// </summary>
-        /// <param name="response">The <see cref="Response"/> instance to attach this body to.</param>
+        /// <param name="response">The <see cref="StreamingResponse"/> instance to attach this body to.</param>
         /// <param name="body">An object containing the data to insert into the stream.</param>
-        public static void SetBody(this Response response, object body)
+        public static void SetBody(this StreamingResponse response, object body)
         {
             if (response == null || body == null)
             {

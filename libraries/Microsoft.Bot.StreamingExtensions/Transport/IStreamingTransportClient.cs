@@ -42,10 +42,10 @@ namespace Microsoft.Bot.StreamingExtensions.Transport
         /// <summary>
         /// Task used to send data over this client connection.
         /// </summary>
-        /// <param name="message">The <see cref="Request"/> to send.</param>
+        /// <param name="message">The <see cref="StreamingRequest"/> to send.</param>
         /// <param name="cancellationToken">An optional <see cref="CancellationToken"/> used to signal this operation should be cancelled.</param>
         /// <returns>A <see cref="Task"/> of type <see cref="ReceiveResponse"/> handling the send operation.</returns>
-        Task<ReceiveResponse> SendAsync(Request message, CancellationToken cancellationToken = default(CancellationToken));
+        Task<ReceiveResponse> SendAsync(StreamingRequest message, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// Method used to disconnect this client.

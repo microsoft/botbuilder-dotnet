@@ -31,7 +31,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
         [TestMethod]
         public void Request_NullProperties()
         {
-            var r = new Request();
+            var r = new StreamingRequest();
             Assert.IsNull(r.Verb);
             Assert.IsNull(r.Path);
         }
@@ -39,7 +39,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
         [TestMethod]
         public void Request_AddStream_Null_Throws()
         {
-            var r = new Request();
+            var r = new StreamingRequest();
 
             Assert.ThrowsException<ArgumentNullException>(() =>
             {
@@ -50,7 +50,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
         [TestMethod]
         public void Request_AddStream_Success()
         {
-            var r = new Request();
+            var r = new StreamingRequest();
             var s = new StringContent("hi");
 
             r.AddStream(s);
@@ -63,7 +63,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
         [TestMethod]
         public void Request_AddStream_ExistingList_Success()
         {
-            var r = new Request();
+            var r = new StreamingRequest();
             var s = new StringContent("hi");
             var s2 = new StringContent("hello");
 
@@ -80,9 +80,9 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
         [TestMethod]
         public void Request_Create_Get_Success()
         {
-            var r = Request.CreateGet();
+            var r = StreamingRequest.CreateGet();
 
-            Assert.AreEqual(Request.GET, r.Verb);
+            Assert.AreEqual(StreamingRequest.GET, r.Verb);
             Assert.IsNull(r.Path);
             Assert.IsNull(r.Streams);
         }
@@ -90,9 +90,9 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
         [TestMethod]
         public void Request_Create_Post_Success()
         {
-            var r = Request.CreatePost();
+            var r = StreamingRequest.CreatePost();
 
-            Assert.AreEqual(Request.POST, r.Verb);
+            Assert.AreEqual(StreamingRequest.POST, r.Verb);
             Assert.IsNull(r.Path);
             Assert.IsNull(r.Streams);
         }
@@ -100,9 +100,9 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
         [TestMethod]
         public void Request_Create_Delete_Success()
         {
-            var r = Request.CreateDelete();
+            var r = StreamingRequest.CreateDelete();
 
-            Assert.AreEqual(Request.DELETE, r.Verb);
+            Assert.AreEqual(StreamingRequest.DELETE, r.Verb);
             Assert.IsNull(r.Path);
             Assert.IsNull(r.Streams);
         }
@@ -110,9 +110,9 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
         [TestMethod]
         public void Request_Create_Put_Success()
         {
-            var r = Request.CreatePut();
+            var r = StreamingRequest.CreatePut();
 
-            Assert.AreEqual(Request.PUT, r.Verb);
+            Assert.AreEqual(StreamingRequest.PUT, r.Verb);
             Assert.IsNull(r.Path);
             Assert.IsNull(r.Streams);
         }
@@ -121,9 +121,9 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
         public void Request_Create_WithBody_Success()
         {
             var s = new StringContent("hi");
-            var r = Request.CreateRequest(Request.POST, "123", s);
+            var r = StreamingRequest.CreateRequest(StreamingRequest.POST, "123", s);
 
-            Assert.AreEqual(Request.POST, r.Verb);
+            Assert.AreEqual(StreamingRequest.POST, r.Verb);
             Assert.AreEqual("123", r.Path);
             Assert.IsNotNull(r.Streams);
             Assert.AreEqual(1, r.Streams.Count);
@@ -133,7 +133,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
         [TestMethod]
         public async Task RequestExtensions_SetBodyString_Success()
         {
-            var r = new Request();
+            var r = new StreamingRequest();
             r.SetBody("123");
 
             Assert.IsNotNull(r.Streams);
@@ -149,7 +149,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
         {
             Exception ex = null;
 
-            var r = new Request();
+            var r = new StreamingRequest();
             try
             {
                 r.SetBody((string)null);
@@ -167,7 +167,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
         [TestMethod]
         public async Task RequestExtensions_SetBody_Success()
         {
-            var r = new Request();
+            var r = new StreamingRequest();
             var a = new Activity() { Text = "hi", Type = "message" };
             r.SetBody(a);
 
@@ -183,7 +183,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
         [TestMethod]
         public void RequestExtensions_SetBody_Null_Does_Not_Throw()
         {
-            var r = new Request();
+            var r = new StreamingRequest();
             Exception ex = null;
 
             try

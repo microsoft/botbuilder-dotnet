@@ -17,7 +17,7 @@ namespace Microsoft.Bot.StreamingExtensions
         /// <param name="request">A <see cref="ReceiveRequest"/> for this handler to process.</param>
         /// <param name="context">Optional context to process the request within.</param>
         /// <param name="logger">Optional logger.</param>
-        /// <returns>A <see cref="Task"/> that will produce a <see cref="Response"/> on successful completion.</returns>
-        public abstract Task<Response> ProcessRequestAsync(ReceiveRequest request, object context = null, ILogger<RequestHandler> logger = null);
+        /// <returns>A <see cref="Task"/> that will produce a <see cref="StreamingResponse"/> on successful completion.</returns>
+        public abstract Task<StreamingResponse> ProcessRequestAsync(ReceiveRequest request, object context = null, ILogger<RequestHandler> logger = null);
     }
 }

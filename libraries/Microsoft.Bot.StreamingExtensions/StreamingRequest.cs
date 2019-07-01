@@ -12,7 +12,7 @@ namespace Microsoft.Bot.StreamingExtensions
     /// The basic request type sent over Bot Framework Protocol 3 with Streaming Extensions transports,
     /// equivalent to HTTP request messages.
     /// </summary>
-    public partial class Request
+    public class StreamingRequest
     {
         /// <summary>
         /// Verb used by requests to get resources hosted on a remote server.
@@ -35,64 +35,76 @@ namespace Microsoft.Bot.StreamingExtensions
         public const string DELETE = "DELETE";
 
         /// <summary>
-        /// Creates a <see cref="Request"/> to get resources hosted on a remote server.
+        /// Gets or sets the verb action this request will perform.
+        /// </summary>
+        /// <value>
+        /// The string representation of an HTTP verb.
+        /// </value>
+        public string Verb { get; set; }
+
+        /// <summary>
+        /// Gets or sets the path this request will route to on the remote server.
+        /// </summary>
+        /// <value>
+        /// The string representation of the URL style path to request at the remote server.
+        /// </value>
+        public string Path { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of stream attachments included in this request.
+        /// </summary>
+        /// <value>
+        /// A <see cref="List{T}"/> of <see cref="HttpContentStream"/> items associated with this request.
+        /// </value>
+        public List<HttpContentStream> Streams { get; set; }
+
+        /// <summary>
+        /// Creates a <see cref="StreamingRequest"/> to get resources hosted on a remote server.
         /// </summary>
         /// <param name="path">Optional path where the resource can be found on the remote server.</param>
         /// <param name="body">Optional body to send to the remote server.</param>
-        /// <returns>A <see cref="Request"/> with appropriate status code and body.</returns>
-        public static Request CreateGet(string path = null, HttpContent body = null)
-        {
-            return CreateRequest(GET, path, body);
-        }
+        /// <returns>A <see cref="StreamingRequest"/> with appropriate status code and body.</returns>
+        public static StreamingRequest CreateGet(string path = null, HttpContent body = null) => CreateRequest(GET, path, body);
 
         /// <summary>
-        /// Creates a <see cref="Request"/> to post data to a remote server.
+        /// Creates a <see cref="StreamingRequest"/> to post data to a remote server.
         /// </summary>
         /// <param name="path">Optional path where the resource can be found on the remote server.</param>
         /// <param name="body">Optional body to send to the remote server.</param>
-        /// <returns>A <see cref="Request"/> with appropriate status code and body.</returns>
-        public static Request CreatePost(string path = null, HttpContent body = null)
-        {
-            return CreateRequest(POST, path, body);
-        }
+        /// <returns>A <see cref="StreamingRequest"/> with appropriate status code and body.</returns>
+        public static StreamingRequest CreatePost(string path = null, HttpContent body = null) => CreateRequest(POST, path, body);
 
         /// <summary>
-        /// Creates a <see cref="Request"/> to put updated data on a remote server.
+        /// Creates a <see cref="StreamingRequest"/> to put updated data on a remote server.
         /// </summary>
         /// <param name="path">Optional path where the resource can be found on the remote server.</param>
         /// <param name="body">Optional body to send to the remote server.</param>
-        /// <returns>A <see cref="Request"/> with appropriate status code and body.</returns>
-        public static Request CreatePut(string path = null, HttpContent body = null)
-        {
-            return CreateRequest(PUT, path, body);
-        }
+        /// <returns>A <see cref="StreamingRequest"/> with appropriate status code and body.</returns>
+        public static StreamingRequest CreatePut(string path = null, HttpContent body = null) => CreateRequest(PUT, path, body);
 
         /// <summary>
-        /// Creates a <see cref="Request"/> to delete data hosted on a remote server.
+        /// Creates a <see cref="StreamingRequest"/> to delete data hosted on a remote server.
         /// </summary>
         /// <param name="path">Optional path where the resource can be found on the remote server.</param>
         /// <param name="body">Optional body to send to the remote server.</param>
-        /// <returns>A <see cref="Request"/> with appropriate status code and body.</returns>
-        public static Request CreateDelete(string path = null, HttpContent body = null)
-        {
-            return CreateRequest(DELETE, path, body);
-        }
+        /// <returns>A <see cref="StreamingRequest"/> with appropriate status code and body.</returns>
+        public static StreamingRequest CreateDelete(string path = null, HttpContent body = null) => CreateRequest(DELETE, path, body);
 
         /// <summary>
-        /// Creates a <see cref="Request"/> with the passed in method, path, and body.
+        /// Creates a <see cref="StreamingRequest"/> with the passed in method, path, and body.
         /// </summary>
         /// <param name="method">The HTTP verb to use for this request.</param>
         /// <param name="path">Optional path where the resource can be found on the remote server.</param>
         /// <param name="body">Optional body to send to the remote server.</param>
-        /// <returns>On success returns a <see cref="Request"/> with appropriate status code and body, otherwise returns null.</returns>
-        public static Request CreateRequest(string method, string path = null, HttpContent body = null)
+        /// <returns>On success returns a <see cref="StreamingRequest"/> with appropriate status code and body, otherwise returns null.</returns>
+        public static StreamingRequest CreateRequest(string method, string path = null, HttpContent body = null)
         {
             if (string.IsNullOrWhiteSpace(method))
             {
                 return null;
             }
 
-            var request = new Request()
+            var request = new StreamingRequest()
             {
                 Verb = method,
                 Path = path,
@@ -107,13 +119,13 @@ namespace Microsoft.Bot.StreamingExtensions
         }
 
         /// <summary>
-        /// Adds a new stream attachment to this <see cref="Request"/>.
+        /// Adds a new stream attachment to this <see cref="StreamingRequest"/>.
         /// </summary>
         /// <param name="content">The <see cref="HttpContent"/> to include in the new stream attachment.</param>
         public void AddStream(HttpContent content) => AddStream(content, Guid.NewGuid());
 
         /// <summary>
-        /// Adds a new stream attachment to this <see cref="Request"/>.
+        /// Adds a new stream attachment to this <see cref="StreamingRequest"/>.
         /// </summary>
         /// <param name="content">The <see cref="HttpContent"/> to include in the new stream attachment.</param>
         /// <param name="streamId">The id to assign to this stream attachment.</param>

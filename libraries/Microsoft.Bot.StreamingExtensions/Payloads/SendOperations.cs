@@ -18,7 +18,7 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
             _payloadSender = payloadSender;
         }
 
-        public async Task SendRequestAsync(Guid id, Request request)
+        public async Task SendRequestAsync(Guid id, StreamingRequest request)
         {
             var disassembler = new RequestDisassembler(_payloadSender, id, request);
 
@@ -38,7 +38,7 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
             }
         }
 
-        public async Task SendResponseAsync(Guid id, Response response)
+        public async Task SendResponseAsync(Guid id, StreamingResponse response)
         {
             var disassembler = new ResponseDisassembler(_payloadSender, id, response);
 
