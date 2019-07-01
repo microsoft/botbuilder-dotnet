@@ -57,7 +57,7 @@ namespace Microsoft.Bot.StreamingExtensions
                 return contentStream.GetStream().ReadAsUtf8String();
             }
 
-            return null;
+            return string.Empty;
         }
 
         /// <summary>
@@ -77,7 +77,7 @@ namespace Microsoft.Bot.StreamingExtensions
                 return await contentStream.GetStream().ReadAsUtf8StringAsync().ConfigureAwait(false);
             }
 
-            return null;
+            return string.Empty;
         }
     }
 }
