@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Microsoft.Bot.Builder.Expressions;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
 {
@@ -56,7 +57,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
                 {
                     if (!patterns.TryGetValue(intent, out regex))
                     {
-                        regex = new Regex(kv.Value, RegexOptions.Compiled);
+                        regex = CommonRegex.CreateRegex(kv.Value);
                         patterns.Add(intent, regex);
                     }
                 }

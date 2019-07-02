@@ -26,7 +26,7 @@ namespace Microsoft.Bot.Builder.Expressions
                     throw new ArgumentException("A regular expression parsing error occurred.");
                 }
 
-                result = new Regex(pattern);
+                result = new Regex(pattern, RegexOptions.Compiled);
                 regexCache.Set(pattern, result);
             }
 
