@@ -302,7 +302,7 @@ namespace Microsoft.Bot.Builder.Expressions
         public static string VerifyList(object value, Expression expression, int _)
         {
             string error = null;
-            if (!TryParseList(value, out var list))
+            if (!TryParseList(value, out var _))
             {
                 error = $"{expression} must be a list.";
             }
@@ -491,11 +491,8 @@ namespace Microsoft.Bot.Builder.Expressions
 
         private static (object value, string error) Callstack(Expression expression, object state)
         {
-            var result = state;
-            string error = null;
-
             // get collection
-            (result, error) = AccessProperty(state, "callstack");
+            var (result, error) = AccessProperty(state, "callstack");
             if (result != null)
             {
                 var items = (IEnumerable<object>)result;
@@ -832,6 +829,37 @@ namespace Microsoft.Bot.Builder.Expressions
             return (value, error);
         }
 
+        private static object SetProperty(object instance, string property, object value)
+        {
+            object result = value;
+            property = property.ToLower();
+
+            if (instance is IDictionary<string, object> idict)
+            {
+                idict[property] = value;
+            }
+            else if (instance is IDictionary dict)
+            {
+                dict[property] = value;
+            }
+            else if (instance is JObject jobj)
+            {
+                result = JToken.FromObject(value);
+                jobj[property] = (JToken)result;
+            }
+            else
+            {
+                // Use reflection
+                var type = instance.GetType();
+                var prop = type.GetProperties().Where(p => p.Name.ToLower() == property).SingleOrDefault();
+                if (prop != null)
+                {
+                    prop.SetValue(instance, value);
+                }
+            }
+            return result;
+        }
+
         /// <summary>
         /// Lookup an index property of instance.
         /// </summary>
@@ -904,6 +932,161 @@ namespace Microsoft.Bot.Builder.Expressions
                     {
                         error = $"Could not coerce {index}<{idxValue.GetType()}> to an int or string";
                     }
+                }
+            }
+            return (value, error);
+        }
+
+        private static bool CanBeModified(object value, string property, int? expected)
+        {
+            var modifiable = false;
+            if (expected.HasValue)
+            {
+                // Modifiable list
+                modifiable = TryParseList(value, out var _);
+            }
+            else
+            {
+                // Modifiable object
+                modifiable = value is IDictionary<string, object>
+                    || value is IDictionary
+                    || value is JObject;
+                if (!modifiable)
+                {
+                    var type = value.GetType();
+                    var prop = type.GetProperties().Where(p => p.Name.ToLower() == property).SingleOrDefault();
+                    modifiable = prop != null;
+                }
+            }
+            return modifiable;
+        }
+
+        // Expected is null if expecting an object or the desired offset in a list.
+        // Value is null except at the root
+        private static (object, string) SetPathToValue(Expression path, int? expected, object value, object state)
+        {
+            object result = null;
+            string error;
+            object instance;
+            object index;
+            var children = path.Children;
+            if (path.Type == ExpressionType.Accessor || path.Type == ExpressionType.Element)
+            {
+                (index, error) = children[path.Type == ExpressionType.Accessor ? 0 : 1].TryEvaluate(state);
+                if (error == null)
+                {
+                    var iindex = index as int?;
+                    if (children.Count() == 2)
+                    {
+                        (instance, error) = SetPathToValue(children[path.Type == ExpressionType.Accessor ? 1 : 0], iindex, null, state);
+                    }
+                    else
+                    {
+                        instance = state;
+                    }
+                    if (error == null)
+                    {
+                        if (index is string propName)
+                        {
+                            if (value != null)
+                            {
+                                result = SetProperty(instance, propName, value);
+                            }
+                            else
+                            {
+                                (result, error) = AccessProperty(instance, propName);
+                                if (error != null || result == null || !CanBeModified(result, propName, expected))
+                                {
+                                    // Create new value for parents to use
+                                    if (expected.HasValue)
+                                    {
+                                        result = SetProperty(instance, propName, new List<object>(expected.Value + 1));
+                                    }
+                                    else
+                                    {
+                                        result = SetProperty(instance, propName, new Dictionary<string, object>());
+                                    }
+                                }
+                            }
+                        }
+                        else if (iindex.HasValue)
+                        {
+                            // Child instance should be a list already because we passed down the iindex.
+                            if (TryParseList(instance, out IList list))
+                            {
+                                if (list.Count <= iindex.Value)
+                                {
+                                    // Extend list.
+                                    while (list.Count <= iindex.Value)
+                                    {
+                                        list.Add(null);
+                                    }
+                                }
+
+                                // Assign value or expected list size or object
+                                if (list is JArray arr)
+                                {
+                                    result = value != null ? JToken.FromObject(value)
+                                        : (expected.HasValue ? (object)new JArray() : new JObject());
+                                    arr[iindex.Value] = (JToken)result;
+                                }
+                                else
+                                {
+                                    result = value ?? (expected.HasValue ? (object)new List<object>(expected.Value + 1) : (object)new Dictionary<string, object>());
+                                    list[iindex.Value] = result;
+                                }
+                            }
+                            else
+                            {
+                                error = $"{children[0]} is not a list.";
+                            }
+                        }
+                        else
+                        {
+                            error = $"{children[0]} is not a valid path";
+                        }
+                    }
+                }
+            }
+            else
+            {
+                // Turn shortcuts into accessors
+                if (path.Type != ExpressionType.SimpleEntity && PrefixsOfShorthand.TryGetValue(path.Type, out string fullPath))
+                {
+                    Expression expr = null;
+                    foreach (var elt in fullPath.Split('.'))
+                    {
+                        if (!string.IsNullOrEmpty(elt))
+                        {
+                            expr = Expression.Accessor(elt, expr);
+                        }
+                    }
+
+                    // TODO: There is no reason you could not do computed functions off shortcuts
+                    var child = path.Children[0] as Constant;
+                    expr = Expression.Accessor((string)child.Value, expr);
+                    (result, error) = SetPathToValue(expr, expected, value, state);
+                }
+                else
+                {
+                    error = $"{path} is not a path that can be set to a value.";
+                }
+            }
+
+            return (result, error);
+        }
+
+        private static (object value, string error) SetPathToValue(Expression expr, object state)
+        {
+            var path = expr.Children[0];
+            var valueExpr = expr.Children[1];
+            var (value, error) = valueExpr.TryEvaluate(state);
+            if (error == null)
+            {
+                (_, error) = SetPathToValue(path, null, value, state);
+                if (error != null)
+                {
+                    value = null;
                 }
             }
             return (value, error);
@@ -1234,10 +1417,8 @@ namespace Microsoft.Bot.Builder.Expressions
             return (result, error);
         }
 
-        private static void ValidateWhere(Expression expression)
-        {
-            ValidateForeach(expression);
-        }
+        private static void ValidateWhere(Expression expression) => ValidateForeach(expression);
+
         private static void ValidateForeach(Expression expression)
         {
             if (expression.Children.Count() != 3)
@@ -1374,7 +1555,7 @@ namespace Microsoft.Bot.Builder.Expressions
         private static (object, string) ConvertTimeZoneFormat(string timezone)
         {
             object convertedTimeZone = null;
-            string convertedTimeZoneStr = null;
+            string convertedTimeZoneStr;
             string error = null;
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
@@ -1445,7 +1626,6 @@ namespace Microsoft.Bot.Builder.Expressions
             string error = null;
             string result = null;
             var srcDt = DateTime.UtcNow;
-            object convertedTimeZone = null;
             try
             {
                 srcDt = DateTime.Parse(sourceTimestamp);
@@ -1457,6 +1637,7 @@ namespace Microsoft.Bot.Builder.Expressions
 
             if (error == null)
             {
+                object convertedTimeZone;
                 (convertedTimeZone, error) = ConvertTimeZoneFormat(sourceTimezone);
                 if (error == null)
                 {
@@ -1579,16 +1760,13 @@ namespace Microsoft.Bot.Builder.Expressions
 
         private static (object, string) UriHost(string uri)
         {
-            object result = null;
-            string error = null;
-            object parsed = null;
-            (parsed, error) = ParseUri(uri);
+            var (result, error) = ParseUri(uri);
 
             if (error == null)
             {
                 try
                 {
-                    var uriBase = (Uri)parsed;
+                    var uriBase = (Uri)result;
                     var host = uriBase.Host;
                     result = host.ToString();
                 }
@@ -1603,16 +1781,13 @@ namespace Microsoft.Bot.Builder.Expressions
 
         private static (object, string) UriPath(string uri)
         {
-            object result = null;
-            string error = null;
-            object parsed = null;
-            (parsed, error) = ParseUri(uri);
+            var (result, error) = ParseUri(uri);
 
             if (error == null)
             {
                 try
                 {
-                    var uriBase = (Uri)parsed;
+                    var uriBase = (Uri)result;
                     result = uriBase.AbsolutePath.ToString();
                 }
                 catch
@@ -1656,15 +1831,12 @@ namespace Microsoft.Bot.Builder.Expressions
 
         private static (object, string) UriPort(string uri)
         {
-            object result = null;
-            string error = null;
-            object parsed = null;
-            (parsed, error) = ParseUri(uri);
+            var (result, error) = ParseUri(uri);
             if (error == null)
             {
                 try
                 {
-                    var uriBase = (Uri)parsed;
+                    var uriBase = (Uri)result;
                     var port = uriBase.Port;
                     result = (int)port;
                 }
@@ -1679,15 +1851,12 @@ namespace Microsoft.Bot.Builder.Expressions
 
         private static (object, string) UriQuery(string uri)
         {
-            object result = null;
-            string error = null;
-            object parsed = null;
-            (parsed, error) = ParseUri(uri);
+            var (result, error) = ParseUri(uri);
             if (error == null)
             {
                 try
                 {
-                    var uriBase = (Uri)parsed;
+                    var uriBase = (Uri)result;
                     var query = uriBase.Query;
                     result = query.ToString();
                 }
@@ -1702,16 +1871,13 @@ namespace Microsoft.Bot.Builder.Expressions
 
         private static (object, string) UriScheme(string uri)
         {
-            object result = null;
-            string error = null;
-            object parsed = null;
-            (parsed, error) = ParseUri(uri);
+            var (result, error) = ParseUri(uri);
 
             if (error == null)
             {
                 try
                 {
-                    var uriBase = (Uri)parsed;
+                    var uriBase = (Uri)result;
                     var scheme = uriBase.Scheme;
                     result = scheme.ToString();
                 }
@@ -1808,7 +1974,7 @@ namespace Microsoft.Bot.Builder.Expressions
                             var nodeType = (System.Xml.XmlNodeType)iterNodes.Current.NodeType;
                             var name = iterNodes.Current.Name;
                             var nameSpaceURI = iterNodes.Current.NamespaceURI.ToString();
-                            XmlNode node = doc.CreateNode(nodeType, name, nameSpaceURI);
+                            var node = doc.CreateNode(nodeType, name, nameSpaceURI);
                             node.InnerText = iterNodes.Current.Value;
                             nodeList.Add(node.OuterXml.ToString());
                         }
@@ -1855,7 +2021,7 @@ namespace Microsoft.Bot.Builder.Expressions
         private static (object, string) ToXml(object contentToConvert)
         {
             string error = null;
-            XDocument xml = null;
+            XDocument xml;
             string result = null;
             try
             {
@@ -2399,11 +2565,10 @@ namespace Microsoft.Bot.Builder.Expressions
                         {
                             object result = null;
                             string error = null;
-                            double unixTimestamp;
                             dynamic timestamp = args[0];
                             if (Extensions.IsNumber(timestamp))
                             {
-                                if (double.TryParse(args[0].ToString(), out unixTimestamp))
+                                if (double.TryParse(args[0].ToString(), out double unixTimestamp))
                                 {
                                     var dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
                                     timestamp = dateTime.AddSeconds(unixTimestamp);
@@ -2978,11 +3143,20 @@ namespace Microsoft.Bot.Builder.Expressions
                 new ExpressionEvaluator(ExpressionType.Json, Apply(args => JToken.Parse(args[0])), ReturnType.String, (expr) => ValidateOrder(expr, null, ReturnType.String)),
                 new ExpressionEvaluator(
                     ExpressionType.AddProperty,
-                    Apply(args =>
+                    ApplyWithError(args =>
                         {
-                            var newJobj = (JObject)args[0];
-                            newJobj[args[1].ToString()] = args[2];
-                            return newJobj;
+                            var newJobj = (IDictionary<string, JToken>)args[0];
+                            var prop = args[1].ToString();
+                            string error = null;
+                            if (newJobj.ContainsKey(prop))
+                            {
+                                error = $"{prop} already exists";
+                            }
+                            else
+                            {
+                                newJobj[prop] = args[2];
+                            }
+                            return (newJobj, error);
                         }),
                     ReturnType.Object,
                     (expr) => ValidateOrder(expr, null, ReturnType.Object, ReturnType.String, ReturnType.Object)),
@@ -3006,6 +3180,11 @@ namespace Microsoft.Bot.Builder.Expressions
                         }),
                     ReturnType.Object,
                     (expr) => ValidateOrder(expr, null, ReturnType.Object, ReturnType.String)),
+                new ExpressionEvaluator(
+                    ExpressionType.SetPathToValue,
+                    SetPathToValue,
+                    ReturnType.Object,
+                    ValidateBinary),
                 new ExpressionEvaluator(ExpressionType.Select, Foreach, ReturnType.Object, ValidateForeach),
                 new ExpressionEvaluator(ExpressionType.Foreach, Foreach, ReturnType.Object, ValidateForeach),
                 new ExpressionEvaluator(ExpressionType.Where, Where, ReturnType.Object, ValidateWhere),
@@ -3048,11 +3227,10 @@ namespace Microsoft.Bot.Builder.Expressions
                         ExpressionType.SimpleEntity,
                         entity =>
                             {
-                                IList list;
                                 var result = entity;
 
                                 // fix issue: https://github.com/microsoft/botbuilder-dotnet/issues/1969
-                                while (TryParseList(result, out list) && list.Count == 1)
+                                while (TryParseList(result, out IList list) && list.Count == 1)
                                 {
                                     result = list[0];
                                 }
