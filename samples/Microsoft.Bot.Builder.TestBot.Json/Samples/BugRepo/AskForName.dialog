@@ -2,9 +2,9 @@
     "$schema": "../../app.schema",
     "$type": "Microsoft.AdaptiveDialog",
     "inputBindings": {
-        "name": "dialog.name"
+        "$name": "dialog.name"
     },
-    "resultProperty": "dialog.name",
+    "defaultResultProperty": "$name",
     "steps": [
         {
             "$type": "Microsoft.TextInput",
