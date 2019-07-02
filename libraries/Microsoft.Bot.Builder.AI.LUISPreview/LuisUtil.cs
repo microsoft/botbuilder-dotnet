@@ -29,14 +29,69 @@ namespace Microsoft.Bot.Builder.AI.LuisPreview
             return intents;
         }
 
-        internal static JObject ExtractEntitiesAndMetadata(Prediction prediction)
+        internal static JToken MapProperties(JToken source, Dictionary<string, string> mappings)
         {
-            // DateTimeV2 -> DateTime
-            // DateTime -> DateTimeV1
-            // 
-            return (JObject)prediction.Entities;
+            JToken result = source;
+            if (source is JObject obj)
+            {
+                var nobj = new JObject();
+                foreach (var property in obj.Properties())
+                {
+                    if (mappings.TryGetValue(property.Name, out string to))
+                    {
+                        if (to != null)
+                        {
+                            nobj.Add(to, MapProperties(property.Value, mappings));
+                        }
+                    }
+                    else
+                    {
+                        nobj.Add(property.Name, property.Value);
+                    }
+                }
+
+                result = nobj;
+            }
+            else if (source is JArray arr)
+            {
+                var narr = new JArray();
+                foreach (var elt in arr)
+                {
+                    narr.Add(MapProperties(elt, mappings));
+                }
+
+                result = narr;
+            }
+
+            return result;
         }
 
+        internal static void FixInstance(JToken object)
+        {
+            // TODO: need to figure out how to only drop text inside $instance 
+            // TODO: need to figure out how to endIndex
+        }
+
+        internal static JObject ExtractEntitiesAndMetadata(Prediction prediction)
+        {
+            var entities = (JObject) JObject.FromObject(prediction.Entities);
+            return (JObject) MapProperties(entities, new Dictionary<string, string> {
+                { "datetimeV2", "datetime" },
+                { "datetime", "datetimeV1" },
+                { "unit", "units" },
+                { "modelType", null },
+                { "modelTypeId", null },
+                { "recognitionSources", null },
+            });
+            // Age, Dimension, Money, Temperature: unit -> units
+            // DateTimeV2 -> DateTime
+            // DateTime -> DateTimeV1
+            // In $instance use length to compute endIndex.
+            // Drop modelType, modelTypeId, recognitionSources, text
+            return 
+        }
+
+        /* TODO: Remove
         internal static JObject ExtractEntitiesAndMetadata(IList<EntityModel> entities, IList<CompositeEntityModel> compositeEntities, bool verbose)
         {
             var entitiesAndMetadata = new JObject();
@@ -289,14 +344,15 @@ namespace Microsoft.Bot.Builder.AI.LuisPreview
                 }
             }
         }
+        */
 
-        internal static void AddProperties(LuisResult luis, RecognizerResult result)
+        internal static void AddProperties(Prediction luis, RecognizerResult result)
         {
-            if (luis.SentimentAnalysis != null)
+            if (luis.Sentiment != null)
             {
                 result.Properties.Add("sentiment", new JObject(
-                    new JProperty("label", luis.SentimentAnalysis.Label),
-                    new JProperty("score", luis.SentimentAnalysis.Score)));
+                    new JProperty("label", luis.Sentiment.Label),
+                    new JProperty("score", luis.Sentiment.Score)));
             }
         }
     }

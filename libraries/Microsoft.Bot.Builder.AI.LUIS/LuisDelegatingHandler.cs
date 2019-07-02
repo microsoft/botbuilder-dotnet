@@ -13,7 +13,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
 {
     internal class LuisDelegatingHandler : DelegatingHandler
     {
-        protected async override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             // Bot Builder Package name and version.
             var assemblyName = this.GetType().Assembly.GetName();

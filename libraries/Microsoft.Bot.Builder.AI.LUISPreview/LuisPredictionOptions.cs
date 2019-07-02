@@ -124,7 +124,7 @@ namespace Microsoft.Bot.Builder.AI.LuisPreview
         /// <value>
         /// LUIS slot name to access.
         /// </value>
-        public string Slot { get; set; }
+        public string Slot { get; set; } = "production";
 
         /// <summary>
         /// Gets or sets the specific version of the model to access.
