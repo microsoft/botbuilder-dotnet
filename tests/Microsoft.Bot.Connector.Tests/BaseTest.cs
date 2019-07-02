@@ -31,7 +31,7 @@ namespace Microsoft.Bot.Connector.Tests
     ///       3. Ensure the appId has Slack channel enabled and you've installed the bot in Slack
     ///
     ///    To re-record:
-    ///      1. All from live/unmocked, except set HttpRecorderMode to Record
+    ///      1. All from live/unmocked, except set HttpRecorderMode to Record.
     /// </summary>
     public class BaseTest
     {
