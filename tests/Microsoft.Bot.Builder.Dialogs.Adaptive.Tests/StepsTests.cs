@@ -364,7 +364,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .AssertReply("I need a yes or no. (1) Yes or (2) No")
             .Send("yes")
                 .AssertReply("confirmation: True")
-                .AssertReply("confirmation: True")
                 .AssertReply("yes or no (1) Yes or (2) No")
             .Send("nope")
                 .AssertReply("confirmation: False")
@@ -418,7 +417,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .AssertReply("Not a color. Please select a color: (1) red, (2) green, or (3) blue")
             .Send("blue")
                 .AssertReply("blue")
-                .AssertReply("blue")
                 .AssertReply("Please select a color: (1) red, (2) green, or (3) blue")
             .Send("red")
                 .AssertReply("red")
@@ -435,7 +433,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 {
                     new SetProperty()
                     {
-                        Value = new ExpressionEngine().Parse("json('[\"red\", \"green\", \"blue\"]')"),
+                        Value = "json('[\"red\", \"green\", \"blue\"]')",
                         Property = "user.choices"
                     },
                     new ChoiceInput()
@@ -493,7 +491,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 {
                     new SetProperty()
                     {
-                        Value = new ExpressionEngine().Parse("json('[{\"value\": \"red\"}, {\"value\": \"green\"}, {\"value\": \"blue\"}]')"),
+                        Value = "json('[{\"value\": \"red\"}, {\"value\": \"green\"}, {\"value\": \"blue\"}]')",
                         Property = "user.choices"
                     },
                     new ChoiceInput()
