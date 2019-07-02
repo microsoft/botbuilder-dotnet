@@ -12,7 +12,6 @@
     <PackageId>Microsoft.Bot.Builder.Integration.ApplicationInsights.Core</PackageId>
     <Description>This library integrates the Microsoft Bot Builder SDK with Application Insights.</Description>
     <Summary>This library provides integration between the Microsoft Bot Builder SDK and Application Insights.</Summary>
-    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">

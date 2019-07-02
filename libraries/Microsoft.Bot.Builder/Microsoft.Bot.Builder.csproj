@@ -21,7 +21,6 @@
     <PackageId>Microsoft.Bot.Builder</PackageId>
     <Description>Library for building bots using Microsoft Bot Framework Connector</Description>
     <Summary>Library for building bots using Microsoft Bot Framework Connector</Summary>
-    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>

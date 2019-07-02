@@ -19,9 +19,7 @@
 		<TargetFramework>netstandard2.0</TargetFramework>		
 		<Description>This library implements C# classes for using the Bot Framework Connector REST API.</Description>
 		<Summary>Client REST API library for Microsoft Bot Framework Connector</Summary>
-    <LangVersion>latest</LangVersion>
 	</PropertyGroup>
-
 
 	<ItemGroup>
 		<Compile Remove="node_modules\**" />

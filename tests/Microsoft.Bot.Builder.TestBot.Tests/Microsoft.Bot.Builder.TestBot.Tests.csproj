@@ -2,14 +2,9 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
-
     <IsPackable>false</IsPackable>
-
     <AssemblyName>Microsoft.Bot.Builder.TestBot.Tests</AssemblyName>
-
     <RootNamespace>Microsoft.BotBuilderSamples.Tests</RootNamespace>
-
-    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>

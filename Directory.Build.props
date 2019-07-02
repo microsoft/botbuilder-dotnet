@@ -2,6 +2,10 @@
   <PropertyGroup>
     <PackageOutputPath>$(MSBuildThisFileDirectory)outputpackages\</PackageOutputPath>
   </PropertyGroup>
+  
+  <PropertyGroup>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
 
   <PropertyGroup>
     <CodeAnalysisRuleSet>$(SolutionDir)BotBuilder-DotNet.ruleset</CodeAnalysisRuleSet>
