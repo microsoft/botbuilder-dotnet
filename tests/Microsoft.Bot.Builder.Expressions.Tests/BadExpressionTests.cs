@@ -353,6 +353,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("json('{\"key1\":value1\"}')"), // invalid json format string 
             Test("addProperty(json('{\"key1\":\"value1\"}'), 'key2','value2','key3')"), //should have 3 parameter
             Test("addProperty(json('{\"key1\":\"value1\"}'), 1,'value2')"), // second param should be string
+            Test("addProperty(json('{\"key1\":\"value1\"}'), 'key1', 3)"), // cannot add existing property
             Test("setProperty(json('{\"key1\":\"value1\"}'), 'key2','value2','key3')"), //should have 3 parameter
             Test("setProperty(json('{\"key1\":\"value1\"}'), 1,'value2')"), // second param should be string
             Test("removeProperty(json('{\"key1\":\"value1\",\"key2\":\"value2\"}'), 1))"),// second param should be string
@@ -377,7 +378,13 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("isMatch('abC', one)"),// second param should be string
             Test("isMatch(1, '^[a-z]+$')"), // first param should be string
             Test("isMatch('abC', '^[a-z+$')"),// bad regular expression
-            # endregion
+            #endregion
+
+            #region SetPathToValue tests
+            Test("setPathToValue(@foo, 3)"), // Cannot set simple entities
+            Test("setPathToValue(one[0], 4)"), // Cannot set existing non-list to list
+
+            #endregion
         };
 
         [DataTestMethod]
