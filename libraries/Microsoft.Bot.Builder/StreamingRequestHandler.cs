@@ -212,8 +212,6 @@ namespace Microsoft.Bot.Builder
             {
                 response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 logger.LogError(ex.Message);
-
-                throw ex;
             }
 
             return response;
