@@ -9,13 +9,29 @@ using Microsoft.Bot.StreamingExtensions.Transport;
 
 namespace Microsoft.Bot.StreamingExtensions.Payloads
 {
+    /*
+     * The 48-byte, fixed size, header prefaces every payload. The header must always have the
+     * same shape, regardless of if its payload is a request, response, or content. It is a
+     * period-delimited ASCII-encoded string terminated with a newline. All headers must have
+     * these segments, and all values must be zero padded to fill the correct number of bytes:
+     * |Title           Size        Description
+     * |Type            1 byte      ASCII-encoded char. Describes the format of the payload (request, response, stream, etc.)
+     * |Delimiter       1 byte      ASCII period character
+     * |Length          6 bytes     ASCII-encoded decimal. Size in bytes of this payload in ASCII decimal, not including the header. Zero padded.
+     * |Delimiter       1 byte      ASCII period character
+     * |ID              36 bytes    ASCII-encoded hex. GUID (Request ID, Stream ID, etc.)
+     * |Delimiter       1 byte      ASCII period character
+     * |End             1 byte      ASCII ‘0’ or ‘1’. Signals the end of a payload or multi-part payload
+     * |Terminator      1 byte      Hardcoded to \n
+     *
+     * ex: A.000168.68e999ca-a651-40f4-ad8f-3aaf781862b4.1\n
+     */
     internal static class HeaderSerializer
     {
         public const byte Delimiter = (byte)'.';
         public const byte Terminator = (byte)'\n';
         public const byte End = (byte)'1';
         public const byte NotEnd = (byte)'0';
-
         public const int TypeOffset = 0;
         public const int TypeDelimiterOffset = 1;
         public const int LengthOffset = 2;
@@ -29,19 +45,24 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
 
         public static int Serialize(Header header, byte[] buffer, int offset)
         {
-            int start = offset;
+            // The position within the buffer to begin writing the header.
+            var start = offset;
 
+            // Write Type
             buffer[TypeOffset] = (byte)header.Type;
             buffer[TypeDelimiterOffset] = Delimiter;
 
+            // Write Length
             var lengthStr = header.PayloadLength.ToString("D6", CultureInfo.InvariantCulture);
             Encoding.ASCII.GetBytes(lengthStr, 0, lengthStr.Length, buffer, LengthOffset);
             buffer[LengthDelimeterOffset] = Delimiter;
 
+            // Write ID
             var guidStr = header.Id.ToString("D", CultureInfo.InvariantCulture);
             Encoding.ASCII.GetBytes(guidStr, 0, guidStr.Length, buffer, IdOffset);
             buffer[IdDelimeterOffset] = Delimiter;
 
+            // Write Terminator
             buffer[EndOffset] = header.End ? End : NotEnd;
             buffer[TerminatorOffset] = Terminator;
 
@@ -55,9 +76,10 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
                 throw new ArgumentException("Cannot deserialize header, incorrect length");
             }
 
-            var header = new Header();
-
-            header.Type = (char)buffer[TypeOffset];
+            var header = new Header
+            {
+                Type = (char)buffer[TypeOffset],
+            };
 
             if (buffer[TypeDelimiterOffset] != Delimiter)
             {
@@ -65,7 +87,7 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
             }
 
             var lengthString = Encoding.ASCII.GetString(buffer, LengthOffset, LengthLength);
-            if (!int.TryParse(lengthString, out int length))
+            if (!int.TryParse(lengthString, out var length))
             {
                 throw new InvalidDataException("header length is malformed");
             }
@@ -83,7 +105,7 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
             }
 
             var identityText = Encoding.ASCII.GetString(buffer, IdOffset, IdLength);
-            if (!Guid.TryParse(identityText, out Guid id))
+            if (!Guid.TryParse(identityText, out var id))
             {
                 throw new InvalidDataException("header id is malformed");
             }
