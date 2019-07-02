@@ -32,6 +32,8 @@ namespace Microsoft.Bot.Connector.Tests
     ///
     ///    To re-record:
     ///      1. All from live/unmocked, except set HttpRecorderMode to Record.
+    ///      2. Once done recording, copy recording sessions from ...Microsoft.Bot.Connector.Tests\bin\Debug\netcoreapp2.1\SessionRecords
+    ///             to ...Microsoft.Bot.Connector.Tests\SessionRecords.
     /// </summary>
     public class BaseTest
     {
@@ -47,6 +49,9 @@ namespace Microsoft.Bot.Connector.Tests
                 var task = credentials.GetTokenAsync();
                 task.Wait();
                 this.token = task.Result;
+
+                // Helpful for generating recordings when debugging locally
+                Environment.SetEnvironmentVariable("AZURE_TEST_MODE", mode.ToString());
             }
             else
             {
@@ -63,9 +68,9 @@ namespace Microsoft.Bot.Connector.Tests
 
         protected static Uri HostUri { get; set; } = new Uri("https://slack.botframework.com", UriKind.Absolute);
 
-        protected string ClientId { get; private set; } = "[appId]";
+        protected string ClientId { get; private set; } = "[MSAPP_ID]";
 
-        protected string ClientSecret { get; private set; } = "[appPassword]";
+        protected string ClientSecret { get; private set; } = "[MSAPP_PASSWORD]";
 
         protected string UserId { get; private set; } = "UK8CH2281:TKGSUQHQE";
 
