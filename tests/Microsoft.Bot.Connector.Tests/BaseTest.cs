@@ -67,9 +67,9 @@ namespace Microsoft.Bot.Connector.Tests
 
         protected string ClientSecret { get; private set; } = "[appPassword]";
 
-        protected string UserId { get; private set; } = "[SlackUserId]";
+        protected string UserId { get; private set; } = "UK8CH2281:TKGSUQHQE";
 
-        protected string BotId { get; private set; } = "[SlackBotId]";
+        protected string BotId { get; private set; } = "BKGSYSTFG:TKGSUQHQE";
 
         private string ClassName => GetType().FullName;
 
