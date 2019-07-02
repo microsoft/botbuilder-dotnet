@@ -18,7 +18,8 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
         public void ReceiveResponse_Streams_Zero()
         {
             var r = new ReceiveResponse();
-            Assert.IsNull(r.Streams);
+            Assert.IsNotNull(r.Streams);
+            Assert.AreEqual(0, r.Streams.Count);
         }
 
         [TestMethod]
@@ -196,14 +197,14 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
         }
 
         [TestMethod]
-        public void ReceiveBase_ReadBodyAsString_NoContent_Null()
+        public void ReceiveBase_ReadBodyAsString_NoContent_EmptyString()
         {
             var r = new ReceiveResponse();
             r.Streams = new List<IContentStream>();
 
             var result = r.ReadBodyAsString();
 
-            Assert.IsNull(result);
+            Assert.AreEqual(string.Empty, result);
         }
     }
 }

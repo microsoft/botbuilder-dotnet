@@ -14,10 +14,11 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
     public class RequestTests
     {
         [TestMethod]
-        public void ReceiveRequest_ctor_NullStreams()
+        public void ReceiveRequest_ctor_Empty_Streams()
         {
             var r = new ReceiveRequest();
-            Assert.IsNull(r.Streams);
+            Assert.IsNotNull(r.Streams);
+            Assert.AreEqual(0, r.Streams.Count);
         }
 
         [TestMethod]

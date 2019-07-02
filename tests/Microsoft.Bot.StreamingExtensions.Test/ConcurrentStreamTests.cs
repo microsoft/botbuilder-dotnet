@@ -242,18 +242,6 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
         }
 
         [TestMethod]
-        public void GetLength_Throws()
-        {
-            using (var stream = new PayloadStream(null))
-            {
-                Assert.ThrowsException<NotSupportedException>(() =>
-                {
-                    var len = stream.Length;
-                });
-            }
-        }
-
-        [TestMethod]
         public void Seek_Throws()
         {
             using (var stream = new PayloadStream(null))
