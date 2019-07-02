@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using Microsoft.Recognizers.Text.Number;
 
@@ -80,7 +81,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
         {
             try
             {
-                var index = int.Parse(match.Resolution.Value) - 1;
+                var value = match.Resolution.Value.Replace("end", list.Count.ToString());
+                DataTable dt = new DataTable();
+                var result = (int)dt.Compute(value, string.Empty);
+
+                var index = result - 1;
                 if (index >= 0 && index < list.Count)
                 {
                     var choice = list[index];
