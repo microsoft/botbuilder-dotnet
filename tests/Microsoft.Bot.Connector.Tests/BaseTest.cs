@@ -16,6 +16,23 @@ using Moq;
 
 namespace Microsoft.Bot.Connector.Tests
 {
+    /// <summary>
+    /// WORKING WITH THESE TESTS
+    ///   To run mocked and without recording:
+    ///       1. Set HttpRecorderMode to Playback
+    ///
+    ///   To run live or unmocked:
+    ///       1. Set HttpRecorderMode to None
+    ///       2. Set the following properties (all must be valid):
+    ///           * ClientId (appId)
+    ///           * ClientSecret (appPass)
+    ///           * UserId (from slack)
+    ///           * BotId (from slack)
+    ///       3. Ensure the appId has Slack channel enabled and you've installed the bot in Slack
+    ///
+    ///    To re-record:
+    ///      1. All from live/unmocked, except set HttpRecorderMode to Record
+    /// </summary>
     public class BaseTest
     {
         private readonly HttpRecorderMode mode = HttpRecorderMode.Playback;
@@ -24,7 +41,7 @@ namespace Microsoft.Bot.Connector.Tests
 
         public BaseTest()
         {
-            if (mode == HttpRecorderMode.Record)
+            if (mode == HttpRecorderMode.Record || mode == HttpRecorderMode.None)
             {
                 var credentials = new MicrosoftAppCredentials(ClientId, ClientSecret);
                 var task = credentials.GetTokenAsync();
@@ -46,13 +63,13 @@ namespace Microsoft.Bot.Connector.Tests
 
         protected static Uri HostUri { get; set; } = new Uri("https://slack.botframework.com", UriKind.Absolute);
 
-        protected string ClientId { get; private set; } = "[MSAPP_ID]";
+        protected string ClientId { get; private set; } = "[appId]";
 
-        protected string ClientSecret { get; private set; } = "[MSAPP_PASSWORD]";
+        protected string ClientSecret { get; private set; } = "[appPassword]";
 
-        protected string UserId { get; private set; } = "U19KH8EHJ:T03CWQ0QB";
+        protected string UserId { get; private set; } = "[SlackUserId]";
 
-        protected string BotId { get; private set; } = "B21UTEF8S:T03CWQ0QB";
+        protected string BotId { get; private set; } = "[SlackBotId]";
 
         private string ClassName => GetType().FullName;
 
@@ -123,7 +140,7 @@ namespace Microsoft.Bot.Connector.Tests
 
         public async Task UseOAuthClientFor(Func<OAuthClient, Task> doTest, string className = null, [CallerMemberName] string methodName = null)
         {
-            using (MockContext context = MockContext.Start(className ?? ClassName, methodName))
+            using (var context = MockContext.Start(className ?? ClassName, methodName))
             {
                 HttpMockServer.Initialize(className ?? ClassName, methodName, mode);
                 using (var oauthClient = new OAuthClient(new Uri(AuthenticationConstants.OAuthUrl), new BotAccessTokenStub(token), handlers: HttpMockServer.CreateInstance()))
