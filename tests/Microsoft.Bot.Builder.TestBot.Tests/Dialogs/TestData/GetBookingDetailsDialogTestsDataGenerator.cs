@@ -21,7 +21,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs.TestData
                     { "hi", "Where would you like to travel to?" },
                     { "Seattle", "Where are you traveling from?" },
                     { "New York", "When would you like to travel?" },
-                    { "tomorrow", null },
+                    { $"{DateTime.UtcNow.AddDays(1):yyyy-MM-dd}", null },
                 },
                 new BookingDetails
                 {
@@ -42,7 +42,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs.TestData
                 {
                     { "hi", "Where are you traveling from?" },
                     { "New York", "When would you like to travel?" },
-                    { "tomorrow", null },
+                    { $"{DateTime.UtcNow.AddDays(1):yyyy-MM-dd}", null },
                 },
                 new BookingDetails
                 {
@@ -62,7 +62,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs.TestData
                 new[,]
                 {
                     { "hi", "When would you like to travel?" },
-                    { "tomorrow", null },
+                    { $"{DateTime.UtcNow.AddDays(1):yyyy-MM-dd}", null },
                 },
                 new BookingDetails
                 {
