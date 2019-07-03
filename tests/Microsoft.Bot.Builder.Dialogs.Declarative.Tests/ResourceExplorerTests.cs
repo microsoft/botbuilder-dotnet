@@ -18,6 +18,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
     {
         private static JsonSerializerSettings jsonSerializerSettings = new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore, Formatting = Formatting.Indented };
         private string testDialogFile = Path.Combine(Environment.CurrentDirectory, "foo.dialog");
+        private string testId = "foo.dialog";
 
         public TestContext TestContext { get; set; }
 
@@ -29,11 +30,29 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
             File.Delete(testDialogFile);
         }
 
+        private static void AssertResourceFound(ResourceExplorer explorer, string id)
+        {
+            var dialog = explorer.GetResource(id);
+            Assert.IsNotNull(dialog, $"getResource({id}) should return resource");
+            var dialogs = explorer.GetResources("dialog");
+            Assert.IsTrue(dialogs.Where(d => d.Id == id).Any(), $"getResources({id}) should return resource");
+        }
+
+        private static void AssertResourceNull(ResourceExplorer explorer, string id)
+        {
+            var dialog = explorer.GetResource(id);
+            Assert.IsNull(dialog, $"GetResource({id}) should return null");
+            var dialogs = explorer.GetResources("dialog");
+            Assert.IsFalse(dialogs.Where(d => d.Id == id).Any(), $"getResources({id}) should not return resource");
+
+        }
+
+
         [TestMethod]
         public async Task TestFolderSource()
         {
             var path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, getOsPath(@"..\..\..")));
-            using(var explorer = new ResourceExplorer())
+            using (var explorer = new ResourceExplorer())
             {
                 explorer.AddResourceProvider(new FolderResourceProvider(path));
 
@@ -47,14 +66,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
         public async Task TestFolderSource_Shallow()
         {
             var path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, getOsPath(@"..\..\..")));
-            using(var explorer = new ResourceExplorer())
+            using (var explorer = new ResourceExplorer())
             {
                 explorer.AddFolder(path, includeSubFolders: false);
 
                 var resources = explorer.GetResources("dialog").ToArray();
                 Assert.AreEqual(0, resources.Length, "shallow folder shouldn't list the dialog resources");
 
-                resources = explorer.GetResources("cs").ToArray();
+                resources = explorer.GetResources("schema").ToArray();
                 Assert.IsTrue(resources.Length > 0, "shallow folder should list the root files");
             }
         }
@@ -65,15 +84,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
             File.Delete(testDialogFile);
 
             var path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, getOsPath(@"..\..\..")));
-            using(var explorer = new ResourceExplorer())
+            using (var explorer = new ResourceExplorer())
             {
                 explorer.AddFolder(path, monitorChanges: true);
+
+                AssertResourceNull(explorer, testId);
 
                 TaskCompletionSource<bool> changeFired = new TaskCompletionSource<bool>();
 
                 explorer.Changed += (resources) =>
                 {
-                    if (resources.Any(resource => resource.Id == "foo.dialog"))
+                    if (resources.Any(resource => resource.Id == testId))
                     {
                         changeFired.SetResult(true);
                     }
@@ -82,6 +103,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
                 // new file
                 File.WriteAllText(testDialogFile, "{}");
                 await changeFired.Task.ConfigureAwait(false);
+
+                AssertResourceFound(explorer, testId);
             }
         }
 
@@ -89,27 +112,49 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
         public async Task TestFolderSource_WriteFiresChanged()
         {
             File.Delete(testDialogFile);
-            File.WriteAllText(testDialogFile, "{}");
+            string contents = "{}";
+            File.WriteAllText(testDialogFile, contents);
 
             var path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, getOsPath(@"..\..\..")));
-            using(var explorer = new ResourceExplorer())
+            using (var explorer = new ResourceExplorer())
             {
                 explorer.AddResourceProvider(new FolderResourceProvider(path, monitorChanges: true));
+
+                AssertResourceFound(explorer, testId);
+
+                await AssertResourceContents(explorer, testId, contents);
 
                 TaskCompletionSource<bool> changeFired = new TaskCompletionSource<bool>();
 
                 explorer.Changed += (resources) =>
                 {
-                    if (resources.Any(resource => resource.Id == "foo.dialog"))
+                    if (resources.Any(res => res.Id == testId))
                     {
                         changeFired.SetResult(true);
                     }
                 };
 
                 // changed file
+                contents = "{'foo':123 }";
                 File.WriteAllText(testDialogFile, "{'foo':123 }");
                 await changeFired.Task.ConfigureAwait(false);
+
+                AssertResourceFound(explorer, testId);
+
+                await AssertResourceContents(explorer, testId, contents);
             }
+        }
+
+        private async Task AssertResourceContents(ResourceExplorer explorer, string id, string contents)
+        {
+            var resource = explorer.GetResource(id);
+
+            var text = await resource.ReadTextAsync();
+            Assert.AreEqual(contents, text, "contents not the same from getResource()");
+            resource = explorer.GetResources("dialog").Where(d => d.Id == id).Single();
+
+            text = await resource.ReadTextAsync();
+            Assert.AreEqual(contents, text, "contents not the same from getResources()");
         }
 
         [TestMethod]
@@ -119,15 +164,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
             File.WriteAllText(testDialogFile, "{}");
 
             var path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, getOsPath(@"..\..\..")));
-            using(var explorer = new ResourceExplorer())
+            using (var explorer = new ResourceExplorer())
             {
-                explorer.AddResourceProvider(new FolderResourceProvider(path, monitorChanges:true));
+                explorer.AddResourceProvider(new FolderResourceProvider(path, monitorChanges: true));
+
+                AssertResourceFound(explorer, testId);
 
                 TaskCompletionSource<bool> changeFired = new TaskCompletionSource<bool>();
 
                 explorer.Changed += (resources) =>
                 {
-                    if (resources.Any(resource => resource.Id == "foo.dialog"))
+                    if (resources.Any(resource => resource.Id == testId))
                     {
                         changeFired.SetResult(true);
                     }
@@ -135,6 +182,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
                 // changed file
                 File.Delete(testDialogFile);
                 await changeFired.Task.ConfigureAwait(false);
+
+                AssertResourceNull(explorer, testId);
             }
         }
 

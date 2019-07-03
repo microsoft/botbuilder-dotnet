@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
 
         public FolderResourceProvider(string folder, bool includeSubFolders = true, bool monitorChanges = true)
         {
-            foreach (var extension in new string[] { ".lg", ".lu", ".dialog" })
+            foreach (var extension in new string[] { ".lg", ".lu", ".dialog", ".schema", ".md" })
             {
                 this.extensions.Add(extension);
             }
@@ -62,7 +62,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                     this.resources.Remove(Path.GetFileName(e.FullPath));
                     if (this.Changed != null)
                     {
-                        this.Changed(new IResource[] { });
+                        this.Changed(new IResource[] { new FileResource(e.FullPath) });
                     }
                 }
             }
