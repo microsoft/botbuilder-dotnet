@@ -10,21 +10,13 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <SignAssembly>true</SignAssembly>
     <DelaySign>true</DelaySign>
-    <AssemblyOriginatorKeyFile>..\..\ChannelSdk\35MSSharedLib1024.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>..\..\build\35MSSharedLib1024.snk</AssemblyOriginatorKeyFile>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <PackageId>Microsoft.Bot.StreamingExtensions</PackageId>
-    <Authors>Microsoft</Authors>
-    <Product>Microsoft Bot Protocol SDK</Product>
-    <Company>Microsoft</Company>
-    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <Copyright>© Microsoft Corporation. All rights reserved.</Copyright>
-    <PackageLicenseUrl>https://github.com/Microsoft/BotBuilder/blob/master/LICENSE</PackageLicenseUrl>
-    <PackageIconUrl>http://docs.botframework.com/images/bot_icon.png</PackageIconUrl>
-    <PackageTags>bots;ai;botframework;botbuilder</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
