@@ -134,7 +134,7 @@ namespace Microsoft.Bot.Builder
                 var streamAttachments = new List<Attachment>();
                 for (var i = 1; i < streams.Count; i++)
                 {
-                    streamAttachments.Add(new Attachment() { ContentType = streams[i].Type, Content = streams[i].GetStream() });
+                    streamAttachments.Add(new Attachment() { ContentType = streams[i].Type, Content = streams[i].Stream });
                 }
 
                 if (activity.Attachments != null)

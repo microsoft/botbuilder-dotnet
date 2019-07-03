@@ -10,13 +10,12 @@ namespace Microsoft.Bot.StreamingExtensions
     internal class ContentStream : IContentStream
     {
         private readonly ContentStreamAssembler _assembler;
-        private readonly PayloadStream _stream;
 
         internal ContentStream(Guid id, ContentStreamAssembler assembler)
         {
             Id = id;
             _assembler = assembler ?? throw new ArgumentNullException();
-            _stream = (PayloadStream)_assembler.GetPayloadStream();
+            Stream = _assembler.GetPayloadStream();
         }
 
         public Guid Id { get; private set; }
@@ -25,7 +24,7 @@ namespace Microsoft.Bot.StreamingExtensions
 
         public int? Length { get; set; }
 
-        public Stream GetStream() => _stream;
+        public Stream Stream { get; private set; }
 
         public void Cancel() => _assembler.Close();
     }

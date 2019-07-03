@@ -27,21 +27,22 @@ namespace Microsoft.Bot.StreamingExtensions
             // The first stream attached to a ReceiveRequest is always the ReceiveRequest body.
             // Any additional streams must be defined within the body or they will not be
             // attached properly when processing activities.
-            var contentStream = request.Streams.FirstOrDefault();
-            if (contentStream != null)
+            try
             {
-                var stream = contentStream.GetStream();
-                using (var reader = new StreamReader(stream, Encoding.UTF8))
+                var contentStream = request.Streams.FirstOrDefault();
+                using (var reader = new StreamReader(contentStream.Stream, Encoding.UTF8))
                 {
                     using (var jsonReader = new JsonTextReader(reader))
                     {
                         var serializer = JsonSerializer.Create(SerializationSettings.DefaultDeserializationSettings);
                         return serializer.Deserialize<T>(jsonReader);
                     }
-                }
             }
-
-            throw new ArgumentNullException("Request has no streams to read.");
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         /// <summary>
@@ -53,17 +54,18 @@ namespace Microsoft.Bot.StreamingExtensions
         /// </returns>
         public static string ReadBodyAsString(this ReceiveRequest request)
         {
-            var contentStream = request.Streams.FirstOrDefault();
-            if (contentStream != null)
+            try
             {
-                var stream = contentStream.GetStream();
-                using (var reader = new StreamReader(stream, Encoding.UTF8))
+                var contentStream = request.Streams.FirstOrDefault();
+                using (var reader = new StreamReader(contentStream.Stream, Encoding.UTF8))
                 {
                     return reader.ReadToEnd();
                 }
             }
-
-            return string.Empty;
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
     }
 }

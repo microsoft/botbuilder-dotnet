@@ -36,11 +36,11 @@ namespace Microsoft.Bot.StreamingExtensions
         int? Length { get; set; }
 
         /// <summary>
-        /// Method called to retrieve the data contained within this ContentStream.
+        /// Gets the data contained within this ContentStream.
         /// </summary>
-        /// <returns>
+        /// <value>
         /// A <see cref="Stream"/> of data.
-        /// </returns>
-        Stream GetStream();
+        /// </value>
+        Stream Stream { get; }
     }
 }

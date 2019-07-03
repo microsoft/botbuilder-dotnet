@@ -22,11 +22,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.Mocks
 
         public int? Length { get; set; }
 
-        private Stream Stream { get; set; }
+        public Stream Stream { get; set; }
 
-        public Stream GetStream()
-        {
-            return Stream;
-        }
     }
 }
