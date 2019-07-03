@@ -1,10 +1,11 @@
 ﻿// Copyright(c) Microsoft Corporation.All rights reserved.
 // Licensed under the MIT License.
 
-using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.BotKit;
 using Microsoft.Bot.Builder.BotKit.Core;
+using Microsoft.Bot.Schema;
 using Thrzn41.WebexTeams.Version1;
 
 namespace Microsoft.Bot.Builder.Adapters.Webex
@@ -37,7 +38,12 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task<object> StartPrivateConversation(string userId)
         {
-            return await Task.FromException<object>(new NotImplementedException());
+            var convRef = new ConversationReference();
+            convRef.User.Id = userId;
+            convRef.ChannelId = "webex";
+            convRef.Conversation.Id = "temporary-value";
+
+            return await this.ChangeContextAsync(convRef);
         }
 
         /// <summary>
@@ -49,7 +55,13 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task<object> StartConversationInRoom(string roomId, string userId)
         {
-            return await Task.FromException<object>(new NotImplementedException());
+            var convRef = new ConversationReference();
+            convRef.User.Id = userId;
+            convRef.User.Name = null;
+            convRef.ChannelId = "webex";
+            convRef.Conversation.Id = roomId;
+
+            return await this.ChangeContextAsync(convRef);
         }
 
         /// <summary>
@@ -57,9 +69,14 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// </summary>
         /// <param name="update">An object in the form of `{id:-id of message to delete-}`.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public async Task<object> DeleteMessage(IBotkitMessage update)
+        public async Task DeleteMessage(IBotkitMessage update)
         {
-            return await Task.FromException<object>(new NotImplementedException());
+            var adapter = (WebexAdapter)this.Controller.Adapter;
+            var context = this.Config.TurnContext;
+            var source = new CancellationTokenSource();
+            var token = source.Token;
+
+            await adapter.DeleteActivityAsync(context, update.Reference, token).ConfigureAwait(false);
         }
     }
 }
