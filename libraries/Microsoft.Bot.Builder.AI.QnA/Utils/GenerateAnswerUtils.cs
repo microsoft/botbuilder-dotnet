@@ -181,7 +181,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 }, Formatting.None);
 
             var httpRequestHelper = new HttpRequestUtils(httpClient);
-            var response = await httpRequestHelper.ExecuteHttpRequest(requestUrl, jsonRequest, _endpoint).ConfigureAwait(false);
+            var response = await httpRequestHelper.ExecuteHttpRequestAsync(requestUrl, jsonRequest, _endpoint).ConfigureAwait(false);
 
             var result = await FormatQnaResultAsync(response, options).ConfigureAwait(false);
 

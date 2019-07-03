@@ -17,7 +17,6 @@ namespace Microsoft.Bot.Builder.AI.QnA
     /// </summary>
     public class QnAMaker : ITelemetryQnAMaker
     {
-
         public static readonly string QnAMakerName = nameof(QnAMaker);
         public static readonly string QnAMakerTraceType = "https://www.qnamaker.ai/schemas/trace";
         public static readonly string QnAMakerTraceLabel = "QnAMaker Trace";
@@ -183,6 +182,26 @@ namespace Microsoft.Bot.Builder.AI.QnA
             return result;
         }
 
+        /// <summary>
+        /// Filters the ambiguous question for active learning.
+        /// </summary>
+        /// <param name="queryResult">User query output.</param>
+        /// <returns>Filtered array of ambiguous question.</returns>
+        public QueryResult[] GetLowScoreVariation(QueryResult[] queryResult)
+        {
+            return ActiveLearningUtils.GetLowScoreVariation(queryResult.ToList()).ToArray();
+        }
+
+        /// <summary>
+        /// Send feedback to the knowledge base.
+        /// </summary>
+        /// <param name="feedbackRecords">Feedback records.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        public async Task CallTrainAsync(FeedbackRecords feedbackRecords)
+        {
+            await this.activeLearningTrainHelper.CallTrainAsync(feedbackRecords).ConfigureAwait(false);
+        }
+
         protected virtual async Task OnQnaResultsAsync(
                    QueryResult[] queryResults,
                    ITurnContext turnContext,
@@ -267,26 +286,5 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
             return Task.FromResult((Properties: telemetryProperties ?? properties, Metrics: telemetryMetrics ?? metrics));
         }
-
-        /// <summary>
-        /// Filters the ambiguous question for active learning.
-        /// </summary>
-        /// <param name="queryResult">User query output</param>
-        /// <returns>Filtered array of ambiguous question</returns>
-        public QueryResult[] GetLowScoreVariation(QueryResult[] queryResult)
-        {
-            return ActiveLearningUtils.GetLowScoreVariation(queryResult.ToList()).ToArray();
-        }
-
-        /// <summary>
-        /// Send feedback to the knowledge base.
-        /// </summary>
-        /// <param name="feedbackRecords">Feedback records.</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public async Task CallTrainAsync(FeedbackRecords feedbackRecords)
-        {
-            await this.activeLearningTrainHelper.CallTrainAsync(feedbackRecords).ConfigureAwait(false);
-        }
-
     }
 }

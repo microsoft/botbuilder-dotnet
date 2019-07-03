@@ -9,11 +9,10 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.AI.QnA
 {
     /// <summary>
-    /// Helper class for train API
+    /// Helper class for train API.
     /// </summary>
     internal class TrainUtils
     {
-        private static readonly string QnAMakerName = nameof(QnAMaker);
         private QnAMakerEndpoint _endpoint;
         private readonly HttpClient httpClient;
 
@@ -29,7 +28,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         }
 
         /// <summary>
-        /// Train API to provide feedback
+        /// Train API to provide feedback.
         /// </summary>
         /// <param name="feedbackRecords">Feedback record list.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
@@ -55,7 +54,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
             var jsonRequest = JsonConvert.SerializeObject(feedbackRecords, Formatting.None);
 
             var httpRequestHelper = new HttpRequestUtils(httpClient);
-            var response = await httpRequestHelper.ExecuteHttpRequest(requestUrl, jsonRequest, _endpoint).ConfigureAwait(false);
+            var response = await httpRequestHelper.ExecuteHttpRequestAsync(requestUrl, jsonRequest, _endpoint).ConfigureAwait(false);
         }
     }
 }
