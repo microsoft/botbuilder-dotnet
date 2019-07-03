@@ -29,7 +29,7 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
 
         public string ContentType { get; set; }
 
-        public override Stream CreatePayloadStream()
+        public override Stream CreateStreamFromPayload()
         {
             return new PayloadStream(this);
         }

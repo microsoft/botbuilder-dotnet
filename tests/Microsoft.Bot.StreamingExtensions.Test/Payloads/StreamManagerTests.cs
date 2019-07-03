@@ -73,7 +73,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.Payloads
             var a = m.GetPayloadAssembler(id);
             var s = m.GetPayloadStream(new Header() { Id = id });
 
-            Assert.AreEqual(a.GetPayloadStream(), s);
+            Assert.AreEqual(a.GetPayloadAsStream(), s);
         }
 
         [TestMethod]
@@ -92,7 +92,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.Payloads
             var id = Guid.NewGuid();
 
             var a = m.GetPayloadAssembler(id);
-            var s = a.GetPayloadStream();
+            var s = a.GetPayloadAsStream();
 
             m.OnReceive(new Header() { Id = id, End = true }, s, 100);
 
@@ -139,7 +139,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.Payloads
 
             var id = Guid.NewGuid();
             var a = m.GetPayloadAssembler(id);
-            var s = a.GetPayloadStream();
+            var s = a.GetPayloadAsStream();
 
             // set it as ended
             a.OnReceive(new Header() { End = true }, s, 1);

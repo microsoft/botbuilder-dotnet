@@ -34,7 +34,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.Payloads
         {
             var id = Guid.NewGuid();
             var a = new MockPayloadAssembler(id);
-            var s = a.GetPayloadStream();
+            var s = a.GetPayloadAsStream();
 
             Assert.IsNotNull(a);
         }
@@ -44,8 +44,8 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.Payloads
         {
             var id = Guid.NewGuid();
             var a = new MockPayloadAssembler(id);
-            var s = a.GetPayloadStream();
-            var s2 = a.GetPayloadStream();
+            var s = a.GetPayloadAsStream();
+            var s2 = a.GetPayloadAsStream();
 
             Assert.AreEqual(s, s2);
         }

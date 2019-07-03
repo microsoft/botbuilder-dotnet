@@ -15,7 +15,7 @@ namespace Microsoft.Bot.StreamingExtensions
         {
             Id = id;
             _assembler = assembler ?? throw new ArgumentNullException();
-            Stream = _assembler.GetPayloadStream();
+            Stream = _assembler.GetPayloadAsStream();
         }
 
         public Guid Id { get; private set; }

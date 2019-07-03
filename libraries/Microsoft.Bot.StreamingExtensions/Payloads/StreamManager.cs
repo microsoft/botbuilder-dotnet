@@ -39,7 +39,7 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
         {
             var assembler = GetPayloadAssembler(header.Id);
 
-            return assembler.GetPayloadStream();
+            return assembler.GetPayloadAsStream();
         }
 
         public void OnReceive(Header header, Stream contentStream, int contentLength)
@@ -55,7 +55,7 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
             if (_activeAssemblers.TryRemove(id, out ContentStreamAssembler assembler))
             {
                 // decide whether to cancel it or not
-                var stream = assembler.GetPayloadStream();
+                var stream = assembler.GetPayloadAsStream();
                 if ((assembler.ContentLength.HasValue && stream.Length < assembler.ContentLength.Value) ||
                     !assembler.End)
                 {

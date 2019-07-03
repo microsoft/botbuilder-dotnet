@@ -25,20 +25,20 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
 
         private Stream Stream { get; set; }
 
-        public Stream GetPayloadStream()
+        public Stream GetPayloadAsStream()
         {
             lock (_syncLock)
             {
                 if (Stream == null)
                 {
-                    Stream = CreatePayloadStream();
+                    Stream = CreateStreamFromPayload();
                 }
             }
 
             return Stream;
         }
 
-        public abstract Stream CreatePayloadStream();
+        public abstract Stream CreateStreamFromPayload();
 
         public virtual void OnReceive(Header header, Stream stream, int contentLength) => End = header.End;
 

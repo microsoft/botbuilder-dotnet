@@ -29,14 +29,7 @@ namespace Microsoft.Bot.StreamingExtensions
         /// </param>
         public HttpContentStream(Guid id)
         {
-            if (id != null)
-            {
-                Id = id;
-            }
-            else
-            {
-                Id = Guid.NewGuid();
-            }
+            Id = id;
         }
 
         /// <summary>

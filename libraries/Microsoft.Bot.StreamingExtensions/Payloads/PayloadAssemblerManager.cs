@@ -41,7 +41,7 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
                     _activeAssemblers.Add(header.Id, assembler);
                 }
 
-                return assembler?.GetPayloadStream();
+                return assembler?.GetPayloadAsStream();
             }
 
             return null;

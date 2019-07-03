@@ -25,7 +25,7 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
             _length = header.End ? (int?)header.PayloadLength : null;
         }
 
-        public override Stream CreatePayloadStream()
+        public override Stream CreateStreamFromPayload()
         {
             if (_length.HasValue)
             {
