@@ -10,9 +10,9 @@ namespace Microsoft.Bot.Configuration.Tests
     [TestClass]
     public class ConnectionTests
     {
-        private string TestBotFileName = getOsPath(@"..\..\..\test.bot");
+        private string TestBotFileName = NormalizePath(@"..\..\..\test.bot");
 
-        private static string getOsPath(string path) => Path.Combine(path.TrimEnd('\\').Split('\\'));
+        private static string NormalizePath(string path) => Path.Combine(path.TrimEnd('\\').Split('\\'));
 
         [TestMethod]
         public async Task ConnectAssignsUniqueIds()

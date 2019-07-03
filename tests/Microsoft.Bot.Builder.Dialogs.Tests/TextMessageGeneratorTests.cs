@@ -31,8 +31,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
     {
         public TestContext TestContext { get; set; }
 
-        private static string getOsPath(string path) => Path.Combine(path.TrimEnd('\\').Split('\\'));
-
         private static ResourceExplorer resourceExplorer;
 
         [ClassInitialize]

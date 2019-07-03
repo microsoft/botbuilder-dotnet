@@ -20,8 +20,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
 
         public TestContext TestContext { get; set; }
 
-        private static string getOsPath(string path) => Path.Combine(path.TrimEnd('\\','/').Split('\\','/'));
-
         [ClassInitialize]
         public static void ClassInitialize(TestContext context)
         {
@@ -63,7 +61,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
         [TestMethod]
         public async Task TestFolderSource()
         {
-            var path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, getOsPath(@"..\..\..")));
+            var path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, PathUtils.NormalizePath(@"..\..\..")));
             using (var explorer = new ResourceExplorer())
             {
                 explorer.AddResourceProvider(new FolderResourceProvider(path));
@@ -77,7 +75,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
         [TestMethod]
         public void TestFolderSource_Shallow()
         {
-            var path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, getOsPath(@"..\..\..")));
+            var path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, PathUtils.NormalizePath(@"..\..\..")));
             using (var explorer = new ResourceExplorer())
             {
                 explorer.AddFolder(path, includeSubFolders: false);
@@ -98,7 +96,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
 
             File.Delete(testDialogFile);
 
-            var path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, getOsPath(@"..\..\..")));
+            var path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, PathUtils.NormalizePath(@"..\..\..")));
             using (var explorer = new ResourceExplorer())
             {
                 explorer.AddFolder(path, monitorChanges: true);
@@ -134,7 +132,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
             string contents = "{}";
             File.WriteAllText(testDialogFile, contents);
 
-            var path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, getOsPath(@"..\..\..")));
+            var path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, PathUtils.NormalizePath(@"..\..\..")));
             using (var explorer = new ResourceExplorer())
             {
                 explorer.AddResourceProvider(new FolderResourceProvider(path, monitorChanges: true));
@@ -175,7 +173,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
             File.Delete(testDialogFile);
             File.WriteAllText(testDialogFile, "{}");
 
-            var path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, getOsPath(@"..\..\..")));
+            var path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, PathUtils.NormalizePath(@"..\..\..")));
             using (var explorer = new ResourceExplorer())
             {
                 explorer.AddResourceProvider(new FolderResourceProvider(path, monitorChanges: true));

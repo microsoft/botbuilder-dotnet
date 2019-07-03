@@ -53,8 +53,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 importResolver = importResolver ?? ((id) =>
                  {
                      // import paths are in resource files which can be executed on multiple OS environments
-                     // Call GetOsPath() to map / & \ in importPath -> OSPath
-                     var importPath = GetOsPath(id);
+                     // normalize to map / & \ in importPath -> OSPath
+                     var importPath = NormalizePath(id);
                      if (!Path.IsPathRooted(importPath))
                      {
                          // get full path for importPath relative to path which is doing the import.
@@ -228,18 +228,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </remarks>
         /// <param name="ambigiousPath">authoredPath.</param>
         /// <returns>path expressed as OS path.</returns>
-        private string GetOsPath(string ambigiousPath)
-        {
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                // map linux/mac sep -> windows
-                return ambigiousPath.Replace("/", "\\");
-            }
-            else
-            {
-                // map windows sep -> linux/mac
-                return ambigiousPath.Replace("\\", "/");
-            }
-        }
+        private static char[] osChars = { '\\', '/' };
+
+        public static string NormalizePath(string path) => Path.Combine(path.TrimEnd(osChars).Split(osChars));
     }
 }
