@@ -14,6 +14,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         event ResourceChangedEventHandler Changed;
 
         /// <summary>
+        /// Get resource by id
+        /// </summary>
+        /// <param name="id">resource id</param>
+        /// <returns>resource</returns>
+        IResource GetResource(string id);
+
+        /// <summary>
         /// enumerate resources
         /// </summary>
         /// <param name="extension"></param>
