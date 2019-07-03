@@ -17,17 +17,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
     public class ResourceTests
     {
         private static JsonSerializerSettings jsonSerializerSettings = new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore, Formatting = Formatting.Indented };
-        private string testDialogFile = Path.Combine(Environment.CurrentDirectory, "foo.dialog");
-        private string testId = "foo.dialog";
 
         public TestContext TestContext { get; set; }
 
-        private static string getOsPath(string path) => Path.Combine(path.TrimEnd('\\').Split('\\'));
+        private static string getOsPath(string path) => Path.Combine(path.TrimEnd('\\','/').Split('\\','/'));
 
-        [TestCleanup]
-        public void TestCleanup()
+        [ClassInitialize]
+        public static void ClassInitialize(TestContext context)
         {
-            File.Delete(testDialogFile);
+            foreach (var file in Directory.EnumerateFiles(Environment.CurrentDirectory, "*.dialog"))
+            {
+                File.Delete(file);
+            }
         }
 
         private static void AssertResourceFound(ResourceExplorer explorer, string id)
@@ -47,6 +48,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
 
         }
 
+        private async Task AssertResourceContents(ResourceExplorer explorer, string id, string contents)
+        {
+            var resource = explorer.GetResource(id);
+
+            var text = await resource.ReadTextAsync();
+            Assert.AreEqual(contents, text, "contents not the same from getResource()");
+            resource = explorer.GetResources("dialog").Where(d => d.Id == id).Single();
+
+            text = await resource.ReadTextAsync();
+            Assert.AreEqual(contents, text, "contents not the same from getResources()");
+        }
 
         [TestMethod]
         public async Task TestFolderSource()
@@ -63,7 +75,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
         }
 
         [TestMethod]
-        public async Task TestFolderSource_Shallow()
+        public void TestFolderSource_Shallow()
         {
             var path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, getOsPath(@"..\..\..")));
             using (var explorer = new ResourceExplorer())
@@ -81,6 +93,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
         [TestMethod]
         public async Task TestFolderSource_NewFiresChanged()
         {
+            string testId = "NewFiresChanged.dialog";
+            string testDialogFile = Path.Combine(Environment.CurrentDirectory, testId);
+
             File.Delete(testDialogFile);
 
             var path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, getOsPath(@"..\..\..")));
@@ -102,7 +117,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
 
                 // new file
                 File.WriteAllText(testDialogFile, "{}");
-                await changeFired.Task.ConfigureAwait(false);
+
+                await Task.WhenAny(changeFired.Task, Task.Delay(5000)).ConfigureAwait(false);
 
                 AssertResourceFound(explorer, testId);
             }
@@ -111,6 +127,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
         [TestMethod]
         public async Task TestFolderSource_WriteFiresChanged()
         {
+            string testId = "WriteFiresChanged.dialog";
+            string testDialogFile = Path.Combine(Environment.CurrentDirectory, testId);
+
             File.Delete(testDialogFile);
             string contents = "{}";
             File.WriteAllText(testDialogFile, contents);
@@ -136,8 +155,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
 
                 // changed file
                 contents = "{'foo':123 }";
-                File.WriteAllText(testDialogFile, "{'foo':123 }");
-                await changeFired.Task.ConfigureAwait(false);
+                File.WriteAllText(testDialogFile, contents);
+
+                await Task.WhenAny(changeFired.Task, Task.Delay(5000)).ConfigureAwait(false);
 
                 AssertResourceFound(explorer, testId);
 
@@ -145,21 +165,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
             }
         }
 
-        private async Task AssertResourceContents(ResourceExplorer explorer, string id, string contents)
-        {
-            var resource = explorer.GetResource(id);
-
-            var text = await resource.ReadTextAsync();
-            Assert.AreEqual(contents, text, "contents not the same from getResource()");
-            resource = explorer.GetResources("dialog").Where(d => d.Id == id).Single();
-
-            text = await resource.ReadTextAsync();
-            Assert.AreEqual(contents, text, "contents not the same from getResources()");
-        }
 
         [TestMethod]
         public async Task TestFolderSource_DeleteFiresChanged()
         {
+            string testId = "DeleteFiresChanged.dialog";
+            string testDialogFile = Path.Combine(Environment.CurrentDirectory, testId);
+
             File.Delete(testDialogFile);
             File.WriteAllText(testDialogFile, "{}");
 
@@ -181,7 +193,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
                 };
                 // changed file
                 File.Delete(testDialogFile);
-                await changeFired.Task.ConfigureAwait(false);
+
+                await Task.WhenAny(changeFired.Task, Task.Delay(5000)).ConfigureAwait(false);
 
                 AssertResourceNull(explorer, testId);
             }
@@ -192,7 +205,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
             var resources = explorer.GetResources(resourceType).ToArray();
             Assert.AreEqual(1, resources.Length);
             Assert.AreEqual($".{resourceType}", Path.GetExtension(resources[0].Id));
-            Assert.AreEqual("test", Path.GetFileNameWithoutExtension(resources[0].Id));
         }
     }
 }

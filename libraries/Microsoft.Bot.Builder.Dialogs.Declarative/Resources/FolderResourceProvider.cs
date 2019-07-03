@@ -90,17 +90,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             var ext = Path.GetExtension(e.FullPath);
             if (this.extensions.Contains(ext))
             {
+                var fileResource = new FileResource(e.FullPath);
+
                 lock (this.resources)
                 {
-                    if (File.Exists(e.FullPath))
-                    {
-                        var fileResource = new FileResource(e.FullPath);
-                        this.resources[fileResource.Id] = fileResource;
-                        if (this.Changed != null)
-                        {
-                            this.Changed(new IResource[] { fileResource });
-                        }
-                    }
+                    this.resources[fileResource.Id] = fileResource;
+                }
+
+                if (this.Changed != null)
+                {
+                    this.Changed(new IResource[] { fileResource });
                 }
             }
         }
@@ -154,7 +153,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         public IEnumerable<IResource> GetResources(string extension)
         {
             extension = $".{extension.TrimStart('.').ToLower()}";
-            return this.resources.Where(pair => Path.GetExtension(pair.Key).ToLower() == extension).Select(pair => pair.Value);
+
+            lock (this.resources)
+            {
+                return this.resources.Where(pair => Path.GetExtension(pair.Key).ToLower() == extension).Select(pair => pair.Value).ToList();
+            }
         }
 
         public override string ToString()
