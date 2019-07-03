@@ -165,11 +165,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                     if (error == null && itemResult != null)
                     {
                         result = false;
-                        if (array.Values<string>().Contains<object>(itemResult))
+                        for (var i = 0; i < array.Count(); ++i)
                         {
-                            result = true;
-                            array.Where(x => x.Value<string>() == itemResult.ToString()).First().Remove();
-                        }                        
+                            if (array[i].ToString() == itemResult.ToString() || JToken.DeepEquals(array[i], JToken.FromObject(itemResult)))
+                            {
+                                result = true;
+                                array.RemoveAt(i);
+                                break;
+                            }
+                        }
                     }
                     break;
                 case ArrayChangeType.Clear:
