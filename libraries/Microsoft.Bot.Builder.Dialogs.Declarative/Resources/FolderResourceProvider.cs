@@ -20,11 +20,26 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         private CancellationTokenSource CancelReloadToken = new CancellationTokenSource();
         private ConcurrentBag<string> changedPaths = new ConcurrentBag<string>();
         private FileSystemWatcher Watcher;
+        private Dictionary<string, FileResource> resources = new Dictionary<string, FileResource>();
+        private HashSet<string> extensions = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
-        public FolderResourceProvider(string folder, bool includeSubFolders=true, bool monitorChanges = true)
+        public FolderResourceProvider(string folder, bool includeSubFolders = true, bool monitorChanges = true)
         {
+            foreach (var extension in new string[] { ".lg", ".lu", ".dialog" })
+            {
+                this.extensions.Add(extension);
+            }
+
             this.IncludeSubFolders = includeSubFolders;
             this.Directory = new DirectoryInfo(folder);
+            SearchOption option = (this.IncludeSubFolders) ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
+
+            foreach (var fileInfo in this.Directory.EnumerateFiles($"*.*", option).Where(fi => this.extensions.Contains(fi.Extension)))
+            {
+                var fileResource = new FileResource(fileInfo.FullName);
+                this.resources[fileResource.Id] = fileResource;
+            }
+
             if (monitorChanges)
             {
                 this.Watcher = new FileSystemWatcher(folder);
@@ -32,25 +47,61 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                 this.Watcher.EnableRaisingEvents = true;
                 this.Watcher.Created += Watcher_Changed;
                 this.Watcher.Changed += Watcher_Changed;
-                this.Watcher.Deleted += Watcher_Changed;
+                this.Watcher.Deleted += Watcher_Deleted;
                 this.Watcher.Renamed += Watcher_Renamed;
+            }
+        }
 
+        private void Watcher_Deleted(object sender, FileSystemEventArgs e)
+        {
+            var ext = Path.GetExtension(e.FullPath);
+            if (this.extensions.Contains(ext))
+            {
+                lock (this.resources)
+                {
+                    this.resources.Remove(Path.GetFileName(e.FullPath));
+                    if (this.Changed != null)
+                    {
+                        this.Changed(new IResource[] { });
+                    }
+                }
             }
         }
 
         private void Watcher_Renamed(object sender, RenamedEventArgs e)
         {
-            if (this.Changed != null)
+            var ext = Path.GetExtension(e.FullPath);
+            if (this.extensions.Contains(ext))
             {
-                this.Changed(new IResource[] { new FileResource(e.FullPath)/*, new FileResource(e.OldFullPath) */});
+                lock (this.resources)
+                {
+                    var fileResource = new FileResource(e.FullPath);
+                    this.resources[fileResource.Id] = fileResource;
+                    if (this.Changed != null)
+                    {
+                        this.Changed(new IResource[] { fileResource });
+                    }
+                }
             }
         }
 
         private void Watcher_Changed(object sender, FileSystemEventArgs e)
         {
-            if (this.Changed != null)
+            var ext = Path.GetExtension(e.FullPath);
+            if (this.extensions.Contains(ext))
             {
-                this.Changed(new IResource[] { new FileResource(e.FullPath) });
+                lock (this.resources)
+                {
+                    if (File.Exists(e.FullPath))
+                    {
+                        var fileResource = new FileResource(e.FullPath);
+                        this.resources[fileResource.Id] = fileResource;
+                        if (this.Changed != null)
+                        {
+                            this.Changed(new IResource[] { fileResource });
+                        }
+                    }
+                }
             }
         }
 
@@ -78,17 +129,32 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             }
         }
 
+
         /// <summary>
-        /// id -> Resource object)
+        /// GetResource by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public IResource GetResource(string id)
+        {
+            lock (this.resources)
+            {
+                if (this.resources.TryGetValue(id, out FileResource fileResource))
+                {
+                    return fileResource;
+                }
+
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Get Resources by extension
         /// </summary>
         public IEnumerable<IResource> GetResources(string extension)
         {
-            SearchOption option = (this.IncludeSubFolders) ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
-            foreach (var fileInfo in this.Directory.EnumerateFiles($"*.{extension.TrimStart('.')}", option))
-            {
-                yield return new FileResource(fileInfo.FullName);
-            }
-            yield break;
+            extension = $".{extension.TrimStart('.').ToLower()}";
+            return this.resources.Where(pair => Path.GetExtension(pair.Key).ToLower() == extension).Select(pair => pair.Value);
         }
 
         public override string ToString()
