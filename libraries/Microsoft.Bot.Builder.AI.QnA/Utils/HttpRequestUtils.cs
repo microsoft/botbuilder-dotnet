@@ -16,8 +16,8 @@ namespace Microsoft.Bot.Builder.AI.QnA
     /// </summary>
     internal class HttpRequestUtils
     {
-        private static ProductInfoHeaderValue BotBuilderInfo;
-        private static ProductInfoHeaderValue PlatformInfo;
+        private static ProductInfoHeaderValue botBuilderInfo;
+        private static ProductInfoHeaderValue platformInfo;
 
         private readonly HttpClient _httpClient;
 
@@ -38,7 +38,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <param name="payloadBody">Http request body.</param>
         /// <param name="endpoint">QnA Maker endpoint details.</param>
         /// <returns>Returns http response object.</returns>
-        public async Task<HttpResponseMessage> ExecuteHttpRequest(string requestUrl, string payloadBody, QnAMakerEndpoint endpoint)
+        public async Task<HttpResponseMessage> ExecuteHttpRequestAsync(string requestUrl, string payloadBody, QnAMakerEndpoint endpoint)
         {
             if (requestUrl == null)
             {
@@ -70,15 +70,15 @@ namespace Microsoft.Bot.Builder.AI.QnA
         private void SetHeaders(HttpRequestMessage request, QnAMakerEndpoint endpoint)
         {
             request.Headers.Add("Authorization", $"EndpointKey {endpoint.EndpointKey}");
-            request.Headers.UserAgent.Add(BotBuilderInfo);
-            request.Headers.UserAgent.Add(PlatformInfo);
+            request.Headers.UserAgent.Add(botBuilderInfo);
+            request.Headers.UserAgent.Add(platformInfo);
         }
 
         private void UpdateBotBuilderAndPlatformInfo()
         {
             // Bot Builder Package name and version
             var assemblyName = this.GetType().Assembly.GetName();
-            BotBuilderInfo = new ProductInfoHeaderValue(assemblyName.Name, assemblyName.Version.ToString());
+            botBuilderInfo = new ProductInfoHeaderValue(assemblyName.Name, assemblyName.Version.ToString());
 
             // Platform information: OS and language runtime
             var framework = Assembly
@@ -86,7 +86,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 .GetCustomAttribute<TargetFrameworkAttribute>()?
                 .FrameworkName;
             var comment = $"({Environment.OSVersion.VersionString};{framework})";
-            PlatformInfo = new ProductInfoHeaderValue(comment);
+            platformInfo = new ProductInfoHeaderValue(comment);
         }
     }
 }

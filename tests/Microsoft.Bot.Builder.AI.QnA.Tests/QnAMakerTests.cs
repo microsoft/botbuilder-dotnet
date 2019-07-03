@@ -285,14 +285,14 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             {
                 QnaId = 1,
                 UserId = "test",
-                UserQuestion = "How are you?"
+                UserQuestion = "How are you?",
             };
 
             var feedback2 = new FeedbackRecord
             {
                 QnaId = 2,
                 UserId = "test",
-                UserQuestion = "What up??"
+                UserQuestion = "What up??",
             };
 
             feedbackRecords.Records = new FeedbackRecord[] { feedback1, feedback2 };
