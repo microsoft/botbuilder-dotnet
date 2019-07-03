@@ -54,7 +54,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
         {
             // Arrange
             var sut = new MainDialog(_mockLogger.Object, null, _mockBookingDialog);
-            var testClient = new DialogTestClient(Channels.Test, sut, middlewares: new[] { new XUnitOutputMiddleware(Output) });
+            var testClient = new DialogTestClient(Channels.Test, sut, middlewares: new[] { new XUnitDialogTestLogger(Output) });
 
             // Act/Assert
             var reply = await testClient.SendActivityAsync<IMessageActivity>("hi");
@@ -69,7 +69,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
         {
             // Arrange
             var sut = new MainDialog(_mockLogger.Object, SimpleMockFactory.CreateMockLuisRecognizer<IRecognizer>(null).Object, _mockBookingDialog);
-            var testClient = new DialogTestClient(Channels.Test, sut, middlewares: new[] { new XUnitOutputMiddleware(Output) });
+            var testClient = new DialogTestClient(Channels.Test, sut, middlewares: new[] { new XUnitDialogTestLogger(Output) });
 
             // Act/Assert
             var reply = await testClient.SendActivityAsync<IMessageActivity>("hi");
@@ -93,7 +93,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
                 });
 
             var sut = new MainDialog(_mockLogger.Object, mockLuisRecognizer.Object, _mockBookingDialog);
-            var testClient = new DialogTestClient(Channels.Test, sut, middlewares: new[] { new XUnitOutputMiddleware(Output) });
+            var testClient = new DialogTestClient(Channels.Test, sut, middlewares: new[] { new XUnitDialogTestLogger(Output) });
 
             var reply = await testClient.SendActivityAsync<IMessageActivity>("hi");
             Assert.Equal("What can I help you with today?", reply.Text);
