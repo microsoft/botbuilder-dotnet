@@ -29,7 +29,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
             // Arrange
             var bookingTestData = testData.GetObject<GetBookingDetailsDialogTestCase>();
             var sut = new GetBookingDetailsDialog();
-            var testClient = new DialogTestClient(Channels.Test, sut, bookingTestData.InitialBookingDetails, new[] { new XUnitOutputMiddleware(Output) });
+            var testClient = new DialogTestClient(Channels.Test, sut, bookingTestData.InitialBookingDetails, new[] { new XUnitDialogTestLogger(Output) });
 
             // Act/Assert
             Output.WriteLine($"Test Case: {bookingTestData.Name}");
