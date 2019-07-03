@@ -4,7 +4,7 @@
 using System;
 using System.IO;
 
-namespace Microsoft.Bot.StreamingExtensions
+namespace Microsoft.Bot.StreamingExtensions.Payloads
 {
     /// <summary>
     /// Implemented by stream attachments compatible with the Bot Framework Protocol 3 with Streaming Extensions.

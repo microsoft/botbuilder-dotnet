@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
+using Microsoft.Bot.StreamingExtensions.Payloads;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.StreamingExtensions.UnitTests

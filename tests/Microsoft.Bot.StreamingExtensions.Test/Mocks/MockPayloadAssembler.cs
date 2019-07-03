@@ -14,7 +14,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.Mocks
         {
         }
 
-        public override Stream CreatePayloadStream()
+        public override Stream CreateStreamFromPayload()
         {
             return new MemoryStream();
         }

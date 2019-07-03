@@ -9,21 +9,22 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
 {
     internal class StreamManager : IStreamManager
     {
-        private readonly ConcurrentDictionary<Guid, ContentStreamAssembler> _activeAssemblers;
-        private readonly Action<ContentStreamAssembler> _onCancelStream;
+        private readonly ConcurrentDictionary<Guid, PayloadStreamAssembler> _activeAssemblers;
+        private readonly Action<PayloadStreamAssembler> _onCancelStream;
 
-        public StreamManager(Action<ContentStreamAssembler> onCancelStream)
+        public StreamManager(Action<PayloadStreamAssembler> onCancelStream = null)
         {
-            _activeAssemblers = new ConcurrentDictionary<Guid, ContentStreamAssembler>();
-            _onCancelStream = onCancelStream;
+            // If no callback is defined, make it a noop to avoid null checking everywhere.
+            _onCancelStream = onCancelStream ?? delegate { };
+            _activeAssemblers = new ConcurrentDictionary<Guid, PayloadStreamAssembler>();
         }
 
-        public ContentStreamAssembler GetPayloadAssembler(Guid id)
+        public PayloadStreamAssembler GetPayloadAssembler(Guid id)
         {
-            if (!_activeAssemblers.TryGetValue(id, out ContentStreamAssembler assembler))
+            if (!_activeAssemblers.TryGetValue(id, out PayloadStreamAssembler assembler))
             {
                 // a new id has come in, start a new task to process it
-                assembler = new ContentStreamAssembler(this, id);
+                assembler = new PayloadStreamAssembler(this, id);
                 if (!_activeAssemblers.TryAdd(id, assembler))
                 {
                     // Don't need to dispose the assembler because it was never used
@@ -44,7 +45,7 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
 
         public void OnReceive(Header header, Stream contentStream, int contentLength)
         {
-            if (_activeAssemblers.TryGetValue(header.Id, out ContentStreamAssembler assembler))
+            if (_activeAssemblers.TryGetValue(header.Id, out PayloadStreamAssembler assembler))
             {
                 assembler.OnReceive(header, contentStream, contentLength);
             }
@@ -52,7 +53,7 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
 
         public void CloseStream(Guid id)
         {
-            if (_activeAssemblers.TryRemove(id, out ContentStreamAssembler assembler))
+            if (_activeAssemblers.TryRemove(id, out PayloadStreamAssembler assembler))
             {
                 // decide whether to cancel it or not
                 var stream = assembler.GetPayloadAsStream();

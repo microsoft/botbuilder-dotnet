@@ -4,7 +4,7 @@
 using System;
 using System.Net.Http;
 
-namespace Microsoft.Bot.StreamingExtensions
+namespace Microsoft.Bot.StreamingExtensions.Payloads
 {
     /// <summary>
     /// An attachment contained within a <see cref="StreamingRequest"/>'s stream collection,

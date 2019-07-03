@@ -58,7 +58,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
             var ops = new SendOperations(sender);
 
             var request = StreamingRequest.CreatePost("/a/b");
-            var stream = new PayloadStream(new ContentStreamAssembler(null, Guid.NewGuid(), "blah", 100));
+            var stream = new PayloadStream(new PayloadStreamAssembler(null, Guid.NewGuid(), "blah", 100));
             stream.Write(new byte[100], 0, 100);
             request.AddStream(new StreamContent(stream));
 

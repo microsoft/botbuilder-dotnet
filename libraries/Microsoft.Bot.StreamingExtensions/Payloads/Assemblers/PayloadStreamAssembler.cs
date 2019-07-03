@@ -6,19 +6,17 @@ using System.IO;
 
 namespace Microsoft.Bot.StreamingExtensions.Payloads
 {
-    internal class ContentStreamAssembler : PayloadAssembler
+    internal class PayloadStreamAssembler : PayloadAssembler
     {
         private readonly IStreamManager _streamManager;
 
-        public ContentStreamAssembler(IStreamManager streamManager, Guid id)
+        public PayloadStreamAssembler(IStreamManager streamManager, Guid id)
             : base(id)
         {
-            ContentType = null;
-            ContentLength = null;
-            _streamManager = streamManager;
+            _streamManager = streamManager ?? new StreamManager();
         }
 
-        public ContentStreamAssembler(IStreamManager streamManager, Guid id, string type, int? length)
+        public PayloadStreamAssembler(IStreamManager streamManager, Guid id, string type, int? length)
             : this(streamManager, id)
         {
             ContentType = type;
@@ -27,12 +25,9 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
 
         public int? ContentLength { get; set; }
 
-        public string ContentType { get; set; }
+        public string ContentType { get; set; } = string.Empty;
 
-        public override Stream CreateStreamFromPayload()
-        {
-            return new PayloadStream(this);
-        }
+        public override Stream CreateStreamFromPayload() => new PayloadStream(this);
 
         public override void OnReceive(Header header, Stream stream, int contentLength)
         {
@@ -44,9 +39,6 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
             }
         }
 
-        public override void Close()
-        {
-            _streamManager.CloseStream(Id);
-        }
+        public override void Close() => _streamManager.CloseStream(Id);
     }
 }

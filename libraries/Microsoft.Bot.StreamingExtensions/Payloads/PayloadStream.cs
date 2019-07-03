@@ -6,13 +6,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.StreamingExtensions.Payloads;
 
-namespace Microsoft.Bot.StreamingExtensions
+namespace Microsoft.Bot.StreamingExtensions.Payloads
 {
     internal class PayloadStream : Stream
     {
-        private readonly ContentStreamAssembler _assembler;
+        private readonly PayloadStreamAssembler _assembler;
         private readonly Queue<byte[]> _bufferQueue = new Queue<byte[]>();
 
         private readonly SemaphoreSlim dataAvailable = new SemaphoreSlim(0, int.MaxValue);
@@ -25,7 +24,7 @@ namespace Microsoft.Bot.StreamingExtensions
 
         private bool _end = false;
 
-        internal PayloadStream(ContentStreamAssembler assembler)
+        internal PayloadStream(PayloadStreamAssembler assembler)
         {
             _assembler = assembler;
         }

@@ -3,15 +3,14 @@
 
 using System;
 using System.IO;
-using Microsoft.Bot.StreamingExtensions.Payloads;
 
-namespace Microsoft.Bot.StreamingExtensions
+namespace Microsoft.Bot.StreamingExtensions.Payloads
 {
     internal class ContentStream : IContentStream
     {
-        private readonly ContentStreamAssembler _assembler;
+        private readonly PayloadStreamAssembler _assembler;
 
-        internal ContentStream(Guid id, ContentStreamAssembler assembler)
+        internal ContentStream(Guid id, PayloadStreamAssembler assembler)
         {
             Id = id;
             _assembler = assembler ?? throw new ArgumentNullException();

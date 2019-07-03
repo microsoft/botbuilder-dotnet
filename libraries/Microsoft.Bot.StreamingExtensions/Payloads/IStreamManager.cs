@@ -8,7 +8,7 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
 {
     internal interface IStreamManager
     {
-        ContentStreamAssembler GetPayloadAssembler(Guid id);
+        PayloadStreamAssembler GetPayloadAssembler(Guid id);
 
         Stream GetPayloadStream(Header header);
 

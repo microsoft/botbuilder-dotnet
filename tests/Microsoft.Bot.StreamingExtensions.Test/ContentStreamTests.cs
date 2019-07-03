@@ -23,7 +23,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
         public void ContentStream_Id()
         {
             var id = Guid.NewGuid();
-            var assembler = new ContentStreamAssembler(null, id);
+            var assembler = new PayloadStreamAssembler(null, id);
             var c = new ContentStream(id, assembler);
 
             Assert.AreEqual(id, c.Id);
@@ -33,7 +33,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
         public void ContentStream_Type()
         {
             var id = Guid.NewGuid();
-            var assembler = new ContentStreamAssembler(null, id);
+            var assembler = new PayloadStreamAssembler(null, id);
             var c = new ContentStream(id, assembler);
             var type = "foo/bar";
 
