@@ -31,7 +31,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
         public string DefaultLocale { get; set; } = null;
 
-        public ListStyle style = ListStyle.Auto;
+        public ListStyle Style { get; set; } = ListStyle.Auto;
 
         public ChoiceFactoryOptions ChoiceOptions { get; set; } = null;
 
