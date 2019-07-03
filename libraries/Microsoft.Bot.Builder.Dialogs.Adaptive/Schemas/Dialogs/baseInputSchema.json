@@ -53,7 +53,7 @@
           "title": "Value",
           "description": "The expression that you evaluated for input."
         },
-        "valueProperty": {
+        "property": {
           "$role": "memoryPath",
           "title": "Value Property",
           "description": "It is where you want to the putput of the input written to",

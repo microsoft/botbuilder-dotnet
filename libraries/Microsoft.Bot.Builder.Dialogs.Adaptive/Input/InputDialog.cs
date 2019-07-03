@@ -291,6 +291,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         private async Task<InputState> RecognizeInput(DialogContext dc, bool consultation)
         {
             dynamic input = null;
+
+            if (!string.IsNullOrEmpty(this.Property) && !this.AlwaysPrompt)
+            {
+                var (temp, error) = new ExpressionEngine().Parse(this.Property).TryEvaluate(dc.State);
+                input = temp;
+            }
+
             if (this.Value != null)
             {
                 var (temp, error) = this.value.TryEvaluate(dc.State);
