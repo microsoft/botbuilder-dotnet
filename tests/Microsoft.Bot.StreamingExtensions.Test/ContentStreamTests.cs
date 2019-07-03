@@ -37,9 +37,9 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
             var c = new ContentStream(id, assembler);
             var type = "foo/bar";
 
-            c.Type = type;
+            c.ContentType = type;
 
-            Assert.AreEqual(type, c.Type);
+            Assert.AreEqual(type, c.ContentType);
         }
     }
 }

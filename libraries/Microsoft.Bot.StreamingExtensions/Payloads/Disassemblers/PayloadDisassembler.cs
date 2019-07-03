@@ -63,7 +63,7 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
 
             if (stream.Content.Headers.TryGetValues(HeaderNames.ContentType, out IEnumerable<string> contentType))
             {
-                description.Type = contentType?.FirstOrDefault();
+                description.ContentType = contentType?.FirstOrDefault();
             }
 
             if (stream.Content.Headers.TryGetValues(HeaderNames.ContentLength, out IEnumerable<string> contentLength))

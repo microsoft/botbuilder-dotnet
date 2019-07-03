@@ -78,13 +78,13 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
                             }
 
                             var streamAssembler = _streamManager.GetPayloadAssembler(id);
-                            streamAssembler.ContentType = streamDescription.Type;
+                            streamAssembler.ContentType = streamDescription.ContentType;
                             streamAssembler.ContentLength = streamDescription.Length;
 
                             response.Streams.Add(new ContentStream(id, streamAssembler)
                             {
                                 Length = streamDescription.Length,
-                                Type = streamDescription.Type,
+                                ContentType = streamDescription.ContentType,
                             });
                         }
                     }

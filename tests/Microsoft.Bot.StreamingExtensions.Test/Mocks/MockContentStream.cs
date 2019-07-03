@@ -12,13 +12,13 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.Mocks
         {
             Id = Guid.NewGuid();
             Stream = stream;
-            Type = type;
+            ContentType = type;
             Length = length;
         }
 
         public Guid Id { get; set; }
 
-        public string Type { get; set; }
+        public string ContentType { get; set; }
 
         public int? Length { get; set; }
 

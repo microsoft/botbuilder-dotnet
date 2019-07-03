@@ -20,7 +20,7 @@ namespace Microsoft.Bot.StreamingExtensions
 
         public Guid Id { get; private set; }
 
-        public string Type { get; set; }
+        public string ContentType { get; set; }
 
         public int? Length { get; set; }
 

@@ -25,7 +25,7 @@ namespace Microsoft.Bot.StreamingExtensions
         /// <value>
         /// Plain text type name.
         /// </value>
-        string Type { get; set; }
+        string ContentType { get; set; }
 
         /// <summary>
         /// Gets or sets the length of this ContentStream.
