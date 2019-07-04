@@ -2,9 +2,9 @@
     "$schema": "../../app.schema",
     "$type": "Microsoft.AdaptiveDialog",
     "inputBindings": {
-        "name": "dialog.name"
+        "$name": "dialog.name"
     },
-    "resultProperty": "dialog.name",
+    "defaultResultProperty": "$name",
     "steps": [
         {
             "$type": "Microsoft.TextInput",
@@ -15,7 +15,7 @@
         },
         {
             "$type": "Microsoft.SendActivity",
-            "activity": "Hello {$name}, nice to meet you!"
+            "activity": "ASKFORNAME ddd Hello {$name}, nice to meet you!"
         }
     ]
 }

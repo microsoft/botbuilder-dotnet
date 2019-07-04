@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,6 +13,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
     public class FileResource : IResource
     {
         private string path;
+        private Task<byte[]> contentTask;
+        private Task<string> textTask;
 
         public FileResource(string path)
         {
@@ -23,39 +26,57 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
 
         public string FullName { get { return this.path; } }
 
-        /// <summary>
-        /// Open read only stream
-        /// </summary>
-        /// <returns></returns>
-        public Stream OpenStream()
+        public async Task<Stream> OpenStreamAsync()
         {
-            return File.OpenRead(this.path);
+            if (contentTask == null)
+            {
+                this.contentTask = Task.Run(async () =>
+                {
+                    Trace.TraceInformation($"Loading {this.Id}");
+                    var fileInfo = new FileInfo(this.path);
+                    Stream stream = null;
+                    try
+                    {
+                        stream = File.OpenRead(this.path);
+                        var buffer = new byte[fileInfo.Length];
+                        await stream.ReadAsync(buffer, 0, (int)fileInfo.Length).ConfigureAwait(false);
+                        return buffer;
+                    }
+                    finally
+                    {
+                        if (stream != null)
+                        {
+                            stream.Close();
+                        }
+                    }
+                });
+            }
+
+            var content = await contentTask.ConfigureAwait(false);
+            return new MemoryStream(content);
         }
 
         /// <summary>
         /// Get resource as atext
         /// </summary>
         /// <returns></returns>
-        public async Task<string> ReadTextAsync()
+        public Task<string> ReadTextAsync()
         {
-            using (var stream = File.OpenRead(this.path))
+            if (this.textTask == null)
             {
-                using (TextReader textReader = new StreamReader(stream))
+                this.textTask = Task.Run(async () =>
                 {
+                    var stream = await OpenStreamAsync().ConfigureAwait(false);
+                    TextReader textReader = new StreamReader(stream);
                     return await textReader.ReadToEndAsync().ConfigureAwait(false);
-                }
+                });
             }
-        }
-
-        public string ReadText()
-        {
-            return File.ReadAllText(this.path);
+            return this.textTask;
         }
 
         public override string ToString()
         {
             return this.Id;
         }
-
     }
 }
