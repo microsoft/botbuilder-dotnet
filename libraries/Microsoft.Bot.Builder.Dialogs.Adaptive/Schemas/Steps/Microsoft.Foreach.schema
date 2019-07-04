@@ -5,7 +5,7 @@
     "description": "Step which executes steps per item in a collection.",
     "type": "object",
     "properties": {
-        "ListProperty": {
+        "listProperty": {
             "$role": "expression",
             "title": "ListProperty",
             "description": "Expression to evaluate.",
@@ -13,7 +13,7 @@
                 "user.todoList"
             ]
         },
-        "Steps": {
+        "steps": {
             "type": "array",
             "items": {
                 "$type": "Microsoft.IDialog"
@@ -21,13 +21,13 @@
             "title": "Steps",
             "description": "Steps to execute"
         },
-        "IndexProperty": {
+        "indexProperty": {
             "$role": "memoryPath",
             "title": "Index Property",
             "description": "The memory path which refers to the index of the item",
             "default": "dialog.index"
         },
-        "ValueProperty": {
+        "valueProperty": {
             "$role": "memoryPath",
             "title": "Value Property",
             "description": "The memory path which refers to the value of the item",
@@ -35,7 +35,7 @@
         }
     },
     "required": [
-        "ListProperty",
-        "Steps"
+        "listProperty",
+        "steps"
     ]
 }

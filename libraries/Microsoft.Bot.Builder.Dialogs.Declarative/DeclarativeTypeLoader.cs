@@ -39,7 +39,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
                 paths.Push(fileResource.FullName);
             }
 
-            var json = resource.ReadText();
+            var json = resource.ReadTextAsync().GetAwaiter().GetResult();
 
             return _load<T>(registry, refResolver, paths, json);
         }

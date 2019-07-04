@@ -10,7 +10,7 @@ namespace Microsoft.Bot.Builder.Expressions
 {
     public class CommonRegex
     {
-        private static LRUCache<string, Regex> regexCache = new LRUCache<string, Regex>(15);
+        private static readonly LRUCache<string, Regex> regexCache = new LRUCache<string, Regex>(15);
 
         public static Regex CreateRegex(string pattern)
         {

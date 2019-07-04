@@ -15,29 +15,26 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
 
         public static HashSet<string> one = new HashSet<string> { "one" };
         public static HashSet<string> oneTwo = new HashSet<string> { "one", "two" };
-        private static string nullStr = null;
+        private static readonly string nullStr = null;
 
-        private readonly object scope = new
+        private readonly object scope = new Dictionary<string, object>
         {
-            one = 1.0,
-            two = 2.0,
-            hello = "hello",
-            world = "world",
-            istrue = true,
-            nullObj = nullStr,
-            bag = new
+            { "one", 1.0 },
+            { "two", 2.0 },
+            { "hello", "hello" },
+            { "world", "world" },
+            { "istrue", true },
+            { "nullObj", nullStr },
+            { "bag", new Dictionary<string, object>
             {
-                three = 3.0,
-                set = new
-                {
-                    four = 4.0,
-                },
-                list = new[] { "red", "blue" },
-                index = 3,
-                name = "mybag"
-            },
-            items = new string[] { "zero", "one", "two" },
-            nestedItems = new[]
+                { "three", 3.0 },
+                { "set", new { four = 4.0 } },
+                { "list", new[] { "red", "blue" } },
+                { "index", 3 },
+                { "name", "mybag" }
+            }},
+            { "items", new string[] { "zero", "one", "two" } },
+            { "nestedItems", new[]
                 {
                 new
                 {
@@ -51,8 +48,8 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
                 {
                     x = 3,
                 }
-            },
-            user = new
+            } },
+            { "user", new
             {
                 lists = new
                 {
@@ -64,39 +61,39 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
                     }
                 },
                 listType = "todo",
-            },
-            timestamp = "2018-03-15T13:00:00.000Z",
-            notISOTimestamp = "2018/03/15 13:00:00",
-            timestampObj = DateTime.Parse("2018-03-15T13:00:00.000Z").ToUniversalTime(),
-            unixTimestamp = 1521118800,
-            xmlStr = "<?xml version='1.0'?> <produce> <item> <name>Gala</name> <type>apple</type> <count>20</count> </item> <item> <name>Honeycrisp</name> <type>apple</type> <count>10</count> </item> </produce>",
-            turn = new
+            } },
+            { "timestamp", "2018-03-15T13:00:00.000Z" },
+            { "notISOTimestamp", "2018/03/15 13:00:00" },
+            { "timestampObj", DateTime.Parse("2018-03-15T13:00:00.000Z").ToUniversalTime() },
+            { "unixTimestamp", 1521118800 },
+            { "xmlStr", "<?xml version='1.0'?> <produce> <item> <name>Gala</name> <type>apple</type> <count>20</count> </item> <item> <name>Honeycrisp</name> <type>apple</type> <count>10</count> </item> </produce>" },
+            { "turn", new
             {
                 recognized = new
                 {
-                    entities = new
+                    entities = new Dictionary<string, object>
                     {
-                        city = "Seattle",
-                        ordinal = new[]
+                        { "city",  "Seattle" },
+                        { "ordinal",  new[]
                         {
                             "1",
                             "2",
                             "3"
-                        },
-                        CompositeList1 = new[] {
+                        } },
+                        { "CompositeList1",  new[] {
                             new[]{ "firstItem" }
-                        },
-                        CompositeList2 = new[] {
+                        } },
+                        { "CompositeList2",  new[] {
                             new[]{ "firstItem", "secondItem" }
-                        }
+                        } }
                     },
                     intents = new
                     {
                         BookFlight = "BookFlight"
                     }
                 }
-            },
-            dialog = new
+            } },
+            { "dialog", new
             {
                 instance = new
                 {
@@ -108,18 +105,34 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
                 },
                 title = "Dialog Title",
                 subTitle = "Dialog Sub Title"
-            },
-            callstack = new object[]
+            } },
+            { "callstack", new object[]
             {
                 new {x = 3 },
                 new {x = 2, y = 2 },
                 new {x = 1, y = 1, z = 1 },
-            }
+            } }
         };
 
         public static IEnumerable<object[]> Data => new[]
        {
-            # region Operators test
+            #region SetPathToProperty test
+            // TODO: We should support this.
+            // Test("@@['c' + 'ity']", "Seattle"),
+            Test("setPathToValue(@@blah.woof, 1+2) + @@blah.woof", 6),
+            Test("setPathToValue(path.simple, 3) + path.simple", 6),
+            Test("setPathToValue(path.simple, 5) + path.simple", 10),
+            Test("setPathToValue(path.array[0], 7) + path.array[0]", 14),
+            Test("setPathToValue(path.array[1], 9) + path.array[1]", 18),
+            Test("setPathToValue(path.darray[2][0], 11) + path.darray[2][0]", 22),
+            Test("setPathToValue(path.darray[2][3].foo, 13) + path.darray[2][3].foo)", 26),
+            Test("setPathToValue(path.overwrite, 3) + setPathToValue(path.overwrite[0], 4) + path.overwrite[0]", 11),
+            Test("setPathToValue(path.overwrite[0], 3) + setPathToValue(path.overwrite, 4) + path.overwrite", 11),
+            Test("setPathToValue(path.overwrite.prop, 3) + setPathToValue(path.overwrite, 4) + path.overwrite", 11),
+            Test("setPathToValue(path.overwrite.prop, 3) + setPathToValue(path.overwrite[0], 4) + path.overwrite[0]", 11),
+            #endregion
+
+            #region Operators test
             Test("1 + 2", 3),
             Test("- 1 + 2", 1),
             Test("+ 1 + 2", 3),
