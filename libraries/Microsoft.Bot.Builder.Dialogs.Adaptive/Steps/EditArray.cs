@@ -50,6 +50,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
         }
 
         private Expression value;
+        private Expression arrayProperty;
+        private Expression resultProperty;
 
         [JsonConstructor]
         public EditArray([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
@@ -74,13 +76,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
         /// Memory expression of the array to manipulate
         /// </summary>Edit
         [JsonProperty("arrayProperty")]
-        public string ArrayProperty { get; set; }
+        public string ArrayProperty
+        {
+            get { return arrayProperty?.ToString(); }
+            set { this.arrayProperty = (value != null) ? new ExpressionEngine().Parse(value) : null; }
+        }
 
         /// <summary>
         /// The result of the action
         /// </summary>
         [JsonProperty("resultProperty")]
-        public string ResultProperty { get; set; }
+        public string ResultProperty 
+        {
+            get { return resultProperty?.ToString(); }
+            set { this.resultProperty = (value != null) ? new ExpressionEngine().Parse(value) : null; }
+        }
 
         /// <summary>
         /// The expression of the item to put onto the array
@@ -89,7 +99,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
         public string Value
         {
             get { return value?.ToString(); }
-            set {this.value = (value != null) ? new ExpressionEngine().Parse(value) : null; }
+            set { this.value = (value != null) ? new ExpressionEngine().Parse(value) : null; }
         }
 
         public EditArray(ArrayChangeType changeType, string arrayProperty = null, string value = null, string resultProperty = null)
@@ -103,8 +113,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                 this.ArrayProperty = arrayProperty;
             }
 
-           switch (changeType)
-           {
+            switch (changeType)
+            {
                 case ArrayChangeType.Clear:
                 case ArrayChangeType.Pop:
                 case ArrayChangeType.Take:
@@ -114,7 +124,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                 case ArrayChangeType.Remove:
                     this.Value = value;
                     break;
-           }           
+            }
         }
 
         protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
@@ -156,7 +166,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                         break;
                     }
                     item = array[0];
-                    array.RemoveAt(0);                   
+                    array.RemoveAt(0);
                     result = item;
                     break;
                 case ArrayChangeType.Remove:
@@ -165,11 +175,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                     if (error == null && itemResult != null)
                     {
                         result = false;
-                        if (array.Values<string>().Contains<object>(itemResult))
+                        for (var i = 0; i < array.Count(); ++i)
                         {
-                            result = true;
-                            array.Where(x => x.Value<string>() == itemResult.ToString()).First().Remove();
-                        }                        
+                            if (array[i].ToString() == itemResult.ToString() || JToken.DeepEquals(array[i], JToken.FromObject(itemResult)))
+                            {
+                                result = true;
+                                array.RemoveAt(i);
+                                break;
+                            }
+                        }
                     }
                     break;
                 case ArrayChangeType.Clear:

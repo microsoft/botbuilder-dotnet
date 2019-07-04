@@ -5,7 +5,7 @@
     "description": "Edit current dialog with changeType and Steps",
     "type": "object",
     "properties": {
-        "ChangeType": {
+        "changeType": {
             "type": "string",
             "title": "Change Type",
             "description": "The change type to apply to current dialog",
@@ -17,7 +17,7 @@
                 "ReplaceSequence"
             ]
         },
-        "Steps": {
+        "steps": {
             "type": "array",
             "items": {
                 "$type": "Microsoft.IDialog"
@@ -27,7 +27,7 @@
         }
     },
     "required": [
-        "ChangeType",
-        "Steps"
+        "changeType",
+        "steps"
     ]
 }

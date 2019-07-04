@@ -10,7 +10,7 @@ namespace Microsoft.Bot.Builder.Expressions
 {
     public class CommonRegex
     {
-        private static LRUCache<string, Regex> regexCache = new LRUCache<string, Regex>(15);
+        private static readonly LRUCache<string, Regex> regexCache = new LRUCache<string, Regex>(15);
 
         public static Regex CreateRegex(string pattern)
         {
@@ -26,7 +26,7 @@ namespace Microsoft.Bot.Builder.Expressions
                     throw new ArgumentException("A regular expression parsing error occurred.");
                 }
 
-                result = new Regex(pattern);
+                result = new Regex(pattern, RegexOptions.Compiled);
                 regexCache.Set(pattern, result);
             }
 

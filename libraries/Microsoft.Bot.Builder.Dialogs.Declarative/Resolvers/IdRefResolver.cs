@@ -44,28 +44,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resolvers
                 throw new InvalidOperationException("Failed to resolve reference, $copy property not present");
             }
 
-            var targetFragments = refTarget.Split('#');
-
-            var dialogResources = resourceExplorer.GetResources("dialog").ToArray();
-            var refResources = dialogResources?.Where(r => Path.GetFileNameWithoutExtension(r.Id) == targetFragments[0]).ToList();
-
-            // Ref target must exist
-            if (refResources == null || refResources.Count == 0)
-            {
-                throw new Exception($"Reference {targetFragments[0]} could not be resolved.");
-            }
-
-            // Ref target should be unique
-            if (refResources.Count > 1)
-            {
-                var builder = new StringBuilder();
-                builder.AppendLine($"Multiple resources found for id {targetFragments[0]}. Please ensure unique names to be able to reference them. Conflicts: ");
-
-                refResources.ForEach(r => builder.AppendLine($"Name: {r.Id} "));
-
-                throw new Exception(builder.ToString());
-            }
-            var resource = refResources.Single();
+            var resource = resourceExplorer.GetResource($"{refTarget}.dialog");
             string text = await resource.ReadTextAsync().ConfigureAwait(false);
             var json = JToken.Parse(text);
 
@@ -94,7 +73,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resolvers
             }
 
             // if we have a source path for the resource, then make it available to InterfaceConverter
-            if (resource is FileResource fileResource) {
+            if (resource is FileResource fileResource)
+            {
                 registry.Add(json, new Source.Range() { Path = fileResource.FullName });
             }
 

@@ -5,7 +5,7 @@
     "description": "Step which execute steps per item page in a collection.",
     "type": "object",
     "properties": {
-        "ListProperty": {
+        "listProperty": {
             "$role": "expression",
             "title": "ListProperty",
             "description": "Expression to evaluate.",
@@ -13,7 +13,7 @@
                 "user.todoList"
             ]
         },
-        "Steps": {
+        "steps": {
             "type": "array",
             "items": {
                 "$type": "Microsoft.IDialog"
@@ -21,13 +21,13 @@
             "title": "Steps",
             "description": "Steps to execute"
         },
-        "PageSize": {
+        "pageSize": {
             "type": "integer",
             "title": "Page Size",
             "description": "The page size",
             "default": 10
         },
-        "ValueProperty": {
+        "valueProperty": {
             "$role": "memoryPath",
             "title": "Value Property",
             "description": "The memory path which refers to the value of the item",
@@ -35,7 +35,7 @@
         }
     },
     "required": [
-        "ListProperty",
-        "Steps"
+        "listProperty",
+        "steps"
     ]
 }
