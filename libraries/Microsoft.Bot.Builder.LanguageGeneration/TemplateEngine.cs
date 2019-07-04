@@ -228,8 +228,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </remarks>
         /// <param name="ambigiousPath">authoredPath.</param>
         /// <returns>path expressed as OS path.</returns>
-        private static char[] osChars = { '\\', '/' };
-
         public static string NormalizePath(string ambigiousPath)
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
