@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="dialogs">Parent dialog set.</param>
         /// <param name="turnContext">Context for the current turn of conversation with the user.</param>
         /// <param name="state">Current dialog state.</param>
-        public DialogContext(DialogSet dialogs, DialogContext parentDialogContext, DialogState state, Dictionary<string, object> conversationState = null, Dictionary<string, object> userState = null, Dictionary<string, object> settings = null)
+        public DialogContext(DialogSet dialogs, DialogContext parentDialogContext, DialogState state, IDictionary<string, object> conversationState = null, IDictionary<string, object> userState = null, IDictionary<string, object> settings = null)
         {
             Dialogs = dialogs;
             Parent = parentDialogContext ?? throw new ArgumentNullException(nameof(parentDialogContext));
@@ -43,7 +43,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             State.SetValue($"turn.activity", Context.Activity);
         }
 
-        public DialogContext(DialogSet dialogs, ITurnContext turnContext, DialogState state, Dictionary<string, object> conversationState = null, Dictionary<string, object> userState = null, Dictionary<string, object> settings = null)
+        public DialogContext(DialogSet dialogs, ITurnContext turnContext, DialogState state, IDictionary<string, object> conversationState = null, IDictionary<string, object> userState = null, IDictionary<string, object> settings = null)
         {
             Parent = null;
             Dialogs = dialogs ?? throw new ArgumentNullException(nameof(dialogs));
@@ -68,7 +68,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         public ITurnContext Context { get; private set; }
 
-        public List<DialogInstance> Stack { get; private set; }
+        public IList<DialogInstance> Stack { get; private set; }
 
         public DialogContextState State { get; private set; }
 
@@ -600,7 +600,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
-        private Dictionary<string, object> GetActiveDialogState(DialogContext dialogContext, Dictionary<string, object> state = null, int? stackIdx = null)
+        private IDictionary<string, object> GetActiveDialogState(DialogContext dialogContext, IDictionary<string, object> state = null, int? stackIdx = null)
         {
             if (state == null && !stackIdx.HasValue)
             {

@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// Provides context for a turn of a waterfall dialog. Contains ITurnContext as property 'Context'.
         /// </summary>
         internal WaterfallStepContext(WaterfallDialog parentWaterfall, DialogContext dc, object options, IDictionary<string, object> values, int index, DialogReason reason, object result = null)
-            : base(dc.Dialogs, dc.Context, new DialogState(dc.Stack), conversationState: dc.State.Conversation, userState: dc.State.User, settings: dc.State.Settings)
+            : base(dc.Dialogs, turnContext: dc.Context, state: new DialogState(dc.Stack), conversationState: dc.State.Conversation, userState: dc.State.User, settings: dc.State.Settings)
         {
             _parentWaterfall = parentWaterfall;
             _nextCalled = false;
