@@ -51,11 +51,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
             var resource = explorer.GetResource(id);
 
             var text = await resource.ReadTextAsync();
-            Assert.AreEqual(contents, text, "contents not the same from getResource()");
+            Assert.AreEqual(contents, text, $"getResource({id}) contents not the same ");
             resource = explorer.GetResources("dialog").Where(d => d.Id == id).Single();
 
             text = await resource.ReadTextAsync();
-            Assert.AreEqual(contents, text, "contents not the same from getResources()");
+            Assert.AreEqual(contents, text, $"getResources({id}) contents not the same");
         }
 
         [TestMethod]
