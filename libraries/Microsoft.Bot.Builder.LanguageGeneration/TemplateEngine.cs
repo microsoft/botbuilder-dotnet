@@ -134,6 +134,20 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return evaluator.EvaluateTemplate(templateName, scope);
         }
 
+        /// <summary>
+        /// Expand a template with given name and scope.
+        /// Return all possible responses instead of random one.
+        /// </summary>
+        /// <param name="templateName">Template name to be evaluated.</param>
+        /// <param name="scope">The state visible in the evaluation.</param>
+        /// <param name="methodBinder">Optional methodBinder to extend or override functions.</param>
+        /// <returns>Expand result.</returns>
+        public List<string> ExpandTemplate(string templateName, object scope = null, IGetMethod methodBinder = null)
+        {
+            var expander = new Expander(Templates, methodBinder);
+            return expander.EvaluateTemplate(templateName, scope);
+        }
+
         public AnalyzerResult AnalyzeTemplate(string templateName)
         {
             var analyzer = new Analyzer(Templates);

@@ -1,0 +1,65 @@
+﻿# Greeting
+- Hi
+- Hello
+
+#TimeOfDay
+- Morning
+- Evening
+
+# FinalGreeting
+- [Greeting] [TimeOfDay]
+
+# TimeOfDayWithCondition
+- IF: {time == 'morning'}
+    - [Greeting] Morning
+- ELSEIF: {time == 'evening'}
+    - [Greeting] Evening
+- ELSE:
+    - [Greeting] Afternoon
+
+# greetInAWeek
+- SWITCH: {day}
+    - CASE: {'Saturday'}
+        - Happy Saturday!
+        - Nice Saturday!
+    - CASE: {'Sunday'}
+        - Happy Sunday!
+        - Nice Sunday!
+    - DEFAULT:
+        - Work Hard!
+        - Weekend soon!
+
+# ShowAlarm(alarm)
+- {alarm.time} at {alarm.date}
+- {alarm.time} of {alarm.date}
+
+# ShowAlarmsWithForeach
+- IF: {count(alarms) == 1}
+   - You have one alarm [ShowAlarm(alarms[0])]
+- ELSEIF: {count(alarms) == 2}
+  - You have {count(alarms)} alarms, {join(foreach(alarms, alarm, lgTemplate('ShowAlarm', alarm)), ',', 'and')}
+- ELSE:
+  - You don't have any alarms
+
+# ShowAlarmsWithLgTemplate
+- IF: {count(alarms) == 1}
+   - You have one alarm [ShowAlarm(alarms[0])]
+- ELSEIF: {count(alarms) == 2}
+  - You have {count(alarms)} alarms, they are {lgTemplate('ShowAlarm', alarms[1])}
+- ELSE:
+  - You don't have any alarms
+
+# ShowAlarmsWithMultiLine
+-```
+You have @{count(alarms)} alarms.
+They are @{lgTemplate('ShowAlarm', alarms[1])}
+```
+
+# bookTransportTicket
+-SWITCH:{pass}
+- CASE: {'Flight'}
+    - Flight ticket booked
+- CASE: {'Train'}
+    - Train ticket booked
+- DEFAULT:
+   - Shuttle ticket booked

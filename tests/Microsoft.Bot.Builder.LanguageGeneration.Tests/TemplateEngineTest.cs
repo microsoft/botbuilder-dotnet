@@ -483,6 +483,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.AreEqual(evaled, "Hi");
         }
 
+        [TestMethod]
         public void TestLgFileImportMultipleTimes()
         {
             var engine = new TemplateEngine().AddFiles(new List<string>() { GetExampleFilePath("import.lg"), GetExampleFilePath("import2.lg") });
@@ -519,6 +520,106 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             engine = new TemplateEngine().AddFiles(new List<string>() { GetExampleFilePath("import.lg") });
             ex = Assert.ThrowsException<Exception>(() => engine.AddFiles(new List<string>() { GetExampleFilePath("import2.lg") }));
             Assert.IsTrue(ex.Message.Contains("Duplicated definitions found for template: wPhrase"));
+        }
+
+        [TestMethod]
+        public void TestExpandTemplate()
+        {
+            var engine = new TemplateEngine().AddFile(GetExampleFilePath("Expand.lg"));
+
+            // without scope
+            var evaled = engine.ExpandTemplate("FinalGreeting");
+            Assert.AreEqual(4, evaled.Count);
+            var expectedResults = new List<string>() { "Hi Morning", "Hi Evening", "Hello Morning", "Hello Evening" };
+            expectedResults.ForEach(x => Assert.AreEqual(true, evaled.Contains(x)));
+
+            // with scope
+            evaled = engine.ExpandTemplate("TimeOfDayWithCondition", new { time = "evening" });
+            Assert.AreEqual(2, evaled.Count);
+            expectedResults = new List<string>() { "Hi Evening", "Hello Evening" };
+            expectedResults.ForEach(x => Assert.AreEqual(true, evaled.Contains(x)));
+
+            // with scope
+            evaled = engine.ExpandTemplate("greetInAWeek", new { day = "Sunday" });
+            Assert.AreEqual(2, evaled.Count);
+            expectedResults = new List<string>() { "Nice Sunday!", "Happy Sunday!" };
+            expectedResults.ForEach(x => Assert.AreEqual(true, evaled.Contains(x)));
+        }
+
+        [TestMethod]
+        public void TestExpandTemplateWithRef()
+        {
+            var engine = new TemplateEngine().AddFile(GetExampleFilePath("Expand.lg"));
+
+            var alarms = new[]
+            {
+                new
+                {
+                    time = "7 am",
+                    date = "tomorrow"
+                },
+                new
+                {
+                    time = "8 pm",
+                    date = "tomorrow"
+                }
+            };
+
+            var evaled = engine.ExpandTemplate("ShowAlarmsWithLgTemplate", new { alarms = alarms });
+            Assert.AreEqual(2, evaled.Count);
+            Assert.AreEqual("You have 2 alarms, they are 8 pm at tomorrow", evaled[0]);
+            Assert.AreEqual("You have 2 alarms, they are 8 pm of tomorrow", evaled[1]);
+        }
+
+        [TestMethod]
+        public void TestExpandTemplateWithRefInForeach()
+        {
+            var engine = new TemplateEngine().AddFile(GetExampleFilePath("Expand.lg"));
+
+            var alarms = new[]
+            {
+                new
+                {
+                    time = "7 am",
+                    date = "tomorrow"
+                },
+                new
+                {
+                    time = "8 pm",
+                    date = "tomorrow"
+                }
+            };
+
+            var evaled = engine.ExpandTemplate("ShowAlarmsWithForeach", new { alarms = alarms });
+            Assert.AreEqual(1, evaled.Count);
+            Assert.AreEqual("You have 2 alarms, 7 am at tomorrow and 8 pm at tomorrow", evaled[0]);
+        }
+
+        [TestMethod]
+        public void TestExpandTemplateWithRefInMultiLine()
+        {
+            var engine = new TemplateEngine().AddFile(GetExampleFilePath("Expand.lg"));
+
+            var alarms = new[]
+            {
+                new
+                {
+                    time = "7 am",
+                    date = "tomorrow"
+                },
+                new
+                {
+                    time = "8 pm",
+                    date = "tomorrow"
+                }
+            };
+
+            var evaled = engine.ExpandTemplate("ShowAlarmsWithMultiLine", new { alarms = alarms });
+            Assert.AreEqual(2, evaled.Count);
+            var eval1Options = new List<string>() { "\r\nYou have 2 alarms.\r\nThey are 8 pm at tomorrow\r\n", "\nYou have 2 alarms.\nThey are 8 pm at tomorrow\n" };
+            var eval2Options = new List<string>() { "\r\nYou have 2 alarms.\r\nThey are 8 pm of tomorrow\r\n", "\nYou have 2 alarms.\nThey are 8 pm of tomorrow\n" };
+            Assert.AreEqual(true, eval1Options.Contains(evaled[0]));
+            Assert.AreEqual(true, eval2Options.Contains(evaled[1]));
         }
     }
 }
