@@ -119,14 +119,14 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.Payloads
             var transport = new MockTransportSender();
             sender.Connect(transport);
 
-            var content = new HttpContentStream(Guid.NewGuid())
+            var content = new ResponseMessageStream(Guid.NewGuid())
             {
                 Content = new StringContent("blah blah blah", Encoding.ASCII),
             };
 
             TaskCompletionSource<string> done = new TaskCompletionSource<string>();
 
-            var disassembler = new HttpContentStreamDisassembler(sender, content);
+            var disassembler = new ResponseMessageStreamDisassembler(sender, content);
 
             await disassembler.Disassemble();
 
@@ -140,12 +140,12 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.Payloads
             var transport = new MockTransportSender();
             sender.Connect(transport);
 
-            var content = new HttpContentStream(Guid.NewGuid())
+            var content = new ResponseMessageStream(Guid.NewGuid())
             {
                 Content = new ObjectContent(typeof(string), "{'a': 55}", new JsonMediaTypeFormatter()),
             };
 
-            var disassembler = new HttpContentStreamDisassembler(sender, content);
+            var disassembler = new ResponseMessageStreamDisassembler(sender, content);
 
             await disassembler.Disassemble();
 
@@ -161,14 +161,14 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.Payloads
 
             var stream = new PayloadStream(new PayloadStreamAssembler(null, Guid.NewGuid(), "blah", 100));
 
-            var content = new HttpContentStream(Guid.NewGuid())
+            var content = new ResponseMessageStream(Guid.NewGuid())
             {
                 Content = new StreamContent(stream),
             };
 
             stream.Write(new byte[100], 0, 100);
 
-            var disassembler = new HttpContentStreamDisassembler(sender, content);
+            var disassembler = new ResponseMessageStreamDisassembler(sender, content);
 
             await disassembler.Disassemble();
 

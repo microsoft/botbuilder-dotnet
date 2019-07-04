@@ -69,7 +69,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests
             var s = new StringContent("hi");
             var s2 = new StringContent("hello");
 
-            r.Streams = new List<HttpContentStream> { new HttpContentStream() { Content = s2 } };
+            r.Streams = new List<ResponseMessageStream> { new ResponseMessageStream() { Content = s2 } };
 
             r.AddStream(s);
 

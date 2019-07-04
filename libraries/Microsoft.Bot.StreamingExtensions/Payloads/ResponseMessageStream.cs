@@ -10,41 +10,41 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
     /// An attachment contained within a <see cref="StreamingRequest"/>'s stream collection,
     /// which itself contains any form of media item.
     /// </summary>
-    public class HttpContentStream
+    public class ResponseMessageStream
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="HttpContentStream"/> class.
+        /// Initializes a new instance of the <see cref="ResponseMessageStream"/> class.
         /// and assigns an unique guid as its Id.
         /// </summary>
-        public HttpContentStream()
+        public ResponseMessageStream()
             : this(Guid.NewGuid())
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="HttpContentStream"/> class.
+        /// Initializes a new instance of the <see cref="ResponseMessageStream"/> class.
         /// </summary>
-        /// <param name="id">A <see cref="Guid"/> to assign as the Id of this instance of <see cref="HttpContentStream"/>.
+        /// <param name="id">A <see cref="Guid"/> to assign as the Id of this instance of <see cref="ResponseMessageStream"/>.
         /// If null a new <see cref="Guid"/> will be generated.
         /// </param>
-        public HttpContentStream(Guid id)
+        public ResponseMessageStream(Guid id)
         {
             Id = id;
         }
 
         /// <summary>
-        /// Gets the <see cref="Guid"/> used to identify this <see cref="HttpContentStream"/>.
+        /// Gets the <see cref="Guid"/> used to identify this <see cref="ResponseMessageStream"/>.
         /// </summary>
         /// <value>
-        /// A <see cref="Guid"/> used to identify this <see cref="HttpContentStream"/>.
+        /// A <see cref="Guid"/> used to identify this <see cref="ResponseMessageStream"/>.
         /// </value>
         public Guid Id { get; private set; }
 
         /// <summary>
-        /// Gets or sets the <see cref="HttpContent"/> of this <see cref="HttpContentStream"/>.
+        /// Gets or sets the <see cref="HttpContent"/> of this <see cref="ResponseMessageStream"/>.
         /// </summary>
         /// <value>
-        /// The <see cref="HttpContent"/> of this <see cref="HttpContentStream"/>.
+        /// The <see cref="HttpContent"/> of this <see cref="ResponseMessageStream"/>.
         /// </value>
         public HttpContent Content { get; set; }
     }

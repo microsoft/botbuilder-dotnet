@@ -54,7 +54,7 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
             await Send().ConfigureAwait(false);
         }
 
-        protected static StreamDescription GetStreamDescription(HttpContentStream stream)
+        protected static StreamDescription GetStreamDescription(ResponseMessageStream stream)
         {
             var description = new StreamDescription()
             {

@@ -88,42 +88,6 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
             return availableCount;
         }
 
-        public override int Read(byte[] buffer, int offset, int count)
-        {
-            if (_end)
-            {
-                return 0;
-            }
-
-            if (_active == null)
-            {
-                dataAvailable.Wait();
-
-                lock (syncLock)
-                {
-                    _active = _bufferQueue.Dequeue();
-                }
-            }
-
-            var availableCount = (int)Math.Min(_active.Length - _activeOffset, count);
-            Array.Copy(_active, _activeOffset, buffer, offset, availableCount);
-            _activeOffset += availableCount;
-            _consumerPosition += availableCount;
-
-            if (_activeOffset >= _active.Length)
-            {
-                _active = null;
-                _activeOffset = 0;
-            }
-
-            if (_assembler != null && _consumerPosition >= _assembler.ContentLength)
-            {
-                _end = true;
-            }
-
-            return availableCount;
-        }
-
         public override Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
         {
             var copy = new byte[count];
@@ -149,6 +113,8 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
             DoneProducing();
         }
 
+        public override int Read(byte[] buffer, int offset, int count) => throw new NotImplementedException();
+
         internal void GiveBuffer(byte[] buffer, int count)
         {
             lock (syncLock)
@@ -160,10 +126,7 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
             dataAvailable.Release();
         }
 
-        internal void DoneProducing()
-        {
-            GiveBuffer(Array.Empty<byte>(), 0);
-        }
+        internal void DoneProducing() => GiveBuffer(Array.Empty<byte>(), 0);
 
         protected override void Dispose(bool disposing)
         {

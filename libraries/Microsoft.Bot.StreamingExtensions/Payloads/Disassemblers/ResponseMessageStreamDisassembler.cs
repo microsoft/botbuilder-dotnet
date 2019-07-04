@@ -6,15 +6,15 @@ using Microsoft.Bot.StreamingExtensions.PayloadTransport;
 
 namespace Microsoft.Bot.StreamingExtensions.Payloads
 {
-    internal class HttpContentStreamDisassembler : PayloadDisassembler
+    internal class ResponseMessageStreamDisassembler : PayloadDisassembler
     {
-        public HttpContentStreamDisassembler(IPayloadSender sender, HttpContentStream contentStream)
+        public ResponseMessageStreamDisassembler(IPayloadSender sender, ResponseMessageStream contentStream)
             : base(sender, contentStream.Id)
         {
             ContentStream = contentStream;
         }
 
-        public HttpContentStream ContentStream { get; private set; }
+        public ResponseMessageStream ContentStream { get; private set; }
 
         public override char Type => PayloadTypes.Stream;
 

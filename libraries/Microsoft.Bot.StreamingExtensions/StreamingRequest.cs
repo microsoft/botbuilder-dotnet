@@ -55,9 +55,9 @@ namespace Microsoft.Bot.StreamingExtensions
         /// Gets or sets the collection of stream attachments included in this request.
         /// </summary>
         /// <value>
-        /// A <see cref="List{T}"/> of <see cref="HttpContentStream"/> items associated with this request.
+        /// A <see cref="List{T}"/> of <see cref="ResponseMessageStream"/> items associated with this request.
         /// </value>
-        public List<HttpContentStream> Streams { get; set; }
+        public List<ResponseMessageStream> Streams { get; set; }
 
         /// <summary>
         /// Creates a <see cref="StreamingRequest"/> to get resources hosted on a remote server.
@@ -139,11 +139,11 @@ namespace Microsoft.Bot.StreamingExtensions
 
             if (Streams == null)
             {
-                Streams = new List<HttpContentStream>();
+                Streams = new List<ResponseMessageStream>();
             }
 
             Streams.Add(
-                new HttpContentStream(streamId)
+                new ResponseMessageStream(streamId)
                 {
                     Content = content,
                 });

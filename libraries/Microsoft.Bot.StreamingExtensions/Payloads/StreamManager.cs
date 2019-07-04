@@ -15,13 +15,13 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
         public StreamManager(Action<PayloadStreamAssembler> onCancelStream = null)
         {
             // If no callback is defined, make it a noop to avoid null checking everywhere.
-            _onCancelStream = onCancelStream ?? delegate { };
+            _onCancelStream = onCancelStream ?? ((a) => { });
             _activeAssemblers = new ConcurrentDictionary<Guid, PayloadStreamAssembler>();
         }
 
         public PayloadStreamAssembler GetPayloadAssembler(Guid id)
         {
-            if (!_activeAssemblers.TryGetValue(id, out PayloadStreamAssembler assembler))
+            if (!_activeAssemblers.TryGetValue(id, out var assembler))
             {
                 // a new id has come in, start a new task to process it
                 assembler = new PayloadStreamAssembler(this, id);
@@ -45,7 +45,7 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
 
         public void OnReceive(Header header, Stream contentStream, int contentLength)
         {
-            if (_activeAssemblers.TryGetValue(header.Id, out PayloadStreamAssembler assembler))
+            if (_activeAssemblers.TryGetValue(header.Id, out var assembler))
             {
                 assembler.OnReceive(header, contentStream, contentLength);
             }
@@ -53,7 +53,7 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
 
         public void CloseStream(Guid id)
         {
-            if (_activeAssemblers.TryRemove(id, out PayloadStreamAssembler assembler))
+            if (_activeAssemblers.TryRemove(id, out var assembler))
             {
                 // decide whether to cancel it or not
                 var stream = assembler.GetPayloadAsStream();
