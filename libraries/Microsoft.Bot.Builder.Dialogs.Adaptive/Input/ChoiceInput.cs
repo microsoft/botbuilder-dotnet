@@ -23,7 +23,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
     public enum ChoiceOutputFormat
     {
+        /// <summary>
+        /// Return the value of the choice
+        /// </summary>
         Value,
+
+        /// <summary>
+        /// return the index of the choice
+        /// </summary>
         Index
     }
 
@@ -44,18 +51,39 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             { Chinese, new ChoiceFactoryOptions { InlineSeparator = "， ", InlineOr = " 要么 ", InlineOrMore = "， 要么 ", IncludeNumbers = true } },
         };
 
+        /// <summary>
+        /// List of choices to present to user
+        /// </summary>
         public List<Choice> Choices { get; set; }
 
+        /// <summary>
+        /// Expression collection of choices to present o user
+        /// </summary>
         public string ChoicesProperty { get; set; }
 
+        /// <summary>
+        /// ListStyle to use to render the choices
+        /// </summary>
         public ListStyle Style { get; set; } = ListStyle.Auto;
 
+        /// <summary>
+        /// DefaultLocale
+        /// </summary>
         public string DefaultLocale { get; set; } = null;
 
+        /// <summary>
+        /// Control the format of the response (value or the index of the choice)
+        /// </summary>
         public ChoiceOutputFormat OutputFormat { get; set; } = ChoiceOutputFormat.Value;
 
+        /// <summary>
+        /// ChoiceOptions controls display options for customizing language
+        /// </summary>
         public ChoiceFactoryOptions ChoiceOptions { get; set; } = null;
 
+        /// <summary>
+        /// Customize how to use the choices to recognize the response from the user
+        /// </summary>
         public FindChoicesOptions RecognizerOptions { get; set; } = null;
 
         public ChoiceInput([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
