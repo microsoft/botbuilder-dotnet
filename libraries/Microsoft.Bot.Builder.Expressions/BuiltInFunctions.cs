@@ -220,7 +220,7 @@ namespace Microsoft.Bot.Builder.Expressions
 
         /// <summary>
         /// Validate there is a single string argument.
-        /// </summary> 
+        /// </summary>
         /// <param name="expression">Expression to validate.</param>
         public static void ValidateUnaryString(Expression expression)
             => ValidateArityAndAnyType(expression, 1, 1, ReturnType.String);
@@ -1070,140 +1070,6 @@ namespace Microsoft.Bot.Builder.Expressions
                 else
                 {
                     error = $"{path} is not a path that can be set to a value.";
-                }
-            }
-
-            return (result, error);
-        }
-
-        private static (object value, string error) SetPathToValue(Expression expr, object state)
-        {
-            var path = expr.Children[0];
-            var valueExpr = expr.Children[1];
-            var (value, error) = valueExpr.TryEvaluate(state);
-            if (error == null)
-            {
-                (_, error) = SetPathToValue(path, null, value, state);
-                if (error != null)
-                {
-                    value = null;
-                }
-            }
-            return (value, error);
-        }
-
-        // Expected is null if expecting an object or the desired offset in a list.
-        // Value is null except at the root
-        private static (object, string) SetPathToValue(Expression path, int? expected, object value, object state)
-        {
-            object result = null;
-            string error = null;
-            object instance;
-            object index;
-            var children = path.Children;
-            if (path.Type == ExpressionType.Accessor || path.Type == ExpressionType.Element)
-            {
-                (index, error) = children[path.Type == ExpressionType.Accessor ? 0 : 1].TryEvaluate(state);
-                if (error == null)
-                {
-                    var iindex = index as int?;
-                    if (children.Count() == 2)
-                    {
-                        (instance, error) = SetPathToValue(children[path.Type == ExpressionType.Accessor ? 1 : 0], iindex, null, state);
-                    }
-                    else
-                    {
-                        instance = state;
-                    }
-                    if (error == null)
-                    {
-                        if (index is string propName)
-                        {
-                            if (value != null)
-                            {
-                                result = SetProperty(instance, propName, value);
-                            }
-                            else
-                            {
-                                (result, error) = AccessProperty(instance, propName);
-                                // If value, just set it
-                                // TODO: IF expected should be list otherwise object
-                                // Should write multi-step tests
-                                if (error == null && result == null)
-                                {
-                                    // Create new value for parents to use
-                                    if (expected.HasValue)
-                                    {
-                                        result = SetProperty(instance, propName, new List<object>(expected.Value + 1));
-                                    }
-                                    else
-                                    {
-                                        result = SetProperty(instance, propName, new Dictionary<string, object>());
-                                    }
-                                }
-                            }
-                        }
-                        else if (iindex.HasValue)
-                        {
-                            // Child instance should be a list already because we passed down the iindex.
-                            if (TryParseList(instance, out IList list))
-                            {
-                                if (list.Count <= iindex.Value)
-                                {
-                                    // Extend list.
-                                    while (list.Count <= iindex.Value)
-                                    {
-                                        list.Add(null);
-                                    }
-                                }
-
-                                // Assign value or expected list size or object
-                                if (list is JArray arr)
-                                {
-                                    result = value != null ? JToken.FromObject(value)
-                                        : (expected.HasValue ? (object)new JArray() : new JObject());
-                                    arr[iindex.Value] = (JToken)result;
-                                }
-                                else
-                                {
-                                    result = value ?? (expected.HasValue ? (object)new List<object>(expected.Value + 1) : (object)new Dictionary<string, object>());
-                                    list[iindex.Value] = result;
-                                }
-                            }
-                            else
-                            {
-                                error = $"{children[0]} is not a list.";
-                            }
-                        }
-                        else
-                        {
-                            error = $"{children[0]} is not a valid path";
-                        }
-                    }
-                }
-            }
-            else
-            {
-                // Turn shortcuts into accessors
-                if (path.Type != ExpressionType.SimpleEntity && PrefixsOfShorthand.TryGetValue(path.Type, out string fullPath))
-                {
-                    Expression expr = null;
-                    foreach (var elt in fullPath.Split('.'))
-                    {
-                        if (!string.IsNullOrEmpty(elt))
-                        {
-                            expr = Expression.Accessor(elt, expr);
-                        }
-                    }
-
-                    // TODO: There is no reason you could not do computed functions off short hands
-                    var child = path.Children[0] as Constant;
-                    expr = Expression.Accessor((string) child.Value, expr);
-                    (result, error) = SetPathToValue(expr, expected, value, state);
-                }
-                else
-                {
-                    error = "Cannot assign to ${path}.";
                 }
             }
 

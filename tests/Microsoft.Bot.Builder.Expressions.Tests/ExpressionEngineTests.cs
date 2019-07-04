@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
 
         public static HashSet<string> one = new HashSet<string> { "one" };
         public static HashSet<string> oneTwo = new HashSet<string> { "one", "two" };
-        private static string nullStr = null;
+        private static readonly string nullStr = null;
 
         private readonly object scope = new Dictionary<string, object>
         {
