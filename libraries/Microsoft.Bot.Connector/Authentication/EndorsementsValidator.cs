@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <param name="expectedEndorsement">The expected endorsement. Generally the ID of the channel to validate, typically extracted from the activity's
         /// <see cref="Schema.Activity.ChannelId"/> property, that to which the Activity is affinitized. Alternatively, it could represent a compliance certification that is required.</param>
         /// <param name="endorsements">The JWT token’s signing party is permitted to send activities only for
-        /// specific channels. That list, the set of channels the service can sign for, is called the the endorsement list.
+        /// specific channels. That list, the set of channels the service can sign for, is called the endorsement list.
         /// The activity’s <see cref="Schema.Activity.ChannelId"/> MUST be found in the endorsement list, or the incoming
         /// activity is not considered valid.</param>
         /// <returns>True if the channel ID is found in the endorsements list; otherwise, false.</returns>

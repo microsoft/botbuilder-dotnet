@@ -79,7 +79,7 @@ namespace Microsoft.Bot.Builder.FunctionalTests
                 var activitySet = await client.Conversations.GetActivitiesAsync(conversationId, watermark);
                 watermark = activitySet?.Watermark;
 
-                // Extract the activies sent from the bot.
+                // Extract the activities sent from the bot.
                 var activities = from x in activitySet.Activities
                                  where x.From.Id == botId
                                  select x;

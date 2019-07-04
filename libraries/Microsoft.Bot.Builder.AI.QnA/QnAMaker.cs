@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <param name="httpClient">An alternate client with which to talk to QnAMaker.
         /// If null, a default client is used for this instance.</param>
         /// <param name="telemetryClient">The IBotTelemetryClient used for logging telemetry events.</param>
-        /// <param name="logPersonalInformation">Set to true to include personally indentifiable information in telemetry events.</param>
+        /// <param name="logPersonalInformation">Set to true to include personally identifiable information in telemetry events.</param>
         public QnAMaker(QnAMakerEndpoint endpoint, QnAMakerOptions options, HttpClient httpClient, IBotTelemetryClient telemetryClient, bool logPersonalInformation = false)
         {
             _endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
@@ -97,7 +97,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <param name="httpClient">An alternate client with which to talk to QnAMaker.
         /// If null, a default client is used for this instance.</param>
         /// <param name="telemetryClient">The IBotTelemetryClient used for logging telemetry events.</param>
-        /// <param name="logPersonalInformation">Set to true to include personally indentifiable information in telemetry events.</param>
+        /// <param name="logPersonalInformation">Set to true to include personally identifiable information in telemetry events.</param>
         public QnAMaker(QnAMakerService service, QnAMakerOptions options, HttpClient httpClient, IBotTelemetryClient telemetryClient, bool logPersonalInformation = false)
             : this(new QnAMakerEndpoint(service), options, httpClient, telemetryClient, logPersonalInformation)
         {
