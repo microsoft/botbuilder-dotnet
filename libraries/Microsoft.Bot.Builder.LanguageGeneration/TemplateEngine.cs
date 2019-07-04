@@ -230,6 +230,18 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <returns>path expressed as OS path.</returns>
         private static char[] osChars = { '\\', '/' };
 
-        public static string NormalizePath(string path) => Path.Combine(path.TrimEnd(osChars).Split(osChars));
+        public static string NormalizePath(string ambigiousPath)
+        {
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                // map linux/mac sep -> windows
+                return ambigiousPath.Replace("/", "\\");
+            }
+            else
+            {
+                // map windows sep -> linux/mac
+                return ambigiousPath.Replace("\\", "/");
+            }
+        }
     }
 }
