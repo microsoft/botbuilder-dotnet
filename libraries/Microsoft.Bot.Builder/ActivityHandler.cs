@@ -51,6 +51,9 @@ namespace Microsoft.Bot.Builder
                 case ActivityTypes.ConversationUpdate:
                     return OnConversationUpdateActivityAsync(new DelegatingTurnContext<IConversationUpdateActivity>(turnContext), cancellationToken);
 
+                case ActivityTypes.MessageReaction:
+                    return OnMessageReactionActivityAsync(new DelegatingTurnContext<IMessageReactionActivity>(turnContext), cancellationToken);
+
                 case ActivityTypes.Event:
                     return OnEventActivityAsync(new DelegatingTurnContext<IEventActivity>(turnContext), cancellationToken);
 
@@ -135,6 +138,58 @@ namespace Microsoft.Bot.Builder
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         protected virtual Task OnMembersRemovedAsync(IList<ChannelAccount> membersRemoved, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Invoked when an event activity is received from the connector when the base behavior of
+        /// <see cref="OnTurnAsync(ITurnContext{IConversationUpdateActivity}, CancellationToken)"/> is used.
+        /// Message reactions correspond to the user adding a 'like' or 'sad' etc. (often an emoji) to a
+        /// previously sent activity. Message reactions are only supported by a few channels.
+        /// The activity that the message reaction corresponds to is indicated in the replyToId property.
+        /// The value of this property is the activity id of a previously sent activity given back to the
+        /// bot as the response from a send call.
+        /// </summary>
+        /// <param name="turnContext">The context object for this turn.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        protected virtual async Task OnMessageReactionActivityAsync(ITurnContext<IMessageReactionActivity> turnContext, CancellationToken cancellationToken)
+        {
+            if (turnContext.Activity.ReactionsAdded != null)
+            {
+                await OnReactionsAddedAsync(turnContext.Activity.ReactionsAdded, turnContext, cancellationToken).ConfigureAwait(false);
+            }
+
+            if (turnContext.Activity.ReactionsRemoved != null)
+            {
+                await OnReactionsRemovedAsync(turnContext.Activity.ReactionsRemoved, turnContext, cancellationToken).ConfigureAwait(false);
+            }
+        }
+
+        /// <summary>
+        /// Called when there have been Reactions added that reference a previous Activity.
+        /// </summary>
+        /// <param name="messageReactions">The list of reactions added.</param>
+        /// <param name="turnContext">The context object for this turn.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        protected virtual Task OnReactionsAddedAsync(IList<MessageReaction> messageReactions, ITurnContext<IMessageReactionActivity> turnContext, CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Called when there have been Reactions removed that reference a previous Activity.
+        /// </summary>
+        /// <param name="messageReactions">The list of reactions removed.</param>
+        /// <param name="turnContext">The context object for this turn.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        protected virtual Task OnReactionsRemovedAsync(IList<MessageReaction> messageReactions, ITurnContext<IMessageReactionActivity> turnContext, CancellationToken cancellationToken)
         {
             return Task.CompletedTask;
         }
