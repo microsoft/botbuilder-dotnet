@@ -178,18 +178,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// <summary>
         /// Get resource by filename
         /// </summary>
-        /// <param name="filename"></param>
+        /// <param name="id"></param>
         /// <returns></returns>
-        public IResource GetResource(string filename)
+        public IResource GetResource(string id)
         {
-            try
+            foreach (var resourceProvider in this.resourceProviders)
             {
-                return GetResources(Path.GetExtension(filename)).Where(resource => resource.Id == filename).SingleOrDefault();
+                var resource = resourceProvider.GetResource(id);
+                if (resource != null)
+                {
+                    return resource;
+                }
             }
-            catch(InvalidOperationException err)
-            {
-                throw new Exception($"{filename} duplicates found.\n{String.Join("\n", GetResources(Path.GetExtension(filename)).Where(resource => resource.Id == filename).Select(resource => resource.Id))}", err);
-            }
+            return null;
         }
 
         public void Dispose()
