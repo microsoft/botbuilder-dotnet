@@ -10,22 +10,35 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.StreamingExtensions.Payloads
 {
-    internal class ReceiveResponseAssembler : PayloadAssembler
+    internal class ReceiveResponseAssembler : IAssembler
     {
         private readonly Func<Guid, ReceiveResponse, Task> _onCompleted;
         private readonly IStreamManager _streamManager;
         private readonly int? _length;
+        private object _syncLock = new object();
 
         public ReceiveResponseAssembler(Header header, IStreamManager streamManager, Func<Guid, ReceiveResponse, Task> onCompleted)
-            : base(header.Id)
         {
-            _streamManager = streamManager;
-            _onCompleted = onCompleted;
+            if (header == null)
+            {
+                throw new ArgumentNullException(nameof(header));
+            }
 
+            _streamManager = streamManager ?? new StreamManager();
+            _onCompleted = onCompleted ?? throw new ArgumentNullException(nameof(onCompleted));
+            Id = header.Id;
             _length = header.End ? (int?)header.PayloadLength : null;
         }
 
-        public override Stream CreateStreamFromPayload()
+        public Guid Id { get; private set; }
+
+        public bool End { get; private set; }
+
+        protected static JsonSerializer Serializer { get; set; } = JsonSerializer.Create(SerializationSettings.DefaultSerializationSettings);
+
+        private Stream Stream { get; set; }
+
+        public Stream CreateStreamFromPayload()
         {
             if (_length.HasValue)
             {
@@ -37,13 +50,25 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
             }
         }
 
-        public override void OnReceive(Header header, Stream stream, int contentLength)
+        public Stream GetPayloadAsStream()
         {
-            // Call base functionality first so that we can fire off a new Task when completed
-            base.OnReceive(header, stream, contentLength);
+            lock (_syncLock)
+            {
+                if (Stream == null)
+                {
+                    Stream = CreateStreamFromPayload();
+                }
+            }
 
+            return Stream;
+        }
+
+        public void OnReceive(Header header, Stream stream, int contentLength)
+        {
             if (header.End)
             {
+                End = header.End;
+
                 // Move stream back to the beginning for reading
                 stream.Position = 0;
 
@@ -53,6 +78,8 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
 
             // else: still receiving data into the stream
         }
+
+        public void Close() => _streamManager.CloseStream(Id);
 
         private async Task ProcessResponse(Stream stream)
         {
@@ -72,7 +99,7 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
                     {
                         foreach (var streamDescription in responsePayload.Streams)
                         {
-                            if (!Guid.TryParse(streamDescription.Id, out Guid id))
+                            if (!Guid.TryParse(streamDescription.Id, out var id))
                             {
                                 throw new InvalidDataException($"Stream description id '{streamDescription.Id}' is not a Guid");
                             }

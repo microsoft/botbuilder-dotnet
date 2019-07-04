@@ -15,7 +15,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.Payloads
         public void PayloadAssembler_ctor_Id()
         {
             var id = Guid.NewGuid();
-            var a = new MockPayloadAssembler(id);
+            var a = new PayloadStreamAssembler(new StreamManager(), id);
 
             Assert.AreEqual(id, a.Id);
         }
@@ -24,7 +24,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.Payloads
         public void PayloadAssembler_ctor_End_false()
         {
             var id = Guid.NewGuid();
-            var a = new MockPayloadAssembler(id);
+            var a = new PayloadStreamAssembler(new StreamManager(), id);
 
             Assert.IsFalse(a.End);
         }
@@ -33,7 +33,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.Payloads
         public void PayloadAssembler_GetStream()
         {
             var id = Guid.NewGuid();
-            var a = new MockPayloadAssembler(id);
+            var a = new PayloadStreamAssembler(new StreamManager(), id);
             var s = a.GetPayloadAsStream();
 
             Assert.IsNotNull(a);
@@ -43,7 +43,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.Payloads
         public void PayloadAssembler_GetStream_DoesNotMakeNewEachTime()
         {
             var id = Guid.NewGuid();
-            var a = new MockPayloadAssembler(id);
+            var a = new PayloadStreamAssembler(new StreamManager(), id);
             var s = a.GetPayloadAsStream();
             var s2 = a.GetPayloadAsStream();
 
@@ -54,11 +54,11 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.Payloads
         public void PayloadAssembler_OnReceive_SetsEnd()
         {
             var id = Guid.NewGuid();
-            var a = new MockPayloadAssembler(id);
+            var a = new PayloadStreamAssembler(new StreamManager(), id);
 
             var header = new Header() { End = true };
 
-            a.OnReceive(header, null, 100);
+            a.OnReceive(header, new PayloadStream(a), 100);
 
             Assert.IsTrue(a.End);
         }
@@ -67,7 +67,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.Payloads
         public void PayloadAssembler_Close__DoesNotSetEnd()
         {
             var id = Guid.NewGuid();
-            var a = new MockPayloadAssembler(id);
+            var a = new PayloadStreamAssembler(new StreamManager(), id);
 
             a.Close();
 
