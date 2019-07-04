@@ -31,7 +31,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
         public string DefaultLocale { get; set; } = null;
 
-        public ListStyle style = ListStyle.Auto;
+        public ListStyle Style { get; set; } = ListStyle.Auto;
 
         public ChoiceFactoryOptions ChoiceOptions { get; set; } = null;
 
@@ -107,7 +107,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
             var prompt = await base.OnRenderPrompt(dc, state);
 
-            return this.AppendChoices(prompt.AsMessageActivity(), channelId, confirmChoices, this.style, choiceOptions);
+            return this.AppendChoices(prompt.AsMessageActivity(), channelId, confirmChoices, this.Style, choiceOptions);
         }
 
         private string GetCulture(DialogContext dc)
