@@ -35,5 +35,11 @@ namespace Microsoft.Bot.Builder.BotKit
         /// </summary>
         /// <value>The Activity.</value>
         public Activity Activity { get; set; }
+
+        /// <summary>
+        /// Gets or Sets the WebhookUri of the BotWorkerConfiguration.
+        /// </summary>
+        /// <value>The Activity.</value>
+        public Activity WebhookUri { get; set; }
     }
 }
