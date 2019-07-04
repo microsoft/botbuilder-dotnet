@@ -13,7 +13,7 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
         private readonly Func<Guid, ReceiveRequest, Task> _onReceiveRequest;
         private readonly Func<Guid, ReceiveResponse, Task> _onReceiveResponse;
         private readonly IStreamManager _streamManager;
-        private readonly Dictionary<Guid, PayloadAssembler> _activeAssemblers;
+        private readonly Dictionary<Guid, IAssembler> _activeAssemblers;
 
         public PayloadAssemblerManager(
             IStreamManager streamManager,
@@ -22,7 +22,7 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
         {
             _onReceiveRequest = onReceiveRequest;
             _onReceiveResponse = onReceiveResponse;
-            _activeAssemblers = new Dictionary<Guid, PayloadAssembler>();
+            _activeAssemblers = new Dictionary<Guid, IAssembler>();
             _streamManager = streamManager;
         }
 
@@ -32,7 +32,7 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
             {
                 return _streamManager.GetPayloadStream(header);
             }
-            else if (!_activeAssemblers.TryGetValue(header.Id, out PayloadAssembler assembler))
+            else if (!_activeAssemblers.TryGetValue(header.Id, out var assembler))
             {
                 // a new requestId has come in, start a new task to process it as it is received
                 assembler = CreatePayloadAssembler(header);
@@ -41,7 +41,7 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
                     _activeAssemblers.Add(header.Id, assembler);
                 }
 
-                return assembler?.GetPayloadStream();
+                return assembler?.GetPayloadAsStream();
             }
 
             return null;
@@ -55,7 +55,7 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
             }
             else
             {
-                if (_activeAssemblers.TryGetValue(header.Id, out PayloadAssembler assembler))
+                if (_activeAssemblers.TryGetValue(header.Id, out var assembler))
                 {
                     assembler.OnReceive(header, contentStream, contentLength);
                 }
@@ -70,12 +70,9 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
             }
         }
 
-        private bool IsStreamPayload(Header header)
-        {
-            return header.Type == PayloadTypes.Stream;
-        }
+        private bool IsStreamPayload(Header header) => header.Type == PayloadTypes.Stream;
 
-        private PayloadAssembler CreatePayloadAssembler(Header header)
+        private IAssembler CreatePayloadAssembler(Header header)
         {
             switch (header.Type)
             {

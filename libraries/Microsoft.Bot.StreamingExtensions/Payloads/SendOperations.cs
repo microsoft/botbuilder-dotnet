@@ -29,7 +29,7 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
                 var tasks = new List<Task>(request.Streams.Count);
                 foreach (var contentStream in request.Streams)
                 {
-                    var contentDisassembler = new HttpContentStreamDisassembler(_payloadSender, contentStream);
+                    var contentDisassembler = new ResponseMessageStreamDisassembler(_payloadSender, contentStream);
 
                     tasks.Add(contentDisassembler.Disassemble());
                 }
@@ -49,7 +49,7 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
                 var tasks = new List<Task>(response.Streams.Count());
                 foreach (var contentStream in response.Streams)
                 {
-                    var contentDisassembler = new HttpContentStreamDisassembler(_payloadSender, contentStream);
+                    var contentDisassembler = new ResponseMessageStreamDisassembler(_payloadSender, contentStream);
 
                     tasks.Add(contentDisassembler.Disassemble());
                 }

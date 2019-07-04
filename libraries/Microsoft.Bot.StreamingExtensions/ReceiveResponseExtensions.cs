@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -24,11 +25,10 @@ namespace Microsoft.Bot.StreamingExtensions
         /// </returns>
         public static T ReadBodyAsJson<T>(this ReceiveResponse response)
         {
-            var contentStream = response.Streams.FirstOrDefault();
-            if (contentStream != null)
+            try
             {
-                var stream = contentStream.GetStream();
-                using (var reader = new StreamReader(stream, Encoding.UTF8))
+                var contentStream = response.Streams.FirstOrDefault();
+                using (var reader = new StreamReader(contentStream.Stream, Encoding.UTF8))
                 {
                     using (var jsonReader = new JsonTextReader(reader))
                     {
@@ -37,8 +37,10 @@ namespace Microsoft.Bot.StreamingExtensions
                     }
                 }
             }
-
-            return default(T);
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         /// <summary>
@@ -54,7 +56,7 @@ namespace Microsoft.Bot.StreamingExtensions
 
             if (contentStream != null)
             {
-                return contentStream.GetStream().ReadAsUtf8String();
+                return contentStream.Stream.ReadAsUtf8String();
             }
 
             return string.Empty;
@@ -74,7 +76,7 @@ namespace Microsoft.Bot.StreamingExtensions
 
             if (contentStream != null)
             {
-                return await contentStream.GetStream().ReadAsUtf8StringAsync().ConfigureAwait(false);
+                return await contentStream.Stream.ReadAsUtf8StringAsync().ConfigureAwait(false);
             }
 
             return string.Empty;

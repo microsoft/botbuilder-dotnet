@@ -11,7 +11,7 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
         public string Id { get; set; }
 
         [JsonProperty("type")]
-        public string Type { get; set; }
+        public string ContentType { get; set; }
 
         [JsonProperty("length")]
         public int? Length { get; set; }

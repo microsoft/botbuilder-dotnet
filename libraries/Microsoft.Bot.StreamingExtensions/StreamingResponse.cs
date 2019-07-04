@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
+using Microsoft.Bot.StreamingExtensions.Payloads;
 
 namespace Microsoft.Bot.StreamingExtensions
 {
@@ -28,9 +29,9 @@ namespace Microsoft.Bot.StreamingExtensions
         /// Gets or sets the collection of streams attached to this response.
         /// </summary>
         /// <value>
-        /// A <see cref="List{T}"/> of type <see cref="HttpContentStream"/>.
+        /// A <see cref="List{T}"/> of type <see cref="ResponseMessageStream"/>.
         /// </value>
-        public List<HttpContentStream> Streams { get; set; }
+        public List<ResponseMessageStream> Streams { get; set; }
 
         /// <summary>
         /// Creates a response indicating the requested resource was not found.
@@ -95,11 +96,11 @@ namespace Microsoft.Bot.StreamingExtensions
 
             if (Streams == null)
             {
-                Streams = new List<HttpContentStream>();
+                Streams = new List<ResponseMessageStream>();
             }
 
             Streams.Add(
-                new HttpContentStream()
+                new ResponseMessageStream()
                 {
                     Content = content,
                 });

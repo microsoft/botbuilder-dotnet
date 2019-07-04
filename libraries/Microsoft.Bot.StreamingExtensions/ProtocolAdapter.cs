@@ -67,7 +67,7 @@ namespace Microsoft.Bot.StreamingExtensions
             await _requestManager.SignalResponse(id, response).ConfigureAwait(false);
         }
 
-        private void OnCancelStream(PayloadAssembler contentStreamAssembler)
+        private void OnCancelStream(IAssembler contentStreamAssembler)
         {
             Background.Run(() => _sendOperations.SendCancelStreamAsync(contentStreamAssembler.Id));
         }
