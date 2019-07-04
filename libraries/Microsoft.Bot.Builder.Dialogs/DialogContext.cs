@@ -50,10 +50,10 @@ namespace Microsoft.Bot.Builder.Dialogs
         public List<DialogInstance> Stack { get; private set; }
 
         /// <summary>
-        /// Gets or sets the The parent DialogContext if any. Used when searching for dialogs to start.
+        /// Gets or sets the parent DialogContext if any. Used when searching for dialogs to start.
         /// </summary>
         /// <value>
-        /// The The parent DialogContext if any. Used when searching for dialogs to start.
+        /// The parent DialogContext if any. Used when searching for dialogs to start.
         /// </value>
         public DialogContext Parent { get; set; }
 
