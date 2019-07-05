@@ -18,6 +18,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
     public class SetProperty : DialogCommand
     {
         private Expression value;
+        private Expression property;
 
         [JsonConstructor]
         public SetProperty([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0) : base()
@@ -39,7 +40,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
         /// Property to put the value in
         /// </summary>
         [JsonProperty("property")]
-        public string Property { get; set; }
+        public string Property 
+        {
+            get { return property?.ToString(); }
+            set { this.property = (value != null) ? new ExpressionEngine().Parse(value) : null; }
+        }
 
         protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -52,11 +57,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
             if (dc is SequenceContext planning)
             {
                 // SetProperty evaluates the "Value" expression and returns it as the result of the dialog
-                var (value, error) = this.value.TryEvaluate(dc.State);
-
-                if (error == null)
+                if (dc.State.TryGetValue<object>(this.value, out object value))
                 {
-                    dc.State.SetValue(Property, value);
+                    dc.State.SetValue(property, value);
 
                     var sc = dc as SequenceContext;
 

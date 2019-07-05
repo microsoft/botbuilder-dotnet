@@ -294,14 +294,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
             if (!string.IsNullOrEmpty(this.Property) && !this.AlwaysPrompt)
             {
-                var (temp, error) = new ExpressionEngine().Parse(this.Property).TryEvaluate(dc.State);
-                input = temp;
+                input = dc.State.GetValue(this.Property, null);
             }
 
             if (this.Value != null)
             {
-                var (temp, error) = this.value.TryEvaluate(dc.State);
-                input = temp;
+                input = dc.State.GetValue(this.value, null);
             }
 
             if (input == null)

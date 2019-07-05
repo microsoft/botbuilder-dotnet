@@ -139,8 +139,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                 throw new Exception($"EditArray: \"{ ChangeType }\" operation couldn't be performed because the arrayProperty wasn't specified.");
             }
 
-            var prop = await new TextTemplate(this.ArrayProperty).BindToData(dc.Context, dc.State).ConfigureAwait(false);
-            var array = dc.State.GetValue(prop, new JArray());
+            var array = dc.State.GetValue<JArray>(this.arrayProperty, new JArray());
 
             object item = null;
             object result = null;
@@ -192,10 +191,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                     break;
             }
 
-            dc.State.SetValue(prop, array);
+            dc.State.SetValue(this.arrayProperty, array);
             if (ResultProperty != null)
             {
-                dc.State.SetValue(ResultProperty, result);
+                dc.State.SetValue(resultProperty, result);
             }
             return await dc.EndDialogAsync(result);
         }
