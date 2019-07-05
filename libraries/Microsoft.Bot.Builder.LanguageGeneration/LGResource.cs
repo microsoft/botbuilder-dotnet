@@ -14,14 +14,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </summary>
         /// <param name="templates">The lg templates.</param>
         /// <param name="imports">The lg imports.</param>
-        /// <param name="description">LG resource description.</param>
         /// <param name="id">The id of the lg source.</param>
-        public LGResource(IEnumerable<LGTemplate> templates, string description, string id, IEnumerable<LGResource> imports = null)
+        public LGResource(IList<LGTemplate> templates, IList<LGImport> imports, string id = "")
         {
             Templates = templates;
             Imports = imports;
             Id = id;
-            Description = description;
         }
 
         public string Description { get; set; }
@@ -40,7 +38,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <value>
         /// LG templates.
         /// </value>
-        public IEnumerable<LGTemplate> Templates { get; set; }
+        public IList<LGTemplate> Templates { get; set; }
 
         /// <summary>
         /// Gets or sets LgImports.
@@ -48,7 +46,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <value>
         /// LG imports.
         /// </value>
-        public IEnumerable<LGResource> Imports { get; set; }
+        public IList<LGImport> Imports { get; set; }
 
         /// <summary>
         /// Override the Equals function for LGResource comparison.
@@ -57,9 +55,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <returns>True if the ids are same.</returns>
         public override bool Equals(object obj)
         {
-            if (obj is LGResource lgresource)
+            if (obj is LGResource lgResourceObj)
             {
-                return this.Id.Equals(lgresource.Id);
+                return this.Id.Equals(lgResourceObj.Id);
             }
 
             return false;
@@ -69,18 +67,20 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// Override the GetHashCode function for LGResource comparison.
         /// </summary>
         /// <returns>Hash code.</returns>
-        public override int GetHashCode() => this.Id.GetHashCode();
+        public override int GetHashCode()
+        {
+            return this.Id.GetHashCode();
+        }
 
         /// <summary>
         /// Discover all imported lg resources from a start resouce.
         /// </summary>
-        /// <param name="start">The lg resource from which to start discovering imported resources.</param>
         /// <param name="importResolver">resolver to resolve LG import id to template text.</param>
         /// <returns>LGResource list of parsed lg content.</returns>
-        public List<LGResource> DiscoverLGResources()
+        public List<LGResource> DiscoverDependencies(ImportResolverDelegate importResolver)
         {
             var resourcesFound = new HashSet<LGResource>();
-            ResolveImportResources(this, resourcesFound);
+            ResolveImportResources(this, importResolver ?? ImportResolver.FileResolver(), resourcesFound);
 
             return resourcesFound.ToList();
         }
@@ -90,23 +90,27 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// All the imports will be visited and resolved to LGResouce list.
         /// </summary>
         /// <param name="start">The lg resource from which to start resolving imported resources.</param>
+        /// <param name="importResolver">resolver to resolve LG import id to template text.</param>
         /// <param name="resourcesFound">Resources that have been found.</param>
-        private void ResolveImportResources(LGResource start, HashSet<LGResource> resourcesFound)
+        private void ResolveImportResources(LGResource start, ImportResolverDelegate importResolver, HashSet<LGResource> resourcesFound)
         {
+            var resourceIds = start.Imports.Select(lg => lg.Id).ToList();
             resourcesFound.Add(start);
 
-            foreach (var childResource in start.Imports)
+            foreach (var id in resourceIds)
             {
                 try
                 {
+                    var (content, path) = importResolver(id);
+                    var childResource = LGParser.Parse(content, path);
                     if (!resourcesFound.Contains(childResource))
                     {
-                        ResolveImportResources(childResource, resourcesFound);
+                        ResolveImportResources(childResource, importResolver, resourcesFound);
                     }
                 }
                 catch (Exception err)
                 {
-                    throw new Exception($"{childResource.Id}:{err.Message}", err);
+                    throw new Exception($"{id}:{err.Message}", err);
                 }
             }
         }

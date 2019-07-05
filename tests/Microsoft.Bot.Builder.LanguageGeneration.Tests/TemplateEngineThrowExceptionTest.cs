@@ -170,5 +170,11 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                 Assert.Fail(errorMessage);
             }
         }
+
+        [TestMethod]
+        public void TestBasic()
+        {
+            var result = StaticChecker.CheckFile(GetExampleFilePath("SwitchCaseWarning.lg"));
+        }
     }
 }

@@ -10,27 +10,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 {
     public class LGParser
     {
-        public static LGResource Parse(string content, ImportResolverDelegate importResolver, string id = "", string description = "")
+        public static LGResource Parse(string content, string id = "")
         {
             var fileContext = GetFileContentContext(content, id);
             var templates = ExtractLGTemplates(fileContext, id);
             var imports = ExtractLGImports(fileContext, id);
 
-            var rootResource = new LGResource(templates, description, id)
-            {
-                Imports = GetImportResources(imports, importResolver ?? ImportResolver.FileResolver()),
-            };
-
-            return rootResource;
-        }
-
-        private static IEnumerable<LGResource> GetImportResources(IList<LGImport> imports, ImportResolverDelegate importResolver)
-        {
-            foreach (var import in imports)
-            {
-                var (content, path) = importResolver(import.Id);
-                yield return Parse(content, importResolver, path, import.Description);
-            }
+            return new LGResource(templates, imports, id);
         }
 
         /// <summary>

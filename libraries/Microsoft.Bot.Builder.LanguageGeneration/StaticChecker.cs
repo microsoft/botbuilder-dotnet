@@ -15,59 +15,75 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public static List<Diagnostic> CheckFiles(IEnumerable<string> filePaths, ImportResolverDelegate importResolver = null)
         {
             var result = new List<Diagnostic>();
-            foreach (var filePath in filePaths)
-            {
-                var diagnostics = CheckFile(filePath, importResolver);
-                result.AddRange(diagnostics);
-            }
-
-            return result;
-        }
-
-        public static List<Diagnostic> CheckFile(string filePath, ImportResolverDelegate importResolver = null)
-        {
-            var fullPath = Path.GetFullPath(filePath);
-            return GetDiagnostics(File.ReadAllText(fullPath), importResolver ?? ImportResolver.FilePathResolver(filePath), fullPath);
-        }
-
-        public static List<Diagnostic> CheckText(string content, string name, ImportResolverDelegate importResolver)
-        {
-            return GetDiagnostics(content, importResolver, name);
-        }
-
-        public static List<Diagnostic> CheckTemplates(List<LGTemplate> templates) => new StaticCheckerInner(templates).Check();
-
-        private static List<Diagnostic> GetDiagnostics(string content, ImportResolverDelegate importResolver, string id)
-        {
-            var result = new List<Diagnostic>();
-            var parseSuccess = true;
-            var resources = new List<LGResource>();
+            var templates = new List<LGTemplate>();
+            var isParseSuccess = true;
             try
             {
-                var rootResource = LGParser.Parse(content, importResolver, id);
-                resources = rootResource.DiscoverLGResources();
+                var totalLGResources = new List<LGResource>();
+                foreach (var filePath in filePaths)
+                {
+                    importResolver = importResolver ?? ImportResolver.FilePathResolver(filePath);
+
+                    var fullPath = Path.GetFullPath(filePath);
+                    var rootResource = LGParser.Parse(File.ReadAllText(fullPath), fullPath);
+                    var resources = rootResource.DiscoverDependencies(importResolver);
+                    totalLGResources.AddRange(resources);
+                }
+                var deduplicatedLGResources = totalLGResources.GroupBy(x => x.Id).Select(x => x.First()).ToList();
+                templates = deduplicatedLGResources.SelectMany(x => x.Templates).ToList();
             }
             catch (LGException ex)
             {
                 result.AddRange(ex.Diagnostics);
-                parseSuccess = false;
+                isParseSuccess = false;
             }
             catch (Exception err)
             {
-                var errorMessage = $"{id}:{err.Message}";
-                result.Add(new Diagnostic(new Range(new Position(0, 0), new Position(0, 0)), errorMessage));
-                parseSuccess = false;
+                result.Add(new Diagnostic(new Range(new Position(0, 0), new Position(0, 0)), err.Message));
+                isParseSuccess = false;
             }
 
-            if (parseSuccess && resources != null)
+            if (isParseSuccess)
             {
-                var templates = resources.SelectMany(x => x.Templates).ToList();
-                var staticCheckerDiagnostics = new StaticCheckerInner(templates).Check();
-                result.AddRange(staticCheckerDiagnostics);
+                result.AddRange(CheckTemplates(templates));
             }
 
             return result;
         }
+
+        public static List<Diagnostic> CheckFile(string filePath, ImportResolverDelegate importResolver = null) => CheckFiles(new List<string>() { filePath }, importResolver);
+
+        public static List<Diagnostic> CheckText(string content, string name, ImportResolverDelegate importResolver)
+        {
+            var result = new List<Diagnostic>();
+            var templates = new List<LGTemplate>();
+            var isParseSuccess = true;
+            try
+            {
+                var rootResource = LGParser.Parse(content, name);
+                var resources = rootResource.DiscoverDependencies(importResolver);
+                templates = resources.SelectMany(x => x.Templates).ToList();
+            }
+            catch (LGException ex)
+            {
+                result.AddRange(ex.Diagnostics);
+                isParseSuccess = false;
+            }
+            catch (Exception err)
+            {
+                result.Add(new Diagnostic(new Range(new Position(0, 0), new Position(0, 0)), err.Message));
+                isParseSuccess = false;
+            }
+
+            if (isParseSuccess)
+            {
+                result.AddRange(CheckTemplates(templates));
+            }
+
+            return result;
+        }
+
+        public static List<Diagnostic> CheckTemplates(List<LGTemplate> templates) => new StaticCheckerInner(templates).Check();
 
         private class StaticCheckerInner : LGFileParserBaseVisitor<List<Diagnostic>>
         {
