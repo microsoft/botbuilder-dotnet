@@ -521,8 +521,13 @@ namespace Microsoft.Bot.Builder.Expressions
             {
                 var result = state;
                 string error = null;
+                object property = null;
 
-                var property = (expression.Children[0] as Constant).Value.ToString();
+                if (expression.Children != null && expression.Children.Length > 0)
+                {
+                    (property, error) = expression.Children[0].TryEvaluate(state);
+                }
+
                 var prefixStr = PrefixsOfShorthand[functionName];
                 var prefixs = prefixStr.Split('.').Where(x => !string.IsNullOrEmpty(x)).ToList();
                 foreach (var prefix in prefixs)
@@ -534,9 +539,20 @@ namespace Microsoft.Bot.Builder.Expressions
                     }
                 }
 
-                if (error == null)
+                if (error == null && property != null)
                 {
-                    (result, error) = AccessProperty(result, property);
+                    if (property is int idx)
+                    {
+                        (result, error) = AccessIndex(result, idx);
+                    }
+                    else if (property is string idxStr)
+                    {
+                        (result, error) = AccessProperty(result, idxStr);
+                    }
+                    else
+                    {
+                        error = $"Could not coerce {expression.Children[0]}<{property.GetType()}> to an int or string";
+                    }
                 }
 
                 if (error == null && function != null)

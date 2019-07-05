@@ -97,11 +97,16 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             {
                 instance = new
                 {
-                    xxx = "instance"
+                    xxx = "instance",
+                    yyy = new
+                    {
+                        instanceY = "instanceY"
+                    }
                 },
                 options = new
                 {
-                    xxx = "options"
+                    xxx = "options",
+                    yyy = new[] { "optionY1", "optionY2" }
                 },
                 title = "Dialog Title",
                 subTitle = "Dialog Sub Title"
@@ -500,6 +505,9 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("$subTitle", "Dialog Sub Title", new HashSet<string> {"dialog.subTitle"}),
             Test("~xxx", "instance", new HashSet<string> {"dialog.instance.xxx"}),
             Test("%xxx", "options", new HashSet<string> {"dialog.options.xxx"}),
+            Test("%['xxx']", "options", new HashSet<string> {"dialog.options.xxx"}),
+            Test("~['yyy'].instanceY", "instanceY", new HashSet<string> {"dialog.instance.yyy"}),
+            Test("%yyy[1]", "optionY2", new HashSet<string> {"dialog.options.yyy"}),
             Test("^x", 3),
             Test("^y", 2),
             Test("^z", 1),
