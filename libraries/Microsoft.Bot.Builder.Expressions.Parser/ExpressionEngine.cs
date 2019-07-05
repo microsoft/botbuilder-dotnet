@@ -103,6 +103,20 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
                 return MakeExpression(functionName, Expression.ConstantExpression(context.IDENTIFIER().GetText()));
             }
 
+            public override Expression VisitShortHandAccessExp([NotNull] ExpressionParser.ShortHandAccessExpContext context)
+            {
+                var prefix = context.GetChild(0).GetText();
+                if (!ShorthandFunctionMap.ContainsKey(prefix))
+                {
+                    throw new Exception($"{prefix} is not a shorthand");
+                }
+
+                var functionName = ShorthandFunctionMap[prefix];
+                var index = Visit(context.expression());
+
+                return MakeExpression(functionName, index);
+            }
+
             public override Expression VisitFuncInvokeExp([NotNull] ExpressionParser.FuncInvokeExpContext context)
             {
                 var parameters = ProcessArgsList(context.argsList()).ToList();
