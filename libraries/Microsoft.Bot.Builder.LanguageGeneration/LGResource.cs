@@ -22,8 +22,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             Id = id;
         }
 
-        public string Description { get; set; }
-
         /// <summary>
         /// Gets or sets id of this lg source.
         /// </summary>
