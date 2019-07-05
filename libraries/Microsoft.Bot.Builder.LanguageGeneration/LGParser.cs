@@ -1,59 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Antlr4.Runtime;
+using Antlr4.Runtime.Tree;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
     public class LGParser
     {
-        /// <summary>
-        /// Get LG template list from input string.
-        /// </summary>
-        /// <param name="text">LG file content or inline text.</param>
-        /// <param name="id">text source.</param>
-        /// <returns>LG template list.</returns>
-        public static LGResource Parse(string text, string id = "")
+        public static LGResource Parse(string content, ImportResolverDelegate importResolver, string id = "", string description = "")
         {
-            var parseSuccess = TryParse(text, out var templates, out var imports, out var error, id);
-            if (!parseSuccess)
-            {
-                throw new Exception(error.ToString());
-            }
+            var fileContext = GetFileContentContext(content, id);
+            var templates = ExtractLGTemplates(fileContext, id);
+            var imports = ExtractLGImports(fileContext, id);
 
-            return new LGResource(templates, imports, id);
+            var rootResource = new LGResource(templates, description, id)
+            {
+                Imports = GetImportResources(imports, importResolver ?? ImportResolver.FileResolver()),
+            };
+
+            return rootResource;
         }
 
-        /// <summary>
-        /// Try Get LG template list from input string.
-        /// </summary>
-        /// <param name="text">LG file content or inline text.</param>
-        /// <param name="templates">LG template list.</param>
-        /// <param name="imports">LG import list.</param>
-        /// <param name="error">error/warning list.</param>
-        /// <param name="source">text source.</param>
-        /// <returns>LG template if parse success.</returns>
-        public static bool TryParse(string text, out IList<LGTemplate> templates, out IList<LGImport> imports, out Diagnostic error, string source = "")
+        private static IEnumerable<LGResource> GetImportResources(IList<LGImport> imports, ImportResolverDelegate importResolver)
         {
-            LGFileParser.FileContext fileContext = null;
-            error = null;
-            templates = new List<LGTemplate>();
-            imports = new List<LGImport>();
-
-            try
+            foreach (var import in imports)
             {
-                fileContext = GetFileContentContext(text, source);
-                templates = ExtractLGTemplates(fileContext, source);
-                imports = ExtractLGImports(fileContext, source);
+                var (content, path) = importResolver(import.Id);
+                yield return Parse(content, importResolver, path, import.Description);
             }
-            catch (Exception e)
-            {
-                error = JsonConvert.DeserializeObject<Diagnostic>(e.Message);
-                return false;
-            }
-
-            return true;
         }
 
         /// <summary>
