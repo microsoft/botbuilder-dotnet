@@ -9,7 +9,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.StreamingExtensions;
-using Microsoft.Bot.StreamingExtensions.Payloads;
 using Microsoft.Bot.StreamingExtensions.Transport;
 using Microsoft.Bot.StreamingExtensions.Transport.NamedPipes;
 using Microsoft.Bot.StreamingExtensions.Transport.WebSockets;
@@ -122,7 +121,7 @@ namespace Microsoft.Bot.Builder
             if (request == null || string.IsNullOrEmpty(request.Verb) || string.IsNullOrEmpty(request.Path))
             {
                 response.StatusCode = (int)HttpStatusCode.BadRequest;
-                logger.LogInformation("Request missing verb and/or path.");
+                logger.LogError("Request missing verb and/or path.");
 
                 return response;
             }
@@ -143,7 +142,7 @@ namespace Microsoft.Bot.Builder
             }
 
             response.StatusCode = (int)HttpStatusCode.NotFound;
-            logger.LogInformation($"Unknown verb and path: {request.Verb} {request.Path}");
+            logger.LogError($"Unknown verb and path: {request.Verb} {request.Path}");
 
             return response;
         }
@@ -185,7 +184,7 @@ namespace Microsoft.Bot.Builder
             catch (Exception ex)
             {
                 response.StatusCode = (int)HttpStatusCode.BadRequest;
-                logger.LogInformation("Request body missing or malformed: " + ex.Message);
+                logger.LogError("Request body missing or malformed: " + ex.Message);
 
                 return response;
             }
