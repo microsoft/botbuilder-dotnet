@@ -121,7 +121,7 @@ namespace Microsoft.Bot.Builder
             if (request == null || string.IsNullOrEmpty(request.Verb) || string.IsNullOrEmpty(request.Path))
             {
                 response.StatusCode = (int)HttpStatusCode.BadRequest;
-                logger.LogInformation("Request missing verb and/or path.");
+                logger.LogError("Request missing verb and/or path.");
 
                 return response;
             }
@@ -142,7 +142,7 @@ namespace Microsoft.Bot.Builder
             }
 
             response.StatusCode = (int)HttpStatusCode.NotFound;
-            logger.LogInformation($"Unknown verb and path: {request.Verb} {request.Path}");
+            logger.LogError($"Unknown verb and path: {request.Verb} {request.Path}");
 
             return response;
         }
@@ -175,11 +175,16 @@ namespace Microsoft.Bot.Builder
         /// <returns>The response ready to send to the client.</returns>
         private async Task<StreamingResponse> ProcessStreamingRequestAsync(ReceiveRequest request, StreamingResponse response, ILogger<RequestHandler> logger, CancellationToken cancellationToken)
         {
-            var body = request.ReadBodyAsString();
-            if (string.IsNullOrEmpty(body) || request.Streams.Count == 0)
+            var body = string.Empty;
+
+            try
+            {
+                body = request.ReadBodyAsString();
+            }
+            catch (Exception ex)
             {
                 response.StatusCode = (int)HttpStatusCode.BadRequest;
-                logger.LogInformation("Request missing body and/or streams.");
+                logger.LogError("Request body missing or malformed: " + ex.Message);
 
                 return response;
             }
