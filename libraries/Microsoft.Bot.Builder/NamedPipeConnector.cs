@@ -24,11 +24,26 @@ namespace Microsoft.Bot.Builder
         /// Initializes a new instance of the <see cref="NamedPipeConnector"/> class.
         /// </summary>
         /// <param name="logger">Optional logger.</param>
-        /// <param name="pipeName">The named pipe to use for incoming and outgoing traffic.</param>
-        public NamedPipeConnector(ILogger logger = null, string pipeName = DefaultPipeName)
+        public NamedPipeConnector(ILogger logger = null)
         {
             _logger = logger ?? NullLogger.Instance;
+            _pipeName = DefaultPipeName;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NamedPipeConnector"/> class.
+        /// </summary>
+        /// <param name="pipeName">The named pipe to use for incoming and outgoing traffic.</param>
+        /// <param name="logger">Optional logger.</param>
+        public NamedPipeConnector(string pipeName, ILogger logger = null)
+        {
+            if (string.IsNullOrWhiteSpace(pipeName))
+            {
+                throw new ArgumentException(nameof(pipeName));
+            }
+
             _pipeName = pipeName;
+            _logger = logger ?? NullLogger.Instance;
         }
 
         /// <summary>
