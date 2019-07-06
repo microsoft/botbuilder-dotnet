@@ -11,6 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.StreamingExtensions;
+using Microsoft.Bot.StreamingExtensions.Payloads;
 using Microsoft.Bot.StreamingExtensions.Transport;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -134,7 +135,7 @@ namespace Microsoft.Bot.Builder
                 var streamAttachments = new List<Attachment>();
                 for (var i = 1; i < streams.Count; i++)
                 {
-                    streamAttachments.Add(new Attachment() { ContentType = streams[i].Type, Content = streams[i].GetStream() });
+                    streamAttachments.Add(new Attachment() { ContentType = streams[i].ContentType, Content = streams[i].Stream });
                 }
 
                 if (activity.Attachments != null)
