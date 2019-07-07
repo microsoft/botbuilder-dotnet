@@ -50,8 +50,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            var prop = await new TextTemplate(this.Property).BindToData(dc.Context, dc.State).ConfigureAwait(false);
-
 
             // Ensure planning context
             if (dc is SequenceContext planning)
@@ -59,10 +57,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                 switch (Type.ToLower())
                 {
                     case "array":
-                        dc.State.SetValue(prop, new JArray());
+                        dc.State.SetValue(this.Property, new JArray());
                         break;
                     case "object":
-                        dc.State.SetValue(prop, new JObject());
+                        dc.State.SetValue(this.Property, new JObject());
                         break;
                 }
 
