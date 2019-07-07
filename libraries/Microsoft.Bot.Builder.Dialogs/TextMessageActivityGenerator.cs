@@ -220,7 +220,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 return null;
             }
 
-            var resolvedFileLocation = Path.Combine(Environment.CurrentDirectory, fileLocation);
+            var resolvedFileLocation = Path.Combine(Environment.CurrentDirectory, PathUtils.NormalizePath(fileLocation));
             var exists = File.Exists(resolvedFileLocation);
 
             // fallback to cwd

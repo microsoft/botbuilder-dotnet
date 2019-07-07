@@ -84,6 +84,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         public static ResourceExplorer LoadProject(string projectFile, string[] ignoreFolders = null, bool monitorChanges = true)
         {
             var explorer = new ResourceExplorer();
+            projectFile = PathUtils.NormalizePath(projectFile);
+            ignoreFolders = ignoreFolders?.Select(f => PathUtils.NormalizePath(f)).ToArray();
+
             if (!File.Exists(projectFile))
             {
                 projectFile = Directory.EnumerateFiles(projectFile, "*.*proj").FirstOrDefault();
@@ -110,7 +113,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             // add project references
             foreach (XmlNode node in xmlDoc.SelectNodes("//ProjectReference"))
             {
-                var path = Path.Combine(projectFolder, PlatformPath(node.Attributes["Include"].Value));
+                var path = Path.Combine(projectFolder, PathUtils.NormalizePath(node.Attributes["Include"].Value));
                 path = Path.GetFullPath(path);
                 path = Path.GetDirectoryName(path);
                 explorer.AddResourceProvider(new FolderResourceProvider(path, includeSubFolders: true, monitorChanges: monitorChanges));
@@ -120,7 +123,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             var relativePackagePath = Path.Combine(@"..", "packages");
             while (!Directory.Exists(packages) && Path.GetDirectoryName(packages) != Path.GetPathRoot(packages))
             {
-                packages = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(packages), PlatformPath(relativePackagePath)));
+                packages = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(packages), PathUtils.NormalizePath(relativePackagePath)));
                 if (packages == null)
                 {
                     throw new ArgumentNullException("Can't find packages folder");
@@ -136,7 +139,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                 if (!String.IsNullOrEmpty(packageName) && !String.IsNullOrEmpty(version))
                 {
                     var package = new PackageIdentity(packageName, new NuGetVersion(version));
-                    var folder = Path.Combine(packages, PlatformPath(pathResolver.GetPackageDirectoryName(package)));
+                    var folder = Path.Combine(packages, PathUtils.NormalizePath(pathResolver.GetPackageDirectoryName(package)));
                     if (Directory.Exists(folder))
                     {
                         explorer.AddResourceProvider(new FolderResourceProvider(folder, includeSubFolders: true, monitorChanges: monitorChanges));
@@ -145,18 +148,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             }
 
             return explorer;
-        }
-
-        private static string PlatformPath(string path)
-        {
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                return path.Replace("/", "\\");
-            }
-            else
-            {
-                return path.Replace("\\", "/");
-            }
         }
 
         /// <summary>

@@ -22,9 +22,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
     [TestClass]
     public class JsonLoadTests
     {
-        private static string getOsPath(string path) => Path.Combine(path.TrimEnd('\\').Split('\\'));
-
-        private readonly string samplesDirectory = getOsPath(@"..\..\..\..\..\samples\Microsoft.Bot.Builder.TestBot.Json\Samples\");
+        private readonly string samplesDirectory = PathUtils.NormalizePath(@"..\..\..\..\..\samples\Microsoft.Bot.Builder.TestBot.Json\Samples\");
 
         private static ResourceExplorer resourceExplorer;
 
@@ -34,7 +32,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
             TypeFactory.Configuration = new ConfigurationBuilder().AddInMemoryCollection().Build();
             TypeFactory.RegisterAdaptiveTypes();
             TypeFactory.Register("Microsoft.RuleRecognizer", typeof(RuleRecognizer));
-            string projPath = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, getOsPath($@"..\..\..\..\..\samples\Microsoft.Bot.Builder.TestBot.Json\Microsoft.Bot.Builder.TestBot.Json.csproj")));
+            string projPath = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, PathUtils.NormalizePath($@"..\..\..\..\..\samples\Microsoft.Bot.Builder.TestBot.Json\Microsoft.Bot.Builder.TestBot.Json.csproj")));
             resourceExplorer = ResourceExplorer.LoadProject(projPath);
         }
 

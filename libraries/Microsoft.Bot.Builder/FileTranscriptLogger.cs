@@ -41,6 +41,8 @@ namespace Microsoft.Bot.Builder
                 folder = Environment.CurrentDirectory;
             }
 
+            folder = PathUtils.NormalizePath(folder);
+
             if (!Directory.Exists(folder))
             {
                 Directory.CreateDirectory(folder);

@@ -31,6 +31,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             }
 
             this.IncludeSubFolders = includeSubFolders;
+            folder = PathUtils.NormalizePath(folder);
             this.Directory = new DirectoryInfo(folder);
             SearchOption option = (this.IncludeSubFolders) ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
 
@@ -195,6 +196,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         {
             if (ignoreFolders != null)
             {
+                folder = PathUtils.NormalizePath(folder);
+
                 explorer.AddFolder(folder, includeSubFolders: false, monitorChanges: monitorChanges);
 
                 var hashIgnore = new HashSet<string>(ignoreFolders.Select(p => Path.Combine(folder, p)), StringComparer.CurrentCultureIgnoreCase);
