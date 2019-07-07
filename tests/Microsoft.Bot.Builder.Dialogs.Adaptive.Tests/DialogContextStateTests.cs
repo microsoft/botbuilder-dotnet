@@ -136,6 +136,60 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
+        public async Task DialogContextState_ComplexExpressions()
+        {
+            var dialog = new AdaptiveDialog("test");
+            var dialogs = new DialogSet();
+            dialogs.Add(dialog);
+            var dc = new DialogContext(dialogs, new TurnContext(new TestAdapter(), new Schema.Activity()), (DialogState)new DialogState());
+            await dc.BeginDialogAsync(dialog.Id);
+            DialogContextState state = new DialogContextState(dc: dc,
+                settings: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase),
+                userState: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase),
+                conversationState: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase),
+                turnState: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase));
+
+
+            // complex type paths
+            state.SetValue("user.name", "joe");
+            state.SetValue("conversation[user.name]", "test");
+            var value = state.GetValue("conversation.joe");
+            Assert.AreEqual("test", value, "complex set should set");
+            value = state.GetValue("conversation[user.name]");
+            Assert.AreEqual("test", value, "complex get should get");
+        }
+
+        [TestMethod]
+        public async Task DialogContextState_GetValue()
+        {
+            var dialog = new AdaptiveDialog("test");
+            var dialogs = new DialogSet();
+            dialogs.Add(dialog);
+            var dc = new DialogContext(dialogs, new TurnContext(new TestAdapter(), new Schema.Activity()), (DialogState)new DialogState());
+            await dc.BeginDialogAsync(dialog.Id);
+            DialogContextState state = new DialogContextState(dc: dc,
+                settings: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase),
+                userState: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase),
+                conversationState: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase),
+                turnState: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase));
+
+
+            // complex type paths
+            object val;
+            string value;
+            state.SetValue("user.name", "joe");
+            Assert.AreEqual("joe", state.GetValue("user.name"));
+            Assert.AreEqual("joe", state.GetValue<String>("user.name"));
+            Assert.IsTrue(state.TryGetValue<string>("user.name", out value));
+            Assert.AreEqual("joe", value);
+
+            Assert.AreEqual("default", state.GetValue("user.xxx", "default"));
+            Assert.AreEqual("default", state.GetValue<String>("user.xxx", "default"));
+            Assert.IsFalse(state.TryGetValue<string>("user.xxx", out value));
+            Assert.AreEqual(null, value);
+        }
+
+        [TestMethod]
         public async Task DialogContextState_ComplexTypes()
         {
             var dialog = new AdaptiveDialog("test");

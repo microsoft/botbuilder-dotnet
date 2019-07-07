@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Expressions;
 using Microsoft.Bot.Builder.Expressions.Parser;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
@@ -249,14 +250,49 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
+        public object GetValue(string pathExpression)
+        {
+            return ObjectPath.GetValue<object>(this, pathExpression);
+        }
+
+        public object GetValue(Expression pathExpression)
+        {
+            return ObjectPath.GetValue<object>(this, pathExpression);
+        }
+
+        public object GetValue(string pathExpression, object defaultValue)
+        {
+            return ObjectPath.GetValue<object>(this, pathExpression, defaultValue);
+        }
+
+        public object GetValue(Expression pathExpression, object defaultValue)
+        {
+            return ObjectPath.GetValue<object>(this, pathExpression, defaultValue);
+        }
+
         public T GetValue<T>(string pathExpression)
         {
-            return ObjectPath.GetValue<T>(this, ResolvePathShortcut(pathExpression));
+            return ObjectPath.GetValue<T>(this, pathExpression);
+        }
+
+        public T GetValue<T>(Expression pathExpression)
+        {
+            return ObjectPath.GetValue<T>(this, pathExpression);
         }
 
         public T GetValue<T>(string pathExpression, T defaultVal)
         {
-            if (ObjectPath.TryGetValue<T>(this, ResolvePathShortcut(pathExpression), out var val))
+            if (ObjectPath.TryGetValue<T>(this, pathExpression, out var val))
+            {
+                return val;
+            }
+
+            return defaultVal;
+        }
+
+        public T GetValue<T>(Expression pathExpression, T defaultVal)
+        {
+            if (ObjectPath.TryGetValue<T>(this, pathExpression, out var val))
             {
                 return val;
             }
@@ -266,89 +302,49 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         public bool TryGetValue<T>(string pathExpression, out T val)
         {
-            return ObjectPath.TryGetValue(this, ResolvePathShortcut(pathExpression), out val);
+            return ObjectPath.TryGetValue(this, pathExpression, out val);
+        }
+
+        public bool TryGetValue<T>(Expression pathExpression, out T val)
+        {
+            return ObjectPath.TryGetValue(this, pathExpression, out val);
         }
 
         public bool HasValue(string pathExpression)
         {
-            return ObjectPath.HasValue(this, ResolvePathShortcut(pathExpression));
+            return ObjectPath.HasValue(this, pathExpression);
+        }
+
+        public bool HasValue(Expression pathExpression)
+        {
+            return ObjectPath.HasValue(this, pathExpression);
         }
 
         public void SetValue(string pathExpression, object value)
+        {
+            ObjectPath.SetValue(this, new ExpressionEngine().Parse(pathExpression), value);
+        }
+
+        public void SetValue(Expression pathExpression, object value)
         {
             if (value is Task)
             {
                 throw new Exception($"{pathExpression} = You can't pass an unresolved Task to SetValue");
             }
 
-            // If the json path does not exist
-            pathExpression = ResolvePathShortcut(pathExpression);
-            var segments = pathExpression.Split('.').Select(segment => segment.ToLower()).ToArray();
-            dynamic current = this;
-
-            for (var i = 0; i < segments.Length - 1; i++)
-            {
-                var segment = segments[i];
-                if (current is IDictionary<string, object> curDict)
-                {
-                    if (!curDict.TryGetValue(segment, out var segVal) || segVal == null)
-                    {
-                        curDict[segment] = new Dictionary<string, object>();
-                    }
-
-                    current = curDict[segment];
-                }
-            }
-
-            if (value is JToken || value is JObject || value is JArray)
-            {
-                current[segments.Last()] = (JToken)value;
-            }
-            else if (value == null)
-            {
-                current[segments.Last()] = null;
-            }
-            else if (value is string || value is byte || value is bool ||
-                    value is Int16 || value is Int32 || value is Int64 ||
-                    value is UInt16 || value is UInt32 || value is UInt64 ||
-                    value is Decimal || value is float || value is double)
-            {
-                current[segments.Last()] = JValue.FromObject(value);
-            }
-            else
-            {
-                current[segments.Last()] = (JToken)JsonConvert.DeserializeObject(JsonConvert.SerializeObject(value, expressionCaseSettings));
-            }
+            ObjectPath.SetValue(this, pathExpression, value);
         }
 
-        public void RemoveValue(string pathExpression)
+        public void RemoveProperty(string pathExpression)
         {
-            pathExpression = ResolvePathShortcut(pathExpression);
+            // TODO move to ObjectPath and use Expressions properly
+            ObjectPath.RemoveProperty(this, ResolvePathShortcut(pathExpression));
+        }
 
-            // If the json path does not exist
-            string[] segments = pathExpression.Split('.').Select(segment => segment.ToLower()).ToArray();
-            dynamic current = this;
-
-            var deleted = false;
-            for (var i = 0; i < segments.Length - 1; i++)
-            {
-                var segment = segments[i];
-                if (current is IDictionary<string, object> curDict)
-                {
-                    if (!curDict.TryGetValue(segment, out var segVal) || segVal == null)
-                    {
-                        deleted = true;
-                        break;
-                    }
-
-                    current = curDict[segment];
-                }
-            }
-
-            if (!deleted)
-            {
-                current.Remove(segments.Last());
-            }
+        public void RemoveProperty(Expression pathExpression)
+        {
+            // TODO move to ObjectPath and use Expressions properly
+            this.RemoveProperty(pathExpression.ToString());
         }
 
         public void Add(string key, object value)
