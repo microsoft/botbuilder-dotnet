@@ -78,9 +78,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
                 {
                     allExpressions.Add(factory.Parse(this.Constraint));
                 }
-                catch
+                catch(Exception e)
                 {
-                    throw new Exception($"Invalid constraint expression: {this.Constraint}");
+                    throw new Exception($"Invalid constraint expression: {this.Constraint}, {e.Message}");
                 }
             }
 
@@ -113,9 +113,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
                     this.fullConstraint = null; // reset to force it to be recalcaulated
                 }
             }
-            catch
+            catch (Exception e)
             {
-                throw new Exception($"Invalid constraint expression: {constraint}");
+                throw new Exception($"Invalid constraint expression: {this.Constraint}, {e.Message}");
             }
         }
 

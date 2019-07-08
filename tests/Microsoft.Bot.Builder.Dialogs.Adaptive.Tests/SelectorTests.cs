@@ -54,7 +54,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 new IntentRule("trigger", constraint: "user.b == 1 || user.c == 1", steps: new List<IDialog> { new SendActivity("ruleBorC") }),
                 new IntentRule("trigger", constraint: "user.a == 1 && user.b == 1", steps: new List<IDialog> { new SendActivity("ruleAandB") }),
                 new IntentRule("trigger", constraint: "user.a == 1 && user.c == 1", steps: new List<IDialog> { new SendActivity("ruleAandC") }),
-                new IntentRule("trigger", steps: new List<IDialog> { new SendActivity("default")})
+                new IntentRule("trigger", constraint: "", steps: new List<IDialog> { new SendActivity("default")})
             });
             dialog.AutoEndDialog = false;
 
