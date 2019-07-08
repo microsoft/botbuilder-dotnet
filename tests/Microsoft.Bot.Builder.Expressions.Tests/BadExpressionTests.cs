@@ -362,9 +362,13 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("xPath(invalidXml, ''sum(/produce/item/count)')"), //not valid xml
             Test("xPath(xmlStr)"), // should have two params
             Test("xPath(xmlStr, 'getTotal')"), // invalid xpath query
-           # endregion
+            #endregion
 
-            # region Memory access test
+            #region  Short Hand Expression
+            Test("%.xxx"), // not supported shorthand pattern
+            #endregion
+
+            #region Memory access test
             Test("getProperty(bag, 1)"),// second param should be string
             Test("Accessor(1)"),// first param should be string
             Test("Accessor(bag, 1)"),// second should be object

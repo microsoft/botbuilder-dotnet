@@ -89,7 +89,23 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
                     },
                     intents = new
                     {
-                        BookFlight = "BookFlight"
+                        BookFlight = "BookFlight",
+                        BookHotel = new[]
+                        {
+                            new
+                            {
+                                Where = "Bellevue",
+                                Time = "Tomorrow",
+                                People= "2"
+                            },
+                            new
+                            {
+                                Where = "Kirkland",
+                                Time = "Today",
+                                People = "4"
+                            }
+                           
+                        }
                     }
                 }
             } },
@@ -499,14 +515,17 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("@city == 'Bellevue'", false, new HashSet<string> {"turn.recognized.entities.city"}),
             Test("@city", "Seattle", new HashSet<string> {"turn.recognized.entities.city"}),
             Test("@city == 'Seattle'", true, new HashSet<string> {"turn.recognized.entities.city"}),
+            Test("@ordinal[1]", "2", new HashSet<string> {"turn.recognized.entities.ordinal"}),
+            Test("@['city']", "Seattle", new HashSet<string> {"turn.recognized.entities.city"}),
             Test("#BookFlight == 'BookFlight'", true, new HashSet<string> {"turn.recognized.intents.BookFlight"}),
+            Test("#BookHotel[1].Where", "Kirkland", new HashSet<string> {"turn.recognized.intents.BookHotel"}),
             Test("exists(#BookFlight)", true, new HashSet<string> {"turn.recognized.intents.BookFlight"}),
             Test("$title", "Dialog Title", new HashSet<string> {"dialog.title"}),
             Test("$subTitle", "Dialog Sub Title", new HashSet<string> {"dialog.subTitle"}),
             Test("~xxx", "instance", new HashSet<string> {"dialog.instance.xxx"}),
+            Test("~['yyy'].instanceY", "instanceY", new HashSet<string> {"dialog.instance.yyy"}),
             Test("%xxx", "options", new HashSet<string> {"dialog.options.xxx"}),
             Test("%['xxx']", "options", new HashSet<string> {"dialog.options.xxx"}),
-            Test("~['yyy'].instanceY", "instanceY", new HashSet<string> {"dialog.instance.yyy"}),
             Test("%yyy[1]", "optionY2", new HashSet<string> {"dialog.options.yyy"}),
             Test("^x", 3),
             Test("^y", 2),
