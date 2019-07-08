@@ -26,6 +26,33 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
             this.Steps = steps ?? new List<IDialog>();
         }
 
+        protected override StepChangeList OnCreateChangeList(SequenceContext planning, object dialogOptions = null)
+        {
+            var changeList = new StepChangeList()
+            {
+                ChangeType = StepChangeTypes.InsertSteps,
+                Steps = new List<StepState>()
+            };
+
+            this.Steps.ForEach(s =>
+            {
+                var stepState = new StepState()
+                {
+                    DialogId = s.Id,
+                    DialogStack = new List<DialogInstance>()
+                };
+
+                if (dialogOptions != null)
+                {
+                    stepState.Options = dialogOptions;
+                }
+
+                changeList.Steps.Add(stepState);
+            });
+
+            return changeList;
+        }
+
         protected override Expression BuildExpression(IExpressionParser factory)
         {
             List<Expression> expressions = new List<Expression>();
@@ -35,7 +62,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
                 expressions.Add(factory.Parse($"turn.dialogEvent.name == '{evt}'"));
             }
 
-            return Expression.AndExpression(Expression.OrExpression(expressions.ToArray()), base.BuildExpression(factory));
+            return Expression.AndExpression(Expression.OrExpression(expressions.ToArray()), 
+                base.BuildExpression(factory));
         }
 
         public override string GetIdentity()

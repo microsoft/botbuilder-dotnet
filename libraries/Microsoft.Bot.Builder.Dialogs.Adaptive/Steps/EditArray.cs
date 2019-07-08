@@ -8,6 +8,8 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Expressions;
+using Microsoft.Bot.Builder.Expressions.Parser;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
@@ -47,6 +49,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
             Clear
         }
 
+        private Expression value;
+        private Expression arrayProperty;
+        private Expression resultProperty;
+
         [JsonConstructor]
         public EditArray([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base()
@@ -70,17 +76,36 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
         /// Memory expression of the array to manipulate
         /// </summary>Edit
         [JsonProperty("arrayProperty")]
-        public string ArrayProperty { get; set; }
+        public string ArrayProperty
+        {
+            get { return arrayProperty?.ToString(); }
+            set { this.arrayProperty = (value != null) ? new ExpressionEngine().Parse(value) : null; }
+        }
 
         /// <summary>
-        /// Memory of the item to put onto the array
+        /// The result of the action
         /// </summary>
-        [JsonProperty("itemProperty")]
-        public string ItemProperty { get; set; }
+        [JsonProperty("resultProperty")]
+        public string ResultProperty 
+        {
+            get { return resultProperty?.ToString(); }
+            set { this.resultProperty = (value != null) ? new ExpressionEngine().Parse(value) : null; }
+        }
 
-        public EditArray(ArrayChangeType changeType, string arrayProperty = null, string itemProperty = null)
+        /// <summary>
+        /// The expression of the item to put onto the array
+        /// </summary>
+        [JsonProperty("value")]
+        public string Value
+        {
+            get { return value?.ToString(); }
+            set { this.value = (value != null) ? new ExpressionEngine().Parse(value) : null; }
+        }
+
+        public EditArray(ArrayChangeType changeType, string arrayProperty = null, string value = null, string resultProperty = null)
             : base()
         {
+
             this.ChangeType = changeType;
 
             if (!string.IsNullOrEmpty(arrayProperty))
@@ -88,9 +113,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                 this.ArrayProperty = arrayProperty;
             }
 
-            if (!string.IsNullOrEmpty(itemProperty))
+            switch (changeType)
             {
-                this.ItemProperty = itemProperty;
+                case ArrayChangeType.Clear:
+                case ArrayChangeType.Pop:
+                case ArrayChangeType.Take:
+                    this.ResultProperty = resultProperty;
+                    break;
+                case ArrayChangeType.Push:
+                case ArrayChangeType.Remove:
+                    this.Value = value;
+                    break;
             }
         }
 
@@ -106,31 +139,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                 throw new Exception($"EditArray: \"{ ChangeType }\" operation couldn't be performed because the arrayProperty wasn't specified.");
             }
 
-            var prop = await new TextTemplate(this.ArrayProperty).BindToData(dc.Context, dc.State).ConfigureAwait(false);
-            var array = dc.State.GetValue(prop, new JArray());
+            var array = dc.State.GetValue<JArray>(this.arrayProperty, new JArray());
 
             object item = null;
-            string serialized = string.Empty;
-            object lastResult = null;
+            object result = null;
 
             switch (ChangeType)
             {
                 case ArrayChangeType.Pop:
                     item = array[array.Count - 1];
                     array.RemoveAt(array.Count - 1);
-                    if (!string.IsNullOrEmpty(ItemProperty))
-                    {
-                        dc.State.SetValue(ItemProperty, item);
-                    }
-                    lastResult = item;
+                    result = item;
                     break;
                 case ArrayChangeType.Push:
-                    EnsureItemProperty();
-                    dc.State.TryGetValue<object>(ItemProperty, out item);
-                    lastResult = item != null;
-                    if ((bool)lastResult)
+                    EnsureValue();
+                    var (itemResult, error) = this.value.TryEvaluate(dc.State);
+                    if (error == null && itemResult != null)
                     {
-                        array.Add(item);
+                        array.Add(itemResult);
                     }
                     break;
                 case ArrayChangeType.Take:
@@ -140,36 +166,44 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                     }
                     item = array[0];
                     array.RemoveAt(0);
-                    if (!string.IsNullOrEmpty(ItemProperty))
-                    {
-                        dc.State.SetValue(ItemProperty, item);
-                    }
-                    lastResult = item;
+                    result = item;
                     break;
                 case ArrayChangeType.Remove:
-                    EnsureItemProperty();
-                    dc.State.TryGetValue<object>(ItemProperty, out item);
-                    if (item != null)
+                    EnsureValue();
+                    (itemResult, error) = this.value.TryEvaluate(dc.State);
+                    if (error == null && itemResult != null)
                     {
-                        lastResult = false;
-                        array.Where(x => x.Value<string>() == item.ToString()).First().Remove();
+                        result = false;
+                        for (var i = 0; i < array.Count(); ++i)
+                        {
+                            if (array[i].ToString() == itemResult.ToString() || JToken.DeepEquals(array[i], JToken.FromObject(itemResult)))
+                            {
+                                result = true;
+                                array.RemoveAt(i);
+                                break;
+                            }
+                        }
                     }
                     break;
                 case ArrayChangeType.Clear:
-                    lastResult = array.Count > 0;
+                    result = array.Count > 0;
                     array.Clear();
                     break;
             }
 
-            dc.State.SetValue(prop, array);
-            return await dc.EndDialogAsync();
+            dc.State.SetValue(this.arrayProperty, array);
+            if (ResultProperty != null)
+            {
+                dc.State.SetValue(resultProperty, result);
+            }
+            return await dc.EndDialogAsync(result);
         }
 
-        private void EnsureItemProperty()
+        private void EnsureValue()
         {
-            if (string.IsNullOrEmpty(ItemProperty))
+            if (Value == null)
             {
-                throw new Exception($"EditArray: \"{ ChangeType }\" operation couldn't be performed for array \"{ArrayProperty}\" because an itemProperty wasn't specified.");
+                throw new Exception($"EditArray: \"{ ChangeType }\" operation couldn't be performed for array \"{ArrayProperty}\" because a value wasn't specified.");
             }
         }
 

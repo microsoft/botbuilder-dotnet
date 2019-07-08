@@ -93,21 +93,6 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="e">The event being raised.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>True if the event is handled by the current dialog and bubbling should stop.</returns>
-        Task<bool> OnDialogEventAsync(DialogContext dc, DialogEvent e, CancellationToken cancellationToken);
-
-        /// <summary>
-        /// Should be overridden by dialogs that support multi-turn conversations. A function for 
-        /// processing the utterance is returned along with a code indicating the dialogs desire to 
-        /// process the utterance.This can be one of the following values. 
-        /// - CanProcess - The dialog is capable of processing the utterance but parent dialogs 
-        /// should feel free to intercept the utterance if they'd like.
-        /// - ShouldProcess - The dialog (or one of its children) wants to process the utterance
-        /// so parents should not intercept it.
-        /// The default implementation calls the legacy ContinueDialogAsync for 
-        /// compatibility reasons.That method simply calls DialogContext.EndDialog().
-        /// </summary>
-        /// <param name="dc">The dialog context for the current turn of conversation.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        Task<DialogConsultation> ConsultDialogAsync(DialogContext dc, CancellationToken cancellationToken = default(CancellationToken));
+        Task<bool> OnDialogEventAsync(DialogContext dc, DialogEvent e, CancellationToken cancellationToken);        
     }
 }

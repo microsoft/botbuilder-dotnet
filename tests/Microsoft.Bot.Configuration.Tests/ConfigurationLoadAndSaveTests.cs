@@ -10,10 +10,10 @@ namespace Microsoft.Bot.Configuration.Tests
     [TestClass]
     public class ConfingurationLoadAndSaveTests
     {
-        private string TestBotFileName = getOsPath(@"..\..\..\test.bot");
+        private string TestBotFileName = NormalizePath(@"..\..\..\test.bot");
         private const string OutputBotFileName = "save.bot";
 
-        private static string getOsPath(string path) => Path.Combine(path.TrimEnd('\\').Split('\\'));
+        private static string NormalizePath(string path) => Path.Combine(path.TrimEnd('\\').Split('\\'));
 
         [TestMethod]
         public async Task DeserializeBotFile()
@@ -155,7 +155,7 @@ namespace Microsoft.Bot.Configuration.Tests
         [ExpectedException(typeof(System.IO.FileNotFoundException))]
         public async Task LoadNotExistentFile()
         {
-            var config = await BotConfiguration.LoadAsync(getOsPath(@"..\..\..\filedoesntexist.bot"));
+            var config = await BotConfiguration.LoadAsync(NormalizePath(@"..\..\..\filedoesntexist.bot"));
         }
 
         [TestMethod]
@@ -169,7 +169,7 @@ namespace Microsoft.Bot.Configuration.Tests
         [ExpectedException(typeof(System.IO.DirectoryNotFoundException))]
         public async Task LoadNotExistentFolder()
         {
-            var config = await BotConfiguration.LoadFromFolderAsync(getOsPath(@"\prettysurethisdoesnotexist"));
+            var config = await BotConfiguration.LoadFromFolderAsync(NormalizePath(@"\prettysurethisdoesnotexist"));
         }
 
         [TestMethod]
@@ -400,7 +400,7 @@ namespace Microsoft.Bot.Configuration.Tests
         public async Task LegacyEncryption()
         {
             var secretKey = "d+Mhts8yQIJIj9P/l1pO7n1fQExss7vvE8t9rg8qXsc=";
-            var config = await BotConfiguration.LoadAsync(getOsPath(@"..\..\..\legacy.bot"), secretKey);
+            var config = await BotConfiguration.LoadAsync(NormalizePath(@"..\..\..\legacy.bot"), secretKey);
             Assert.AreEqual("xyzpdq", ((EndpointService)config.Services[0]).AppPassword, "value should be unencrypted");
             Assert.IsTrue(!String.IsNullOrEmpty(config.Padlock), "padlock should exist");
             Assert.IsNull(config.Properties["secretKey"], "secretKey should not exist");
@@ -420,7 +420,7 @@ namespace Microsoft.Bot.Configuration.Tests
             Assert.IsNotNull(endpointSvc);
             Assert.IsNull(endpointSvc.ChannelService);
             
-            var govConfig = BotConfiguration.Load(getOsPath(@"..\..\..\govTest.bot"));
+            var govConfig = BotConfiguration.Load(NormalizePath(@"..\..\..\govTest.bot"));
             endpointSvc = govConfig.Services.Single(x => x.Type == ServiceTypes.Endpoint) as EndpointService;
             Assert.IsNotNull(endpointSvc);
             Assert.AreEqual("https://botframework.azure.us", endpointSvc.ChannelService);

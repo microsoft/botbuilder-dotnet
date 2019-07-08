@@ -14,12 +14,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
     /// </summary>
     public class EndDialog : DialogCommand
     {
+        /// <summary>
+        /// Gets or sets the property to return as the result ending the dialog.
+        /// </summary>
+        public string ResultProperty { get; set; } = "dialog.result";
 
         [JsonConstructor]
-        public EndDialog([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public EndDialog(string resultProperty = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base()
         {
             this.RegisterSourceLocation(callerPath, callerLine);
+
+            if (!string.IsNullOrEmpty(resultProperty))
+            {
+                ResultProperty = resultProperty;
+            }
         }
 
         protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
@@ -29,13 +38,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            dc.State.TryGetValue<string>(Property, out var result);
+            dc.State.TryGetValue<string>(ResultProperty, out var result);
             return await EndParentDialogAsync(dc, result, cancellationToken).ConfigureAwait(false);
         }
 
         protected override string OnComputeId()
         {
-            return $"end({this.Property ?? string.Empty})";
+            return $"end({this.ResultProperty ?? string.Empty})";
         }
     }
 }

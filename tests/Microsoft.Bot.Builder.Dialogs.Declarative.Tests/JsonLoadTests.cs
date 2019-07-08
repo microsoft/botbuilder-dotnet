@@ -8,7 +8,6 @@ using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Tests.Recognizers;
-using Microsoft.Bot.Builder.LanguageGeneration.Renderer;
 using Microsoft.Bot.Schema;
 using System.Collections.Generic;
 using System;
@@ -16,15 +15,14 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
+using Microsoft.Bot.Builder.LanguageGeneration;
 
 namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
 {
     [TestClass]
     public class JsonLoadTests
     {
-        private static string getOsPath(string path) => Path.Combine(path.TrimEnd('\\').Split('\\'));
-        
-        private readonly string samplesDirectory = getOsPath(@"..\..\..\..\..\samples\Microsoft.Bot.Builder.TestBot.Json\Samples\");
+        private readonly string samplesDirectory = PathUtils.NormalizePath(@"..\..\..\..\..\samples\Microsoft.Bot.Builder.TestBot.Json\Samples\");
 
         private static ResourceExplorer resourceExplorer;
 
@@ -34,7 +32,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
             TypeFactory.Configuration = new ConfigurationBuilder().AddInMemoryCollection().Build();
             TypeFactory.RegisterAdaptiveTypes();
             TypeFactory.Register("Microsoft.RuleRecognizer", typeof(RuleRecognizer));
-            string projPath = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, getOsPath($@"..\..\..\..\..\samples\Microsoft.Bot.Builder.TestBot.Json\Microsoft.Bot.Builder.TestBot.Json.csproj")));
+            string projPath = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, PathUtils.NormalizePath($@"..\..\..\..\..\samples\Microsoft.Bot.Builder.TestBot.Json\Microsoft.Bot.Builder.TestBot.Json.csproj")));
             resourceExplorer = ResourceExplorer.LoadProject(projPath);
         }
 
@@ -80,6 +78,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         }
 
         [TestMethod]
+        public async Task JsonDialogLoad_SwitchCondition_Number()
+        {
+            await BuildTestFlow("SwitchCondition.main.dialog")
+            .Send("Hi")
+            .AssertReply("Age is 22!")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
         public async Task JsonDialogLoad_TextInputWithoutProperty()
         {
             await BuildTestFlow("TextInput.WithoutProperty.main.dialog")
@@ -110,7 +117,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
             .SendConversationUpdate()
                 .AssertReply("What is your age?")
             .Send("Blablabla")
-                .AssertReply("What is your age?")
+                .AssertReply("Please input a number.")
             .Send("4")
                 .AssertReply("Hello, your age is 4!")
                 .AssertReply("2 * 2.2 equals?")
@@ -175,8 +182,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         public async Task JsonDialogLoad_BeginDialog()
         {
             await BuildTestFlow("BeginDialog.main.dialog")
-            .Send(new Activity(ActivityTypes.ConversationUpdate, 
-                membersAdded: new List<ChannelAccount>() { new ChannelAccount("bot", "Bot")}))
+            .Send(new Activity(ActivityTypes.ConversationUpdate,
+                membersAdded: new List<ChannelAccount>() { new ChannelAccount("bot", "Bot") }))
             .SendConversationUpdate()
                 .AssertReply("Hello, I'm Zoidberg. What is your name?")
             .Send("Carlos")
@@ -287,7 +294,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         private TestFlow BuildTestFlow(string resourceName, bool sendTrace = false)
         {
             TypeFactory.Configuration = new ConfigurationBuilder().Build();
-            var lg = new LGLanguageGenerator(resourceExplorer);
             var storage = new MemoryStorage();
             var convoState = new ConversationState(storage);
             var userState = new UserState(storage);
@@ -295,19 +301,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
             adapter
                 .UseStorage(storage)
                 .UseState(userState, convoState)
-                .UseLanguageGenerator(lg)
                 .UseResourceExplorer(resourceExplorer)
+                .UseLanguageGeneration(resourceExplorer)
                 .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
 
             var resource = resourceExplorer.GetResource(resourceName);
             var dialog = DeclarativeTypeLoader.Load<IDialog>(resource, resourceExplorer, DebugSupport.SourceRegistry);
+            DialogManager dm = new DialogManager(dialog);
 
             return new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                if (dialog is AdaptiveDialog planningDialog)
-                {
-                    await planningDialog.OnTurnAsync(turnContext, null, cancellationToken).ConfigureAwait(false);
-                }
+                await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
             });
         }
     }

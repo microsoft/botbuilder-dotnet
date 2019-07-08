@@ -4,7 +4,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.LanguageGeneration.Renderer;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Rules;
@@ -13,6 +12,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Bot.Builder.LanguageGeneration;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 {
@@ -80,21 +80,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var convoState = new ConversationState(storage);
             var userState = new UserState(storage);
             var resourceExplorer = new ResourceExplorer();
-            var lg = new LGLanguageGenerator(resourceExplorer);
             var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
             adapter
                 .UseStorage(storage)
                 .UseState(userState, convoState)
                 .UseResourceExplorer(resourceExplorer)
-                .UseLanguageGenerator(lg)
+                .UseLanguageGeneration(resourceExplorer)
                 .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
-
 
             adapter.Locale = locale;
 
-            var planningDialog = new AdaptiveDialog();
-            planningDialog.Recognizer = GetMultiLingualRecognizer();
-            planningDialog.AddRules(new List<IRule>()
+            var dialog = new AdaptiveDialog();
+            dialog.Recognizer = GetMultiLingualRecognizer();
+            dialog.AddRules(new List<IRule>()
             {
                 new IntentRule("Greeting", steps:
                     new List<IDialog>()
@@ -112,10 +110,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         new SendActivity("default rule"),
                     }),
             });
+            DialogManager dm = new DialogManager(dialog);
 
             return new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                await planningDialog.OnTurnAsync(turnContext, null).ConfigureAwait(false);
+                await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
             });
         }
 

@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.TemplateManager;
 
-namespace Microsoft.Bot.Builder.LanguageGeneration.Renderer
+namespace Microsoft.Bot.Builder.LanguageGeneration
 {
     public class LanguageGenerationRenderer : ITemplateRenderer
     {
@@ -17,7 +16,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration.Renderer
                 throw new ArgumentException(nameof(lgFilePath));
             }
 
-            this.templateEngine = TemplateEngine.FromFiles(lgFilePath);
+            this.templateEngine = new TemplateEngine().AddFile(lgFilePath);
         }
 
         public LanguageGenerationRenderer(TemplateEngine templateEngine)

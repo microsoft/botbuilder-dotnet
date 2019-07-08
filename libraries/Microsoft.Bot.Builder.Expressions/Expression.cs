@@ -149,12 +149,39 @@ namespace Microsoft.Bot.Builder.Expressions
             }));
 
         /// <summary>
+        /// Construct and validate an Set a property expression to a value expression
+        /// </summary>
+        /// <param name="property">property expression</param>
+        /// <param name="value">value expression</param>
+        /// <returns>New expression.</returns>
+        public static Expression SetPathToValue(Expression property, Expression value)
+            => Expression.MakeExpression(ExpressionType.SetPathToValue, property, value);
+
+        /// <summary>
+        /// Construct and validate an Set a property expression to a value expression
+        /// </summary>
+        /// <param name="property">property expression</param>
+        /// <param name="value">value object</param>
+        /// <returns>New expression.</returns>
+        public static Expression SetPathToValue(Expression property, object value)
+        {
+            if (value is Expression)
+            {
+                return Expression.MakeExpression(ExpressionType.SetPathToValue, property, (Expression)value);
+            }
+            else
+            {
+                return Expression.MakeExpression(ExpressionType.SetPathToValue, property, Expression.ConstantExpression(value));
+            }
+        }
+
+        /// <summary>
         /// Construct and validate an Equals expression.
         /// </summary>
         /// <param name="children">Child clauses.</param>
         /// <returns>New expression.</returns>
         public static Expression EqualsExpression(params Expression[] children)
-            => Expression.MakeExpression(ExpressionType.Equal, children);
+        => Expression.MakeExpression(ExpressionType.Equal, children);
 
         /// <summary>
         /// Construct and validate an And expression.
@@ -162,7 +189,13 @@ namespace Microsoft.Bot.Builder.Expressions
         /// <param name="children">Child clauses.</param>
         /// <returns>New expression.</returns>
         public static Expression AndExpression(params Expression[] children)
-            => Expression.MakeExpression(ExpressionType.And, children);
+        {
+            if (children.Count() > 1)
+            {
+                return Expression.MakeExpression(ExpressionType.And, children);
+            }
+            return children.Single();
+        }
 
         /// <summary>
         /// Construct and validate an Or expression.
@@ -170,7 +203,13 @@ namespace Microsoft.Bot.Builder.Expressions
         /// <param name="children">Child clauses.</param>
         /// <returns>New expression.</returns>
         public static Expression OrExpression(params Expression[] children)
-            => Expression.MakeExpression(ExpressionType.Or, children);
+        {
+            if (children.Count() > 1)
+            {
+                return Expression.MakeExpression(ExpressionType.Or, children);
+            }
+            return children.Single();
+        }
 
         /// <summary>
         /// Construct and validate a Not expression.

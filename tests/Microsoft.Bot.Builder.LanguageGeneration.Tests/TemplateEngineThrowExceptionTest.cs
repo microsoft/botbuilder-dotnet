@@ -39,13 +39,17 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Test("InvalidTemplateName2.lg"),
             Test("DuplicatedTemplates.lg"),
             Test("LgTemplateFunctionError.lg"),
+            Test("SwitchCaseFormatError.lg"),
+            Test("InvalidLGFileImportPath.lg"),
+            Test("DuplicatedTemplatesInImportFiles.lg")
         };
 
         public static IEnumerable<object[]> StaticCheckWariningData => new[]
         {
             Test("EmptyLGFile.lg"),
             Test("OnlyNoMatchRule.lg"),
-            Test("NoMatchRule.lg")
+            Test("NoMatchRule.lg"),
+            Test("SwitchCaseWarning.lg")
         };
 
         public static IEnumerable<object[]> AnalyzerExceptionData => new[]
@@ -69,7 +73,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var isFail = false;
             try
             {
-                TemplateEngine.FromFiles(GetExampleFilePath(input));
+                new TemplateEngine().AddFile(GetExampleFilePath(input));
                 isFail = true;
             }
             catch (Exception e)
@@ -80,15 +84,15 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             if (isFail)
             {
                 Assert.Fail("No exception is thrown.");
-            }    
+            }
         }
 
         [DataTestMethod]
         [DynamicData(nameof(StaticCheckWariningData))]
         public void WariningTest(string input)
         {
-            var engine = TemplateEngine.FromFiles(GetExampleFilePath(input));
-         
+            var engine = new TemplateEngine().AddFile(GetExampleFilePath(input));
+
             var report = new StaticChecker(engine.Templates).Check();
 
             TestContext.WriteLine(string.Join("\n", report));
@@ -103,14 +107,14 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             TemplateEngine engine = null;
             try
             {
-                engine = TemplateEngine.FromFiles(GetExampleFilePath(input));
+                engine = new TemplateEngine().AddFile(GetExampleFilePath(input));
             }
             catch (Exception)
             {
                 isFail = true;
                 errorMessage = "error occurs when parsing file";
             }
-            if(!isFail)
+            if (!isFail)
             {
                 try
                 {
@@ -139,7 +143,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             TemplateEngine engine = null;
             try
             {
-                engine = TemplateEngine.FromFiles(GetExampleFilePath(input));
+                engine = new TemplateEngine().AddFile(GetExampleFilePath(input));
             }
             catch (Exception)
             {
@@ -147,7 +151,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                 errorMessage = "error occurs when parsing file";
             }
 
-            if(!isFail)
+            if (!isFail)
             {
                 try
                 {

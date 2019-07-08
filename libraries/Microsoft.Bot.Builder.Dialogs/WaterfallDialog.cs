@@ -162,25 +162,6 @@ namespace Microsoft.Bot.Builder.Dialogs
             return Task.CompletedTask;
         }
 
-        public override async Task<DialogConsultation> ConsultDialogAsync(DialogContext dc, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            return new DialogConsultation()
-            {
-                Desire = DialogConsultationDesire.CanProcess,
-                Processor = async (dialogContext) =>
-                {
-                    // Don't do anything for non-message activities
-                    if (dialogContext.Context.Activity.Type != ActivityTypes.Message)
-                    {
-                        return Dialog.EndOfTurn;
-                    }
-
-                    // Run next step with the message text as the result
-                    return await this.ResumeDialogAsync(dialogContext, DialogReason.ContinueCalled, dialogContext.Context.Activity.Text).ConfigureAwait(false);
-                },
-            };
-        }
-
         protected virtual async Task<DialogTurnResult> OnStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var stepName = WaterfallStepName(stepContext.Index);

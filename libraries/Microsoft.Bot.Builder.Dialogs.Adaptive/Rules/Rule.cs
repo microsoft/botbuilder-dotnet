@@ -22,9 +22,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
     [DebuggerDisplay("{GetIdentity()}")]
     public abstract class Rule : IRule, IItemIdentity
     {
-        private Expression constraint;
-
+        // constraints from Rule.AddConstraint()
         private List<Expression> extraConstraints = new List<Expression>();
+
+        // cached expression representing all constraints (constraint AND extraConstraints AND childrenConstraints)
+        private Expression fullConstraint = null;
 
         [JsonConstructor]
         public Rule(string constraint = null, List<IDialog> steps = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
@@ -38,11 +40,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
         /// <summary>
         /// Gets or sets the constraint to apply to the rule (OPTIONAL) 
         /// </summary>
+        [JsonProperty("constraint")]
         public string Constraint { get; set; }
 
         /// <summary>
         /// Gets or sets the steps to add to the plan when the rule constraints are met
         /// </summary>
+        [JsonProperty("steps")]
         public List<IDialog> Steps { get; set; } = new List<IDialog>();
 
         /// <summary>
@@ -50,12 +54,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
         /// </summary>
         public Expression GetExpression(IExpressionParser parser)
         {
-            if (this.constraint == null)
+            lock (this.extraConstraints)
             {
-                this.constraint = BuildExpression(parser);
+                if (this.fullConstraint == null)
+                {
+                    this.fullConstraint = BuildExpression(parser);
+                }
             }
 
-            return this.constraint;
+            return this.fullConstraint;
         }
 
         /// <summary>
@@ -65,7 +72,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
         protected virtual Expression BuildExpression(IExpressionParser factory)
         {
             List<Expression> allExpressions = new List<Expression>();
-            if (!String.IsNullOrEmpty(this.Constraint))
+            if (this.Constraint != null)
             {
                 allExpressions.Add(factory.Parse(this.Constraint));
             }
@@ -89,9 +96,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
         /// Add external constraint to the rule (mostly used by RuleSet to apply external constraints to rule)
         /// </summary>
         /// <param name="constraint"></param>
-        public void AddConstraint(Expression constraint)
+        public void AddConstraint(string constraint)
         {
-            this.extraConstraints.Add(constraint);
+            lock (this.extraConstraints)
+            {
+                this.extraConstraints.Add(new ExpressionEngine().Parse(constraint));
+                this.fullConstraint = null; // reset to force it to be recalcaulated
+            }
         }
 
         /// <summary>
@@ -100,7 +111,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
         /// <param name="planningContext"></param>
         /// <param name="dialogEvent"></param>
         /// <returns></returns>
-        public async Task<List<PlanChangeList>> ExecuteAsync(PlanningContext planningContext)
+        public async Task<List<StepChangeList>> ExecuteAsync(SequenceContext planningContext)
         {
             return await OnExecuteAsync(planningContext).ConfigureAwait(false);
         }
@@ -112,24 +123,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
         /// <param name="context"></param>
         /// <param name="dialogEvent"></param>
         /// <returns></returns>
-        public async virtual Task<List<PlanChangeList>> OnExecuteAsync(PlanningContext planning)
+        public async virtual Task<List<StepChangeList>> OnExecuteAsync(SequenceContext planning)
         {
-            return new List<PlanChangeList>()
+            return new List<StepChangeList>()
             {
                 this.OnCreateChangeList(planning)
             };
         }
 
-        protected virtual PlanChangeList OnCreateChangeList(PlanningContext planning, object dialogOptions = null)
+        protected virtual StepChangeList OnCreateChangeList(SequenceContext planning, object dialogOptions = null)
         {
-            var changeList = new PlanChangeList()
+            var changeList = new StepChangeList()
             {
-                Steps = new List<PlanStepState>()
+                Steps = new List<StepState>()
             };
 
             Steps.ForEach(s =>
             {
-                var stepState = new PlanStepState()
+                var stepState = new StepState()
                 {
                     DialogStack = new List<DialogInstance>(),
                     DialogId = s.Id

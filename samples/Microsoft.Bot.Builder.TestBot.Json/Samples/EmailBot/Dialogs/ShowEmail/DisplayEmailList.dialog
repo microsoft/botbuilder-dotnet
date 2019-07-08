@@ -27,7 +27,7 @@
                     "condition": "dialog.choice",
                     "cases": [
                         {
-                            "case": "'1'",
+                            "case": "1",
                             "steps": [
                                 {
                                     "$type": "Microsoft.SetProperty",
@@ -38,7 +38,7 @@
                         },
                         {
 
-                            "case": "'2'",
+                            "case": "2",
                             "steps": [
                                 {
                                     "$type": "Microsoft.SetProperty",
@@ -49,7 +49,7 @@
                         },
                         {
 
-                            "case": "'3'",
+                            "case": "3",
                             "steps": [
                                 {
                                     "$type": "Microsoft.SetProperty",

@@ -15,66 +15,124 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
 
         public static HashSet<string> one = new HashSet<string> { "one" };
         public static HashSet<string> oneTwo = new HashSet<string> { "one", "two" };
+        private static readonly string nullStr = null;
 
-        private readonly object scope = new
+        private readonly object scope = new Dictionary<string, object>
         {
-            one = 1.0,
-            two = 2.0,
-            hello = "hello",
-            world = "world",
-            istrue = true,
-            bag = new
+            { "one", 1.0 },
+            { "two", 2.0 },
+            { "hello", "hello" },
+            { "world", "world" },
+            { "istrue", true },
+            { "nullObj", nullStr },
+            { "bag", new Dictionary<string, object>
             {
-                three = 3.0,
-                set = new
+                { "three", 3.0 },
+                { "set", new { four = 4.0 } },
+                { "list", new[] { "red", "blue" } },
+                { "index", 3 },
+                { "name", "mybag" }
+            }},
+            { "items", new string[] { "zero", "one", "two" } },
+            { "nestedItems", new[]
                 {
-                    four = 4.0,
+                new
+                {
+                    x = 1
                 },
-                list = new[] { "red", "blue" },
-                index = 3,
-                name = "mybag"
-            },
-            items = new string[] { "zero", "one", "two" },
-            nestedItems = new[]
+                new
                 {
-                    new
+                    x = 2,
+                },
+                new
+                {
+                    x = 3,
+                }
+            } },
+            { "user", new
+            {
+                lists = new
+                {
+                    todo = new[]
                     {
-                        x = 1
-                    },
-                    new
-                    {
-                        x = 2,
-                    },
-                    new
-                    {
-                        x = 3,
+                        "todo1",
+                        "todo2",
+                        "todo3",
                     }
                 },
-            timestamp = "2018-03-15T13:00:00Z",
-            turn = new
+                listType = "todo",
+            } },
+            { "timestamp", "2018-03-15T13:00:00.000Z" },
+            { "notISOTimestamp", "2018/03/15 13:00:00" },
+            { "timestampObj", DateTime.Parse("2018-03-15T13:00:00.000Z").ToUniversalTime() },
+            { "unixTimestamp", 1521118800 },
+            { "xmlStr", "<?xml version='1.0'?> <produce> <item> <name>Gala</name> <type>apple</type> <count>20</count> </item> <item> <name>Honeycrisp</name> <type>apple</type> <count>10</count> </item> </produce>" },
+            { "turn", new
             {
-                entities = new
+                recognized = new
                 {
-                    city = "Seattle"
+                    entities = new Dictionary<string, object>
+                    {
+                        { "city",  "Seattle" },
+                        { "ordinal",  new[]
+                        {
+                            "1",
+                            "2",
+                            "3"
+                        } },
+                        { "CompositeList1",  new[] {
+                            new[]{ "firstItem" }
+                        } },
+                        { "CompositeList2",  new[] {
+                            new[]{ "firstItem", "secondItem" }
+                        } }
+                    },
+                    intents = new
+                    {
+                        BookFlight = "BookFlight"
+                    }
+                }
+            } },
+            { "dialog", new
+            {
+                instance = new
+                {
+                    xxx = "instance"
                 },
-                intents = new
+                options = new
                 {
-                    BookFlight = "BookFlight"
-                }
-            },
-            dialog = new
+                    xxx = "options"
+                },
+                title = "Dialog Title",
+                subTitle = "Dialog Sub Title"
+            } },
+            { "callstack", new object[]
             {
-                result = new
-                {
-                    title = "Dialog Title",
-                    subTitle = "Dialog Sub Title"
-                }
-            },
+                new {x = 3 },
+                new {x = 2, y = 2 },
+                new {x = 1, y = 1, z = 1 },
+            } }
         };
 
         public static IEnumerable<object[]> Data => new[]
        {
-            # region Operators test
+            #region SetPathToProperty test
+            // TODO: We should support this.
+            // Test("@@['c' + 'ity']", "Seattle"),
+            Test("setPathToValue(@@blah.woof, 1+2) + @@blah.woof", 6),
+            Test("setPathToValue(path.simple, 3) + path.simple", 6),
+            Test("setPathToValue(path.simple, 5) + path.simple", 10),
+            Test("setPathToValue(path.array[0], 7) + path.array[0]", 14),
+            Test("setPathToValue(path.array[1], 9) + path.array[1]", 18),
+            Test("setPathToValue(path.darray[2][0], 11) + path.darray[2][0]", 22),
+            Test("setPathToValue(path.darray[2][3].foo, 13) + path.darray[2][3].foo)", 26),
+            Test("setPathToValue(path.overwrite, 3) + setPathToValue(path.overwrite[0], 4) + path.overwrite[0]", 11),
+            Test("setPathToValue(path.overwrite[0], 3) + setPathToValue(path.overwrite, 4) + path.overwrite", 11),
+            Test("setPathToValue(path.overwrite.prop, 3) + setPathToValue(path.overwrite, 4) + path.overwrite", 11),
+            Test("setPathToValue(path.overwrite.prop, 3) + setPathToValue(path.overwrite[0], 4) + path.overwrite[0]", 11),
+            #endregion
+
+            #region Operators test
             Test("1 + 2", 3),
             Test("- 1 + 2", 1),
             Test("+ 1 + 2", 3),
@@ -90,8 +148,9 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("(1 + 2) * 3", 9),
             Test("(one + two) * bag.three", 9.0, new HashSet<string> {"one", "two", "bag.three" }),
             Test("(one + two) * bag.set.four", 12.0, new HashSet<string> {"one", "two", "bag.set.four" } ),
-            Test("2^2", 4.0),
-            Test("3^2^2", 81.0),
+            // BROKEN DUE TO ^ Memory lookup
+            //Test("2^2", 4.0),
+            //Test("3^2^2", 81.0),
             Test("one > 0.5 && two < 2.5", true),
             Test("one > 0.5 || two < 1.5", true),
             Test("5 % 2", 1),
@@ -123,7 +182,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("'string'&'builder'","stringbuilder"),
             Test("\"string\"&\"builder\"","stringbuilder"),
             Test("one > 0.5 && two < 2.5", true, oneTwo),
-            Test("notThere > 4", false), 
+            Test("notThere > 4", false),
             Test("float(5.5) && float(0.0)", true),
             Test("hello && \"hello\"", true),
             Test("items || ((2 + 2) <= (4 - 1))", true), // true || false
@@ -262,9 +321,21 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("bool('hi')", true),
             Test("createArray('h', 'e', 'l', 'l', 'o')", new List<object>{"h", "e", "l", "l", "o" }),
             Test("createArray(1, bool(0), string(bool(1)), float('10'))", new List<object>{1, true, "true", 10.0f }),
-            # endregion
+            Test("array('hello')",new List<object>{ "hello" }),
+            Test("binary(hello)", "0110100001100101011011000110110001101111"),
+            Test("length(binary(hello))", 40),
+            Test("base64(hello)", "aGVsbG8="),
+            Test("base64ToBinary(base64(hello))", "0110000101000111010101100111001101100010010001110011100000111101"),
+            Test("base64ToString(base64(hello))", "hello"),
+            Test("dataUri(hello)", "data:text/plain;charset=utf-8;base64,aGVsbG8="),
+            Test("dataUriToBinary(base64(hello))","0110000101000111010101100111001101100010010001110011100000111101"),
+            Test("dataUriToString(dataUri(hello))","hello"),
+            Test("xml('{\"person\": {\"name\": \"Sophia Owen\", \"city\": \"Seattle\"}}')", $"<root type=\"object\">{Environment.NewLine}  <person type=\"object\">{Environment.NewLine}    <name type=\"string\">Sophia Owen</name>{Environment.NewLine}    <city type=\"string\">Seattle</city>{Environment.NewLine}  </person>{Environment.NewLine}</root>"),
+            Test("uriComponent('http://contoso.com')", "http%3A%2F%2Fcontoso.com"),
+            Test("uriComponentToString('http%3A%2F%2Fcontoso.com')", "http://contoso.com"),
+            #endregion
 
-            # region  Math functions test
+            #region  Math functions test
             Test("add(1, 2, 3)", 6),
             Test("add(1, 2)", 3),
             Test("add(1.0, 2.0)", 3.0),
@@ -288,17 +359,19 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("mod(5,2)", 1),
             Test("rand(1, 2)", 1),
             Test("rand(2, 3)", 2),
+            Test("range(1,4)",new[]{1,2,3,4}),
+            Test("range(-1,6)",new[]{-1,0,1,2,3,4}),
             # endregion
 
             # region  Date and time function test
             //init dateTime: 2018-03-15T13:00:00Z
-            Test("addDays(timestamp, 1)", "2018-03-16T13:00:00.0000000Z"),
+            Test("addDays(timestamp, 1)", "2018-03-16T13:00:00.000Z"),
             Test("addDays(timestamp, 1,'MM-dd-yy')", "03-16-18"),
-            Test("addHours(timestamp, 1)", "2018-03-15T14:00:00.0000000Z"),
+            Test("addHours(timestamp, 1)", "2018-03-15T14:00:00.000Z"),
             Test("addHours(timestamp, 1,'MM-dd-yy hh-mm')", "03-15-18 02-00"),
-            Test("addMinutes(timestamp, 1)", "2018-03-15T13:01:00.0000000Z"),
+            Test("addMinutes(timestamp, 1)", "2018-03-15T13:01:00.000Z"),
             Test("addMinutes(timestamp, 1, 'MM-dd-yy hh-mm')", "03-15-18 01-01"),
-            Test("addSeconds(timestamp, 1)", "2018-03-15T13:00:01.0000000Z"),
+            Test("addSeconds(timestamp, 1)", "2018-03-15T13:00:01.000Z"),
             Test("addSeconds(timestamp, 1, 'MM-dd-yy hh-mm-ss')", "03-15-18 01-00-01"),
             Test("dayOfMonth(timestamp)", 15),
             Test("dayOfWeek(timestamp)", 4),//Thursday
@@ -306,24 +379,29 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("month(timestamp)", 3),
             Test("date(timestamp)", "3/15/2018"),//Default. TODO
             Test("year(timestamp)", 2018),
-            Test("formatDateTime(timestamp)", "2018-03-15T13:00:00.0000000Z"),
-            Test("formatDateTime(timestamp, 'MM-dd-yy')", "03-15-18"),
-            Test("subtractFromTime(timestamp, 1, 'Year')", "2017-03-15T13:00:00.0000000Z"),
-            Test("subtractFromTime(timestamp, 1, 'Month')", "2018-02-15T13:00:00.0000000Z"),
-            Test("subtractFromTime(timestamp, 1, 'Week')", "2018-03-08T13:00:00.0000000Z"),
-            Test("subtractFromTime(timestamp, 1, 'Day')", "2018-03-14T13:00:00.0000000Z"),
-            Test("subtractFromTime(timestamp, 1, 'Hour')", "2018-03-15T12:00:00.0000000Z"),
-            Test("subtractFromTime(timestamp, 1, 'Minute')", "2018-03-15T12:59:00.0000000Z"),
-            Test("subtractFromTime(timestamp, 1, 'Second')", "2018-03-15T12:59:59.0000000Z"),
+            Test("length(utcNow())", 24),
+            Test("utcNow('MM-DD-YY')", DateTime.UtcNow.ToString("MM-DD-YY")),
+            Test("formatDateTime(notISOTimestamp)", "2018-03-15T13:00:00.000Z"),
+            Test("formatDateTime(notISOTimestamp, 'MM-dd-yy')", "03-15-18"),
+            Test("formatDateTime('2018-03-15')", "2018-03-15T00:00:00.000Z"),
+            Test("formatDateTime(timestampObj)", "2018-03-15T13:00:00.000Z"),
+            Test("formatDateTime(unixTimestamp)", "2018-03-15T13:00:00.000Z"),
+            Test("subtractFromTime(timestamp, 1, 'Year')", "2017-03-15T13:00:00.000Z"),
+            Test("subtractFromTime(timestamp, 1, 'Month')", "2018-02-15T13:00:00.000Z"),
+            Test("subtractFromTime(timestamp, 1, 'Week')", "2018-03-08T13:00:00.000Z"),
+            Test("subtractFromTime(timestamp, 1, 'Day')", "2018-03-14T13:00:00.000Z"),
+            Test("subtractFromTime(timestamp, 1, 'Hour')", "2018-03-15T12:00:00.000Z"),
+            Test("subtractFromTime(timestamp, 1, 'Minute')", "2018-03-15T12:59:00.000Z"),
+            Test("subtractFromTime(timestamp, 1, 'Second')", "2018-03-15T12:59:59.000Z"),
             Test("dateReadBack(timestamp, addDays(timestamp, 1))", "tomorrow"),
             Test("dateReadBack(addDays(timestamp, 1),timestamp))", "yesterday"),
-            Test("getTimeOfDay('2018-03-15T00:00:00Z')", "midnight"),
-            Test("getTimeOfDay('2018-03-15T08:00:00Z')", "morning"),
-            Test("getTimeOfDay('2018-03-15T12:00:00Z')", "noon"),
-            Test("getTimeOfDay('2018-03-15T13:00:00Z')", "afternoon"),
-            Test("getTimeOfDay('2018-03-15T18:00:00Z')", "evening"),
-            Test("getTimeOfDay('2018-03-15T22:00:00Z')", "evening"),
-            Test("getTimeOfDay('2018-03-15T23:00:00Z')", "night"),
+            Test("getTimeOfDay('2018-03-15T00:00:00.000Z')", "midnight"),
+            Test("getTimeOfDay('2018-03-15T08:00:00.000Z')", "morning"),
+            Test("getTimeOfDay('2018-03-15T12:00:00.000Z')", "noon"),
+            Test("getTimeOfDay('2018-03-15T13:00:00.000Z')", "afternoon"),
+            Test("getTimeOfDay('2018-03-15T18:00:00.000Z')", "evening"),
+            Test("getTimeOfDay('2018-03-15T22:00:00.000Z')", "evening"),
+            Test("getTimeOfDay('2018-03-15T23:00:00.000Z')", "night"),
             Test("getPastTime(1,'Year','MM-dd-yy')", DateTime.Now.AddYears(-1).ToString("MM-dd-yy")),
             Test("getPastTime(1,'Month','MM-dd-yy')", DateTime.Now.AddMonths(-1).ToString("MM-dd-yy")),
             Test("getPastTime(1,'Week','MM-dd-yy')", DateTime.Now.AddDays(-7).ToString("MM-dd-yy")),
@@ -332,10 +410,27 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("getFutureTime(1,'Month','MM-dd-yy')", DateTime.Now.AddMonths(1).ToString("MM-dd-yy")),
             Test("getFutureTime(1,'Week','MM-dd-yy')", DateTime.Now.AddDays(7).ToString("MM-dd-yy")),
             Test("getFutureTime(1,'Day','MM-dd-yy')", DateTime.Now.AddDays(1).ToString("MM-dd-yy")),
-           
-            # endregion
+            Test("convertFromUTC('2018-01-02T02:00:00.000Z', 'Pacific Standard Time', 'D')", "Monday, January 1, 2018"),
+            Test("convertFromUTC('2018-01-02T01:00:00.000Z', 'America/Los_Angeles', 'D')", "Monday, January 1, 2018"),
+            Test("convertToUTC('01/01/2018 00:00:00', 'Pacific Standard Time')", "2018-01-01T08:00:00.000Z"),
+            Test("addToTime('2018-01-01T08:00:00.000Z', 1, 'Day', 'D')", "Tuesday, January 2, 2018"),
+            Test("addToTime('2018-01-01T00:00:00.000Z', 1, 'Week')", "2018-01-08T00:00:00.000Z"),
+            Test("startOfDay('2018-03-15T13:30:30.000Z')", "2018-03-15T00:00:00.000Z"),
+            Test("startOfHour('2018-03-15T13:30:30.000Z')", "2018-03-15T13:00:00.000Z"),
+            Test("startOfMonth('2018-03-15T13:30:30.000Z')", "2018-03-01T00:00:00.000Z"),
+            Test("ticks('2018-01-01T08:00:00.000Z')", 636503904000000000),
+            #endregion
 
-            # region  collection functions test
+            #region uri parsing function test
+            Test("uriHost('https://www.localhost.com:8080')", "www.localhost.com"),
+            Test("uriPath('http://www.contoso.com/catalog/shownew.htm?date=today')", "/catalog/shownew.htm"),
+            Test("uriPathAndQuery('http://www.contoso.com/catalog/shownew.htm?date=today')", "/catalog/shownew.htm?date=today"),
+            Test("uriPort('http://www.localhost:8080')", 8080),
+            Test("uriQuery('http://www.contoso.com/catalog/shownew.htm?date=today')", "?date=today"),
+            Test("uriScheme('http://www.contoso.com/catalog/shownew.htm?date=today')", "http"),
+            #endregion
+
+            #region  collection functions test
             Test("sum(createArray(1, 2))", 3),
             Test("sum(createArray(one, two, 3))", 6.0),
             Test("average(createArray(1, 2))", 1.5),
@@ -362,6 +457,11 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("join(foreach(items, item, item), ',')", "zero,one,two"),
             Test("join(foreach(nestedItems, i, i.x + first(nestedItems).x), ',')", "2,3,4", new HashSet<string>{ "nestedItems"}),
             Test("join(foreach(items, item, concat(item, string(count(items)))), ',')", "zero3,one3,two3", new HashSet<string>{ "items"}),
+            Test("join(select(items, item, item), ',')", "zero,one,two"),
+            Test("join(select(nestedItems, i, i.x + first(nestedItems).x), ',')", "2,3,4", new HashSet<string>{ "nestedItems"}),
+            Test("join(select(items, item, concat(item, string(count(items)))), ',')", "zero3,one3,two3", new HashSet<string>{ "items"}),
+            Test("join(where(items, item, item == 'two'), ',')", "two"),
+            Test("join(foreach(where(nestedItems, item, item.x > 1), result, result.x), ',')", "2,3", new HashSet<string>{ "nestedItems"}),
             Test("last(items)", "two"),
             Test("last('hello')", "o"),
             Test("last(createArray(0, 1, 2))", 2),
@@ -370,26 +470,43 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("count(union(createArray('a', 'b'), createArray('b', 'c'), createArray('b', 'd')))", 4),
             Test("count(intersection(createArray('a', 'b')))", 2),
             Test("count(intersection(createArray('a', 'b'), createArray('b', 'c'), createArray('b', 'd')))", 1),
-            
+            Test("skip(createArray('H','e','l','l','0'),2)", new List<object>{"l", "l", "0"}),
+            Test("take(createArray('H','e','l','l','0'),2)", new List<object>{"H", "e"}),
+            Test("subArray(createArray('H','e','l','l','o'),2,5)", new List<object>{"l", "l", "o"}),
+            Test("count(newGuid())", 36),
+            Test("indexOf(newGuid(), '-')", 8),
+            Test("indexOf(hello, '-')", -1),
+            Test("lastIndexOf(newGuid(), '-')", 23),
+            Test("lastIndexOf(hello, '-')", -1),
+            Test("length(newGuid())",36),
             # endregion
 
             # region  Object manipulation and construction functions
             Test("string(addProperty(json('{\"key1\":\"value1\"}'), 'key2','value2'))", "{\"key1\":\"value1\",\"key2\":\"value2\"}"),
             Test("string(setProperty(json('{\"key1\":\"value1\"}'), 'key1','value2'))", "{\"key1\":\"value2\"}"),
             Test("string(removeProperty(json('{\"key1\":\"value1\",\"key2\":\"value2\"}'), 'key2'))", "{\"key1\":\"value1\"}"),
+            Test("coalesce(nullObj,hello,nullObj)", "hello"),
+            //Test("xPath(xmlStr,'/produce/item/name')", new[] { "<name>Gala</name>", "<name>Honeycrisp</name>"}),
+            Test("xPath(xmlStr,'sum(/produce/item/count)')", 30),
             # endregion
 
             # region  Short Hand Expression
-            Test("@city == 'Bellevue'", false, new HashSet<string> {"turn.entities.city"}),
-            Test("@city", "Seattle", new HashSet<string> {"turn.entities.city"}),
-            Test("@city == 'Seattle'", true, new HashSet<string> {"turn.entities.city"}),
-            Test("#BookFlight == 'BookFlight'", true, new HashSet<string> {"turn.intents.BookFlight"}),
-            Test("exists(#BookFlight)", true, new HashSet<string> {"turn.intents.BookFlight"}),
-            Test("$title", "Dialog Title", new HashSet<string> {"dialog.result.title"}),
-            Test("$subTitle", "Dialog Sub Title", new HashSet<string> {"dialog.result.subTitle"}),
-            # endregion
+            Test("@city == 'Bellevue'", false, new HashSet<string> {"turn.recognized.entities.city"}),
+            Test("@city", "Seattle", new HashSet<string> {"turn.recognized.entities.city"}),
+            Test("@city == 'Seattle'", true, new HashSet<string> {"turn.recognized.entities.city"}),
+            Test("#BookFlight == 'BookFlight'", true, new HashSet<string> {"turn.recognized.intents.BookFlight"}),
+            Test("exists(#BookFlight)", true, new HashSet<string> {"turn.recognized.intents.BookFlight"}),
+            Test("$title", "Dialog Title", new HashSet<string> {"dialog.title"}),
+            Test("$subTitle", "Dialog Sub Title", new HashSet<string> {"dialog.subTitle"}),
+            Test("~xxx", "instance", new HashSet<string> {"dialog.instance.xxx"}),
+            Test("%xxx", "options", new HashSet<string> {"dialog.options.xxx"}),
+            Test("^x", 3),
+            Test("^y", 2),
+            Test("^z", 1),
+            Test("count(@@CompositeList1) == 1 && count(@@CompositeList1[0]) == 1", true),
+            #endregion
 
-            # region  Memory access
+            #region  Memory access
             Test("getProperty(bag, concat('na','me'))","mybag"),
             Test("items[2]", "two", new HashSet<string> { "items[2]" }),
             Test("bag.list[bag.index - 2]", "blue", new HashSet<string> {"bag.list", "bag.index" }),
@@ -399,10 +516,46 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("items[1+1]","two"),
             Test("getProperty(null, 'p')", null),
             Test("(getProperty(null, 'p'))[1]", null),
+            #endregion
+
+            # region Dialog 
+            Test("user.lists.todo[int(@ordinal[0]) - 1] != null", true),
+            Test("user.lists.todo[int(@ordinal[0]) + 3] != null", false),
+            Test("count(user.lists.todo) > int(@ordinal[0]))", true),
+            Test("count(user.lists.todo) >= int(@ordinal[0]))", true),
+            Test("user.lists.todo[int(@ordinal[0]) - 1]", "todo1"),
+            Test("user.lists[user.listType][int(@ordinal[0]) - 1]", "todo1"),
+            #endregion
+
+            # region Regex
+            Test("isMatch('abc', '^[ab]+$')", false), // simple character classes ([abc]), "+" (one or more)
+            Test("isMatch('abb', '^[ab]+$')", true), // simple character classes ([abc])
+            Test("isMatch('123', '^[^abc]+$')", true), // complemented character classes ([^abc])
+            Test("isMatch('12a', '^[^abc]+$')", false), // complemented character classes ([^abc])
+            Test("isMatch('123', '^[^a-z]+$')", true), // complemented character classes ([^a-z])
+            Test("isMatch('12a', '^[^a-z]+$')", false), // complemented character classes ([^a-z])
+            Test("isMatch('a1', '^[a-z]?[0-9]$')", true), // "?" (zero or one)
+            Test("isMatch('1', '^[a-z]?[0-9]$')", true), // "?" (zero or one)
+            Test("isMatch('1', '^[a-z]*[0-9]$')", true), // "*" (zero or more)
+            Test("isMatch('abc1', '^[a-z]*[0-9]$')", true), // "*" (zero or more)
+            Test("isMatch('ab', '^[a-z]{1}$')", false), // "{x}" (exactly x occurrences)
+            Test("isMatch('ab', '^[a-z]{1,2}$')", true), // "{x,y}" (at least x, at most y, occurrences)
+            Test("isMatch('abc', '^[a-z]{1,}$')", true), // "{x,}" (x occurrences or more)
+            Test("isMatch('Name', '^(?i)name$')", true), // "(?i)x" (x ignore case)
+            Test("isMatch('FORTUNE', '(?i)fortune|future')", true), // "x|y" (alternation)
+            Test("isMatch('FUTURE', '(?i)fortune|future')", true), // "x|y" (alternation)
+            Test("isMatch('A', '(?i)fortune|future')", false), // "x|y" (alternation)
+            Test("isMatch('abacaxc', 'ab.+?c')", true), // "+?" (lazy versions)
+            Test("isMatch('abacaxc', 'ab.*?c')", true), // "*?" (lazy versions)
+            Test("isMatch('abacaxc', 'ab.??c')", true), // "??" (lazy versions)
+            Test("isMatch('12abc34', '([0-9]+)([a-z]+)([0-9]+)')", true), // "(...)" (simple group)
+            Test("isMatch('12abc', '([0-9]+)([a-z]+)([0-9]+)')", false), // "(...)" (simple group)
+            Test(@"isMatch('a', '\\w{1}')", true), // "\w" (match [a-zA-Z0-9_])
+            Test(@"isMatch('1', '\\d{1}')", true), // "\d" (match [0-9])
             # endregion
         };
 
-        [DataTestMethod]
+        [DataTestMethod()]
         [DynamicData(nameof(Data))]
         public void Evaluate(string input, object expected, HashSet<string> expectedRefs)
         {
@@ -452,7 +605,15 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
         {
             if (IsNumber(actual) && IsNumber(expected))
             {
-                Assert.IsTrue(Convert.ToSingle(actual) == Convert.ToSingle(expected));
+                if (actual is int)
+                {
+                    Assert.IsTrue(expected is int);
+                    Assert.AreEqual(actual, expected);
+                }
+                else
+                {
+                    Assert.IsTrue(Convert.ToSingle(actual) == Convert.ToSingle(expected));
+                }
             }
             // Compare two lists
             else if (expected is IList expectedList

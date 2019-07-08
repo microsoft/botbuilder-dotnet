@@ -4,7 +4,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.LanguageGeneration.Renderer;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
@@ -18,6 +17,7 @@ using Microsoft.Bot.Schema;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Bot.Builder.LanguageGeneration;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 {
@@ -30,7 +30,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             TypeFactory.Configuration = new ConfigurationBuilder().Build();
             var resourceExplorer = new ResourceExplorer();
-            var lg = new LGLanguageGenerator(resourceExplorer);
             var storage = new MemoryStorage();
             var convoState = new ConversationState(storage);
             var userState = new UserState(storage);
@@ -38,13 +37,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             adapter
                 .UseStorage(storage)
                 .UseState(userState, convoState)
-                .UseLanguageGenerator(lg)
                 .UseResourceExplorer(resourceExplorer)
+                .UseLanguageGeneration(resourceExplorer)
                 .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+
+            DialogManager dm = new DialogManager(dialog);
 
             return new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                await dialog.OnTurnAsync(turnContext, null).ConfigureAwait(false);
+                await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
             });
         }
 
@@ -75,7 +76,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             },
                             new IfCondition()
                             {
-                                Condition = new ExpressionEngine().Parse("conversation.addTodo.cancelConfirmation == true"),
+                                Condition = "conversation.addTodo.cancelConfirmation == true",
                                 Steps = new List<IDialog>()
                                 {
                                     new SendActivity("canceling"),
@@ -105,7 +106,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .Send("hi")
                     .AssertReply("name?")
                 .Send("cancel")
-                    .AssertReply("cancel?")
+                    .AssertReply("cancel? (1) Yes or (2) No")
                 .Send("yes")
                     .AssertReply("canceling")
                 .StartTestAsync();
@@ -126,9 +127,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 },
                 Steps = new List<IDialog>()
                 {
-                    new TextInput() { Prompt = new ActivityTemplate("Hello, what is your name?"), OutputBinding = "user.name" },
+                    new TextInput() { Prompt = new ActivityTemplate("Hello, what is your name?"), OutputBinding = "user.name", AllowInterruptions = true , Value = "user.name"},
                     new SendActivity("Hello {user.name}, nice to meet you!"),
-                    new NumberInput() { MinValue=1, MaxValue = 110, Prompt = new ActivityTemplate("What is your age?"), OutputBinding = "user.age" },
+                    new NumberInput() { Prompt = new ActivityTemplate("What is your age?"), OutputBinding = "user.age" },
                     new SendActivity("{user.age} is a good age to be!"),
                     new SendActivity("your name is {user.name}!"),
                 },
@@ -138,7 +139,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     {
                         Steps = new List<IDialog>()
                         {
-                            new SaveEntity("@name", "user.name"),
+                            new SetProperty()
+                            {
+                                Property = "user.name",
+                                Value = "@name"
+                            }
                         }
                     }
                 }

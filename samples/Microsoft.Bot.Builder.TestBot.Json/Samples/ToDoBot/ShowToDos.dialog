@@ -1,6 +1,7 @@
 {
     "$schema": "../../app.schema",
     "$type": "Microsoft.AdaptiveDialog",
+    "generator": "todo.lg",
     "steps": [
         {
             "$type": "Microsoft.IfCondition",
@@ -15,17 +16,6 @@
                 {
                     "$type": "Microsoft.SendActivity",
                     "activity": "[ShowTodo]"
-                }
-            ]
-        }
-    ],
-    "rules": [
-        {
-            "$type": "Microsoft.IntentRule",
-            "intent": "CancelIntent",
-            "steps": [
-                {
-                    "$type": "Microsoft.CancelAllDialogs"
                 }
             ]
         }

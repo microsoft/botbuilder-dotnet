@@ -36,24 +36,28 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
             }
         }
 
-        public string ResultProperty
-        {
-            get
-            {
-                return OutputBinding;
-            }
+        //public string ResultProperty
+        //{
+        //    get
+        //    {
+        //        return OutputBinding;
+        //    }
 
-            set
-            {
-                OutputBinding = value;
-            }
-        }
+        //    set
+        //    {
+        //        InputBindings[DialogContextState.DIALOG_VALUE] = value;
+        //        OutputBinding = value;
+        //    }
+        //}
 
         [JsonConstructor]
-        public EmitEvent([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public EmitEvent(string eventName = null, object eventValue = null, bool bubble = true, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base()
         {
             this.RegisterSourceLocation(callerPath, callerLine);
+            this.EventName = eventName;
+            this.EventValue = EventValue;
+            this.BubbleEvent = bubble;
         }
 
         protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
@@ -63,7 +67,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            var handled = await dc.EmitEventAsync(EventName, EventValue, BubbleEvent, cancellationToken).ConfigureAwait(false);
+            var handled = await dc.EmitEventAsync(EventName, EventValue, BubbleEvent, false, cancellationToken).ConfigureAwait(false);
             return await dc.EndDialogAsync(handled, cancellationToken).ConfigureAwait(false);
         }
 

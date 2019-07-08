@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Expressions;
+using Microsoft.Bot.Builder.Expressions.Parser;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -16,6 +17,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
     /// </summary>
     public class SetProperty : DialogCommand
     {
+        private Expression value;
+        private Expression property;
+
         [JsonConstructor]
         public SetProperty([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0) : base()
         {
@@ -25,7 +29,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
         /// <summary>
         /// Value expression
         /// </summary>
-        public Expression Value { get; set; }
+        [JsonProperty("value")]
+        public string Value
+        {
+            get { return value?.ToString(); }
+            set {this.value = (value != null) ? new ExpressionEngine().Parse(value) : null; }
+        }
+
+        /// <summary>
+        /// Property to put the value in
+        /// </summary>
+        [JsonProperty("property")]
+        public string Property 
+        {
+            get { return property?.ToString(); }
+            set { this.property = (value != null) ? new ExpressionEngine().Parse(value) : null; }
+        }
 
         protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -35,25 +54,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
             }
 
             // Ensure planning context
-            if (dc is PlanningContext planning)
+            if (dc is SequenceContext planning)
             {
                 // SetProperty evaluates the "Value" expression and returns it as the result of the dialog
-                var (value, error) = Value.TryEvaluate(dc.State);
-
-
-                if (error == null)
+                if (dc.State.TryGetValue<object>(this.value, out object value))
                 {
-                    PlanningContext pc = dc as PlanningContext;
+                    dc.State.SetValue(property, value);
 
-                    // if this step interrupted a step in the active plan
-                    if (pc != null && pc.Plan.Steps.Count > 1 && pc.Plan.Steps[1].DialogStack.Count > 0)
+                    var sc = dc as SequenceContext;
+
+                    // If this step interrupted a step in the active plan
+                    if (sc != null && sc.Steps.Count > 1 && sc.Steps[1].DialogStack.Count > 0)
                     {
-                        // reset the next step's dialog stack so that when the plan continues it reevaluates new changed state
-                        pc.Plan.Steps[1].DialogStack.Clear();
+                        // Reset the next step's dialog stack so that when the plan continues it reevaluates new changed state
+                        sc.Steps[1].DialogStack.Clear();
                     }
                 }
 
-                return await planning.EndDialogAsync(value, cancellationToken: cancellationToken).ConfigureAwait(false);
+                return await planning.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
             else
             {

@@ -39,7 +39,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
                 paths.Push(fileResource.FullName);
             }
 
-            var json = resource.ReadText();
+            var json = resource.ReadTextAsync().GetAwaiter().GetResult();
 
             return _load<T>(registry, refResolver, paths, json);
         }
@@ -57,6 +57,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
                         new InterfaceConverter<IRule>(refResolver, registry, paths),
                         new InterfaceConverter<IStorage>(refResolver, registry, paths),
                         new InterfaceConverter<IRecognizer>(refResolver, registry, paths),
+                        new LanguageGeneratorConverter(refResolver, registry, paths),
                         new ExpressionConverter(),
                         new ActivityConverter(),
                         new ActivityTemplateConverter()

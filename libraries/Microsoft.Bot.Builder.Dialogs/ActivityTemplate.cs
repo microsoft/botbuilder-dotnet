@@ -33,12 +33,9 @@ namespace Microsoft.Bot.Builder.Dialogs
                 if (messageGenerator != null)
                 {
                     var result = await messageGenerator.Generate(
-                        context.Activity.Locale,
-                        inlineTemplate: this.Template,
-                        id: null,
-                        data: data,
-                        tags: null,
-                        types: null).ConfigureAwait(false);
+                        turnContext: context,
+                        template: this.Template,
+                        data: data).ConfigureAwait(false);
                     return result as Activity;
                 }
 
@@ -51,12 +48,9 @@ namespace Microsoft.Bot.Builder.Dialogs
                 if (languageGenerator != null)
                 {
                     var result = await languageGenerator.Generate(
-                        context.Activity.Locale,
-                        inlineTemplate: Template,
-                        id: null,
-                        data: data,
-                        tags: null,
-                        types: null).ConfigureAwait(false);
+                        turnContext: context,
+                        template: Template,
+                        data: data).ConfigureAwait(false);
                     if (result != null)
                     {
                         message.Text = result;

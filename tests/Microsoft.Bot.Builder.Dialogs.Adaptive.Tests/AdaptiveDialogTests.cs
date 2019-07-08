@@ -4,15 +4,17 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.LanguageGeneration.Renderer;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Rules;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Steps;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
 using Microsoft.Bot.Builder.Expressions;
 using Microsoft.Bot.Builder.Expressions.Parser;
+using Microsoft.Bot.Builder.LanguageGeneration;
 using Microsoft.Bot.Schema;
+using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
@@ -21,11 +23,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
     public class AdaptiveDialogTests
     {
         public TestContext TestContext { get; set; }
+        public ExpressionEngine expressionEngine = new ExpressionEngine();
 
         private TestFlow CreateFlow(AdaptiveDialog ruleDialog)
         {
+            TypeFactory.Configuration = new ConfigurationBuilder().Build();
+
             var explorer = new ResourceExplorer();
-            var lg = new LGLanguageGenerator(explorer);
             var storage = new MemoryStorage();
             var convoState = new ConversationState(storage);
             var userState = new UserState(storage);
@@ -35,21 +39,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .UseStorage(storage)
                 .UseState(userState, convoState)
                 .Use(new RegisterClassMiddleware<ResourceExplorer>(explorer))
-                .UseLanguageGenerator(lg)
+                .UseLanguageGeneration(explorer)
                 .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
 
-            var convoStateProperty = convoState.CreateProperty<Dictionary<string, object>>("conversation");
-
-            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
-
-            ruleDialog.BotState = convoState.CreateProperty<BotState>("bot");
-            ruleDialog.UserState = userState.CreateProperty<Dictionary<string, object>>("user"); ;
-
-            var dialogs = new DialogSet(dialogState);
-
+            DialogManager dm = new DialogManager(ruleDialog);
             return new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                await ruleDialog.OnTurnAsync(turnContext, null).ConfigureAwait(false);
+                await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
             });
         }
 
@@ -206,7 +202,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     {
                         new IfCondition()
                         {
-                            Condition = new ExpressionEngine().Parse("user.name == null"),
+                            Condition = "user.name == null",
                             Steps = new List<IDialog>()
                             {
                                 new TextInput() {
@@ -235,7 +231,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 {
                     new IfCondition()
                     {
-                        Condition = new ExpressionEngine().Parse("user.name == null"),
+                        Condition = "user.name == null",
                         Steps = new List<IDialog>()
                         {
                             new TextInput()
@@ -273,7 +269,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         {
                             new IfCondition()
                             {
-                                Condition = new ExpressionEngine().Parse("user.name == null"),
+                                Condition = "user.name == null",
                                 Steps = new List<IDialog>()
                                 {
                                     new TextInput()
@@ -286,7 +282,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             new IfCondition()
                             {
                                 // Check comparison with string literal
-                                Condition = new ExpressionEngine().Parse("user.name == 'Carlos'"),
+                                Condition = "user.name == 'Carlos'",
                                 Steps = new List<IDialog>()
                                 {
                                     new SendActivity("Hello carlin")
@@ -327,7 +323,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 {
                     new IfCondition()
                     {
-                        Condition = new ExpressionEngine().Parse("user.name == null"),
+                        Condition = "user.name == null",
                             Steps = new List<IDialog>()
                             {
                                 new TextInput()
@@ -393,7 +389,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     {
                         new IfCondition()
                         {
-                            Condition = new ExpressionEngine().Parse("user.name == null"),
+                            Condition = "user.name == null",
                             Steps = new List<IDialog>()
                             {
                                 new TextInput()
@@ -463,7 +459,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 {
                     new IfCondition()
                     {
-                        Condition = new ExpressionEngine().Parse("user.name == null"),
+                        Condition = "user.name == null",
                         Steps = new List<IDialog>()
                         {
                             new TextInput()
@@ -576,7 +572,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     {
                         new IfCondition()
                         {
-                            Condition = new ExpressionEngine().Parse("user.name == null"),
+                            Condition = "user.name == null",
                             Steps = new List<IDialog>()
                             {
                                 new TextInput()
@@ -592,10 +588,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             }
                         }
                     }
-                }
-            });
-
-            innerDialog.AddDialog(new[] {
+                },
                 new AdaptiveDialog("TellJokeDialog")
                     {
                         Steps = new List<IDialog>()
@@ -792,6 +785,92 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .AssertReply("age?")
             .Send("10")
                 .AssertReply("10")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task AdaptiveDialog_ActivityRules()
+        {
+            var dialog = new AdaptiveDialog("test")
+            {
+                AutoEndDialog = false,
+                Recognizer = new RegexRecognizer()
+                {
+                    Intents = new Dictionary<string, string>()
+                    {
+                        { "JokeIntent", "joke" }
+                    }
+                },
+                Rules = new List<IRule>()
+                {
+                    new ActivityRule("Custom", steps: new List<IDialog>() { new SendActivity("CustomActivityRule") }),
+                    new MessageActivityRule(steps: new List<IDialog>() { new SendActivity("MessageActivityRule") }),
+                    new MessageDeleteActivityRule(steps: new List<IDialog>() { new SendActivity("MessageDeleteActivityRule") }),
+                    new MessageUpdateActivityRule(steps: new List<IDialog>() { new SendActivity("MessageUpdateActivityRule") }),
+                    new MessageReactionActivityRule(steps: new List<IDialog>() { new SendActivity("MessageReactionActivityRule") }),
+                    new ConversationUpdateActivityRule(steps: new List<IDialog>() { new SendActivity("ConversationUpdateActivityRule") }),
+                    new EndOfConversationActivityRule(steps: new List<IDialog>() { new SendActivity("EndOfConversationActivityRule") }),
+                    new InvokeActivityRule(steps: new List<IDialog>() { new SendActivity("InvokeActivityRule") }),
+                    new EventActivityRule(steps: new List<IDialog>() { new SendActivity("EventActivityRule") }),
+                    new HandoffActivityRule(steps: new List<IDialog>() { new SendActivity("HandoffActivityRule") }),
+                    new TypingActivityRule(steps: new List<IDialog>() { new SendActivity("TypingActivityRule") }),
+                    new MessageActivityRule(constraint: "turn.activity.text == 'constraint'", steps: new List<IDialog>() { new SendActivity("constraint") }),
+                }
+            };
+
+            await CreateFlow(dialog)
+            .SendConversationUpdate()
+                .AssertReply("ConversationUpdateActivityRule")
+            .Send("MessageActivityRule")
+                .AssertReply("MessageActivityRule")
+            .Send("constraint")
+                .AssertReply("constraint")
+            .Send(new Activity(type: ActivityTypes.MessageUpdate))
+                .AssertReply("MessageUpdateActivityRule")
+            .Send(new Activity(type: ActivityTypes.MessageDelete))
+                .AssertReply("MessageDeleteActivityRule")
+            .Send(new Activity(type: ActivityTypes.MessageReaction))
+                .AssertReply("MessageReactionActivityRule")
+            .Send(Activity.CreateTypingActivity())
+                .AssertReply("TypingActivityRule")
+            .Send(Activity.CreateEndOfConversationActivity())
+                .AssertReply("EndOfConversationActivityRule")
+            .Send(Activity.CreateEventActivity())
+                .AssertReply("EventActivityRule")
+            .Send(Activity.CreateHandoffActivity())
+                .AssertReply("HandoffActivityRule")
+            .Send(Activity.CreateInvokeActivity())
+                .AssertReply("InvokeActivityRule")
+            .Send(new Activity(type: "Custom"))
+                .AssertReply("CustomActivityRule")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task AdaptiveDialog_ActivityAndIntentRules()
+        {
+            var dialog = new AdaptiveDialog("test")
+            {
+                AutoEndDialog = false,
+                Recognizer = new RegexRecognizer()
+                {
+                    Intents = new Dictionary<string, string>()
+                    {
+                        { "JokeIntent", "joke" }
+                    }
+                },
+                Rules = new List<IRule>()
+                {
+                    new IntentRule(intent: "JokeIntent", steps: new List<IDialog>() { new SendActivity("chicken joke") }),
+                    new MessageActivityRule(constraint: "turn.activity.text == 'magic'", steps: new List<IDialog>() { new SendActivity("abracadabra") }),
+                }
+            };
+
+            await CreateFlow(dialog)
+            .Send("tell me a joke")
+                .AssertReply("chicken joke")
+            .Send("magic")
+                .AssertReply("abracadabra")
             .StartTestAsync();
         }
 

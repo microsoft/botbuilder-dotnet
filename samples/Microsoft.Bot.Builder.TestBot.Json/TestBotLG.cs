@@ -15,18 +15,15 @@ namespace Microsoft.Bot.Builder.TestBot.Json
     {
         private readonly TemplateEngine engine;
 
-        private static string getOsPath(string path) => Path.Combine(path.TrimEnd('\\').Split('\\'));
-
         private string GetLGResourceFile(string fileName)
         {
-            return getOsPath(AppContext.BaseDirectory.Substring(0, AppContext.BaseDirectory.IndexOf("bin")) + "LG\\" + fileName);
+            return PathUtils.NormalizePath(AppContext.BaseDirectory.Substring(0, AppContext.BaseDirectory.IndexOf("bin")) + "LG\\" + fileName);
         }
 
         public TestBotLG(TestBotAccessors accessors)
         {
             // load LG file into engine
-            engine = new TemplateEngine()
-                .AddFiles(GetLGResourceFile("8.LG"));
+            engine = new TemplateEngine().AddFile(GetLGResourceFile("8.LG"));
         }
 
         public async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))

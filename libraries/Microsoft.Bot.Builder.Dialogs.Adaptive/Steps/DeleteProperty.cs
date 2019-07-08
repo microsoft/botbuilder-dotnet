@@ -14,6 +14,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
     /// </summary>
     public class DeleteProperty : DialogCommand
     {
+        /// <summary>
+        /// Property to path to remove Example: user.age will remove "age" from "user"
+        /// </summary>
+        public string Property { get; set; }
+
         [JsonConstructor]
         public DeleteProperty([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0) : base()
         {
@@ -38,9 +43,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
             }
 
             // Ensure planning context
-            if (dc is PlanningContext planning)
+            if (dc is SequenceContext planning)
             {
-                dc.State.RemoveValue(Property);
+                dc.State.RemoveProperty(Property);
                 return await dc.EndDialogAsync();
             }
             else

@@ -10,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json.Linq;
 using static Microsoft.Bot.Builder.Dialogs.Debugging.DebugSupport;
 
 namespace Microsoft.Bot.Builder.Dialogs
@@ -40,7 +41,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             State = new DialogContextState(this, settings: settings, userState: userState, conversationState: conversationState, turnState: turnState as Dictionary<string, object>);
-            State.SetValue($"turn.activity", Context.Activity);
+            State.SetValue(DialogContextState.TURN_ACTIVITY, Context.Activity);
         }
 
         public DialogContext(DialogSet dialogs, ITurnContext turnContext, DialogState state, IDictionary<string, object> conversationState = null, IDictionary<string, object> userState = null, IDictionary<string, object> settings = null)
@@ -59,18 +60,56 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             State = new DialogContextState(this, settings: settings, userState: userState, conversationState: conversationState, turnState: turnState as Dictionary<string, object>);
-            State.SetValue($"turn.activity", Context.Activity);
+            State.SetValue(DialogContextState.TURN_ACTIVITY, Context.Activity);
         }
 
-        public DialogContext Parent { get; protected set; }
+        /// <summary>
+        /// Parent context.
+        /// </summary>
+        public DialogContext Parent { get; set; }
 
+        /// <summary>
+        /// Set of dialogs which are active for the current dialog container.
+        /// </summary>
         public DialogSet Dialogs { get; private set; }
 
+        /// <summary>
+        /// Turn context.
+        /// </summary>
         public ITurnContext Context { get; private set; }
 
+        /// <summary>
+        /// Stack of active dialogs and their dialog state.
+        /// </summary>
         public IList<DialogInstance> Stack { get; private set; }
 
+        /// <summary>
+        /// Current active scoped state with (user|conversation|dialog|settings scopes).
+        /// </summary>
         public DialogContextState State { get; private set; }
+
+        /// <summary>
+        /// Dialog context for child if there is an active child.
+        /// </summary>
+        public DialogContext Child
+        {
+            get
+            {
+                var instance = this.ActiveDialog;
+
+                if (instance != null)
+                {
+                    var dialog = FindDialog(instance.Id);
+
+                    if (dialog is DialogContainer container)
+                    {
+                        return container.CreateChildContext(this);
+                    }
+                }
+
+                return null;
+            }
+        }
 
         /// <summary>
         /// Gets the cached instance of the active dialog on the top of the stack or <c>null</c> if the stack is empty.
@@ -101,7 +140,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// Returns a list of all `Dialog.tags` that are currently on the dialog stack. 
+        /// Returns a list of all `Dialog.tags` that are currently on the dialog stack.
         /// Any duplicate tags are removed from the returned list and the order of the tag reflects the
         /// order of the dialogs on the stack.
         /// The returned list will also include any tags applied as "globalTags". These tags are
@@ -140,6 +179,9 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
+        /// <summary>
+        /// The current dialog state for the active dialog.
+        /// </summary>
         public Dictionary<string, object> DialogState
         {
             get
@@ -174,11 +216,24 @@ namespace Microsoft.Bot.Builder.Dialogs
                 throw new Exception($"DialogContext.BeginDialogAsync(): A dialog with an id of '{dialogId}' wasn't found.");
             }
 
+            // Process dialogs input bindings
+            var bindings = new JObject();
+            foreach (var binding in dialog.InputBindings)
+            {
+                var bindingKey = binding.Key;
+                var bindingValue = binding.Value;
+
+                if (State.TryGetValue<object>(bindingValue, out var value))
+                {
+                    bindings[bindingKey] = JToken.FromObject(value);
+                }
+            }
+
             // Check for inherited state
             // Local stack references are positive numbers and negative numbers are references on the
             // parents stack.
             Dictionary<string, object> state = null;
-            int stateIndex = 0;
+            int? stateIndex = null;
 
             if (dialog is DialogCommand)
             {
@@ -203,7 +258,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 }
             }
 
-            if (state == null)
+            if (state == null && !stateIndex.HasValue)
             {
                 state = new Dictionary<string, object>();
             }
@@ -219,27 +274,28 @@ namespace Microsoft.Bot.Builder.Dialogs
             Stack.Insert(0, instance);
             activeTags = null;
 
-
-            // Process dialogs input bindings
-            // - If the stack is empty, any 'dialog.*' bindings will be pulled from the active dialog on
-            //   the parents stack.
-            if (!State.TryGetValue<Dictionary<string, object>>("dialog.result", out var stateBindings))
+            // take the bindings (dialog.xxx => dialog.yyy)
+            foreach (var property in bindings)
             {
-                stateBindings = new Dictionary<string, object>();
-            }
-
-            foreach (var option in dialog.InputBindings)
-            {
-                var bindingKey = option.Key;
-                var bindingValue = option.Value;
-
-                if (State.TryGetValue<object>(bindingValue, out var value))
+                // make sure the key is a dialog property this is only used for dialog bindings
+                if (!property.Key.StartsWith("$") && !property.Key.ToLower().StartsWith("dialog."))
                 {
-                    stateBindings[bindingKey] = value;
+                    throw new ArgumentOutOfRangeException($"{property.Key} is not a dialog property");
                 }
+
+                // Set the dialog property in the current state to the value from the bindings
+                State.SetValue(property.Key, property.Value);
             }
 
-            State.SetValue("dialog.result", stateBindings);
+            // set dialog result
+            if (dialog is DialogCommand)
+            {
+                State.SetValue(DialogContextState.STEP_OPTIONS_PROPERTY, options);
+            }
+            else
+            {
+                State.SetValue(DialogContextState.DIALOG_OPTIONS, options);
+            }
 
             // Call dialogs BeginAsync() method.
             await this.DebuggerStepAsync(dialog, DialogEvents.BeginDialog, cancellationToken).ConfigureAwait(false);
@@ -274,19 +330,25 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// its `Dialog.ContinueDialogAsync()` method. You can check `context.responded` after the call completes
         /// to determine if a dialog was run and a reply was sent to the user.
         /// </summary>
-        /// <remarks>
-        /// The ConsultDialogAsync method will be called to find the preferred function to invoke.
-        /// </remarks>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task<DialogTurnResult> ContinueDialogAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
-            // Consult dialog for processor to invoke.
-            var consultation = await ConsultDialogAsync(cancellationToken).ConfigureAwait(false);
+            // Check for a dialog on the stack
+            var instance = this.ActiveDialog;
 
-            if (consultation != null)
+            if (instance != null)
             {
-                return await consultation.Processor(this).ConfigureAwait(false);
+                // Lookup dialog
+                var dialog = this.FindDialog(instance.Id);
+
+                if (dialog == null)
+                {
+                    throw new Exception($"Failed to continue dialog. A dialog with id {instance.Id} could not be found.");
+                }
+
+                // Continue dialog execution
+                return await dialog.ContinueDialogAsync(this, cancellationToken).ConfigureAwait(false);
             }
             else
             {
@@ -369,7 +431,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                         // Check to see if the dialog wants to handle the event
                         if (notify)
                         {
-                            var eventHandled = await dialogContext.EmitEventAsync(eventName, eventValue, false, cancellationToken).ConfigureAwait(false);
+                            var eventHandled = await dialogContext.EmitEventAsync(eventName, eventValue, bubble: false, fromLeaf: false, cancellationToken: cancellationToken).ConfigureAwait(false);
 
                             if (eventHandled)
                             {
@@ -431,7 +493,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         public async Task RepromptDialogAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
             // Emit 'RepromptDialog' event
-            var handled = await EmitEventAsync(DialogEvents.RepromptDialog, null, false, cancellationToken).ConfigureAwait(false);
+            var handled = await EmitEventAsync(name: DialogEvents.RepromptDialog, value: null, bubble: false, fromLeaf: false, cancellationToken: cancellationToken).ConfigureAwait(false);
 
             if (!handled)
             {
@@ -453,7 +515,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// Find the dialog id for the given context. 
+        /// Find the dialog id for the given context.
         /// </summary>
         /// <param name="dialogId">dialog id to find</param>
         /// <returns>dialog with that id</returns>
@@ -481,10 +543,9 @@ namespace Microsoft.Bot.Builder.Dialogs
             public const string BeginDialog = "beginDialog";
             public const string ResumeDialog = "resumeDialog";
             public const string RepromptDialog = "repromptDialog";
-            public const string ConsultDialog = "consultDialog";
             public const string CancelDialog = "cancelDialog";
             public const string EndDialog = "endDialog";
-            public const string OnRecognize = "onRecognize";
+            public const string ActivityReceived = "activityReceived";
         }
 
         /// <summary>
@@ -496,7 +557,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="bubble">Flag to control whether the event should be bubbled to its parent if not handled locally. Defaults to a value of `true`.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>True if the event was handled.</returns>
-        public async Task<bool> EmitEventAsync(string name, object value = null, bool bubble = true, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<bool> EmitEventAsync(string name, object value = null, bool bubble = true, bool fromLeaf = false, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Initialize event
             var dialogEvent = new DialogEvent()
@@ -506,68 +567,41 @@ namespace Microsoft.Bot.Builder.Dialogs
                 Value = value,
             };
 
-            // Dispatch to active dialog first
-            var handled = false;
             var dc = this;
 
-            while (true)
+            // Find starting dialog
+            if (fromLeaf)
             {
-                var instance = dc.ActiveDialog;
-
-                if (instance != null)
+                while (true)
                 {
-                    var dialog = dc.FindDialog(instance.Id);
+                    var childDc = dc.Child;
 
-                    if (dialog != null)
+                    if (childDc != null)
                     {
-                        await this.DebuggerStepAsync(dialog, name, cancellationToken).ConfigureAwait(false);
-                        handled = await dialog.OnDialogEventAsync(dc, dialogEvent, cancellationToken).ConfigureAwait(false);
+                        dc = childDc;
+                    }
+                    else
+                    {
+                        break;
                     }
                 }
-
-                // Break out if not bubbling or no parent
-                if (!handled && dialogEvent.Bubble && dc.Parent != null)
-                {
-                    dc = dc.Parent;
-                }
-                else
-                {
-                    break;
-                }
             }
 
-            return handled;
-        }
+            // Dispatch to active dialog first
+            var instance = dc.ActiveDialog;
 
-        /// <summary>
-        /// Queries the active dialog about its desire to process the current utterance.
-        /// </summary>
-        /// <remarks>
-        /// If there's an active multi-turn dialog on the stack, the dialog will return a processor 
-        /// function that can be invoked to continue execution of the multi-turn dialog.
-        /// </remarks>
-        /// <returns>Consultation result.</returns>
-        public async Task<DialogConsultation> ConsultDialogAsync(CancellationToken cancellationToken = default(CancellationToken))
-        {
-            // Check for a dialog on the stack
-            if (ActiveDialog != null)
+            if (instance != null)
             {
-                // Lookup dialog
-                var dialog = FindDialog(ActiveDialog.Id);
+                var dialog = dc.FindDialog(instance.Id);
 
-                if (dialog == null)
+                if (dialog != null)
                 {
-                    throw new Exception($"`DialogContext.ConsultDialogAsync(): Can't consult dialog. A dialog with an id of '{ActiveDialog.Id}' wasn't found.");
+                    await this.DebuggerStepAsync(dialog, name, cancellationToken).ConfigureAwait(false);
+                    return await dialog.OnDialogEventAsync(dc, dialogEvent, cancellationToken).ConfigureAwait(false);
                 }
+            }
 
-                // Consult dialog
-                await this.DebuggerStepAsync(dialog, DialogEvents.ConsultDialog, cancellationToken).ConfigureAwait(false);
-                return await dialog.ConsultDialogAsync(this, cancellationToken).ConfigureAwait(false);
-            }
-            else
-            {
-                return null;
-            }
+            return false;
         }
 
         private async Task EndActiveDialogAsync(DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))
@@ -613,18 +647,15 @@ namespace Microsoft.Bot.Builder.Dialogs
                 // the parent DC.
                 int stackIndex = stackIdx.Value;
 
-                if (stackIndex >= 0)
+                for (int iStack = stackIndex; iStack < dialogContext.Stack.Count && iStack >= 0; iStack--)
                 {
-                    if (stackIndex < dialogContext.Stack.Count)
+                    if (dialogContext.Stack[iStack].State != null)
                     {
-                        return this.GetActiveDialogState(dialogContext, dialogContext.Stack[stackIndex].State, null);
-                    }
-                    else
-                    {
-                        throw new Exception("DialogContext.ActiveDialog: Can't find inherited state. Index out of range.");
+                        return dialogContext.Stack[iStack].State;
                     }
                 }
-                else if (dialogContext.Parent != null)
+
+                if (dialogContext.Parent != null)
                 {
                     return this.GetActiveDialogState(dialogContext.Parent, null, -stackIndex - 1);
                 }
@@ -636,5 +667,6 @@ namespace Microsoft.Bot.Builder.Dialogs
                 return state;
             }
         }
+
     }
 }

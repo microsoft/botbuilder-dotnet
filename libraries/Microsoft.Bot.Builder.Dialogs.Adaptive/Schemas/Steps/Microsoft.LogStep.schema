@@ -13,7 +13,8 @@
         "traceActivity": {
             "type": "boolean",
             "title": "Send Trace Activity",
-            "description": "Set to true to also create a TraceActivity with the log text"
+            "description": "Set to true to also create a TraceActivity with the log text",
+            "default":  false
         }
     },
     "required": [

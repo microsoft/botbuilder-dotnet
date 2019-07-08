@@ -1,24 +1,27 @@
 {
     "$schema": "../../app.schema",
     "$type": "Microsoft.AdaptiveDialog",
+    "generator": "todo.lg",
     "steps": [
         {
             "$type": "Microsoft.EditArray",
             "changeType": "Clear",
-            "arrayProperty": "user.todos"
+            "arrayProperty": "user.todos",
+            "resultProperty": "dialog.cleared"
         },
         {
-            "$type": "Microsoft.SendActivity",
-            "activity": "Successfully clear the todo list."
-        }
-    ],
-    "rules": [
-        {
-            "$type": "Microsoft.IntentRule",
-            "intent": "CancelIntent",
+            "$type": "Microsoft.IfCondition",
+            "condition": "dialog.cleared",
             "steps": [
                 {
-                    "$type": "Microsoft.CancelAllDialogs"
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "Successfully cleared items in the Todo List."
+                }
+            ],
+            "elseSteps": [
+                {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "You don't have any item in the Todo List."
                 }
             ]
         }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -10,9 +11,21 @@ namespace Microsoft.Bot.Configuration.Tests
     [TestClass]
     public class ConnectionTests
     {
-        private string TestBotFileName = getOsPath(@"..\..\..\test.bot");
+        private string TestBotFileName = NormalizePath(@"..\..\..\test.bot");
 
-        private static string getOsPath(string path) => Path.Combine(path.TrimEnd('\\').Split('\\'));
+        public static string NormalizePath(string ambigiousPath)
+        {
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                // map linux/mac sep -> windows
+                return ambigiousPath.Replace("/", "\\");
+            }
+            else
+            {
+                // map windows sep -> linux/mac
+                return ambigiousPath.Replace("\\", "/");
+            }
+        }
 
         [TestMethod]
         public async Task ConnectAssignsUniqueIds()

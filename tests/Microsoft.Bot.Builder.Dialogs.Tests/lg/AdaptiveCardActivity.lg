@@ -1,5 +1,5 @@
 ﻿# externalAdaptiveCardTemplate
-- ```[Attachment=lg/adaptiveCard.json adaptivecard]```
+- ```[Attachment=lg/..\lg/adaptiveCard.json adaptivecard]```
 
 # adaptiveCardTemplate
 - ```

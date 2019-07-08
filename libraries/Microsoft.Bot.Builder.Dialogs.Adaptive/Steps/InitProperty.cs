@@ -23,6 +23,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
         }
 
         /// <summary>
+        /// Property which is bidirectional property for input and output.  Example: user.age will be passed in, and user.age will be set when the dialog completes
+        /// </summary>
+        public string Property
+        {
+            get
+            {
+                return OutputBinding;
+            }
+            set
+            {
+                InputBindings[DialogContextState.DIALOG_VALUE] = value;
+                OutputBinding = value;
+            }
+        }
+
+        /// <summary>
         ///  Type, either Array or Object
         /// </summary>
         public string Type { get; set; }
@@ -34,19 +50,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            var prop = await new TextTemplate(this.Property).BindToData(dc.Context, dc.State).ConfigureAwait(false);
-
 
             // Ensure planning context
-            if (dc is PlanningContext planning)
+            if (dc is SequenceContext planning)
             {
                 switch (Type.ToLower())
                 {
                     case "array":
-                        dc.State.SetValue(prop, new JArray());
+                        dc.State.SetValue(this.Property, new JArray());
                         break;
                     case "object":
-                        dc.State.SetValue(prop, new JObject());
+                        dc.State.SetValue(this.Property, new JObject());
                         break;
                 }
 

@@ -34,33 +34,5 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
             callerPath: callerPath, callerLine: callerLine)
         {
         }
-
-        protected override PlanChangeList OnCreateChangeList(PlanningContext planning, object dialogOptions = null)
-        {
-            if (planning.State.TryGetValue<RecognizerResult>("turn.dialogEvent.value", out var recognizerResult))
-            {
-                return new PlanChangeList()
-                {
-                    //ChangeType = this.ChangeType,
-                    Desire = DialogConsultationDesire.CanProcess,
-                    Steps = Steps.Select(s => new PlanStepState()
-                    {
-                        DialogStack = new List<DialogInstance>(),
-                        DialogId = s.Id,
-                        Options = dialogOptions
-                    }).ToList()
-                };
-            }
-
-            return new PlanChangeList()
-            { 
-                Steps = Steps.Select(s => new PlanStepState()
-                {
-                    DialogStack = new List<DialogInstance>(),
-                    DialogId = s.Id,
-                    Options = dialogOptions
-                }).ToList()
-            };
-        }
     }
 }

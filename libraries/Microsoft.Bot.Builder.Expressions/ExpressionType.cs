@@ -20,6 +20,7 @@ namespace Microsoft.Bot.Builder.Expressions
         public const string Mod = "%";
         public const string Average = "average";
         public const string Sum = "sum";
+        public const string Range = "range";
 
         // Comparisons
         public const string LessThan = "<";
@@ -49,6 +50,9 @@ namespace Microsoft.Bot.Builder.Expressions
         public const string StartsWith = "startsWith";
         public const string CountWord = "countWord";
         public const string AddOrdinal = "addOrdinal";
+        public const string NewGuid = "newGuid";
+        public const string IndexOf = "indexOf";
+        public const string LastIndexOf = "lastIndexOf";
 
         // Collection
         public const string Count = "count";
@@ -58,8 +62,13 @@ namespace Microsoft.Bot.Builder.Expressions
         public const string First = "first";
         public const string Last = "last";
         public const string Foreach = "foreach";
+        public const string Select = "select";
+        public const string Where = "where";
         public const string Union = "union";
         public const string Intersection = "intersection";
+        public const string Skip = "skip";
+        public const string Take = "take";
+        public const string SubArray = "subArray";
 
         // DateTime
         public const string AddDays = "addDays";
@@ -79,12 +88,38 @@ namespace Microsoft.Bot.Builder.Expressions
         public const string GetTimeOfDay = "getTimeOfDay";
         public const string GetFutureTime = "getFutureTime";
         public const string GetPastTime = "getPastTime";
+        public const string ConvertFromUTC = "convertFromUTC";
+        public const string ConvertToUTC = "convertToUTC";
+        public const string AddToTime = "addToTime";
+        public const string StartOfDay = "startOfDay";
+        public const string StartOfHour = "startOfHour";
+        public const string StartOfMonth = "startOfMonth";
+        public const string Ticks = "ticks";
 
         // Conversions
         public const string Float = "float";
         public const string Int = "int";
         public const string String = "string";
         public const string Bool = "bool";
+        public const string Array = "array";
+        public const string Binary = "binary";
+        public const string Base64 = "base64";
+        public const string Base64ToBinary = "base64ToBinary";
+        public const string Base64ToString = "base64ToString";
+        public const string DataUri = "dataUri";
+        public const string DataUriToBinary = "dataUriToBinary";
+        public const string DataUriToString = "dataUriToString";
+        public const string UriComponent = "uriComponent";
+        public const string UriComponentToString = "uriComponentToString";
+        public const string Xml = "xml";
+
+        // URI Parsing Functions
+        public const string UriHost = "uriHost";
+        public const string UriPath = "uriPath";
+        public const string UriPathAndQuery = "uriPathAndQuery";
+        public const string UriPort = "uriPort";
+        public const string UriQuery = "uriQuery";
+        public const string UriScheme = "uriScheme";
 
         // Memory
         public const string Accessor = "Accessor";
@@ -103,5 +138,20 @@ namespace Microsoft.Bot.Builder.Expressions
         public const string AddProperty = "addProperty";
         public const string RemoveProperty = "removeProperty";
         public const string SetProperty = "setProperty";
+        public const string Coalesce = "coalesce";
+        public const string XPath = "xPath";
+        public const string SetPathToValue = "setPathToValue";
+
+        // Regular expression
+        public const string IsMatch = "isMatch";
+
+        // short hand functions
+        public const string Intent = "intent";
+        public const string Entity = "entity";
+        public const string Dialog = "dialog";
+        public const string SimpleEntity = "simpleEntity";
+        public const string Instance = "instance";
+        public const string Option = "option";
+        public const string Callstack = "callstack";
     }
 }

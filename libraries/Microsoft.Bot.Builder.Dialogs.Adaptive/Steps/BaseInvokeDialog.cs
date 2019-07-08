@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
     /// <summary>
     /// Step which calls another dialog
     /// </summary>
-    public abstract class BaseInvokeDialog : Dialog, IDialogDependencies
+    public abstract class BaseInvokeDialog : DialogCommand
     {
         protected string dialogIdToCall;
 
@@ -31,24 +31,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
         /// <summary>
         /// The property from memory to pass to the calling dialog and to set the return value to.
         /// </summary>
-        public override string Property
+        public string Property
         {
             get
             {
-                return InputBindings["value"];
+                return InputBindings.TryGetValue(DialogContextState.DIALOG_VALUE, out string value) ? value : null;
             }
             set
             {
-                InputBindings["value"] = value;
+                InputBindings[DialogContextState.DIALOG_VALUE] = value;
                 OutputBinding = value;
             }
         }
 
-        public BaseInvokeDialog(string dialogIdToCall = null, string id = null, string property = null, object options = null) 
+        public BaseInvokeDialog(string dialogIdToCall = null, string property = null, object options = null) 
             : base()
         {
             this.dialogIdToCall = dialogIdToCall;
-            this.OutputBinding = "dialog.lastResult";
 
             if (options != null)
             {
@@ -59,8 +58,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
             {
                 Property = property;
             }
-
-            Id = id;
         }
 
         protected override string OnComputeId()
@@ -80,7 +77,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
             return dialog;
         }
 
-        public List<IDialog> ListDependencies()
+        public override List<IDialog> ListDependencies()
         {
             if (Dialog != null)
             {

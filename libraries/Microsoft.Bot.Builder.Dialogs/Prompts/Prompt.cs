@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
+using static Microsoft.Bot.Builder.Dialogs.DialogContext;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
@@ -23,6 +24,23 @@ namespace Microsoft.Bot.Builder.Dialogs
         private const string PersistedState = "state";
 
         protected PromptValidator<T> _validator = null;
+
+        /// <summary>
+        /// Property which is bidirectional property for input and output.  Example: user.age will be passed in, and user.age will be set when the dialog completes
+        /// </summary>
+        public string Property
+        {
+            get
+            {
+                return OutputBinding;
+            }
+
+            set
+            {
+                InputBindings[DialogContextState.DIALOG_VALUE] = value;
+                OutputBinding = value;
+            }
+        }
 
         public Prompt(string dialogId = null, PromptValidator<T> validator = null)
             : base(dialogId)
@@ -87,56 +105,56 @@ namespace Microsoft.Bot.Builder.Dialogs
             return Dialog.EndOfTurn;
         }
 
-        public override async Task<DialogConsultation> ConsultDialogAsync(DialogContext dc, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task<DialogTurnResult> ContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Don't do anything for non-message activities
             if (dc.Context.Activity.Type != ActivityTypes.Message)
             {
-                return new DialogConsultation()
-                {
-                    Desire = DialogConsultationDesire.CanProcess,
-                    Processor = async (dialogContext2) => Dialog.EndOfTurn,
-                };
+                return Dialog.EndOfTurn;
+            }
+
+            // Are we being continued after an interruption?
+            // The stepCount will be 1 or more if we're running in the context of an AdaptiveDialog
+            // and we're coming back from an interruption.
+            var stepCount = dc.State.GetValue<int>("turn.stepCount", 0);
+
+            if (stepCount > 0)
+            {
+                // Reprompt and then end
+                await this.RepromptDialogAsync(dc.Context, dc.ActiveDialog, cancellationToken).ConfigureAwait(false);
+                return Dialog.EndOfTurn;
             }
 
             // Perform base recognition
             var state = dc.DialogState;
             var recognized = await this.OnRecognizeAsync(dc.Context, (IDictionary<string, object>)state[PersistedState], (PromptOptions)state[PersistedOptions]).ConfigureAwait(false);
 
-            return new DialogConsultation()
+            // Validate the return value
+            bool isValid = false;
+            if (this._validator != null)
             {
-                Desire = recognized.Succeeded && !recognized.AllowInterruption ? DialogConsultationDesire.ShouldProcess : DialogConsultationDesire.CanProcess,
-                Processor = async (dialogContext) =>
+                isValid = await this._validator(new PromptValidatorContext<T>(dc.Context, recognized, (IDictionary<string, object>)state[PersistedState], (PromptOptions)state[PersistedOptions]), cancellationToken).ConfigureAwait(false);
+            }
+            else if (recognized.Succeeded)
+            {
+                isValid = true;
+            }
+
+            // Return recognized value or re-prompt
+            if (isValid)
+            {
+                return await dc.EndDialogAsync(recognized.Value, cancellationToken: cancellationToken).ConfigureAwait(false);
+            }
+            else
+            {
+                if (!dc.Context.Responded)
                 {
-                    // Validate the return value
-                    bool isValid = false;
-                    if (this._validator != null)
-                    {
-                        isValid = await this._validator(new PromptValidatorContext<T>(dialogContext.Context, recognized, (IDictionary<string, object>)state[PersistedState], (PromptOptions)state[PersistedOptions]), cancellationToken).ConfigureAwait(false);
-                    }
-                    else if (recognized.Succeeded)
-                    {
-                        isValid = true;
-                    }
+                    await this.OnPromptAsync(dc.Context, (IDictionary<string, object>)state[PersistedState], (PromptOptions)state[PersistedOptions], true).ConfigureAwait(false);
+                }
 
-                    // Return recognized value or re-prompt
-                    if (isValid)
-                    {
-                        return await dc.EndDialogAsync(recognized.Value, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    }
-                    else
-                    {
-                        if (!dc.Context.Responded)
-                        {
-                            await this.OnPromptAsync(dc.Context, (IDictionary<string, object>)state[PersistedState], (PromptOptions)state[PersistedOptions], true).ConfigureAwait(false);
-                        }
-
-                        return Dialog.EndOfTurn;
-                    }
-                },
-            };
+                return Dialog.EndOfTurn;
+            }
         }
-
 
         public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -156,9 +174,22 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         public override async Task RepromptDialogAsync(ITurnContext turnContext, DialogInstance instance, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var state = (IDictionary<string, object>)((Dictionary<string, object>)instance.State)[PersistedState];
-            var options = (PromptOptions)((Dictionary<string, object>)instance.State)[PersistedOptions];
+            var state = (IDictionary<string, object>)instance.State[PersistedState];
+            var options = (PromptOptions)instance.State[PersistedOptions];
             await OnPromptAsync(turnContext, state, options, isRetry: true).ConfigureAwait(false);
+        }
+
+        protected override async Task<bool> OnPreBubbleEvent(DialogContext dc, DialogEvent e, CancellationToken cancellationToken)
+        {
+            if (e.Name == DialogEvents.ActivityReceived && dc.Context.Activity.Type == ActivityTypes.Message)
+            {
+                // Perform base recognition
+                var state = dc.DialogState;
+                var recognized = await this.OnRecognizeAsync(dc.Context, (IDictionary<string, object>)state[PersistedState], (PromptOptions)state[PersistedOptions]).ConfigureAwait(false);
+                return recognized.Succeeded;
+            }
+
+            return false;
         }
 
         protected abstract Task OnPromptAsync(ITurnContext turnContext, IDictionary<string, object> state, PromptOptions options, bool isRetry, CancellationToken cancellationToken = default(CancellationToken));

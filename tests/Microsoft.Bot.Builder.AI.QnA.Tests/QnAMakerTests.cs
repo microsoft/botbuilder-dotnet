@@ -17,7 +17,6 @@ using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
 using Microsoft.Bot.Builder.Expressions.Parser;
-using Microsoft.Bot.Builder.LanguageGeneration.Renderer;
 using Microsoft.Bot.Configuration;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
@@ -39,8 +38,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
 
         private TestFlow CreateFlow(AdaptiveDialog ruleDialog)
         {
-            var explorer = new ResourceExplorer();
-            var lg = new LGLanguageGenerator(explorer);
+            var resourceExplorer = new ResourceExplorer();
             var storage = new MemoryStorage();
             var userState = new UserState(storage);
             var conversationState = new ConversationState(storage);
@@ -49,22 +47,15 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             adapter
                 .UseStorage(storage)
                 .UseState(userState, conversationState)
-                .UseResourceExplorer(explorer)
-                .UseLanguageGenerator(lg)
+                .UseResourceExplorer(resourceExplorer)
+                .UseLanguageGeneration(resourceExplorer)
                 .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
 
-            var convoStateProperty = conversationState.CreateProperty<Dictionary<string, object>>("conversation");
-
-            var dialogState = conversationState.CreateProperty<DialogState>("dialogState");
-
-            ruleDialog.BotState = conversationState.CreateProperty<Microsoft.Bot.Builder.Dialogs.Adaptive.BotState>("bot");
-            ruleDialog.UserState = userState.CreateProperty<Dictionary<string, object>>("user"); ;
-
-            var dialogs = new DialogSet(dialogState);
+            DialogManager dm = new DialogManager(ruleDialog);
 
             return new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                await ruleDialog.OnTurnAsync(turnContext, null).ConfigureAwait(false);
+                await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
             });
         }
 
@@ -158,7 +149,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                                         },
                                         new IfCondition()
                                         {
-                                             Condition = new ExpressionEngine().Parse("turn.LastResult == false"),
+                                             Condition = "turn.LastResult == false",
                                              Steps =   new List<IDialog>()
                                              {
                                                  new SendActivity("I didn't understand that.")

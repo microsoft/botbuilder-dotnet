@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Expressions;
+using Microsoft.Bot.Builder.Expressions.Parser;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
@@ -18,11 +19,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
     /// </summary>
     public class IfCondition : DialogCommand, IDialogDependencies
     {
+        private Expression condition;
+
         /// <summary>
         /// Condition expression against memory Example: "user.age > 18"
         /// </summary>
         [JsonProperty("condition")]
-        public Expression Condition { get; set; }
+        public string Condition
+        {
+            get { return condition?.ToString(); }
+            set { lock(this) condition = (value != null) ? new ExpressionEngine().Parse(value) : null; }
+        }
 
         [JsonProperty("steps")]
         public List<IDialog> Steps { get; set; } = new List<IDialog>();
@@ -46,9 +53,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
 
 
             // Ensure planning context
-            if (dc is PlanningContext planning)
+            if (dc is SequenceContext planning)
             {
-                var (value, error) = Condition.TryEvaluate(dc.State);
+                var (value, error) = condition.TryEvaluate(dc.State);
                 var conditionResult = error == null && (bool)value;
 
                 var steps = new List<IDialog>();
@@ -61,7 +68,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                     steps = this.ElseSteps;
                 }
 
-                var planSteps = steps.Select(s => new PlanStepState()
+                var planSteps = steps.Select(s => new StepState()
                 {
                     DialogStack = new List<DialogInstance>(),
                     DialogId = s.Id,
@@ -69,9 +76,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                 });
 
                 // Queue up steps that should run after current step
-                planning.QueueChanges(new PlanChangeList()
+                planning.QueueChanges(new StepChangeList()
                 {
-                    ChangeType = PlanChangeTypes.DoSteps,
+                    ChangeType = StepChangeTypes.InsertSteps,
                     Steps = planSteps.ToList()
                 });
 

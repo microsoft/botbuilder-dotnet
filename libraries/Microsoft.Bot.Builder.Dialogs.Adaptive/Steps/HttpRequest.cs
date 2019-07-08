@@ -21,6 +21,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
     /// </summary>
     public class HttpRequest : DialogCommand
     {
+        private static readonly HttpClient client = new HttpClient();
+
         public enum ResponseTypes
         {
             /// <summary>
@@ -71,7 +73,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
         public string Url { get; set; }
 
         [JsonProperty("header")]
-        public Dictionary<string, string> Header { get; set; }
+        public Dictionary<string, string> Headers { get; set; }
 
         [JsonProperty("body")]
         public JToken Body { get; set; }
@@ -79,15 +81,29 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
         [JsonProperty("returnType")]
         public ResponseTypes ResponseType { get; set; } = ResponseTypes.Json;
 
-        private static readonly HttpClient client = new HttpClient();
+        /// <summary>
+        /// Property which is bidirectional property for input and output.  Example: user.age will be passed in, and user.age will be set when the dialog completes
+        /// </summary>
+        public string Property
+        {
+            get
+            {
+                return OutputBinding;
+            }
+            set
+            {
+                InputBindings[DialogContextState.DIALOG_VALUE] = value;
+                OutputBinding = value;
+            }
+        }
 
-        public HttpRequest(HttpMethod method, string url, string property, Dictionary<string, string> header = null, JObject body = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public HttpRequest(HttpMethod method, string url, string property, Dictionary<string, string> headers = null, JObject body = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
             this.RegisterSourceLocation(callerPath, callerLine);
             this.Method = method;
             this.Url = url ?? throw new ArgumentNullException(nameof(url));
             this.Property = property;
-            this.Header = header;
+            this.Headers = headers;
             this.Body = body;
         }
 
@@ -138,7 +154,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                 instanceBody = (JToken)this.Body.DeepClone();
             }
 
-            var instanceHeader = Header == null ? null : new Dictionary<string, string>(Header);
+            var instanceHeaders = Headers == null ? null : new Dictionary<string, string>(Headers);
             var instanceUrl = this.Url;
 
             instanceUrl = await new TextTemplate(this.Url).BindToData(dc.Context, dc.State).ConfigureAwait(false);
@@ -150,9 +166,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
             }
 
             // Set header
-            if (instanceHeader != null)
+            if (instanceHeaders != null)
             {
-                foreach (var unit in instanceHeader)
+                foreach (var unit in instanceHeaders)
                 {
                     client.DefaultRequestHeaders.Add(
                         await new TextTemplate(unit.Key).BindToData(dc.Context, dc.State),

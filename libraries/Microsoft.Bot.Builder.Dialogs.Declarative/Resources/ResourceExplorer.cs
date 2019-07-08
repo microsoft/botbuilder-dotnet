@@ -16,7 +16,7 @@ using NuGet.Versioning;
 
 namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
 {
-    public delegate void ResourceChangedEventHandler(string[] paths);
+    public delegate void ResourceChangedEventHandler(IResource[] resources);
 
     /// <summary>
     /// Class which gives standard access to file based resources
@@ -26,7 +26,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         private List<IResourceProvider> resourceProviders = new List<IResourceProvider>();
 
         private CancellationTokenSource CancelReloadToken = new CancellationTokenSource();
-        private ConcurrentBag<string> changedPaths = new ConcurrentBag<string>();
+        private ConcurrentBag<IResource> changedResources = new ConcurrentBag<IResource>();
 
         public ResourceExplorer()
         {
@@ -60,13 +60,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             return this;
         }
 
-        private void ResourceProvider_Changed(string[] ids)
+        private void ResourceProvider_Changed(IResource[] resources)
         {
             if (this.Changed != null)
             {
-                foreach (var id in ids)
+                foreach (var resource in resources)
                 {
-                    changedPaths.Add(id);
+                    changedResources.Add(resource);
                 }
 
                 lock (CancelReloadToken)
@@ -78,8 +78,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                         {
                             if (t.IsCanceled)
                                 return;
-                            var changed = changedPaths.ToArray();
-                            changedPaths = new ConcurrentBag<string>();
+                            var changed = changedResources.ToArray();
+                            changedResources = new ConcurrentBag<IResource>();
                             this.Changed(changed);
                         }).ContinueWith(t => t.Status);
                 }
@@ -95,6 +95,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         public static ResourceExplorer LoadProject(string projectFile, string[] ignoreFolders = null, bool monitorChanges = true)
         {
             var explorer = new ResourceExplorer();
+            projectFile = PathUtils.NormalizePath(projectFile);
+            ignoreFolders = ignoreFolders?.Select(f => PathUtils.NormalizePath(f)).ToArray();
+
             if (!File.Exists(projectFile))
             {
                 projectFile = Directory.EnumerateFiles(projectFile, "*.*proj").FirstOrDefault();
@@ -121,8 +124,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             // add project references
             foreach (XmlNode node in xmlDoc.SelectNodes("//ProjectReference"))
             {
-                var path = Path.Combine(projectFolder, PlatformPath(node.Attributes["Include"].Value));
-
+                var path = Path.Combine(projectFolder, PathUtils.NormalizePath(node.Attributes["Include"].Value));
                 path = Path.GetFullPath(path);
                 path = Path.GetDirectoryName(path);
                 if (Directory.Exists(path))
@@ -138,7 +140,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             var relativePackagePath = Path.Combine(@"..", "packages");
             while (!Directory.Exists(packages) && Path.GetDirectoryName(packages) != Path.GetPathRoot(packages))
             {
-                packages = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(packages), PlatformPath(relativePackagePath)));
+                packages = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(packages), PathUtils.NormalizePath(relativePackagePath)));
                 if (packages == null)
                 {
                     throw new ArgumentNullException("Can't find packages folder");
@@ -154,7 +156,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                 if (!String.IsNullOrEmpty(packageName) && !String.IsNullOrEmpty(version))
                 {
                     var package = new PackageIdentity(packageName, new NuGetVersion(version));
-                    var folder = Path.Combine(packages, PlatformPath(pathResolver.GetPackageDirectoryName(package)));
+                    var folder = Path.Combine(packages, PathUtils.NormalizePath(pathResolver.GetPackageDirectoryName(package)));
                     if (Directory.Exists(folder))
                     {
                         explorer.AddResourceProvider(new FolderResourceProvider(folder, includeSubFolders: true, monitorChanges: monitorChanges));
@@ -163,18 +165,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             }
 
             return explorer;
-        }
-
-        private static string PlatformPath(string path)
-        {
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                return path.Replace("/", "\\");
-            }
-            else
-            {
-                return path.Replace("\\", "/");
-            }
         }
 
         /// <summary>
@@ -196,18 +186,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// <summary>
         /// Get resource by filename
         /// </summary>
-        /// <param name="filename"></param>
+        /// <param name="id"></param>
         /// <returns></returns>
-        public IResource GetResource(string filename)
+        public IResource GetResource(string id)
         {
-            try
+            foreach (var resourceProvider in this.resourceProviders)
             {
-                return GetResources(Path.GetExtension(filename)).Where(resource => resource.Id == filename).SingleOrDefault();
+                var resource = resourceProvider.GetResource(id);
+                if (resource != null)
+                {
+                    return resource;
+                }
             }
-            catch(InvalidOperationException err)
-            {
-                throw new Exception($"{filename} duplicates found.\n{String.Join("\n", GetResources(Path.GetExtension(filename)).Where(resource => resource.Id == filename).Select(resource => resource.Id))}", err);
-            }
+            return null;
         }
 
         public void Dispose()

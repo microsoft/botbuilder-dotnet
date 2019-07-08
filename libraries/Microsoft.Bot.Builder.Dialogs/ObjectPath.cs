@@ -1,13 +1,97 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Expressions;
 using Microsoft.Bot.Builder.Expressions.Parser;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
     public static class ObjectPath
     {
+        private static JsonSerializerSettings expressionCaseSettings = new JsonSerializerSettings
+        {
+            ContractResolver = new DefaultContractResolver { NamingStrategy = new CamelCaseNamingStrategy() },
+            NullValueHandling = NullValueHandling.Ignore,
+        };
+
+        public static bool HasValue(object obj, Expression pathExpression)
+        {
+            return TryGetValue<object>(obj, pathExpression, out var value);
+        }
+
+        public static T GetValue<T>(object obj, Expression pathExpression)
+        {
+            if (TryGetValue<T>(obj, pathExpression, out var value))
+            {
+                return value;
+            }
+
+            throw new KeyNotFoundException(pathExpression.ToString());
+        }
+
+        public static T GetValue<T>(object obj, Expression pathExpression, T defaultValue)
+        {
+            if (TryGetValue<T>(obj, pathExpression, out var value))
+            {
+                return value;
+            }
+
+            return defaultValue;
+        }
+
+        public static bool TryGetValue<T>(object o, Expression expression, out T value)
+        {
+            value = default(T);
+
+            if (expression == null)
+            {
+                return false;
+            }
+
+            // normal expression
+            var (val, error) = expression.TryEvaluate(o);
+            if (error != null)
+            {
+                return false;
+            }
+
+            if (val == null)
+            {
+                return false;
+            }
+
+            if (val is JToken)
+            {
+                value = ((JToken)val).ToObject<T>();
+                return true;
+            }
+            else if (val is T)
+            {
+                value = (T)val;
+                return true;
+            }
+            else
+            {
+                try
+                {
+                    value = (T)Convert.ChangeType(val, typeof(T));
+                    return true;
+                }
+                catch (Exception)
+                {
+                    // we don't know what type it is?
+                }
+            }
+
+            return false;
+        }
+
         public static bool HasValue(object obj, string pathExpression)
         {
             return TryGetValue<object>(obj, pathExpression, out var value);
@@ -42,8 +126,9 @@ namespace Microsoft.Bot.Builder.Dialogs
                 return false;
             }
 
+            // if JPath expression
             JToken result = null;
-            if (pathExpression.StartsWith("$"))
+            if (pathExpression.StartsWith("$."))
             {
                 // jpath
                 if (o != null && o.GetType() == typeof(JArray))
@@ -67,47 +152,85 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 // normal expression
                 var exp = new ExpressionEngine().Parse(pathExpression);
-                var (val, error) = exp.TryEvaluate(o);
-                if (error != null)
-                {
-                    return false;
-                }
-
-                if (val == null)
-                {
-                    return false;
-                }
-
-                if (val is JToken)
-                {
-                    result = (JToken)val;
-                }
-                else if (val is T)
-                {
-                    value = (T)val;
-                    return true;
-                }
-                else
-                {
-                    try
-                    {
-                        value = (T)Convert.ChangeType(val, typeof(T));
-                        return true;
-                    }
-                    catch (Exception)
-                    {
-                        // we don't know what type it is?
-                    }
-                }
-            }
-
-            if (result != null)
-            {
-                value = result.ToObject<T>();
-                return true;
+                return TryGetValue<T>(o, exp, out value);
             }
 
             return false;
+        }
+
+        public static string SetValue(object o, string pathExpression, object value)
+        {
+            return SetValue(o, new ExpressionEngine().Parse(pathExpression), value);
+        }
+
+        public static string SetValue(object o, Expression pathExpression, object value, bool json = true)
+        {
+            object val;
+            if (json)
+            {
+                if (value is JToken || value is JObject || value is JArray)
+                {
+                    val = (JToken)value;
+                }
+                else if (value == null)
+                {
+                    val = null;
+                }
+                else if (value is string || value is byte || value is bool ||
+                        value is Int16 || value is Int32 || value is Int64 ||
+                        value is UInt16 || value is UInt32 || value is UInt64 ||
+                        value is Decimal || value is float || value is double)
+                {
+                    val = JValue.FromObject(value);
+                }
+                else
+                {
+                    val = (JToken)JsonConvert.DeserializeObject(JsonConvert.SerializeObject(value, expressionCaseSettings));
+                }
+            }
+            else
+            {
+                val = value;
+            }
+
+            var (result, error) = Expression.SetPathToValue(pathExpression, val).TryEvaluate(o);
+            return error;
+        }
+
+        public static void RemoveProperty(object o, string pathExpression)
+        {
+            // TODO-- use expression library to resolve pathexpression. 
+
+            // If the json path does not exist
+            string[] segments = pathExpression.Split('.').Select(segment => segment.ToLower()).ToArray();
+            dynamic current = o;
+
+            var deleted = false;
+            for (var i = 0; i < segments.Length - 1; i++)
+            {
+                var segment = segments[i];
+                if (current is IDictionary<string, object> curDict)
+                {
+                    if (!curDict.TryGetValue(segment, out var segVal) || segVal == null)
+                    {
+                        deleted = true;
+                        break;
+                    }
+
+                    current = curDict[segment];
+                }
+            }
+
+            if (!deleted)
+            {
+                current.Remove(segments.Last());
+            }
+        }
+
+        public static void RemoveProperty(object o, Expression pathExpression)
+        {
+            // TODO-- use expression library to resolve pathexpression.
+            RemoveProperty(o, pathExpression.ToString());
         }
 
         /// <summary>

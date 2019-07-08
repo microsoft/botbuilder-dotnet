@@ -9,9 +9,9 @@ using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Expressions;
-using Microsoft.Bot.Builder.LanguageGeneration.Renderer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.Bot.Builder.Expressions.Parser;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 {
@@ -27,17 +27,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var convoState = new ConversationState(storage);
             var userState = new UserState(storage);
             var resourceExplorer = new ResourceExplorer();
-            var lg = new LGLanguageGenerator(resourceExplorer);
             var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
             adapter
                 .UseStorage(storage)
                 .UseState(userState, convoState)
                 .UseResourceExplorer(resourceExplorer)
-                .UseLanguageGenerator(lg)
+                .UseLanguageGeneration(resourceExplorer)
                 .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
 
-            var planningDialog = new AdaptiveDialog() { Selector = selector };
-            planningDialog.Recognizer = new RegexRecognizer
+            var dialog = new AdaptiveDialog() { Selector = selector };
+            dialog.Recognizer = new RegexRecognizer
             {
                 Intents = new Dictionary<string, string>
                 {
@@ -46,22 +45,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     { "trigger", "trigger" }
                 }
             };
-            planningDialog.AddRules(new List<IRule>()
+            dialog.AddRules(new List<IRule>()
             {
-                new IntentRule("a", steps: new List<IDialog> { new SetProperty {  OutputBinding = "user.a", Value = Expression.ConstantExpression(1) } }),
-                new IntentRule("b", steps: new List<IDialog> { new SetProperty {  OutputBinding = "user.b", Value = Expression.ConstantExpression(1) } }),
-                new IntentRule("trigger", constraint:"user.a == 1", steps: new List<IDialog> { new SendActivity("ruleA1") }),
-                new IntentRule("trigger", constraint:"user.a == 1", steps: new List<IDialog> { new SendActivity("ruleA2") }),
-                new IntentRule("trigger", constraint:"user.b == 1 || user.c == 1", steps: new List<IDialog> { new SendActivity("ruleBorC") }),
-                new IntentRule("trigger", constraint:"user.a == 1 && user.b == 1", steps: new List<IDialog> { new SendActivity("ruleAandB") }),
-                new IntentRule("trigger", constraint:"user.a == 1 && user.c == 1", steps: new List<IDialog> { new SendActivity("ruleAandC") }),
+                new IntentRule("a", steps: new List<IDialog> { new SetProperty { Property = "user.a", Value = "1" } }),
+                new IntentRule("b", steps: new List<IDialog> { new SetProperty { Property = "user.b", Value = "1" } }),
+                new IntentRule("trigger", constraint: "user.a == 1", steps: new List<IDialog> { new SendActivity("ruleA1") }),
+                new IntentRule("trigger", constraint: "user.a == 1", steps: new List<IDialog> { new SendActivity("ruleA2") }),
+                new IntentRule("trigger", constraint: "user.b == 1 || user.c == 1", steps: new List<IDialog> { new SendActivity("ruleBorC") }),
+                new IntentRule("trigger", constraint: "user.a == 1 && user.b == 1", steps: new List<IDialog> { new SendActivity("ruleAandB") }),
+                new IntentRule("trigger", constraint: "user.a == 1 && user.c == 1", steps: new List<IDialog> { new SendActivity("ruleAandC") }),
                 new IntentRule("trigger", steps: new List<IDialog> { new SendActivity("default")})
             });
-            planningDialog.AutoEndDialog = false;
+            dialog.AutoEndDialog = false;
+
+            DialogManager dm = new DialogManager(dialog);
 
             return new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                await planningDialog.OnTurnAsync(turnContext, null).ConfigureAwait(false);
+                await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
             });
         }
 

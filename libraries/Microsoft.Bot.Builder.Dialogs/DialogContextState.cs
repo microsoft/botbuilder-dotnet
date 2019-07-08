@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Expressions;
 using Microsoft.Bot.Builder.Expressions.Parser;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
@@ -47,6 +48,21 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
+        /// Common state properties paths.
+        /// </summary>
+        public const string DIALOG_OPTIONS = "dialog.options";
+        public const string DIALOG_VALUE = "dialog.value";
+
+        public const string TURN_ACTIVITY = "turn.activity";
+        public const string TURN_RECOGNIZED = "turn.recognized";
+        public const string TURN_TOPINTENT = "turn.recognized.intent";
+        public const string TURN_TOPSCORE = "turn.recognized.score";
+        public const string TURN_STEPCOUNT = "turn.stepCount";
+        public const string TURN_DIALOGEVENT = "turn.dialogEvent";
+
+        public const string STEP_OPTIONS_PROPERTY = "dialog.step.options";
+
+        /// <summary>
         /// Gets or sets settings for the application.
         /// </summary>
         [JsonProperty(PropertyName = "settings")]
@@ -82,7 +98,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                     }
                     else
                     {
-                        return null;  //throw new Exception("DialogContext.State.Dialog: no active or parent dialog instance.");
+                        throw new Exception("DialogContext.State.Dialog: no active or parent dialog instance.");
                     }
                 }
 
@@ -111,14 +127,42 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
+        /// Gets access to the callstack of dialog state.
+        /// </summary>
+        [JsonIgnore]
+        public IEnumerable<object> CallStack
+        {
+            get
+            {
+                // get each state on the current stack.
+                foreach (var instance in this.dialogContext.Stack)
+                {
+                    if (instance.State != null)
+                    {
+                        yield return instance.State;
+                    }
+                }
+
+                // switch to parent stack and enumerate it's state objects
+                if (this.dialogContext.Parent != null)
+                {
+                    foreach (var state in dialogContext.Parent.State.CallStack)
+                    {
+                        yield return state;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
         /// Gets or sets state associated with the current turn only (this is non-persisted).
         /// </summary>
         [JsonProperty(PropertyName = "turn")]
         public IDictionary<string, object> Turn { get; set; }
 
-        public ICollection<string> Keys => new[] { "user", "conversation", "dialog", "turn", "settings" };
+        public ICollection<string> Keys => new[] { "user", "conversation", "dialog", "callstack", "turn", "settings" };
 
-        public ICollection<object> Values => new[] { User, Conversation, Dialog, Turn };
+        public ICollection<object> Values => new object[] { User, Conversation, Dialog, CallStack, Turn };
 
         public int Count => 3;
 
@@ -169,8 +213,69 @@ namespace Microsoft.Bot.Builder.Dialogs
             return json.SelectTokens(pathExpression);
         }
 
+        public string ResolvePathShortcut(string path)
+        {
+            path = path.Trim();
+            if (path.Length == 0)
+            {
+                return path;
+            }
+
+            string name = path.Substring(1);
+
+            switch (path[0])
+            {
+                case '#':
+                    // #BookFlight == turn.recognized.intents.BookFlight
+                    return $"turn.recognized.intents.{name}";
+
+                case '@':
+                    // @city == turn.recognized.entities.city
+                    return $"turn.recognized.entities.{name}";
+
+                case '$':
+                    // $title == dialog.title
+                    return $"dialog.{name}";
+
+                case '%':
+                    // %xxx == dialog.instance.xxx
+                    return $"dialog.instance.{name}";
+
+                case '^':
+                    // ^xxx == dialog.options.xxx
+                    return $"dialog.options.{name}";
+
+                default:
+                    return path;
+            }
+        }
+
+        public object GetValue(string pathExpression)
+        {
+            return ObjectPath.GetValue<object>(this, pathExpression);
+        }
+
+        public object GetValue(Expression pathExpression)
+        {
+            return ObjectPath.GetValue<object>(this, pathExpression);
+        }
+
+        public object GetValue(string pathExpression, object defaultValue)
+        {
+            return ObjectPath.GetValue<object>(this, pathExpression, defaultValue);
+        }
+
+        public object GetValue(Expression pathExpression, object defaultValue)
+        {
+            return ObjectPath.GetValue<object>(this, pathExpression, defaultValue);
+        }
 
         public T GetValue<T>(string pathExpression)
+        {
+            return ObjectPath.GetValue<T>(this, pathExpression);
+        }
+
+        public T GetValue<T>(Expression pathExpression)
         {
             return ObjectPath.GetValue<T>(this, pathExpression);
         }
@@ -185,7 +290,22 @@ namespace Microsoft.Bot.Builder.Dialogs
             return defaultVal;
         }
 
+        public T GetValue<T>(Expression pathExpression, T defaultVal)
+        {
+            if (ObjectPath.TryGetValue<T>(this, pathExpression, out var val))
+            {
+                return val;
+            }
+
+            return defaultVal;
+        }
+
         public bool TryGetValue<T>(string pathExpression, out T val)
+        {
+            return ObjectPath.TryGetValue(this, pathExpression, out val);
+        }
+
+        public bool TryGetValue<T>(Expression pathExpression, out T val)
         {
             return ObjectPath.TryGetValue(this, pathExpression, out val);
         }
@@ -195,78 +315,36 @@ namespace Microsoft.Bot.Builder.Dialogs
             return ObjectPath.HasValue(this, pathExpression);
         }
 
+        public bool HasValue(Expression pathExpression)
+        {
+            return ObjectPath.HasValue(this, pathExpression);
+        }
+
         public void SetValue(string pathExpression, object value)
+        {
+            ObjectPath.SetValue(this, new ExpressionEngine().Parse(pathExpression), value);
+        }
+
+        public void SetValue(Expression pathExpression, object value)
         {
             if (value is Task)
             {
                 throw new Exception($"{pathExpression} = You can't pass an unresolved Task to SetValue");
             }
 
-            // If the json path does not exist
-            var segments = pathExpression.Split('.').Select(segment => segment.ToLower()).ToArray();
-            dynamic current = this;
-
-            for (var i = 0; i < segments.Length - 1; i++)
-            {
-                var segment = segments[i];
-                if (current is IDictionary<string, object> curDict)
-                {
-                    if (!curDict.TryGetValue(segment, out var segVal) || segVal == null)
-                    {
-                        curDict[segment] = new JObject();
-                    }
-
-                    current = curDict[segment];
-                }
-            }
-
-            if (value is JToken || value is JObject || value is JArray)
-            {
-                current[segments.Last()] = (JToken)value;
-            }
-            else if (value == null)
-            {
-                current[segments.Last()] = null;
-            }
-            else if (value is string || value is byte || value is bool ||
-                    value is Int16 || value is Int32 || value is Int64 ||
-                    value is UInt16 || value is UInt32 || value is UInt64 ||
-                    value is Decimal || value is float || value is double)
-            {
-                current[segments.Last()] = JValue.FromObject(value);
-            }
-            else
-            {
-                current[segments.Last()] = (JToken)JsonConvert.DeserializeObject(JsonConvert.SerializeObject(value, expressionCaseSettings));
-            }
+            ObjectPath.SetValue(this, pathExpression, value);
         }
 
-        public void RemoveValue(string pathExpression)
+        public void RemoveProperty(string pathExpression)
         {
-            // If the json path does not exist
-            string[] segments = pathExpression.Split('.').Select(segment => segment.ToLower()).ToArray();
-            dynamic current = this;
+            // TODO move to ObjectPath and use Expressions properly
+            ObjectPath.RemoveProperty(this, ResolvePathShortcut(pathExpression));
+        }
 
-            var deleted = false;
-            for (var i = 0; i < segments.Length - 1; i++)
-            {
-                var segment = segments[i];
-                if (current is IDictionary<string, object> curDict)
-                {
-                    if (!curDict.TryGetValue(segment, out var segVal) || segVal == null)
-                    {
-                        deleted = true;
-                        break;
-                    }
-
-                    current = curDict[segment];
-                }
-            }
-
-            if (!deleted)
-            {
-                current.Remove(segments.Last());
-            }
+        public void RemoveProperty(Expression pathExpression)
+        {
+            // TODO move to ObjectPath and use Expressions properly
+            this.RemoveProperty(pathExpression.ToString());
         }
 
         public void Add(string key, object value)
@@ -297,6 +375,9 @@ namespace Microsoft.Bot.Builder.Dialogs
                     return true;
                 case "dialog":
                     value = this.Dialog;
+                    return true;
+                case "callstack":
+                    value = this.CallStack;
                     return true;
                 case "settings":
                     value = this.Settings;
@@ -339,6 +420,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             yield return new KeyValuePair<string, object>("user", this.User);
             yield return new KeyValuePair<string, object>("conversation", this.Conversation);
             yield return new KeyValuePair<string, object>("dialog", this.Dialog);
+            yield return new KeyValuePair<string, object>("callstack", this.CallStack);
             yield return new KeyValuePair<string, object>("settings", this.Settings);
             yield return new KeyValuePair<string, object>("turn", this.Turn);
             yield break;

@@ -7,7 +7,11 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Rules;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Steps;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
-using Microsoft.Bot.Builder.LanguageGeneration.Renderer;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
+using Microsoft.Bot.Builder.Expressions;
+using Microsoft.Bot.Builder.Expressions.Parser;
+using Microsoft.Bot.Builder.LanguageGeneration;
+using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
@@ -132,6 +136,60 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
+        public async Task DialogContextState_ComplexExpressions()
+        {
+            var dialog = new AdaptiveDialog("test");
+            var dialogs = new DialogSet();
+            dialogs.Add(dialog);
+            var dc = new DialogContext(dialogs, new TurnContext(new TestAdapter(), new Schema.Activity()), (DialogState)new DialogState());
+            await dc.BeginDialogAsync(dialog.Id);
+            DialogContextState state = new DialogContextState(dc: dc,
+                settings: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase),
+                userState: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase),
+                conversationState: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase),
+                turnState: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase));
+
+
+            // complex type paths
+            state.SetValue("user.name", "joe");
+            state.SetValue("conversation[user.name]", "test");
+            var value = state.GetValue("conversation.joe");
+            Assert.AreEqual("test", value, "complex set should set");
+            value = state.GetValue("conversation[user.name]");
+            Assert.AreEqual("test", value, "complex get should get");
+        }
+
+        [TestMethod]
+        public async Task DialogContextState_GetValue()
+        {
+            var dialog = new AdaptiveDialog("test");
+            var dialogs = new DialogSet();
+            dialogs.Add(dialog);
+            var dc = new DialogContext(dialogs, new TurnContext(new TestAdapter(), new Schema.Activity()), (DialogState)new DialogState());
+            await dc.BeginDialogAsync(dialog.Id);
+            DialogContextState state = new DialogContextState(dc: dc,
+                settings: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase),
+                userState: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase),
+                conversationState: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase),
+                turnState: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase));
+
+
+            // complex type paths
+            object val;
+            string value;
+            state.SetValue("user.name", "joe");
+            Assert.AreEqual("joe", state.GetValue("user.name"));
+            Assert.AreEqual("joe", state.GetValue<String>("user.name"));
+            Assert.IsTrue(state.TryGetValue<string>("user.name", out value));
+            Assert.AreEqual("joe", value);
+
+            Assert.AreEqual("default", state.GetValue("user.xxx", "default"));
+            Assert.AreEqual("default", state.GetValue<String>("user.xxx", "default"));
+            Assert.IsFalse(state.TryGetValue<string>("user.xxx", out value));
+            Assert.AreEqual(null, value);
+        }
+
+        [TestMethod]
         public async Task DialogContextState_ComplexTypes()
         {
             var dialog = new AdaptiveDialog("test");
@@ -162,36 +220,29 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             Assert.AreEqual(state.GetValue<Foo>("turn.foo").SubName.Name, "bob");
         }
 
-        private TestFlow CreateFlow(AdaptiveDialog planningDialog, ConversationState convoState, UserState userState, bool sendTrace = false)
+        private TestFlow CreateFlow(AdaptiveDialog dialog, ConversationState convoState = null, UserState userState = null, bool sendTrace = false)
         {
-            var botResourceManager = new ResourceExplorer();
-            var lg = new LGLanguageGenerator(botResourceManager);
+            TypeFactory.Configuration = new ConfigurationBuilder().Build();
+            var resourceExplorer = new ResourceExplorer();
 
             var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName), sendTrace)
-                .Use(new RegisterClassMiddleware<ResourceExplorer>(botResourceManager))
-                .Use(new RegisterClassMiddleware<ILanguageGenerator>(lg))
+                .Use(new RegisterClassMiddleware<ResourceExplorer>(resourceExplorer))
+                .UseLanguageGeneration(resourceExplorer)
                 .Use(new RegisterClassMiddleware<IStorage>(new MemoryStorage()))
-                .Use(new RegisterClassMiddleware<IMessageActivityGenerator>(new TextMessageActivityGenerator(lg)))
-                .Use(new AutoSaveStateMiddleware(convoState, userState))
+                .Use(new AutoSaveStateMiddleware(userState ?? new UserState(new MemoryStorage()), convoState ?? new ConversationState(new MemoryStorage())))
                 .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
 
-            var userStateProperty = userState.CreateProperty<Dictionary<string, object>>("user");
-            var convoStateProperty = convoState.CreateProperty<Dictionary<string, object>>("conversation");
-            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
-            var dialogs = new DialogSet(dialogState);
+            var dm = new DialogManager(dialog);
 
-            return new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            return new TestFlow((TestAdapter)adapter, async (turnContext, cancellationToken) =>
             {
-                await planningDialog.OnTurnAsync(turnContext, null).ConfigureAwait(false);
+                await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
             });
         }
 
         [TestMethod]
         public async Task DialogContextState_TurnStateMappings()
         {
-            var convoState = new ConversationState(new MemoryStorage());
-            var userState = new UserState(new MemoryStorage());
-
             var testDialog = new AdaptiveDialog("testDialog")
             {
                 AutoEndDialog = false,
@@ -213,31 +264,242 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         steps:new List<IDialog>()
                         {
                             new SendActivity("{turn.activity.text}"),
-                            new SendActivity("{turn.intent.intentnumber1}"),
-                            new SendActivity("{turn.dialogevents.recognizedIntent.text}"),
-                            new SendActivity("{turn.dialogevents.recognizedIntent.intents.intentnumber1.score}"),
+                            new SendActivity("{turn.recognized.intent}"),
+                            new SendActivity("{turn.recognized.score}"),
+                            new SendActivity("{turn.recognized.text}"),
+                            new SendActivity("{turn.recognized.intents.intentnumber1.score}"),
                         }),
                     new IntentRule(intent: "NameIntent",
                         steps:new List<IDialog>()
                         {
-                            new SendActivity("{turn.entities.name}"),
-                            new SendActivity("{turn.dialogevents.recognizedIntent.entities.name}"),
+                            new SendActivity("{turn.recognized.entities.name}"),
                         }),
                 }
             };
 
-            await CreateFlow(testDialog, convoState, userState)
+            await CreateFlow(testDialog)
                 .Send("hi")
                     .AssertReply("hi")
                 .Send("intent1")
                     .AssertReply("intent1")
+                    .AssertReply("IntentNumber1")
                     .AssertReply("1")
                     .AssertReply("intent1")
                     .AssertReply("1")
                 .Send("my name is joe")
                     .AssertReply("joe")
-                    .AssertReply("joe")
                 .StartTestAsync();
         }
+
+        [TestMethod]
+        public async Task DialogContextState_DialogCommandScope()
+        {
+            var testDialog = new AdaptiveDialog("testDialog")
+            {
+                AutoEndDialog = false,
+                Steps = new List<IDialog>()
+                {
+                    new SetProperty()
+                    {
+                        Property = "dialog.name",
+                        Value = "'testDialog'"
+                    },
+                    new SendActivity("{dialog.name}"),
+                    new IfCondition()
+                    {
+                        Condition= "{dialog.name} == 'testDialog'",
+                        Steps = new List<IDialog>()
+                        {
+                            new SendActivity("nested dialogCommand {dialog.name}")
+                        }
+                    }
+                }
+            };
+
+            await CreateFlow(testDialog)
+                    .SendConversationUpdate()
+                        .AssertReply("testDialog")
+                        .AssertReply("nested dialogCommand testDialog")
+                    .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task DialogContextState_InputBinding()
+        {
+            var testDialog = new AdaptiveDialog("testDialog")
+            {
+                AutoEndDialog = false,
+                Steps = new List<IDialog>()
+                {
+                    new SetProperty() { Property = "dialog.name", Value = "'testDialog'" },
+                    new SendActivity("{dialog.name}"),
+                    new AdaptiveDialog("d1")
+                    {
+                        InputBindings = new Dictionary<string, string>() { { "$address.name", "dialog.name" } },
+                        Steps = new List<IDialog>()
+                        {
+                            new SendActivity("nested dialogCommand {$address.name}")
+                        }
+                    },
+                    new BeginDialog()
+                    {
+                        // bind dialog.name -> adaptive dialog
+                        Dialog = new AdaptiveDialog("d2")
+                        {
+                            InputBindings = new Dictionary<string, string>() { { "$address.name", "dialog.name" } },
+                            Steps = new List<IDialog>()
+                            {
+                                new SendActivity("nested begindialog {$address.name}")
+                            }
+                        }
+                    },
+                }
+            };
+
+            await CreateFlow(testDialog)
+                    .SendConversationUpdate()
+                        .AssertReply("testDialog")
+                        .AssertReply("nested dialogCommand testDialog")
+                        .AssertReply("nested begindialog testDialog")
+                    .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task DialogContextState_OutputBinding()
+        {
+            var testDialog = new AdaptiveDialog("testDialog")
+            {
+                AutoEndDialog = false,
+                Steps = new List<IDialog>()
+                {
+                    new SetProperty() { Property = "dialog.name", Value = "'testDialog'" },
+                    new SendActivity("{dialog.name}"),
+                    new AdaptiveDialog("d1")
+                    {
+                        InputBindings = new Dictionary<string, string>() { { "$xxx", "dialog.name" } },
+                        OutputBinding = "dialog.name",
+                        DefaultResultProperty = "$xxx",
+                        Steps = new List<IDialog>()
+                        {
+                            new SendActivity("nested dialogCommand {$xxx}"),
+                            new SetProperty() { Property = "dialog.xxx", Value = "'newName'" },
+                            new SendActivity("nested dialogCommand {$xxx}"),
+                        }
+                    },
+                    new SendActivity("{dialog.name}"),
+                    new BeginDialog()
+                    {
+                        Dialog = new AdaptiveDialog("d2")
+                        {
+                            InputBindings = new Dictionary<string, string>() { { "$zzz", "dialog.name" } },
+                            DefaultResultProperty = "$zzz",
+                            // test output binding from adaptive dialog
+                            OutputBinding = "dialog.name",
+                            Steps = new List<IDialog>()
+                            {
+                                new SendActivity("nested begindialog {$zzz}"),
+                                new SetProperty() { Property = "dialog.zzz", Value = "'newName2'" },
+                                new SendActivity("nested begindialog {$zzz}"),
+                            }
+                        }
+                    },
+                    new SendActivity("{dialog.name}"),
+                    new BeginDialog()
+                    {
+                        // test output binding from beginDialog
+                        OutputBinding = "dialog.name",
+                        Dialog = new AdaptiveDialog("d3")
+                        {
+                            InputBindings = new Dictionary<string, string>() { { "$qqq", "dialog.name" } },
+                            DefaultResultProperty = "$qqq",
+                            Steps = new List<IDialog>()
+                            {
+                                new SendActivity("nested begindialog2 {$qqq}"),
+                                new SetProperty() { Property = "dialog.qqq", Value = "'newName3'" },
+                                new SendActivity("nested begindialog2 {$qqq}"),
+                            }
+                        }
+                    },
+                    new SendActivity("{dialog.name}"),
+                }
+            };
+
+            await CreateFlow(testDialog)
+                    .SendConversationUpdate()
+                        .AssertReply("testDialog")
+                        .AssertReply("nested dialogCommand testDialog")
+                        .AssertReply("nested dialogCommand newName")
+                        .AssertReply("newName")
+                        .AssertReply("nested begindialog newName")
+                        .AssertReply("nested begindialog newName2")
+                        .AssertReply("newName2")
+                        .AssertReply("nested begindialog2 newName2")
+                        .AssertReply("nested begindialog2 newName3")
+                        .AssertReply("newName3")
+                    .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task DialogContextState_CallstackScope()
+        {
+            var testDialog = new AdaptiveDialog("testDialog")
+            {
+                AutoEndDialog = false,
+                Steps = new List<IDialog>()
+                {
+                    new SetProperty() { Property = "$xxx", Value = "'xxx'" },
+                    new SetProperty() { Property = "$aaa", Value = "'d1'" },
+                    new SendActivity("{$aaa}"),
+                    new BeginDialog()
+                    {
+                        Dialog = new AdaptiveDialog("d2")
+                        {
+                            Steps = new List<IDialog>()
+                            {
+                                new SetProperty() { Property = "$yyy", Value = "'yyy'" },
+                                new SendActivity("{$aaa == null}"),
+                                new SendActivity("{^aaa}"),
+                                new BeginDialog()
+                                {
+                                    Dialog = new AdaptiveDialog("d3")
+                                    {
+                                        Steps = new List<IDialog>()
+                                        {
+                                            new SetProperty() { Property = "$zzz", Value = "'zzz'" },
+                                            new SetProperty() { Property = "$aaa", Value = "'d3'" },
+                                            new SendActivity("{$aaa}"),
+                                            new SendActivity("{^aaa}"),
+                                            new SendActivity("{$zzz}"),
+                                            new SendActivity("{$yyy==null}"),
+                                            new SendActivity("{$xxx==null}"),
+                                            new SendActivity("{^yyy}"),
+                                            new SendActivity("{^xxx}"),
+                                        }
+                                    }
+                                },
+                            }
+                        }
+                    },
+                }
+            };
+
+            await CreateFlow(testDialog)
+                    .SendConversationUpdate()
+                        // d1
+                        .AssertReply("d1")
+                        // d2
+                        .AssertReply("True")
+                        .AssertReply("d1")
+                        // d3
+                        .AssertReply("d3")
+                        .AssertReply("d3")
+                        .AssertReply("zzz")
+                        .AssertReply("True")
+                        .AssertReply("True")
+                        .AssertReply("yyy")
+                        .AssertReply("xxx")
+                    .StartTestAsync();
+        }
+
     }
 }
