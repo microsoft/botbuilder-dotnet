@@ -105,18 +105,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
         /// <param name="constraint"></param>
         public void AddConstraint(string constraint)
         {
-            try
+            if (!string.IsNullOrWhiteSpace(constraint))
             {
-                lock (this.extraConstraints)
+                try
                 {
-                    this.extraConstraints.Add(new ExpressionEngine().Parse(constraint));
-                    this.fullConstraint = null; // reset to force it to be recalcaulated
+                    lock (this.extraConstraints)
+                    {
+                        this.extraConstraints.Add(new ExpressionEngine().Parse(constraint));
+                        this.fullConstraint = null; // reset to force it to be recalcaulated
+                    }
+                }
+                catch (Exception e)
+                {
+                    throw new Exception($"Invalid constraint expression: {this.Constraint}, {e.Message}");
                 }
             }
-            catch (Exception e)
-            {
-                throw new Exception($"Invalid constraint expression: {this.Constraint}, {e.Message}");
-            }
+                
         }
 
         /// <summary>
