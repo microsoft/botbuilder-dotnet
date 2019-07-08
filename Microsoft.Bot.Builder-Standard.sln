@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.645
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29025.244
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{4269F3C3-6B42-419B-B64A-3E6DC0F1574A}"
 EndProject
@@ -373,8 +373,8 @@ Global
 		{AE3FC7F6-B212-4438-B1D7-C121BB4C15ED}.Documentation|Any CPU.Build.0 = Debug|Any CPU
 		{AE3FC7F6-B212-4438-B1D7-C121BB4C15ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AE3FC7F6-B212-4438-B1D7-C121BB4C15ED}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8DC1257B-7650-40EB-97A2-C1CBA306DA6A}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug - NuGet Packages|Any CPU
-		{8DC1257B-7650-40EB-97A2-C1CBA306DA6A}.Debug - NuGet Packages|Any CPU.Build.0 = Debug - NuGet Packages|Any CPU
+		{8DC1257B-7650-40EB-97A2-C1CBA306DA6A}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{8DC1257B-7650-40EB-97A2-C1CBA306DA6A}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{8DC1257B-7650-40EB-97A2-C1CBA306DA6A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8DC1257B-7650-40EB-97A2-C1CBA306DA6A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8DC1257B-7650-40EB-97A2-C1CBA306DA6A}.Documentation|Any CPU.ActiveCfg = Documentation|Any CPU
