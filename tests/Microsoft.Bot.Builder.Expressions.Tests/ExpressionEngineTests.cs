@@ -23,6 +23,8 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             { "two", 2.0 },
             { "hello", "hello" },
             { "world", "world" },
+            { "cit", "cit" },
+            { "y", "y" },
             { "istrue", true },
             { "nullObj", nullStr },
             { "bag", new Dictionary<string, object>
@@ -517,6 +519,8 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("@city == 'Seattle'", true, new HashSet<string> {"turn.recognized.entities.city"}),
             Test("@ordinal[1]", "2", new HashSet<string> {"turn.recognized.entities.ordinal"}),
             Test("@['city']", "Seattle", new HashSet<string> {"turn.recognized.entities.city"}),
+            Test("@[concat('cit', 'y')]", "Seattle", new HashSet<string> {"turn.recognized.entities"}),
+            Test("@[concat(cit, y)]", "Seattle", new HashSet<string> {"turn.recognized.entities", "cit", "y"}),
             Test("#BookFlight == 'BookFlight'", true, new HashSet<string> {"turn.recognized.intents.BookFlight"}),
             Test("#BookHotel[1].Where", "Kirkland", new HashSet<string> {"turn.recognized.intents.BookHotel"}),
             Test("exists(#BookFlight)", true, new HashSet<string> {"turn.recognized.intents.BookFlight"}),

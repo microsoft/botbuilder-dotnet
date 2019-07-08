@@ -191,13 +191,24 @@ namespace Microsoft.Bot.Builder.Expressions
                 else if (BuiltInFunctions.PrefixsOfShorthand.ContainsKey(expression.Type))
                 {
                     // Shorthand
+                    var prefixStr = BuiltInFunctions.PrefixsOfShorthand[expression.Type];
                     var shorthandName = (children[0] as Constant)?.Value?.ToString();
-                    if (shorthandName != null)
+                    path = ReferenceWalk(children[0], references, extension);
+                    if (path != null)
                     {
-                        var prefixStr = BuiltInFunctions.PrefixsOfShorthand[expression.Type];
+                        var reference = prefixStr + path;
+
+                        references.Add(reference);
+                    }
+                    else if (shorthandName != null)
+                    {
                         var reference = prefixStr + shorthandName;
 
                         references.Add(reference);
+                    }
+                    else
+                    {
+                        references.Add(prefixStr.Remove(prefixStr.Length - 1));
                     }
                 }
                 else
