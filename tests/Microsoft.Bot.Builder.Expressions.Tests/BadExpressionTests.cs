@@ -366,6 +366,8 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
 
             #region  Short Hand Expression
             Test("%.xxx"), // not supported shorthand pattern
+            Test("@[city]"), // city is not provided.
+            Test("@[0]"), // entities is not a collection.
             #endregion
 
             #region Memory access test
@@ -443,13 +445,16 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
                 relativeUri = "../catalog/shownew.htm?date=today",
                 turn = new
                 {
-                    entities = new
+                    recognized = new
                     {
-                        city = "Seattle"
-                    },
-                    intents = new
-                    {
-                        BookFlight = "BookFlight"
+                        entities = new
+                        {
+                            city = "Seattle"
+                        },
+                        intents = new
+                        {
+                            BookFlight = "BookFlight"
+                        }
                     }
                 },
                 dialog = new

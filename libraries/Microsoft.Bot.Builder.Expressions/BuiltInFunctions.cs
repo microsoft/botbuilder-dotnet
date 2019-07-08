@@ -526,16 +526,23 @@ namespace Microsoft.Bot.Builder.Expressions
                 if (expression.Children != null && expression.Children.Length > 0)
                 {
                     (property, error) = expression.Children[0].TryEvaluate(state);
+                    if (error == null && property == null)
+                    {
+                        error = $"Could not coerce the property from expression: {expression.Children[0]}";
+                    }
                 }
 
-                var prefixStr = PrefixsOfShorthand[functionName];
-                var prefixs = prefixStr.Split('.').Where(x => !string.IsNullOrEmpty(x)).ToList();
-                foreach (var prefix in prefixs)
+                if (error == null)
                 {
-                    (result, error) = AccessProperty(result, prefix);
-                    if (error != null)
+                    var prefixStr = PrefixsOfShorthand[functionName];
+                    var prefixs = prefixStr.Split('.').Where(x => !string.IsNullOrEmpty(x)).ToList();
+                    foreach (var prefix in prefixs)
                     {
-                        break;
+                        (result, error) = AccessProperty(result, prefix);
+                        if (error != null)
+                        {
+                            break;
+                        }
                     }
                 }
 
@@ -3231,12 +3238,12 @@ namespace Microsoft.Bot.Builder.Expressions
                     ValidateIsMatch),
 
                 // Shorthand functions
-                new ExpressionEvaluator(ExpressionType.Intent, ApplyShorthand(ExpressionType.Intent), ReturnType.Object, ValidateUnaryString),
-                new ExpressionEvaluator(ExpressionType.Dialog, ApplyShorthand(ExpressionType.Dialog), ReturnType.Object, ValidateUnaryString),
-                new ExpressionEvaluator(ExpressionType.Instance, ApplyShorthand(ExpressionType.Instance), ReturnType.Object, ValidateUnaryString),
-                new ExpressionEvaluator(ExpressionType.Option, ApplyShorthand(ExpressionType.Option), ReturnType.Object, ValidateUnaryString),
-                new ExpressionEvaluator(ExpressionType.Callstack, Callstack, ReturnType.Object, ValidateUnaryString),
-                new ExpressionEvaluator(ExpressionType.Entity, ApplyShorthand(ExpressionType.Entity), ReturnType.Object, ValidateUnaryString),
+                new ExpressionEvaluator(ExpressionType.Intent, ApplyShorthand(ExpressionType.Intent), ReturnType.Object, ValidateUnary),
+                new ExpressionEvaluator(ExpressionType.Dialog, ApplyShorthand(ExpressionType.Dialog), ReturnType.Object, ValidateUnary),
+                new ExpressionEvaluator(ExpressionType.Instance, ApplyShorthand(ExpressionType.Instance), ReturnType.Object, ValidateUnary),
+                new ExpressionEvaluator(ExpressionType.Option, ApplyShorthand(ExpressionType.Option), ReturnType.Object, ValidateUnary),
+                new ExpressionEvaluator(ExpressionType.Callstack, Callstack, ReturnType.Object, ValidateUnary),
+                new ExpressionEvaluator(ExpressionType.Entity, ApplyShorthand(ExpressionType.Entity), ReturnType.Object, ValidateUnary),
                 new ExpressionEvaluator(
                     ExpressionType.SimpleEntity,
                     ApplyShorthand(
@@ -3254,7 +3261,7 @@ namespace Microsoft.Bot.Builder.Expressions
                                 return (result, null);
                         }),
                     ReturnType.Object,
-                    ValidateUnaryString),
+                    ValidateUnary),
             };
 
             var lookup = new Dictionary<string, ExpressionEvaluator>();
