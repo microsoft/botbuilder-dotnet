@@ -131,10 +131,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                 {
                     explorer.AddResourceProvider(new FolderResourceProvider(path, includeSubFolders: true, monitorChanges: monitorChanges));
                 }
-                else
-                {
-
-                }
             }
             var packages = Path.GetFullPath("packages");
             var relativePackagePath = Path.Combine(@"..", "packages");

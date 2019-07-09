@@ -42,6 +42,7 @@ namespace Microsoft.Bot.Builder.Azure
         /// using the provided CosmosDB credentials, database ID, and collection ID.
         /// </summary>
         /// <param name="cosmosDbStorageOptions">Cosmos DB storage configuration options.</param>
+        /// <param name="tokenProvider">optional token provider to get token to connect to Cosmos DB</param>
         public CosmosDbStorage(CosmosDbStorageOptions cosmosDbStorageOptions, AzureServiceTokenProvider tokenProvider)
         {
             if (cosmosDbStorageOptions == null)
@@ -92,10 +93,15 @@ namespace Microsoft.Bot.Builder.Azure
             }
 
             //_client = new DocumentClient(cosmosDbStorageOptions.CosmosDBEndpoint, keyOrToken, connectionPolicy);
-            _client = new DocumentClient(cosmosDbStorageOptions.CosmosDBEndpoint, new Dictionary<string, string> {
-                {  UriFactory.CreateDocumentCollectionUri(_databaseId, _collectionId).ToString(),
-                   "type=resource&ver=1&sig=MAId4n3bZN4fYxG7Nk3xUg==;5IXkef5FsSljxmMpeZpBl5wbzIHWv1JOdm/pDMTGRPtYl2hJYJLYeRostn8Ae38U2c/qfK+/S7peAhP+FAaUtc2IhUPe+t/tFLiMcycyCUgl2fOHsYd8Vog5zeZlkuIMBdAQp17wPmPQt/exSGVi4W5GHTbdZLgZTONPFtQ31j169a7cgCU+lB4yZy+pdtWAB9w9IM42WGmPbdJgVJjp1v7LKt6/mAahXgvAv/9eD0jcg4OKyQwALTGA9Qs4J9P/EGyzhno1NWLIRLmA+Mxw6A==;" }
-            });
+            _client = new DocumentClient(
+                cosmosDbStorageOptions.CosmosDBEndpoint, 
+                new Dictionary<string, string>
+                {
+                    {
+                       UriFactory.CreateDocumentCollectionUri(_databaseId, _collectionId).ToString(),
+                       keyOrToken
+                    }
+                }, connectionPolicy);
             var permission = SetPermissionAsync("abh-repo").Result;
         }
 

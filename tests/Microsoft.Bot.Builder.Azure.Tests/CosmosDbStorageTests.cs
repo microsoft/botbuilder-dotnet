@@ -62,7 +62,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                     CollectionId = CosmosCollectionName,
                     CosmosDBEndpoint = new Uri(CosmosServiceEndpoint),
                     DatabaseId = CosmosDatabaseName,
-                });
+                }, null);
             }
         }
 
@@ -101,7 +101,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         public void Constructor_Should_Throw_On_InvalidOptions()
         {
             // No Options. Should throw. 
-            Assert.ThrowsException<ArgumentNullException>(() => new CosmosDbStorage(null));
+            Assert.ThrowsException<ArgumentNullException>(() => new CosmosDbStorage(cosmosDbCustomClientOptions: null, documentClient: null));
 
             // No Endpoint. Should throw. 
             Assert.ThrowsException<ArgumentNullException>(() => new CosmosDbStorage(new CosmosDbStorageOptions
@@ -110,7 +110,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 CollectionId = "testId",
                 DatabaseId = "testDb",
                 CosmosDBEndpoint = null,
-            }));
+            }, null));
 
             // No Auth Key. Should throw. 
             Assert.ThrowsException<ArgumentException>(() => new CosmosDbStorage(new CosmosDbStorageOptions
@@ -119,7 +119,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 CollectionId = "testId",
                 DatabaseId = "testDb",
                 CosmosDBEndpoint = new Uri("https://test.com"),
-            }));
+            }, null));
 
             // No Database Id. Should throw. 
             Assert.ThrowsException<ArgumentException>(() => new CosmosDbStorage(new CosmosDbStorageOptions
@@ -128,7 +128,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 CollectionId = "testId",
                 DatabaseId = null,
                 CosmosDBEndpoint = new Uri("https://test.com"),
-            }));
+            }, null));
 
             // No Collection Id. Should throw. 
             Assert.ThrowsException<ArgumentException>(() => new CosmosDbStorage(new CosmosDbStorageOptions
@@ -137,7 +137,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 CollectionId = null,
                 DatabaseId = "testDb",
                 CosmosDBEndpoint = new Uri("https://test.com"),
-            }));
+            }, null));
         }
 
         [TestMethod]
@@ -186,7 +186,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 ConnectionPolicyConfigurator = (ConnectionPolicy p) => wasCalled = true,
             };
 
-            var storage = new CosmosDbStorage(optionsWithConfigurator);
+            var storage = new CosmosDbStorage(optionsWithConfigurator, null);
             Assert.IsTrue(wasCalled, "The Connection Policy Configurator was not called.");
         }
 
@@ -301,7 +301,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                     CosmosDBEndpoint = new Uri(CosmosServiceEndpoint),
                     DatabaseId = CosmosDatabaseName,
                     ConnectionPolicyConfigurator = (ConnectionPolicy policy) => policyRef = policy
-                });
+                }, null);
 
                 Assert.IsNotNull(policyRef, "ConnectionPolicy configurator was not called.");
             }

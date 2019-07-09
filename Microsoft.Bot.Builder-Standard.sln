@@ -100,8 +100,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Langu
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.LanguageGeneration.Renderer.Tests", "tests\Microsoft.Bot.Builder.LanguageGeneration.Renderer.Tests\Microsoft.Bot.Builder.LanguageGeneration.Renderer.Tests.csproj", "{240646C5-EFCB-4CF1-AF8E-7036558CD78C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EchoBot", "..\..\scratch\code\botbuilder-samples\experimental\adaptive-dialog\declarative\10.EchoBot\EchoBot.csproj", "{1DE08958-5FD8-4B02-BCD3-0F44632544A2}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug - NuGet Packages|Any CPU = Debug - NuGet Packages|Any CPU
@@ -453,14 +451,6 @@ Global
 		{240646C5-EFCB-4CF1-AF8E-7036558CD78C}.Documentation|Any CPU.Build.0 = Debug|Any CPU
 		{240646C5-EFCB-4CF1-AF8E-7036558CD78C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{240646C5-EFCB-4CF1-AF8E-7036558CD78C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1DE08958-5FD8-4B02-BCD3-0F44632544A2}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{1DE08958-5FD8-4B02-BCD3-0F44632544A2}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
-		{1DE08958-5FD8-4B02-BCD3-0F44632544A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1DE08958-5FD8-4B02-BCD3-0F44632544A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1DE08958-5FD8-4B02-BCD3-0F44632544A2}.Documentation|Any CPU.ActiveCfg = Debug|Any CPU
-		{1DE08958-5FD8-4B02-BCD3-0F44632544A2}.Documentation|Any CPU.Build.0 = Debug|Any CPU
-		{1DE08958-5FD8-4B02-BCD3-0F44632544A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1DE08958-5FD8-4B02-BCD3-0F44632544A2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -512,7 +502,6 @@ Global
 		{F59673EA-2D0D-441A-BB85-CD343DE6BE45} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{72EE26E2-E8BE-4169-82AD-93E021539C34} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{240646C5-EFCB-4CF1-AF8E-7036558CD78C} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
-		{1DE08958-5FD8-4B02-BCD3-0F44632544A2} = {1DEDDC46-F2F4-448F-A0B7-FD48682EEC80}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7173C9F3-A7F9-496E-9078-9156E35D6E16}
