@@ -50,7 +50,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <item>datetime -- combination of date and time like "march 23 2pm".</item>
         /// <item>timerange -- a range of time like "2pm to 4pm".</item>
         /// <item>daterange -- a range of dates like "march 23rd to 24th".</item>
-        /// <item>datetimerang -- a range of dates and times like "july 3rd 2pm to 5th 4pm".</item>
+        /// <item>datetimerange -- a range of dates and times like "july 3rd 2pm to 5th 4pm".</item>
         /// <item>set -- a recurrence like "every monday".</item>
         /// </list>
         /// </remarks>

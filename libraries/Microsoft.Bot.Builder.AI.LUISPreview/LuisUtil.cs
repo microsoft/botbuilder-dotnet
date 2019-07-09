@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,8 @@ namespace Microsoft.Bot.Builder.AI.LuisPreview
     internal static class LuisUtil
     {
         internal const string _metadataKey = "$instance";
+        internal const string _geoV2 = "builtin.geographyV2.";
+        internal static readonly HashSet<string> _dateSubtypes = new HashSet<string> { "date", "daterange", "datetimerange", "duration", "set", "time", "timerange" };
 
         internal static string NormalizedIntent(string intent) => intent.Replace('.', '_').Replace(' ', '_');
 
@@ -29,24 +32,117 @@ namespace Microsoft.Bot.Builder.AI.LuisPreview
             return intents;
         }
 
-        internal static JToken MapProperties(JToken source, Dictionary<string, string> mappings)
+        internal static string NormalizedEntity(string entity)
         {
-            JToken result = source;
+            // Type::Role -> Role
+            var type = entity.Split(':').Last();
+            return type.Replace('.', '_').Replace(' ', '_');
+        }
+
+        internal static void GeographyTypes(JToken source, Dictionary<string, string> geoTypes)
+        {
+            if (source is JObject obj)
+            {
+                if (obj.TryGetValue("type", out var type) && type.Type == JTokenType.String && type.Value<string>().StartsWith(_geoV2))
+                {
+                    var path = type.Path.Replace(_metadataKey + ".", string.Empty);
+                    path = path.Substring(0, path.LastIndexOf('.'));
+                    geoTypes.Add(path, type.Value<string>().Substring(_geoV2.Length));
+                }
+                else
+                {
+                    foreach (var property in obj.Properties())
+                    {
+                        GeographyTypes(property.Value, geoTypes);
+                    }
+                }
+            }
+            else if (source is JArray arr)
+            {
+                foreach (var elt in arr)
+                {
+                    GeographyTypes(elt, geoTypes);
+                }
+            }
+        }
+
+        internal static JToken MapProperties(JToken source, bool inInstance, Dictionary<string, string> geoTypes)
+        {
+            var result = source;
             if (source is JObject obj)
             {
                 var nobj = new JObject();
-                foreach (var property in obj.Properties())
+
+                // Fix datetime by reverting to simple timex
+                if (!inInstance && obj.TryGetValue("type", out var type) && type.Type == JTokenType.String && _dateSubtypes.Contains(type.Value<string>()))
                 {
-                    if (mappings.TryGetValue(property.Name, out string to))
+                    var timex = obj["values"]?.First()["timex"].Value<string>();
+                    var arr = new JArray();
+                    if (timex != null)
                     {
-                        if (to != null)
+                        if (timex.StartsWith("(") && timex.EndsWith(")"))
                         {
-                            nobj.Add(to, MapProperties(property.Value, mappings));
+                            foreach (var expr in timex.Substring(1, timex.Length - 2).Split(','))
+                            {
+                                arr.Add(expr);
+                            }
                         }
+                        else
+                        {
+                            arr.Add(timex);
+                        }
+
+                        nobj["timex"] = arr;
                     }
-                    else
+
+                    nobj["type"] = type;
+                }
+                else
+                {
+                    // Map or remove properties
+                    foreach (var property in obj.Properties())
                     {
-                        nobj.Add(property.Name, property.Value);
+                        var name = NormalizedEntity(property.Name);
+                        var isObj = property.Value.Type == JTokenType.Object;
+                        var isArr = property.Value.Type == JTokenType.Array;
+                        var isStr = property.Value.Type == JTokenType.String;
+                        var isInt = property.Value.Type == JTokenType.Integer;
+                        var val = MapProperties(property.Value, inInstance || property.Name == _metadataKey, geoTypes);
+                        if (name == "datetime" && isArr)
+                        {
+                            nobj.Add("datetimeV1", val);
+                        }
+                        else if (name == "datetimeV2" && isArr)
+                        {
+                            nobj.Add("datetime", val);
+                        }
+                        else if (inInstance)
+                        {
+                            // Correct $instance issues
+                            if (name == "length" && isInt)
+                            {
+                                nobj.Add("endIndex", property.Value.Value<int>() + property.Parent["startIndex"].Value<int>());
+                            }
+                            else if (!((isStr && name == "modelType") ||
+                                       (isInt && name == "modelTypeId") ||
+                                       (isArr && name == "recognitionSources") ||
+                                       (isStr && name == "role")))
+                            {
+                                nobj.Add(name, val);
+                            }
+                        }
+                        else
+                        {
+                            // Correct non-$instance values
+                            if (name == "unit" && isStr)
+                            {
+                                nobj.Add("units", val);
+                            }
+                            else
+                            {
+                                nobj.Add(name, val);
+                            }
+                        }
                     }
                 }
 
@@ -57,7 +153,14 @@ namespace Microsoft.Bot.Builder.AI.LuisPreview
                 var narr = new JArray();
                 foreach (var elt in arr)
                 {
-                    narr.Add(MapProperties(elt, mappings));
+                    if (!inInstance && geoTypes.TryGetValue(elt.Path, out var geoType))
+                    {
+                        narr.Add(new JObject(new JProperty("location", elt.Value<string>()), new JProperty("type", geoType)));
+                    }
+                    else
+                    {
+                        narr.Add(MapProperties(elt, inInstance, geoTypes));
+                    }
                 }
 
                 result = narr;
@@ -66,29 +169,12 @@ namespace Microsoft.Bot.Builder.AI.LuisPreview
             return result;
         }
 
-        internal static void FixInstance(JToken object)
-        {
-            // TODO: need to figure out how to only drop text inside $instance 
-            // TODO: need to figure out how to endIndex
-        }
-
         internal static JObject ExtractEntitiesAndMetadata(Prediction prediction)
         {
-            var entities = (JObject) JObject.FromObject(prediction.Entities);
-            return (JObject) MapProperties(entities, new Dictionary<string, string> {
-                { "datetimeV2", "datetime" },
-                { "datetime", "datetimeV1" },
-                { "unit", "units" },
-                { "modelType", null },
-                { "modelTypeId", null },
-                { "recognitionSources", null },
-            });
-            // Age, Dimension, Money, Temperature: unit -> units
-            // DateTimeV2 -> DateTime
-            // DateTime -> DateTimeV1
-            // In $instance use length to compute endIndex.
-            // Drop modelType, modelTypeId, recognitionSources, text
-            return 
+            var entities = (JObject)JObject.FromObject(prediction.Entities);
+            var geoTypes = new Dictionary<string, string>();
+            GeographyTypes(entities, geoTypes);
+            return (JObject)MapProperties(entities, false, geoTypes);
         }
 
         /* TODO: Remove
@@ -142,9 +228,9 @@ namespace Microsoft.Bot.Builder.AI.LuisPreview
 
         internal static JToken ExtractEntityValue(EntityModel entity)
         {
-#pragma warning disable IDE0007 // Use implicit type
+        #pragma warning disable IDE0007 // Use implicit type
             if (entity.AdditionalProperties == null || !entity.AdditionalProperties.TryGetValue("resolution", out dynamic resolution))
-#pragma warning restore IDE0007 // Use implicit type
+        #pragma warning restore IDE0007 // Use implicit type
             {
                 return entity.Entity;
             }
@@ -222,9 +308,9 @@ namespace Microsoft.Bot.Builder.AI.LuisPreview
                     obj.score = (double)score;
                 }
 
-#pragma warning disable IDE0007 // Use implicit type
+        #pragma warning disable IDE0007 // Use implicit type
                 if (entity.AdditionalProperties.TryGetValue("resolution", out dynamic resolution) && resolution.subtype != null)
-#pragma warning restore IDE0007 // Use implicit type
+        #pragma warning restore IDE0007 // Use implicit type
                 {
                     obj.subtype = resolution.subtype;
                 }

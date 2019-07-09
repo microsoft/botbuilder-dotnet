@@ -139,6 +139,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.TestUtils
             {
                 json["v2"] = oracle["v2"];
             }
+
             if (oracle["v3"] != null)
             {
                 json["v3"] = oracle["v3"];
