@@ -70,7 +70,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// </summary>
         /// <returns>Runs the exchange between the user and the bot.</returns>
         /// <remarks>This methods sends the activities from the user to the bot and
-        /// checks the responses from the bot based on the activiies described in the
+        /// checks the responses from the bot based on the activities described in the
         /// current test flow.</remarks>
         public Task StartTestAsync() => _testTask;
 
@@ -309,7 +309,7 @@ namespace Microsoft.Bot.Builder.Adapters
         }
 
         /// <summary>
-        /// Shorcut for adding an arbitray exchange between the user and bot.
+        /// Shortcut for adding an arbitrary exchange between the user and bot.
         /// Each activity with a <see cref="IActivity.From"/>.<see cref="ChannelAccount.Role"/> equals to "bot"
         /// will be processed with the <see cref="AssertReply(IActivity, string, uint)"/> method.
         /// Every other activity will be processed as user's message via the <see cref="Send(IActivity)"/> method.
@@ -337,7 +337,7 @@ namespace Microsoft.Bot.Builder.Adapters
         }
 
         /// <summary>
-        /// Shorcut for adding an arbitray exchange between the user and bot.
+        /// Shortcut for adding an arbitrary exchange between the user and bot.
         /// Each activity with a <see cref="IActivity.From"/>.<see cref="ChannelAccount.Role"/> equals to "bot"
         /// will be processed with the <see cref="AssertReply(IActivity, string, uint)"/> method.
         /// Every other activity will be processed as user's message via the <see cref="Send(IActivity)"/> method.

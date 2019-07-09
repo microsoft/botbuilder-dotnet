@@ -127,7 +127,7 @@ namespace Microsoft.Bot.Builder
 
             // Relocate the tenantId field used by MS Teams to a new location (from channelData to conversation)
             // This will only occur on activities from teams that include tenant info in channelData but NOT in conversation,
-            // thus should be future friendly.  However, once the the transition is complete. we can remove this.
+            // thus should be future friendly.  However, once the transition is complete. we can remove this.
             Use(new TenantIdWorkaroundForTeamsMiddleware());
 
             // DefaultRequestHeaders are not thread safe so set them up here because this adapter should be a singleton.

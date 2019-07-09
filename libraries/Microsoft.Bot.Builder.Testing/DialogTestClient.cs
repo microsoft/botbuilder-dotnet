@@ -31,18 +31,18 @@ namespace Microsoft.Bot.Builder.Testing
         /// <param name="targetDialog">The dialog to be tested. This will be the root dialog for the test client.</param>
         /// <param name="initialDialogOptions">(Optional) additional argument(s) to pass to the dialog being started.</param>
         /// <param name="middlewares">(Optional) A list of middlewares to be added to the test adapter.</param>
-        /// <param name="callback">(Optional) The bot turn processing logic for the test. If this value is not provided, the test client will create a default <see cref="BotCallbackHandler"/>.</param>
-        public DialogTestClient(string channelId, Dialog targetDialog, object initialDialogOptions = null, IEnumerable<IMiddleware> middlewares = null, BotCallbackHandler callback = null)
+        /// <param name="conversationState">(Optional) A <see cref="ConversationState"/> to use in the test client.</param>
+        public DialogTestClient(string channelId, Dialog targetDialog, object initialDialogOptions = null, IEnumerable<IMiddleware> middlewares = null, ConversationState conversationState = null)
         {
-            var convoState = new ConversationState(new MemoryStorage());
+            ConversationState = conversationState ?? new ConversationState(new MemoryStorage());
             _testAdapter = new TestAdapter(channelId)
-                .Use(new AutoSaveStateMiddleware(convoState));
+                .Use(new AutoSaveStateMiddleware(ConversationState));
 
             AddUserMiddlewares(middlewares);
 
-            var dialogState = convoState.CreateProperty<DialogState>("DialogState");
+            var dialogState = ConversationState.CreateProperty<DialogState>("DialogState");
 
-            _callback = callback ?? GetDefaultCallback(targetDialog, initialDialogOptions, dialogState);
+            _callback = GetDefaultCallback(targetDialog, initialDialogOptions, dialogState);
         }
 
         /// <summary>
@@ -52,24 +52,30 @@ namespace Microsoft.Bot.Builder.Testing
         /// <param name="targetDialog">The dialog to be tested. This will be the root dialog for the test client.</param>
         /// <param name="initialDialogOptions">(Optional) additional argument(s) to pass to the dialog being started.</param>
         /// <param name="middlewares">(Optional) A list of middlewares to be added to the test adapter.</param>
-        /// <param name="callback">(Optional) The bot turn processing logic for the test. If this value is not provided, the test client will create a default <see cref="BotCallbackHandler"/>.</param>
-        public DialogTestClient(TestAdapter testAdapter, Dialog targetDialog, object initialDialogOptions = null, IEnumerable<IMiddleware> middlewares = null, BotCallbackHandler callback = null)
+        /// <param name="conversationState">(Optional) A <see cref="ConversationState"/> to use in the test client.</param>
+        public DialogTestClient(TestAdapter testAdapter, Dialog targetDialog, object initialDialogOptions = null, IEnumerable<IMiddleware> middlewares = null, ConversationState conversationState = null)
         {
-            var convoState = new ConversationState(new MemoryStorage());
-            _testAdapter = testAdapter.Use(new AutoSaveStateMiddleware(convoState));
+            ConversationState = conversationState ?? new ConversationState(new MemoryStorage());
+            _testAdapter = testAdapter.Use(new AutoSaveStateMiddleware(ConversationState));
 
             AddUserMiddlewares(middlewares);
 
-            var dialogState = convoState.CreateProperty<DialogState>("DialogState");
+            var dialogState = ConversationState.CreateProperty<DialogState>("DialogState");
 
-            _callback = callback ?? GetDefaultCallback(targetDialog, initialDialogOptions, dialogState);
+            _callback = GetDefaultCallback(targetDialog, initialDialogOptions, dialogState);
         }
 
         /// <summary>
         /// Gets the latest <see cref="DialogTurnResult"/> for the dialog being tested.
         /// </summary>
         /// <value>A <see cref="DialogTurnResult"/> instance with the result of the last turn.</value>
-        public virtual DialogTurnResult DialogTurnResult { get; private set; }
+        public DialogTurnResult DialogTurnResult { get; private set; }
+
+        /// <summary>
+        /// Gets the latest <see cref="ConversationState"/> for <see cref="DialogTestClient"/>.
+        /// </summary>
+        /// <value>A <see cref="ConversationState"/> instance for the current test client.</value>
+        public ConversationState ConversationState { get; }
 
         /// <summary>
         /// Sends an <see cref="Activity"/> to the target dialog.

@@ -18,12 +18,12 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
 {
     public class CancelAndHelpDialogTests : BotTestBase
     {
-        private readonly XUnitOutputMiddleware[] _middlewares;
+        private readonly XUnitDialogTestLogger[] _middlewares;
 
         public CancelAndHelpDialogTests(ITestOutputHelper output)
             : base(output)
         {
-            _middlewares = new[] { new XUnitOutputMiddleware(output) };
+            _middlewares = new[] { new XUnitDialogTestLogger(output) };
         }
 
         [Theory]

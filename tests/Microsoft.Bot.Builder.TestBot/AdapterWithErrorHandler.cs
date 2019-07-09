@@ -4,15 +4,15 @@
 using System;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
-using Microsoft.Bot.Connector.Authentication;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace Microsoft.BotBuilderSamples
 {
     public class AdapterWithErrorHandler : BotFrameworkHttpAdapter
     {
-        public AdapterWithErrorHandler(ICredentialProvider credentialProvider, ILogger<BotFrameworkHttpAdapter> logger, InspectionMiddleware inspectionMiddleware, ConversationState conversationState)
-            : base(credentialProvider)
+        public AdapterWithErrorHandler(IConfiguration configuration, ILogger<BotFrameworkHttpAdapter> logger, InspectionMiddleware inspectionMiddleware, ConversationState conversationState)
+            : base(configuration, logger)
         {
             OnTurnError = async (turnContext, exception) =>
             {

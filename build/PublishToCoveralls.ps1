@@ -41,7 +41,7 @@ $uploadArgs = @(
     "--jobId ""$env:Build_BuildId""",
     "--commitId ""$env:Build_SourceVersion""",
     "--commitAuthor ""$env:Build_RequestedFor""",
-    "--commitEmail ""$env:Build_RequestedForEmail""",
+    "--commitEmail ""$env:Build_RequestedForEmail """,
     "--commitMessage ""$env:Build_SourceVersionMessage""",
     "--serviceName ""$serviceName"""
 );

@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder.FunctionalTests
             GetEnvironmentVars();
 
             echoGuid = Guid.NewGuid().ToString();
-            input = input + echoGuid;
+            input += echoGuid;
 
             var botAnswer = await StartBotConversationAsync();
 
@@ -39,13 +39,13 @@ namespace Microsoft.Bot.Builder.FunctionalTests
         private static async Task<string> StartBotConversationAsync()
         {
             // Create a new Direct Line client.
-            DirectLineClient client = new DirectLineClient(directLineSecret);
+            var client = new DirectLineClient(directLineSecret);
 
             // Start the conversation.
             var conversation = await client.Conversations.StartConversationAsync();
 
             // Create a message activity with the input text.
-            Activity userMessage = new Activity
+            var userMessage = new Activity
             {
                 From = new ChannelAccount(fromUser),
                 Text = input,
@@ -70,7 +70,7 @@ namespace Microsoft.Bot.Builder.FunctionalTests
         private static async Task<string> ReadBotMessagesAsync(DirectLineClient client, string conversationId)
         {
             string watermark = null;
-            string answer = string.Empty;
+            var answer = string.Empty;
 
             // Poll the bot for replies once per second.
             while (answer.Equals(string.Empty))
@@ -79,13 +79,13 @@ namespace Microsoft.Bot.Builder.FunctionalTests
                 var activitySet = await client.Conversations.GetActivitiesAsync(conversationId, watermark);
                 watermark = activitySet?.Watermark;
 
-                // Extract the activies sent from the bot.
+                // Extract the activities sent from the bot.
                 var activities = from x in activitySet.Activities
                                  where x.From.Id == botId
                                  select x;
 
                 // Analyze each activity in the activity set.
-                foreach (Activity activity in activities)
+                foreach (var activity in activities)
                 {
                     if (activity.Type == ActivityTypes.Message && activity.Text != "Welcome to Echo Bot.")
                     {

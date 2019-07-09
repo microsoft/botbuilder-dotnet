@@ -71,6 +71,21 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
         }
 
         [TestMethod]
+        public void AppSettings_NoConfig_AppSettings()
+        {
+            ArrangeBotFile(null); // No bot file
+            ArrangeAppSettings("default"); // Appsettings file with instrumentation key
+            var server = new TestServer(new WebHostBuilder()
+                .UseStartup<StartupNoParameters>());
+
+            // Telemetry Client should be active
+            var telemetryClient = server.Host.Services.GetService(typeof(IBotTelemetryClient));
+            Assert.IsNotNull(telemetryClient);
+            Assert.IsFalse(typeof(NullBotTelemetryClient).Equals(telemetryClient.GetType()));
+            Assert.IsFalse(server.Host.Services.GetService(typeof(TelemetryClient)) == null);
+        }
+
+        [TestMethod]
         public void AppSettings_NoBot_AppSettings_InvalidKey()
         {
             ArrangeBotFile(null); // No bot file

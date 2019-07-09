@@ -17,7 +17,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs.TestData
             yield return BuildTestCaseObject(
                 "tomorrow",
                 null,
-                $"{DateTime.UtcNow.AddDays(1):yyyy-MM-dd}",
+                $"{DateTime.Now.AddDays(1):yyyy-MM-dd}",
                 new[,]
                 {
                     { "hi", "When would you like to travel?" },
@@ -27,7 +27,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs.TestData
             yield return BuildTestCaseObject(
                 "the day after tomorrow",
                 null,
-                $"{DateTime.UtcNow.AddDays(2):yyyy-MM-dd}",
+                $"{DateTime.Now.AddDays(2):yyyy-MM-dd}",
                 new[,]
                 {
                     { "hi", "When would you like to travel?" },
@@ -37,7 +37,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs.TestData
             yield return BuildTestCaseObject(
                 "two days from now",
                 null,
-                $"{DateTime.UtcNow.AddDays(2):yyyy-MM-dd}",
+                $"{DateTime.Now.AddDays(2):yyyy-MM-dd}",
                 new[,]
                 {
                     { "hi", "When would you like to travel?" },
@@ -46,8 +46,8 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs.TestData
 
             yield return BuildTestCaseObject(
                 "valid input given (tomorrow)",
-                $"{DateTime.UtcNow.AddDays(1):yyyy-MM-dd}",
-                $"{DateTime.UtcNow.AddDays(1):yyyy-MM-dd}",
+                $"{DateTime.Now.AddDays(1):yyyy-MM-dd}",
+                $"{DateTime.Now.AddDays(1):yyyy-MM-dd}",
                 new[,]
                 {
                     { "hi", null },
@@ -56,7 +56,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs.TestData
             yield return BuildTestCaseObject(
                 "retry prompt",
                 null,
-                $"{DateTime.UtcNow.AddDays(1):yyyy-MM-dd}",
+                $"{DateTime.Now.AddDays(1):yyyy-MM-dd}",
                 new[,]
                 {
                     { "hi", "When would you like to travel?" },

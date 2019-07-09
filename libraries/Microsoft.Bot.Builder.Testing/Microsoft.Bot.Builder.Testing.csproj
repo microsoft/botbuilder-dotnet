@@ -21,7 +21,6 @@
     <PackageId>Microsoft.Bot.Builder.Testing</PackageId>
     <Description>Library for building bot tests using Microsoft Bot Framework Connector</Description>
     <Summary>Library for building bot tests using Microsoft Bot Framework Connector</Summary>
-    <LangVersion>latest</LangVersion>
   </PropertyGroup> 
 
   <ItemGroup>

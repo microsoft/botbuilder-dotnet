@@ -8,10 +8,17 @@ using Microsoft.ApplicationInsights.DataContracts;
 
 namespace Microsoft.Bot.Builder.ApplicationInsights
 {
+    /// <summary>
+    /// Instanciates a BotTelemetryCLient object.
+    /// </summary>
     public class BotTelemetryClient : IBotTelemetryClient
     {
         private readonly TelemetryClient _telemetryClient;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BotTelemetryClient"/> class.
+        /// </summary>
+        /// <param name="telemetryClient">the telemetry client.</param>
         public BotTelemetryClient(TelemetryClient telemetryClient)
         {
             _telemetryClient = telemetryClient ?? throw new ArgumentNullException(nameof(telemetryClient));
