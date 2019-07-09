@@ -72,9 +72,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
         protected virtual Expression BuildExpression(IExpressionParser factory)
         {
             List<Expression> allExpressions = new List<Expression>();
-            if (this.Constraint != null)
+            if (!string.IsNullOrWhiteSpace(this.Constraint))
             {
-                allExpressions.Add(factory.Parse(this.Constraint));
+                try
+                {
+                    allExpressions.Add(factory.Parse(this.Constraint));
+                }
+                catch(Exception e)
+                {
+                    throw new Exception($"Invalid constraint expression: {this.Constraint}, {e.Message}");
+                }
             }
 
             if (this.extraConstraints.Any())
@@ -98,11 +105,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
         /// <param name="constraint"></param>
         public void AddConstraint(string constraint)
         {
-            lock (this.extraConstraints)
+            if (!string.IsNullOrWhiteSpace(constraint))
             {
-                this.extraConstraints.Add(new ExpressionEngine().Parse(constraint));
-                this.fullConstraint = null; // reset to force it to be recalcaulated
+                try
+                {
+                    lock (this.extraConstraints)
+                    {
+                        this.extraConstraints.Add(new ExpressionEngine().Parse(constraint));
+                        this.fullConstraint = null; // reset to force it to be recalcaulated
+                    }
+                }
+                catch (Exception e)
+                {
+                    throw new Exception($"Invalid constraint expression: {this.Constraint}, {e.Message}");
+                }
             }
+                
         }
 
         /// <summary>
