@@ -18,11 +18,11 @@ primaryExpression
     | NUMBER                                  #numericAtom
     | STRING                                  #stringAtom
     | IDENTIFIER                              #idAtom
-    | ('#'|'@'|'@@'|'$'|'%'|'^'|'~') IDENTIFIER                    #shortHandExp
-    | ('#'|'@'|'@@'|'$'|'%'|'^'|'~') '[' expression ']'            #shortHandAccessExp
-    | primaryExpression '.' IDENTIFIER        #memberAccessExp
+    | ('#'|'@'|'@@'|'$'|'%'|'^'|'~')          #shortHandAtom
+    | primaryExpression IDENTIFIER            #shortHandAccessorExp  // only allow primaryExpression is shorthand
+    | primaryExpression '.' IDENTIFIER        #memberAccessExp  // primaryExpression could not be shorthand 
     | primaryExpression '(' argsList? ')'     #funcInvokeExp
-    | primaryExpression '[' expression ']'    #indexAccessExp
+    | primaryExpression '[' expression ']'    #indexAccessExp  // primaryExpression can be shorthand
     ;
 
 argsList

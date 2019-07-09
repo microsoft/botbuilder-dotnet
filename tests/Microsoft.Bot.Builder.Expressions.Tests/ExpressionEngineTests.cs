@@ -106,8 +106,8 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
                                 Time = "Today",
                                 People = "4"
                             }
-                           
-                        }
+
+                         }
                     }
                 }
             } },
@@ -171,9 +171,9 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("(1 + 2) * 3", 9),
             Test("(one + two) * bag.three", 9.0, new HashSet<string> {"one", "two", "bag.three" }),
             Test("(one + two) * bag.set.four", 12.0, new HashSet<string> {"one", "two", "bag.set.four" } ),
-            // BROKEN DUE TO ^ Memory lookup
-            //Test("2^2", 4.0),
-            //Test("3^2^2", 81.0),
+
+            Test("2^2", 4.0),
+            Test("3^2^2", 81.0),
             Test("one > 0.5 && two < 2.5", true),
             Test("one > 0.5 || two < 1.5", true),
             Test("5 % 2", 1),
@@ -522,15 +522,15 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("@[concat('cit', 'y')]", "Seattle", new HashSet<string> {"turn.recognized.entities"}),
             Test("@[concat(cit, y)]", "Seattle", new HashSet<string> {"turn.recognized.entities", "cit", "y"}),
             Test("#BookFlight == 'BookFlight'", true, new HashSet<string> {"turn.recognized.intents.BookFlight"}),
-            Test("#BookHotel[1].Where", "Kirkland", new HashSet<string> {"turn.recognized.intents.BookHotel"}),
+            Test("#BookHotel[1].Where", "Kirkland", new HashSet<string> {"turn.recognized.intents.BookHotel[1].Where"}),
             Test("exists(#BookFlight)", true, new HashSet<string> {"turn.recognized.intents.BookFlight"}),
             Test("$title", "Dialog Title", new HashSet<string> {"dialog.title"}),
             Test("$subTitle", "Dialog Sub Title", new HashSet<string> {"dialog.subTitle"}),
             Test("~xxx", "instance", new HashSet<string> {"dialog.instance.xxx"}),
-            Test("~['yyy'].instanceY", "instanceY", new HashSet<string> {"dialog.instance.yyy"}),
+            Test("~['yyy'].instanceY", "instanceY", new HashSet<string> {"dialog.instance.yyy.instanceY"}),
             Test("%xxx", "options", new HashSet<string> {"dialog.options.xxx"}),
             Test("%['xxx']", "options", new HashSet<string> {"dialog.options.xxx"}),
-            Test("%yyy[1]", "optionY2", new HashSet<string> {"dialog.options.yyy"}),
+            Test("%yyy[1]", "optionY2", new HashSet<string> {"dialog.options.yyy[1]"}),
             Test("^x", 3),
             Test("^y", 2),
             Test("^z", 1),

@@ -174,7 +174,14 @@ namespace Microsoft.Bot.Builder.Expressions
                     {
                         if (children[1] is Constant cnst)
                         {
-                            path += $"[{cnst.Value}]";
+                            if (cnst.ReturnType == ReturnType.String)
+                            {
+                                path += $".{cnst.Value}";
+                            }
+                            else
+                            {
+                                path += $"[{cnst.Value}]";
+                            }
                         }
                         else
                         {
@@ -186,29 +193,6 @@ namespace Microsoft.Bot.Builder.Expressions
                     if (idxPath != null)
                     {
                         references.Add(idxPath);
-                    }
-                }
-                else if (BuiltInFunctions.PrefixsOfShorthand.ContainsKey(expression.Type))
-                {
-                    // Shorthand
-                    var prefixStr = BuiltInFunctions.PrefixsOfShorthand[expression.Type];
-                    var shorthandName = (children[0] as Constant)?.Value?.ToString();
-                    path = ReferenceWalk(children[0], references, extension);
-                    if (path != null)
-                    {
-                        var reference = prefixStr + path;
-
-                        references.Add(reference);
-                    }
-                    else if (shorthandName != null)
-                    {
-                        var reference = prefixStr + shorthandName;
-
-                        references.Add(reference);
-                    }
-                    else
-                    {
-                        references.Add(prefixStr.Remove(prefixStr.Length - 1));
                     }
                 }
                 else
