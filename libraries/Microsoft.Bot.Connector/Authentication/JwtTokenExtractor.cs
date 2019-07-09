@@ -54,10 +54,10 @@ namespace Microsoft.Bot.Connector.Authentication
         /// Initializes a new instance of the <see cref="JwtTokenExtractor"/> class.
         /// Extracts relevant data from JWT Tokens.
         /// </summary>
-        /// <param name="httpClient">As part of validating JWT Tokens, endorsements need to be feteched from
+        /// <param name="httpClient">As part of validating JWT Tokens, endorsements need to be fetched from
         /// sources specified by the relevant security URLs. This HttpClient is used to allow for resource
         /// pooling around those retrievals. As those resources require TLS sharing the HttpClient is
-        /// important to overall perfomance.</param>
+        /// important to overall performance.</param>
         /// <param name="tokenValidationParameters">tokenValidationParameters.</param>
         /// <param name="metadataUrl">metadataUrl.</param>
         /// <param name="allowedSigningAlgorithms">allowedSigningAlgorithms.</param>
@@ -88,10 +88,10 @@ namespace Microsoft.Bot.Connector.Authentication
         /// Initializes a new instance of the <see cref="JwtTokenExtractor"/> class.
         /// Extracts relevant data from JWT Tokens.
         /// </summary>
-        /// <param name="httpClient">As part of validating JWT Tokens, endorsements need to be feteched from
+        /// <param name="httpClient">As part of validating JWT Tokens, endorsements need to be fetched from
         /// sources specified by the relevant security URLs. This HttpClient is used to allow for resource
         /// pooling around those retrievals. As those resources require TLS sharing the HttpClient is
-        /// important to overall perfomance.</param>
+        /// important to overall performance.</param>
         /// <param name="tokenValidationParameters">tokenValidationParameters.</param>
         /// <param name="metadataUrl">metadataUrl.</param>
         /// <param name="allowedSigningAlgorithms">allowedSigningAlgorithms.</param>

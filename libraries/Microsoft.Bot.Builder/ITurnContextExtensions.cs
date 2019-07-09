@@ -9,7 +9,7 @@ using Microsoft.Bot.Schema;
 namespace Microsoft.Bot.Builder.TraceExtensions
 {
     /// <summary>
-    /// Contains methods for woring with <see cref="ITurnContext"/> objects.
+    /// Contains methods for working with <see cref="ITurnContext"/> objects.
     /// </summary>
     public static class ITurnContextExtensions
     {
@@ -26,7 +26,7 @@ namespace Microsoft.Bot.Builder.TraceExtensions
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>If the adapter is being hosted in the Emulator, the task result contains
         /// a <see cref="ResourceResponse"/> object with the original trace activity's ID; otherwise,
-        /// it containsa <see cref="ResourceResponse"/> object containing the ID that the receiving
+        /// it contains a <see cref="ResourceResponse"/> object containing the ID that the receiving
         /// channel assigned to the activity.</remarks>
         public static Task<ResourceResponse> TraceActivityAsync(this ITurnContext turnContext, string name, object value = null, string valueType = null, [CallerMemberName] string label = null, CancellationToken cancellationToken = default(CancellationToken))
         {

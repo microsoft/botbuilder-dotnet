@@ -169,7 +169,7 @@ namespace Microsoft.Bot.Builder.Tests
         [Description("Cannot get a bool with no default set")]
         public async Task State_bool_NoDefault()
         {
-            // Arange
+            // Arrange
             var dictionary = new Dictionary<string, JObject>();
             var userState = new UserState(new MemoryStorage(dictionary));
             var context = TestUtilities.CreateEmptyContext();
