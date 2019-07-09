@@ -19,10 +19,10 @@ primaryExpression
     | STRING                                  #stringAtom
     | IDENTIFIER                              #idAtom
     | ('#'|'@'|'@@'|'$'|'%'|'^'|'~')          #shortHandAtom
-    | primaryExpression IDENTIFIER            #shortHandAccessorExp  // only allow primaryExpression is shorthand
-    | primaryExpression '.' IDENTIFIER        #memberAccessExp  // primaryExpression could not be shorthand 
+    | primaryExpression IDENTIFIER            #shortHandAccessorExp
+    | primaryExpression '.' IDENTIFIER        #memberAccessExp
     | primaryExpression '(' argsList? ')'     #funcInvokeExp
-    | primaryExpression '[' expression ']'    #indexAccessExp  // primaryExpression can be shorthand
+    | primaryExpression '[' expression ']'    #indexAccessExp
     ;
 
 argsList
