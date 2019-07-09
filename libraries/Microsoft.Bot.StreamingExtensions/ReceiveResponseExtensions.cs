@@ -28,6 +28,16 @@ namespace Microsoft.Bot.StreamingExtensions
             try
             {
                 var contentStream = response.Streams.FirstOrDefault();
+
+                /* If the response had no body we have to return a compatible
+                 * but empty object to avoid throwing exceptions upstream anytime
+                 * an empty response is received.
+                 */
+                if (contentStream == null)
+                {
+                    return default(T);
+                }
+
                 using (var reader = new StreamReader(contentStream.Stream, Encoding.UTF8))
                 {
                     using (var jsonReader = new JsonTextReader(reader))

@@ -113,7 +113,50 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
             DoneProducing();
         }
 
-        public override int Read(byte[] buffer, int offset, int count) => throw new NotImplementedException();
+        /// <summary>
+        /// This function is called by StreamReader when processing streams.
+        /// It will appear to have no references, but is in fact required to
+        /// be implemented by StreamReader, just like Length.
+        /// </summary>
+        /// <param name="buffer">The buffer to read from.</param>
+        /// <param name="offset">The position to begin reading from.</param>
+        /// <param name="count">The amount to attempt to read.</param>
+        /// <returns>The number of chunks remaining unread in the buffer.</returns>
+        public override int Read(byte[] buffer, int offset, int count)
+        {
+            if (_end)
+            {
+                return 0;
+            }
+
+            if (_active == null)
+            {
+                dataAvailable.Wait();
+
+                lock (syncLock)
+                {
+                    _active = _bufferQueue.Dequeue();
+                }
+            }
+
+            var availableCount = (int)Math.Min(_active.Length - _activeOffset, count);
+            Array.Copy(_active, _activeOffset, buffer, offset, availableCount);
+            _activeOffset += availableCount;
+            _consumerPosition += availableCount;
+
+            if (_activeOffset >= _active.Length)
+            {
+                _active = null;
+                _activeOffset = 0;
+            }
+
+            if (_assembler != null && _consumerPosition >= _assembler.ContentLength)
+            {
+                _end = true;
+            }
+
+            return availableCount;
+        }
 
         internal void GiveBuffer(byte[] buffer, int count)
         {
