@@ -86,23 +86,24 @@ namespace Microsoft.Bot.Builder.Azure
 
             var keyOrToken = cosmosDbStorageOptions.AuthKey;
 
-            if (keyOrToken == null)
+            if (!string.IsNullOrEmpty(keyOrToken))
             {
-                keyOrToken = _tokenProvider.GetAccessTokenAsync("https://management.azure.com/").Result;
-                keyOrToken = Convert.ToBase64String(Encoding.UTF8.GetBytes(keyOrToken));
+                _client = new DocumentClient(cosmosDbStorageOptions.CosmosDBEndpoint, keyOrToken, connectionPolicy);
             }
+            else
+            {
+                var collectionUri = UriFactory.CreateDocumentCollectionUri(_databaseId, _collectionId).AbsoluteUri;
 
-            //_client = new DocumentClient(cosmosDbStorageOptions.CosmosDBEndpoint, keyOrToken, connectionPolicy);
-            _client = new DocumentClient(
-                cosmosDbStorageOptions.CosmosDBEndpoint, 
-                new Dictionary<string, string>
-                {
+                keyOrToken = _tokenProvider.GetAccessTokenAsync(collectionUri).Result;
+
+                _client = new DocumentClient(
+                    cosmosDbStorageOptions.CosmosDBEndpoint,
+                    new Dictionary<string, string>
                     {
-                       UriFactory.CreateDocumentCollectionUri(_databaseId, _collectionId).ToString(),
-                       keyOrToken
-                    }
-                }, connectionPolicy);
-            var permission = SetPermissionAsync("abh-repo").Result;
+                        { collectionUri, keyOrToken}
+                    },
+                    connectionPolicy);
+            }
         }
 
         /// <summary>
@@ -345,32 +346,6 @@ namespace Microsoft.Bot.Builder.Azure
                     _semaphore.Release();
                 }
             }
-        }
-
-        private async Task<string> SetPermissionAsync(string botId)
-        {
-            var userUri = UriFactory.CreateUserUri(_databaseId, botId);
-            var collectionUri = UriFactory.CreateDocumentCollectionUri(_databaseId, _collectionId);
-
-            var user = (await _client.ReadUserAsync(userUri).ConfigureAwait(false)).Resource;
-            if (user == null)
-            {
-                user = new User
-                {
-                    Id = botId
-                };
-                await _client.CreateUserAsync(UriFactory.CreateDatabaseUri(_databaseId), user).ConfigureAwait(false);
-            }
-
-            var permFeed = await _client.ReadPermissionFeedAsync(userUri).ConfigureAwait(false);
-            var result = await _client.CreatePermissionAsync(userUri, new Permission
-            {
-                PermissionMode = PermissionMode.All,
-                ResourceLink = collectionUri.ToString(),
-                Id = $"user-{botId}"
-            }).ConfigureAwait(false);
-
-            return result.Resource.Token;
         }
 
         /// <summary>
