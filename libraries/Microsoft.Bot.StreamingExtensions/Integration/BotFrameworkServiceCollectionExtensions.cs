@@ -2,10 +2,9 @@
 // Licensed under the MIT License.
 
 using System;
-using Microsoft.Bot.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Microsoft.Bot.Builder.Integration.AspNet.Core
+namespace Microsoft.Bot.StreamingExtensions.Integration
 {
     /// <summary>
     /// An extention to the Service Collection to allow registration of the Bot Framework Protocol Version 3 with Streaming Extensions adapter for use with named pipe connections.

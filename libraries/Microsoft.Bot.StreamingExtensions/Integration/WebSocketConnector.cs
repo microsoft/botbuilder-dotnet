@@ -5,13 +5,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Web.WebSockets;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Bot.Builder;
 using Microsoft.Bot.Connector.Authentication;
 
-namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.StreamingExtensions
+namespace Microsoft.Bot.StreamingExtensions.Integration
 {
     internal class WebSocketConnector
     {
@@ -37,14 +37,13 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.StreamingExtensions
         /// <summary>
         /// Process the initial request to establish a long lived connection via a streaming server.
         /// </summary>
-        /// <param name="onTurnError">Logic to execute on encountering turn errors.</param>
+        /// <param name="onTurnError"> The function to execute on turn errors.</param>
         /// <param name="middlewareSet">The set of middleware to perform on each turn.</param>
         /// <param name="httpRequest">The connection request.</param>
         /// <param name="httpResponse">The response sent on error or connection termination.</param>
-        /// <param name="bot">The bot that is communicating over this connection.</param>
         /// <param name="cancellationToken">Optional cancellation token.</param>
         /// <returns>Returns on task completion.</returns>
-        internal async Task ProcessAsync(Func<ITurnContext, Exception, Task> onTurnError, List<IMiddleware> middlewareSet, HttpRequestMessage httpRequest, HttpResponseMessage httpResponse, IBot bot = null, CancellationToken cancellationToken = default(CancellationToken))
+        internal async Task ProcessAsync(Func<ITurnContext, Exception, Task> onTurnError, List<Builder.IMiddleware> middlewareSet, HttpRequest httpRequest, HttpResponse httpResponse, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (httpRequest == null)
             {
@@ -56,10 +55,10 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.StreamingExtensions
                 throw new ArgumentNullException(nameof(httpResponse));
             }
 
-            if (!System.Web.HttpContext.Current.IsWebSocketRequest)
+            if (!httpRequest.HttpContext.WebSockets.IsWebSocketRequest)
             {
-                httpResponse.Content = new StringContent("Upgrade to web socket is required");
-                httpResponse.StatusCode = HttpStatusCode.BadRequest;
+                httpRequest.HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                await httpRequest.HttpContext.Response.WriteAsync("Upgrade to WebSocket is required.").ConfigureAwait(false);
 
                 return;
             }
@@ -68,19 +67,19 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.StreamingExtensions
             {
                 if (!await _credentialProvider.IsAuthenticationDisabledAsync().ConfigureAwait(false))
                 {
-                    var authHeader = httpRequest.Headers.Where(x => x.Key.ToLower() == AuthHeaderName).FirstOrDefault().Value?.FirstOrDefault();
-                    var channelId = httpRequest.Headers.Where(x => x.Key.ToLower() == ChannelIdHeaderName).FirstOrDefault().Value?.FirstOrDefault();
+                    var authHeader = httpRequest.Headers.Where(x => x.Key.ToLower() == AuthHeaderName).FirstOrDefault().Value.FirstOrDefault();
+                    var channelId = httpRequest.Headers.Where(x => x.Key.ToLower() == ChannelIdHeaderName).FirstOrDefault().Value.FirstOrDefault();
 
                     if (string.IsNullOrWhiteSpace(authHeader))
                     {
-                        MissingAuthHeaderHelper(AuthHeaderName, httpResponse);
+                        await MissingAuthHeaderHelperAsync(AuthHeaderName, httpRequest).ConfigureAwait(false);
 
                         return;
                     }
 
                     if (string.IsNullOrWhiteSpace(channelId))
                     {
-                        MissingAuthHeaderHelper(ChannelIdHeaderName, httpResponse);
+                        await MissingAuthHeaderHelperAsync(ChannelIdHeaderName, httpRequest).ConfigureAwait(false);
 
                         return;
                     }
@@ -88,7 +87,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.StreamingExtensions
                     var claimsIdentity = await JwtTokenValidation.ValidateAuthHeader(authHeader, _credentialProvider, _channelProvider, channelId).ConfigureAwait(false);
                     if (!claimsIdentity.IsAuthenticated)
                     {
-                        httpResponse.StatusCode = HttpStatusCode.Unauthorized;
+                        httpRequest.HttpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
 
                         return;
                     }
@@ -96,43 +95,37 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.StreamingExtensions
             }
             catch (Exception ex)
             {
-                httpResponse.StatusCode = HttpStatusCode.InternalServerError;
-                httpResponse.Content = new StringContent("Error while attempting to authorize connection.");
+                httpRequest.HttpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                await httpRequest.HttpContext.Response.WriteAsync("Error while attempting to authorize connection.").ConfigureAwait(false);
 
                 throw ex;
             }
 
-            CreateStreamingServerConnection(onTurnError, middlewareSet, System.Web.HttpContext.Current, httpResponse, httpRequest, bot);
+            await CreateStreamingServerConnectionAsync(onTurnError, middlewareSet, httpRequest.HttpContext).ConfigureAwait(false);
         }
 
-        private void MissingAuthHeaderHelper(string headerName, HttpResponseMessage httpResponseMessage)
+        private async Task MissingAuthHeaderHelperAsync(string headerName, HttpRequest httpRequest)
         {
-            httpResponseMessage.StatusCode = HttpStatusCode.Unauthorized;
-            httpResponseMessage.Content = new StringContent($"Unable to authentiate. Missing header: {headerName}");
+            httpRequest.HttpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+            await httpRequest.HttpContext.Response.WriteAsync($"Unable to authentiate. Missing header: {headerName}").ConfigureAwait(false);
         }
 
-        private void CreateStreamingServerConnection(Func<ITurnContext, Exception, Task> onTurnError, List<Builder.IMiddleware> middlewareSet, System.Web.HttpContext httpContext, HttpResponseMessage httpResponse, HttpRequestMessage httpRequest, IBot bot = null)
+        private async Task CreateStreamingServerConnectionAsync(Func<ITurnContext, Exception, Task> onTurnError, List<Builder.IMiddleware> middlewareSet, HttpContext httpContext)
         {
-            var handler = new StreamingRequestHandler(onTurnError, bot ?? httpRequest.GetDependencyScope().GetService(typeof(IBot)) as IBot, middlewareSet);
+            var handler = new StreamingRequestHandler(onTurnError, httpContext.RequestServices, middlewareSet);
+            var socket = await httpContext.WebSockets.AcceptWebSocketAsync().ConfigureAwait(false);
 
-            Func<AspNetWebSocketContext, Task> processWebSocketSessionFunc = async (context) =>
+            try
             {
-                try
-                {
-                    await handler.StartAsync(context.WebSocket).ConfigureAwait(false);
-                }
-                catch (Exception ex)
-                {
-                    httpResponse.StatusCode = HttpStatusCode.InternalServerError;
-                    httpResponse.Content = new StringContent("Unable to create transport server.");
+                await handler.StartAsync(socket).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                httpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                await httpContext.Response.WriteAsync("Unable to create transport server.").ConfigureAwait(false);
 
-                    throw ex;
-                }
-            };
-
-            // set the status code first , since the next call might have a chance to block the thread.
-            httpResponse.StatusCode = HttpStatusCode.SwitchingProtocols;
-            httpContext.AcceptWebSocketRequest(processWebSocketSessionFunc);
+                throw ex;
+            }
         }
     }
 }

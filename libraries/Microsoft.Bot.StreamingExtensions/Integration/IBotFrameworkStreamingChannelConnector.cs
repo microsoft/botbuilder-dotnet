@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
 using Microsoft.Rest;
 
-namespace Microsoft.Bot.Builder
+namespace Microsoft.Bot.StreamingExtensions.Integration
 {
     /// <summary>
     /// This is a collection of methods that must be implemented on adapters supporting channels built on 
