@@ -421,18 +421,9 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
                 invalidXml = "<?xml version='1.0'?> <produce> <item> <name>Gala</name> <type>apple</type> <count>20</count> </item> <item> <name>Honeycrisp</name> <type>apple</type> <count>10</count>",
                 nestedItems = new[]
                 {
-                    new
-                    {
-                        x = 1
-                    },
-                    new
-                    {
-                        x = 2,
-                    },
-                    new
-                    {
-                        x = 3,
-                    }
+                    new { x = 1 },
+                    new { x = 2 },
+                    new { x = 3 }
                 },
                 timestamp = "2018-03-15T13:00:00.000Z",
                 timestamp2 = "2018-01-01T03:00:00.000Z",

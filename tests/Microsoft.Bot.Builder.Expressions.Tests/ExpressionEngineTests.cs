@@ -28,113 +28,127 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             { "istrue", true },
             { "nullObj", nullStr },
             { "bag", new Dictionary<string, object>
-            {
-                { "three", 3.0 },
-                { "set", new { four = 4.0 } },
-                { "list", new[] { "red", "blue" } },
-                { "index", 3 },
-                { "name", "mybag" }
-            }},
-            { "items", new string[] { "zero", "one", "two" } },
-            { "nestedItems", new[]
                 {
-                new
-                {
-                    x = 1
-                },
-                new
-                {
-                    x = 2,
-                },
-                new
-                {
-                    x = 3,
+                    { "three", 3.0 },
+                    { "set", new { four = 4.0 } },
+                    { "list", new[] { "red", "blue" } },
+                    { "index", 3 },
+                    { "name", "mybag" }
                 }
-            } },
-            { "user", new
-            {
-                lists = new
+            },
+            { "items", new string[] { "zero", "one", "two" } },
+            { "nestedItems",
+                new[]
                 {
-                    todo = new[]
+                    new { x = 1 },
+                    new { x = 2 },
+                    new { x = 3 }
+                }
+            },
+            { "user",
+                new
+                {
+                    lists = new
                     {
-                        "todo1",
-                        "todo2",
-                        "todo3",
-                    }
-                },
-                listType = "todo",
-            } },
+                        todo = new[]
+                        {
+                            "todo1",
+                            "todo2",
+                            "todo3",
+                        }
+                    },
+                    listType = "todo",
+                }
+            },
             { "timestamp", "2018-03-15T13:00:00.000Z" },
             { "notISOTimestamp", "2018/03/15 13:00:00" },
             { "timestampObj", DateTime.Parse("2018-03-15T13:00:00.000Z").ToUniversalTime() },
             { "unixTimestamp", 1521118800 },
             { "xmlStr", "<?xml version='1.0'?> <produce> <item> <name>Gala</name> <type>apple</type> <count>20</count> </item> <item> <name>Honeycrisp</name> <type>apple</type> <count>10</count> </item> </produce>" },
             { "turn", new
-            {
-                recognized = new
                 {
-                    entities = new Dictionary<string, object>
+                    recognized = new
                     {
-                        { "city",  "Seattle" },
-                        { "ordinal",  new[]
+                        entities = new Dictionary<string, object>
                         {
-                            "1",
-                            "2",
-                            "3"
-                        } },
-                        { "CompositeList1",  new[] {
-                            new[]{ "firstItem" }
-                        } },
-                        { "CompositeList2",  new[] {
-                            new[]{ "firstItem", "secondItem" }
-                        } }
-                    },
-                    intents = new
-                    {
-                        BookFlight = "BookFlight",
-                        BookHotel = new[]
-                        {
-                            new
-                            {
-                                Where = "Bellevue",
-                                Time = "Tomorrow",
-                                People= "2"
+                            { "city",  "Seattle" },
+                            { "ordinal",
+                                new[]
+                                {
+                                    "1",
+                                    "2",
+                                    "3"
+                                }
                             },
-                            new
-                            {
-                                Where = "Kirkland",
-                                Time = "Today",
-                                People = "4"
+                            { "CompositeList1",
+                                new[]
+                                {
+                                    new[]
+                                    {
+                                        "firstItem"
+                                    }
+                                }
+                            },
+                            { "CompositeList2",
+                                new[]
+                                {
+                                    new[]
+                                    {
+                                        "firstItem",
+                                        "secondItem"
+                                    }
+                                }
                             }
-
+                        },
+                        intents = new
+                        {
+                            BookFlight = "BookFlight",
+                            BookHotel = new[]
+                            {
+                                new
+                                {
+                                    Where = "Bellevue",
+                                    Time = "Tomorrow",
+                                    People= "2"
+                                },
+                                new
+                                {
+                                    Where = "Kirkland",
+                                    Time = "Today",
+                                    People = "4"
+                                }
+                             }
                          }
                     }
                 }
-            } },
-            { "dialog", new
-            {
-                instance = new
+            },
+            { "dialog",
+                new
                 {
-                    xxx = "instance",
-                    yyy = new
+                    instance = new
                     {
-                        instanceY = "instanceY"
-                    }
-                },
-                options = new
-                {
-                    xxx = "options",
-                    yyy = new[] { "optionY1", "optionY2" }
-                },
-                title = "Dialog Title",
-                subTitle = "Dialog Sub Title"
-            } },
+                        xxx = "instance",
+                        yyy = new
+                        {
+                            instanceY = "instanceY"
+                        }
+                    },
+                    options = new
+                    {
+                        xxx = "options",
+                        yyy = new[] { "optionY1", "optionY2" }
+                    },
+                    title = "Dialog Title",
+                    subTitle = "Dialog Sub Title"
+                }
+            },
             { "callstack", new object[]
-            {
-                new {x = 3 },
-                new {x = 2, y = 2 },
-                new {x = 1, y = 1, z = 1 },
-            } }
+                {
+                    new {x = 3 },
+                    new {x = 2, y = 2 },
+                    new {x = 1, y = 1, z = 1 },
+                }
+            }
         };
 
         public static IEnumerable<object[]> Data => new[]
