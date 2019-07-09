@@ -189,13 +189,14 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
 
             public override Expression VisitMemberAccessExp([NotNull] ExpressionParser.MemberAccessExpContext context)
             {
+                var property = context.IDENTIFIER().GetText();
                 if (context.primaryExpression() is ExpressionParser.ShorthandAtomContext shorthandAtom)
                 {
-                    throw new Exception($"Shorthand is not support with such format: {context.GetText()}");
+                    throw new Exception($"{context.GetText()} is not a valid shorthand. Maybe you mean '{context.primaryExpression().GetText()}{property}'?");
                 }
 
                 var instance = Visit(context.primaryExpression());
-                var property = context.IDENTIFIER().GetText();
+
                 return MakeExpression(ExpressionType.Accessor, Expression.ConstantExpression(property), instance);
             }
 
