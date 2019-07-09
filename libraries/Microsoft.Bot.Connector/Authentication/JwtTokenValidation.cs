@@ -47,7 +47,7 @@ namespace Microsoft.Bot.Connector.Authentication
                 throw new UnauthorizedAccessException();
             }
 
-            ClaimsIdentity claimsIdentity = await ValidateAuthHeader(authHeader, credentials, provider, activity.ChannelId, activity.ServiceUrl, httpClient ?? _httpClient);
+            var claimsIdentity = await ValidateAuthHeader(authHeader, credentials, provider, activity.ChannelId, activity.ServiceUrl, httpClient ?? _httpClient);
 
             MicrosoftAppCredentials.TrustServiceUrl(activity.ServiceUrl);
 
@@ -77,7 +77,7 @@ namespace Microsoft.Bot.Connector.Authentication
             {
                 return await EmulatorValidation.AuthenticateEmulatorToken(authHeader, credentials, channelProvider, httpClient ?? _httpClient, channelId);
             }
-            else if(channelProvider == null || channelProvider.IsPublicAzure())
+            else if (channelProvider == null || channelProvider.IsPublicAzure())
             {
                 // No empty or null check. Empty can point to issues. Null checks only.
                 if (serviceUrl != null)
