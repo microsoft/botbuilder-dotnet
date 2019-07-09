@@ -482,12 +482,13 @@ namespace Microsoft.Bot.Builder.Expressions
         private static (object value, string error) Callstack(Expression expression, object state)
         {
             // get collection
+            // get collection
             var (result, error) = AccessProperty(state, "callstack");
-            object property = null;
-            if (result != null && error == null && TryParseList(result, out IList items))
+            if (result != null)
             {
+                var items = (IEnumerable<object>)result;
+                object property = null;
                 (property, error) = expression.Children[0].TryEvaluate(state);
-
                 if (property != null && error == null)
                 {
                     foreach (var item in items)
@@ -504,7 +505,6 @@ namespace Microsoft.Bot.Builder.Expressions
                     }
                 }
             }
-
             return (null, error);
         }
 
