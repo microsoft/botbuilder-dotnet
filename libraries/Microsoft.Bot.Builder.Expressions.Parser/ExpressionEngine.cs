@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
         /// <summary>
         /// constant short hand currently have.
         /// </summary>
-        private static readonly Dictionary<string, string> BuildinShorthandDict = new Dictionary<string, string>()
+        private static readonly Dictionary<string, string> ShorthandPrefixMap = new Dictionary<string, string>()
         {
             { "#", $"turn.recognized.intents" },
             { "@", $"turn.recognized.entities" },
@@ -93,28 +93,28 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
                 return MakeExpression(binaryOperationName, left, right);
             }
 
-            public override Expression VisitShortHandAccessorExp([NotNull] ExpressionParser.ShortHandAccessorExpContext context)
+            public override Expression VisitShorthandAccessorExp([NotNull] ExpressionParser.ShorthandAccessorExpContext context)
             {
-                if (context.primaryExpression() is ExpressionParser.ShortHandAtomContext shortHandAtom)
+                if (context.primaryExpression() is ExpressionParser.ShorthandAtomContext shorthandAtom)
                 {
-                    var shortHandMark = shortHandAtom.GetText();
+                    var shorthandMark = shorthandAtom.GetText();
 
-                    if (!BuildinShorthandDict.ContainsKey(shortHandMark))
+                    if (!ShorthandPrefixMap.ContainsKey(shorthandMark))
                     {
-                        throw new Exception($"{shortHandMark} is not a shorthand");
+                        throw new Exception($"{shorthandMark} is not a shorthand");
                     }
 
                     var property = Expression.ConstantExpression(context.IDENTIFIER().GetText());
 
-                    if (shortHandMark == "^")
+                    if (shorthandMark == "^")
                     {
                         return MakeExpression(ExpressionType.Callstack, property);
                     }
 
-                    var accessorExpression = this.Transform(AntlrParse(BuildinShorthandDict[shortHandMark]));
+                    var accessorExpression = this.Transform(AntlrParse(ShorthandPrefixMap[shorthandMark]));
                     var expression = MakeExpression(ExpressionType.Accessor, property, accessorExpression);
 
-                    return shortHandMark == "@" ? MakeExpression(ExpressionType.SimpleEntity, expression) : expression;
+                    return shorthandMark == "@" ? MakeExpression(ExpressionType.SimpleEntity, expression) : expression;
                 }
 
                 throw new Exception($"{context.primaryExpression().GetText()} is not a shorthand.");
@@ -163,24 +163,24 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
                 Expression instance;
                 var property = Visit(context.expression());
 
-                if (context.primaryExpression() is ExpressionParser.ShortHandAtomContext shortHandAtom)
+                if (context.primaryExpression() is ExpressionParser.ShorthandAtomContext shorthandAtom)
                 {
-                    var shortHandMark = shortHandAtom.GetText();
+                    var shorthandMark = shorthandAtom.GetText();
 
-                    if (!BuildinShorthandDict.ContainsKey(shortHandMark))
+                    if (!ShorthandPrefixMap.ContainsKey(shorthandMark))
                     {
-                        throw new Exception($"{shortHandMark} is not a shorthand");
+                        throw new Exception($"{shorthandMark} is not a shorthand");
                     }
 
-                    if (shortHandMark == "^")
+                    if (shorthandMark == "^")
                     {
                         return MakeExpression(ExpressionType.Callstack, property);
                     }
 
-                    instance = this.Transform(AntlrParse(BuildinShorthandDict[shortHandMark]));
+                    instance = this.Transform(AntlrParse(ShorthandPrefixMap[shorthandMark]));
                     var expression = MakeExpression(ExpressionType.Element, instance, property);
 
-                    return shortHandMark == "@" ? MakeExpression(ExpressionType.SimpleEntity, expression) : expression;
+                    return shorthandMark == "@" ? MakeExpression(ExpressionType.SimpleEntity, expression) : expression;
                 }
 
                 instance = Visit(context.primaryExpression());
@@ -189,7 +189,7 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
 
             public override Expression VisitMemberAccessExp([NotNull] ExpressionParser.MemberAccessExpContext context)
             {
-                if (context.primaryExpression() is ExpressionParser.ShortHandAtomContext shortHandAtom)
+                if (context.primaryExpression() is ExpressionParser.ShorthandAtomContext shorthandAtom)
                 {
                     throw new Exception($"Shorthand is not support with such format: {context.GetText()}");
                 }

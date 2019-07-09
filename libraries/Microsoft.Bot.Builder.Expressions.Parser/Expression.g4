@@ -18,8 +18,8 @@ primaryExpression
     | NUMBER                                  #numericAtom
     | STRING                                  #stringAtom
     | IDENTIFIER                              #idAtom
-    | ('#'|'@'|'@@'|'$'|'%'|'^'|'~')          #shortHandAtom
-    | primaryExpression IDENTIFIER            #shortHandAccessorExp
+    | ('#'|'@'|'@@'|'$'|'%'|'^'|'~')          #shorthandAtom
+    | primaryExpression IDENTIFIER            #shorthandAccessorExp
     | primaryExpression '.' IDENTIFIER        #memberAccessExp
     | primaryExpression '(' argsList? ')'     #funcInvokeExp
     | primaryExpression '[' expression ']'    #indexAccessExp
