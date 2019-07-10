@@ -84,8 +84,14 @@ namespace Microsoft.Bot.Builder
                             System.Diagnostics.Trace.TraceInformation($"file://{transcriptFile.Replace("\\", "/")}");
                             started.Add(transcriptFile);
                             List<Activity> transcript = new List<Activity>() { (Activity)activity };
-                            File.WriteAllText(transcriptFile, $"[{JsonConvert.SerializeObject(activity, jsonSettings)}]");
-                            return;
+                            using (var stream = File.OpenWrite(transcriptFile))
+                            {
+                                using (var writer = new StreamWriter(stream) as TextWriter)
+                                {
+                                    await writer.WriteAsync($"[{JsonConvert.SerializeObject(activity, jsonSettings)}]").ConfigureAwait(false);
+                                    return;
+                                }
+                            }
                         }
                         else
                         {
@@ -151,10 +157,10 @@ namespace Microsoft.Bot.Builder
             }
         }
 
-        private Task messageUpdate(IActivity activity, string transcriptFile)
+        private async Task messageUpdate(IActivity activity, string transcriptFile)
         {
             // load all activities
-            var transcript = JsonConvert.DeserializeObject<Activity[]>(File.ReadAllText(transcriptFile));
+            var transcript = await loadTranscript(transcriptFile);
             for (int i = 0; i < transcript.Length; i++)
             {
                 var originalActivity = transcript[i];
@@ -166,18 +172,34 @@ namespace Microsoft.Bot.Builder
                     updatedActivity.Timestamp = originalActivity.Timestamp;
                     transcript[i] = updatedActivity;
                     var json = JsonConvert.SerializeObject(transcript, jsonSettings);
-                    File.WriteAllText(transcriptFile, json);
-                    break;
+                    using (var stream = File.OpenWrite(transcriptFile))
+                    {
+                        using (var writer = new StreamWriter(stream) as TextWriter)
+                        {
+                            await writer.WriteAsync(json).ConfigureAwait(false);
+                            return;
+                        }
+                    }
                 }
             }
-
-            return Task.CompletedTask;
         }
 
-        private Task messageDelete(IActivity activity, string transcriptFile)
+        private static async Task<Activity[]> loadTranscript(string transcriptFile)
+        {
+            using (var stream = File.OpenRead(transcriptFile))
+            {
+                using (var reader = new StreamReader(stream) as TextReader)
+                {
+                    var json = await reader.ReadToEndAsync().ConfigureAwait(false);
+                    return JsonConvert.DeserializeObject<Activity[]>(json);
+                }
+            }
+        }
+
+        private async Task messageDelete(IActivity activity, string transcriptFile)
         {
             // load all activities
-            var transcript = JsonConvert.DeserializeObject<Activity[]>(File.ReadAllText(transcriptFile));
+            var transcript = await loadTranscript(transcriptFile);
 
             // if message delete comes in, delete the message from the transcript
             for (int index = 0; index < transcript.Length; index++)
@@ -201,23 +223,27 @@ namespace Microsoft.Bot.Builder
                         ReplyToId = originalActivity.ReplyToId,
                     };
                     var json = JsonConvert.SerializeObject(transcript, jsonSettings);
-                    File.WriteAllText(transcriptFile, json);
-                    break;
+                    using (var stream = File.OpenWrite(transcriptFile))
+                    {
+                        using (var writer = new StreamWriter(stream) as TextWriter)
+                        {
+                            await writer.WriteAsync(json).ConfigureAwait(false);
+                            return;
+                        }
+                    }
                 }
             }
-
-            return Task.CompletedTask;
         }
 
-        public Task<PagedResult<IActivity>> GetTranscriptActivitiesAsync(string channelId, string conversationId, string continuationToken = null, DateTimeOffset startDate = default(DateTimeOffset))
+        public async Task<PagedResult<IActivity>> GetTranscriptActivitiesAsync(string channelId, string conversationId, string continuationToken = null, DateTimeOffset startDate = default(DateTimeOffset))
         {
             var transcriptFile = getTranscriptFile(channelId, conversationId);
 
-            var activities = JsonConvert.DeserializeObject<Activity[]>(File.ReadAllText(transcriptFile));
+            var transcript = await loadTranscript(transcriptFile).ConfigureAwait(false);
             var result = new PagedResult<IActivity>();
             result.ContinuationToken = null;
-            result.Items = activities.Where(activity => activity.Timestamp >= startDate).Cast<IActivity>().ToArray();
-            return Task.FromResult(result);
+            result.Items = transcript.Where(activity => activity.Timestamp >= startDate).Cast<IActivity>().ToArray();
+            return result;
         }
 
         public Task<PagedResult<TranscriptInfo>> ListTranscriptsAsync(string channelId, string continuationToken = null)
