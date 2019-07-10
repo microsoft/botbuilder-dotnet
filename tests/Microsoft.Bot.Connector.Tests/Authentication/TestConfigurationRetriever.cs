@@ -6,15 +6,15 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.IdentityModel.Protocols;
 
-namespace Microsoft.Bot.Connector.Authentication.Tests
+namespace Microsoft.Bot.Connector.Tests.Authentication
 {
     public class TestConfigurationRetriever : IConfigurationRetriever<IDictionary<string, HashSet<string>>>
     {
-        public Dictionary<string, HashSet<string>> EndorsementTable { get; private set; } = new Dictionary<string, HashSet<string>>();
+        public IDictionary<string, HashSet<string>> EndorsementTable { get; } = new Dictionary<string, HashSet<string>>();
 
-        public async Task<IDictionary<string, HashSet<string>>> GetConfigurationAsync(string address, IDocumentRetriever retriever, CancellationToken cancel)
+        public Task<IDictionary<string, HashSet<string>>> GetConfigurationAsync(string address, IDocumentRetriever retriever, CancellationToken cancel)
         {
-            return EndorsementTable;
+            return Task.FromResult(EndorsementTable);
         }
     }
 }

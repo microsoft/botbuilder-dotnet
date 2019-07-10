@@ -17,12 +17,12 @@ namespace Microsoft.Bot.Builder.Testing.XUnit
     /// A middleware to output incoming and outgoing activities as json strings to the console during
     /// unit tests.
     /// </summary>
-    public class XUnitOutputMiddleware : IMiddleware
+    public class XUnitDialogTestLogger : IMiddleware
     {
         private readonly string _stopWatchStateKey;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="XUnitOutputMiddleware"/> class.
+        /// Initializes a new instance of the <see cref="XUnitDialogTestLogger"/> class.
         /// </summary>
         /// <remarks>
         /// This middleware outputs the incoming and outgoing activities for the XUnit based test to the console window.
@@ -33,9 +33,9 @@ namespace Microsoft.Bot.Builder.Testing.XUnit
         /// An XUnit <see cref="ITestOutputHelper"/> instance.
         /// See <see href="https://xunit.net/docs/capturing-output.html">Capturing Output</see> in the XUnit documentation for additional details.
         /// </param>
-        public XUnitOutputMiddleware(ITestOutputHelper xunitOutputHelper)
+        public XUnitDialogTestLogger(ITestOutputHelper xunitOutputHelper)
         {
-            _stopWatchStateKey = $"{nameof(XUnitOutputMiddleware)}.Stopwatch.{Guid.NewGuid()}";
+            _stopWatchStateKey = $"{nameof(XUnitDialogTestLogger)}.Stopwatch.{Guid.NewGuid()}";
             Output = xunitOutputHelper;
         }
 
@@ -97,7 +97,7 @@ namespace Microsoft.Bot.Builder.Testing.XUnit
             if (activity.Type == ActivityTypes.Message)
             {
                 var messageActivity = activity.AsMessageActivity();
-                Output.WriteLine($"\r\n{actor} Text={messageActivity.Text}\r\n       Speak={messageActivity.Speak}\r\n       InputHint={messageActivity.InputHint}");
+                Output.WriteLine($"\r\n{actor} Text = {messageActivity.Text}\r\n       Speak = {messageActivity.Speak}\r\n       InputHint = {messageActivity.InputHint}");
             }
             else
             {

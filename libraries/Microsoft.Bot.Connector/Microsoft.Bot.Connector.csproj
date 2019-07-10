@@ -21,7 +21,6 @@
 		<Summary>Client REST API library for Microsoft Bot Framework Connector</Summary>
 	</PropertyGroup>
 
-
 	<ItemGroup>
 		<Compile Remove="node_modules\**" />
 		<EmbeddedResource Remove="node_modules\**" />

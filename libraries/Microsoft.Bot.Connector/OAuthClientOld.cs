@@ -316,7 +316,7 @@ namespace Microsoft.Bot.Connector
         /// Get the status of tokens for connections for this bot for a particular user.
         /// </summary>
         /// <param name="userId">User id.</param>
-        /// <param name="includeFilter">A comma seperated list of connections to include. If null, then all connections are returned.</param>
+        /// <param name="includeFilter">A comma separated list of connections to include. If null, then all connections are returned.</param>
         /// <param name="cancellationToken">Cancellation Token.</param>
         /// <returns>TokenStatus.</returns>
         public async Task<TokenStatus[]> GetTokenStatusAsync(string userId, string includeFilter = null, CancellationToken cancellationToken = default(CancellationToken))

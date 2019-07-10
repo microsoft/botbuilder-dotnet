@@ -132,23 +132,6 @@ namespace Microsoft.Bot.Builder.Testing.Tests
                     It.IsAny<CancellationToken>()), Times.Once);
         }
 
-        [Fact]
-        public async Task ShouldUseCustomCallback()
-        {
-            var callbackCalled = false;
-
-            async Task TestCallback(ITurnContext context, CancellationToken token)
-            {
-                callbackCalled = true;
-                await context.SendActivityAsync("test reply from the bot", cancellationToken: token);
-            }
-
-            var sut = new DialogTestClient(Channels.Test, _mockDialog.Object, callback: TestCallback);
-
-            await sut.SendActivityAsync<IActivity>("test message");
-            Assert.True(callbackCalled);
-        }
-
         private class TestOptions
         {
             public string SomeText { get; set; }

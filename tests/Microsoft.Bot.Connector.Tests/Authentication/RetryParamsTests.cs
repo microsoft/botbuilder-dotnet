@@ -2,9 +2,10 @@
 // Licensed under the MIT License.
 
 using System;
+using Microsoft.Bot.Connector.Authentication;
 using Xunit;
 
-namespace Microsoft.Bot.Connector.Authentication.Tests
+namespace Microsoft.Bot.Connector.Tests.Authentication
 {
     public class RetryParamsTests
     {

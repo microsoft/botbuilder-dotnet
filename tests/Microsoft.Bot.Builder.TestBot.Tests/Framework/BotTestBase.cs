@@ -59,7 +59,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Framework
         /// having to put them in git.
         /// If you use launch settings, make sure you set the Copy to Output Directory property to Copy Always.
         /// </summary>
-        /// <param name="launchSettingsFile">The relative path to the launch settings file (i.e.: "Properties//launchSettings.json")</param>
+        /// <param name="launchSettingsFile">The relative path to the launch settings file (i.e.: "Properties//launchSettings.json").</param>
         private static void LoadLaunchSettingsIntoEnvVariables(string launchSettingsFile)
         {
             if (!File.Exists(launchSettingsFile))

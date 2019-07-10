@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 
@@ -37,6 +38,9 @@ namespace Microsoft.Bot.Builder
         {
             if (turnContext.Activity.Type == ActivityTypes.Message && turnContext.Activity.Text != null)
             {
+                var originalText = turnContext.Activity.Text;
+                turnContext.Activity.RemoveRecipientMention();
+
                 var command = turnContext.Activity.Text.Trim().Split(' ');
                 if (command.Length > 1 && command[0] == Command)
                 {
@@ -52,6 +56,8 @@ namespace Microsoft.Bot.Builder
                         return true;
                     }
                 }
+
+                turnContext.Activity.Text = originalText;
             }
 
             return false;

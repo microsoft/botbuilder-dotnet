@@ -82,47 +82,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         }
 
         [TestMethod]
-        public async Task RetryAttachmentPrompt()
-        {
-            var convoState = new ConversationState(new MemoryStorage());
-            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
-
-            var adapter = new TestAdapter()
-                .Use(new AutoSaveStateMiddleware(convoState));
-
-            var dialogs = new DialogSet(dialogState);
-
-            var eventPrompt = new EventActivityPrompt("EventActivityPrompt", Validator);
-            dialogs.Add(eventPrompt);
-
-            var eventActivity = new Activity { Type = ActivityTypes.Event, Value = 2 };
-
-            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
-            {
-                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
-                var results = await dc.ContinueDialogAsync(cancellationToken);
-                if (results.Status == DialogTurnStatus.Empty)
-                {
-                    var options = new PromptOptions { Prompt = new Activity { Type = ActivityTypes.Message, Text = "please send an event." } };
-                    await dc.PromptAsync("EventActivityPrompt", options);
-                }
-                else if (results.Status == DialogTurnStatus.Complete)
-                {
-                    var content = (Activity)results.Result;
-                    await turnContext.SendActivityAsync(content, cancellationToken);
-                }
-            })
-            .Send("hello")
-            .AssertReply("please send an event.")
-            .Send("hello again")
-            .AssertReply("Please send an 'event'-type Activity with a value of 2.")
-            .Send(eventActivity)
-            .AssertReply("2")
-            .StartTestAsync();
-        }
-
-        [TestMethod]
-        public async Task ActivityPromptShouldReturnDialogEndOfTurnIfValidationFailed()
+        public async Task ActivityPromptShouldSendRetryPromptIfValidationFailed()
         {
             var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
@@ -148,7 +108,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 var results = await dc.ContinueDialogAsync(cancellationToken);
                 if (results.Status == DialogTurnStatus.Empty)
                 {
-                    var options = new PromptOptions { Prompt = new Activity { Type = ActivityTypes.Message, Text = "please send an event." } };
+                    var options = new PromptOptions
+                    {
+                        Prompt = new Activity
+                        {
+                            Type = ActivityTypes.Message,
+                            Text = "please send an event.",
+                        },
+                        RetryPrompt = new Activity
+                        {
+                            Type = ActivityTypes.Message,
+                            Text = "Retrying - please send an event.",
+                        },
+                    };
+
                     await dc.PromptAsync("EventActivityPrompt", options);
                 }
                 else if (results.Status == DialogTurnStatus.Complete)
@@ -164,7 +137,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .Send("hello")
             .AssertReply("please send an event.")
             .Send("test")
-            .AssertReply("Test complete.")
+            .AssertReply("Retrying - please send an event.")
             .StartTestAsync();
         }
 
@@ -195,7 +168,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 var results = await dc.ContinueDialogAsync(cancellationToken);
                 if (results.Status == DialogTurnStatus.Empty)
                 {
-                    var options = new PromptOptions { Prompt = new Activity { Type = ActivityTypes.Message, Text = "please send an event." } };
+                    var options = new PromptOptions
+                    {
+                        Prompt = new Activity
+                        {
+                            Type = ActivityTypes.Message,
+                            Text = "please send an event.",
+                        },
+                        RetryPrompt = new Activity
+                        {
+                            Type = ActivityTypes.Message,
+                            Text = "Retrying - please send an event.",
+                        },
+                    };
                     await dc.PromptAsync("EventActivityPrompt", options);
                 }
 
@@ -208,8 +193,89 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             })
             .Send("hello")
             .AssertReply("please send an event.")
-            .AssertReply("please send an event.")
+            .Send("test")
+            .AssertReply("Retrying - please send an event.")
             .AssertReply("Test complete.")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task OnPromptOverloadWithoutIsRetryParamReturnsBasicActivityPrompt()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+
+            var adapter = new TestAdapter()
+                .Use(new AutoSaveStateMiddleware(convoState));
+
+            // Create new DialogSet.
+            var dialogs = new DialogSet(dialogState);
+
+            // Create and add custom activity prompt to DialogSet.
+            var eventPrompt = new EventActivityWithoutRetryPrompt("EventActivityWithoutRetryPrompt", Validator);
+            dialogs.Add(eventPrompt);
+
+            // Create mock Activity for testing.
+            var eventActivity = new Activity { Type = ActivityTypes.Event, Value = 2 };
+
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+
+                var results = await dc.ContinueDialogAsync(cancellationToken);
+                if (results.Status == DialogTurnStatus.Empty)
+                {
+                    var options = new PromptOptions { Prompt = new Activity { Type = ActivityTypes.Message, Text = "please send an event." } };
+                    await dc.PromptAsync("EventActivityWithoutRetryPrompt", options, cancellationToken);
+                }
+                else if (results.Status == DialogTurnStatus.Complete)
+                {
+                    var content = (Activity)results.Result;
+                    await turnContext.SendActivityAsync(content, cancellationToken);
+                }
+            })
+            .Send("hello")
+            .AssertReply("please send an event.")
+            .Send(eventActivity)
+            .AssertReply("2")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public async Task OnPromptErrorsWithNullContext()
+        {
+            var eventPrompt = new EventActivityPrompt("EventActivityPrompt", Validator);
+
+            var options = new PromptOptions { Prompt = new Activity { Type = ActivityTypes.Message, Text = "please send an event." } };
+
+            await eventPrompt.OnPromptNullContext(options);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public async Task OnPromptErrorsWithNullOptions()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+
+            var adapter = new TestAdapter()
+                .Use(new AutoSaveStateMiddleware(convoState));
+
+            // Create new DialogSet.
+            var dialogs = new DialogSet(dialogState);
+
+            // Create and add custom activity prompt to DialogSet.
+            var eventPrompt = new EventActivityPrompt("EventActivityPrompt", Validator);
+            dialogs.Add(eventPrompt);
+
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+
+                await eventPrompt.OnPromptNullOptions(dc);
+            })
+            .Send("hello")
             .StartTestAsync();
         }
 

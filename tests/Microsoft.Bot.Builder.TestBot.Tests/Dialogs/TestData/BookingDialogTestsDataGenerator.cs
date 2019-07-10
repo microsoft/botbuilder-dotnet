@@ -20,12 +20,12 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs.TestData
                 {
                     Destination = "Seattle",
                     Origin = "New York",
-                    TravelDate = $"{DateTime.UtcNow.AddDays(1):yyyy-MM-dd}",
+                    TravelDate = $"{DateTime.Now.AddDays(1):yyyy-MM-dd}",
                 },
                 new[,]
                 {
                     { "hi", "GetBookingDetailsDialog mock invoked" },
-                    { null, $"Please confirm, I have you traveling to: Seattle from: New York on: {DateTime.UtcNow.AddDays(1):yyyy-MM-dd} (1) Yes or (2) No" },
+                    { null, $"Please confirm, I have you traveling to: Seattle from: New York on: {DateTime.Now.AddDays(1):yyyy-MM-dd} (1) Yes or (2) No" },
                     { "yes", "Booking your flight, this shouldn't take long..." },
                     { null, "I have you booked to Seattle from New York on tomorrow" },
                 });
@@ -36,12 +36,12 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs.TestData
                 {
                     Destination = "Seattle",
                     Origin = "New York",
-                    TravelDate = $"{DateTime.UtcNow.AddDays(1):yyyy-MM-dd}",
+                    TravelDate = $"{DateTime.Now.AddDays(1):yyyy-MM-dd}",
                 },
                 new[,]
                 {
                     { "hi", "GetBookingDetailsDialog mock invoked" },
-                    { null, $"Please confirm, I have you traveling to: Seattle from: New York on: {DateTime.UtcNow.AddDays(1):yyyy-MM-dd} (1) Yes or (2) No" },
+                    { null, $"Please confirm, I have you traveling to: Seattle from: New York on: {DateTime.Now.AddDays(1):yyyy-MM-dd} (1) Yes or (2) No" },
                     { "no", "OK, we can do this later" },
                 });
 
@@ -51,12 +51,12 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs.TestData
                 {
                     Destination = "Seattle",
                     Origin = "New York",
-                    TravelDate = $"{DateTime.UtcNow.AddDays(1):yyyy-MM-dd}",
+                    TravelDate = $"{DateTime.Now.AddDays(1):yyyy-MM-dd}",
                 },
                 new[,]
                 {
                     { "hi", "GetBookingDetailsDialog mock invoked" },
-                    { null, $"Please confirm, I have you traveling to: Seattle from: New York on: {DateTime.UtcNow.AddDays(1):yyyy-MM-dd} (1) Yes or (2) No" },
+                    { null, $"Please confirm, I have you traveling to: Seattle from: New York on: {DateTime.Now.AddDays(1):yyyy-MM-dd} (1) Yes or (2) No" },
                     { "cancel", "Cancelling" },
                 },
                 true,
@@ -68,12 +68,12 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs.TestData
                 {
                     Destination = "Seattle",
                     Origin = "New York",
-                    TravelDate = $"{DateTime.UtcNow.AddDays(1):yyyy-MM-dd}",
+                    TravelDate = $"{DateTime.Now.AddDays(1):yyyy-MM-dd}",
                 },
                 new[,]
                 {
                     { "hi", "GetBookingDetailsDialog mock invoked" },
-                    { null, $"Please confirm, I have you traveling to: Seattle from: New York on: {DateTime.UtcNow.AddDays(1):yyyy-MM-dd} (1) Yes or (2) No" },
+                    { null, $"Please confirm, I have you traveling to: Seattle from: New York on: {DateTime.Now.AddDays(1):yyyy-MM-dd} (1) Yes or (2) No" },
                     { "yes", "Booking your flight, this shouldn't take long..." },
                     { null, "Sorry, I was unable to secure your reservation, please try another flight" },
                 }, false);

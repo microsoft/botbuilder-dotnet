@@ -5,14 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Reflection;
-using System.Runtime.Versioning;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.TraceExtensions;
 using Microsoft.Bot.Configuration;
-using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.AI.QnA
@@ -22,16 +17,16 @@ namespace Microsoft.Bot.Builder.AI.QnA
     /// </summary>
     public class QnAMaker : ITelemetryQnAMaker
     {
-        public const string QnAMakerName = nameof(QnAMaker);
-        public const string QnAMakerTraceType = "https://www.qnamaker.ai/schemas/trace";
-        public const string QnAMakerTraceLabel = "QnAMaker Trace";
+        public static readonly string QnAMakerName = nameof(QnAMaker);
+        public static readonly string QnAMakerTraceType = "https://www.qnamaker.ai/schemas/trace";
+        public static readonly string QnAMakerTraceLabel = "QnAMaker Trace";
 
         private readonly HttpClient _httpClient;
 
         private readonly QnAMakerEndpoint _endpoint;
-        private readonly QnAMakerOptions _options;
 
-        private readonly bool _isLegacyProtocol;
+        private GenerateAnswerUtils generateAnswerHelper;
+        private TrainUtils activeLearningTrainHelper;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="QnAMaker"/> class.
@@ -41,7 +36,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <param name="httpClient">An alternate client with which to talk to QnAMaker.
         /// If null, a default client is used for this instance.</param>
         /// <param name="telemetryClient">The IBotTelemetryClient used for logging telemetry events.</param>
-        /// <param name="logPersonalInformation">Set to true to include personally indentifiable information in telemetry events.</param>
+        /// <param name="logPersonalInformation">Set to true to include personally identifiable information in telemetry events.</param>
         public QnAMaker(QnAMakerEndpoint endpoint, QnAMakerOptions options, HttpClient httpClient, IBotTelemetryClient telemetryClient, bool logPersonalInformation = false)
         {
             _endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
@@ -61,13 +56,10 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 throw new ArgumentException(nameof(endpoint.EndpointKey));
             }
 
-            if (_endpoint.Host.EndsWith("v2.0"))
+            if (_endpoint.Host.EndsWith("v2.0") || _endpoint.Host.EndsWith("v3.0"))
             {
-                throw new NotSupportedException("v2.0 of QnA Maker service is no longer supported in the Bot Framework. Please upgrade your QnA Maker service at www.qnamaker.ai.");
+                throw new NotSupportedException("v2.0 and v3.0 of QnA Maker service is no longer supported in the QnA Maker.");
             }
-
-            _options = options ?? new QnAMakerOptions();
-            ValidateOptions(_options);
 
             if (httpClient == null)
             {
@@ -78,10 +70,11 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 _httpClient = httpClient;
             }
 
-            _isLegacyProtocol = _endpoint.Host.EndsWith("v3.0");
-
             TelemetryClient = telemetryClient ?? new NullBotTelemetryClient();
             LogPersonalInformation = logPersonalInformation;
+
+            this.generateAnswerHelper = new GenerateAnswerUtils(TelemetryClient, _endpoint, options, _httpClient);
+            this.activeLearningTrainHelper = new TrainUtils(_endpoint, _httpClient);
         }
 
         /// <summary>
@@ -96,6 +89,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         {
         }
 
+        /// <summary>
         /// Initializes a new instance of the <see cref="QnAMaker"/> class.
         /// </summary>
         /// <param name="service">QnA service details from configuration.</param>
@@ -103,12 +97,13 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <param name="httpClient">An alternate client with which to talk to QnAMaker.
         /// If null, a default client is used for this instance.</param>
         /// <param name="telemetryClient">The IBotTelemetryClient used for logging telemetry events.</param>
-        /// <param name="logPersonalInformation">Set to true to include personally indentifiable information in telemetry events.</param>
+        /// <param name="logPersonalInformation">Set to true to include personally identifiable information in telemetry events.</param>
         public QnAMaker(QnAMakerService service, QnAMakerOptions options, HttpClient httpClient, IBotTelemetryClient telemetryClient, bool logPersonalInformation = false)
             : this(new QnAMakerEndpoint(service), options, httpClient, telemetryClient, logPersonalInformation)
         {
         }
 
+        /// <summary>
         /// Initializes a new instance of the <see cref="QnAMaker"/> class.
         /// </summary>
         /// <param name="service">QnA service details from configuration.</param>
@@ -180,16 +175,31 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 throw new ArgumentException("Null or empty text");
             }
 
-            var hydratedOptions = HydrateOptions(options);
-            ValidateOptions(hydratedOptions);
-
-            var result = await QueryQnaServiceAsync((Activity)messageActivity, hydratedOptions).ConfigureAwait(false);
-
-            await EmitTraceInfoAsync(turnContext, (Activity)messageActivity, result, hydratedOptions).ConfigureAwait(false);
+            var result = await this.generateAnswerHelper.GetAnswersAsync(turnContext, messageActivity, options).ConfigureAwait(false);
 
             await OnQnaResultsAsync(result, turnContext, telemetryProperties, telemetryMetrics, CancellationToken.None).ConfigureAwait(false);
 
             return result;
+        }
+
+        /// <summary>
+        /// Filters the ambiguous question for active learning.
+        /// </summary>
+        /// <param name="queryResult">User query output.</param>
+        /// <returns>Filtered array of ambiguous question.</returns>
+        public QueryResult[] GetLowScoreVariation(QueryResult[] queryResult)
+        {
+            return ActiveLearningUtils.GetLowScoreVariation(queryResult.ToList()).ToArray();
+        }
+
+        /// <summary>
+        /// Send feedback to the knowledge base.
+        /// </summary>
+        /// <param name="feedbackRecords">Feedback records.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        public async Task CallTrainAsync(FeedbackRecords feedbackRecords)
+        {
+            await this.activeLearningTrainHelper.CallTrainAsync(feedbackRecords).ConfigureAwait(false);
         }
 
         protected virtual async Task OnQnaResultsAsync(
@@ -202,7 +212,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
             var eventData = await FillQnAEventAsync(queryResults, turnContext, telemetryProperties, telemetryMetrics, cancellationToken).ConfigureAwait(false);
 
             // Track the event
-            TelemetryClient.TrackEvent(QnATelemetryConstants.QnaMsgEvent, eventData.Properties, eventData.Metrics);
+            this.TelemetryClient.TrackEvent(QnATelemetryConstants.QnaMsgEvent, eventData.Properties, eventData.Metrics);
         }
 
         /// <summary>
@@ -227,7 +237,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
             var userName = turnContext.Activity.From.Name;
 
             // Use the LogPersonalInformation flag to toggle logging PII data, text and user name are common examples
-            if (LogPersonalInformation)
+            if (this.LogPersonalInformation)
             {
                 if (!string.IsNullOrWhiteSpace(text))
                 {
@@ -275,213 +285,6 @@ namespace Microsoft.Bot.Builder.AI.QnA
             }
 
             return Task.FromResult((Properties: telemetryProperties ?? properties, Metrics: telemetryMetrics ?? metrics));
-        }
-
-        /// <summary>
-        /// Combines QnAMakerOptions passed into the QnAMaker constructor with the options passed as arguments into GetAnswersAsync().
-        /// </summary>
-        /// <param name="queryOptions">The options for the QnA Maker knowledge base.</param>
-        private QnAMakerOptions HydrateOptions(QnAMakerOptions queryOptions)
-        {
-            var hydratedOptions = JsonConvert.DeserializeObject<QnAMakerOptions>(JsonConvert.SerializeObject(_options));
-
-            if (queryOptions != null)
-            {
-                if (queryOptions.ScoreThreshold != hydratedOptions.ScoreThreshold && queryOptions.ScoreThreshold != 0)
-                {
-                    hydratedOptions.ScoreThreshold = queryOptions.ScoreThreshold;
-                }
-
-                if (queryOptions.Top != hydratedOptions.Top && queryOptions.Top != 0)
-                {
-                    hydratedOptions.Top = queryOptions.Top;
-                }
-
-                if (queryOptions.StrictFilters?.Length > 0)
-                {
-                   hydratedOptions.StrictFilters = queryOptions.StrictFilters;
-                }
-
-                if (queryOptions.MetadataBoost?.Length > 0)
-                {
-                   hydratedOptions.MetadataBoost = queryOptions.MetadataBoost;
-                }
-            }
-
-            return hydratedOptions;
-        }
-
-        private void ValidateOptions(QnAMakerOptions options)
-        {
-            if (options.ScoreThreshold == 0)
-            {
-                options.ScoreThreshold = 0.3F;
-            }
-
-            if (options.Top == 0)
-            {
-                options.Top = 1;
-            }
-
-            if (options.ScoreThreshold < 0 || options.ScoreThreshold > 1)
-            {
-                throw new ArgumentOutOfRangeException(nameof(options.ScoreThreshold), "Score threshold should be a value between 0 and 1");
-            }
-
-            if (options.Timeout == 0.0D)
-            {
-                options.Timeout = 100000;
-            }
-
-            if (options.Top < 1)
-            {
-                throw new ArgumentOutOfRangeException(nameof(options.Top), "Top should be an integer greater than 0");
-            }
-
-            if (options.StrictFilters == null)
-            {
-                options.StrictFilters = new Metadata[] { };
-            }
-
-            if (options.MetadataBoost == null)
-            {
-                options.MetadataBoost = new Metadata[] { };
-            }
-        }
-
-        private async Task<QueryResult[]> QueryQnaServiceAsync(Activity messageActivity, QnAMakerOptions options)
-        {
-            var request = BuildRequest(messageActivity, options);
-
-            var response = await _httpClient.SendAsync(request).ConfigureAwait(false);
-
-            response.EnsureSuccessStatusCode();
-
-            var result = await FormatQnaResultAsync(response, options).ConfigureAwait(false);
-
-            return result;
-        }
-
-        private async Task EmitTraceInfoAsync(ITurnContext turnContext, Activity messageActivity, QueryResult[] result, QnAMakerOptions options)
-        {
-            var traceInfo = new QnAMakerTraceInfo
-            {
-                Message = (Activity)messageActivity,
-                QueryResults = result,
-                KnowledgeBaseId = _endpoint.KnowledgeBaseId,
-                ScoreThreshold = options.ScoreThreshold,
-                Top = options.Top,
-                StrictFilters = options.StrictFilters,
-                MetadataBoost = options.MetadataBoost,
-            };
-            var traceActivity = Activity.CreateTraceActivity(QnAMakerName, QnAMakerTraceType, traceInfo, QnAMakerTraceLabel);
-            await turnContext.SendActivityAsync(traceActivity).ConfigureAwait(false);
-        }
-
-        private HttpRequestMessage BuildRequest(Activity messageActivity, QnAMakerOptions options)
-        {
-            var requestUrl = $"{_endpoint.Host}/knowledgebases/{_endpoint.KnowledgeBaseId}/generateanswer";
-
-            var request = new HttpRequestMessage(HttpMethod.Post, requestUrl);
-
-            var jsonRequest = JsonConvert.SerializeObject(
-                new
-                {
-                    question = messageActivity.Text,
-                    top = options.Top,
-                    strictFilters = options.StrictFilters,
-                    metadataBoost = options.MetadataBoost,
-                    scoreThreshold = options.ScoreThreshold,
-                }, Formatting.None);
-
-            request.Content = new StringContent(jsonRequest, System.Text.Encoding.UTF8, "application/json");
-
-            SetHeaders(request);
-
-            return request;
-        }
-
-        private async Task<QueryResult[]> FormatQnaResultAsync(HttpResponseMessage response, QnAMakerOptions options)
-        {
-            var jsonResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-
-            var results = _isLegacyProtocol ?
-                ConvertLegacyResults(JsonConvert.DeserializeObject<InternalQueryResults>(jsonResponse))
-                    :
-                JsonConvert.DeserializeObject<QueryResults>(jsonResponse);
-
-            foreach (var answer in results.Answers)
-            {
-                answer.Score = answer.Score / 100;
-            }
-
-            var result = results.Answers.Where(answer => answer.Score > options.ScoreThreshold).ToArray();
-
-            return result;
-        }
-
-        private void SetHeaders(HttpRequestMessage request)
-        {
-            if (_isLegacyProtocol)
-            {
-                request.Headers.Add("Ocp-Apim-Subscription-Key", _endpoint.EndpointKey);
-            }
-            else
-            {
-                request.Headers.Add("Authorization", $"EndpointKey {_endpoint.EndpointKey}");
-            }
-
-            AddUserAgent(request);
-        }
-
-        private void AddUserAgent(HttpRequestMessage request)
-        {
-            // Bot Builder Package name and version
-            var assemblyName = this.GetType().Assembly.GetName();
-            request.Headers.UserAgent.Add(new ProductInfoHeaderValue(assemblyName.Name, assemblyName.Version.ToString()));
-
-            // Platform information: OS and language runtime
-            var framework = Assembly
-                .GetEntryAssembly()?
-                .GetCustomAttribute<TargetFrameworkAttribute>()?
-                .FrameworkName;
-            var comment = $"({Environment.OSVersion.VersionString};{framework})";
-            request.Headers.UserAgent.Add(new ProductInfoHeaderValue(comment));
-        }
-
-        // The old version of the protocol returns the id in a field called qnaId the
-        // following classes and helper function translate this old structure
-        // This method can consume results from v3.0 of QnA API, but not v2.0.
-        private QueryResults ConvertLegacyResults(InternalQueryResults legacyResults) => new QueryResults
-        {
-            Answers = legacyResults.Answers
-                    .Select(answer => new QueryResult
-                    {
-                        // The old version of the protocol returns the "id" in a field called "qnaId"
-                        Id = answer.QnaId,
-                        Answer = answer.Answer,
-                        Metadata = answer.Metadata,
-                        Score = answer.Score,
-                        Source = answer.Source,
-                        Questions = answer.Questions,
-                    })
-                    .ToArray(),
-        };
-
-        private class InternalQueryResult : QueryResult
-        {
-            [JsonProperty(PropertyName = "qnaId")]
-            public int QnaId { get; set; }
-        }
-
-        private class InternalQueryResults
-        {
-            /// <summary>
-            /// Gets or sets the answers for a user query,
-            /// sorted in decreasing order of ranking score.
-            /// </summary>
-            [JsonProperty("answers")]
-            public InternalQueryResult[] Answers { get; set; }
         }
     }
 }
