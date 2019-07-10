@@ -24,6 +24,5 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.Mocks
         public int? Length { get; set; }
 
         public Stream Stream { get; set; }
-
     }
 }

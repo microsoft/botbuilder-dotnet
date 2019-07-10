@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using Microsoft.Bot.StreamingExtensions.Payloads;
+using Microsoft.Bot.StreamingExtensions.Transport;
 
 namespace Microsoft.Bot.StreamingExtensions
 {
@@ -12,10 +13,10 @@ namespace Microsoft.Bot.StreamingExtensions
     public class ReceiveResponse
     {
         /// <summary>
-        /// Gets or sets the status code of this response, as defined by <see cref="https://docs.microsoft.com/en-us/dotnet/api/system.net.httpstatuscode?view=netframework-4.8"/>.
+        /// Gets or sets the status code of this response.
         /// </summary>
         /// <value>
-        /// The numeric portion of a status code defined by <see cref="https://docs.microsoft.com/en-us/dotnet/api/system.net.httpstatuscode?view=netframework-4.8"/>.
+        /// The numeric portion of a status code.
         /// </value>
         public int StatusCode { get; set; }
 

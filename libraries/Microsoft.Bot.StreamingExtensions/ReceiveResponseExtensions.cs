@@ -35,7 +35,9 @@ namespace Microsoft.Bot.StreamingExtensions
                  */
                 if (contentStream == null)
                 {
+#pragma warning disable IDE0034
                     return default(T);
+#pragma warning restore IDE0034
                 }
 
                 using (var reader = new StreamReader(contentStream.Stream, Encoding.UTF8))
@@ -58,7 +60,6 @@ namespace Microsoft.Bot.StreamingExtensions
         /// </summary>
         /// <param name="response">The current instance of <see cref="ReceiveResponse"/>.</param>
         /// <returns>On success, an <see cref="string"/> of the data from the <see cref="ReceiveResponse"/> body.
-        /// Otherwise <see cref="null"/>.
         /// </returns>
         public static string ReadBodyAsString(this ReceiveResponse response)
         {
@@ -67,26 +68,6 @@ namespace Microsoft.Bot.StreamingExtensions
             if (contentStream != null)
             {
                 return contentStream.Stream.ReadAsUtf8String();
-            }
-
-            return string.Empty;
-        }
-
-        /// <summary>
-        /// Serializes the body of this <see cref="ReceiveResponse"/> as a <see cref="string"/>.
-        /// as an asynchronus <see cref="Task"/>.
-        /// </summary>
-        /// <param name="response">The current instance of <see cref="ReceiveResponse"/>.</param>
-        /// <returns>On success, a <see cref="Task"/> that will provide a <see cref="string"/> of the data from the <see cref="ReceiveResponse"/> body.
-        /// Otherwise <see cref="null"/>.
-        /// </returns>
-        private static async Task<string> ReadBodyAsStringAsync(this ReceiveResponse response)
-        {
-            var contentStream = response.Streams.FirstOrDefault();
-
-            if (contentStream != null)
-            {
-                return await contentStream.Stream.ReadAsUtf8StringAsync().ConfigureAwait(false);
             }
 
             return string.Empty;

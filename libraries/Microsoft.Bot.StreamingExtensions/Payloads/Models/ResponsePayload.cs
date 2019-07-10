@@ -8,16 +8,18 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
 {
     internal class ResponsePayload
     {
+#pragma warning disable SA1609
         /// <summary>
-        /// Status - The Response Status
+        /// Gets or sets status - The Response Status.
         /// </summary>
         [JsonProperty("statusCode")]
         public int StatusCode { get; set; }
 
         /// <summary>
-        /// Assoicated stream descriptions
+        /// Gets or sets assoicated stream descriptions.
         /// </summary>
         [JsonProperty("streams")]
         public List<StreamDescription> Streams { get; set; }
+#pragma warning restore SA1609
     }
 }

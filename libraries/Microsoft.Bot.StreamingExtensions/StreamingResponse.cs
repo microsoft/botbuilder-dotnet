@@ -17,8 +17,7 @@ namespace Microsoft.Bot.StreamingExtensions
     public class StreamingResponse
     {
         /// <summary>
-        /// Gets or sets the numeric status code for the response,
-        /// adhering to <see cref="https://docs.microsoft.com/en-us/dotnet/api/system.net.httpstatuscode?view=netframework-4.8"/>.
+        /// Gets or sets the numeric status code for the response.
         /// </summary>
         /// <value>
         /// The numeric status code for the response.

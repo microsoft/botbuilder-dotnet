@@ -20,7 +20,7 @@ namespace Microsoft.Bot.StreamingExtensions.Transport.WebSockets
         private readonly ProtocolAdapter _protocolAdapter;
         private readonly IPayloadSender _sender;
         private readonly IPayloadReceiver _receiver;
-        private WebSocketTransport _websocketTransport;
+        private readonly WebSocketTransport _websocketTransport;
         private TaskCompletionSource<string> _closedSignal;
         private bool _isDisconnecting = false;
 
@@ -76,13 +76,14 @@ namespace Microsoft.Bot.StreamingExtensions.Transport.WebSockets
         }
 
         /// <summary>
-        /// Task used to send data over this server connection. 
+        /// Task used to send data over this server connection.
         /// Throws <see cref="InvalidOperationException"/> if called when server is not connected.
         /// Throws <see cref="ArgumentNullException"/> if request is null.
         /// </summary>
         /// <param name="request">The <see cref="StreamingRequest"/> to send.</param>
         /// <param name="cancellationToken">Optional <see cref="CancellationToken"/> used to signal this operation should be cancelled.</param>
         /// <returns>A <see cref="Task"/> of type <see cref="ReceiveResponse"/> handling the send operation.</returns>
+#pragma warning disable IDE0034
         public Task<ReceiveResponse> SendAsync(StreamingRequest request, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (request == null)

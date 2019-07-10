@@ -12,8 +12,8 @@ using Microsoft.Bot.StreamingExtensions.Utilities;
 namespace Microsoft.Bot.StreamingExtensions.PayloadTransport
 {
     /// <summary>
-    /// On Send: queues up sends and sends them along the transport
-    /// On Receive: receives a packet header and some bytes and dispatches it to the subscriber
+    /// On Send: queues up sends and sends them along the transport.
+    /// On Receive: receives a packet header and some bytes and dispatches it to the subscriber.
     /// </summary>
     internal class PayloadSender : IPayloadSender
     {
@@ -21,8 +21,8 @@ namespace Microsoft.Bot.StreamingExtensions.PayloadTransport
         private readonly EventWaitHandle _connectedEvent = new EventWaitHandle(false, EventResetMode.ManualReset);
         private ITransportSender _sender;
         private bool _isDisconnecting = false;
-        private byte[] _sendHeaderBuffer = new byte[TransportConstants.MaxHeaderLength];
-        private byte[] _sendContentBuffer = new byte[TransportConstants.MaxPayloadLength];
+        private readonly byte[] _sendHeaderBuffer = new byte[TransportConstants.MaxHeaderLength];
+        private readonly byte[] _sendContentBuffer = new byte[TransportConstants.MaxPayloadLength];
 
         public PayloadSender()
         {
@@ -31,10 +31,7 @@ namespace Microsoft.Bot.StreamingExtensions.PayloadTransport
 
         public event DisconnectedEventHandler Disconnected;
 
-        public bool IsConnected
-        {
-            get { return _sender != null; }
-        }
+        public bool IsConnected => _sender != null;
 
         public void Connect(ITransportSender sender)
         {
@@ -62,7 +59,7 @@ namespace Microsoft.Bot.StreamingExtensions.PayloadTransport
 
         public void Disconnect(DisconnectedEventArgs e = null)
         {
-            bool didDisconnect = false;
+            var didDisconnect = false;
 
             if (!_isDisconnecting)
             {
@@ -108,14 +105,14 @@ namespace Microsoft.Bot.StreamingExtensions.PayloadTransport
                 // determine if we know the payload length and end
                 if (!packet.IsLengthKnown)
                 {
-                    int count = await packet.Payload.ReadAsync(_sendContentBuffer, 0, TransportConstants.MaxPayloadLength).ConfigureAwait(false);
+                    var count = await packet.Payload.ReadAsync(_sendContentBuffer, 0, TransportConstants.MaxPayloadLength).ConfigureAwait(false);
                     packet.Header.PayloadLength = count;
                     packet.Header.End = count == 0;
                 }
 
                 int length;
 
-                int headerLength = HeaderSerializer.Serialize(packet.Header, _sendHeaderBuffer, 0);
+                var headerLength = HeaderSerializer.Serialize(packet.Header, _sendHeaderBuffer, 0);
 
                 // Send: Packet Header
                 length = await _sender.SendAsync(_sendHeaderBuffer, 0, headerLength).ConfigureAwait(false);
@@ -124,7 +121,7 @@ namespace Microsoft.Bot.StreamingExtensions.PayloadTransport
                     throw new TransportDisconnectedException();
                 }
 
-                int offset = 0;
+                var offset = 0;
 
                 // Send content in chunks
                 if (packet.Header.PayloadLength > 0 && packet.Payload != null)
@@ -144,7 +141,7 @@ namespace Microsoft.Bot.StreamingExtensions.PayloadTransport
                     {
                         do
                         {
-                            int count = Math.Min(packet.Header.PayloadLength - offset, TransportConstants.MaxPayloadLength);
+                            var count = Math.Min(packet.Header.PayloadLength - offset, TransportConstants.MaxPayloadLength);
 
                             // copy the stream to the buffer
                             count = await packet.Payload.ReadAsync(_sendContentBuffer, 0, count).ConfigureAwait(false);

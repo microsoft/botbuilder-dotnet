@@ -18,6 +18,7 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.StreamingExtensions.UnitTests.StreamingExtensions
 {
+#pragma warning disable IDE0017
     [TestClass]
     public class StreamingRequestHandlerTests
     {
@@ -85,7 +86,6 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.StreamingExtensions
 
             Assert.AreEqual(s._userAgent, userAgentHeader.ToString());
         }
-
 
         [TestMethod]
         public async Task StreamingRequestHandler_ProcessRequestAsync_NoVerb_ReturnsBadRequest()
@@ -256,4 +256,5 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.StreamingExtensions
             Assert.AreEqual((int)HttpStatusCode.OK, response.StatusCode);
         }
     }
+#pragma warning restore IDE0017
 }

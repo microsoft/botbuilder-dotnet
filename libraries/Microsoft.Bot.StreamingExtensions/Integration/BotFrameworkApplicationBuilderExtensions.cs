@@ -10,13 +10,12 @@ using Microsoft.Extensions.DependencyInjection;
 namespace Microsoft.Bot.StreamingExtensions.Integration
 {
     /// <summary>
-    /// Maps various endpoint handlers for the <see cref="ServiceCollectionExtensions.AddBot{TBot}(IServiceCollection, Action{BotFrameworkOptions})">registered bot</see> into the request execution pipeline using the V4 protocol.
+    /// Maps various endpoint handlers for the registered bot into the request execution pipeline using the V4 protocol.
     /// </summary>
     public static class BotFrameworkApplicationBuilderExtensions
     {
         /// <summary>
-        /// Maps various endpoint handlers for the <see cref="ServiceCollectionExtensions.AddBot{TBot}(IServiceCollection, Action{BotFrameworkOptions})">
-        /// registered bot</see> into the request execution pipeline using the V4 protocol.
+        /// Maps various endpoint handlers for the registered bot into the request execution pipeline using the V4 protocol.
         /// Throws <see cref="ArgumentNullException"/> if application is null.
         /// </summary>
         /// <param name="applicationBuilder">The application builder that defines the bot's pipeline.<see cref="IApplicationBuilder"/>.</param>

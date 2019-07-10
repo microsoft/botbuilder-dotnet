@@ -10,37 +10,27 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.Mocks
 {
     internal class MockPayloadAssembler : IAssembler
     {
+        public MockPayloadAssembler(Guid id)
+        {
+            Id = id;
+        }
+
         public Guid Id { get; private set; }
 
         public bool End { get; private set; }
 
         protected static JsonSerializer Serializer { get; set; } = JsonSerializer.Create(SerializationSettings.DefaultSerializationSettings);
 
-        private Stream Stream { get; set; }
-
-
-        public MockPayloadAssembler(Guid id)
-        {
-            Id = id;
-        }
-
-        public Stream CreateStreamFromPayload()
-        {
-            return new MemoryStream();
-        }
+        public Stream CreateStreamFromPayload() => new MemoryStream();
 
         public void Close()
         {
         }
 
-        public void OnReceive(Header header, Stream stream, int contentLength)
-        {
-            End = header.End;
-        }
+#pragma warning disable IDE0060
+        public void OnReceive(Header header, Stream stream, int contentLength) => End = header.End;
+#pragma warning restore IDE0060
 
-        public Stream GetPayloadAsStream()
-        {
-            throw new NotImplementedException();
-        }
+        public Stream GetPayloadAsStream() => throw new NotImplementedException();
     }
 }

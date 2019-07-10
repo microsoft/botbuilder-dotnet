@@ -8,22 +8,24 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
 {
     internal class RequestPayload
     {
+#pragma warning disable SA1609
         /// <summary>
-        /// Request verb, null on responses
+        /// Gets or sets request verb, null on responses.
         /// </summary>
         [JsonProperty("verb")]
         public string Verb { get; set; }
 
         /// <summary>
-        /// Request path; null on responses
+        /// Gets or sets request path; null on responses.
         /// </summary>
         [JsonProperty("path")]
         public string Path { get; set; }
 
         /// <summary>
-        /// Assoicated stream descriptions
+        /// Gets or sets assoicated stream descriptions.
         /// </summary>
         [JsonProperty("streams")]
         public List<StreamDescription> Streams { get; set; }
+#pragma warning restore SA1609
     }
 }

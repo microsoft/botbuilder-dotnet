@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
@@ -7,9 +8,10 @@ using Microsoft.Rest;
 
 namespace Microsoft.Bot.StreamingExtensions.Integration
 {
+#pragma warning disable IDE0034
     /// <summary>
-    /// This is a collection of methods that must be implemented on adapters supporting channels built on 
-    /// the Streaming Extensions feature set of the V3 protocol. They are equivalent to the HTTP endpoints 
+    /// This is a collection of methods that must be implemented on adapters supporting channels built on
+    /// the Streaming Extensions feature set of the V3 protocol. They are equivalent to the HTTP endpoints
     /// defined in Bot.Connector but are modified to be communicated over a persistent, streaming, connection.
     /// </summary>
     public interface IBotFrameworkStreamingChannelConnector

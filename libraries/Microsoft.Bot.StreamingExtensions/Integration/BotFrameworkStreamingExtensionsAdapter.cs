@@ -97,13 +97,14 @@ namespace Microsoft.Bot.StreamingExtensions.Integration
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute. If the activity type
         /// was 'Invoke' and the corresponding key (channelId + activityId) was found
-        /// then an InvokeResponse is returned, otherwise null is returned.</returns> /// <returns>a <see cref="Task"/> that will resolve a <see cref="InvokeResponse"/> in response to the activity.</returns>
+        /// then an InvokeResponse is returned, otherwise null is returned.</returns>
         /// <remarks>Call this method to reactively send a message to a conversation.
         /// If the task completes successfully, then if the activity's <see cref="Activity.Type"/>
         /// is <see cref="ActivityTypes.Invoke"/> and the corresponding key
         /// (<see cref="Activity.ChannelId"/> + <see cref="Activity.Id"/>) is found
         /// then an <see cref="InvokeResponse"/> is returned, otherwise null is returned.
-        /// <para>This method registers the following services for the turn.<list type="bullet">
+        /// <para>This method registers the following services for the turn.<list type="bullet"/></para>
+        /// </remarks>
         public async Task<InvokeResponse> ProcessActivityAsync(string body, List<IContentStream> streams, BotCallbackHandler callback, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (string.IsNullOrWhiteSpace(body))
@@ -162,13 +163,14 @@ namespace Microsoft.Bot.StreamingExtensions.Integration
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute. If the activity type
         /// was 'Invoke' and the corresponding key (channelId + activityId) was found
-        /// then an InvokeResponse is returned, otherwise null is returned.</returns> /// <returns>a <see cref="Task"/> that will resolve a <see cref="InvokeResponse"/> in response to the activity.</returns>
+        /// then an InvokeResponse is returned, otherwise null is returned.</returns>
         /// <remarks>Call this method to reactively send a message to a conversation.
         /// If the task completes successfully, then if the activity's <see cref="Activity.Type"/>
         /// is <see cref="ActivityTypes.Invoke"/> and the corresponding key
         /// (<see cref="Activity.ChannelId"/> + <see cref="Activity.Id"/>) is found
         /// then an <see cref="InvokeResponse"/> is returned, otherwise null is returned.
-        /// <para>This method registers the following services for the turn.<list type="bullet">
+        /// <para>This method registers the following services for the turn.<list type="bullet"/></para>
+        /// </remarks>
         public async Task<InvokeResponse> ProcessActivityAsync(Activity activity, BotCallbackHandler callback, CancellationToken cancellationToken = default(CancellationToken))
         {
             BotAssert.ActivityNotNull(activity);

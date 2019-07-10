@@ -8,10 +8,11 @@ using Microsoft.Extensions.Logging;
 namespace Microsoft.Bot.StreamingExtensions
 {
     /// <summary>
-    /// Implemented by classes used to process incoming requests sent over an <see cref="IStreamingTransport"/> and adhering to the Bot Framework Protocol v3 with Streaming Extensions.
+    /// Implemented by classes used to process incoming requests sent over an IStreamingTransport and adhering to the Bot Framework Protocol v3 with Streaming Extensions.
     /// </summary>
     public abstract class RequestHandler
     {
+    #pragma warning disable IDE0034
         /// <summary>
         /// The method that must be implemented in order to handle incoming requests.
         /// </summary>
@@ -21,5 +22,6 @@ namespace Microsoft.Bot.StreamingExtensions
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>A <see cref="Task"/> that will produce a <see cref="StreamingResponse"/> on successful completion.</returns>
         public abstract Task<StreamingResponse> ProcessRequestAsync(ReceiveRequest request, ILogger<RequestHandler> logger, object context = null, CancellationToken cancellationToken = default(CancellationToken));
+    #pragma warning restore IDE0034
     }
 }

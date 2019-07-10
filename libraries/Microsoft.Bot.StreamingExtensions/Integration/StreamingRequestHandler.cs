@@ -18,16 +18,21 @@ using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Microsoft.Bot.StreamingExtensions.Integration
 {
-    /// <summary>
-    /// Used to process incoming requests sent over an <see cref="IStreamingTransport"/> and adhering to the Bot Framework Protocol v3 with Streaming Extensions.
-    /// </summary>
+#pragma warning disable SA1202
+#pragma warning disable SA1401
+#pragma warning disable IDE0034
+#pragma warning disable CS1574 // XML comment has cref attribute that could not be resolved
+                              /// <summary>
+                              /// Used to process incoming requests sent over an <see cref="IStreamingTransport"/> and adhering to the Bot Framework Protocol v3 with Streaming Extensions.
+                              /// </summary>
     public class StreamingRequestHandler : RequestHandler
+#pragma warning restore CS1574 // XML comment has cref attribute that could not be resolved
     {
         private readonly IBot _bot;
 
         private readonly IList<IMiddleware> _middlewareSet;
 
-        private Func<ITurnContext, Exception, Task> _onTurnError;
+        private readonly Func<ITurnContext, Exception, Task> _onTurnError;
 
         private readonly IServiceProvider _services;
 
@@ -38,12 +43,14 @@ namespace Microsoft.Bot.StreamingExtensions.Integration
 #endif
         IStreamingTransportServer _transportServer;
 
+#pragma warning disable IDE0044
 #if DEBUG
         public
 #else
         private
 #endif
         string _userAgent;
+#pragma warning restore IDE0044
 
         /// <summary>
         /// Initializes a new instance of the <see cref="StreamingRequestHandler"/> class.
