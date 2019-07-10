@@ -95,14 +95,21 @@ namespace Microsoft.Bot.Builder.AI.Luis.TestUtils
             {
                 if (expected.Type == actual.Type)
                 {
-                    var val1 = (JValue)expected;
-                    var val2 = (JValue)actual;
-                    withinDelta = false;
-                    if (compare &&
-                        double.TryParse((string)val1, out var num1)
-                                && double.TryParse((string)val2, out var num2))
+                    if (expected.Type == JTokenType.String)
                     {
-                        withinDelta = Math.Abs(num1 - num2) < delta;
+                        withinDelta = expected.Value<string>().Equals(actual.Value<string>(), StringComparison.InvariantCultureIgnoreCase);
+                    }
+                    else
+                    {
+                        var val1 = (JValue)expected;
+                        var val2 = (JValue)actual;
+                        withinDelta = false;
+                        if (compare &&
+                            double.TryParse((string)val1, out var num1)
+                                    && double.TryParse((string)val2, out var num2))
+                        {
+                            withinDelta = Math.Abs(num1 - num2) < delta;
+                        }
                     }
                 }
                 else

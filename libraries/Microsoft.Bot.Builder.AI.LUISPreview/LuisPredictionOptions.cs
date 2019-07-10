@@ -15,15 +15,6 @@ namespace Microsoft.Bot.Builder.AI.LuisPreview
     public class LuisPredictionOptions
     {
         /// <summary>
-        /// Gets or sets the Bing Spell Check subscription key.
-        /// </summary>
-        /// <value>
-        /// The Bing Spell Check subscription key.
-        /// </value>
-        [Obsolete]
-        public string BingSpellCheckSubscriptionKey { get; set; }
-
-        /// <summary>
         /// Gets or sets whether all intents come back or only the top one.
         /// </summary>
         /// <value>
@@ -48,24 +39,6 @@ namespace Microsoft.Bot.Builder.AI.LuisPreview
         public bool? Log { get; set; }
 
         /// <summary>
-        /// Gets or sets whether to spell check queries.
-        /// </summary>
-        /// <value>
-        /// Whether to spell check queries.
-        /// </value>
-        [Obsolete]
-        public bool? SpellCheck { get; set; }
-
-        /// <summary>
-        /// Gets or sets whether to use the staging endpoint.
-        /// </summary>
-        /// <value>
-        /// Whether to use the staging endpoint.
-        /// </value>
-        [Obsolete]
-        public bool? Staging { get; set; }
-
-        /// <summary>
         /// Gets or sets the time in milliseconds to wait before the request times out.
         /// </summary>
         /// <value>
@@ -76,15 +49,6 @@ namespace Microsoft.Bot.Builder.AI.LuisPreview
         /// in individual <see cref="IRecognizer.RecognizeAsync"/> calls.
         /// </remarks>
         public double Timeout { get; set; } = 100000;
-
-        /// <summary>
-        /// Gets or sets the time zone offset.
-        /// </summary>
-        /// <value>
-        /// The time zone offset.
-        /// </value>
-        [Obsolete]
-        public double? TimezoneOffset { get; set; }
 
         /// <summary>
         /// Gets or sets the datetime used for resolving relative datetime references.

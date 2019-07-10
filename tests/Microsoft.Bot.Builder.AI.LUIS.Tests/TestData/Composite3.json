@@ -118,7 +118,7 @@
     "label": "neutral",
     "score": 0.5
   },
-  "text": "Deliver from 12345 va to 12346 wa",
+  "text": "Deliver from 12345 VA to 12346 WA",
   "v2": {
     "compositeEntities": [
       {
@@ -248,7 +248,7 @@
         "score": 4.757576E-10
       }
     ],
-    "query": "Deliver from 12345 va to 12346 wa",
+    "query": "Deliver from 12345 VA to 12346 WA",
     "sentimentAnalysis": {
       "label": "neutral",
       "score": 0.5

@@ -478,7 +478,6 @@ namespace Microsoft.Bot.Builder.AI.LuisPreview.Tests
                     Assert.IsNotNull(recognizerResult.Intents["SpecifyName"]);
                     Assert.AreEqual(luisTraceInfo["luisResult"]["query"], utterance);
                     Assert.AreEqual(luisTraceInfo["luisModel"]["ModelID"], _luisAppId);
-                    Assert.AreEqual(luisTraceInfo["luisOptions"]["Staging"], default(bool?));
                 },
                 "luisTraceInfo")
                 .Send(utterance)
