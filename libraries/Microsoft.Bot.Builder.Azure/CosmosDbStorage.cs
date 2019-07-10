@@ -55,11 +55,10 @@ namespace Microsoft.Bot.Builder.Azure
                 throw new ArgumentNullException(nameof(cosmosDbStorageOptions.CosmosDBEndpoint), "Service EndPoint for CosmosDB is required.");
             }
 
-            /*
-            if (string.IsNullOrEmpty(cosmosDbStorageOptions.AuthKey))
+            if (string.IsNullOrEmpty(cosmosDbStorageOptions.AuthKey) && tokenProvider == null)
             {
-                throw new ArgumentException("AuthKey for CosmosDB is required.", nameof(cosmosDbStorageOptions.AuthKey));
-            }*/
+                throw new ArgumentException("AuthKey or tokenProvider for CosmosDB is required.", $"{nameof(cosmosDbStorageOptions.AuthKey)} or {nameof(tokenProvider)}");
+            }
 
             if (string.IsNullOrEmpty(cosmosDbStorageOptions.DatabaseId))
             {
