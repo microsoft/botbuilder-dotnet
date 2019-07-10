@@ -9,7 +9,10 @@ using Microsoft.Rest;
 
 namespace Microsoft.Bot.Builder.Azure
 {
-    public class MsiCredentialProvider : ICredentialProvider
+    /// <summary>
+    /// Credential provider that uses managed service identity instead of client secrets.
+    /// </summary>
+    public class MsiCredentialProvider : ICredentialProvider2
     {
         private readonly IConfiguration _configuration;
         private readonly AzureServiceTokenProvider _tokenProvider;
@@ -36,7 +39,7 @@ namespace Microsoft.Bot.Builder.Azure
 
         public ServiceClientCredentials GetCredentials()
         {
-            return new MsiServiceCrendtials(_tokenProvider);
+            return new MsiServiceCredentials(_tokenProvider);
         }
     }
 }

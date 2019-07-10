@@ -77,10 +77,5 @@ namespace Microsoft.Bot.Connector.Authentication
         {
             return Task.FromResult(string.IsNullOrEmpty(AppId));
         }
-
-        public ServiceClientCredentials GetCredentials()
-        {
-            return null;
-        }
     }
 }

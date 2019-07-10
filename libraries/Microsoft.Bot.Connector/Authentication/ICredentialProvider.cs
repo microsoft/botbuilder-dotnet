@@ -55,7 +55,5 @@ namespace Microsoft.Bot.Connector.Authentication
         /// that may need to call out to serviced to validate the appId / password pair.
         /// </para></remarks>
         Task<bool> IsAuthenticationDisabledAsync();
-
-        ServiceClientCredentials GetCredentials();
     }
 }

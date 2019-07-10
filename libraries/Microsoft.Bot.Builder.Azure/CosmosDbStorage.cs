@@ -35,15 +35,14 @@ namespace Microsoft.Bot.Builder.Azure
         private readonly RequestOptions _databaseCreationRequestOptions = null;
         private readonly IDocumentClient _client;
         private string _collectionLink = null;
-        private readonly AzureServiceTokenProvider _tokenProvider;
+
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CosmosDbStorage"/> class.
         /// using the provided CosmosDB credentials, database ID, and collection ID.
         /// </summary>
         /// <param name="cosmosDbStorageOptions">Cosmos DB storage configuration options.</param>
-        /// <param name="tokenProvider">optional token provider to get token to connect to Cosmos DB</param>
-        public CosmosDbStorage(CosmosDbStorageOptions cosmosDbStorageOptions, AzureServiceTokenProvider tokenProvider)
+        public CosmosDbStorage(CosmosDbStorageOptions cosmosDbStorageOptions)
         {
             if (cosmosDbStorageOptions == null)
             {
@@ -55,9 +54,9 @@ namespace Microsoft.Bot.Builder.Azure
                 throw new ArgumentNullException(nameof(cosmosDbStorageOptions.CosmosDBEndpoint), "Service EndPoint for CosmosDB is required.");
             }
 
-            if (string.IsNullOrEmpty(cosmosDbStorageOptions.AuthKey) && tokenProvider == null)
+            if (string.IsNullOrEmpty(cosmosDbStorageOptions.AuthKey))
             {
-                throw new ArgumentException("AuthKey or tokenProvider for CosmosDB is required.", $"{nameof(cosmosDbStorageOptions.AuthKey)} or {nameof(tokenProvider)}");
+                throw new ArgumentException("AuthKey for CosmosDB is required.", nameof(cosmosDbStorageOptions.AuthKey));
             }
 
             if (string.IsNullOrEmpty(cosmosDbStorageOptions.DatabaseId))
@@ -70,7 +69,6 @@ namespace Microsoft.Bot.Builder.Azure
                 throw new ArgumentException("CollectionId is required.", nameof(cosmosDbStorageOptions.CollectionId));
             }
 
-            _tokenProvider = tokenProvider;
             _databaseId = cosmosDbStorageOptions.DatabaseId;
             _collectionId = cosmosDbStorageOptions.CollectionId;
             _documentCollectionCreationRequestOptions = cosmosDbStorageOptions.DocumentCollectionRequestOptions;
@@ -85,24 +83,7 @@ namespace Microsoft.Bot.Builder.Azure
 
             var keyOrToken = cosmosDbStorageOptions.AuthKey;
 
-            if (!string.IsNullOrEmpty(keyOrToken))
-            {
-                _client = new DocumentClient(cosmosDbStorageOptions.CosmosDBEndpoint, keyOrToken, connectionPolicy);
-            }
-            else
-            {
-                var collectionUri = UriFactory.CreateDocumentCollectionUri(_databaseId, _collectionId).AbsoluteUri;
-
-                keyOrToken = _tokenProvider.GetAccessTokenAsync(collectionUri).Result;
-
-                _client = new DocumentClient(
-                    cosmosDbStorageOptions.CosmosDBEndpoint,
-                    new Dictionary<string, string>
-                    {
-                        { collectionUri, keyOrToken}
-                    },
-                    connectionPolicy);
-            }
+            _client = new DocumentClient(cosmosDbStorageOptions.CosmosDBEndpoint, keyOrToken, connectionPolicy);
         }
 
         /// <summary>

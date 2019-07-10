@@ -11,11 +11,14 @@ using Microsoft.Rest;
 
 namespace Microsoft.Bot.Builder.Azure
 {
-    public class MsiServiceCrendtials : ServiceClientCredentials
+    /// <summary>
+    /// Managed service identity credentials used to identify a bot
+    /// </summary>
+    public class MsiServiceCredentials : ServiceClientCredentials
     {
         private readonly AzureServiceTokenProvider _tokenProvider;
 
-        public MsiServiceCrendtials(AzureServiceTokenProvider tokenProvider)
+        public MsiServiceCredentials(AzureServiceTokenProvider tokenProvider)
         {
             _tokenProvider = tokenProvider;
         }
