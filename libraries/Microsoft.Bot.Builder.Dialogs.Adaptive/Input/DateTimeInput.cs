@@ -27,9 +27,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
         protected override Task<InputState> OnRecognizeInput(DialogContext dc, bool consultation)
         {
-            var message = dc.Context.Activity.AsMessageActivity();
+            var input = dc.State.GetValue<object>(INPUT_PROPERTY);
+
             var culture = GetCulture(dc);
-            var results = DateTimeRecognizer.RecognizeDateTime(message.Text, culture);
+            var results = DateTimeRecognizer.RecognizeDateTime(input.ToString(), culture);
             if (results.Count > 0)
             {
                 // Return list of resolutions from first match
