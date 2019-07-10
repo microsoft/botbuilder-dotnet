@@ -32,17 +32,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         {
         }
 
-        public ResourceExplorer(ResourceExplorer source, Func<IResourceProvider, IResourceProvider> transform)
-        {
-            foreach (var resourceProvider in source.resourceProviders.Select(transform))
-            {
-                if (resourceProvider != null)
-                {
-                    AddResourceProvider(resourceProvider);
-                }
-            }
-        }
-
         public IEnumerable<IResourceProvider> ResourceProviders { get { return this.resourceProviders; } }
 
         public event ResourceChangedEventHandler Changed;

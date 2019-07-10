@@ -101,7 +101,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         public void Constructor_Should_Throw_On_InvalidOptions()
         {
             // No Options. Should throw. 
-            Assert.ThrowsException<ArgumentNullException>(() => new CosmosDbStorage(cosmosDbCustomClientOptions: null, documentClient: null));
+            Assert.ThrowsException<ArgumentNullException>(() => new CosmosDbStorage(null));
 
             // No Endpoint. Should throw. 
             Assert.ThrowsException<ArgumentNullException>(() => new CosmosDbStorage(new CosmosDbStorageOptions

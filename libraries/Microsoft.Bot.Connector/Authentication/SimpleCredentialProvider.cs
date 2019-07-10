@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System.Threading.Tasks;
-using Microsoft.Rest;
 
 namespace Microsoft.Bot.Connector.Authentication
 {
