@@ -34,6 +34,7 @@ namespace Microsoft.Bot.Schema
 
         /// <summary>
         /// Remove recipient mention text from Text property.
+        /// Use with caution because this function is altering the text on the Activity.
         /// </summary>
         /// <param name="activity">.</param>
         /// <returns>new .Text property value.</returns>
@@ -46,6 +47,7 @@ namespace Microsoft.Bot.Schema
         /// Replace any mention text for given id from Text property. First checks for and replaces the name of the
         /// recipient with the matching id and then checks for the leftover <at></at> tags (this is done to handle
         /// the way Skype sends mention text.
+        /// Use with caution because this function is altering the text on the Activity.
         /// </summary>
         /// <param name="activity">activity.</param>
         /// <param name="id">id to match.</param>
