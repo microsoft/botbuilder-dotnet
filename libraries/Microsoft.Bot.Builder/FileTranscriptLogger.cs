@@ -120,6 +120,46 @@ namespace Microsoft.Bot.Builder
             }
         }
 
+
+        public async Task<PagedResult<IActivity>> GetTranscriptActivitiesAsync(string channelId, string conversationId, string continuationToken = null, DateTimeOffset startDate = default(DateTimeOffset))
+        {
+            var transcriptFile = getTranscriptFile(channelId, conversationId);
+
+            var transcript = await loadTranscript(transcriptFile).ConfigureAwait(false);
+            var result = new PagedResult<IActivity>();
+            result.ContinuationToken = null;
+            result.Items = transcript.Where(activity => activity.Timestamp >= startDate).Cast<IActivity>().ToArray();
+            return result;
+        }
+
+        public Task<PagedResult<TranscriptInfo>> ListTranscriptsAsync(string channelId, string continuationToken = null)
+        {
+            List<TranscriptInfo> transcripts = new List<TranscriptInfo>();
+            var channelFolder = getChannelFolder(channelId);
+
+            foreach (var file in Directory.EnumerateFiles(channelFolder, "*.transcript"))
+            {
+                transcripts.Add(new TranscriptInfo()
+                {
+                    ChannelId = channelId,
+                    Id = Path.GetFileNameWithoutExtension(file),
+                    Created = File.GetCreationTime(file),
+                });
+            }
+            return Task.FromResult(new PagedResult<TranscriptInfo>()
+            {
+                Items = transcripts.ToArray(),
+                ContinuationToken = null,
+            });
+        }
+
+        public Task DeleteTranscriptAsync(string channelId, string conversationId)
+        {
+            var transcriptFile = getTranscriptFile(channelId, conversationId);
+            File.Delete(transcriptFile);
+            return Task.CompletedTask;
+        }
+
         private string getTranscriptFile(string channelId, string conversationId)
         {
             var channelFolder = getChannelFolder(channelId);
@@ -160,7 +200,8 @@ namespace Microsoft.Bot.Builder
         private async Task messageUpdate(IActivity activity, string transcriptFile)
         {
             // load all activities
-            var transcript = await loadTranscript(transcriptFile);
+            var transcript = await loadTranscript(transcriptFile).ConfigureAwait(false);
+
             for (int i = 0; i < transcript.Length; i++)
             {
                 var originalActivity = transcript[i];
@@ -199,7 +240,7 @@ namespace Microsoft.Bot.Builder
         private async Task messageDelete(IActivity activity, string transcriptFile)
         {
             // load all activities
-            var transcript = await loadTranscript(transcriptFile);
+            var transcript = await loadTranscript(transcriptFile).ConfigureAwait(false);
 
             // if message delete comes in, delete the message from the transcript
             for (int index = 0; index < transcript.Length; index++)
@@ -233,45 +274,6 @@ namespace Microsoft.Bot.Builder
                     }
                 }
             }
-        }
-
-        public async Task<PagedResult<IActivity>> GetTranscriptActivitiesAsync(string channelId, string conversationId, string continuationToken = null, DateTimeOffset startDate = default(DateTimeOffset))
-        {
-            var transcriptFile = getTranscriptFile(channelId, conversationId);
-
-            var transcript = await loadTranscript(transcriptFile).ConfigureAwait(false);
-            var result = new PagedResult<IActivity>();
-            result.ContinuationToken = null;
-            result.Items = transcript.Where(activity => activity.Timestamp >= startDate).Cast<IActivity>().ToArray();
-            return result;
-        }
-
-        public Task<PagedResult<TranscriptInfo>> ListTranscriptsAsync(string channelId, string continuationToken = null)
-        {
-            List<TranscriptInfo> transcripts = new List<TranscriptInfo>();
-            var channelFolder = getChannelFolder(channelId);
-
-            foreach (var file in Directory.EnumerateFiles(channelFolder, "*.transcript"))
-            {
-                transcripts.Add(new TranscriptInfo()
-                {
-                    ChannelId = channelId,
-                    Id = Path.GetFileNameWithoutExtension(file),
-                    Created = File.GetCreationTime(file),
-                });
-            }
-            return Task.FromResult(new PagedResult<TranscriptInfo>()
-            {
-                Items = transcripts.ToArray(),
-                ContinuationToken = null,
-            });
-        }
-
-        public Task DeleteTranscriptAsync(string channelId, string conversationId)
-        {
-            var transcriptFile = getTranscriptFile(channelId, conversationId);
-            File.Delete(transcriptFile);
-            return Task.CompletedTask;
         }
     }
 }
