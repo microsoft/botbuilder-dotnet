@@ -1,7 +1,7 @@
 {
   "$schema": "../../app.schema",
   "$type": "Microsoft.AdaptiveDialog",
-  "steps": [
+  "actions": [
     // Todo: check page boundary.
     {
       "$type": "Microsoft.SetProperty",

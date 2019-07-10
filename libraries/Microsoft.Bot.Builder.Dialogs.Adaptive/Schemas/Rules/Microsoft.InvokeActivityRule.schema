@@ -3,7 +3,7 @@
     "$ref": "./Microsoft.EventRule.schema#",
     "$role": "unionType(Microsoft.IRule)",
     "title": "Invoke Activity Rule",
-    "description": "This defines the steps to take when an Invoke activity is received",
+    "description": "This defines the actions to take when an Invoke activity is received",
     "type": "object",
     "allOf": [
         {
@@ -11,7 +11,7 @@
         },
         {
             "required": [
-                "steps"
+                "actions"
             ]
         }
     ]

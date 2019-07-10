@@ -3,7 +3,7 @@
     "$ref": "./Microsoft.EventRule.schema#",
     "$role": "unionType(Microsoft.IRule)",
     "title": "Intent Rule",
-    "description": "This defines the steps to take when an Intent is recognized (and optionally entities)",
+    "description": "This defines the actions to take when an Intent is recognized (and optionally entities)",
     "type": "object",
     "allOf": [
         {
@@ -27,7 +27,7 @@
             },
             "required": [
                 "intent",
-                "steps"
+                "actions"
             ]
         }
     ]

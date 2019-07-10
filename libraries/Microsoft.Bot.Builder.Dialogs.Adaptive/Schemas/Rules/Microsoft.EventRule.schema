@@ -22,17 +22,17 @@
                             "activityReceived",
                             "recognizedIntent",
                             "unknownIntent",
-                            "stepsStarted",
-                            "stepsSaved",
-                            "stepsEnded",
-                            "stepsResumed"
+                            "actionsStarted",
+                            "actionsSaved",
+                            "actionsEnded",
+                            "actionsResumed"
                         ]
                     }
                 }
             },
             "required": [
                 "events",
-                "steps"
+                "actions"
             ]
         }
     ]

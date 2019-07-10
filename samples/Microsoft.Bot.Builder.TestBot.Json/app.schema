@@ -7,12 +7,12 @@
     "oneOf": [
         {
             "title": "Microsoft.ActivityRule",
-            "description": "This defines the steps to take when an custom activity is received",
+            "description": "This defines the actions to take when an custom activity is received",
             "$ref": "#/definitions/Microsoft.ActivityRule"
         },
         {
             "title": "Microsoft.AdaptiveDialog",
-            "description": "Configures a data driven dialog via a collection of steps/dialogs.",
+            "description": "Configures a data driven dialog via a collection of actions/dialogs.",
             "$ref": "#/definitions/Microsoft.AdaptiveDialog"
         },
         {
@@ -24,6 +24,11 @@
             "title": "Microsoft.BeginDialog",
             "description": "Step which begins another dialog (and when that dialog is done, it will return the caller).",
             "$ref": "#/definitions/Microsoft.BeginDialog"
+        },
+        {
+            "title": "Microsoft.BeginDialogRule",
+            "description": "This defines the actions to take when a dialog is started via BeginDialog()",
+            "$ref": "#/definitions/Microsoft.BeginDialogRule"
         },
         {
             "title": "Microsoft.CancelAllDialogs",
@@ -47,7 +52,7 @@
         },
         {
             "title": "Microsoft.ConversationUpdateActivityRule",
-            "description": "This defines the steps to take when an ConversationUpdate activity is received",
+            "description": "This defines the actions to take when an ConversationUpdate activity is received",
             "$ref": "#/definitions/Microsoft.ConversationUpdateActivityRule"
         },
         {
@@ -66,14 +71,14 @@
             "$ref": "#/definitions/Microsoft.DeleteProperty"
         },
         {
+            "title": "Microsoft.EditActions",
+            "description": "Edit current dialog with changeType and Actions",
+            "$ref": "#/definitions/Microsoft.EditActions"
+        },
+        {
             "title": "Microsoft.EditArray",
             "description": "This is a step which allows you to modify an array in memory",
             "$ref": "#/definitions/Microsoft.EditArray"
-        },
-        {
-            "title": "Microsoft.EditSteps",
-            "description": "Edit current dialog with changeType and Steps",
-            "$ref": "#/definitions/Microsoft.EditSteps"
         },
         {
             "title": "Microsoft.EmitEvent",
@@ -87,7 +92,7 @@
         },
         {
             "title": "Microsoft.EndOfConversationActivityRule",
-            "description": "This defines the steps to take when an EndOfConversation Activity is received",
+            "description": "This defines the actions to take when an EndOfConversation Activity is received",
             "$ref": "#/definitions/Microsoft.EndOfConversationActivityRule"
         },
         {
@@ -97,7 +102,7 @@
         },
         {
             "title": "Microsoft.EventActivityRule",
-            "description": "This defines the steps to take when an Event activity is received",
+            "description": "This defines the actions to take when an Event activity is received",
             "$ref": "#/definitions/Microsoft.EventActivityRule"
         },
         {
@@ -112,17 +117,17 @@
         },
         {
             "title": "Microsoft.Foreach",
-            "description": "Step which executes steps per item in a collection.",
+            "description": "Step which executes actions per item in a collection.",
             "$ref": "#/definitions/Microsoft.Foreach"
         },
         {
             "title": "Microsoft.ForeachPage",
-            "description": "Step which execute steps per item page in a collection.",
+            "description": "Step which execute actions per item page in a collection.",
             "$ref": "#/definitions/Microsoft.ForeachPage"
         },
         {
             "title": "Microsoft.HandoffActivityRule",
-            "description": "This defines the steps to take when an Handoff activity is received",
+            "description": "This defines the actions to take when an Handoff activity is received",
             "$ref": "#/definitions/Microsoft.HandoffActivityRule"
         },
         {
@@ -142,12 +147,12 @@
         },
         {
             "title": "Microsoft.IntentRule",
-            "description": "This defines the steps to take when an Intent is recognized (and optionally entities)",
+            "description": "This defines the actions to take when an Intent is recognized (and optionally entities)",
             "$ref": "#/definitions/Microsoft.IntentRule"
         },
         {
             "title": "Microsoft.InvokeActivityRule",
-            "description": "This defines the steps to take when an Invoke activity is received",
+            "description": "This defines the actions to take when an Invoke activity is received",
             "$ref": "#/definitions/Microsoft.InvokeActivityRule"
         },
         {
@@ -157,7 +162,7 @@
         },
         {
             "title": "Microsoft.LogStep",
-            "description": "This is a step which writes to console.log and optional creates a TraceActivity around a text binding",
+            "description": "This is a action which writes to console.log and optional creates a TraceActivity around a text binding",
             "$ref": "#/definitions/Microsoft.LogStep"
         },
         {
@@ -167,22 +172,22 @@
         },
         {
             "title": "Microsoft.MessageActivityRule",
-            "description": "This defines the steps to take when an Message activity is received. NOTE: If this triggers it will override any Recognizer/Intent rule calculation",
+            "description": "This defines the actions to take when an Message activity is received. NOTE: If this triggers it will override any Recognizer/Intent rule calculation",
             "$ref": "#/definitions/Microsoft.MessageActivityRule"
         },
         {
             "title": "Microsoft.MessageDeleteActivityRule",
-            "description": "This defines the steps to take when an MessageDelete activity is received",
+            "description": "This defines the actions to take when an MessageDelete activity is received",
             "$ref": "#/definitions/Microsoft.MessageDeleteActivityRule"
         },
         {
             "title": "Microsoft.MessageReactionActivityRule",
-            "description": "This defines the steps to take when a MessageReaction activity is received",
+            "description": "This defines the actions to take when a MessageReaction activity is received",
             "$ref": "#/definitions/Microsoft.MessageReactionActivityRule"
         },
         {
             "title": "Microsoft.MessageUpdateActivityRule",
-            "description": "This defines the steps to take when an MessageUpdate ctivity is received",
+            "description": "This defines the actions to take when an MessageUpdate ctivity is received",
             "$ref": "#/definitions/Microsoft.MessageUpdateActivityRule"
         },
         {
@@ -262,12 +267,12 @@
         },
         {
             "title": "Microsoft.TypingActivityRule",
-            "description": "This defines the steps to take when a Typing activity is received",
+            "description": "This defines the actions to take when a Typing activity is received",
             "$ref": "#/definitions/Microsoft.TypingActivityRule"
         },
         {
             "title": "Microsoft.UnknownIntentRule",
-            "description": "Defines a sequence of steps to take if there is no other trigger or plan operating",
+            "description": "This defines the actions to take when an utterence is not recognized (aka, the None Intent). NOTE: UnknownIntent will defer to any specific intent that fires in a parent dialog",
             "$ref": "#/definitions/Microsoft.UnknownIntentRule"
         },
         {
@@ -285,7 +290,7 @@
         "Microsoft.ActivityRule": {
             "$role": "unionType(Microsoft.IRule)",
             "title": "Custom Activity Rule",
-            "description": "This defines the steps to take when an custom activity is received",
+            "description": "This defines the actions to take when an custom activity is received",
             "type": "object",
             "properties": {
                 "$type": {
@@ -321,9 +326,9 @@
                     ],
                     "type": "string"
                 },
-                "steps": {
+                "actions": {
                     "type": "array",
-                    "description": "Sequence of steps or dialogs to execute",
+                    "description": "Sequence of actions or dialogs to execute",
                     "items": {
                         "$type": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
@@ -351,7 +356,7 @@
                 {
                     "title": "Type",
                     "required": [
-                        "steps",
+                        "actions",
                         "type",
                         "$type"
                     ]
@@ -361,7 +366,7 @@
         "Microsoft.AdaptiveDialog": {
             "$role": "unionType(Microsoft.IDialog)",
             "title": "Adaptive Dialog",
-            "description": "Configures a data driven dialog via a collection of steps/dialogs.",
+            "description": "Configures a data driven dialog via a collection of actions/dialogs.",
             "type": "object",
             "properties": {
                 "$type": {
@@ -422,13 +427,13 @@
                 "autoEndDialog": {
                     "type": "boolean",
                     "title": "Auto End Dialog",
-                    "description": "If this is true the dialog will automatically end when there are no more steps to run.  If this is false it is the responsbility of the author to call EndDialog at an appropriate time.",
+                    "description": "If this is true the dialog will automatically end when there are no more actions to run.  If this is false it is the responsbility of the author to call EndDialog at an appropriate time.",
                     "default": "true"
                 },
                 "defaultResultProperty": {
                     "type": "string",
                     "title": "Default Result Property",
-                    "description": "Property path to the memory to return as the result of this dialog ending because AutoEndDialog is true and there are no more steps to execute.",
+                    "description": "Property path to the memory to return as the result of this dialog ending because AutoEndDialog is true and there are no more actions to execute.",
                     "default": "dialog.result"
                 },
                 "recognizer": {
@@ -448,14 +453,6 @@
                     "title": "Selector",
                     "description": "Policy for how to select rule to execute next",
                     "$ref": "#/definitions/Microsoft.IRuleSelector"
-                },
-                "steps": {
-                    "type": "array",
-                    "description": "Initial Sequence of steps or dialogs to execute when dialog is started",
-                    "items": {
-                        "$type": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.IDialog"
-                    }
                 },
                 "rules": {
                     "type": "array",
@@ -522,7 +519,8 @@
                     "title": "Property",
                     "description": "This is that will be passed in as InputProperty and also set as the OutputProperty",
                     "examples": [
-                        "value.birthday"
+                        "value.birthday",
+                        "user.name"
                     ],
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
@@ -599,16 +597,6 @@
                     "title": "Value",
                     "description": "The expression that you evaluated for input.",
                     "type": "string"
-                },
-                "valueProperty": {
-                    "$role": "memoryPath",
-                    "title": "Value Property",
-                    "description": "It is where you want to the putput of the input written to",
-                    "examples": [
-                        "user.name"
-                    ],
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
                 },
                 "defaultValue": {
                     "$role": "expression",
@@ -740,6 +728,76 @@
                 }
             ]
         },
+        "Microsoft.BeginDialogRule": {
+            "title": "BeginDialog Rule",
+            "description": "This defines the actions to take when a dialog is started via BeginDialog()",
+            "$role": "unionType(Microsoft.IRule)",
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.BeginDialogRule"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "constraint": {
+                    "$role": "expression",
+                    "title": "Constraint",
+                    "description": "Optional constraint to which must be met for this rule to fire",
+                    "examples": [
+                        "user.vip == true"
+                    ],
+                    "type": "string"
+                },
+                "actions": {
+                    "type": "array",
+                    "description": "Sequence of actions or dialogs to execute",
+                    "items": {
+                        "$type": "Microsoft.IDialog",
+                        "$ref": "#/definitions/Microsoft.IDialog"
+                    }
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "actions",
+                        "$type"
+                    ]
+                }
+            ]
+        },
         "Microsoft.CancelAllDialogs": {
             "$role": "unionType(Microsoft.IDialog)",
             "title": "Cancel All Dialogs",
@@ -855,7 +913,8 @@
                     "title": "Property",
                     "description": "This is that will be passed in as InputProperty and also set as the OutputProperty",
                     "examples": [
-                        "value.birthday"
+                        "value.birthday",
+                        "user.name"
                     ],
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
@@ -932,16 +991,6 @@
                     "title": "Value",
                     "description": "The expression that you evaluated for input.",
                     "type": "string"
-                },
-                "valueProperty": {
-                    "$role": "memoryPath",
-                    "title": "Value Property",
-                    "description": "It is where you want to the putput of the input written to",
-                    "examples": [
-                        "user.name"
-                    ],
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
                 },
                 "defaultValue": {
                     "$role": "expression",
@@ -1230,7 +1279,8 @@
                     "title": "Property",
                     "description": "This is that will be passed in as InputProperty and also set as the OutputProperty",
                     "examples": [
-                        "value.birthday"
+                        "value.birthday",
+                        "user.name"
                     ],
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
@@ -1307,16 +1357,6 @@
                     "title": "Value",
                     "description": "The expression that you evaluated for input.",
                     "type": "string"
-                },
-                "valueProperty": {
-                    "$role": "memoryPath",
-                    "title": "Value Property",
-                    "description": "It is where you want to the putput of the input written to",
-                    "examples": [
-                        "user.name"
-                    ],
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
                 },
                 "defaultValue": {
                     "$role": "expression",
@@ -1444,7 +1484,7 @@
         "Microsoft.ConversationUpdateActivityRule": {
             "$role": "unionType(Microsoft.IRule)",
             "title": "ConversationUpdateActivity Rule",
-            "description": "This defines the steps to take when an ConversationUpdate activity is received",
+            "description": "This defines the actions to take when an ConversationUpdate activity is received",
             "type": "object",
             "properties": {
                 "$type": {
@@ -1480,9 +1520,9 @@
                     ],
                     "type": "string"
                 },
-                "steps": {
+                "actions": {
                     "type": "array",
-                    "description": "Sequence of steps or dialogs to execute",
+                    "description": "Sequence of actions or dialogs to execute",
                     "items": {
                         "$type": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
@@ -1505,7 +1545,7 @@
                 {
                     "title": "Type",
                     "required": [
-                        "steps",
+                        "actions",
                         "$type"
                     ]
                 }
@@ -1546,7 +1586,8 @@
                     "title": "Property",
                     "description": "This is that will be passed in as InputProperty and also set as the OutputProperty",
                     "examples": [
-                        "value.birthday"
+                        "value.birthday",
+                        "user.name"
                     ],
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
@@ -1623,16 +1664,6 @@
                     "title": "Value",
                     "description": "The expression that you evaluated for input.",
                     "type": "string"
-                },
-                "valueProperty": {
-                    "$role": "memoryPath",
-                    "title": "Value Property",
-                    "description": "It is where you want to the putput of the input written to",
-                    "examples": [
-                        "user.name"
-                    ],
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
                 },
                 "defaultValue": {
                     "$role": "expression",
@@ -1798,6 +1829,81 @@
                 }
             ]
         },
+        "Microsoft.EditActions": {
+            "$role": "unionType(Microsoft.IDialog)",
+            "title": "EditActions Step",
+            "description": "Edit current dialog with changeType and Actions",
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.EditActions"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "changeType": {
+                    "type": "string",
+                    "title": "Change Type",
+                    "description": "The change type to apply to current dialog",
+                    "enum": [
+                        "InsertActions",
+                        "InsertActionsBeforeTags",
+                        "AppendActions",
+                        "EndSequence",
+                        "ReplaceSequence"
+                    ]
+                },
+                "actions": {
+                    "type": "array",
+                    "title": "Actions",
+                    "description": "Actions to execute",
+                    "items": {
+                        "$type": "Microsoft.IDialog",
+                        "$ref": "#/definitions/Microsoft.IDialog"
+                    }
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "changeType",
+                        "actions",
+                        "$type"
+                    ]
+                }
+            ]
+        },
         "Microsoft.EditArray": {
             "$role": "unionType(Microsoft.IDialog)",
             "title": "Edit Array Step",
@@ -1887,81 +1993,6 @@
                 }
             ]
         },
-        "Microsoft.EditSteps": {
-            "$role": "unionType(Microsoft.IDialog)",
-            "title": "EditSteps Step",
-            "description": "Edit current dialog with changeType and Steps",
-            "type": "object",
-            "properties": {
-                "$type": {
-                    "title": "$type",
-                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.EditSteps"
-                },
-                "$copy": {
-                    "title": "$copy",
-                    "description": "Copy the definition by id from a .dialog file.",
-                    "type": "string",
-                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
-                },
-                "$id": {
-                    "title": "$id",
-                    "description": "Inline id for reuse of an inline definition",
-                    "type": "string",
-                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
-                },
-                "$designer": {
-                    "title": "$designer",
-                    "type": "object",
-                    "description": "Extra information for the Bot Framework Designer."
-                },
-                "ChangeType": {
-                    "type": "string",
-                    "title": "Change Type",
-                    "description": "The change type to apply to current dialog",
-                    "enum": [
-                        "InsertSteps",
-                        "InsertStepsBeforeTags",
-                        "AppendSteps",
-                        "EndSequence",
-                        "ReplaceSequence"
-                    ]
-                },
-                "Steps": {
-                    "type": "array",
-                    "title": "Steps",
-                    "description": "Steps to execute",
-                    "items": {
-                        "$type": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.IDialog"
-                    }
-                }
-            },
-            "additionalProperties": false,
-            "patternProperties": {
-                "^\\$": {
-                    "type": "string"
-                }
-            },
-            "anyOf": [
-                {
-                    "title": "Reference",
-                    "required": [
-                        "$copy"
-                    ]
-                },
-                {
-                    "title": "Type",
-                    "required": [
-                        "ChangeType",
-                        "Steps",
-                        "$type"
-                    ]
-                }
-            ]
-        },
         "Microsoft.EmitEvent": {
             "$role": "unionType(Microsoft.IDialog)",
             "title": "Emit Event Step",
@@ -2004,10 +2035,10 @@
                                 "activityReceived",
                                 "recognizedIntent",
                                 "unknownIntent",
-                                "stepsStarted",
-                                "stepsSaved",
-                                "stepsEnded",
-                                "stepsResumed"
+                                "actionsStarted",
+                                "actionsSaved",
+                                "actionsEnded",
+                                "actionsResumed"
                             ]
                         },
                         {
@@ -2113,7 +2144,7 @@
         "Microsoft.EndOfConversationActivityRule": {
             "$role": "unionType(Microsoft.IRule)",
             "title": "EndOfConversation Activity Rule",
-            "description": "This defines the steps to take when an EndOfConversation Activity is received",
+            "description": "This defines the actions to take when an EndOfConversation Activity is received",
             "type": "object",
             "properties": {
                 "$type": {
@@ -2149,9 +2180,9 @@
                     ],
                     "type": "string"
                 },
-                "steps": {
+                "actions": {
                     "type": "array",
-                    "description": "Sequence of steps or dialogs to execute",
+                    "description": "Sequence of actions or dialogs to execute",
                     "items": {
                         "$type": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
@@ -2174,7 +2205,7 @@
                 {
                     "title": "Type",
                     "required": [
-                        "steps",
+                        "actions",
                         "$type"
                     ]
                 }
@@ -2235,7 +2266,7 @@
         "Microsoft.EventActivityRule": {
             "$role": "unionType(Microsoft.IRule)",
             "title": "Event Activity Rule",
-            "description": "This defines the steps to take when an Event activity is received",
+            "description": "This defines the actions to take when an Event activity is received",
             "type": "object",
             "properties": {
                 "$type": {
@@ -2271,9 +2302,9 @@
                     ],
                     "type": "string"
                 },
-                "steps": {
+                "actions": {
                     "type": "array",
-                    "description": "Sequence of steps or dialogs to execute",
+                    "description": "Sequence of actions or dialogs to execute",
                     "items": {
                         "$type": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
@@ -2296,7 +2327,7 @@
                 {
                     "title": "Type",
                     "required": [
-                        "steps",
+                        "actions",
                         "$type"
                     ]
                 }
@@ -2341,9 +2372,9 @@
                     ],
                     "type": "string"
                 },
-                "steps": {
+                "actions": {
                     "type": "array",
-                    "description": "Sequence of steps or dialogs to execute",
+                    "description": "Sequence of actions or dialogs to execute",
                     "items": {
                         "$type": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
@@ -2361,10 +2392,10 @@
                             "activityReceived",
                             "recognizedIntent",
                             "unknownIntent",
-                            "stepsStarted",
-                            "stepsSaved",
-                            "stepsEnded",
-                            "stepsResumed"
+                            "actionsStarted",
+                            "actionsSaved",
+                            "actionsEnded",
+                            "actionsResumed"
                         ]
                     }
                 }
@@ -2385,8 +2416,8 @@
                 {
                     "title": "Type",
                     "required": [
+                        "actions",
                         "events",
-                        "steps",
                         "$type"
                     ]
                 }
@@ -2447,7 +2478,7 @@
         "Microsoft.Foreach": {
             "$role": "unionType(Microsoft.IDialog)",
             "title": "Foreach Step",
-            "description": "Step which executes steps per item in a collection.",
+            "description": "Step which executes actions per item in a collection.",
             "type": "object",
             "properties": {
                 "$type": {
@@ -2474,7 +2505,7 @@
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
                 },
-                "ListProperty": {
+                "listProperty": {
                     "$role": "expression",
                     "title": "ListProperty",
                     "description": "Expression to evaluate.",
@@ -2483,16 +2514,16 @@
                     ],
                     "type": "string"
                 },
-                "Steps": {
+                "actions": {
                     "type": "array",
-                    "title": "Steps",
-                    "description": "Steps to execute",
+                    "title": "Actions",
+                    "description": "Actions to execute",
                     "items": {
                         "$type": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
                 },
-                "IndexProperty": {
+                "indexProperty": {
                     "$role": "memoryPath",
                     "title": "Index Property",
                     "description": "The memory path which refers to the index of the item",
@@ -2500,7 +2531,7 @@
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
                 },
-                "ValueProperty": {
+                "valueProperty": {
                     "$role": "memoryPath",
                     "title": "Value Property",
                     "description": "The memory path which refers to the value of the item",
@@ -2525,8 +2556,8 @@
                 {
                     "title": "Type",
                     "required": [
-                        "ListProperty",
-                        "Steps",
+                        "listProperty",
+                        "actions",
                         "$type"
                     ]
                 }
@@ -2535,7 +2566,7 @@
         "Microsoft.ForeachPage": {
             "$role": "unionType(Microsoft.IDialog)",
             "title": "Foreach Page Step",
-            "description": "Step which execute steps per item page in a collection.",
+            "description": "Step which execute actions per item page in a collection.",
             "type": "object",
             "properties": {
                 "$type": {
@@ -2562,7 +2593,7 @@
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
                 },
-                "ListProperty": {
+                "listProperty": {
                     "$role": "expression",
                     "title": "ListProperty",
                     "description": "Expression to evaluate.",
@@ -2571,22 +2602,22 @@
                     ],
                     "type": "string"
                 },
-                "Steps": {
+                "actions": {
                     "type": "array",
-                    "title": "Steps",
-                    "description": "Steps to execute",
+                    "title": "Actions",
+                    "description": "Actions to execute",
                     "items": {
                         "$type": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
                 },
-                "PageSize": {
+                "pageSize": {
                     "type": "integer",
                     "title": "Page Size",
                     "description": "The page size",
                     "default": 10
                 },
-                "ValueProperty": {
+                "valueProperty": {
                     "$role": "memoryPath",
                     "title": "Value Property",
                     "description": "The memory path which refers to the value of the item",
@@ -2611,8 +2642,8 @@
                 {
                     "title": "Type",
                     "required": [
-                        "ListProperty",
-                        "Steps",
+                        "listProperty",
+                        "actions",
                         "$type"
                     ]
                 }
@@ -2621,7 +2652,7 @@
         "Microsoft.HandoffActivityRule": {
             "$role": "unionType(Microsoft.IRule)",
             "title": "Handoff Activity Rule",
-            "description": "This defines the steps to take when an Handoff activity is received",
+            "description": "This defines the actions to take when an Handoff activity is received",
             "type": "object",
             "properties": {
                 "$type": {
@@ -2657,9 +2688,9 @@
                     ],
                     "type": "string"
                 },
-                "steps": {
+                "actions": {
                     "type": "array",
-                    "description": "Sequence of steps or dialogs to execute",
+                    "description": "Sequence of actions or dialogs to execute",
                     "items": {
                         "$type": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
@@ -2682,7 +2713,7 @@
                 {
                     "title": "Type",
                     "required": [
-                        "steps",
+                        "actions",
                         "$type"
                     ]
                 }
@@ -2817,7 +2848,7 @@
             "oneOf": [
                 {
                     "title": "Microsoft.AdaptiveDialog",
-                    "description": "Configures a data driven dialog via a collection of steps/dialogs.",
+                    "description": "Configures a data driven dialog via a collection of actions/dialogs.",
                     "$ref": "#/definitions/Microsoft.AdaptiveDialog"
                 },
                 {
@@ -2861,14 +2892,14 @@
                     "$ref": "#/definitions/Microsoft.DeleteProperty"
                 },
                 {
+                    "title": "Microsoft.EditActions",
+                    "description": "Edit current dialog with changeType and Actions",
+                    "$ref": "#/definitions/Microsoft.EditActions"
+                },
+                {
                     "title": "Microsoft.EditArray",
                     "description": "This is a step which allows you to modify an array in memory",
                     "$ref": "#/definitions/Microsoft.EditArray"
-                },
-                {
-                    "title": "Microsoft.EditSteps",
-                    "description": "Edit current dialog with changeType and Steps",
-                    "$ref": "#/definitions/Microsoft.EditSteps"
                 },
                 {
                     "title": "Microsoft.EmitEvent",
@@ -2887,12 +2918,12 @@
                 },
                 {
                     "title": "Microsoft.Foreach",
-                    "description": "Step which executes steps per item in a collection.",
+                    "description": "Step which executes actions per item in a collection.",
                     "$ref": "#/definitions/Microsoft.Foreach"
                 },
                 {
                     "title": "Microsoft.ForeachPage",
-                    "description": "Step which execute steps per item page in a collection.",
+                    "description": "Step which execute actions per item page in a collection.",
                     "$ref": "#/definitions/Microsoft.ForeachPage"
                 },
                 {
@@ -2912,7 +2943,7 @@
                 },
                 {
                     "title": "Microsoft.LogStep",
-                    "description": "This is a step which writes to console.log and optional creates a TraceActivity around a text binding",
+                    "description": "This is a action which writes to console.log and optional creates a TraceActivity around a text binding",
                     "$ref": "#/definitions/Microsoft.LogStep"
                 },
                 {
@@ -3036,22 +3067,27 @@
             "oneOf": [
                 {
                     "title": "Microsoft.ActivityRule",
-                    "description": "This defines the steps to take when an custom activity is received",
+                    "description": "This defines the actions to take when an custom activity is received",
                     "$ref": "#/definitions/Microsoft.ActivityRule"
                 },
                 {
+                    "title": "Microsoft.BeginDialogRule",
+                    "description": "This defines the actions to take when a dialog is started via BeginDialog()",
+                    "$ref": "#/definitions/Microsoft.BeginDialogRule"
+                },
+                {
                     "title": "Microsoft.ConversationUpdateActivityRule",
-                    "description": "This defines the steps to take when an ConversationUpdate activity is received",
+                    "description": "This defines the actions to take when an ConversationUpdate activity is received",
                     "$ref": "#/definitions/Microsoft.ConversationUpdateActivityRule"
                 },
                 {
                     "title": "Microsoft.EndOfConversationActivityRule",
-                    "description": "This defines the steps to take when an EndOfConversation Activity is received",
+                    "description": "This defines the actions to take when an EndOfConversation Activity is received",
                     "$ref": "#/definitions/Microsoft.EndOfConversationActivityRule"
                 },
                 {
                     "title": "Microsoft.EventActivityRule",
-                    "description": "This defines the steps to take when an Event activity is received",
+                    "description": "This defines the actions to take when an Event activity is received",
                     "$ref": "#/definitions/Microsoft.EventActivityRule"
                 },
                 {
@@ -3061,37 +3097,37 @@
                 },
                 {
                     "title": "Microsoft.HandoffActivityRule",
-                    "description": "This defines the steps to take when an Handoff activity is received",
+                    "description": "This defines the actions to take when an Handoff activity is received",
                     "$ref": "#/definitions/Microsoft.HandoffActivityRule"
                 },
                 {
                     "title": "Microsoft.IntentRule",
-                    "description": "This defines the steps to take when an Intent is recognized (and optionally entities)",
+                    "description": "This defines the actions to take when an Intent is recognized (and optionally entities)",
                     "$ref": "#/definitions/Microsoft.IntentRule"
                 },
                 {
                     "title": "Microsoft.InvokeActivityRule",
-                    "description": "This defines the steps to take when an Invoke activity is received",
+                    "description": "This defines the actions to take when an Invoke activity is received",
                     "$ref": "#/definitions/Microsoft.InvokeActivityRule"
                 },
                 {
                     "title": "Microsoft.MessageActivityRule",
-                    "description": "This defines the steps to take when an Message activity is received. NOTE: If this triggers it will override any Recognizer/Intent rule calculation",
+                    "description": "This defines the actions to take when an Message activity is received. NOTE: If this triggers it will override any Recognizer/Intent rule calculation",
                     "$ref": "#/definitions/Microsoft.MessageActivityRule"
                 },
                 {
                     "title": "Microsoft.MessageDeleteActivityRule",
-                    "description": "This defines the steps to take when an MessageDelete activity is received",
+                    "description": "This defines the actions to take when an MessageDelete activity is received",
                     "$ref": "#/definitions/Microsoft.MessageDeleteActivityRule"
                 },
                 {
                     "title": "Microsoft.MessageReactionActivityRule",
-                    "description": "This defines the steps to take when a MessageReaction activity is received",
+                    "description": "This defines the actions to take when a MessageReaction activity is received",
                     "$ref": "#/definitions/Microsoft.MessageReactionActivityRule"
                 },
                 {
                     "title": "Microsoft.MessageUpdateActivityRule",
-                    "description": "This defines the steps to take when an MessageUpdate ctivity is received",
+                    "description": "This defines the actions to take when an MessageUpdate ctivity is received",
                     "$ref": "#/definitions/Microsoft.MessageUpdateActivityRule"
                 },
                 {
@@ -3101,12 +3137,12 @@
                 },
                 {
                     "title": "Microsoft.TypingActivityRule",
-                    "description": "This defines the steps to take when a Typing activity is received",
+                    "description": "This defines the actions to take when a Typing activity is received",
                     "$ref": "#/definitions/Microsoft.TypingActivityRule"
                 },
                 {
                     "title": "Microsoft.UnknownIntentRule",
-                    "description": "Defines a sequence of steps to take if there is no other trigger or plan operating",
+                    "description": "This defines the actions to take when an utterence is not recognized (aka, the None Intent). NOTE: UnknownIntent will defer to any specific intent that fires in a parent dialog",
                     "$ref": "#/definitions/Microsoft.UnknownIntentRule"
                 }
             ]
@@ -3193,18 +3229,18 @@
                     ],
                     "type": "string"
                 },
-                "steps": {
+                "actions": {
                     "type": "array",
-                    "title": "Steps",
+                    "title": "Actions",
                     "description": "Step to execute if condition is true.",
                     "items": {
                         "$type": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
                 },
-                "elseSteps": {
+                "elseActions": {
                     "type": "array",
-                    "title": "Else Steps",
+                    "title": "Else Actions",
                     "description": "Step to execute if condition is false.",
                     "items": {
                         "$type": "Microsoft.IDialog",
@@ -3229,7 +3265,7 @@
                     "title": "Type",
                     "required": [
                         "condition",
-                        "steps",
+                        "actions",
                         "$type"
                     ]
                 }
@@ -3311,7 +3347,7 @@
         "Microsoft.IntentRule": {
             "$role": "unionType(Microsoft.IRule)",
             "title": "Intent Rule",
-            "description": "This defines the steps to take when an Intent is recognized (and optionally entities)",
+            "description": "This defines the actions to take when an Intent is recognized (and optionally entities)",
             "type": "object",
             "properties": {
                 "$type": {
@@ -3347,9 +3383,9 @@
                     ],
                     "type": "string"
                 },
-                "steps": {
+                "actions": {
                     "type": "array",
-                    "description": "Sequence of steps or dialogs to execute",
+                    "description": "Sequence of actions or dialogs to execute",
                     "items": {
                         "$type": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
@@ -3385,8 +3421,8 @@
                 {
                     "title": "Type",
                     "required": [
+                        "actions",
                         "intent",
-                        "steps",
                         "$type"
                     ]
                 }
@@ -3395,7 +3431,7 @@
         "Microsoft.InvokeActivityRule": {
             "$role": "unionType(Microsoft.IRule)",
             "title": "Invoke Activity Rule",
-            "description": "This defines the steps to take when an Invoke activity is received",
+            "description": "This defines the actions to take when an Invoke activity is received",
             "type": "object",
             "properties": {
                 "$type": {
@@ -3431,9 +3467,9 @@
                     ],
                     "type": "string"
                 },
-                "steps": {
+                "actions": {
                     "type": "array",
-                    "description": "Sequence of steps or dialogs to execute",
+                    "description": "Sequence of actions or dialogs to execute",
                     "items": {
                         "$type": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
@@ -3456,7 +3492,7 @@
                 {
                     "title": "Type",
                     "required": [
-                        "steps",
+                        "actions",
                         "$type"
                     ]
                 }
@@ -3516,8 +3552,8 @@
         },
         "Microsoft.LogStep": {
             "$role": "unionType(Microsoft.IDialog)",
-            "title": "Log Step",
-            "description": "This is a step which writes to console.log and optional creates a TraceActivity around a text binding",
+            "title": "Log Action",
+            "description": "This is a action which writes to console.log and optional creates a TraceActivity around a text binding",
             "type": "object",
             "properties": {
                 "$type": {
@@ -3645,7 +3681,7 @@
         "Microsoft.MessageActivityRule": {
             "$role": "unionType(Microsoft.IRule)",
             "title": "Message Activity Rule",
-            "description": "This defines the steps to take when an Message activity is received. NOTE: If this triggers it will override any Recognizer/Intent rule calculation",
+            "description": "This defines the actions to take when an Message activity is received. NOTE: If this triggers it will override any Recognizer/Intent rule calculation",
             "type": "object",
             "properties": {
                 "$type": {
@@ -3681,9 +3717,9 @@
                     ],
                     "type": "string"
                 },
-                "steps": {
+                "actions": {
                     "type": "array",
-                    "description": "Sequence of steps or dialogs to execute",
+                    "description": "Sequence of actions or dialogs to execute",
                     "items": {
                         "$type": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
@@ -3706,7 +3742,7 @@
                 {
                     "title": "Type",
                     "required": [
-                        "steps",
+                        "actions",
                         "$type"
                     ]
                 }
@@ -3715,7 +3751,7 @@
         "Microsoft.MessageDeleteActivityRule": {
             "$role": "unionType(Microsoft.IRule)",
             "title": "MessageDelete Activity Rule",
-            "description": "This defines the steps to take when an MessageDelete activity is received",
+            "description": "This defines the actions to take when an MessageDelete activity is received",
             "type": "object",
             "properties": {
                 "$type": {
@@ -3751,9 +3787,9 @@
                     ],
                     "type": "string"
                 },
-                "steps": {
+                "actions": {
                     "type": "array",
-                    "description": "Sequence of steps or dialogs to execute",
+                    "description": "Sequence of actions or dialogs to execute",
                     "items": {
                         "$type": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
@@ -3776,7 +3812,7 @@
                 {
                     "title": "Type",
                     "required": [
-                        "steps",
+                        "actions",
                         "$type"
                     ]
                 }
@@ -3785,7 +3821,7 @@
         "Microsoft.MessageReactionActivityRule": {
             "$role": "unionType(Microsoft.IRule)",
             "title": "MessageReaction Activity Rule",
-            "description": "This defines the steps to take when a MessageReaction activity is received",
+            "description": "This defines the actions to take when a MessageReaction activity is received",
             "type": "object",
             "properties": {
                 "$type": {
@@ -3821,9 +3857,9 @@
                     ],
                     "type": "string"
                 },
-                "steps": {
+                "actions": {
                     "type": "array",
-                    "description": "Sequence of steps or dialogs to execute",
+                    "description": "Sequence of actions or dialogs to execute",
                     "items": {
                         "$type": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
@@ -3846,7 +3882,7 @@
                 {
                     "title": "Type",
                     "required": [
-                        "steps",
+                        "actions",
                         "$type"
                     ]
                 }
@@ -3855,7 +3891,7 @@
         "Microsoft.MessageUpdateActivityRule": {
             "$role": "unionType(Microsoft.IRule)",
             "title": "MessageUpdate Activity Rule",
-            "description": "This defines the steps to take when an MessageUpdate ctivity is received",
+            "description": "This defines the actions to take when an MessageUpdate ctivity is received",
             "type": "object",
             "properties": {
                 "$type": {
@@ -3891,9 +3927,9 @@
                     ],
                     "type": "string"
                 },
-                "steps": {
+                "actions": {
                     "type": "array",
-                    "description": "Sequence of steps or dialogs to execute",
+                    "description": "Sequence of actions or dialogs to execute",
                     "items": {
                         "$type": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
@@ -3916,7 +3952,7 @@
                 {
                     "title": "Type",
                     "required": [
-                        "steps",
+                        "actions",
                         "$type"
                     ]
                 }
@@ -4082,7 +4118,8 @@
                     "title": "Property",
                     "description": "This is that will be passed in as InputProperty and also set as the OutputProperty",
                     "examples": [
-                        "value.birthday"
+                        "value.birthday",
+                        "user.name"
                     ],
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
@@ -4159,16 +4196,6 @@
                     "title": "Value",
                     "description": "The expression that you evaluated for input.",
                     "type": "string"
-                },
-                "valueProperty": {
-                    "$role": "memoryPath",
-                    "title": "Value Property",
-                    "description": "It is where you want to the putput of the input written to",
-                    "examples": [
-                        "user.name"
-                    ],
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
                 },
                 "defaultValue": {
                     "$role": "expression",
@@ -4606,9 +4633,9 @@
                     ],
                     "type": "string"
                 },
-                "steps": {
+                "actions": {
                     "type": "array",
-                    "description": "Sequence of steps or dialogs to execute",
+                    "description": "Sequence of actions or dialogs to execute",
                     "items": {
                         "$type": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
@@ -4631,7 +4658,7 @@
                 {
                     "title": "Type",
                     "required": [
-                        "steps",
+                        "actions",
                         "$type"
                     ]
                 }
@@ -4824,10 +4851,10 @@
                                 "description": "Value which must match the condition property",
                                 "type": "string"
                             },
-                            "steps": {
+                            "actions": {
                                 "type": "array",
-                                "title": "Steps",
-                                "description": "Steps to execute if case is equal to condition",
+                                "title": "Actions",
+                                "description": "Actions to execute if case is equal to condition",
                                 "items": {
                                     "$type": "Microsoft.IDialog",
                                     "$ref": "#/definitions/Microsoft.IDialog"
@@ -4903,7 +4930,8 @@
                     "title": "Property",
                     "description": "This is that will be passed in as InputProperty and also set as the OutputProperty",
                     "examples": [
-                        "value.birthday"
+                        "value.birthday",
+                        "user.name"
                     ],
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
@@ -4980,16 +5008,6 @@
                     "title": "Value",
                     "description": "The expression that you evaluated for input.",
                     "type": "string"
-                },
-                "valueProperty": {
-                    "$role": "memoryPath",
-                    "title": "Value Property",
-                    "description": "It is where you want to the putput of the input written to",
-                    "examples": [
-                        "user.name"
-                    ],
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
                 },
                 "defaultValue": {
                     "$role": "expression",
@@ -5173,7 +5191,7 @@
         "Microsoft.TypingActivityRule": {
             "$role": "unionType(Microsoft.IRule)",
             "title": "Typing Activity Rule",
-            "description": "This defines the steps to take when a Typing activity is received",
+            "description": "This defines the actions to take when a Typing activity is received",
             "type": "object",
             "properties": {
                 "$type": {
@@ -5209,9 +5227,9 @@
                     ],
                     "type": "string"
                 },
-                "steps": {
+                "actions": {
                     "type": "array",
-                    "description": "Sequence of steps or dialogs to execute",
+                    "description": "Sequence of actions or dialogs to execute",
                     "items": {
                         "$type": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
@@ -5234,15 +5252,15 @@
                 {
                     "title": "Type",
                     "required": [
-                        "steps",
+                        "actions",
                         "$type"
                     ]
                 }
             ]
         },
         "Microsoft.UnknownIntentRule": {
-            "title": "This defines the steps to take when an utterence is not recognized (aka, the None Intent). NOTE: UnknownIntent will defer to any specific intent that fires in a parent dialog",
-            "description": "Defines a sequence of steps to take if there is no other trigger or plan operating",
+            "title": "Unknown Intent Rule",
+            "description": "This defines the actions to take when an utterence is not recognized (aka, the None Intent). NOTE: UnknownIntent will defer to any specific intent that fires in a parent dialog",
             "$role": "unionType(Microsoft.IRule)",
             "type": "object",
             "properties": {
@@ -5279,9 +5297,9 @@
                     ],
                     "type": "string"
                 },
-                "steps": {
+                "actions": {
                     "type": "array",
-                    "description": "Sequence of steps or dialogs to execute",
+                    "description": "Sequence of actions or dialogs to execute",
                     "items": {
                         "$type": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
@@ -5304,7 +5322,7 @@
                 {
                     "title": "Type",
                     "required": [
-                        "steps",
+                        "actions",
                         "$type"
                     ]
                 }

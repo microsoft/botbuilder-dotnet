@@ -10,12 +10,12 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
     /// <summary>
     /// Command to cancel all of the current dialogs by emitting an event which must be caught to prevent cancelation from propagating.
     /// </summary>
-    public class CancelAllDialogs : DialogCommand
+    public class CancelAllDialogs : DialogAction
     {
         [JsonConstructor]
         public CancelAllDialogs([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)

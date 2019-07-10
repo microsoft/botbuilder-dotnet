@@ -13,12 +13,12 @@ using Microsoft.Bot.Builder.Expressions.Parser;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
     /// <summary>
-    /// Executes a set of steps once for each item in an in-memory list or collection.
+    /// Executes a set of actions once for each item in an in-memory list or collection.
     /// </summary>
-    public class ForeachPage : DialogCommand, IDialogDependencies
+    public class ForeachPage : DialogAction, IDialogDependencies
     {
         // Expression used to compute the list that should be enumerated.
         [JsonProperty("listProperty")]
@@ -31,9 +31,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
         [JsonProperty("valueProperty")]
         public string ValueProperty { get; set; } = DialogContextState.DIALOG_VALUE;
 
-        // Steps to be run for each of items.
-        [JsonProperty("steps")]
-        public List<IDialog> Steps { get; set; } = new List<IDialog>();
+        // Actions to be run for each of items.
+        [JsonProperty("actions")]
+        public List<IDialog> Actions { get; set; } = new List<IDialog>();
 
         [JsonConstructor]
         public ForeachPage([CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
@@ -81,14 +81,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                     if (page.Count() > 0)
                     {
                         dc.State.SetValue(this.ValueProperty, page);
-                        var changes = new StepChangeList()
+                        var changes = new ActionChangeList()
                         {
-                            ChangeType = StepChangeTypes.InsertSteps,
-                            Steps = new List<StepState>()
+                            ChangeType = ActionChangeType.InsertActions,
+                            Actions = new List<ActionState>()
                         };
-                        this.Steps.ForEach(step => changes.Steps.Add(new StepState(step.Id)));
+                        this.Actions.ForEach(step => changes.Actions.Add(new ActionState(step.Id)));
 
-                        changes.Steps.Add(new StepState()
+                        changes.Actions.Add(new ActionState()
                         {
                             DialogStack = new List<DialogInstance>(),
                             DialogId = this.Id,
@@ -141,7 +141,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
 
         public override List<IDialog> ListDependencies()
         {
-            return this.Steps;
+            return this.Actions;
         }
 
         public class ForeachPageOptions

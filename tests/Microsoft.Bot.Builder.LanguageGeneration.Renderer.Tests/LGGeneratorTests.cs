@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Steps;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Rules;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
@@ -141,9 +142,15 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var dialog = new AdaptiveDialog()
             {
                 Generator = new ResourceMultiLanguageGenerator("subDialog.lg"),
-                Steps = new List<IDialog>()
+                Rules = new List<IRule>()
                 {
-                    new SendActivity("[test]")
+                    new BeginDialogRule()
+                    {
+                        Actions = new List<IDialog>()
+                        {
+                            new SendActivity("[test]")
+                        }
+                    }
                 }
             };
             DialogManager dm = new DialogManager(dialog);

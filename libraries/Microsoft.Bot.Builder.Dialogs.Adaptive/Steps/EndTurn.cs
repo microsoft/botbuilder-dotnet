@@ -11,12 +11,12 @@ using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
     /// <summary>
     /// This command ends the current turn without ending the dialog
     /// </summary>
-    public class EndTurn : DialogCommand
+    public class EndTurn : DialogAction
     {
         [JsonConstructor]
         public EndTurn([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)

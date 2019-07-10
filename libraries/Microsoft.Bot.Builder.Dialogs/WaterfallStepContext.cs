@@ -50,7 +50,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         public object Result { get; }
 
         /// <summary>
-        /// Gets a dictionary of values which will be persisted across all waterfall steps.
+        /// Gets a dictionary of values which will be persisted across all waterfall actions.
         /// </summary>
         public IDictionary<string, object> Values { get; }
 

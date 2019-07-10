@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
-    public abstract class DialogCommand : Dialog, IDialogDependencies
+    public abstract class DialogAction : Dialog, IDialogDependencies
     {
         public override Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {

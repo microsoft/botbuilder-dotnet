@@ -24,12 +24,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
     public class UnknownIntentRule : EventRule
     {
         [JsonConstructor]
-        public UnknownIntentRule(List<IDialog> steps = null, string constraint = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public UnknownIntentRule(List<IDialog> actions = null, string constraint = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base(events: new List<string>()
             {
                 AdaptiveEvents.UnknownIntent
             },
-            steps: steps,
+            actions: actions,
             constraint: constraint,
             callerPath: callerPath, callerLine: callerLine)
         {

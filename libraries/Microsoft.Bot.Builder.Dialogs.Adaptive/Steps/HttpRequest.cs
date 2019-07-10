@@ -14,12 +14,12 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 
-namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
     /// <summary>
     /// Step for HttpRequests
     /// </summary>
-    public class HttpRequest : DialogCommand
+    public class HttpRequest : DialogAction
     {
         private static readonly HttpClient client = new HttpClient();
 

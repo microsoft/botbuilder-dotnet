@@ -9,12 +9,12 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
     /// <summary>
     /// Sets a property with the result of evaluating a value expression
     /// </summary>
-    public class InitProperty : DialogCommand
+    public class InitProperty : DialogAction
     {
         [JsonConstructor]
         public InitProperty([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0) : base()

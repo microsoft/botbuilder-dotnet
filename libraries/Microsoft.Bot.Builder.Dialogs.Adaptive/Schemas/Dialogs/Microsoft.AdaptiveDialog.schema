@@ -2,7 +2,7 @@
     "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/master/packages/DialogSchema/src/dialogSchema.schema",
     "$role": "unionType(Microsoft.IDialog)",
     "title": "Adaptive Dialog",
-    "description": "Configures a data driven dialog via a collection of steps/dialogs.",
+    "description": "Configures a data driven dialog via a collection of actions/dialogs.",
     "type": "object",
     "allOf": [
         {
@@ -13,13 +13,13 @@
                 "autoEndDialog": {
                     "type": "boolean",
                     "title": "Auto End Dialog",
-                    "description": "If this is true the dialog will automatically end when there are no more steps to run.  If this is false it is the responsbility of the author to call EndDialog at an appropriate time.",
+                    "description": "If this is true the dialog will automatically end when there are no more actions to run.  If this is false it is the responsbility of the author to call EndDialog at an appropriate time.",
                     "default": "true"
                 },
                 "defaultResultProperty": {
                     "type": "string",
                     "title": "Default Result Property",
-                    "description": "Property path to the memory to return as the result of this dialog ending because AutoEndDialog is true and there are no more steps to execute.",
+                    "description": "Property path to the memory to return as the result of this dialog ending because AutoEndDialog is true and there are no more actions to execute.",
                     "default": "dialog.result"
                 },
                 "recognizer": {
@@ -36,13 +36,6 @@
                     "$type": "Microsoft.IRuleSelector",
                     "title": "Selector",
                     "description": "Policy for how to select rule to execute next"
-                },
-                "steps": {
-                    "type": "array",
-                    "description": "Initial Sequence of steps or dialogs to execute when dialog is started",
-                    "items": {
-                        "$type": "Microsoft.IDialog"
-                    }
                 },
                 "rules": {
                     "type": "array",

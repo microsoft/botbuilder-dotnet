@@ -2,21 +2,26 @@
     "$schema": "../../app.schema",
     "$type": "Microsoft.AdaptiveDialog",
     "$id": "root",
-    "steps": [
+    "rules": [
         {
-            "$type": "Microsoft.TextInput",
-            "prompt": "Hello, what is your name?",
-            "outputBinding": "user.name"
-        },
-        {
-            "$type": "Microsoft.TraceActivity",
-            "valueType": "memory",
-            "value": "user",
-            "valueProperty": "user"
-        },
-        {
-            "$type": "Microsoft.LogStep",
-            "text": "{user.name}"
+            "$type": "Microsoft.BeginDialogRule",
+            "actions": [
+                {
+                    "$type": "Microsoft.TextInput",
+                    "prompt": "Hello, what is your name?",
+                    "outputBinding": "user.name"
+                },
+                {
+                    "$type": "Microsoft.TraceActivity",
+                    "valueType": "memory",
+                    "value": "user",
+                    "valueProperty": "user"
+                },
+                {
+                    "$type": "Microsoft.LogStep",
+                    "text": "{user.name}"
+                }
+            ]
         }
     ]
 }

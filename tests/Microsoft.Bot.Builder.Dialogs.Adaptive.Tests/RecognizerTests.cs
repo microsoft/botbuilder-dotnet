@@ -7,7 +7,7 @@ using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Rules;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Steps;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
@@ -94,17 +94,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             dialog.Recognizer = GetMultiLingualRecognizer();
             dialog.AddRules(new List<IRule>()
             {
-                new IntentRule("Greeting", steps:
+                new IntentRule("Greeting", actions:
                     new List<IDialog>()
                     {
                         new SendActivity("greeting intent"),
                     }),
-                new IntentRule("Goodbye", steps:
+                new IntentRule("Goodbye", actions:
                     new List<IDialog>()
                     {
                         new SendActivity("goodbye intent"),
                     }),
-                new UnknownIntentRule(steps:
+                new UnknownIntentRule(actions:
                     new List<IDialog>()
                     {
                         new SendActivity("default rule"),

@@ -63,6 +63,7 @@
     <None Remove="Schemas\Recognizers\Microsoft.MultiLanguageRecognizer.schema" />
     <None Remove="Schemas\Recognizers\Microsoft.RegexRecognizer.schema" />
     <None Remove="Schemas\Rules\Microsoft.ActivityRule.schema" />
+    <None Remove="Schemas\Rules\Microsoft.BeginDialogRule.schema" />
     <None Remove="Schemas\Rules\Microsoft.ConversationUpdateActivityRule.schema" />
     <None Remove="Schemas\Rules\Microsoft.EndOfConversationActivityRule.schema" />
     <None Remove="Schemas\Rules\Microsoft.EventActivityRule.schema" />
@@ -113,6 +114,7 @@
     <Content Include="Schemas\Microsoft.IRuleSelector.schema" />
     <Content Include="Schemas\Recognizers\Microsoft.MultiLanguageRecognizer.schema" />
     <Content Include="Schemas\Recognizers\Microsoft.RegexRecognizer.schema" />
+    <Content Include="Schemas\Rules\Microsoft.BeginDialogRule.schema" />
     <Content Include="Schemas\Rules\Microsoft.ActivityRule.schema" />
     <Content Include="Schemas\Rules\Microsoft.ConversationUpdateActivityRule.schema" />
     <Content Include="Schemas\Rules\Microsoft.EndOfConversationActivityRule.schema" />

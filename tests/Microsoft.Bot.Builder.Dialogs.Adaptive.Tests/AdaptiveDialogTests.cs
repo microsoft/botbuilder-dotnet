@@ -7,7 +7,7 @@ using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Rules;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Steps;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
 using Microsoft.Bot.Builder.Expressions;
@@ -113,63 +113,66 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         public async Task AdaptiveDialog_EditArray()
         {
             var dialog = new AdaptiveDialog("planningTest");
-            dialog.Steps = new List<IDialog>()
+            dialog.Rules.Add(new BeginDialogRule()
             {
-                // Add item
-                new TextInput() {
-                    AlwaysPrompt = true,
-                    Prompt = new ActivityTemplate("Please add an item to todos."),
-                    Property = "dialog.todo"
-                },
-                new InitProperty() { Property = "user.todos", Type = "array" },
-                new EditArray(EditArray.ArrayChangeType.Push, "user.todos", "dialog.todo"),
-                new SendActivity() { Activity = new ActivityTemplate("Your todos: {join(user.todos, ',')}") },
-                new TextInput()
+                Actions = new List<IDialog>()
                 {
-                    AlwaysPrompt = true,
-                    Prompt = new ActivityTemplate("Please add an item to todos."),
-                    Property = "dialog.todo"
+                    // Add item
+                    new TextInput() {
+                        AlwaysPrompt = true,
+                        Prompt = new ActivityTemplate("Please add an item to todos."),
+                        Property = "dialog.todo"
+                    },
+                    new InitProperty() { Property = "user.todos", Type = "array" },
+                    new EditArray(EditArray.ArrayChangeType.Push, "user.todos", "dialog.todo"),
+                    new SendActivity() { Activity = new ActivityTemplate("Your todos: {join(user.todos, ',')}") },
+                    new TextInput()
+                    {
+                        AlwaysPrompt = true,
+                        Prompt = new ActivityTemplate("Please add an item to todos."),
+                        Property = "dialog.todo"
 
-                },
-                new EditArray(EditArray.ArrayChangeType.Push, "user.todos", "dialog.todo"),
-                new SendActivity() { Activity = new ActivityTemplate("Your todos: {join(user.todos, ',')}") },
+                    },
+                    new EditArray(EditArray.ArrayChangeType.Push, "user.todos", "dialog.todo"),
+                    new SendActivity() { Activity = new ActivityTemplate("Your todos: {join(user.todos, ',')}") },
 
-                // Remove item
-                new TextInput() {
-                    AlwaysPrompt = true,
-                    Prompt = new ActivityTemplate("Enter a item to remove."),
-                    Property = "dialog.todo"
-                },
-                new EditArray(EditArray.ArrayChangeType.Remove, "user.todos", "dialog.todo"),
-                new SendActivity() { Activity = new ActivityTemplate("Your todos: {join(user.todos, ',')}") },
+                    // Remove item
+                    new TextInput() {
+                        AlwaysPrompt = true,
+                        Prompt = new ActivityTemplate("Enter a item to remove."),
+                        Property = "dialog.todo"
+                    },
+                    new EditArray(EditArray.ArrayChangeType.Remove, "user.todos", "dialog.todo"),
+                    new SendActivity() { Activity = new ActivityTemplate("Your todos: {join(user.todos, ',')}") },
 
-                // Add item and pop item
-                new TextInput() {
-                    AlwaysPrompt = true,
-                    Prompt = new ActivityTemplate("Please add an item to todos."),
-                    Property = "dialog.todo"
-                },
-                new EditArray(EditArray.ArrayChangeType.Push, "user.todos", "dialog.todo"),
-                new TextInput()
-                {
-                    AlwaysPrompt = true,
-                    Prompt = new ActivityTemplate("Please add an item to todos."),
-                    Property = "dialog.todo"
-                },
-                new EditArray(EditArray.ArrayChangeType.Push, "user.todos", "dialog.todo"),
-                new SendActivity() { Activity = new ActivityTemplate("Your todos: {join(user.todos, ',')}") },
+                    // Add item and pop item
+                    new TextInput() {
+                        AlwaysPrompt = true,
+                        Prompt = new ActivityTemplate("Please add an item to todos."),
+                        Property = "dialog.todo"
+                    },
+                    new EditArray(EditArray.ArrayChangeType.Push, "user.todos", "dialog.todo"),
+                    new TextInput()
+                    {
+                        AlwaysPrompt = true,
+                        Prompt = new ActivityTemplate("Please add an item to todos."),
+                        Property = "dialog.todo"
+                    },
+                    new EditArray(EditArray.ArrayChangeType.Push, "user.todos", "dialog.todo"),
+                    new SendActivity() { Activity = new ActivityTemplate("Your todos: {join(user.todos, ',')}") },
 
-                new EditArray(EditArray.ArrayChangeType.Pop, "user.todos"),
-                new SendActivity() { Activity = new ActivityTemplate("Your todos: {join(user.todos, ',')}") },
+                    new EditArray(EditArray.ArrayChangeType.Pop, "user.todos"),
+                    new SendActivity() { Activity = new ActivityTemplate("Your todos: {join(user.todos, ',')}") },
 
-                // Take item
-                new EditArray(EditArray.ArrayChangeType.Take, "user.todos"),
-                new SendActivity() { Activity = new ActivityTemplate("Your todos: {join(user.todos, ',')}") },
+                    // Take item
+                    new EditArray(EditArray.ArrayChangeType.Take, "user.todos"),
+                    new SendActivity() { Activity = new ActivityTemplate("Your todos: {join(user.todos, ',')}") },
 
-                // Clear list
-                new EditArray(EditArray.ArrayChangeType.Clear, "user.todos"),
-                new SendActivity() { Activity = new ActivityTemplate("Your todos: {join(user.todos, ',')}") },
-            };
+                    // Clear list
+                    new EditArray(EditArray.ArrayChangeType.Clear, "user.todos"),
+                    new SendActivity() { Activity = new ActivityTemplate("Your todos: {join(user.todos, ',')}") },
+                }
+            });
 
             await CreateFlow(dialog)
             .Send("hi")
@@ -203,7 +206,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         new IfCondition()
                         {
                             Condition = "user.name == null",
-                            Steps = new List<IDialog>()
+                            Actions = new List<IDialog>()
                             {
                                 new TextInput() {
                                     Prompt = new ActivityTemplate("Hello, what is your name?"),
@@ -227,21 +230,27 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             var ruleDialog = new AdaptiveDialog("planningTest")
             {
-                Steps = new List<IDialog>()
+                Rules = new List<IRule>()
                 {
-                    new IfCondition()
+                    new BeginDialogRule()
                     {
-                        Condition = "user.name == null",
-                        Steps = new List<IDialog>()
+                        Actions = new List<IDialog>()
                         {
-                            new TextInput()
+                            new IfCondition()
                             {
-                                Prompt = new ActivityTemplate("Hello, what is your name?"),
-                                Property = "user.name"
-                            }
+                                Condition = "user.name == null",
+                                Actions = new List<IDialog>()
+                                {
+                                    new TextInput()
+                                    {
+                                        Prompt = new ActivityTemplate("Hello, what is your name?"),
+                                        Property = "user.name"
+                                    }
+                                }
+                            },
+                            new SendActivity("Hello {user.name}, nice to meet you!")
                         }
-                    },
-                    new SendActivity("Hello {user.name}, nice to meet you!")
+                    }
                 }
             };
 
@@ -265,12 +274,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 {
                     new UnknownIntentRule()
                     {
-                        Steps = new List<IDialog>()
+                        Actions = new List<IDialog>()
                         {
                             new IfCondition()
                             {
                                 Condition = "user.name == null",
-                                Steps = new List<IDialog>()
+                                Actions = new List<IDialog>()
                                 {
                                     new TextInput()
                                     {
@@ -283,7 +292,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             {
                                 // Check comparison with string literal
                                 Condition = "user.name == 'Carlos'",
-                                Steps = new List<IDialog>()
+                                Actions = new List<IDialog>()
                                 {
                                     new SendActivity("Hello carlin")
                                 }
@@ -306,7 +315,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
 
         [TestMethod]
-        public async Task AdaptiveDialog_DoSteps()
+        public async Task AdaptiveDialog_DoActions()
         {
             var ruleDialog = new AdaptiveDialog("planningTest")
             {
@@ -319,28 +328,31 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         { "HelloIntent", "hi|hello" }
                     }
                 },
-                Steps = new List<IDialog>()
-                {
-                    new IfCondition()
-                    {
-                        Condition = "user.name == null",
-                            Steps = new List<IDialog>()
-                            {
-                                new TextInput()
-                                {
-                                    Prompt = new ActivityTemplate("Hello, what is your name?"),
-                                    Property = "user.name"
-                                }
-                            }
-                    },
-                    new SendActivity("Hello {user.name}, nice to meet you!")
-                },
                 Rules = new List<IRule>()
                 {
+                    new BeginDialogRule()
+                    {
+                        Actions = new List<IDialog>()
+                        {
+                            new IfCondition()
+                            {
+                                Condition = "user.name == null",
+                                    Actions = new List<IDialog>()
+                                    {
+                                        new TextInput()
+                                        {
+                                            Prompt = new ActivityTemplate("Hello, what is your name?"),
+                                            Property = "user.name"
+                                        }
+                                    }
+                            },
+                            new SendActivity("Hello {user.name}, nice to meet you!")
+                        },
+                    },
                     new IntentRule()
                     {
                         Intent="JokeIntent",
-                        Steps = new List<IDialog>()
+                        Actions = new List<IDialog>()
                         {
                             new SendActivity("Why did the chicken cross the road?"),
                             new EndTurn(),
@@ -350,7 +362,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     new IntentRule()
                     {
                         Intent="HelloIntent",
-                        Steps = new List<IDialog>()
+                        Actions = new List<IDialog>()
                         {
                             new SendActivity("Hello {user.name}, nice to meet you!")
                         }
@@ -385,12 +397,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     { "GreetingIntent", "(?i)greeting|hi|hello" }
                 }
             };
-            ruleDialog.Steps = new List<IDialog>()
+
+            ruleDialog.AddRules(new List<IRule>()
+            {
+                new BeginDialogRule()
+                {
+                    Actions = new List<IDialog>()
                     {
                         new IfCondition()
                         {
                             Condition = "user.name == null",
-                            Steps = new List<IDialog>()
+                            Actions = new List<IDialog>()
                             {
                                 new TextInput()
                                 {
@@ -400,27 +417,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             }
                         },
                         new SendActivity("Hello {user.name}, nice to meet you!")
-                    };
-
-            ruleDialog.AddRules(new List<IRule>()
-            {
+                    }
+                },
                 new IntentRule()
                 {
                     Intent= "GreetingIntent",
-                    Steps = new List<IDialog>()
+                    Actions = new List<IDialog>()
                     {
                         new SendActivity("Hello {user.name}, nice to meet you!")
                     }
                 },
                 new IntentRule("JokeIntent",
-                    steps: new List<IDialog>()
+                    actions: new List<IDialog>()
                     {
                         new SendActivity("Why did the chicken cross the road?"),
                         new EndTurn(),
                         new SendActivity("To get to the other side")
                     }),
                 new UnknownIntentRule(
-                    steps: new List<IDialog>()
+                    actions: new List<IDialog>()
                     {
                         new SendActivity("I'm a joke bot. To get started say 'tell me a joke'")
                     }),
@@ -455,38 +470,41 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         { "GoodbyeIntent", "bye|goodbye|seeya|see ya"},
                     }
                 },
-                Steps = new List<IDialog>()
-                {
-                    new IfCondition()
-                    {
-                        Condition = "user.name == null",
-                        Steps = new List<IDialog>()
-                        {
-                            new TextInput()
-                            {
-                                Prompt = new ActivityTemplate("Hello, what is your name?"),
-                                Property = "user.name"
-                            }
-                        }
-                    },
-                    new SendActivity("Hello {user.name}, nice to meet you!"),
-                },
                 Rules = new List<IRule>()
                 {
+                    new BeginDialogRule()
+                    {
+                        Actions = new List<IDialog>()
+                        {
+                            new IfCondition()
+                            {
+                                Condition = "user.name == null",
+                                Actions = new List<IDialog>()
+                                {
+                                    new TextInput()
+                                    {
+                                        Prompt = new ActivityTemplate("Hello, what is your name?"),
+                                        Property = "user.name"
+                                    }
+                                }
+                            },
+                            new SendActivity("Hello {user.name}, nice to meet you!"),
+                        },
+                    },
                     new IntentRule("GreetingIntemt",
-                        steps: new List<IDialog>()
+                        actions: new List<IDialog>()
                         {
                             new SendActivity("Hello {user.name}, nice to meet you!"),
                         }),
                     new IntentRule("JokeIntent",
-                        steps: new List<IDialog>()
+                        actions: new List<IDialog>()
                         {
                             new SendActivity("Why did the chicken cross the road?"),
                             new EndTurn(),
                             new SendActivity("To get to the other side")
                         }),
                     new IntentRule("GoodbyeIntent",
-                        steps: new List<IDialog>()
+                        actions: new List<IDialog>()
                         {
                             new SendActivity("See you later aligator!"),
                             new EndDialog()
@@ -532,33 +550,37 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         { "GoodbyeIntent", "(?i)bye|goodbye|seeya|see ya"}
                     }
                 },
-                Steps = new List<IDialog>()
-                {
-                    new BeginDialog("Greeting"),
-                    new SendActivity("I'm a joke bot. To get started say 'tell me a joke'"),
-                },
                 Rules = new List<IRule>()
                 {
+                    new BeginDialogRule()
+                    {
+                        Actions = new List<IDialog>()
+                        {
+                            new BeginDialog("Greeting"),
+                            new SendActivity("I'm a joke bot. To get started say 'tell me a joke'"),
+                        },
+                    },
+
                     new IntentRule("JokeIntent",
-                        steps: new List<IDialog>()
+                        actions: new List<IDialog>()
                         {
                             new BeginDialog("TellJokeDialog"),
                         }),
 
                     new IntentRule("GreetingIntent",
-                        steps: new List<IDialog>()
+                        actions: new List<IDialog>()
                         {
                             new BeginDialog("Greeting"),
                         }),
 
                     new IntentRule("GoodbyeIntent",
-                        steps: new List<IDialog>()
+                        actions: new List<IDialog>()
                         {
                             new SendActivity("See you later aligator!"),
                             new EndDialog()
                         }),
 
-                    new UnknownIntentRule(steps: new List<IDialog>()
+                    new UnknownIntentRule(actions: new List<IDialog>()
                         {
                             new SendActivity("Like I said, I'm a joke bot. To get started say 'tell me a joke'"),
                         }),
@@ -568,34 +590,48 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             innerDialog.AddDialog(new[] {
                 new AdaptiveDialog("Greeting")
                 {
-                    Steps = new List<IDialog>()
+                    Rules = new List<IRule>()
                     {
-                        new IfCondition()
+                        new BeginDialogRule()
                         {
-                            Condition = "user.name == null",
-                            Steps = new List<IDialog>()
+
+                            Actions = new List<IDialog>()
                             {
-                                new TextInput()
+                                new IfCondition()
                                 {
-                                    Prompt = new ActivityTemplate("Hello, what is your name?"),
-                                    Property = "user.name"
-                                },
-                                new SendActivity("Hello {user.name}, nice to meet you!")
-                            },
-                            ElseSteps = new List<IDialog>()
-                            {
-                                new SendActivity("Hello {user.name}, nice to see you again!")
+                                    Condition = "user.name == null",
+                                    Actions = new List<IDialog>()
+                                    {
+                                        new TextInput()
+                                        {
+                                            Prompt = new ActivityTemplate("Hello, what is your name?"),
+                                            Property = "user.name"
+                                        },
+                                        new SendActivity("Hello {user.name}, nice to meet you!")
+                                    },
+                                    ElseActions = new List<IDialog>()
+                                    {
+                                        new SendActivity("Hello {user.name}, nice to see you again!")
+                                    }
+                                }
                             }
                         }
                     }
                 },
                 new AdaptiveDialog("TellJokeDialog")
                     {
-                        Steps = new List<IDialog>()
+                        Rules = new List<IRule>()
                         {
-                            new SendActivity("Why did the chicken cross the road?"),
-                            new EndTurn(),
-                            new SendActivity("To get to the other side")
+                            new BeginDialogRule()
+                            {
+
+                                Actions = new List<IDialog>()
+                                {
+                                    new SendActivity("Why did the chicken cross the road?"),
+                                    new EndTurn(),
+                                    new SendActivity("To get to the other side")
+                                }
+                            }
                         }
                     }
                 });
@@ -611,29 +647,32 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         { "HelpIntent", "(?i)help" }
                     }
                 },
-                Steps = new List<IDialog>()
-                {
-                    new SendActivity("Hi, type 'begin' to start a dialog, type 'help' to get help.")
-                },
                 Rules = new List<IRule>()
                 {
+                    new BeginDialogRule()
+                    {
+                        Actions = new List<IDialog>()
+                        {
+                            new SendActivity("Hi, type 'begin' to start a dialog, type 'help' to get help.")
+                        },
+                    },
                     new IntentRule("BeginIntent")
                     {
-                        Steps = new List<IDialog>()
+                        Actions = new List<IDialog>()
                         {
                             new BeginDialog("innerDialog")
                         }
                     },
                     new IntentRule("HelpIntent")
                     {
-                        Steps = new List<IDialog>()
+                        Actions = new List<IDialog>()
                         {
                             new SendActivity("help is coming")
                         }
                     },
                     new UnknownIntentRule()
                     {
-                        Steps = new List<IDialog>()
+                        Actions = new List<IDialog>()
                         {
                             new SendActivity("Hi, type 'begin' to start a dialog, type 'help' to get help.")
                         }
@@ -683,14 +722,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         { "JokeIntent", "joke" }
                     }
                 },
-                Steps = new List<IDialog>()
-                {
-                    new SendActivity("I'm a joke bot. To get started say 'tell me a joke'")
-                },
                 Rules = new List<IRule>()
                 {
+                    new BeginDialogRule()
+                    {
+                        Actions = new List<IDialog>()
+                        {
+                            new SendActivity("I'm a joke bot. To get started say 'tell me a joke'")
+                        },
+                    },
                     new IntentRule("JokeIntent",
-                        steps: new List<IDialog>()
+                        actions: new List<IDialog>()
                         {
                             new SendActivity("Why did the chicken cross the road?"),
                             new EndTurn(),
@@ -723,26 +765,30 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         { "CancelIntent", "cancel" },
                     }
                 },
-                Steps = new List<IDialog>()
-                {
-                    new TextInput()
-                    {
-                        Prompt = new ActivityTemplate("name?"),
-                        Property = "user.name"
-                    },
-                    new SendActivity("{user.name}"),
-                    new NumberInput()
-                    {
-                        Prompt = new ActivityTemplate("age?"),
-                        Property = "user.age"
-                    },
-                    new SendActivity("{user.age}"),
-                },
+
                 Rules = new List<IRule>()
                 {
-                    new IntentRule("SideIntent") { Steps = new List<IDialog>() { new SendActivity("sideintent") } },
-                    new IntentRule("CancelIntent") { Steps = new List<IDialog>() { new EndDialog() } },
-                    new UnknownIntentRule() { Steps = new List<IDialog>() { new SendActivity("outerWhat") } }
+                    new BeginDialogRule()
+                    {
+                        Actions = new List<IDialog>()
+                        {
+                            new TextInput()
+                            {
+                                Prompt = new ActivityTemplate("name?"),
+                                Property = "user.name"
+                            },
+                            new SendActivity("{user.name}"),
+                            new NumberInput()
+                            {
+                                Prompt = new ActivityTemplate("age?"),
+                                Property = "user.age"
+                            },
+                            new SendActivity("{user.age}"),
+                        }
+                    },
+                    new IntentRule("SideIntent") { Actions = new List<IDialog>() { new SendActivity("sideintent") } },
+                    new IntentRule("CancelIntent") { Actions = new List<IDialog>() { new EndDialog() } },
+                    new UnknownIntentRule() { Actions = new List<IDialog>() { new SendActivity("outerWhat") } }
                 }
             };
 
@@ -759,8 +805,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 },
                 Rules = new List<IRule>()
                 {
-                    new IntentRule("StartOuterIntent", steps: new List<IDialog>() { outerDialog }),
-                    new IntentRule("RootIntent", steps: new List<IDialog>() { new SendActivity("rootintent") }),
+                    new IntentRule("StartOuterIntent", actions: new List<IDialog>() { outerDialog }),
+                    new IntentRule("RootIntent", actions: new List<IDialog>() { new SendActivity("rootintent") }),
                     new UnknownIntentRule( new List<IDialog>() { new SendActivity("rootunknown") })
                 }
             };
@@ -803,18 +849,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 },
                 Rules = new List<IRule>()
                 {
-                    new ActivityRule("Custom", steps: new List<IDialog>() { new SendActivity("CustomActivityRule") }),
-                    new MessageActivityRule(steps: new List<IDialog>() { new SendActivity("MessageActivityRule") }),
-                    new MessageDeleteActivityRule(steps: new List<IDialog>() { new SendActivity("MessageDeleteActivityRule") }),
-                    new MessageUpdateActivityRule(steps: new List<IDialog>() { new SendActivity("MessageUpdateActivityRule") }),
-                    new MessageReactionActivityRule(steps: new List<IDialog>() { new SendActivity("MessageReactionActivityRule") }),
-                    new ConversationUpdateActivityRule(steps: new List<IDialog>() { new SendActivity("ConversationUpdateActivityRule") }),
-                    new EndOfConversationActivityRule(steps: new List<IDialog>() { new SendActivity("EndOfConversationActivityRule") }),
-                    new InvokeActivityRule(steps: new List<IDialog>() { new SendActivity("InvokeActivityRule") }),
-                    new EventActivityRule(steps: new List<IDialog>() { new SendActivity("EventActivityRule") }),
-                    new HandoffActivityRule(steps: new List<IDialog>() { new SendActivity("HandoffActivityRule") }),
-                    new TypingActivityRule(steps: new List<IDialog>() { new SendActivity("TypingActivityRule") }),
-                    new MessageActivityRule(constraint: "turn.activity.text == 'constraint'", steps: new List<IDialog>() { new SendActivity("constraint") }),
+                    new ActivityRule("Custom", actions: new List<IDialog>() { new SendActivity("CustomActivityRule") }),
+                    new MessageActivityRule(actions: new List<IDialog>() { new SendActivity("MessageActivityRule") }),
+                    new MessageDeleteActivityRule(actions: new List<IDialog>() { new SendActivity("MessageDeleteActivityRule") }),
+                    new MessageUpdateActivityRule(actions: new List<IDialog>() { new SendActivity("MessageUpdateActivityRule") }),
+                    new MessageReactionActivityRule(actions: new List<IDialog>() { new SendActivity("MessageReactionActivityRule") }),
+                    new ConversationUpdateActivityRule(actions: new List<IDialog>() { new SendActivity("ConversationUpdateActivityRule") }),
+                    new EndOfConversationActivityRule(actions: new List<IDialog>() { new SendActivity("EndOfConversationActivityRule") }),
+                    new InvokeActivityRule(actions: new List<IDialog>() { new SendActivity("InvokeActivityRule") }),
+                    new EventActivityRule(actions: new List<IDialog>() { new SendActivity("EventActivityRule") }),
+                    new HandoffActivityRule(actions: new List<IDialog>() { new SendActivity("HandoffActivityRule") }),
+                    new TypingActivityRule(actions: new List<IDialog>() { new SendActivity("TypingActivityRule") }),
+                    new MessageActivityRule(constraint: "turn.activity.text == 'constraint'", actions: new List<IDialog>() { new SendActivity("constraint") }),
                 }
             };
 
@@ -861,8 +907,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 },
                 Rules = new List<IRule>()
                 {
-                    new IntentRule(intent: "JokeIntent", steps: new List<IDialog>() { new SendActivity("chicken joke") }),
-                    new MessageActivityRule(constraint: "turn.activity.text == 'magic'", steps: new List<IDialog>() { new SendActivity("abracadabra") }),
+                    new IntentRule(intent: "JokeIntent", actions: new List<IDialog>() { new SendActivity("chicken joke") }),
+                    new MessageActivityRule(constraint: "turn.activity.text == 'magic'", actions: new List<IDialog>() { new SendActivity("abracadabra") }),
                 }
             };
 

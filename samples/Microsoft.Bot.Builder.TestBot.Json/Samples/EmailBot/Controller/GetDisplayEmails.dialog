@@ -1,7 +1,7 @@
 {
   "$schema": "../../app.schema",
   "$type": "Microsoft.AdaptiveDialog",
-  "steps": [
+  "actions": [
     "GetEmails",
     {
       "$type": "Microsoft.EditArray",
@@ -17,7 +17,7 @@
     {
       "$type": "Microsoft.IfCondition",
       "condition": "user.mailType=='msgraph'",
-      "steps": [
+      "actions": [
         // Need subarray. Hack for now.
         //{
         //  "$type": "Microsoft.SetProperty",
@@ -47,7 +47,7 @@
         {
           "$type": "Microsoft.IfCondition",
           "condition": "user.showIndex==0",
-          "steps": [
+          "actions": [
             {
               "$type": "Microsoft.EditArray",
               "changeType": "Push",
@@ -67,7 +67,7 @@
               "itemProperty": "user.getGraphEmails.value[2]"
             }
           ],
-          "elseSteps": [
+          "elseActions": [
             {
               "$type": "Microsoft.EditArray",
               "changeType": "Push",

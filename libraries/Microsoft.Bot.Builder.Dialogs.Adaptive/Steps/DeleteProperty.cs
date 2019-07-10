@@ -7,12 +7,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
     /// <summary>
     /// Deletes a property from memory
     /// </summary>
-    public class DeleteProperty : DialogCommand
+    public class DeleteProperty : DialogAction
     {
         /// <summary>
         /// Property to path to remove Example: user.age will remove "age" from "user"

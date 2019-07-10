@@ -13,39 +13,42 @@
             "CancelIntent": "(?i)cancel"
         }
     },
-    "steps": [
-        {
-            "$type": "Microsoft.SendActivity",
-            "activity": "[welcome]"
-        },
-        "ExternalLanguage.Greeting"
-    ],
     "rules": [
+        {
+            "$type": "Microsoft.BeginDialogRule",
+            "actions": [
+                {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "[welcome]"
+                },
+                "ExternalLanguage.Greeting"
+            ]
+        },
         {
             "$type": "Microsoft.IntentRule",
             "intent": "JokeIntent",
-            "steps": [
+            "actions": [
                 "ExternalLanguage.TellJoke"
             ]
         },
         {
             "$type": "Microsoft.IntentRule",
             "intent": "FortuneTellerIntent",
-            "steps": [
+            "actions": [
                 "ExternalLanguage.FortuneTeller"
             ]
         },
         {
             "$type": "Microsoft.IntentRule",
             "intent": "GreetingIntent",
-            "steps": [
+            "actions": [
                 "ExternalLanguage.Greeting"
             ]
         },
         {
             "$type": "Microsoft.IntentRule",
             "intent": "HelpIntent",
-            "steps": [
+            "actions": [
                 {
                     "$type": "Microsoft.SendActivity",
                     "activity": "[help]"
@@ -55,7 +58,7 @@
         {
             "$type": "Microsoft.IntentRule",
             "intent": "CancelIntent",
-            "steps": [
+            "actions": [
                 {
                     "$type": "Microsoft.SendActivity",
                     "activity": "OK, see ya"
@@ -67,7 +70,7 @@
         },
         {
             "$type": "Microsoft.UnknownIntentRule",
-            "steps": [
+            "actions": [
                 {
                     "$type": "Microsoft.SendActivity",
                     "activity": "[help]"

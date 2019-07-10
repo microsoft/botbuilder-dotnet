@@ -25,13 +25,13 @@
                         "title": "Value",
                         "description": "Value which must match the condition property"
                     },
-                    "steps": {
+                    "actions": {
                         "type": "array",
                         "items": {
                             "$type": "Microsoft.IDialog"
                         },
-                        "title": "Steps",
-                        "description": "Steps to execute if case is equal to condition"
+                        "title": "Actions",
+                        "description": "Actions to execute if case is equal to condition"
                     }
                 },
                 "required": [

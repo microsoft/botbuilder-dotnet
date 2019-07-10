@@ -6,7 +6,7 @@
     "rules": [
         {
             "$type": "Microsoft.IntentRule",
-            "steps": [
+            "actions": [
                 {
                     "$comment": "**** Primary ordering dialog ****",
                     "$type": "Microsoft.AdaptiveDialog",
@@ -18,7 +18,7 @@
                                 "recognizedIntent"
                             ],
                             "constraint": "@meat && ignore(!turn.setmeat)",
-                            "steps": [
+                            "actions": [
                                 {
                                     "$type": "Microsoft.SendActivity",
                                     "activity": "Set conversation.order.meat to {first(@meat[0])}"
@@ -47,7 +47,7 @@
                                 "recognizedIntent"
                             ],
                             "constraint": "@cheese && ignore(!turn.setcheese)",
-                            "steps": [
+                            "actions": [
                                 {
                                     "$type": "Microsoft.SendActivity",
                                     "activity": "Set conversation.order.cheese to {first(@cheese[0])}"
@@ -75,7 +75,7 @@
                                 "recognizedIntent"
                             ],
                             "constraint": "@bread && ignore(!turn.setbread)",
-                            "steps": [
+                            "actions": [
                                 {
                                     "$type": "Microsoft.SendActivity",
                                     "activity": "Set conversation.order.bread to {first(@bread[0])}"
@@ -103,7 +103,7 @@
                                 "recognizedIntent"
                             ],
                             "constraint": "@topping && ignore(!turn.settopping)",
-                            "steps": [
+                            "actions": [
                                 {
                                     "$type": "Microsoft.SendActivity",
                                     "activity": "Set conversation.order.topping to {join(foreach(@topping, list, first(list)), ', ')}"
@@ -131,7 +131,7 @@
                                 "recognizedIntent"
                             ],
                             "constraint": "@confirmation && ignore(!turn.setconfirmation)",
-                            "steps": [
+                            "actions": [
                                 {
                                     "$type": "Microsoft.SendActivity",
                                     "activity": "Set conversation.order.confirmation to {first(@confirmation[0])}"
@@ -160,7 +160,7 @@
                                 "recognizedIntent"
                             ],
                             "constraint": "!conversation.order.meat && !conversation.order.bread",
-                            "steps": [
+                            "actions": [
                                 {
                                     "$type": "Microsoft.SendActivity",
                                     "activity": "[MeatAndBread]"
@@ -173,7 +173,7 @@
                                 "recognizedIntent"
                             ],
                             "constraint": "conversation.order.meat && conversation.order.bread && !conversation.order.cheese && !conversation.order.topping",
-                            "steps": [
+                            "actions": [
                                 {
                                     "$type": "Microsoft.SendActivity",
                                     "activity": "[CheeseAndToppingsWithMeatAndBread]"
@@ -186,7 +186,7 @@
                                 "recognizedIntent"
                             ],
                             "constraint": "!conversation.order.confirmation && conversation.order.meat && conversation.order.bread && conversation.order.cheese && conversation.order.topping",
-                            "steps": [
+                            "actions": [
                                 {
                                     "$type": "Microsoft.SendActivity",
                                     "activity": "[Confirmation]"
@@ -200,7 +200,7 @@
                                 "recognizedIntent"
                             ],
                             "constraint": "conversation.order.confirmation == 'yes' && !conversation.order.alldone",
-                            "steps": [
+                            "actions": [
                                 {
                                     "$type": "Microsoft.SendActivity",
                                     "activity": "[BeingProcessed]"
@@ -218,7 +218,7 @@
                                 "recognizedIntent"
                             ],
                             "constraint": "conversation.order.confirmation == 'no'",
-                            "steps": [
+                            "actions": [
                                 {
                                     "$type": "Microsoft.SendActivity",
                                     "activity": "[StartAgain]"
@@ -239,7 +239,7 @@
                             "events": [
                                 "recognizedIntent"
                             ],
-                            "steps": [
+                            "actions": [
                                 {
                                     "$type": "Microsoft.SendActivity",
                                     "activity": "[NoIntent]"
@@ -252,7 +252,7 @@
                                 "recognizedIntent"
                             ],
                             "constraint": "conversation.order.meat && conversation.order.cheese && !conversation.order.bread && !conversation.order.topping",
-                            "steps": [
+                            "actions": [
                                 {
                                     "$type": "Microsoft.SendActivity",
                                     "activity": "[BreadAndToppingsWithMeatAndCheese]"
@@ -265,7 +265,7 @@
                                 "recognizedIntent"
                             ],
                             "constraint": "!conversation.order.meat && conversation.order.bread",
-                            "steps": [
+                            "actions": [
                                 {
                                     "$type": "Microsoft.SendActivity",
                                     "activity": "[MeatWithBread]"
@@ -279,7 +279,7 @@
                                 "recognizedIntent"
                             ],
                             "constraint": "!conversation.order.meat",
-                            "steps": [
+                            "actions": [
                                 {
                                     "$type": "Microsoft.SendActivity",
                                     "activity": "[Meat]"
@@ -295,7 +295,7 @@
                                 "recognizedIntent"
                             ],
                             "constraint": "!conversation.order.cheese",
-                            "steps": [
+                            "actions": [
                                 {
                                     "$type": "Microsoft.SendActivity",
                                     "activity": "[Cheese]"
@@ -308,7 +308,7 @@
                                 "recognizedIntent"
                             ],
                             "constraint": "!conversation.order.bread",
-                            "steps": [
+                            "actions": [
                                 {
                                     "$type": "Microsoft.SendActivity",
                                     "activity": "[Bread]"
@@ -321,7 +321,7 @@
                                 "recognizedIntent"
                             ],
                             "constraint": "!conversation.order.topping",
-                            "steps": [
+                            "actions": [
                                 {
                                     "$type": "Microsoft.SendActivity",
                                     "activity": "[Toppings]"
@@ -342,7 +342,7 @@
         {
             "$type": "Microsoft.IntentRule",
             "intent": "SandwichOptions",
-            "steps": [
+            "actions": [
                 {
                     "$type": "Microsoft.SendActivity",
                     "activity": "[SandwichOptions]"
@@ -352,7 +352,7 @@
         {
             "$type": "Microsoft.IntentRule",
             "intent": "BreadOptions",
-            "steps": [
+            "actions": [
                 {
                     "$type": "Microsoft.SendActivity",
                     "activity": "[BreadOptions]"
@@ -362,7 +362,7 @@
         {
             "$type": "Microsoft.IntentRule",
             "intent": "ToppingOptions",
-            "steps": [
+            "actions": [
                 {
                     "$type": "Microsoft.SendActivity",
                     "activity": "[ToppingOptions]"
@@ -372,7 +372,7 @@
         {
             "$type": "Microsoft.IntentRule",
             "intent": "CheeseOptions",
-            "steps": [
+            "actions": [
                 {
                     "$type": "Microsoft.SendActivity",
                     "activity": "[CheeseOptions]"
@@ -382,7 +382,7 @@
         {
             "$type": "Microsoft.IntentRule",
             "intent": "Greeting",
-            "steps": [
+            "actions": [
                 {
                     "$type": "Microsoft.SendActivity",
                     "activity": "[Greeting]"
@@ -394,7 +394,7 @@
             "events": [
                 "beginDialog"
             ],
-            "steps": [
+            "actions": [
                 {
                     "$type": "Microsoft.SendActivity",
                     "activity": "[Initial]"

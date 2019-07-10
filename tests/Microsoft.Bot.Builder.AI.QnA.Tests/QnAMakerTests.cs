@@ -12,7 +12,7 @@ using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Rules;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Steps;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
@@ -116,57 +116,60 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
 
             var rootDialog = new AdaptiveDialog("root")
             {
-                Steps = new List<IDialog>()
+                Rules = new List<IRule>()
                 {
-                    new BeginDialog()
+                    new BeginDialogRule()
                     {
-                        Dialog = new AdaptiveDialog("outer")
+                        Actions = new List<IDialog>()
                         {
-                            AutoEndDialog = false,
-                            Recognizer = new RegexRecognizer()
+                            new BeginDialog()
                             {
-                                Intents = new Dictionary<string, string>()
+                                Dialog = new AdaptiveDialog("outer")
                                 {
-                                    { "CowboyIntent" , "moo" }
-                                }
-                            },
-                            Rules = new List<IRule>()
-                            {
-                                new IntentRule(intent: "CowboyIntent")
-                                {
-                                    Steps = new List<IDialog>()
+                                    AutoEndDialog = false,
+                                    Recognizer = new RegexRecognizer()
                                     {
-                                        new SendActivity("Yippee ki-yay!")
-                                    }
-                                },
-                                new UnknownIntentRule()
-                                {
-                                    Steps = new List<IDialog>()
-                                    {
-                                        new QnAMakerDialog(qnamaker:qna )
+                                        Intents = new Dictionary<string, string>()
                                         {
-                                            OutputBinding = "turn.LastResult"
+                                            { "CowboyIntent" , "moo" }
+                                        }
+                                    },
+                                    Rules = new List<IRule>()
+                                    {
+                                        new IntentRule(intent: "CowboyIntent")
+                                        {
+                                            Actions = new List<IDialog>()
+                                            {
+                                                new SendActivity("Yippee ki-yay!")
+                                            }
                                         },
-                                        new IfCondition()
+                                        new UnknownIntentRule()
                                         {
-                                             Condition = "turn.LastResult == false",
-                                             Steps =   new List<IDialog>()
-                                             {
-                                                 new SendActivity("I didn't understand that.")
-                                             }
+                                            Actions = new List<IDialog>()
+                                            {
+                                                new QnAMakerDialog(qnamaker:qna )
+                                                {
+                                                    OutputBinding = "turn.LastResult"
+                                                },
+                                                new IfCondition()
+                                                {
+                                                     Condition = "turn.LastResult == false",
+                                                     Actions =   new List<IDialog>()
+                                                     {
+                                                         new SendActivity("I didn't understand that.")
+                                                     }
+                                                }
+                                            }
                                         }
                                     }
                                 }
                             }
                         }
-                    }
-                },
-                Rules = new List<IRule>()
-                {
+                    },
                     new EventRule()
                     {
                         Events = new List<string>() { "UnhandledUnknownIntent"},
-                        Steps = new List<IDialog>()
+                        Actions = new List<IDialog>()
                         {
                             new EditArray(),
                             new SendActivity("magenta")

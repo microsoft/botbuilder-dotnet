@@ -29,12 +29,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
         private Expression fullConstraint = null;
 
         [JsonConstructor]
-        public Rule(string constraint = null, List<IDialog> steps = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public Rule(string constraint = null, List<IDialog> actions = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
             this.RegisterSourceLocation(callerPath, callerLine);
 
             this.Constraint = constraint;
-            this.Steps = steps;
+            this.Actions = actions;
         }
 
         /// <summary>
@@ -44,10 +44,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
         public string Constraint { get; set; }
 
         /// <summary>
-        /// Gets or sets the steps to add to the plan when the rule constraints are met
+        /// Gets or sets the actions to add to the plan when the rule constraints are met
         /// </summary>
-        [JsonProperty("steps")]
-        public List<IDialog> Steps { get; set; } = new List<IDialog>();
+        [JsonProperty("actions")]
+        public List<IDialog> Actions { get; set; } = new List<IDialog>();
 
         /// <summary>
         /// Get the expression for this rule by calling GatherConstraints()
@@ -124,41 +124,41 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
         }
 
         /// <summary>
-        /// Method called to execute the rule's steps
+        /// Method called to execute the rule's actions
         /// </summary>
         /// <param name="planningContext"></param>
         /// <param name="dialogEvent"></param>
         /// <returns></returns>
-        public async Task<List<StepChangeList>> ExecuteAsync(SequenceContext planningContext)
+        public async Task<List<ActionChangeList>> ExecuteAsync(SequenceContext planningContext)
         {
             return await OnExecuteAsync(planningContext).ConfigureAwait(false);
         }
 
 
         /// <summary>
-        /// Method called to process the request to execute the steps
+        /// Method called to process the request to execute the actions
         /// </summary>
         /// <param name="context"></param>
         /// <param name="dialogEvent"></param>
         /// <returns></returns>
-        public async virtual Task<List<StepChangeList>> OnExecuteAsync(SequenceContext planning)
+        public async virtual Task<List<ActionChangeList>> OnExecuteAsync(SequenceContext planning)
         {
-            return new List<StepChangeList>()
+            return new List<ActionChangeList>()
             {
                 this.OnCreateChangeList(planning)
             };
         }
 
-        protected virtual StepChangeList OnCreateChangeList(SequenceContext planning, object dialogOptions = null)
+        protected virtual ActionChangeList OnCreateChangeList(SequenceContext planning, object dialogOptions = null)
         {
-            var changeList = new StepChangeList()
+            var changeList = new ActionChangeList()
             {
-                Steps = new List<StepState>()
+                Actions = new List<ActionState>()
             };
 
-            Steps.ForEach(s =>
+            Actions.ForEach(s =>
             {
-                var stepState = new StepState()
+                var stepState = new ActionState()
                 {
                     DialogStack = new List<DialogInstance>(),
                     DialogId = s.Id
@@ -169,7 +169,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
                     stepState.Options = dialogOptions;
                 }
 
-                changeList.Steps.Add(stepState);
+                changeList.Actions.Add(stepState);
             });
 
             return changeList;

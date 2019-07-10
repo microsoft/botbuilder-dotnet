@@ -1,18 +1,28 @@
 {
     "$schema": "../../app.schema",
     "$type": "Microsoft.AdaptiveDialog",
-    "rules":[
+    "rules": [
         {
-            "$type":"Microsoft.BeginDialogRule",    
+            "$type": "Microsoft.BeginDialogRule",
             "actions": [
                 {
-                    "$type": "Microsoft.IfCondition",
-                    "condition": "user.name == null",
+                    "$type": "Microsoft.EditActions",
+                    "changeType": "InsertActions",
                     "actions": [
                         {
                             "$type": "Microsoft.TextInput",
                             "prompt": "Hello, I'm Zoidberg. What is your name?",
                             "property": "user.name"
+                        }
+                    ]
+                },
+                {
+                    "$type": "Microsoft.EditActions",
+                    "changeType": "AppendActions",
+                    "actions": [
+                        {
+                            "$type": "Microsoft.SendActivity",
+                            "activity": "Goodbye!"
                         }
                     ]
                 },

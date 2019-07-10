@@ -8,12 +8,12 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
     /// <summary>
     /// Write log activity to console log
     /// </summary>
-    public class LogStep : DialogCommand
+    public class LogStep : DialogAction
     {
         /// <summary>
         /// LG expression to log

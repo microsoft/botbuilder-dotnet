@@ -3,7 +3,7 @@
     "$ref": "./Microsoft.EventRule.schema#",
     "$role": "unionType(Microsoft.IRule)",
     "title": "Custom Activity Rule",
-    "description": "This defines the steps to take when an custom activity is received",
+    "description": "This defines the actions to take when an custom activity is received",
     "type": "object",
     "allOf": [
         {
@@ -19,7 +19,7 @@
             },
             "required": [
                 "type",
-                "steps"
+                "actions"
             ]
         }
     ]

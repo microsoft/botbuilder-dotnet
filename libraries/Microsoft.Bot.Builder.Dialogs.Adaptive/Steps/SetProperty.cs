@@ -10,12 +10,12 @@ using Microsoft.Bot.Builder.Expressions.Parser;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
     /// <summary>
     /// Sets a property with the result of evaluating a value expression
     /// </summary>
-    public class SetProperty : DialogCommand
+    public class SetProperty : DialogAction
     {
         private Expression value;
         private Expression property;
@@ -64,10 +64,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                     var sc = dc as SequenceContext;
 
                     // If this step interrupted a step in the active plan
-                    if (sc != null && sc.Steps.Count > 1 && sc.Steps[1].DialogStack.Count > 0)
+                    if (sc != null && sc.Actions.Count > 1 && sc.Actions[1].DialogStack.Count > 0)
                     {
                         // Reset the next step's dialog stack so that when the plan continues it reevaluates new changed state
-                        sc.Steps[1].DialogStack.Clear();
+                        sc.Actions[1].DialogStack.Clear();
                     }
                 }
 

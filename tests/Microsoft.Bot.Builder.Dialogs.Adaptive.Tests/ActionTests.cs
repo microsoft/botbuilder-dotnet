@@ -8,7 +8,7 @@ using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Rules;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Steps;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Expressions;
 using Microsoft.Bot.Builder.Expressions.Parser;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -22,7 +22,7 @@ using Microsoft.Bot.Builder.LanguageGeneration;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 {
     [TestClass]
-    public class StepsTests
+    public class ActionsTests
     {
         public TestContext TestContext { get; set; }
 
@@ -131,7 +131,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         new IfCondition()
                         {
                             Condition = "user.name == null",
-                            Steps = new List<IDialog>()
+                            Actions = new List<IDialog>()
                             {
                                 new TextInput() {
                                     Prompt  = new ActivityTemplate("Hello, what is your name?"),
@@ -139,7 +139,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 },
                                 new SendActivity("Hello {user.name}, nice to meet you!")
                             },
-                            ElseSteps = new List<IDialog>()
+                            ElseActions = new List<IDialog>()
                             {
                                 new SendActivity("Hello {user.name}, nice to see you again!")
                             }
@@ -161,25 +161,31 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             var testDialog = new AdaptiveDialog("planningTest")
             {
-                Steps = new List<IDialog>()
+                Rules = new List<IRule>()
+                {
+                    new BeginDialogRule()
                     {
-                        new SetProperty()
-                        {
-                            Property = "user.name",
-                            Value = "'frank'"
-                        },
-                        new SwitchCondition()
-                        {
-                            Condition = "user.name",
-                            Cases = new List<Case>()
+                        Actions = new List<IDialog>()
                             {
-                                new Case("susan", new List<IDialog>() { new SendActivity("hi susan") } ),
-                                new Case("bob", new List<IDialog>() { new SendActivity("hi bob") } ),
-                                new Case("frank", new List<IDialog>() { new SendActivity("hi frank") } )
-                            },
-                            Default = new List<IDialog>() { new SendActivity("Who are you?") }
-                        },
+                                new SetProperty()
+                                {
+                                    Property = "user.name",
+                                    Value = "'frank'"
+                                },
+                                new SwitchCondition()
+                                {
+                                    Condition = "user.name",
+                                    Cases = new List<Case>()
+                                    {
+                                        new Case("susan", new List<IDialog>() { new SendActivity("hi susan") } ),
+                                        new Case("bob", new List<IDialog>() { new SendActivity("hi bob") } ),
+                                        new Case("frank", new List<IDialog>() { new SendActivity("hi frank") } )
+                                    },
+                                    Default = new List<IDialog>() { new SendActivity("Who are you?") }
+                                },
+                            }
                     }
+                }
             };
 
             await CreateFlow(testDialog)
@@ -193,25 +199,31 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             var testDialog = new AdaptiveDialog("planningTest")
             {
-                Steps = new List<IDialog>()
+                Rules = new List<IRule>()
+                {
+                    new BeginDialogRule()
                     {
-                        new SetProperty()
+                        Actions = new List<IDialog>()
                         {
-                            Property = "user.name",
-                            Value = "'Zoidberg'"
-                        },
-                        new SwitchCondition()
-                        {
-                            Condition = "user.name",
-                            Cases = new List<Case>()
+                            new SetProperty()
                             {
-                                new Case("susan", new List<IDialog>() { new SendActivity("hi susan") } ),
-                                new Case("bob", new List<IDialog>() { new SendActivity("hi bob") } ),
-                                new Case("frank", new List<IDialog>() { new SendActivity("hi frank") } )
+                                Property = "user.name",
+                                Value = "'Zoidberg'"
                             },
-                            Default = new List<IDialog>() { new SendActivity("Who are you?") }
-                        },
+                            new SwitchCondition()
+                            {
+                                Condition = "user.name",
+                                Cases = new List<Case>()
+                                {
+                                    new Case("susan", new List<IDialog>() { new SendActivity("hi susan") } ),
+                                    new Case("bob", new List<IDialog>() { new SendActivity("hi bob") } ),
+                                    new Case("frank", new List<IDialog>() { new SendActivity("hi frank") } )
+                                },
+                                Default = new List<IDialog>() { new SendActivity("Who are you?") }
+                            },
+                        }
                     }
+                }
             };
 
             await CreateFlow(testDialog)
@@ -225,25 +237,32 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             var testDialog = new AdaptiveDialog("planningTest")
             {
-                Steps = new List<IDialog>()
+                Rules = new List<IRule>()
+                {
+                    new BeginDialogRule()
                     {
-                        new SetProperty()
+
+                        Actions = new List<IDialog>()
                         {
-                            Property = "user.age",
-                            Value = "22"
-                        },
-                        new SwitchCondition()
-                        {
-                            Condition = "user.age",
-                            Cases = new List<Case>()
+                            new SetProperty()
                             {
-                                new Case("21", new List<IDialog>() { new SendActivity("Age is 21") } ),
-                                new Case("22", new List<IDialog>() { new SendActivity("Age is 22") } ),
-                                new Case("23", new List<IDialog>() { new SendActivity("Age is 23") } )
+                                Property = "user.age",
+                                Value = "22"
                             },
-                            Default = new List<IDialog>() { new SendActivity("Who are you?") }
-                        },
+                            new SwitchCondition()
+                            {
+                                Condition = "user.age",
+                                Cases = new List<Case>()
+                                {
+                                    new Case("21", new List<IDialog>() { new SendActivity("Age is 21") } ),
+                                    new Case("22", new List<IDialog>() { new SendActivity("Age is 22") } ),
+                                    new Case("23", new List<IDialog>() { new SendActivity("Age is 23") } )
+                                },
+                                Default = new List<IDialog>() { new SendActivity("Who are you?") }
+                            },
+                        }
                     }
+                }
             };
 
             await CreateFlow(testDialog)
@@ -257,24 +276,31 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             var testDialog = new AdaptiveDialog("planningTest")
             {
-                Steps = new List<IDialog>()
+                Rules = new List<IRule>()
+                {
+                    new BeginDialogRule()
                     {
-                        new SetProperty()
+
+                        Actions = new List<IDialog>()
                         {
-                            Property = "user.isVip",
-                            Value = "true"
-                        },
-                        new SwitchCondition()
-                        {
-                            Condition = "user.isVip",
-                            Cases = new List<Case>()
+                            new SetProperty()
                             {
-                                new Case("True", new List<IDialog>() { new SendActivity("User is VIP") } ),
-                                new Case("False", new List<IDialog>() { new SendActivity("User is NOT VIP") } )
+                                Property = "user.isVip",
+                                Value = "true"
                             },
-                            Default = new List<IDialog>() { new SendActivity("Who are you?") }
-                        },
+                            new SwitchCondition()
+                            {
+                                Condition = "user.isVip",
+                                Cases = new List<Case>()
+                                {
+                                    new Case("True", new List<IDialog>() { new SendActivity("User is VIP") } ),
+                                    new Case("False", new List<IDialog>() { new SendActivity("User is NOT VIP") } )
+                                },
+                                Default = new List<IDialog>() { new SendActivity("Who are you?") }
+                            },
+                        }
                     }
+                }
             };
 
             await CreateFlow(testDialog)
@@ -296,7 +322,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         new IfCondition()
                         {
                             Condition = "user.name == null",
-                            Steps = new List<IDialog>()
+                            Actions = new List<IDialog>()
                             {
                                 new TextInput()
                                 {
@@ -329,31 +355,37 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var testDialog = new AdaptiveDialog("planningTest")
             {
                 AutoEndDialog = false,
-                Steps = new List<IDialog>()
+                Rules = new List<IRule>()
                 {
-                    new ConfirmInput()
+                    new BeginDialogRule()
                     {
-                        Prompt = new ActivityTemplate("yes or no"),
-                        UnrecognizedPrompt = new ActivityTemplate("I need a yes or no."),
-                        Property = "user.confirmed"
-                    },
-                    new SendActivity("confirmation: {user.confirmed}"),
-                    new ConfirmInput()
-                    {
-                        Prompt = new ActivityTemplate("yes or no"),
-                        UnrecognizedPrompt = new ActivityTemplate("I need a yes or no."),
-                        Property = "user.confirmed",
-                        AlwaysPrompt = true
-                    },
-                    new SendActivity("confirmation: {user.confirmed}"),
-                    new ConfirmInput()
-                    {
-                        Prompt = new ActivityTemplate("yes or no"),
-                        UnrecognizedPrompt = new ActivityTemplate("I need a yes or no."),
-                        Property = "user.confirmed",
-                        AlwaysPrompt = true
-                    },
-                    new SendActivity("confirmation: {user.confirmed}"),
+                        Actions = new List<IDialog>()
+                        {
+                            new ConfirmInput()
+                            {
+                                Prompt = new ActivityTemplate("yes or no"),
+                                UnrecognizedPrompt = new ActivityTemplate("I need a yes or no."),
+                                Property = "user.confirmed"
+                            },
+                            new SendActivity("confirmation: {user.confirmed}"),
+                            new ConfirmInput()
+                            {
+                                Prompt = new ActivityTemplate("yes or no"),
+                                UnrecognizedPrompt = new ActivityTemplate("I need a yes or no."),
+                                Property = "user.confirmed",
+                                AlwaysPrompt = true
+                            },
+                            new SendActivity("confirmation: {user.confirmed}"),
+                            new ConfirmInput()
+                            {
+                                Prompt = new ActivityTemplate("yes or no"),
+                                UnrecognizedPrompt = new ActivityTemplate("I need a yes or no."),
+                                Property = "user.confirmed",
+                                AlwaysPrompt = true
+                            },
+                            new SendActivity("confirmation: {user.confirmed}"),
+                        }
+                    }
                 }
             };
 
@@ -376,37 +408,44 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var testDialog = new AdaptiveDialog("planningTest")
             {
                 AutoEndDialog = false,
-                Steps = new List<IDialog>()
+                Rules = new List<IRule>()
                 {
-                    new ChoiceInput()
+                    new BeginDialogRule()
                     {
-                        Property = "user.color",
-                        Prompt = new ActivityTemplate("Please select a color:"),
-                        UnrecognizedPrompt = new ActivityTemplate("Not a color. Please select a color:"),
-                        Choices = new List<Choice>() { new Choice("red"), new Choice("green"), new Choice("blue") },
-                        Style = ListStyle.Inline
-                    },
-                    new SendActivity("{user.color}"),
-                    new ChoiceInput()
-                    {
-                        Property = "user.color",
-                        Prompt = new ActivityTemplate("Please select a color:"),
-                        UnrecognizedPrompt = new ActivityTemplate("Please select a color:"),
-                        Choices = new List<Choice>() { new Choice("red"), new Choice("green"), new Choice("blue") },
-                        AlwaysPrompt = true,
-                        Style = ListStyle.Inline
-                    },
-                    new SendActivity("{user.color}"),
-                    new ChoiceInput()
-                    {
-                        Property = "user.color",
-                        Prompt = new ActivityTemplate("Please select a color:"),
-                        UnrecognizedPrompt = new ActivityTemplate("Please select a color:"),
-                        Choices = new List<Choice>() { new Choice("red"), new Choice("green"), new Choice("blue") },
-                        AlwaysPrompt = true,
-                        Style = ListStyle.Inline
-                    },
-                    new SendActivity("{user.color}"),
+
+                        Actions = new List<IDialog>()
+                        {
+                            new ChoiceInput()
+                            {
+                                Property = "user.color",
+                                Prompt = new ActivityTemplate("Please select a color:"),
+                                UnrecognizedPrompt = new ActivityTemplate("Not a color. Please select a color:"),
+                                Choices = new List<Choice>() { new Choice("red"), new Choice("green"), new Choice("blue") },
+                                Style = ListStyle.Inline
+                            },
+                            new SendActivity("{user.color}"),
+                            new ChoiceInput()
+                            {
+                                Property = "user.color",
+                                Prompt = new ActivityTemplate("Please select a color:"),
+                                UnrecognizedPrompt = new ActivityTemplate("Please select a color:"),
+                                Choices = new List<Choice>() { new Choice("red"), new Choice("green"), new Choice("blue") },
+                                AlwaysPrompt = true,
+                                Style = ListStyle.Inline
+                            },
+                            new SendActivity("{user.color}"),
+                            new ChoiceInput()
+                            {
+                                Property = "user.color",
+                                Prompt = new ActivityTemplate("Please select a color:"),
+                                UnrecognizedPrompt = new ActivityTemplate("Please select a color:"),
+                                Choices = new List<Choice>() { new Choice("red"), new Choice("green"), new Choice("blue") },
+                                AlwaysPrompt = true,
+                                Style = ListStyle.Inline
+                            },
+                            new SendActivity("{user.color}"),
+                        }
+                    }
                 }
             };
 
@@ -429,42 +468,49 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var testDialog = new AdaptiveDialog("planningTest")
             {
                 AutoEndDialog = false,
-                Steps = new List<IDialog>()
+                Rules = new List<IRule>()
                 {
-                    new SetProperty()
+                    new BeginDialogRule()
                     {
-                        Value = "json('[\"red\", \"green\", \"blue\"]')",
-                        Property = "user.choices"
-                    },
-                    new ChoiceInput()
-                    {
-                        Property = "user.color",
-                        Prompt = new ActivityTemplate("Please select a color:"),
-                        UnrecognizedPrompt = new ActivityTemplate("Not a color. Please select a color:"),
-                        ChoicesProperty = "user.choices",
-                        Style = ListStyle.Inline
-                    },
-                    new SendActivity("{user.color}"),
-                    new ChoiceInput()
-                    {
-                        Property = "user.color",
-                        Prompt = new ActivityTemplate("Please select a color:"),
-                        UnrecognizedPrompt = new ActivityTemplate("Please select a color:"),
-                        ChoicesProperty = "user.choices",
-                        AlwaysPrompt = true,
-                        Style = ListStyle.Inline
-                    },
-                    new SendActivity("{user.color}"),
-                    new ChoiceInput()
-                    {
-                        Property = "user.color",
-                        Prompt = new ActivityTemplate("Please select a color:"),
-                        UnrecognizedPrompt = new ActivityTemplate("Please select a color:"),
-                        ChoicesProperty = "user.choices",
-                        AlwaysPrompt = true,
-                        Style = ListStyle.Inline
-                    },
-                    new SendActivity("{user.color}"),
+
+                        Actions = new List<IDialog>()
+                        {
+                            new SetProperty()
+                            {
+                                Value = "json('[\"red\", \"green\", \"blue\"]')",
+                                Property = "user.choices"
+                            },
+                            new ChoiceInput()
+                            {
+                                Property = "user.color",
+                                Prompt = new ActivityTemplate("Please select a color:"),
+                                UnrecognizedPrompt = new ActivityTemplate("Not a color. Please select a color:"),
+                                ChoicesProperty = "user.choices",
+                                Style = ListStyle.Inline
+                            },
+                            new SendActivity("{user.color}"),
+                            new ChoiceInput()
+                            {
+                                Property = "user.color",
+                                Prompt = new ActivityTemplate("Please select a color:"),
+                                UnrecognizedPrompt = new ActivityTemplate("Please select a color:"),
+                                ChoicesProperty = "user.choices",
+                                AlwaysPrompt = true,
+                                Style = ListStyle.Inline
+                            },
+                            new SendActivity("{user.color}"),
+                            new ChoiceInput()
+                            {
+                                Property = "user.color",
+                                Prompt = new ActivityTemplate("Please select a color:"),
+                                UnrecognizedPrompt = new ActivityTemplate("Please select a color:"),
+                                ChoicesProperty = "user.choices",
+                                AlwaysPrompt = true,
+                                Style = ListStyle.Inline
+                            },
+                            new SendActivity("{user.color}"),
+                        }
+                    }
                 }
             };
 
@@ -487,42 +533,48 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var testDialog = new AdaptiveDialog("planningTest")
             {
                 AutoEndDialog = false,
-                Steps = new List<IDialog>()
+                Rules = new List<IRule>()
                 {
-                    new SetProperty()
+                    new BeginDialogRule()
                     {
-                        Value = "json('[{\"value\": \"red\"}, {\"value\": \"green\"}, {\"value\": \"blue\"}]')",
-                        Property = "user.choices"
-                    },
-                    new ChoiceInput()
-                    {
-                        Property = "user.color",
-                        Prompt = new ActivityTemplate("Please select a color:"),
-                        UnrecognizedPrompt = new ActivityTemplate("Not a color. Please select a color:"),
-                        ChoicesProperty = "user.choices",
-                        Style = ListStyle.Inline
-                    },
-                    new SendActivity("{user.color}"),
-                    new ChoiceInput()
-                    {
-                        Property = "user.color",
-                        Prompt = new ActivityTemplate("Please select a color:"),
-                        UnrecognizedPrompt = new ActivityTemplate("Please select a color:"),
-                        ChoicesProperty = "user.choices",
-                        AlwaysPrompt = true,
-                        Style = ListStyle.Inline
-                    },
-                    new SendActivity("{user.color}"),
-                    new ChoiceInput()
-                    {
-                        Property = "user.color",
-                        Prompt = new ActivityTemplate("Please select a color:"),
-                        UnrecognizedPrompt = new ActivityTemplate("Please select a color:"),
-                        ChoicesProperty = "user.choices",
-                        AlwaysPrompt = true,
-                        Style = ListStyle.Inline
-                    },
-                    new SendActivity("{user.color}"),
+                        Actions = new List<IDialog>()
+                        {
+                            new SetProperty()
+                            {
+                                Value = "json('[{\"value\": \"red\"}, {\"value\": \"green\"}, {\"value\": \"blue\"}]')",
+                                Property = "user.choices"
+                            },
+                            new ChoiceInput()
+                            {
+                                Property = "user.color",
+                                Prompt = new ActivityTemplate("Please select a color:"),
+                                UnrecognizedPrompt = new ActivityTemplate("Not a color. Please select a color:"),
+                                ChoicesProperty = "user.choices",
+                                Style = ListStyle.Inline
+                            },
+                            new SendActivity("{user.color}"),
+                            new ChoiceInput()
+                            {
+                                Property = "user.color",
+                                Prompt = new ActivityTemplate("Please select a color:"),
+                                UnrecognizedPrompt = new ActivityTemplate("Please select a color:"),
+                                ChoicesProperty = "user.choices",
+                                AlwaysPrompt = true,
+                                Style = ListStyle.Inline
+                            },
+                            new SendActivity("{user.color}"),
+                            new ChoiceInput()
+                            {
+                                Property = "user.color",
+                                Prompt = new ActivityTemplate("Please select a color:"),
+                                UnrecognizedPrompt = new ActivityTemplate("Please select a color:"),
+                                ChoicesProperty = "user.choices",
+                                AlwaysPrompt = true,
+                                Style = ListStyle.Inline
+                            },
+                            new SendActivity("{user.color}"),
+                        }
+                    }
                 }
             };
 
@@ -623,7 +675,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         new IfCondition()
                         {
                             Condition = "user.name == null",
-                            Steps = new List<IDialog>()
+                            Actions = new List<IDialog>()
                             {
                                 new TextInput()
                                 {
@@ -652,7 +704,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
-        public async Task Step_DoSteps()
+        public async Task Step_DoActions()
         {
             var testDialog = new AdaptiveDialog("planningTest");
 
@@ -661,7 +713,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             testDialog.AddRules(new List<IRule>()
             {
                 new IntentRule("JokeIntent",
-                    steps: new List<IDialog>()
+                    actions: new List<IDialog>()
                     {
                         new SendActivity("Why did the chicken cross the road?"),
                         new EndTurn(),
@@ -673,7 +725,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         new IfCondition()
                         {
                             Condition = "user.name == null",
-                            Steps = new List<IDialog>()
+                            Actions = new List<IDialog>()
                             {
                                 new TextInput()
                                 {
@@ -718,21 +770,28 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             var askNameDialog = new AdaptiveDialog("AskNameDialog")
             {
-                Steps = new List<IDialog>()
+                Rules = new List<IRule>()
                 {
-                    new IfCondition()
+                    new BeginDialogRule()
                     {
-                        Condition = "user.name == null",
-                        Steps = new List<IDialog>()
+
+                        Actions = new List<IDialog>()
                         {
-                            new TextInput()
+                            new IfCondition()
                             {
-                                Prompt  = new ActivityTemplate("Hello, what is your name?"),
-                                OutputBinding = "user.name"
-                            }
+                                Condition = "user.name == null",
+                                Actions = new List<IDialog>()
+                                {
+                                    new TextInput()
+                                    {
+                                        Prompt  = new ActivityTemplate("Hello, what is your name?"),
+                                        OutputBinding = "user.name"
+                                    }
+                                }
+                            },
+                            new SendActivity("Hello {user.name}, nice to meet you!")
                         }
-                    },
-                    new SendActivity("Hello {user.name}, nice to meet you!")
+                    }
                 }
             };
 
@@ -742,21 +801,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             testDialog.Recognizer = new RegexRecognizer() { Intents = new Dictionary<string, string>() { { "JokeIntent", "joke" } } };
 
-            testDialog.Steps = new List<IDialog>()
-                    {
-                        new SendActivity("I'm a joke bot. To get started say 'tell me a joke'"),
-                        new BeginDialog() { Dialog = askNameDialog }
-                    };
 
             testDialog.AddRules(new List<IRule>()
             {
+                new BeginDialogRule()
+                {
+                    Actions = new List<IDialog>()
+                    {
+                        new SendActivity("I'm a joke bot. To get started say 'tell me a joke'"),
+                        new BeginDialog() { Dialog = askNameDialog }
+                    }
+                }, 
+
                 new IntentRule("JokeIntent",
-                    steps: new List<IDialog>()
+                    actions: new List<IDialog>()
                     {
                         new BeginDialog() { Dialog = tellJokeDialog }
                     }),
                 new UnknownIntentRule(
-                    steps: new List<IDialog>()
+                    actions: new List<IDialog>()
                     {
                         new SendActivity("I'm a joke bot. To get started say 'tell me a joke'")
                     }),
@@ -791,39 +854,50 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             var askNameDialog = new AdaptiveDialog("AskNameDialog")
             {
-                Steps = new List<IDialog>()
+                Rules = new List<IRule>()
                 {
-                    new IfCondition()
+                    new BeginDialogRule()
                     {
-                        Condition = "user.name == null",
-                        Steps = new List<IDialog>()
+
+                        Actions = new List<IDialog>()
                         {
-                            new TextInput()
+                            new IfCondition()
                             {
-                                Prompt = new ActivityTemplate("Hello, what is your name?"),
-                                UnrecognizedPrompt = new ActivityTemplate("How should I call you?"),
-                                InvalidPrompt  = new ActivityTemplate("That does not soud like a name"),
-                                Property = "user.name",
-                            }
+                                Condition = "user.name == null",
+                                Actions = new List<IDialog>()
+                                {
+                                    new TextInput()
+                                    {
+                                        Prompt = new ActivityTemplate("Hello, what is your name?"),
+                                        UnrecognizedPrompt = new ActivityTemplate("How should I call you?"),
+                                        InvalidPrompt  = new ActivityTemplate("That does not soud like a name"),
+                                        Property = "user.name",
+                                    }
+                                }
+                            },
+                            new SendActivity("Hello {user.name}, nice to meet you!")
                         }
-                    },
-                    new SendActivity("Hello {user.name}, nice to meet you!")
+                    }
                 }
             };
 
             var testDialog = new AdaptiveDialog("planningTest");
             testDialog.AutoEndDialog = false;
             testDialog.Recognizer = new RegexRecognizer() { Intents = new Dictionary<string, string>() { { "JokeIntent", "joke" } } };
-            testDialog.Steps = new List<IDialog>()
+
+            testDialog.AddRule(new BeginDialogRule()
             {
-                new SendActivity("I'm a joke bot. To get started say 'tell me a joke'"),
-                new ReplaceDialog("AskNameDialog")
-            };
+                Actions = new List<IDialog>()
+                {
+                    new SendActivity("I'm a joke bot. To get started say 'tell me a joke'"),
+                    new ReplaceDialog("AskNameDialog")
+                }
+            });
 
             testDialog.AddRules(new List<IRule>()
             {
                 new IntentRule("JokeIntent",
-                    steps: new List<IDialog>()
+                    actions: new List<IDialog>()
                     {
                         new ReplaceDialog("TellJokeDialog")
                     }),
@@ -859,7 +933,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             tellJokeDialog.AddRules(new List<IRule>()
             {
                 new IntentRule("EndIntent",
-                    steps: new List<IDialog>()
+                    actions: new List<IDialog>()
                     {
                         new EndDialog()
                     }),
@@ -897,12 +971,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             var testDialog = new AdaptiveDialog("testDialog")
             {
-                Steps = new List<IDialog>()
+                Rules = new List<IRule>()
                 {
-                    new TextInput() { Prompt = new ActivityTemplate("Hello, what is your name?"), OutputBinding = "user.name" , Value = "user.name" },
-                    new SendActivity("Hello {user.name}, nice to meet you!"),
-                    new EndTurn(),
-                    new RepeatDialog()
+                    new BeginDialogRule()
+                    {
+
+                        Actions = new List<IDialog>()
+                        {
+                            new TextInput() { Prompt = new ActivityTemplate("Hello, what is your name?"), OutputBinding = "user.name" , Value = "user.name" },
+                            new SendActivity("Hello {user.name}, nice to meet you!"),
+                            new EndTurn(),
+                            new RepeatDialog()
+                        }
+                    }
                 }
             };
 
@@ -925,51 +1006,56 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             var rootDialog = new AdaptiveDialog("root")
             {
-                Steps = new List<IDialog>()
+                Rules = new List<IRule>()
                 {
-                    new BeginDialog()
+                    new BeginDialogRule()
                     {
-                        Dialog = new AdaptiveDialog("outer")
+
+                        Actions = new List<IDialog>()
                         {
-                            AutoEndDialog = false,
-                            Recognizer = new RegexRecognizer()
+                            new BeginDialog()
                             {
-                                Intents = new Dictionary<string, string>()
+                                Dialog = new AdaptiveDialog("outer")
                                 {
-                                    { "EmitIntent" , "emit" },
-                                    { "CowboyIntent" , "moo" }
-                                }
-                            },
-                            Rules = new List<IRule>()
-                            {
-                                new IntentRule(intent: "CowboyIntent")
-                                {
-                                    Steps = new List<IDialog>()
+                                    AutoEndDialog = false,
+                                    Recognizer = new RegexRecognizer()
                                     {
-                                        new SendActivity("Yippee ki-yay!")
-                                    }
-                                },
-                                new IntentRule(intent: "EmitIntent")
-                                {
-                                    Steps = new List<IDialog>()
-                                    {
-                                        new EmitEvent()
+                                        Intents = new Dictionary<string, string>()
                                         {
-                                            EventName = "CustomEvent",
-                                            BubbleEvent = true,
+                                            { "EmitIntent" , "emit" },
+                                            { "CowboyIntent" , "moo" }
+                                        }
+                                    },
+                                    Rules = new List<IRule>()
+                                    {
+                                        new IntentRule(intent: "CowboyIntent")
+                                        {
+                                            Actions = new List<IDialog>()
+                                            {
+                                                new SendActivity("Yippee ki-yay!")
+                                            }
+                                        },
+                                        new IntentRule(intent: "EmitIntent")
+                                        {
+                                            Actions = new List<IDialog>()
+                                            {
+                                                new EmitEvent()
+                                                {
+                                                    EventName = "CustomEvent",
+                                                    BubbleEvent = true,
+                                                }
+                                            }
                                         }
                                     }
                                 }
                             }
                         }
-                    }
-                },
-                Rules = new List<IRule>()
-                {
+                    },
+
                     new EventRule()
                     {
                         Events = new List<string>() { "CustomEvent"},
-                        Steps = new List<IDialog>()
+                        Actions = new List<IDialog>()
                         {
                             new SendActivity("CustomEventFired")
                         }
@@ -996,41 +1082,47 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             var rootDialog = new AdaptiveDialog("root")
             {
-                Steps = new List<IDialog>()
+                Rules = new List<IRule>()
                 {
-                    new InitProperty()
+                    new BeginDialogRule()
                     {
-                        Property = "dialog.todo",
-                        Type = "Array"
-                    },
-
-                    new EditArray()
-                    {
-                        ArrayProperty = "dialog.todo",
-                        ChangeType = EditArray.ArrayChangeType.Push,
-                        Value = "1"
-                    },
-
-                    new EditArray()
-                    {
-                        ArrayProperty = "dialog.todo",
-                        ChangeType = EditArray.ArrayChangeType.Push,
-                        Value = "2"
-                    },
-
-                    new EditArray()
-                    {
-                        ArrayProperty = "dialog.todo",
-                        ChangeType = EditArray.ArrayChangeType.Push,
-                        Value = "3"
-                    },
-
-                    new Foreach()
-                    {
-                        ListProperty = "dialog.todo",
-                        Steps = new List<IDialog>()
+                        Actions = new List<IDialog>()
                         {
-                            new SendActivity("index is: {dialog.index} and value is: {dialog.value}")
+                            new InitProperty()
+                            {
+                                Property = "dialog.todo",
+                                Type = "Array"
+                            },
+
+                            new EditArray()
+                            {
+                                ArrayProperty = "dialog.todo",
+                                ChangeType = EditArray.ArrayChangeType.Push,
+                                Value = "1"
+                            },
+
+                            new EditArray()
+                            {
+                                ArrayProperty = "dialog.todo",
+                                ChangeType = EditArray.ArrayChangeType.Push,
+                                Value = "2"
+                            },
+
+                            new EditArray()
+                            {
+                                ArrayProperty = "dialog.todo",
+                                ChangeType = EditArray.ArrayChangeType.Push,
+                                Value = "3"
+                            },
+
+                            new Foreach()
+                            {
+                                ListProperty = "dialog.todo",
+                                Actions = new List<IDialog>()
+                                {
+                                    new SendActivity("index is: {dialog.index} and value is: {dialog.value}")
+                                }
+                            }
                         }
                     }
                 }
@@ -1053,70 +1145,77 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             var rootDialog = new AdaptiveDialog("root")
             {
-                Steps = new List<IDialog>()
+                Rules = new List<IRule>()
                 {
-                    new InitProperty()
+                    new BeginDialogRule()
                     {
-                        Property = "dialog.todo",
-                        Type = "Array"
-                    },
 
-                    new EditArray()
-                    {
-                        ArrayProperty = "dialog.todo",
-                        ChangeType = EditArray.ArrayChangeType.Push,
-                        Value = "1"
-                    },
-
-                    new EditArray()
-                    {
-                        ArrayProperty = "dialog.todo",
-                        ChangeType = EditArray.ArrayChangeType.Push,
-                        Value = "2"
-                    },
-
-                    new EditArray()
-                    {
-                        ArrayProperty = "dialog.todo",
-                        ChangeType = EditArray.ArrayChangeType.Push,
-                        Value = "3"
-                    },
-
-                    new EditArray()
-                    {
-                        ArrayProperty = "dialog.todo",
-                        ChangeType = EditArray.ArrayChangeType.Push,
-                        Value = "4"
-                    },
-
-                    new EditArray()
-                    {
-                        ArrayProperty = "dialog.todo",
-                        ChangeType = EditArray.ArrayChangeType.Push,
-                        Value = "5"
-                    },
-
-                    new EditArray()
-                    {
-                        ArrayProperty = "dialog.todo",
-                        ChangeType = EditArray.ArrayChangeType.Push,
-                        Value = "6"
-                    },
-
-                    new ForeachPage()
-                    {
-                        ListProperty = new ExpressionEngine().Parse("dialog.todo"),
-                        PageSize = 3,
-                        ValueProperty = "dialog.page",
-                        Steps = new List<IDialog>()
+                        Actions = new List<IDialog>()
                         {
-                            new SendActivity("This page have 3 items"),
-                            new Foreach()
+                            new InitProperty()
                             {
-                                ListProperty = "dialog.page",
-                                Steps = new List<IDialog>()
+                                Property = "dialog.todo",
+                                Type = "Array"
+                            },
+
+                            new EditArray()
+                            {
+                                ArrayProperty = "dialog.todo",
+                                ChangeType = EditArray.ArrayChangeType.Push,
+                                Value = "1"
+                            },
+
+                            new EditArray()
+                            {
+                                ArrayProperty = "dialog.todo",
+                                ChangeType = EditArray.ArrayChangeType.Push,
+                                Value = "2"
+                            },
+
+                            new EditArray()
+                            {
+                                ArrayProperty = "dialog.todo",
+                                ChangeType = EditArray.ArrayChangeType.Push,
+                                Value = "3"
+                            },
+
+                            new EditArray()
+                            {
+                                ArrayProperty = "dialog.todo",
+                                ChangeType = EditArray.ArrayChangeType.Push,
+                                Value = "4"
+                            },
+
+                            new EditArray()
+                            {
+                                ArrayProperty = "dialog.todo",
+                                ChangeType = EditArray.ArrayChangeType.Push,
+                                Value = "5"
+                            },
+
+                            new EditArray()
+                            {
+                                ArrayProperty = "dialog.todo",
+                                ChangeType = EditArray.ArrayChangeType.Push,
+                                Value = "6"
+                            },
+
+                            new ForeachPage()
+                            {
+                                ListProperty = new ExpressionEngine().Parse("dialog.todo"),
+                                PageSize = 3,
+                                ValueProperty = "dialog.page",
+                                Actions = new List<IDialog>()
                                 {
-                                    new SendActivity("index is: {dialog.index} and value is: {dialog.value}")
+                                    new SendActivity("This page have 3 items"),
+                                    new Foreach()
+                                    {
+                                        ListProperty = "dialog.page",
+                                        Actions = new List<IDialog>()
+                                        {
+                                            new SendActivity("index is: {dialog.index} and value is: {dialog.value}")
+                                        }
+                                    }
                                 }
                             }
                         }

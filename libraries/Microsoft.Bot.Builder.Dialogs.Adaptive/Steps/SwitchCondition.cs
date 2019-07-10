@@ -13,14 +13,14 @@ using Microsoft.Bot.Builder.Expressions;
 using Microsoft.Bot.Builder.Expressions.Parser;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
     public class Case
     {
-        public Case(string value = null, IEnumerable<IDialog> steps = null)
+        public Case(string value = null, IEnumerable<IDialog> actions = null)
         {
             this.Value = value;
-            this.Steps = steps?.ToList() ?? this.Steps;
+            this.Actions = actions?.ToList() ?? this.Actions;
         }
 
         /// <summary>
@@ -30,10 +30,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
         public string Value { get; set; }
 
         /// <summary>
-        /// Set of steps to be executed given that the condition of the switch matches the value of this case.
+        /// Set of actions to be executed given that the condition of the switch matches the value of this case.
         /// </summary>
-        [JsonProperty("steps")]
-        public List<IDialog> Steps { get; set; } = new List<IDialog>();
+        [JsonProperty("actions")]
+        public List<IDialog> Actions { get; set; } = new List<IDialog>();
 
         /// <summary>
         /// Creates an expression that returns the value in its primitive type. Still
@@ -69,7 +69,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
     /// <summary>
     /// Conditional branch with multiple cases
     /// </summary>
-    public class SwitchCondition : DialogCommand, IDialogDependencies
+    public class SwitchCondition : DialogAction, IDialogDependencies
     {
         private Dictionary<string, Expression> caseExpressions = null;
 
@@ -122,13 +122,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                             // Values for cases are always coerced to string
                             var caseCondition = Expression.EqualsExpression(this.condition, c.CreateValueExpression());
 
-                            // Map of expression to steps
+                            // Map of expression to actions
                             this.caseExpressions[c.Value] = caseCondition;
                         }
                     }
                 }
 
-                List<IDialog> stepsToRun = this.Default;
+                List<IDialog> actionsToRun = this.Default;
 
                 foreach (var caseCondition in this.Cases)
                 {
@@ -143,24 +143,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                     // Compare both expression results. The current switch case triggers if the comparison is true.
                     if (((bool)value) == true)
                     {
-                        stepsToRun = caseCondition.Steps;
+                        actionsToRun = caseCondition.Actions;
                         break;
                     }
                 }
 
-                // run condition or default steps
-                var planSteps = stepsToRun.Select(s => new StepState()
+                // run condition or default actions
+                var planActions = actionsToRun.Select(s => new ActionState()
                 {
                     DialogStack = new List<DialogInstance>(),
                     DialogId = s.Id,
                     Options = options
                 });
 
-                // Queue up steps that should run after current step
-                planning.QueueChanges(new StepChangeList()
+                // Queue up actions that should run after current step
+                planning.QueueChanges(new ActionChangeList()
                 {
-                    ChangeType = StepChangeTypes.InsertSteps,
-                    Steps = planSteps.ToList()
+                    ChangeType = ActionChangeType.InsertActions,
+                    Actions = planActions.ToList()
                 });
 
                 return await planning.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
@@ -188,7 +188,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
             {
                 foreach (var conidtionalCase in this.Cases)
                 {
-                    dialogs.AddRange(conidtionalCase.Steps);
+                    dialogs.AddRange(conidtionalCase.Actions);
                 }
             }
 

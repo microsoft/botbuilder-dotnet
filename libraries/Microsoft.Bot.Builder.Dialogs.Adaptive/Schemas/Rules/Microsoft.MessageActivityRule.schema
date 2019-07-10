@@ -3,7 +3,7 @@
     "$ref": "./Microsoft.EventRule.schema#",
     "$role": "unionType(Microsoft.IRule)",
     "title": "Message Activity Rule",
-    "description": "This defines the steps to take when an Message activity is received. NOTE: If this triggers it will override any Recognizer/Intent rule calculation",
+    "description": "This defines the actions to take when an Message activity is received. NOTE: If this triggers it will override any Recognizer/Intent rule calculation",
     "type": "object",
     "allOf": [
         {
@@ -11,7 +11,7 @@
         },
         {
             "required": [
-                "steps"
+                "actions"
             ]
         }
     ]

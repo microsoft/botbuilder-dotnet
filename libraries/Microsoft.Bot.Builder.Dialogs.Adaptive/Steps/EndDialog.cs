@@ -7,12 +7,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
     /// <summary>
     /// Command to end the current dialog, returning the resultProperty as the result of the dialog.
     /// </summary>
-    public class EndDialog : DialogCommand
+    public class EndDialog : DialogAction
     {
         /// <summary>
         /// Gets or sets the property to return as the result ending the dialog.

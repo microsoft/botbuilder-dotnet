@@ -8,9 +8,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
-    public class DebugBreak : DialogCommand
+    public class DebugBreak : DialogAction
     {
         public DebugBreak([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
@@ -48,11 +48,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                     current = current.Parent;
                 }
 
-                // Get list of steps
-                var stepState = dc is SequenceContext sc ? sc.Steps : new List<StepState>();
-                var stepsIds = stepState.Select(s => s.DialogId);
+                // Get list of actions
+                var stepState = dc is SequenceContext sc ? sc.Actions : new List<ActionState>();
+                var actionsIds = stepState.Select(s => s.DialogId);
 
-                Debug.WriteLine($"{path}: {stepCount} steps executed and {stepsIds.Count()} remaining.");
+                Debug.WriteLine($"{path}: {stepCount} actions executed and {actionsIds.Count()} remaining.");
             }
             catch (Exception ex)
             {

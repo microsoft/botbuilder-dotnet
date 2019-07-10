@@ -1,11 +1,11 @@
 {
   "$schema": "../../app.schema",
   "$type": "Microsoft.AdaptiveDialog",
-  "steps": [
+  "actions": [
     {
       "$type": "Microsoft.IfCondition",
       "condition": "dialog.token == null",
-      "steps": [
+      "actions": [
         {
           "$type": "Microsoft.OAuthPrompt",
           "ConnectionName": "msgraph",

@@ -102,7 +102,7 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Tests
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void WaterfallWithStepsNull()
+        public void WaterfallWithActionsNull()
         {
             var telemetryClient = new Mock<IBotTelemetryClient>();
             var waterfall = new WaterfallDialog("test") { TelemetryClient = telemetryClient.Object };
@@ -237,8 +237,8 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Tests
 
         public class MyWaterfallDialog : WaterfallDialog
         {
-            public MyWaterfallDialog(string id, IEnumerable<WaterfallStep> steps = null)
-                : base(id, steps)
+            public MyWaterfallDialog(string id, IEnumerable<WaterfallStep> actions = null)
+                : base(id, actions)
             {
                 
 

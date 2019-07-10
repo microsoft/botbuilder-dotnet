@@ -9,12 +9,12 @@ using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
     /// <summary>
     /// Send an Tace activity back to the transcript
     /// </summary>
-    public class TraceActivity : DialogCommand
+    public class TraceActivity : DialogAction
     {
 
         /// <summary>

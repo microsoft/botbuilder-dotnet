@@ -675,7 +675,7 @@
             Initializes a new instance of the <see cref="T:Microsoft.Bot.Builder.Dialogs.WaterfallDialog"/> class.
             </summary>
             <param name="dialogId">The dialog id.</param>
-            <param name="steps">Optional steps to be defined by caller.</param>
+            <param name="actions">Optional actions to be defined by caller.</param>
         </member>
         <member name="M:Microsoft.Bot.Builder.Dialogs.WaterfallDialog.AddStep(Microsoft.Bot.Builder.Dialogs.WaterfallStep)">
             <summary>
@@ -725,7 +725,7 @@
         </member>
         <member name="P:Microsoft.Bot.Builder.Dialogs.WaterfallStepContext.Values">
             <summary>
-            Gets a dictionary of values which will be persisted across all waterfall steps.
+            Gets a dictionary of values which will be persisted across all waterfall actions.
             </summary>
         </member>
         <member name="M:Microsoft.Bot.Builder.Dialogs.WaterfallStepContext.NextAsync(System.Object,System.Threading.CancellationToken)">

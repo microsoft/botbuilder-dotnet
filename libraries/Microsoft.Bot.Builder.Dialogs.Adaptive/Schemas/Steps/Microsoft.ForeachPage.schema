@@ -2,7 +2,7 @@
     "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/master/packages/DialogSchema/src/dialogSchema.schema",
     "$role": "unionType(Microsoft.IDialog)",
     "title": "Foreach Page Step",
-    "description": "Step which execute steps per item page in a collection.",
+    "description": "Step which execute actions per item page in a collection.",
     "type": "object",
     "properties": {
         "listProperty": {
@@ -13,13 +13,13 @@
                 "user.todoList"
             ]
         },
-        "steps": {
+        "actions": {
             "type": "array",
             "items": {
                 "$type": "Microsoft.IDialog"
             },
-            "title": "Steps",
-            "description": "Steps to execute"
+            "title": "Actions",
+            "description": "Actions to execute"
         },
         "pageSize": {
             "type": "integer",
@@ -36,6 +36,6 @@
     },
     "required": [
         "listProperty",
-        "steps"
+        "actions"
     ]
 }

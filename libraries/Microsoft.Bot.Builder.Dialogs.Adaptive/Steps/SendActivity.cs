@@ -8,12 +8,12 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
     /// <summary>
     /// Send an activity back to the user
     /// </summary>
-    public class SendActivity : DialogCommand
+    public class SendActivity : DialogAction
     {
         /// <summary>
         /// Template for the activity

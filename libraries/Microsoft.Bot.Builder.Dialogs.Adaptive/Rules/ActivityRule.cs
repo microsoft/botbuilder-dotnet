@@ -19,12 +19,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
     public class ActivityRule : EventRule
     {
         [JsonConstructor]
-        public ActivityRule(string type=null, List<IDialog> steps = null, string constraint = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public ActivityRule(string type=null, List<IDialog> actions = null, string constraint = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base(events: new List<string>()
             {
                 AdaptiveEvents.ActivityReceived
             },
-            steps: steps,
+            actions: actions,
             constraint: constraint,
             callerPath: callerPath, callerLine: callerLine)
         {
@@ -45,11 +45,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
                 base.BuildExpression(factory));
         }
 
-        protected override StepChangeList OnCreateChangeList(SequenceContext planning, object dialogOptions = null)
+        protected override ActionChangeList OnCreateChangeList(SequenceContext planning, object dialogOptions = null)
         {
-            return new StepChangeList()
+            return new ActionChangeList()
             {
-                Steps = Steps.Select(s => new StepState()
+                Actions = Actions.Select(s => new ActionState()
                 {
                     DialogStack = new List<DialogInstance>(),
                     DialogId = s.Id,
@@ -70,8 +70,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
     public class ConversationUpdateActivityRule : ActivityRule
     {
         [JsonConstructor]
-        public ConversationUpdateActivityRule(List<IDialog> steps = null, string constraint= null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
-            : base(type: ActivityTypes.ConversationUpdate, steps: steps, constraint: constraint, callerPath: callerPath, callerLine: callerLine) { }
+        public ConversationUpdateActivityRule(List<IDialog> actions = null, string constraint= null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+            : base(type: ActivityTypes.ConversationUpdate, actions: actions, constraint: constraint, callerPath: callerPath, callerLine: callerLine) { }
     }
 
     /// <summary>
@@ -80,8 +80,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
     public class EndOfConversationActivityRule : ActivityRule
     {
         [JsonConstructor]
-        public EndOfConversationActivityRule(List<IDialog> steps = null, string constraint= null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
-            : base(type: ActivityTypes.EndOfConversation, steps: steps, constraint: constraint, callerPath: callerPath, callerLine: callerLine) { }
+        public EndOfConversationActivityRule(List<IDialog> actions = null, string constraint= null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+            : base(type: ActivityTypes.EndOfConversation, actions: actions, constraint: constraint, callerPath: callerPath, callerLine: callerLine) { }
     }
 
 
@@ -91,8 +91,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
     public class EventActivityRule : ActivityRule
     {
         [JsonConstructor]
-        public EventActivityRule(List<IDialog> steps = null, string constraint= null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
-            : base(type: ActivityTypes.Event, steps: steps, constraint: constraint, callerPath: callerPath, callerLine: callerLine) { }
+        public EventActivityRule(List<IDialog> actions = null, string constraint= null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+            : base(type: ActivityTypes.Event, actions: actions, constraint: constraint, callerPath: callerPath, callerLine: callerLine) { }
     }
 
     /// <summary>
@@ -101,8 +101,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
     public class HandoffActivityRule: ActivityRule
     {
         [JsonConstructor]
-        public HandoffActivityRule(List<IDialog> steps = null, string constraint= null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
-            : base(type: ActivityTypes.Handoff, steps: steps, constraint: constraint, callerPath: callerPath, callerLine: callerLine) { }
+        public HandoffActivityRule(List<IDialog> actions = null, string constraint= null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+            : base(type: ActivityTypes.Handoff, actions: actions, constraint: constraint, callerPath: callerPath, callerLine: callerLine) { }
     }
 
     /// <summary>
@@ -111,8 +111,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
     public class InvokeActivityRule : ActivityRule
     {
         [JsonConstructor]
-        public InvokeActivityRule(List<IDialog> steps = null, string constraint= null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
-            : base(type: ActivityTypes.Invoke, steps: steps, constraint: constraint, callerPath: callerPath, callerLine: callerLine) { }
+        public InvokeActivityRule(List<IDialog> actions = null, string constraint= null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+            : base(type: ActivityTypes.Invoke, actions: actions, constraint: constraint, callerPath: callerPath, callerLine: callerLine) { }
     }
 
     /// <summary>
@@ -121,8 +121,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
     public class MessageActivityRule : ActivityRule
     {
         [JsonConstructor]
-        public MessageActivityRule(List<IDialog> steps = null, string constraint= null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
-            : base(type: ActivityTypes.Message, steps: steps, constraint: constraint, callerPath: callerPath, callerLine: callerLine) { }
+        public MessageActivityRule(List<IDialog> actions = null, string constraint= null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+            : base(type: ActivityTypes.Message, actions: actions, constraint: constraint, callerPath: callerPath, callerLine: callerLine) { }
     }
 
     /// <summary>
@@ -131,8 +131,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
     public class MessageReactionActivityRule : ActivityRule
     {
         [JsonConstructor]
-        public MessageReactionActivityRule(List<IDialog> steps = null, string constraint= null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
-            : base(type: ActivityTypes.MessageReaction, steps: steps, constraint: constraint, callerPath: callerPath, callerLine: callerLine) { }
+        public MessageReactionActivityRule(List<IDialog> actions = null, string constraint= null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+            : base(type: ActivityTypes.MessageReaction, actions: actions, constraint: constraint, callerPath: callerPath, callerLine: callerLine) { }
     }
 
 
@@ -142,8 +142,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
     public class MessageUpdateActivityRule : ActivityRule
     {
         [JsonConstructor]
-        public MessageUpdateActivityRule(List<IDialog> steps = null, string constraint= null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
-            : base(type: ActivityTypes.MessageUpdate, steps: steps, constraint: constraint, callerPath: callerPath, callerLine: callerLine) { }
+        public MessageUpdateActivityRule(List<IDialog> actions = null, string constraint= null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+            : base(type: ActivityTypes.MessageUpdate, actions: actions, constraint: constraint, callerPath: callerPath, callerLine: callerLine) { }
     }
 
     /// <summary>
@@ -152,8 +152,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
     public class MessageDeleteActivityRule : ActivityRule
     {
         [JsonConstructor]
-        public MessageDeleteActivityRule(List<IDialog> steps = null, string constraint= null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
-            : base(type: ActivityTypes.MessageDelete, steps: steps, constraint: constraint, callerPath: callerPath, callerLine: callerLine) { }
+        public MessageDeleteActivityRule(List<IDialog> actions = null, string constraint= null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+            : base(type: ActivityTypes.MessageDelete, actions: actions, constraint: constraint, callerPath: callerPath, callerLine: callerLine) { }
     }
 
     /// <summary>
@@ -162,8 +162,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
     public class TypingActivityRule : ActivityRule
     {
         [JsonConstructor]
-        public TypingActivityRule(List<IDialog> steps = null, string constraint= null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
-            : base(type: ActivityTypes.Typing, steps: steps, constraint: constraint, callerPath: callerPath, callerLine: callerLine) { }
+        public TypingActivityRule(List<IDialog> actions = null, string constraint= null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+            : base(type: ActivityTypes.Typing, actions: actions, constraint: constraint, callerPath: callerPath, callerLine: callerLine) { }
     }
 
 }

@@ -13,7 +13,7 @@ using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Rules;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Steps;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 
@@ -128,7 +128,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
             Register("Microsoft.EventRule", typeof(EventRule));
             Register("Microsoft.IntentRule", typeof(IntentRule));
             Register("Microsoft.UnknownIntentRule", typeof(UnknownIntentRule));
-
+            Register("Microsoft.BeginDialogRule", typeof(BeginDialogRule));
             Register("Microsoft.ActivityRule", typeof(ActivityRule));
             Register("Microsoft.MessageActivityRule", typeof(MessageActivityRule));
             Register("Microsoft.MessageUpdateActivityRule", typeof(MessageUpdateActivityRule));
@@ -141,13 +141,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
             Register("Microsoft.TypingActivityRule", typeof(TypingActivityRule));
             Register("Microsoft.HandoffActivityRule", typeof(HandoffActivityRule));
 
-            // Steps
+            // Actions
             Register("Microsoft.BeginDialog", typeof(BeginDialog));
             Register("Microsoft.CancelAllDialogs", typeof(CancelAllDialogs));
             Register("Microsoft.DebugBreak", typeof(DebugBreak));
             Register("Microsoft.DeleteProperty", typeof(DeleteProperty));
             Register("Microsoft.EditArray", typeof(EditArray));
-            Register("Microsoft.EditSteps", typeof(EditSteps));
+            Register("Microsoft.EditActions", typeof(EditActions));
             Register("Microsoft.EmitEvent", typeof(EmitEvent));
             Register("Microsoft.EndDialog", typeof(EndDialog));
             Register("Microsoft.EndTurn", typeof(EndTurn));

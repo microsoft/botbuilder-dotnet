@@ -1,21 +1,21 @@
 {
     "$schema": "../../app.schema",
     "$type": "Microsoft.AdaptiveDialog",
-    "generator": "ExternalLanguage.main.lg",
     "rules": [
         {
             "$type": "Microsoft.BeginDialogRule",
             "actions": [
                 {
                     "$type": "Microsoft.SendActivity",
-                    "activity": "Why did the chicken cross the road?"
-                },
-                {
-                    "$type": "Microsoft.EndTurn"
+                    "activity": "Step 1"
                 },
                 {
                     "$type": "Microsoft.SendActivity",
-                    "activity": "To get to the other side"
+                    "activity": "Step 2"
+                },
+                {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "Step 3"
                 }
             ]
         }

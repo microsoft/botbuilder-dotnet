@@ -14,45 +14,48 @@
             "CancelIntent": "(?i)cancel|never mind"
         }
     },
-    "steps": [
-        {
-            "$type": "Microsoft.SendActivity",
-            "activity": "Hi! I'm a ToDo bot. Say \"add a todo named first\" to get started."
-        }
-    ],
     "rules": [
+        {
+            "$type":"Microsoft.BeginDialogRule",
+            "actions": [
+                {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "Hi! I'm a ToDo bot. Say \"add a todo named first\" to get started."
+                }
+            ]
+        },
         {
             "$type": "Microsoft.IntentRule",
             "intent": "AddIntent",
-            "steps": [
+            "actions": [
                 "AddToDo"
             ]
         },
         {
             "$type": "Microsoft.IntentRule",
             "intent": "DeleteIntent",
-            "steps": [
+            "actions": [
                 "DeleteToDo"
             ]
         },
         {
             "$type": "Microsoft.IntentRule",
             "intent": "ClearIntent",
-            "steps": [
+            "actions": [
                 "ClearToDos"
             ]
         },
         {
             "$type": "Microsoft.IntentRule",
             "intent": "ShowIntent",
-            "steps": [
+            "actions": [
                 "ShowToDos"
             ]
         },
         {
             "$type": "Microsoft.IntentRule",
             "intent": "HelpIntent",
-            "steps": [
+            "actions": [
                 {
                     "$type": "Microsoft.SendActivity",
                     "activity": "[help]"
@@ -62,7 +65,7 @@
         {
             "$type": "Microsoft.IntentRule",
             "intent": "CancelIntent",
-            "steps": [
+            "actions": [
                 {
                     "$type": "Microsoft.SendActivity",
                     "activity": "ok."
@@ -74,7 +77,7 @@
         },
         {
             "$type": "Microsoft.UnknownIntentRule",
-            "steps": [
+            "actions": [
                 {
                     "$type": "Microsoft.SendActivity",
                     "activity": "Hi! I'm a ToDo bot. Say \"add a todo named first\" to get started."

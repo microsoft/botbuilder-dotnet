@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Rules;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Steps;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Extensions.Configuration;
@@ -48,7 +48,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var dialog = new AdaptiveDialog();
             dialog.AddRules(new List<IRule>()
             {
-                new UnknownIntentRule(steps:
+                new UnknownIntentRule(actions:
                     new List<IDialog>()
                     {
                         new SendActivity()

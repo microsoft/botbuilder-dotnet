@@ -45,9 +45,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         public TestContext TestContext { get; set; }
 
         [TestMethod]
-        public async Task JsonDialogLoad_Steps()
+        public async Task JsonDialogLoad_Actions()
         {
-            await BuildTestFlow(@"Steps.main.dialog")
+            await BuildTestFlow(@"Actions.main.dialog")
                 .SendConversationUpdate()
                 .AssertReply("Step 1")
                 .AssertReply("Step 2")
@@ -158,9 +158,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         }
 
         [TestMethod]
-        public async Task JsonDialogLoad_DoSteps()
+        public async Task JsonDialogLoad_DoActions()
         {
-            await BuildTestFlow("DoSteps.main.dialog")
+            await BuildTestFlow("DoActions.main.dialog")
             .Send(new Activity(ActivityTypes.ConversationUpdate, membersAdded: new List<ChannelAccount>() { new ChannelAccount("bot", "Bot") }))
             .SendConversationUpdate()
                 .AssertReply("Hello, I'm Zoidberg. What is your name?")
@@ -306,6 +306,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
                 .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
 
             var resource = resourceExplorer.GetResource(resourceName);
+            if (resource == null)
+                throw new Exception($"Resource[{resourceName}] not found");
             var dialog = DeclarativeTypeLoader.Load<IDialog>(resource, resourceExplorer, DebugSupport.SourceRegistry);
             DialogManager dm = new DialogManager(dialog);
 

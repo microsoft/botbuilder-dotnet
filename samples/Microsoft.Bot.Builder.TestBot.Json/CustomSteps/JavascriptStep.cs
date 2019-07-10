@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.TestBot.Json
 {
-    public class JavascriptStep : DialogCommand
+    public class JavascriptStep : DialogAction
     {
         private ScriptEngine scriptEngine;
         private string script;

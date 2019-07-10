@@ -7,18 +7,18 @@ using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
-    public class EditSteps : DialogCommand, IDialogDependencies
+    public class EditActions : DialogAction, IDialogDependencies
     {
-        [JsonProperty("steps")]
-        public List<IDialog> Steps { get; set; } = new List<IDialog>();
+        [JsonProperty("actions")]
+        public List<IDialog> Actions { get; set; } = new List<IDialog>();
 
         [JsonProperty("changeType")]
-        public StepChangeTypes ChangeType { get; set; }
+        public ActionChangeType ChangeType { get; set; }
 
         [JsonConstructor]
-        public EditSteps([CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
+        public EditActions([CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
             : base()
         {
             this.RegisterSourceLocation(sourceFilePath, sourceLineNumber);
@@ -29,20 +29,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
 
             if (dc is SequenceContext sc)
             {
-                var planSteps = Steps.Select(s => new StepState()
+                var planActions = Actions.Select(s => new ActionState()
                 {
                     DialogStack = new List<DialogInstance>(),
                     DialogId = s.Id,
                     Options = options
                 });
 
-                var changes = new StepChangeList()
+                var changes = new ActionChangeList()
                 {
                     ChangeType = ChangeType,
-                    Steps = planSteps.ToList()
+                    Actions = planActions.ToList()
                 };
 
-                if (this.ChangeType == StepChangeTypes.InsertStepsBeforeTags)
+                if (this.ChangeType == ActionChangeType.InsertActionsBeforeTags)
                 {
                     changes.Tags = this.Tags;
                 }
@@ -59,13 +59,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
 
         protected override string OnComputeId()
         {
-            var idList = Steps.Select(s => s.Id);
-            return $"{nameof(EditSteps)}({this.ChangeType}|{string.Join(",", idList)})";
+            var idList = Actions.Select(s => s.Id);
+            return $"{nameof(EditActions)}({this.ChangeType}|{string.Join(",", idList)})";
         }
 
         public override List<IDialog> ListDependencies()
         {
-            return this.Steps;
+            return this.Actions;
         }
 
     }

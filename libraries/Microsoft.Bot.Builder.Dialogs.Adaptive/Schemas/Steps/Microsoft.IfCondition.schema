@@ -13,26 +13,26 @@
                 "user.age > 3"
             ]
         },
-        "steps": {
+        "actions": {
             "type": "array",
             "items": {
                 "$type": "Microsoft.IDialog"
             },
-            "title": "Steps",
+            "title": "Actions",
             "description": "Step to execute if condition is true."
         },
-        "elseSteps": {
+        "elseActions": {
             "type": "array",
             "items": {
                 "$type": "Microsoft.IDialog"
             },
-            "title": "Else Steps",
+            "title": "Else Actions",
             "description": "Step to execute if condition is false."
         }
 
     },
     "required": [
         "condition",
-        "steps"
+        "actions"
     ]
 }

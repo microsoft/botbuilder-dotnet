@@ -9,11 +9,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
 
-namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
     using CodeStepHandler = Func<DialogContext, object, Task<DialogTurnResult>>;
 
-    public class CodeStep : DialogCommand
+    public class CodeStep : DialogAction
     {
         private readonly CodeStepHandler codeHandler;
 

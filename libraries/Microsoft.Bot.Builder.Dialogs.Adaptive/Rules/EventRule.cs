@@ -19,24 +19,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
         public List<string> Events { get; set; }
 
         [JsonConstructor]
-        public EventRule(List<string> events = null, List<IDialog> steps = null, string constraint = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
-            : base(constraint: constraint, steps: steps, callerPath: callerPath, callerLine: callerLine)
+        public EventRule(List<string> events = null, List<IDialog> actions = null, string constraint = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+            : base(constraint: constraint, actions: actions, callerPath: callerPath, callerLine: callerLine)
         {
             this.Events = events ?? new List<string>();
-            this.Steps = steps ?? new List<IDialog>();
+            this.Actions = actions ?? new List<IDialog>();
         }
 
-        protected override StepChangeList OnCreateChangeList(SequenceContext planning, object dialogOptions = null)
+        protected override ActionChangeList OnCreateChangeList(SequenceContext planning, object dialogOptions = null)
         {
-            var changeList = new StepChangeList()
+            var changeList = new ActionChangeList()
             {
-                ChangeType = StepChangeTypes.InsertSteps,
-                Steps = new List<StepState>()
+                ChangeType = ActionChangeType.InsertActions,
+                Actions = new List<ActionState>()
             };
 
-            this.Steps.ForEach(s =>
+            this.Actions.ForEach(s =>
             {
-                var stepState = new StepState()
+                var stepState = new ActionState()
                 {
                     DialogId = s.Id,
                     DialogStack = new List<DialogInstance>()
@@ -47,7 +47,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
                     stepState.Options = dialogOptions;
                 }
 
-                changeList.Steps.Add(stepState);
+                changeList.Actions.Add(stepState);
             });
 
             return changeList;

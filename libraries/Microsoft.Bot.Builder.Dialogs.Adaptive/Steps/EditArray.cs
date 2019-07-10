@@ -14,12 +14,12 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 
-namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
     /// <summary>
     /// Lets you modify an array in memory
     /// </summary>
-    public class EditArray : DialogCommand
+    public class EditArray : DialogAction
     {
         public enum ArrayChangeType
         {

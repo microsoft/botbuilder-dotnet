@@ -13,15 +13,15 @@
                 "user.vip == true"
             ]
         },
-        "steps": {
+        "actions": {
             "type": "array",
-            "description": "Sequence of steps or dialogs to execute",
+            "description": "Sequence of actions or dialogs to execute",
             "items": {
                 "$type": "Microsoft.IDialog"
             }
         }
     },
     "required": [
-        "steps"
+        "actions"
     ]
 }

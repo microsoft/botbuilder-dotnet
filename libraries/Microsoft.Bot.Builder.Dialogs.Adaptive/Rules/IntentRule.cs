@@ -18,12 +18,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
     public class IntentRule : EventRule
     {
         [JsonConstructor]
-        public IntentRule(string intent = null, List<string> entities = null, List<IDialog> steps = null, string constraint = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public IntentRule(string intent = null, List<string> entities = null, List<IDialog> actions = null, string constraint = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base(events: new List<string>()
             {
                 AdaptiveEvents.RecognizedIntent
             },
-            steps: steps,
+            actions: actions,
             constraint: constraint,
             callerPath: callerPath, callerLine: callerLine)
         {
@@ -58,12 +58,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
                 base.BuildExpression(factory));
         }
 
-        protected override StepChangeList OnCreateChangeList(SequenceContext planning, object dialogOptions = null)
+        protected override ActionChangeList OnCreateChangeList(SequenceContext planning, object dialogOptions = null)
         {
             if (planning.State.TryGetValue<RecognizerResult>("turn.dialogEvent.value", out var recognizerResult))
             {
                 var (name, score) = recognizerResult.GetTopScoringIntent();
-                return new StepChangeList()
+                return new ActionChangeList()
                 {
                     //ChangeType = this.ChangeType,
 
@@ -82,7 +82,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
                             })
                         }
                     },
-                    Steps = Steps.Select(s => new StepState()
+                    Actions = Actions.Select(s => new ActionState()
                     {
                         DialogStack = new List<DialogInstance>(),
                         DialogId = s.Id,
@@ -91,9 +91,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Rules
                 };
             }
 
-            return new StepChangeList()
+            return new ActionChangeList()
             {
-                Steps = Steps.Select(s => new StepState()
+                Actions = Actions.Select(s => new ActionState()
                 {
                     DialogStack = new List<DialogInstance>(),
                     DialogId = s.Id,

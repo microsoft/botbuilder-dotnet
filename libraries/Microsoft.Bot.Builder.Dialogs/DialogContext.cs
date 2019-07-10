@@ -235,7 +235,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             Dictionary<string, object> state = null;
             int? stateIndex = null;
 
-            if (dialog is DialogCommand)
+            if (dialog is DialogAction)
             {
                 if (Stack.Count > 0)
                 {
@@ -288,7 +288,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             // set dialog result
-            if (dialog is DialogCommand)
+            if (dialog is DialogAction)
             {
                 State.SetValue(DialogContextState.STEP_OPTIONS_PROPERTY, options);
             }

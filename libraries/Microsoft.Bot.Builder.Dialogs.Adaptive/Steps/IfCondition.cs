@@ -12,12 +12,12 @@ using Microsoft.Bot.Builder.Expressions;
 using Microsoft.Bot.Builder.Expressions.Parser;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
     /// <summary>
     /// Conditional branch
     /// </summary>
-    public class IfCondition : DialogCommand, IDialogDependencies
+    public class IfCondition : DialogAction, IDialogDependencies
     {
         private Expression condition;
 
@@ -31,11 +31,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
             set { lock(this) condition = (value != null) ? new ExpressionEngine().Parse(value) : null; }
         }
 
-        [JsonProperty("steps")]
-        public List<IDialog> Steps { get; set; } = new List<IDialog>();
+        [JsonProperty("actions")]
+        public List<IDialog> Actions { get; set; } = new List<IDialog>();
 
-        [JsonProperty("elseSteps")]
-        public List<IDialog> ElseSteps { get; set; } = new List<IDialog>();
+        [JsonProperty("elseActions")]
+        public List<IDialog> ElseActions { get; set; } = new List<IDialog>();
 
         [JsonConstructor]
         public IfCondition([CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
@@ -58,28 +58,28 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                 var (value, error) = condition.TryEvaluate(dc.State);
                 var conditionResult = error == null && (bool)value;
 
-                var steps = new List<IDialog>();
+                var actions = new List<IDialog>();
                 if (conditionResult == true)
                 {
-                    steps = this.Steps;
+                    actions = this.Actions;
                 }
                 else
                 {
-                    steps = this.ElseSteps;
+                    actions = this.ElseActions;
                 }
 
-                var planSteps = steps.Select(s => new StepState()
+                var planActions = actions.Select(s => new ActionState()
                 {
                     DialogStack = new List<DialogInstance>(),
                     DialogId = s.Id,
                     Options = options
                 });
 
-                // Queue up steps that should run after current step
-                planning.QueueChanges(new StepChangeList()
+                // Queue up actions that should run after current step
+                planning.QueueChanges(new ActionChangeList()
                 {
-                    ChangeType = StepChangeTypes.InsertSteps,
-                    Steps = planSteps.ToList()
+                    ChangeType = ActionChangeType.InsertActions,
+                    Actions = planActions.ToList()
                 });
 
                 return await planning.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
@@ -92,14 +92,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
 
         protected override string OnComputeId()
         {
-            var idList = Steps.Select(s => s.Id);
+            var idList = Actions.Select(s => s.Id);
             return $"{nameof(IfCondition)}({this.Condition}|{string.Join(",", idList)})";
         }
 
         public override List<IDialog> ListDependencies()
         {
-            var combined = new List<IDialog>(Steps);
-            combined.AddRange(ElseSteps);
+            var combined = new List<IDialog>(Actions);
+            combined.AddRange(ElseActions);
             return combined;
         }
     }

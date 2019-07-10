@@ -10,9 +10,9 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
-    public class RepeatDialog : DialogCommand
+    public class RepeatDialog : DialogAction
     {
         [JsonConstructor]
         public RepeatDialog([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0) 

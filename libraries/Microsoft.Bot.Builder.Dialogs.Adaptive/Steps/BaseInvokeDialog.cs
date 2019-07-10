@@ -9,12 +9,12 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
 
-namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
     /// <summary>
     /// Step which calls another dialog
     /// </summary>
-    public abstract class BaseInvokeDialog : DialogCommand
+    public abstract class BaseInvokeDialog : DialogAction
     {
         protected string dialogIdToCall;
 
