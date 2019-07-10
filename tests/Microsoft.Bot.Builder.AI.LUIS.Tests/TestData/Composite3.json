@@ -4,7 +4,7 @@
       "Destination": [
         {
           "endIndex": 33,
-          "score": 0.9818967,
+          "score": 0.982723653,
           "startIndex": 25,
           "text": "12346 wa",
           "type": "Address"
@@ -13,7 +13,7 @@
       "Source": [
         {
           "endIndex": 21,
-          "score": 0.9377045,
+          "score": 0.933905244,
           "startIndex": 13,
           "text": "12345 va",
           "type": "Address"
@@ -27,7 +27,6 @@
             {
               "endIndex": 30,
               "startIndex": 25,
-              "subtype": "integer",
               "text": "12346",
               "type": "builtin.number"
             }
@@ -35,7 +34,7 @@
           "State": [
             {
               "endIndex": 33,
-              "score": 0.9899993,
+              "score": 0.9893949,
               "startIndex": 31,
               "text": "wa",
               "type": "State"
@@ -57,7 +56,6 @@
             {
               "endIndex": 18,
               "startIndex": 13,
-              "subtype": "integer",
               "text": "12345",
               "type": "builtin.number"
             }
@@ -65,7 +63,7 @@
           "State": [
             {
               "endIndex": 21,
-              "score": 0.9417667,
+              "score": 0.937490761,
               "startIndex": 19,
               "text": "va",
               "type": "State"
@@ -83,37 +81,37 @@
   },
   "intents": {
     "Cancel": {
-      "score": 1E-09
+      "score": 1.01764708E-09
     },
     "Delivery": {
-      "score": 0.00234605442
+      "score": 0.00238572317
     },
     "EntityTests": {
-      "score": 4.6666665E-10
+      "score": 4.757576E-10
     },
     "Greeting": {
-      "score": 1.06875E-09
+      "score": 1.0875E-09
     },
     "Help": {
-      "score": 1E-09
+      "score": 1.01764708E-09
     },
     "None": {
-      "score": 1.15824787E-06
+      "score": 1.17844979E-06
     },
     "Roles": {
-      "score": 0.999888361
+      "score": 0.999911964
     },
     "search": {
-      "score": 9.343347E-06
+      "score": 9.494859E-06
     },
     "SpecifyName": {
-      "score": 3.01666669E-09
+      "score": 3.0666667E-09
     },
     "Travel": {
-      "score": 3.04712876E-06
+      "score": 3.09763345E-06
     },
     "Weather_GetForecast": {
-      "score": 1.01009994E-06
+      "score": 1.02792524E-06
     }
   },
   "sentiment": {
@@ -156,14 +154,14 @@
       {
         "endIndex": 20,
         "entity": "va",
-        "score": 0.9417667,
+        "score": 0.937490761,
         "startIndex": 19,
         "type": "State"
       },
       {
         "endIndex": 32,
         "entity": "wa",
-        "score": 0.9899993,
+        "score": 0.9893949,
         "startIndex": 31,
         "type": "State"
       },
@@ -171,7 +169,7 @@
         "endIndex": 20,
         "entity": "12345 va",
         "role": "Source",
-        "score": 0.9377045,
+        "score": 0.933905244,
         "startIndex": 13,
         "type": "Address"
       },
@@ -179,7 +177,7 @@
         "endIndex": 32,
         "entity": "12346 wa",
         "role": "Destination",
-        "score": 0.9818967,
+        "score": 0.982723653,
         "startIndex": 25,
         "type": "Address"
       },
@@ -207,47 +205,47 @@
     "intents": [
       {
         "intent": "Roles",
-        "score": 0.999888361
+        "score": 0.999911964
       },
       {
         "intent": "Delivery",
-        "score": 0.00234605442
+        "score": 0.00238572317
       },
       {
         "intent": "search",
-        "score": 9.343347E-06
+        "score": 9.494859E-06
       },
       {
         "intent": "Travel",
-        "score": 3.04712876E-06
+        "score": 3.09763345E-06
       },
       {
         "intent": "None",
-        "score": 1.15824787E-06
+        "score": 1.17844979E-06
       },
       {
         "intent": "Weather.GetForecast",
-        "score": 1.01009994E-06
+        "score": 1.02792524E-06
       },
       {
         "intent": "SpecifyName",
-        "score": 3.01666669E-09
+        "score": 3.0666667E-09
       },
       {
         "intent": "Greeting",
-        "score": 1.06875E-09
+        "score": 1.0875E-09
       },
       {
         "intent": "Cancel",
-        "score": 1E-09
+        "score": 1.01764708E-09
       },
       {
         "intent": "Help",
-        "score": 1E-09
+        "score": 1.01764708E-09
       },
       {
         "intent": "EntityTests",
-        "score": 4.6666665E-10
+        "score": 4.757576E-10
       }
     ],
     "query": "Deliver from 12345 VA to 12346 WA",
@@ -257,7 +255,7 @@
     },
     "topScoringIntent": {
       "intent": "Roles",
-      "score": 0.999888361
+      "score": 0.999911964
     }
   }
 }

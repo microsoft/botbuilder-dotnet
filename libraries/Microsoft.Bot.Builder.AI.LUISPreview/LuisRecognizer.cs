@@ -404,7 +404,7 @@ namespace Microsoft.Bot.Builder.AI.LuisPreview
                         ModelID = _application.ApplicationId,
                     },
                     luisOptions = luisPredictionOptions,
-                    luisResponse,
+                    luisResult = luisResponse,
                 });
 
             await turnContext.TraceActivityAsync("LuisRecognizer", traceInfo, LuisTraceType, LuisTraceLabel, cancellationToken).ConfigureAwait(false);

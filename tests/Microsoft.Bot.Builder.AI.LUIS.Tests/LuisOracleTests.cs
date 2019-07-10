@@ -1045,7 +1045,6 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             return new LuisRecognizer(luisApp, options, verbose, httpClientHandler);
         }
 
-
         private MockedHttpClientHandler GetMockHttpClientHandlerObject(string example, string responsePath)
         {
             var response = GetResponse(responsePath);

@@ -6,7 +6,7 @@
           "endIndex": 66,
           "score": 0.456283748,
           "startIndex": 0,
-          "text": "http : / / foo . com is where you can get a weather forecast for seattle",
+          "text": "http://foo.com is where you can get a weather forecast for seattle",
           "type": "Composite2"
         }
       ],
@@ -198,5 +198,124 @@
       "intent": "Weather.GetForecast",
       "score": 0.669524968
     }
+  },
+  "v3": {
+    "prediction": {
+      "entities": {
+        "$instance": {
+          "Composite2": [
+            {
+              "length": 66,
+              "modelType": "Composite Entity Extractor",
+              "modelTypeId": 4,
+              "recognitionSources": [
+                "model"
+              ],
+              "score": 0.456283748,
+              "startIndex": 0,
+              "text": "http://foo.com is where you can get a weather forecast for seattle",
+              "type": "Composite2"
+            }
+          ],
+          "geographyV2": [
+            {
+              "length": 7,
+              "modelType": "Prebuilt Entity Extractor",
+              "modelTypeId": 2,
+              "recognitionSources": [
+                "model"
+              ],
+              "startIndex": 59,
+              "text": "seattle",
+              "type": "builtin.geographyV2.city"
+            }
+          ]
+        },
+        "Composite2": [
+          {
+            "$instance": {
+              "url": [
+                {
+                  "length": 14,
+                  "modelType": "Prebuilt Entity Extractor",
+                  "modelTypeId": 2,
+                  "recognitionSources": [
+                    "model"
+                  ],
+                  "startIndex": 0,
+                  "text": "http://foo.com",
+                  "type": "builtin.url"
+                }
+              ],
+              "Weather.Location": [
+                {
+                  "length": 7,
+                  "modelType": "Entity Extractor",
+                  "modelTypeId": 1,
+                  "recognitionSources": [
+                    "model"
+                  ],
+                  "score": 0.76184386,
+                  "startIndex": 59,
+                  "text": "seattle",
+                  "type": "Weather.Location"
+                }
+              ]
+            },
+            "url": [
+              "http://foo.com"
+            ],
+            "Weather.Location": [
+              "seattle"
+            ]
+          }
+        ],
+        "geographyV2": [
+          "seattle"
+        ]
+      },
+      "intents": {
+        "Cancel": {
+          "score": 0.000171828113
+        },
+        "Delivery": {
+          "score": 0.0011408634
+        },
+        "EntityTests": {
+          "score": 0.342939854
+        },
+        "Greeting": {
+          "score": 0.0001518702
+        },
+        "Help": {
+          "score": 0.0005502715
+        },
+        "None": {
+          "score": 0.0175834317
+        },
+        "Roles": {
+          "score": 0.0432791822
+        },
+        "search": {
+          "score": 0.014743383
+        },
+        "SpecifyName": {
+          "score": 0.00172697916
+        },
+        "Travel": {
+          "score": 0.013458414
+        },
+        "Weather.GetForecast": {
+          "score": 0.669524968
+        }
+      },
+      "normalizedQuery": "http://foo.com is where you can get a weather forecast for seattle",
+      "sentiment": {
+        "label": "neutral",
+        "score": 0.5
+      },
+      "topIntent": "Weather.GetForecast"
+    },
+    "query": "http://foo.com is where you can get a weather forecast for seattle"
   }
 }

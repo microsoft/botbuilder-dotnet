@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder.AI.LuisPreview
     {
         internal const string _metadataKey = "$instance";
         internal const string _geoV2 = "builtin.geographyV2.";
-        internal static readonly HashSet<string> _dateSubtypes = new HashSet<string> { "date", "daterange", "datetimerange", "duration", "set", "time", "timerange" };
+        internal static readonly HashSet<string> _dateSubtypes = new HashSet<string> { "date", "daterange", "datetime", "datetimerange", "duration", "set", "time", "timerange" };
 
         internal static string NormalizedIntent(string intent) => intent.Replace('.', '_').Replace(' ', '_');
 
@@ -76,18 +76,17 @@ namespace Microsoft.Bot.Builder.AI.LuisPreview
                 // Fix datetime by reverting to simple timex
                 if (!inInstance && obj.TryGetValue("type", out var type) && type.Type == JTokenType.String && _dateSubtypes.Contains(type.Value<string>()))
                 {
-                    var timex = obj["values"]?.First()["timex"].Value<string>();
+                    var timexs = obj["values"];
                     var arr = new JArray();
-                    if (timex != null)
+                    if (timexs != null)
                     {
-                        if (timex.StartsWith("(") && timex.EndsWith(")"))
+                        var unique = new HashSet<string>();
+                        foreach (var elt in timexs)
                         {
-                            foreach (var expr in timex.Substring(1, timex.Length - 2).Split(','))
-                            {
-                                arr.Add(expr);
-                            }
+                            unique.Add(elt["timex"]?.Value<string>());
                         }
-                        else
+
+                        foreach (var timex in unique)
                         {
                             arr.Add(timex);
                         }

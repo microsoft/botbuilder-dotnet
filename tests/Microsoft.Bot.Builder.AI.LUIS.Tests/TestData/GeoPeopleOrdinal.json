@@ -229,5 +229,163 @@
       "intent": "Roles",
       "score": 0.999204934
     }
+  },
+  "v3": {
+    "prediction": {
+      "entities": {
+        "$instance": {
+          "child": [
+            {
+              "length": 12,
+              "modelType": "Prebuilt Entity Extractor",
+              "modelTypeId": 2,
+              "recognitionSources": [
+                "model"
+              ],
+              "role": "child",
+              "startIndex": 87,
+              "text": "lisa simpson",
+              "type": "builtin.personName"
+            }
+          ],
+          "endloc": [
+            {
+              "length": 7,
+              "modelType": "Prebuilt Entity Extractor",
+              "modelTypeId": 2,
+              "recognitionSources": [
+                "model"
+              ],
+              "role": "endloc",
+              "startIndex": 44,
+              "text": "jakarta",
+              "type": "builtin.geographyV2.city"
+            }
+          ],
+          "endpos": [
+            {
+              "length": 4,
+              "modelType": "Prebuilt Entity Extractor",
+              "modelTypeId": 2,
+              "recognitionSources": [
+                "model"
+              ],
+              "role": "endpos",
+              "startIndex": 24,
+              "text": "last",
+              "type": "builtin.ordinalV2.relative"
+            }
+          ],
+          "parent": [
+            {
+              "length": 13,
+              "modelType": "Prebuilt Entity Extractor",
+              "modelTypeId": 2,
+              "recognitionSources": [
+                "model"
+              ],
+              "role": "parent",
+              "startIndex": 56,
+              "text": "homer simpson",
+              "type": "builtin.personName"
+            }
+          ],
+          "startloc": [
+            {
+              "length": 6,
+              "modelType": "Prebuilt Entity Extractor",
+              "modelTypeId": 2,
+              "recognitionSources": [
+                "model"
+              ],
+              "role": "startloc",
+              "startIndex": 34,
+              "text": "london",
+              "type": "builtin.geographyV2.city"
+            }
+          ],
+          "startpos": [
+            {
+              "length": 12,
+              "modelType": "Prebuilt Entity Extractor",
+              "modelTypeId": 2,
+              "recognitionSources": [
+                "model"
+              ],
+              "role": "startpos",
+              "startIndex": 8,
+              "text": "next to last",
+              "type": "builtin.ordinalV2.relative"
+            }
+          ]
+        },
+        "child": [
+          "lisa simpson"
+        ],
+        "endloc": [
+          "jakarta"
+        ],
+        "endpos": [
+          {
+            "offset": 0,
+            "relativeTo": "end"
+          }
+        ],
+        "parent": [
+          "homer simpson"
+        ],
+        "startloc": [
+          "london"
+        ],
+        "startpos": [
+          {
+            "offset": -1,
+            "relativeTo": "end"
+          }
+        ]
+      },
+      "intents": {
+        "Cancel": {
+          "score": 0.000107549029
+        },
+        "Delivery": {
+          "score": 0.00123035291
+        },
+        "EntityTests": {
+          "score": 0.0009487789
+        },
+        "Greeting": {
+          "score": 5.293933E-05
+        },
+        "Help": {
+          "score": 0.0001358991
+        },
+        "None": {
+          "score": 0.0109820236
+        },
+        "Roles": {
+          "score": 0.999204934
+        },
+        "search": {
+          "score": 0.0309635121
+        },
+        "SpecifyName": {
+          "score": 0.0009410849
+        },
+        "Travel": {
+          "score": 0.01095186
+        },
+        "Weather.GetForecast": {
+          "score": 0.0106523167
+        }
+      },
+      "normalizedQuery": "go from next to last to last move london to jakarta and homer simpson is the parent of lisa simpson",
+      "sentiment": {
+        "label": "neutral",
+        "score": 0.5
+      },
+      "topIntent": "Roles"
+    },
+    "query": "go from next to last to last move london to jakarta and homer simpson is the parent of lisa simpson"
   }
 }

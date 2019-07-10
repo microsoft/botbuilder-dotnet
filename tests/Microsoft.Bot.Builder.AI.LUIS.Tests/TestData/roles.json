@@ -178,112 +178,96 @@
         {
           "endIndex": 1,
           "startIndex": 0,
-          "subtype": "integer",
           "text": "3",
           "type": "builtin.number"
         },
         {
           "endIndex": 18,
           "startIndex": 17,
-          "subtype": "integer",
           "text": "2",
           "type": "builtin.number"
         },
         {
           "endIndex": 36,
           "startIndex": 35,
-          "subtype": "integer",
           "text": "5",
           "type": "builtin.number"
         },
         {
           "endIndex": 43,
           "startIndex": 41,
-          "subtype": "integer",
           "text": "10",
           "type": "builtin.number"
         },
         {
           "endIndex": 66,
           "startIndex": 65,
-          "subtype": "integer",
           "text": "6",
           "type": "builtin.number"
         },
         {
           "endIndex": 82,
           "startIndex": 81,
-          "subtype": "integer",
           "text": "8",
           "type": "builtin.number"
         },
         {
           "endIndex": 139,
           "startIndex": 136,
-          "subtype": "integer",
           "text": "425",
           "type": "builtin.number"
         },
         {
           "endIndex": 143,
           "startIndex": 140,
-          "subtype": "integer",
           "text": "777",
           "type": "builtin.number"
         },
         {
           "endIndex": 148,
           "startIndex": 144,
-          "subtype": "integer",
           "text": "1212",
           "type": "builtin.number"
         },
         {
           "endIndex": 155,
           "startIndex": 152,
-          "subtype": "integer",
           "text": "206",
           "type": "builtin.number"
         },
         {
           "endIndex": 159,
           "startIndex": 156,
-          "subtype": "integer",
           "text": "666",
           "type": "builtin.number"
         },
         {
           "endIndex": 164,
           "startIndex": 160,
-          "subtype": "integer",
           "text": "4123",
           "type": "builtin.number"
         },
         {
           "endIndex": 301,
           "startIndex": 299,
-          "subtype": "integer",
           "text": "68",
           "type": "builtin.number"
         },
         {
           "endIndex": 316,
           "startIndex": 314,
-          "subtype": "integer",
           "text": "72",
           "type": "builtin.number"
         },
         {
           "endIndex": 394,
           "startIndex": 391,
-          "subtype": "integer",
           "text": "400",
           "type": "builtin.number"
         },
         {
           "endIndex": 403,
           "startIndex": 400,
-          "subtype": "integer",
           "text": "500",
           "type": "builtin.number"
         }

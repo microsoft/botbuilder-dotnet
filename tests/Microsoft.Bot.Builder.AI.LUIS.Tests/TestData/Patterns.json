@@ -189,5 +189,136 @@
       "intent": "search",
       "score": 0.9999993
     }
+  },
+  "v3": {
+    "prediction": {
+      "entities": {
+        "$instance": {
+          "extra": [
+            {
+              "length": 5,
+              "modelType": "Pattern.Any Entity Extractor",
+              "modelTypeId": 7,
+              "recognitionSources": [
+                "model"
+              ],
+              "role": "extra",
+              "startIndex": 71,
+              "text": "kb435",
+              "type": "subject"
+            }
+          ],
+          "Part": [
+            {
+              "length": 5,
+              "modelType": "Regex Entity Extractor",
+              "modelTypeId": 8,
+              "recognitionSources": [
+                "model"
+              ],
+              "startIndex": 71,
+              "text": "kb435",
+              "type": "Part"
+            }
+          ],
+          "person": [
+            {
+              "length": 12,
+              "modelType": "Pattern.Any Entity Extractor",
+              "modelTypeId": 7,
+              "recognitionSources": [
+                "model"
+              ],
+              "startIndex": 49,
+              "text": "bart simpson",
+              "type": "person"
+            }
+          ],
+          "personName": [
+            {
+              "length": 12,
+              "modelType": "Prebuilt Entity Extractor",
+              "modelTypeId": 2,
+              "recognitionSources": [
+                "model"
+              ],
+              "startIndex": 49,
+              "text": "bart simpson",
+              "type": "builtin.personName"
+            }
+          ],
+          "subject": [
+            {
+              "length": 31,
+              "modelType": "Pattern.Any Entity Extractor",
+              "modelTypeId": 7,
+              "recognitionSources": [
+                "model"
+              ],
+              "startIndex": 12,
+              "text": "something wicked this way comes",
+              "type": "subject"
+            }
+          ]
+        },
+        "extra": [
+          "kb435"
+        ],
+        "Part": [
+          "kb435"
+        ],
+        "person": [
+          "bart simpson"
+        ],
+        "personName": [
+          "bart simpson"
+        ],
+        "subject": [
+          "something wicked this way comes"
+        ]
+      },
+      "intents": {
+        "Cancel": {
+          "score": 1.01764708E-09
+        },
+        "Delivery": {
+          "score": 1.8E-09
+        },
+        "EntityTests": {
+          "score": 1.044335E-05
+        },
+        "Greeting": {
+          "score": 1.0875E-09
+        },
+        "Help": {
+          "score": 1.01764708E-09
+        },
+        "None": {
+          "score": 2.38094663E-06
+        },
+        "Roles": {
+          "score": 5.98274755E-06
+        },
+        "search": {
+          "score": 0.9999993
+        },
+        "SpecifyName": {
+          "score": 3.0666667E-09
+        },
+        "Travel": {
+          "score": 3.09763345E-06
+        },
+        "Weather.GetForecast": {
+          "score": 1.02792524E-06
+        }
+      },
+      "normalizedQuery": "email about something wicked this way comes from bart simpson and also kb435",
+      "sentiment": {
+        "label": "negative",
+        "score": 0.210341513
+      },
+      "topIntent": "search"
+    },
+    "query": "email about something wicked this way comes from bart simpson and also kb435"
   }
 }

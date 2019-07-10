@@ -79,8 +79,8 @@ namespace Microsoft.Bot.Builder.AI.LuisPreview.Tests
 
         public double[] number;
 
-        public double[] ordinal;
-        public double[] start;
+        // public double[] ordinal;
+        // public double[] start;
 
         public OrdinalV2[] ordinalV2;
         public OrdinalV2[] endpos;
@@ -146,7 +146,7 @@ namespace Microsoft.Bot.Builder.AI.LuisPreview.Tests
             public InstanceData[] email;
             public InstanceData[] money;
             public InstanceData[] number;
-            public InstanceData[] ordinal;
+            // public InstanceData[] ordinal;
             public InstanceData[] percentage;
             public InstanceData[] phonenumber;
             public InstanceData[] temperature;
@@ -159,7 +159,7 @@ namespace Microsoft.Bot.Builder.AI.LuisPreview.Tests
             public string[] email;
             public Money[] money;
             public double[] number;
-            public double[] ordinal;
+            // public double[] ordinal;
             public double[] percentage;
             public string[] phonenumber;
             public Temperature[] temperature;
