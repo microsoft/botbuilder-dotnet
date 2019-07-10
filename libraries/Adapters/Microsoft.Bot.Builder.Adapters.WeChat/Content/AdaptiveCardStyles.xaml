@@ -1,0 +1,27 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:core="clr-namespace:System;assembly=mscorlib"
+>
+
+    <Style x:Key="Hidden" TargetType="FrameworkElement">
+        <Setter Property="Visibility" Value="Collapsed"/>
+    </Style>
+
+    <!-- TextBlock definitions -->
+    <Style x:Key="Adaptive.TextBlock" TargetType="TextBlock" >
+        <Setter Property="FontFamily" Value="Tahoma"/>
+    </Style>
+
+
+
+    <!-- Circular Person mask -->
+    <RadialGradientBrush x:Key="PersonMask" GradientOrigin="0.5,0.5" Center="0.5,0.5" RadiusX="0.5" RadiusY="0.5">
+        <GradientStop Color="#ffffffff" Offset="0.9" />
+        <GradientStop Color="#00ffffff" Offset="1.0" />
+    </RadialGradientBrush>
+
+    <Style x:Key="Adaptive.Image.Person" TargetType="Image" >
+        <Setter Property="OpacityMask" Value="{StaticResource PersonMask}"/>
+    </Style>
+
+</ResourceDictionary>

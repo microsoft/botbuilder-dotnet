@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AdaptiveCards.Rendering.Html" Version="1.1.2" />
+    <PackageReference Include="Microsoft.MarkedNet" Version="1.0.13" />
+    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Microsoft.Bot.Builder.ApplicationInsights\Microsoft.Bot.Builder.ApplicationInsights.csproj" />
+    <ProjectReference Include="..\..\Microsoft.Bot.Schema\Microsoft.Bot.Schema.csproj" />
+    <ProjectReference Include="..\Microsoft.Bot.Builder.Adapters.WeChat.Schema\Microsoft.Bot.Builder.Adapters.WeChat.Schema.csproj" />
+    <ProjectReference Include="..\..\integration\Microsoft.Bot.Builder.Integration.AspNet.Core\Microsoft.Bot.Builder.Integration.AspNet.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Content\AdaptiveCardStyles.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </None>
+  </ItemGroup>
+
+</Project>
