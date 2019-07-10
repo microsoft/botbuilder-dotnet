@@ -4,7 +4,7 @@
       "Composite2": [
         {
           "endIndex": 69,
-          "score": 0.9501543,
+          "score": 0.97076714,
           "startIndex": 0,
           "text": "http://foo.com is where you can fly from seattle to dallas via denver",
           "type": "Composite2"
@@ -25,7 +25,7 @@
           "City": [
             {
               "endIndex": 69,
-              "score": 0.9857553,
+              "score": 0.984581649,
               "startIndex": 63,
               "text": "denver",
               "type": "City"
@@ -34,7 +34,7 @@
           "From": [
             {
               "endIndex": 48,
-              "score": 0.9997592,
+              "score": 0.999511,
               "startIndex": 41,
               "text": "seattle",
               "type": "City::From"
@@ -43,7 +43,7 @@
           "To": [
             {
               "endIndex": 58,
-              "score": 0.9990426,
+              "score": 0.9984612,
               "startIndex": 52,
               "text": "dallas",
               "type": "City::To"
@@ -102,13 +102,13 @@
       "score": 0.0300086979
     },
     "search": {
-      "score": 0.0211907644
+      "score": 0.0108942846
     },
     "SpecifyName": {
-      "score": 0.00157370011
+      "score": 0.00168467627
     },
     "Travel": {
-      "score": 0.0778588
+      "score": 0.0154484725
     },
     "Weather_GetForecast": {
       "score": 0.0237181056
@@ -148,28 +148,28 @@
       {
         "endIndex": 57,
         "entity": "dallas",
-        "score": 0.9990426,
+        "score": 0.9984612,
         "startIndex": 52,
         "type": "City::To"
       },
       {
         "endIndex": 47,
         "entity": "seattle",
-        "score": 0.9997592,
+        "score": 0.999511,
         "startIndex": 41,
         "type": "City::From"
       },
       {
         "endIndex": 68,
         "entity": "denver",
-        "score": 0.9857553,
+        "score": 0.984581649,
         "startIndex": 63,
         "type": "City"
       },
       {
         "endIndex": 68,
         "entity": "http : / / foo . com is where you can fly from seattle to dallas via denver",
-        "score": 0.9501543,
+        "score": 0.97076714,
         "startIndex": 0,
         "type": "Composite2"
       },
@@ -195,10 +195,6 @@
         "score": 0.94500196
       },
       {
-        "intent": "Travel",
-        "score": 0.0778588
-      },
-      {
         "intent": "Roles",
         "score": 0.0300086979
       },
@@ -207,8 +203,12 @@
         "score": 0.0237181056
       },
       {
+        "intent": "Travel",
+        "score": 0.0154484725
+      },
+      {
         "intent": "search",
-        "score": 0.0211907644
+        "score": 0.0108942846
       },
       {
         "intent": "None",
@@ -216,7 +216,7 @@
       },
       {
         "intent": "SpecifyName",
-        "score": 0.00157370011
+        "score": 0.00168467627
       },
       {
         "intent": "Delivery",
@@ -257,7 +257,7 @@
               "recognitionSources": [
                 "model"
               ],
-              "score": 0.9501543,
+              "score": 0.97076714,
               "startIndex": 0,
               "text": "http://foo.com is where you can fly from seattle to dallas via denver",
               "type": "Composite2"
@@ -288,7 +288,7 @@
                   "recognitionSources": [
                     "model"
                   ],
-                  "score": 0.9857553,
+                  "score": 0.984581649,
                   "startIndex": 63,
                   "text": "denver",
                   "type": "City"
@@ -302,7 +302,7 @@
                   "recognitionSources": [
                     "model"
                   ],
-                  "score": 0.9997592,
+                  "score": 0.999511,
                   "startIndex": 41,
                   "text": "seattle",
                   "type": "City::From"
@@ -316,7 +316,7 @@
                   "recognitionSources": [
                     "model"
                   ],
-                  "score": 0.9990426,
+                  "score": 0.9984612,
                   "startIndex": 52,
                   "text": "dallas",
                   "type": "City::To"
@@ -377,13 +377,13 @@
           "score": 0.0300086979
         },
         "search": {
-          "score": 0.0211907644
+          "score": 0.0108942846
         },
         "SpecifyName": {
-          "score": 0.00157370011
+          "score": 0.00168467627
         },
         "Travel": {
-          "score": 0.0778588
+          "score": 0.0154484725
         },
         "Weather.GetForecast": {
           "score": 0.0237181056

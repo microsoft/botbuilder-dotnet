@@ -17,7 +17,7 @@
           "type": "builtin.geographyV2.city"
         }
       ],
-      "endpos": [
+      "ordinalV2": [
         {
           "endIndex": 28,
           "startIndex": 24,
@@ -59,7 +59,7 @@
         "type": "city"
       }
     ],
-    "endpos": [
+    "ordinalV2": [
       {
         "offset": 0,
         "relativeTo": "end"
@@ -104,13 +104,13 @@
       "score": 0.999204934
     },
     "search": {
-      "score": 0.0309635121
+      "score": 0.0263254233
     },
     "SpecifyName": {
-      "score": 0.0009410849
+      "score": 0.00104324089
     },
     "Travel": {
-      "score": 0.01095186
+      "score": 0.01043327
     },
     "Weather_GetForecast": {
       "score": 0.0106523167
@@ -155,7 +155,6 @@
           "offset": "0",
           "relativeTo": "end"
         },
-        "role": "endpos",
         "startIndex": 24,
         "type": "builtin.ordinalV2.relative"
       },
@@ -181,31 +180,31 @@
       },
       {
         "intent": "search",
-        "score": 0.0309635121
+        "score": 0.0263254233
       },
       {
         "intent": "None",
         "score": 0.0109820236
       },
       {
-        "intent": "Travel",
-        "score": 0.01095186
-      },
-      {
         "intent": "Weather.GetForecast",
         "score": 0.0106523167
+      },
+      {
+        "intent": "Travel",
+        "score": 0.01043327
       },
       {
         "intent": "Delivery",
         "score": 0.00123035291
       },
       {
-        "intent": "EntityTests",
-        "score": 0.0009487789
+        "intent": "SpecifyName",
+        "score": 0.00104324089
       },
       {
-        "intent": "SpecifyName",
-        "score": 0.0009410849
+        "intent": "EntityTests",
+        "score": 0.0009487789
       },
       {
         "intent": "Help",
@@ -262,7 +261,7 @@
               "type": "builtin.geographyV2.city"
             }
           ],
-          "endpos": [
+          "ordinalV2": [
             {
               "length": 4,
               "modelType": "Prebuilt Entity Extractor",
@@ -270,7 +269,6 @@
               "recognitionSources": [
                 "model"
               ],
-              "role": "endpos",
               "startIndex": 24,
               "text": "last",
               "type": "builtin.ordinalV2.relative"
@@ -325,7 +323,7 @@
         "endloc": [
           "jakarta"
         ],
-        "endpos": [
+        "ordinalV2": [
           {
             "offset": 0,
             "relativeTo": "end"
@@ -367,13 +365,13 @@
           "score": 0.999204934
         },
         "search": {
-          "score": 0.0309635121
+          "score": 0.0263254233
         },
         "SpecifyName": {
-          "score": 0.0009410849
+          "score": 0.00104324089
         },
         "Travel": {
-          "score": 0.01095186
+          "score": 0.01043327
         },
         "Weather.GetForecast": {
           "score": 0.0106523167

@@ -4,7 +4,7 @@
       "Composite1": [
         {
           "endIndex": 306,
-          "score": 0.8764849,
+          "score": 0.880988955,
           "startIndex": 0,
           "text": "12 years old and 3 days old and monday july 3rd, 2019 and every monday and between 3am and 5:30am and 4 acres and 4 pico meters and chrimc@hotmail.com and $4 and $4.25 and also 32 and 210.4 and first and 10% and 10.5% and 425-555-1234 and 3 degrees and -27.5 degrees c and the next one and the previous one",
           "type": "Composite1"
@@ -238,20 +238,6 @@
               "type": "builtin.number"
             }
           ],
-          "ordinal": [
-            {
-              "endIndex": 47,
-              "startIndex": 44,
-              "text": "3rd",
-              "type": "builtin.ordinal"
-            },
-            {
-              "endIndex": 199,
-              "startIndex": 194,
-              "text": "first",
-              "type": "builtin.ordinal"
-            }
-          ],
           "percentage": [
             {
               "endIndex": 207,
@@ -269,6 +255,7 @@
           "phonenumber": [
             {
               "endIndex": 234,
+              "score": 0.9,
               "startIndex": 222,
               "text": "425-555-1234",
               "type": "builtin.phonenumber"
@@ -375,10 +362,6 @@
           1,
           1
         ],
-        "ordinal": [
-          3,
-          1
-        ],
         "percentage": [
           10,
           10.5
@@ -440,13 +423,13 @@
       "score": 0.197366714
     },
     "search": {
-      "score": 0.149378926
+      "score": 0.14049834
     },
     "SpecifyName": {
-      "score": 6.563565E-05
+      "score": 0.000137732946
     },
     "Travel": {
-      "score": 0.0119320424
+      "score": 0.0100996653
     },
     "Weather_GetForecast": {
       "score": 0.0143940123
@@ -586,14 +569,6 @@
             "value": "one"
           },
           {
-            "type": "builtin.ordinal",
-            "value": "3rd"
-          },
-          {
-            "type": "builtin.ordinal",
-            "value": "first"
-          },
-          {
             "type": "builtin.percentage",
             "value": "10%"
           },
@@ -622,7 +597,7 @@
       {
         "endIndex": 305,
         "entity": "12 years old and 3 days old and monday july 3rd , 2019 and every monday and between 3am and 5 : 30am and 4 acres and 4 pico meters and chrimc @ hotmail . com and $ 4 and $ 4 . 25 and also 32 and 210 . 4 and first and 10 % and 10 . 5 % and 425 - 555 - 1234 and 3 degrees and - 27 . 5 degrees c and the next one and the previous one",
-        "score": 0.8764849,
+        "score": 0.880988955,
         "startIndex": 0,
         "type": "Composite1"
       },
@@ -965,24 +940,6 @@
         "endIndex": 46,
         "entity": "3rd",
         "resolution": {
-          "value": "3"
-        },
-        "startIndex": 44,
-        "type": "builtin.ordinal"
-      },
-      {
-        "endIndex": 198,
-        "entity": "first",
-        "resolution": {
-          "value": "1"
-        },
-        "startIndex": 194,
-        "type": "builtin.ordinal"
-      },
-      {
-        "endIndex": 46,
-        "entity": "3rd",
-        "resolution": {
           "offset": "3",
           "relativeTo": "start"
         },
@@ -1079,19 +1036,19 @@
       },
       {
         "intent": "search",
-        "score": 0.149378926
+        "score": 0.14049834
       },
       {
         "intent": "Weather.GetForecast",
         "score": 0.0143940123
       },
       {
-        "intent": "Travel",
-        "score": 0.0119320424
-      },
-      {
         "intent": "None",
         "score": 0.01040122
+      },
+      {
+        "intent": "Travel",
+        "score": 0.0100996653
       },
       {
         "intent": "Delivery",
@@ -1099,7 +1056,7 @@
       },
       {
         "intent": "SpecifyName",
-        "score": 6.563565E-05
+        "score": 0.000137732946
       },
       {
         "intent": "Help",
@@ -1130,15 +1087,15 @@
         "$instance": {
           "Composite1": [
             {
-              "length": 300,
+              "length": 306,
               "modelType": "Composite Entity Extractor",
               "modelTypeId": 4,
               "recognitionSources": [
                 "model"
               ],
-              "score": 0.877445638,
+              "score": 0.880988955,
               "startIndex": 0,
-              "text": "12 years old and 3 days old and monday july 3rd and every monday and between 3am and 5:30am and 4 acres and 4 pico meters and chrimc@hotmail.com and $4 and $4.25 and also 32 and 210.4 and first and 10% and 10.5% and 425-555-1234 and 3 degrees and -27.5 degrees c and the next one and the previous one",
+              "text": "12 years old and 3 days old and monday july 3rd, 2019 and every monday and between 3am and 5:30am and 4 acres and 4 pico meters and chrimc@hotmail.com and $4 and $4.25 and also 32 and 210.4 and first and 10% and 10.5% and 425-555-1234 and 3 degrees and -27.5 degrees c and the next one and the previous one",
               "type": "Composite1"
             }
           ],
@@ -1161,7 +1118,7 @@
               "recognitionSources": [
                 "model"
               ],
-              "startIndex": 188,
+              "startIndex": 194,
               "text": "first",
               "type": "builtin.ordinalV2"
             },
@@ -1172,7 +1129,7 @@
               "recognitionSources": [
                 "model"
               ],
-              "startIndex": 271,
+              "startIndex": 277,
               "text": "next one",
               "type": "builtin.ordinalV2.relative"
             },
@@ -1183,7 +1140,7 @@
               "recognitionSources": [
                 "model"
               ],
-              "startIndex": 288,
+              "startIndex": 294,
               "text": "previous one",
               "type": "builtin.ordinalV2.relative"
             }
@@ -1240,14 +1197,14 @@
                   "type": "builtin.datetimeV2.duration"
                 },
                 {
-                  "length": 15,
+                  "length": 21,
                   "modelType": "Prebuilt Entity Extractor",
                   "modelTypeId": 2,
                   "recognitionSources": [
                     "model"
                   ],
                   "startIndex": 32,
-                  "text": "monday july 3rd",
+                  "text": "monday july 3rd, 2019",
                   "type": "builtin.datetimeV2.date"
                 },
                 {
@@ -1257,7 +1214,7 @@
                   "recognitionSources": [
                     "model"
                   ],
-                  "startIndex": 52,
+                  "startIndex": 58,
                   "text": "every monday",
                   "type": "builtin.datetimeV2.set"
                 },
@@ -1268,7 +1225,7 @@
                   "recognitionSources": [
                     "model"
                   ],
-                  "startIndex": 69,
+                  "startIndex": 75,
                   "text": "between 3am and 5:30am",
                   "type": "builtin.datetimeV2.timerange"
                 }
@@ -1281,7 +1238,7 @@
                   "recognitionSources": [
                     "model"
                   ],
-                  "startIndex": 96,
+                  "startIndex": 102,
                   "text": "4 acres",
                   "type": "builtin.dimension"
                 },
@@ -1292,7 +1249,7 @@
                   "recognitionSources": [
                     "model"
                   ],
-                  "startIndex": 108,
+                  "startIndex": 114,
                   "text": "4 pico meters",
                   "type": "builtin.dimension"
                 }
@@ -1305,7 +1262,7 @@
                   "recognitionSources": [
                     "model"
                   ],
-                  "startIndex": 126,
+                  "startIndex": 132,
                   "text": "chrimc@hotmail.com",
                   "type": "builtin.email"
                 }
@@ -1318,7 +1275,7 @@
                   "recognitionSources": [
                     "model"
                   ],
-                  "startIndex": 149,
+                  "startIndex": 155,
                   "text": "$4",
                   "type": "builtin.currency"
                 },
@@ -1329,7 +1286,7 @@
                   "recognitionSources": [
                     "model"
                   ],
-                  "startIndex": 156,
+                  "startIndex": 162,
                   "text": "$4.25",
                   "type": "builtin.currency"
                 }
@@ -1358,13 +1315,24 @@
                   "type": "builtin.number"
                 },
                 {
+                  "length": 4,
+                  "modelType": "Prebuilt Entity Extractor",
+                  "modelTypeId": 2,
+                  "recognitionSources": [
+                    "model"
+                  ],
+                  "startIndex": 49,
+                  "text": "2019",
+                  "type": "builtin.number"
+                },
+                {
                   "length": 1,
                   "modelType": "Prebuilt Entity Extractor",
                   "modelTypeId": 2,
                   "recognitionSources": [
                     "model"
                   ],
-                  "startIndex": 85,
+                  "startIndex": 91,
                   "text": "5",
                   "type": "builtin.number"
                 },
@@ -1375,7 +1343,7 @@
                   "recognitionSources": [
                     "model"
                   ],
-                  "startIndex": 96,
+                  "startIndex": 102,
                   "text": "4",
                   "type": "builtin.number"
                 },
@@ -1386,7 +1354,7 @@
                   "recognitionSources": [
                     "model"
                   ],
-                  "startIndex": 108,
+                  "startIndex": 114,
                   "text": "4",
                   "type": "builtin.number"
                 },
@@ -1397,7 +1365,7 @@
                   "recognitionSources": [
                     "model"
                   ],
-                  "startIndex": 150,
+                  "startIndex": 156,
                   "text": "4",
                   "type": "builtin.number"
                 },
@@ -1408,7 +1376,7 @@
                   "recognitionSources": [
                     "model"
                   ],
-                  "startIndex": 157,
+                  "startIndex": 163,
                   "text": "4.25",
                   "type": "builtin.number"
                 },
@@ -1419,7 +1387,7 @@
                   "recognitionSources": [
                     "model"
                   ],
-                  "startIndex": 171,
+                  "startIndex": 177,
                   "text": "32",
                   "type": "builtin.number"
                 },
@@ -1430,7 +1398,7 @@
                   "recognitionSources": [
                     "model"
                   ],
-                  "startIndex": 178,
+                  "startIndex": 184,
                   "text": "210.4",
                   "type": "builtin.number"
                 },
@@ -1441,7 +1409,7 @@
                   "recognitionSources": [
                     "model"
                   ],
-                  "startIndex": 198,
+                  "startIndex": 204,
                   "text": "10",
                   "type": "builtin.number"
                 },
@@ -1452,7 +1420,7 @@
                   "recognitionSources": [
                     "model"
                   ],
-                  "startIndex": 206,
+                  "startIndex": 212,
                   "text": "10.5",
                   "type": "builtin.number"
                 },
@@ -1463,7 +1431,7 @@
                   "recognitionSources": [
                     "model"
                   ],
-                  "startIndex": 216,
+                  "startIndex": 222,
                   "text": "425",
                   "type": "builtin.number"
                 },
@@ -1474,7 +1442,7 @@
                   "recognitionSources": [
                     "model"
                   ],
-                  "startIndex": 220,
+                  "startIndex": 226,
                   "text": "555",
                   "type": "builtin.number"
                 },
@@ -1485,7 +1453,7 @@
                   "recognitionSources": [
                     "model"
                   ],
-                  "startIndex": 224,
+                  "startIndex": 230,
                   "text": "1234",
                   "type": "builtin.number"
                 },
@@ -1496,7 +1464,7 @@
                   "recognitionSources": [
                     "model"
                   ],
-                  "startIndex": 233,
+                  "startIndex": 239,
                   "text": "3",
                   "type": "builtin.number"
                 },
@@ -1507,7 +1475,7 @@
                   "recognitionSources": [
                     "model"
                   ],
-                  "startIndex": 247,
+                  "startIndex": 253,
                   "text": "-27.5",
                   "type": "builtin.number"
                 },
@@ -1518,7 +1486,7 @@
                   "recognitionSources": [
                     "model"
                   ],
-                  "startIndex": 276,
+                  "startIndex": 282,
                   "text": "one",
                   "type": "builtin.number"
                 },
@@ -1529,33 +1497,9 @@
                   "recognitionSources": [
                     "model"
                   ],
-                  "startIndex": 297,
+                  "startIndex": 303,
                   "text": "one",
                   "type": "builtin.number"
-                }
-              ],
-              "ordinal": [
-                {
-                  "length": 3,
-                  "modelType": "Prebuilt Entity Extractor",
-                  "modelTypeId": 2,
-                  "recognitionSources": [
-                    "model"
-                  ],
-                  "startIndex": 44,
-                  "text": "3rd",
-                  "type": "builtin.ordinal"
-                },
-                {
-                  "length": 5,
-                  "modelType": "Prebuilt Entity Extractor",
-                  "modelTypeId": 2,
-                  "recognitionSources": [
-                    "model"
-                  ],
-                  "startIndex": 188,
-                  "text": "first",
-                  "type": "builtin.ordinal"
                 }
               ],
               "percentage": [
@@ -1566,7 +1510,7 @@
                   "recognitionSources": [
                     "model"
                   ],
-                  "startIndex": 198,
+                  "startIndex": 204,
                   "text": "10%",
                   "type": "builtin.percentage"
                 },
@@ -1577,7 +1521,7 @@
                   "recognitionSources": [
                     "model"
                   ],
-                  "startIndex": 206,
+                  "startIndex": 212,
                   "text": "10.5%",
                   "type": "builtin.percentage"
                 }
@@ -1591,7 +1535,7 @@
                     "model"
                   ],
                   "score": 0.9,
-                  "startIndex": 216,
+                  "startIndex": 222,
                   "text": "425-555-1234",
                   "type": "builtin.phonenumber"
                 }
@@ -1604,7 +1548,7 @@
                   "recognitionSources": [
                     "model"
                   ],
-                  "startIndex": 233,
+                  "startIndex": 239,
                   "text": "3 degrees",
                   "type": "builtin.temperature"
                 },
@@ -1615,7 +1559,7 @@
                   "recognitionSources": [
                     "model"
                   ],
-                  "startIndex": 247,
+                  "startIndex": 253,
                   "text": "-27.5 degrees c",
                   "type": "builtin.temperature"
                 }
@@ -1654,11 +1598,7 @@
                 "type": "date",
                 "values": [
                   {
-                    "timex": "XXXX-07-03",
-                    "value": "2018-07-03"
-                  },
-                  {
-                    "timex": "XXXX-07-03",
+                    "timex": "2019-07-03",
                     "value": "2019-07-03"
                   }
                 ]
@@ -1709,6 +1649,7 @@
             "number": [
               12,
               3,
+              2019,
               5,
               4,
               4,
@@ -1725,16 +1666,6 @@
               -27.5,
               1,
               1
-            ],
-            "ordinal": [
-              {
-                "offset": 3,
-                "relativeTo": "start"
-              },
-              {
-                "offset": 1,
-                "relativeTo": "start"
-              }
             ],
             "percentage": [
               10,
@@ -1776,46 +1707,46 @@
       },
       "intents": {
         "Cancel": {
-          "score": 1.602786E-06
+          "score": 1.56337478E-06
         },
         "Delivery": {
-          "score": 0.000278715248
+          "score": 0.0002846266
         },
         "EntityTests": {
-          "score": 0.96595037
+          "score": 0.953405857
         },
         "Greeting": {
-          "score": 8.547132E-07
+          "score": 8.20979437E-07
         },
         "Help": {
-          "score": 4.902734E-06
+          "score": 4.81870757E-06
         },
         "None": {
-          "score": 0.009063047
+          "score": 0.01040122
         },
         "Roles": {
-          "score": 0.184567839
+          "score": 0.197366714
         },
         "search": {
-          "score": 0.149123311
+          "score": 0.14049834
         },
         "SpecifyName": {
-          "score": 6.590373E-05
+          "score": 0.000137732946
         },
         "Travel": {
-          "score": 0.0114093516
+          "score": 0.0100996653
         },
         "Weather.GetForecast": {
-          "score": 0.0122321565
+          "score": 0.0143940123
         }
       },
-      "normalizedQuery": "12 years old and 3 days old and monday july 3rd and every monday and between 3am and 5:30am and 4 acres and 4 pico meters and chrimc@hotmail.com and $4 and $4.25 and also 32 and 210.4 and first and 10% and 10.5% and 425-555-1234 and 3 degrees and -27.5 degrees c and the next one and the previous one",
+      "normalizedQuery": "12 years old and 3 days old and monday july 3rd, 2019 and every monday and between 3am and 5:30am and 4 acres and 4 pico meters and chrimc@hotmail.com and $4 and $4.25 and also 32 and 210.4 and first and 10% and 10.5% and 425-555-1234 and 3 degrees and -27.5 degrees c and the next one and the previous one",
       "sentiment": {
         "label": "neutral",
         "score": 0.5
       },
       "topIntent": "EntityTests"
     },
-    "query": "12 years old and 3 days old and monday july 3rd and every monday and between 3am and 5:30am and 4 acres and 4 pico meters and chrimc@hotmail.com and $4 and $4.25 and also 32 and 210.4 and first and 10% and 10.5% and 425-555-1234 and 3 degrees and -27.5 degrees c and the next one and the previous one"
+    "query": "12 years old and 3 days old and monday july 3rd, 2019 and every monday and between 3am and 5:30am and 4 acres and 4 pico meters and chrimc@hotmail.com and $4 and $4.25 and also 32 and 210.4 and first and 10% and 10.5% and 425-555-1234 and 3 degrees and -27.5 degrees c and the next one and the previous one"
   }
 }

@@ -4,7 +4,7 @@
       "Composite2": [
         {
           "endIndex": 66,
-          "score": 0.456283748,
+          "score": 0.7077416,
           "startIndex": 0,
           "text": "http://foo.com is where you can get a weather forecast for seattle",
           "type": "Composite2"
@@ -78,13 +78,13 @@
       "score": 0.0432791822
     },
     "search": {
-      "score": 0.014743383
+      "score": 0.01050759
     },
     "SpecifyName": {
-      "score": 0.00172697916
+      "score": 0.001833231
     },
     "Travel": {
-      "score": 0.013458414
+      "score": 0.004430798
     },
     "Weather_GetForecast": {
       "score": 0.669524968
@@ -123,7 +123,7 @@
       {
         "endIndex": 65,
         "entity": "http : / / foo . com is where you can get a weather forecast for seattle",
-        "score": 0.456283748,
+        "score": 0.7077416,
         "startIndex": 0,
         "type": "Composite2"
       },
@@ -162,15 +162,15 @@
       },
       {
         "intent": "search",
-        "score": 0.014743383
+        "score": 0.01050759
       },
       {
         "intent": "Travel",
-        "score": 0.013458414
+        "score": 0.004430798
       },
       {
         "intent": "SpecifyName",
-        "score": 0.00172697916
+        "score": 0.001833231
       },
       {
         "intent": "Delivery",
@@ -211,7 +211,7 @@
               "recognitionSources": [
                 "model"
               ],
-              "score": 0.456283748,
+              "score": 0.7077416,
               "startIndex": 0,
               "text": "http://foo.com is where you can get a weather forecast for seattle",
               "type": "Composite2"
@@ -297,13 +297,13 @@
           "score": 0.0432791822
         },
         "search": {
-          "score": 0.014743383
+          "score": 0.01050759
         },
         "SpecifyName": {
-          "score": 0.00172697916
+          "score": 0.001833231
         },
         "Travel": {
-          "score": 0.013458414
+          "score": 0.004430798
         },
         "Weather.GetForecast": {
           "score": 0.669524968

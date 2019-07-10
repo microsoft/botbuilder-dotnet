@@ -1,6 +1,14 @@
 {
   "entities": {
     "$instance": {
+      "a": [
+        {
+          "endIndex": 309,
+          "startIndex": 299,
+          "text": "68 degrees",
+          "type": "builtin.temperature"
+        }
+      ],
       "arrive": [
         {
           "endIndex": 373,
@@ -41,18 +49,22 @@
           "type": "Airline"
         }
       ],
-      "datetime": [
+      "Composite1": [
         {
-          "endIndex": 72,
-          "startIndex": 65,
-          "text": "6 years",
-          "type": "builtin.datetimeV2.duration"
-        },
+          "endIndex": 172,
+          "score": 0.01107535,
+          "startIndex": 0,
+          "text": "3 inches long by 2 inches wide and 5% to 10% and are you between 6 years old and 8 years old and can i trade kb457 for kb922 and change 425-777-1212 to 206-666-4123 and did",
+          "type": "Composite1"
+        }
+      ],
+      "Composite2": [
         {
-          "endIndex": 88,
-          "startIndex": 81,
-          "text": "8 years",
-          "type": "builtin.datetimeV2.duration"
+          "endIndex": 283,
+          "score": 0.15191336,
+          "startIndex": 238,
+          "text": "http://foo.com changed to http://blah.com and",
+          "type": "Composite2"
         }
       ],
       "destination": [
@@ -119,7 +131,7 @@
       "likee": [
         {
           "endIndex": 344,
-          "score": 0.9899757,
+          "score": 0.9900547,
           "startIndex": 340,
           "text": "mary",
           "type": "Name"
@@ -128,7 +140,7 @@
       "liker": [
         {
           "endIndex": 333,
-          "score": 0.9922591,
+          "score": 0.992201567,
           "startIndex": 329,
           "text": "john",
           "type": "Name"
@@ -169,84 +181,13 @@
       "newPhone": [
         {
           "endIndex": 164,
+          "score": 0.9,
           "startIndex": 152,
           "text": "206-666-4123",
           "type": "builtin.phonenumber"
         }
       ],
       "number": [
-        {
-          "endIndex": 1,
-          "startIndex": 0,
-          "text": "3",
-          "type": "builtin.number"
-        },
-        {
-          "endIndex": 18,
-          "startIndex": 17,
-          "text": "2",
-          "type": "builtin.number"
-        },
-        {
-          "endIndex": 36,
-          "startIndex": 35,
-          "text": "5",
-          "type": "builtin.number"
-        },
-        {
-          "endIndex": 43,
-          "startIndex": 41,
-          "text": "10",
-          "type": "builtin.number"
-        },
-        {
-          "endIndex": 66,
-          "startIndex": 65,
-          "text": "6",
-          "type": "builtin.number"
-        },
-        {
-          "endIndex": 82,
-          "startIndex": 81,
-          "text": "8",
-          "type": "builtin.number"
-        },
-        {
-          "endIndex": 139,
-          "startIndex": 136,
-          "text": "425",
-          "type": "builtin.number"
-        },
-        {
-          "endIndex": 143,
-          "startIndex": 140,
-          "text": "777",
-          "type": "builtin.number"
-        },
-        {
-          "endIndex": 148,
-          "startIndex": 144,
-          "text": "1212",
-          "type": "builtin.number"
-        },
-        {
-          "endIndex": 155,
-          "startIndex": 152,
-          "text": "206",
-          "type": "builtin.number"
-        },
-        {
-          "endIndex": 159,
-          "startIndex": 156,
-          "text": "666",
-          "type": "builtin.number"
-        },
-        {
-          "endIndex": 164,
-          "startIndex": 160,
-          "text": "4123",
-          "type": "builtin.number"
-        },
         {
           "endIndex": 301,
           "startIndex": 299,
@@ -275,6 +216,7 @@
       "old": [
         {
           "endIndex": 148,
+          "score": 0.9,
           "startIndex": 136,
           "text": "425-777-1212",
           "type": "builtin.phonenumber"
@@ -343,22 +285,6 @@
           "type": "Weather.Location"
         }
       ],
-      "temperature": [
-        {
-          "endIndex": 309,
-          "startIndex": 299,
-          "text": "68 degrees",
-          "type": "builtin.temperature"
-        }
-      ],
-      "url": [
-        {
-          "endIndex": 279,
-          "startIndex": 264,
-          "text": "http://blah.com",
-          "type": "builtin.url"
-        }
-      ],
       "width": [
         {
           "endIndex": 25,
@@ -368,6 +294,12 @@
         }
       ]
     },
+    "a": [
+      {
+        "number": 68,
+        "units": "Degree"
+      }
+    ],
     "arrive": [
       {
         "timex": [
@@ -396,18 +328,143 @@
         "Delta"
       ]
     ],
-    "datetime": [
+    "Composite1": [
       {
-        "timex": [
-          "P6Y"
+        "$instance": {
+          "datetime": [
+            {
+              "endIndex": 72,
+              "startIndex": 65,
+              "text": "6 years",
+              "type": "builtin.datetimeV2.duration"
+            },
+            {
+              "endIndex": 88,
+              "startIndex": 81,
+              "text": "8 years",
+              "type": "builtin.datetimeV2.duration"
+            }
+          ],
+          "number": [
+            {
+              "endIndex": 1,
+              "startIndex": 0,
+              "text": "3",
+              "type": "builtin.number"
+            },
+            {
+              "endIndex": 18,
+              "startIndex": 17,
+              "text": "2",
+              "type": "builtin.number"
+            },
+            {
+              "endIndex": 36,
+              "startIndex": 35,
+              "text": "5",
+              "type": "builtin.number"
+            },
+            {
+              "endIndex": 43,
+              "startIndex": 41,
+              "text": "10",
+              "type": "builtin.number"
+            },
+            {
+              "endIndex": 66,
+              "startIndex": 65,
+              "text": "6",
+              "type": "builtin.number"
+            },
+            {
+              "endIndex": 82,
+              "startIndex": 81,
+              "text": "8",
+              "type": "builtin.number"
+            },
+            {
+              "endIndex": 139,
+              "startIndex": 136,
+              "text": "425",
+              "type": "builtin.number"
+            },
+            {
+              "endIndex": 143,
+              "startIndex": 140,
+              "text": "777",
+              "type": "builtin.number"
+            },
+            {
+              "endIndex": 148,
+              "startIndex": 144,
+              "text": "1212",
+              "type": "builtin.number"
+            },
+            {
+              "endIndex": 155,
+              "startIndex": 152,
+              "text": "206",
+              "type": "builtin.number"
+            },
+            {
+              "endIndex": 159,
+              "startIndex": 156,
+              "text": "666",
+              "type": "builtin.number"
+            },
+            {
+              "endIndex": 164,
+              "startIndex": 160,
+              "text": "4123",
+              "type": "builtin.number"
+            }
+          ]
+        },
+        "datetime": [
+          {
+            "timex": [
+              "P6Y"
+            ],
+            "type": "duration"
+          },
+          {
+            "timex": [
+              "P8Y"
+            ],
+            "type": "duration"
+          }
         ],
-        "type": "duration"
-      },
+        "number": [
+          3,
+          2,
+          5,
+          10,
+          6,
+          8,
+          425,
+          777,
+          1212,
+          206,
+          666,
+          4123
+        ]
+      }
+    ],
+    "Composite2": [
       {
-        "timex": [
-          "P8Y"
-        ],
-        "type": "duration"
+        "$instance": {
+          "url": [
+            {
+              "endIndex": 279,
+              "startIndex": 264,
+              "text": "http://blah.com",
+              "type": "builtin.url"
+            }
+          ]
+        },
+        "url": [
+          "http://blah.com"
+        ]
       }
     ],
     "destination": [
@@ -481,18 +538,6 @@
       "206-666-4123"
     ],
     "number": [
-      3,
-      2,
-      5,
-      10,
-      6,
-      8,
-      425,
-      777,
-      1212,
-      206,
-      666,
-      4123,
       68,
       72,
       400,
@@ -525,15 +570,6 @@
     "source": [
       "hawaii"
     ],
-    "temperature": [
-      {
-        "number": 68,
-        "units": "Degree"
-      }
-    ],
-    "url": [
-      "http://blah.com"
-    ],
     "width": [
       {
         "number": 2,
@@ -564,13 +600,13 @@
       "score": 1.0
     },
     "search": {
-      "score": 0.08896044
+      "score": 0.07635335
     },
     "SpecifyName": {
-      "score": 5.360404E-05
+      "score": 9.136085E-05
     },
     "Travel": {
-      "score": 0.009896766
+      "score": 0.00771805458
     },
     "Weather_GetForecast": {
       "score": 0.0100867962
@@ -582,21 +618,95 @@
   },
   "text": "3 inches long by 2 inches wide and 5% to 10% and are you between 6 years old and 8 years old and can i trade kb457 for kb922 and change 425-777-1212 to 206-666-4123 and did delta buy virgin and did the rain from hawaii get to redmond and http://foo.com changed to http://blah.com and i like between 68 degrees and 72 degrees and john likes mary and leave 3pm and arrive 5pm and pay between $400 and $500 and send chrimc@hotmail.com from emad@gmail.com",
   "v2": {
-    "entities": [
+    "compositeEntities": [
       {
-        "endIndex": 343,
-        "entity": "mary",
-        "role": "likee",
-        "score": 0.9899757,
-        "startIndex": 340,
-        "type": "Name"
+        "children": [
+          {
+            "type": "builtin.datetimeV2.duration",
+            "value": "6 years"
+          },
+          {
+            "type": "builtin.datetimeV2.duration",
+            "value": "8 years"
+          },
+          {
+            "type": "builtin.number",
+            "value": "3"
+          },
+          {
+            "type": "builtin.number",
+            "value": "2"
+          },
+          {
+            "type": "builtin.number",
+            "value": "5"
+          },
+          {
+            "type": "builtin.number",
+            "value": "10"
+          },
+          {
+            "type": "builtin.number",
+            "value": "6"
+          },
+          {
+            "type": "builtin.number",
+            "value": "8"
+          },
+          {
+            "type": "builtin.number",
+            "value": "425"
+          },
+          {
+            "type": "builtin.number",
+            "value": "777"
+          },
+          {
+            "type": "builtin.number",
+            "value": "1212"
+          },
+          {
+            "type": "builtin.number",
+            "value": "206"
+          },
+          {
+            "type": "builtin.number",
+            "value": "666"
+          },
+          {
+            "type": "builtin.number",
+            "value": "4123"
+          }
+        ],
+        "parentType": "Composite1",
+        "value": "3 inches long by 2 inches wide and 5 % to 10 % and are you between 6 years old and 8 years old and can i trade kb457 for kb922 and change 425 - 777 - 1212 to 206 - 666 - 4123 and did"
       },
+      {
+        "children": [
+          {
+            "type": "builtin.url",
+            "value": "http://blah.com"
+          }
+        ],
+        "parentType": "Composite2",
+        "value": "http : / / foo . com changed to http : / / blah . com and"
+      }
+    ],
+    "entities": [
       {
         "endIndex": 332,
         "entity": "john",
         "role": "liker",
-        "score": 0.9922591,
+        "score": 0.992201567,
         "startIndex": 329,
+        "type": "Name"
+      },
+      {
+        "endIndex": 343,
+        "entity": "mary",
+        "role": "likee",
+        "score": 0.9900547,
+        "startIndex": 340,
         "type": "Name"
       },
       {
@@ -614,6 +724,20 @@
         "score": 0.985884964,
         "startIndex": 226,
         "type": "Weather.Location"
+      },
+      {
+        "endIndex": 171,
+        "entity": "3 inches long by 2 inches wide and 5 % to 10 % and are you between 6 years old and 8 years old and can i trade kb457 for kb922 and change 425 - 777 - 1212 to 206 - 666 - 4123 and did",
+        "score": 0.01107535,
+        "startIndex": 0,
+        "type": "Composite1"
+      },
+      {
+        "endIndex": 282,
+        "entity": "http : / / foo . com changed to http : / / blah . com and",
+        "score": 0.15191336,
+        "startIndex": 238,
+        "type": "Composite2"
       },
       {
         "endIndex": 0,
@@ -1016,6 +1140,7 @@
           "unit": "Degree",
           "value": "68"
         },
+        "role": "a",
         "startIndex": 299,
         "type": "builtin.temperature"
       },
@@ -1095,7 +1220,7 @@
       },
       {
         "intent": "search",
-        "score": 0.08896044
+        "score": 0.07635335
       },
       {
         "intent": "Weather.GetForecast",
@@ -1103,7 +1228,7 @@
       },
       {
         "intent": "Travel",
-        "score": 0.009896766
+        "score": 0.00771805458
       },
       {
         "intent": "EntityTests",
@@ -1114,12 +1239,12 @@
         "score": 0.00093744183
       },
       {
-        "intent": "Delivery",
-        "score": 7.978094E-05
+        "intent": "SpecifyName",
+        "score": 9.136085E-05
       },
       {
-        "intent": "SpecifyName",
-        "score": 5.360404E-05
+        "intent": "Delivery",
+        "score": 7.978094E-05
       },
       {
         "intent": "Help",
@@ -1143,5 +1268,920 @@
       "intent": "Roles",
       "score": 1.0
     }
+  },
+  "v3": {
+    "prediction": {
+      "entities": {
+        "$instance": {
+          "a": [
+            {
+              "length": 10,
+              "modelType": "Prebuilt Entity Extractor",
+              "modelTypeId": 2,
+              "recognitionSources": [
+                "model"
+              ],
+              "role": "a",
+              "startIndex": 299,
+              "text": "68 degrees",
+              "type": "builtin.temperature"
+            }
+          ],
+          "arrive": [
+            {
+              "length": 3,
+              "modelType": "Prebuilt Entity Extractor",
+              "modelTypeId": 2,
+              "recognitionSources": [
+                "model"
+              ],
+              "role": "arrive",
+              "startIndex": 370,
+              "text": "5pm",
+              "type": "builtin.datetimeV2.time"
+            }
+          ],
+          "b": [
+            {
+              "length": 10,
+              "modelType": "Prebuilt Entity Extractor",
+              "modelTypeId": 2,
+              "recognitionSources": [
+                "model"
+              ],
+              "role": "b",
+              "startIndex": 314,
+              "text": "72 degrees",
+              "type": "builtin.temperature"
+            }
+          ],
+          "begin": [
+            {
+              "length": 11,
+              "modelType": "Prebuilt Entity Extractor",
+              "modelTypeId": 2,
+              "recognitionSources": [
+                "model"
+              ],
+              "role": "begin",
+              "startIndex": 65,
+              "text": "6 years old",
+              "type": "builtin.age"
+            }
+          ],
+          "buy": [
+            {
+              "length": 5,
+              "modelType": "Regex Entity Extractor",
+              "modelTypeId": 8,
+              "recognitionSources": [
+                "model"
+              ],
+              "role": "buy",
+              "startIndex": 119,
+              "text": "kb922",
+              "type": "Part"
+            }
+          ],
+          "Buyer": [
+            {
+              "length": 5,
+              "modelType": "List Entity Extractor",
+              "modelTypeId": 5,
+              "recognitionSources": [
+                "model"
+              ],
+              "role": "Buyer",
+              "startIndex": 173,
+              "text": "delta",
+              "type": "Airline"
+            }
+          ],
+          "Composite1": [
+            {
+              "length": 172,
+              "modelType": "Composite Entity Extractor",
+              "modelTypeId": 4,
+              "recognitionSources": [
+                "model"
+              ],
+              "score": 0.01107535,
+              "startIndex": 0,
+              "text": "3 inches long by 2 inches wide and 5% to 10% and are you between 6 years old and 8 years old and can i trade kb457 for kb922 and change 425-777-1212 to 206-666-4123 and did",
+              "type": "Composite1"
+            }
+          ],
+          "Composite2": [
+            {
+              "length": 45,
+              "modelType": "Composite Entity Extractor",
+              "modelTypeId": 4,
+              "recognitionSources": [
+                "model"
+              ],
+              "score": 0.15191336,
+              "startIndex": 238,
+              "text": "http://foo.com changed to http://blah.com and",
+              "type": "Composite2"
+            }
+          ],
+          "destination": [
+            {
+              "length": 7,
+              "modelType": "Entity Extractor",
+              "modelTypeId": 1,
+              "recognitionSources": [
+                "model"
+              ],
+              "role": "destination",
+              "score": 0.985884964,
+              "startIndex": 226,
+              "text": "redmond",
+              "type": "Weather.Location"
+            }
+          ],
+          "dimension": [
+            {
+              "length": 3,
+              "modelType": "Prebuilt Entity Extractor",
+              "modelTypeId": 2,
+              "recognitionSources": [
+                "model"
+              ],
+              "startIndex": 355,
+              "text": "3pm",
+              "type": "builtin.dimension"
+            },
+            {
+              "length": 3,
+              "modelType": "Prebuilt Entity Extractor",
+              "modelTypeId": 2,
+              "recognitionSources": [
+                "model"
+              ],
+              "startIndex": 370,
+              "text": "5pm",
+              "type": "builtin.dimension"
+            }
+          ],
+          "end": [
+            {
+              "length": 11,
+              "modelType": "Prebuilt Entity Extractor",
+              "modelTypeId": 2,
+              "recognitionSources": [
+                "model"
+              ],
+              "role": "end",
+              "startIndex": 81,
+              "text": "8 years old",
+              "type": "builtin.age"
+            }
+          ],
+          "geographyV2": [
+            {
+              "length": 6,
+              "modelType": "Prebuilt Entity Extractor",
+              "modelTypeId": 2,
+              "recognitionSources": [
+                "model"
+              ],
+              "startIndex": 212,
+              "text": "hawaii",
+              "type": "builtin.geographyV2.state"
+            },
+            {
+              "length": 7,
+              "modelType": "Prebuilt Entity Extractor",
+              "modelTypeId": 2,
+              "recognitionSources": [
+                "model"
+              ],
+              "startIndex": 226,
+              "text": "redmond",
+              "type": "builtin.geographyV2.city"
+            }
+          ],
+          "leave": [
+            {
+              "length": 3,
+              "modelType": "Prebuilt Entity Extractor",
+              "modelTypeId": 2,
+              "recognitionSources": [
+                "model"
+              ],
+              "role": "leave",
+              "startIndex": 355,
+              "text": "3pm",
+              "type": "builtin.datetimeV2.time"
+            }
+          ],
+          "length": [
+            {
+              "length": 8,
+              "modelType": "Prebuilt Entity Extractor",
+              "modelTypeId": 2,
+              "recognitionSources": [
+                "model"
+              ],
+              "role": "length",
+              "startIndex": 0,
+              "text": "3 inches",
+              "type": "builtin.dimension"
+            }
+          ],
+          "likee": [
+            {
+              "length": 4,
+              "modelType": "Entity Extractor",
+              "modelTypeId": 1,
+              "recognitionSources": [
+                "model"
+              ],
+              "role": "likee",
+              "score": 0.9900547,
+              "startIndex": 340,
+              "text": "mary",
+              "type": "Name"
+            }
+          ],
+          "liker": [
+            {
+              "length": 4,
+              "modelType": "Entity Extractor",
+              "modelTypeId": 1,
+              "recognitionSources": [
+                "model"
+              ],
+              "role": "liker",
+              "score": 0.992201567,
+              "startIndex": 329,
+              "text": "john",
+              "type": "Name"
+            }
+          ],
+          "max": [
+            {
+              "length": 4,
+              "modelType": "Prebuilt Entity Extractor",
+              "modelTypeId": 2,
+              "recognitionSources": [
+                "model"
+              ],
+              "role": "max",
+              "startIndex": 399,
+              "text": "$500",
+              "type": "builtin.currency"
+            }
+          ],
+          "maximum": [
+            {
+              "length": 3,
+              "modelType": "Prebuilt Entity Extractor",
+              "modelTypeId": 2,
+              "recognitionSources": [
+                "model"
+              ],
+              "role": "maximum",
+              "startIndex": 41,
+              "text": "10%",
+              "type": "builtin.percentage"
+            }
+          ],
+          "min": [
+            {
+              "length": 4,
+              "modelType": "Prebuilt Entity Extractor",
+              "modelTypeId": 2,
+              "recognitionSources": [
+                "model"
+              ],
+              "role": "min",
+              "startIndex": 390,
+              "text": "$400",
+              "type": "builtin.currency"
+            }
+          ],
+          "minimum": [
+            {
+              "length": 2,
+              "modelType": "Prebuilt Entity Extractor",
+              "modelTypeId": 2,
+              "recognitionSources": [
+                "model"
+              ],
+              "role": "minimum",
+              "startIndex": 35,
+              "text": "5%",
+              "type": "builtin.percentage"
+            }
+          ],
+          "newPhone": [
+            {
+              "length": 12,
+              "modelType": "Prebuilt Entity Extractor",
+              "modelTypeId": 2,
+              "recognitionSources": [
+                "model"
+              ],
+              "role": "newPhone",
+              "score": 0.9,
+              "startIndex": 152,
+              "text": "206-666-4123",
+              "type": "builtin.phonenumber"
+            }
+          ],
+          "number": [
+            {
+              "length": 2,
+              "modelType": "Prebuilt Entity Extractor",
+              "modelTypeId": 2,
+              "recognitionSources": [
+                "model"
+              ],
+              "startIndex": 299,
+              "text": "68",
+              "type": "builtin.number"
+            },
+            {
+              "length": 2,
+              "modelType": "Prebuilt Entity Extractor",
+              "modelTypeId": 2,
+              "recognitionSources": [
+                "model"
+              ],
+              "startIndex": 314,
+              "text": "72",
+              "type": "builtin.number"
+            },
+            {
+              "length": 3,
+              "modelType": "Prebuilt Entity Extractor",
+              "modelTypeId": 2,
+              "recognitionSources": [
+                "model"
+              ],
+              "startIndex": 391,
+              "text": "400",
+              "type": "builtin.number"
+            },
+            {
+              "length": 3,
+              "modelType": "Prebuilt Entity Extractor",
+              "modelTypeId": 2,
+              "recognitionSources": [
+                "model"
+              ],
+              "startIndex": 400,
+              "text": "500",
+              "type": "builtin.number"
+            }
+          ],
+          "old": [
+            {
+              "length": 12,
+              "modelType": "Prebuilt Entity Extractor",
+              "modelTypeId": 2,
+              "recognitionSources": [
+                "model"
+              ],
+              "role": "old",
+              "score": 0.9,
+              "startIndex": 136,
+              "text": "425-777-1212",
+              "type": "builtin.phonenumber"
+            }
+          ],
+          "oldURL": [
+            {
+              "length": 14,
+              "modelType": "Prebuilt Entity Extractor",
+              "modelTypeId": 2,
+              "recognitionSources": [
+                "model"
+              ],
+              "role": "oldURL",
+              "startIndex": 238,
+              "text": "http://foo.com",
+              "type": "builtin.url"
+            }
+          ],
+          "personName": [
+            {
+              "length": 4,
+              "modelType": "Prebuilt Entity Extractor",
+              "modelTypeId": 2,
+              "recognitionSources": [
+                "model"
+              ],
+              "startIndex": 329,
+              "text": "john",
+              "type": "builtin.personName"
+            },
+            {
+              "length": 4,
+              "modelType": "Prebuilt Entity Extractor",
+              "modelTypeId": 2,
+              "recognitionSources": [
+                "model"
+              ],
+              "startIndex": 340,
+              "text": "mary",
+              "type": "builtin.personName"
+            }
+          ],
+          "receiver": [
+            {
+              "length": 18,
+              "modelType": "Prebuilt Entity Extractor",
+              "modelTypeId": 2,
+              "recognitionSources": [
+                "model"
+              ],
+              "role": "receiver",
+              "startIndex": 413,
+              "text": "chrimc@hotmail.com",
+              "type": "builtin.email"
+            }
+          ],
+          "sell": [
+            {
+              "length": 5,
+              "modelType": "Regex Entity Extractor",
+              "modelTypeId": 8,
+              "recognitionSources": [
+                "model"
+              ],
+              "role": "sell",
+              "startIndex": 109,
+              "text": "kb457",
+              "type": "Part"
+            }
+          ],
+          "Seller": [
+            {
+              "length": 6,
+              "modelType": "List Entity Extractor",
+              "modelTypeId": 5,
+              "recognitionSources": [
+                "model"
+              ],
+              "role": "Seller",
+              "startIndex": 183,
+              "text": "virgin",
+              "type": "Airline"
+            }
+          ],
+          "sender": [
+            {
+              "length": 14,
+              "modelType": "Prebuilt Entity Extractor",
+              "modelTypeId": 2,
+              "recognitionSources": [
+                "model"
+              ],
+              "role": "sender",
+              "startIndex": 437,
+              "text": "emad@gmail.com",
+              "type": "builtin.email"
+            }
+          ],
+          "source": [
+            {
+              "length": 6,
+              "modelType": "Entity Extractor",
+              "modelTypeId": 1,
+              "recognitionSources": [
+                "model"
+              ],
+              "role": "source",
+              "score": 0.9713092,
+              "startIndex": 212,
+              "text": "hawaii",
+              "type": "Weather.Location"
+            }
+          ],
+          "width": [
+            {
+              "length": 8,
+              "modelType": "Prebuilt Entity Extractor",
+              "modelTypeId": 2,
+              "recognitionSources": [
+                "model"
+              ],
+              "role": "width",
+              "startIndex": 17,
+              "text": "2 inches",
+              "type": "builtin.dimension"
+            }
+          ]
+        },
+        "a": [
+          {
+            "number": 68,
+            "unit": "Degree"
+          }
+        ],
+        "arrive": [
+          {
+            "type": "time",
+            "values": [
+              {
+                "timex": "T17",
+                "value": "17:00:00"
+              }
+            ]
+          }
+        ],
+        "b": [
+          {
+            "number": 72,
+            "unit": "Degree"
+          }
+        ],
+        "begin": [
+          {
+            "number": 6,
+            "unit": "Year"
+          }
+        ],
+        "buy": [
+          "kb922"
+        ],
+        "Buyer": [
+          [
+            "Delta"
+          ]
+        ],
+        "Composite1": [
+          {
+            "$instance": {
+              "datetimeV2": [
+                {
+                  "length": 7,
+                  "modelType": "Prebuilt Entity Extractor",
+                  "modelTypeId": 2,
+                  "recognitionSources": [
+                    "model"
+                  ],
+                  "startIndex": 65,
+                  "text": "6 years",
+                  "type": "builtin.datetimeV2.duration"
+                },
+                {
+                  "length": 7,
+                  "modelType": "Prebuilt Entity Extractor",
+                  "modelTypeId": 2,
+                  "recognitionSources": [
+                    "model"
+                  ],
+                  "startIndex": 81,
+                  "text": "8 years",
+                  "type": "builtin.datetimeV2.duration"
+                }
+              ],
+              "number": [
+                {
+                  "length": 1,
+                  "modelType": "Prebuilt Entity Extractor",
+                  "modelTypeId": 2,
+                  "recognitionSources": [
+                    "model"
+                  ],
+                  "startIndex": 0,
+                  "text": "3",
+                  "type": "builtin.number"
+                },
+                {
+                  "length": 1,
+                  "modelType": "Prebuilt Entity Extractor",
+                  "modelTypeId": 2,
+                  "recognitionSources": [
+                    "model"
+                  ],
+                  "startIndex": 17,
+                  "text": "2",
+                  "type": "builtin.number"
+                },
+                {
+                  "length": 1,
+                  "modelType": "Prebuilt Entity Extractor",
+                  "modelTypeId": 2,
+                  "recognitionSources": [
+                    "model"
+                  ],
+                  "startIndex": 35,
+                  "text": "5",
+                  "type": "builtin.number"
+                },
+                {
+                  "length": 2,
+                  "modelType": "Prebuilt Entity Extractor",
+                  "modelTypeId": 2,
+                  "recognitionSources": [
+                    "model"
+                  ],
+                  "startIndex": 41,
+                  "text": "10",
+                  "type": "builtin.number"
+                },
+                {
+                  "length": 1,
+                  "modelType": "Prebuilt Entity Extractor",
+                  "modelTypeId": 2,
+                  "recognitionSources": [
+                    "model"
+                  ],
+                  "startIndex": 65,
+                  "text": "6",
+                  "type": "builtin.number"
+                },
+                {
+                  "length": 1,
+                  "modelType": "Prebuilt Entity Extractor",
+                  "modelTypeId": 2,
+                  "recognitionSources": [
+                    "model"
+                  ],
+                  "startIndex": 81,
+                  "text": "8",
+                  "type": "builtin.number"
+                },
+                {
+                  "length": 3,
+                  "modelType": "Prebuilt Entity Extractor",
+                  "modelTypeId": 2,
+                  "recognitionSources": [
+                    "model"
+                  ],
+                  "startIndex": 136,
+                  "text": "425",
+                  "type": "builtin.number"
+                },
+                {
+                  "length": 3,
+                  "modelType": "Prebuilt Entity Extractor",
+                  "modelTypeId": 2,
+                  "recognitionSources": [
+                    "model"
+                  ],
+                  "startIndex": 140,
+                  "text": "777",
+                  "type": "builtin.number"
+                },
+                {
+                  "length": 4,
+                  "modelType": "Prebuilt Entity Extractor",
+                  "modelTypeId": 2,
+                  "recognitionSources": [
+                    "model"
+                  ],
+                  "startIndex": 144,
+                  "text": "1212",
+                  "type": "builtin.number"
+                },
+                {
+                  "length": 3,
+                  "modelType": "Prebuilt Entity Extractor",
+                  "modelTypeId": 2,
+                  "recognitionSources": [
+                    "model"
+                  ],
+                  "startIndex": 152,
+                  "text": "206",
+                  "type": "builtin.number"
+                },
+                {
+                  "length": 3,
+                  "modelType": "Prebuilt Entity Extractor",
+                  "modelTypeId": 2,
+                  "recognitionSources": [
+                    "model"
+                  ],
+                  "startIndex": 156,
+                  "text": "666",
+                  "type": "builtin.number"
+                },
+                {
+                  "length": 4,
+                  "modelType": "Prebuilt Entity Extractor",
+                  "modelTypeId": 2,
+                  "recognitionSources": [
+                    "model"
+                  ],
+                  "startIndex": 160,
+                  "text": "4123",
+                  "type": "builtin.number"
+                }
+              ]
+            },
+            "datetimeV2": [
+              {
+                "type": "duration",
+                "values": [
+                  {
+                    "timex": "P6Y",
+                    "value": "189216000"
+                  }
+                ]
+              },
+              {
+                "type": "duration",
+                "values": [
+                  {
+                    "timex": "P8Y",
+                    "value": "252288000"
+                  }
+                ]
+              }
+            ],
+            "number": [
+              3,
+              2,
+              5,
+              10,
+              6,
+              8,
+              425,
+              777,
+              1212,
+              206,
+              666,
+              4123
+            ]
+          }
+        ],
+        "Composite2": [
+          {
+            "$instance": {
+              "url": [
+                {
+                  "length": 15,
+                  "modelType": "Prebuilt Entity Extractor",
+                  "modelTypeId": 2,
+                  "recognitionSources": [
+                    "model"
+                  ],
+                  "startIndex": 264,
+                  "text": "http://blah.com",
+                  "type": "builtin.url"
+                }
+              ]
+            },
+            "url": [
+              "http://blah.com"
+            ]
+          }
+        ],
+        "destination": [
+          "redmond"
+        ],
+        "dimension": [
+          {
+            "number": 3,
+            "unit": "Picometer"
+          },
+          {
+            "number": 5,
+            "unit": "Picometer"
+          }
+        ],
+        "end": [
+          {
+            "number": 8,
+            "unit": "Year"
+          }
+        ],
+        "geographyV2": [
+          "hawaii",
+          "redmond"
+        ],
+        "leave": [
+          {
+            "type": "time",
+            "values": [
+              {
+                "timex": "T15",
+                "value": "15:00:00"
+              }
+            ]
+          }
+        ],
+        "length": [
+          {
+            "number": 3,
+            "unit": "Inch"
+          }
+        ],
+        "likee": [
+          "mary"
+        ],
+        "liker": [
+          "john"
+        ],
+        "max": [
+          {
+            "number": 500,
+            "unit": "Dollar"
+          }
+        ],
+        "maximum": [
+          10
+        ],
+        "min": [
+          {
+            "number": 400,
+            "unit": "Dollar"
+          }
+        ],
+        "minimum": [
+          5
+        ],
+        "newPhone": [
+          "206-666-4123"
+        ],
+        "number": [
+          68,
+          72,
+          400,
+          500
+        ],
+        "old": [
+          "425-777-1212"
+        ],
+        "oldURL": [
+          "http://foo.com"
+        ],
+        "personName": [
+          "john",
+          "mary"
+        ],
+        "receiver": [
+          "chrimc@hotmail.com"
+        ],
+        "sell": [
+          "kb457"
+        ],
+        "Seller": [
+          [
+            "Virgin"
+          ]
+        ],
+        "sender": [
+          "emad@gmail.com"
+        ],
+        "source": [
+          "hawaii"
+        ],
+        "width": [
+          {
+            "number": 2,
+            "unit": "Inch"
+          }
+        ]
+      },
+      "intents": {
+        "Cancel": {
+          "score": 4.50860341E-07
+        },
+        "Delivery": {
+          "score": 7.978094E-05
+        },
+        "EntityTests": {
+          "score": 0.0046325135
+        },
+        "Greeting": {
+          "score": 4.73494453E-07
+        },
+        "Help": {
+          "score": 7.622754E-07
+        },
+        "None": {
+          "score": 0.00093744183
+        },
+        "Roles": {
+          "score": 1.0
+        },
+        "search": {
+          "score": 0.07635335
+        },
+        "SpecifyName": {
+          "score": 9.136085E-05
+        },
+        "Travel": {
+          "score": 0.00771805458
+        },
+        "Weather.GetForecast": {
+          "score": 0.0100867962
+        }
+      },
+      "normalizedQuery": "3 inches long by 2 inches wide and 5% to 10% and are you between 6 years old and 8 years old and can i trade kb457 for kb922 and change 425-777-1212 to 206-666-4123 and did delta buy virgin and did the rain from hawaii get to redmond and http://foo.com changed to http://blah.com and i like between 68 degrees and 72 degrees and john likes mary and leave 3pm and arrive 5pm and pay between $400 and $500 and send chrimc@hotmail.com from emad@gmail.com",
+      "sentiment": {
+        "label": "neutral",
+        "score": 0.5
+      },
+      "topIntent": "Roles"
+    },
+    "query": "3 inches long by 2 inches wide and 5% to 10% and are you between 6 years old and 8 years old and can i trade kb457 for kb922 and change 425-777-1212 to 206-666-4123 and did delta buy virgin and did the rain from hawaii get to redmond and http://foo.com changed to http://blah.com and i like between 68 degrees and 72 degrees and john likes mary and leave 3pm and arrive 5pm and pay between $400 and $500 and send chrimc@hotmail.com from emad@gmail.com"
   }
 }

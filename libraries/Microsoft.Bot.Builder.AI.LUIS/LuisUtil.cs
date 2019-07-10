@@ -264,7 +264,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
                     }
 
                     // This entity doesn't belong to this composite entity
-                    if (child.Type != entity.Type || !CompositeContainsEntity(compositeEntityMetadata, entity))
+                    if (child.Type != entity.Type || !CompositeContainsEntity(compositeEntityMetadata, entity) || child.Value != entity.Entity)
                     {
                         continue;
                     }
@@ -277,6 +277,8 @@ namespace Microsoft.Bot.Builder.AI.Luis
                     {
                         AddProperty((JObject)childrenEntites[_metadataKey], ExtractNormalizedEntityName(entity), ExtractEntityMetadata(entity, utterance));
                     }
+
+                    break;
                 }
             }
 

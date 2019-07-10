@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
         // By default (when the Mocks are being used), the subscription key used can be any GUID. Only if the tests
         // are connecting to LUIS is an actual key needed.
         // NOTE: DO NOT REMOVE THIS APP ID or ENDPOINT.  It points to the server model used for updating these tests.
-        private string _luisAppId = "38330cad-f768-4619-96f9-69ea333e594b";
+        private string _luisAppId = "38d43f13-3e8d-45f3-b23f-ef8a0b9d98ac";
         private string _endpoint = "https://westus.api.cognitive.microsoft.com";
         private string _subscriptionKey = null;
 
@@ -251,8 +251,6 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             Assert.IsNotNull(result.Entities);
             Assert.IsNotNull(result.Entities["number"]);
             Assert.AreEqual(2001, (int)result.Entities["number"].First);
-            Assert.IsNotNull(result.Entities["ordinal"]);
-            Assert.AreEqual(2, (int)result.Entities["ordinal"].First);
             Assert.IsNotNull(result.Entities["datetime"].First);
             Assert.AreEqual("2001-02-02", (string)result.Entities["datetime"].First["timex"].First);
             Assert.IsNotNull(result.Entities["$instance"]["number"]);

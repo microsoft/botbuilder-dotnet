@@ -4,7 +4,7 @@
       "Destination": [
         {
           "endIndex": 33,
-          "score": 0.982723653,
+          "score": 0.9818366,
           "startIndex": 25,
           "text": "12346 wa",
           "type": "Address"
@@ -13,7 +13,7 @@
       "Source": [
         {
           "endIndex": 21,
-          "score": 0.933905244,
+          "score": 0.9345161,
           "startIndex": 13,
           "text": "12345 va",
           "type": "Address"
@@ -34,7 +34,7 @@
           "State": [
             {
               "endIndex": 33,
-              "score": 0.9893949,
+              "score": 0.9893861,
               "startIndex": 31,
               "text": "wa",
               "type": "State"
@@ -63,7 +63,7 @@
           "State": [
             {
               "endIndex": 21,
-              "score": 0.937490761,
+              "score": 0.941649556,
               "startIndex": 19,
               "text": "va",
               "type": "State"
@@ -118,7 +118,7 @@
     "label": "neutral",
     "score": 0.5
   },
-  "text": "Deliver from 12345 VA to 12346 WA",
+  "text": "Deliver from 12345 va to 12346 wa",
   "v2": {
     "compositeEntities": [
       {
@@ -154,14 +154,14 @@
       {
         "endIndex": 20,
         "entity": "va",
-        "score": 0.937490761,
+        "score": 0.941649556,
         "startIndex": 19,
         "type": "State"
       },
       {
         "endIndex": 32,
         "entity": "wa",
-        "score": 0.9893949,
+        "score": 0.9893861,
         "startIndex": 31,
         "type": "State"
       },
@@ -169,7 +169,7 @@
         "endIndex": 20,
         "entity": "12345 va",
         "role": "Source",
-        "score": 0.933905244,
+        "score": 0.9345161,
         "startIndex": 13,
         "type": "Address"
       },
@@ -177,7 +177,7 @@
         "endIndex": 32,
         "entity": "12346 wa",
         "role": "Destination",
-        "score": 0.982723653,
+        "score": 0.9818366,
         "startIndex": 25,
         "type": "Address"
       },
@@ -248,7 +248,7 @@
         "score": 4.757576E-10
       }
     ],
-    "query": "Deliver from 12345 VA to 12346 WA",
+    "query": "Deliver from 12345 va to 12346 wa",
     "sentimentAnalysis": {
       "label": "neutral",
       "score": 0.5
@@ -257,5 +257,163 @@
       "intent": "Roles",
       "score": 0.999911964
     }
+  },
+  "v3": {
+    "prediction": {
+      "entities": {
+        "$instance": {
+          "Destination": [
+            {
+              "length": 8,
+              "modelType": "Composite Entity Extractor",
+              "modelTypeId": 4,
+              "recognitionSources": [
+                "model"
+              ],
+              "role": "Destination",
+              "score": 0.9818366,
+              "startIndex": 25,
+              "text": "12346 wa",
+              "type": "Address"
+            }
+          ],
+          "Source": [
+            {
+              "length": 8,
+              "modelType": "Composite Entity Extractor",
+              "modelTypeId": 4,
+              "recognitionSources": [
+                "model"
+              ],
+              "role": "Source",
+              "score": 0.9345161,
+              "startIndex": 13,
+              "text": "12345 va",
+              "type": "Address"
+            }
+          ]
+        },
+        "Destination": [
+          {
+            "$instance": {
+              "number": [
+                {
+                  "length": 5,
+                  "modelType": "Prebuilt Entity Extractor",
+                  "modelTypeId": 2,
+                  "recognitionSources": [
+                    "model"
+                  ],
+                  "startIndex": 25,
+                  "text": "12346",
+                  "type": "builtin.number"
+                }
+              ],
+              "State": [
+                {
+                  "length": 2,
+                  "modelType": "Entity Extractor",
+                  "modelTypeId": 1,
+                  "recognitionSources": [
+                    "model"
+                  ],
+                  "score": 0.9893861,
+                  "startIndex": 31,
+                  "text": "wa",
+                  "type": "State"
+                }
+              ]
+            },
+            "number": [
+              12346
+            ],
+            "State": [
+              "wa"
+            ]
+          }
+        ],
+        "Source": [
+          {
+            "$instance": {
+              "number": [
+                {
+                  "length": 5,
+                  "modelType": "Prebuilt Entity Extractor",
+                  "modelTypeId": 2,
+                  "recognitionSources": [
+                    "model"
+                  ],
+                  "startIndex": 13,
+                  "text": "12345",
+                  "type": "builtin.number"
+                }
+              ],
+              "State": [
+                {
+                  "length": 2,
+                  "modelType": "Entity Extractor",
+                  "modelTypeId": 1,
+                  "recognitionSources": [
+                    "model"
+                  ],
+                  "score": 0.941649556,
+                  "startIndex": 19,
+                  "text": "va",
+                  "type": "State"
+                }
+              ]
+            },
+            "number": [
+              12345
+            ],
+            "State": [
+              "va"
+            ]
+          }
+        ]
+      },
+      "intents": {
+        "Cancel": {
+          "score": 1.01764708E-09
+        },
+        "Delivery": {
+          "score": 0.00238572317
+        },
+        "EntityTests": {
+          "score": 4.757576E-10
+        },
+        "Greeting": {
+          "score": 1.0875E-09
+        },
+        "Help": {
+          "score": 1.01764708E-09
+        },
+        "None": {
+          "score": 1.17844979E-06
+        },
+        "Roles": {
+          "score": 0.999911964
+        },
+        "search": {
+          "score": 9.494859E-06
+        },
+        "SpecifyName": {
+          "score": 3.0666667E-09
+        },
+        "Travel": {
+          "score": 3.09763345E-06
+        },
+        "Weather.GetForecast": {
+          "score": 1.02792524E-06
+        }
+      },
+      "normalizedQuery": "deliver from 12345 va to 12346 wa",
+      "sentiment": {
+        "label": "neutral",
+        "score": 0.5
+      },
+      "topIntent": "Roles"
+    },
+    "query": "Deliver from 12345 va to 12346 wa"
   }
 }

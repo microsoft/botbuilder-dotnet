@@ -50,14 +50,23 @@ namespace Microsoft.Bot.Builder.AI.Luis.TestUtils
         }
 
         // Compare two JSON structures and ensure entity and intent scores are within delta
-        public static bool WithinDelta(JToken token1, JToken token2, double delta, bool compare = false)
+        public static bool WithinDelta(JToken expected, JToken actual, double delta, bool compare = false)
         {
             var withinDelta = true;
-            if (token1.Type == JTokenType.Object && token2.Type == JTokenType.Object)
+            if (expected.Type == JTokenType.Object && actual.Type == JTokenType.Object)
             {
-                var obj1 = (JObject)token1;
-                var obj2 = (JObject)token2;
+                var obj1 = (JObject)expected;
+                var obj2 = (JObject)actual;
                 withinDelta = obj1.Count == obj2.Count;
+                if (!withinDelta)
+                {
+                    // Try removing score which is added by V3 to some prebuilts
+                    if (obj1.Remove("score"))
+                    {
+                        withinDelta = obj1.Count == obj2.Count;
+                    }
+                }
+
                 foreach (var property in obj1)
                 {
                     if (!withinDelta)
@@ -68,10 +77,10 @@ namespace Microsoft.Bot.Builder.AI.Luis.TestUtils
                     withinDelta = obj2.TryGetValue(property.Key, out var val2) && WithinDelta(property.Value, val2, delta, compare || property.Key == "score" || property.Key == "intents");
                 }
             }
-            else if (token1.Type == JTokenType.Array && token2.Type == JTokenType.Array)
+            else if (expected.Type == JTokenType.Array && actual.Type == JTokenType.Array)
             {
-                var arr1 = (JArray)token1;
-                var arr2 = (JArray)token2;
+                var arr1 = (JArray)expected;
+                var arr2 = (JArray)actual;
                 withinDelta = arr1.Count == arr2.Count;
                 for (var i = 0; withinDelta && i < arr1.Count; ++i)
                 {
@@ -82,12 +91,12 @@ namespace Microsoft.Bot.Builder.AI.Luis.TestUtils
                     }
                 }
             }
-            else if (!token1.Equals(token2))
+            else if (!expected.Equals(actual))
             {
-                if (token1.Type == token2.Type)
+                if (expected.Type == actual.Type)
                 {
-                    var val1 = (JValue)token1;
-                    var val2 = (JValue)token2;
+                    var val1 = (JValue)expected;
+                    var val2 = (JValue)actual;
                     withinDelta = false;
                     if (compare &&
                         double.TryParse((string)val1, out var num1)
@@ -172,7 +181,8 @@ namespace Microsoft.Bot.Builder.AI.Luis.TestUtils
             var typedResult = await luisRecognizer.RecognizeAsync<T>(context, CancellationToken.None);
             var typedJson = Utils.Json(typedResult, version, expectedJson);
 
-            if (!Utils.WithinDelta(expectedJson, typedJson, 0.1))
+            // Threshold is 0.0 so when hitting endpoint get exact and when mocking isn't needed.
+            if (!Utils.WithinDelta(expectedJson, typedJson, 0.0))
             {
                 using (var writer = new StreamWriter(newPath))
                 {
