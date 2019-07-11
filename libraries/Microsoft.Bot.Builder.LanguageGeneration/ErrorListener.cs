@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var range = new Range(startPosition, stopPosition);
             msg = $"source: {source}. syntax error message: {msg}";
             var diagnostic = new Diagnostic(range, msg, DiagnosticSeverity.Error);
-            throw new LGException(msg, new List<Diagnostic>() { diagnostic });
+            throw new LGException(diagnostic.ToString(), new List<Diagnostic>() { diagnostic });
         }
     }
 }

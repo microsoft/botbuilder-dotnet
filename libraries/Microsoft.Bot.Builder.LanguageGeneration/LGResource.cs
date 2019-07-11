@@ -108,7 +108,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 }
                 catch (Exception err)
                 {
-                    throw new Exception($"{id}:{err.Message}", err);
+                    throw new Exception($"[Error]{id}:{err.Message}", err);
                 }
             }
         }
