@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.Bot.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Microsoft.Bot.Builder.StreamingExtensions
@@ -30,7 +29,7 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
 
             var applicationServices = applicationBuilder.ApplicationServices;
             var bot = applicationServices.GetRequiredService<IBot>();
-            var connector = applicationServices.GetRequiredService<NamedPipeConnector>();
+            var connector = new NamedPipeConnector();
             connector.InitializeNamedPipeServer(bot, middlewareSet);
 
             return applicationBuilder;

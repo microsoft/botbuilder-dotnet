@@ -50,6 +50,25 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
         /// Attaches a  <see cref="StreamingRequestHandler"/> to process requests via the connected named pipe
         /// and begins listening for incoming traffic.
         /// </summary>
+        /// <param name="services">The service provider containing the IBot type definition.</param>
+        /// <param name="middleware">The middleware the bot will execute as part of the pipeline.</param>
+        /// <param name="onTurnError">Callback to execute when an error occurs while executing the pipeline.</param>
+        public void InitializeNamedPipeServer(IServiceProvider services, IList<IMiddleware> middleware = null, Func<ITurnContext, Exception, Task> onTurnError = null)
+        {
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
+            middleware = middleware ?? new List<IMiddleware>();
+            var handler = new StreamingRequestHandler(onTurnError, services, middleware);
+            StartServer(handler);
+        }
+
+        /// <summary>
+        /// Attaches a  <see cref="StreamingRequestHandler"/> to process requests via the connected named pipe
+        /// and begins listening for incoming traffic.
+        /// </summary>
         /// <param name="bot">The bot to use when processing messages.</param>
         /// <param name="middleware">The middleware the bot will execute as part of the pipeline.</param>
         /// <param name="onTurnError">Callback to execute when an error occurs while executing the pipeline.</param>
@@ -62,7 +81,11 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
 
             middleware = middleware ?? new List<IMiddleware>();
             var handler = new StreamingRequestHandler(onTurnError, bot, middleware);
+            StartServer(handler);
+        }
 
+        private void StartServer(StreamingRequestHandler handler)
+        {
             try
             {
                 Task.Run(() => handler.StartAsync(_pipeName));
