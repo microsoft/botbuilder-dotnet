@@ -15,8 +15,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         public abstract bool TryGetGenerator(ITurnContext context, string locale, out ILanguageGenerator generator);
 
-        public virtual string NoLGMatchDiagnosticMessage(string targetLocal) => $"Can not find the corresponding {targetLocal} language LG file";
-
         /// <summary>
         /// This allows you to specify per language the fallback policies you want
         /// </summary>
@@ -36,31 +34,35 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 }
             }
 
-            List<string> errors = new List<string>();
-            bool hasFound = false;
+            var generators = new List<ILanguageGenerator>();
             foreach (var locale in locales)
             {
                 if (this.TryGetGenerator(turnContext, locale, out ILanguageGenerator generator))
                 {
-                    hasFound = true;
-                    try
-                    {
-                        return await generator.Generate(turnContext, template, data);
-                    }
-                    catch(Exception err)
-                    {
-                        errors.Add(err.Message);
-                    }
+                    generators.Add(generator);
                 }
             }
-            if (!hasFound)
+
+            if (generators.Count == 0)
             {
-                throw new Exception(NoLGMatchDiagnosticMessage(targetLocale));
+                throw new Exception($"No generator found for language {targetLocale}");
             }
-            else
+
+
+            List<string> errors = new List<string>();
+            foreach (var generator in generators)
             {
-                throw new Exception(String.Join(",\n", errors.Distinct()));
+                try
+                {
+                    return await generator.Generate(turnContext, template, data);
+                }
+                catch (Exception err)
+                {
+                    errors.Add(err.Message);
+                }
             }
+
+            throw new Exception(String.Join(",\n", errors.Distinct()));
         }
     }
 }
