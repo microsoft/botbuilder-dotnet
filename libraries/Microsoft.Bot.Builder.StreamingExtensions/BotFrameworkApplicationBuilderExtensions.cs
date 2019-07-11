@@ -4,10 +4,9 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.Bot.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Microsoft.Bot.StreamingExtensions.Integration
+namespace Microsoft.Bot.Builder.StreamingExtensions
 {
     /// <summary>
     /// Maps various endpoint handlers for the registered bot into the request execution pipeline using the V4 protocol.
@@ -30,7 +29,7 @@ namespace Microsoft.Bot.StreamingExtensions.Integration
 
             var applicationServices = applicationBuilder.ApplicationServices;
             var bot = applicationServices.GetRequiredService<IBot>();
-            var connector = applicationServices.GetRequiredService<NamedPipeConnector>();
+            var connector = new NamedPipeConnector();
             connector.InitializeNamedPipeServer(bot, middlewareSet);
 
             return applicationBuilder;

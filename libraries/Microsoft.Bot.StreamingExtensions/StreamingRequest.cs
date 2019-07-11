@@ -130,7 +130,7 @@ namespace Microsoft.Bot.StreamingExtensions
         /// </summary>
         /// <param name="content">The <see cref="HttpContent"/> to include in the new stream attachment.</param>
         /// <param name="streamId">The id to assign to this stream attachment.</param>
-        private void AddStream(HttpContent content, Guid streamId)
+        public void AddStream(HttpContent content, Guid streamId)
         {
             if (content == null)
             {

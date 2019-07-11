@@ -110,12 +110,10 @@ namespace Microsoft.Bot.StreamingExtensions.Transport.NamedPipes
             return await _protocolAdapter.SendRequestAsync(request, cancellationToken).ConfigureAwait(false);
         }
 
-#if DEBUG
-        public
-#else
-        private
-#endif
-        void Disconnect()
+        /// <summary>
+        /// Disconnects the NamedPipeServer.
+        /// </summary>
+        public void Disconnect()
         {
             _sender.Disconnect();
             _receiver.Disconnect();

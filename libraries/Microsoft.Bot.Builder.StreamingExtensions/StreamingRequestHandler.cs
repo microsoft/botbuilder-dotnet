@@ -7,8 +7,8 @@ using System.Net;
 using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder;
 using Microsoft.Bot.Connector;
+using Microsoft.Bot.StreamingExtensions;
 using Microsoft.Bot.StreamingExtensions.Transport;
 using Microsoft.Bot.StreamingExtensions.Transport.NamedPipes;
 using Microsoft.Bot.StreamingExtensions.Transport.WebSockets;
@@ -16,7 +16,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
-namespace Microsoft.Bot.StreamingExtensions.Integration
+namespace Microsoft.Bot.Builder.StreamingExtensions
 {
 #pragma warning disable SA1202
 #pragma warning disable SA1401
@@ -200,8 +200,21 @@ namespace Microsoft.Bot.StreamingExtensions.Integration
             {
                 var adapter = new BotFrameworkStreamingExtensionsAdapter(_transportServer, _middlewareSet, logger);
 
-                // Check for dependency injected bot first, then check for bot passed as parameter, throw if neither is found.
-                var bot = _services?.GetService<IBot>() ?? this._bot ?? throw new Exception("Unable to find bot when processing request.");
+                // First check if a bot has been directly set.
+                var bot = _bot;
+
+                // If no bot has been set, check if an IBot type definition is available from the service provider.
+                if (bot == null)
+                {
+                    bot = _services?.GetService<IBot>();
+                }
+
+                // If a bot still hasn't been set, the request will not be handled correctly, so throw and terminate.
+                if (bot == null)
+                {
+                    throw new Exception("Unable to find bot when processing request.");
+                }
+
                 adapter.OnTurnError = _onTurnError;
                 var invokeResponse = await adapter.ProcessActivityAsync(body, request.Streams, new BotCallbackHandler(bot.OnTurnAsync), cancellationToken).ConfigureAwait(false);
 

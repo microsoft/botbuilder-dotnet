@@ -9,8 +9,8 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
+using Microsoft.Bot.StreamingExtensions;
 using Microsoft.Bot.StreamingExtensions.Payloads;
 using Microsoft.Bot.StreamingExtensions.Transport;
 using Microsoft.Extensions.Logging;
@@ -18,7 +18,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Rest;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.StreamingExtensions.Integration
+namespace Microsoft.Bot.Builder.StreamingExtensions
 {
     /// <summary>
     /// A bot adapter that can connect a bot to a service endpoint.
