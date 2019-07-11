@@ -60,7 +60,18 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </value>
         public string Message { get; }
 
-        public override string ToString() => $"[{Severity}] {Range}: {Message}";
+        public override string ToString()
+        {
+            // ignore error range if source is "inline"
+            if (Source == "inline")
+            {
+                return $"[{Severity}] {Message}";
+            }
+            else
+            {
+                return $"[{Severity}] {Range}: {Message}";
+            }
+        }
     }
 
     /// <summary>
