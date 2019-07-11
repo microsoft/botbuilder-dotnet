@@ -21,6 +21,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             this.ResourceId = resourceId;
         }
 
+        public override string NoLGMatchDiagnosticMessage(string targetLocal)
+        {
+            return $"Can not find the corresponding {targetLocal} language LG file based on {ResourceId}";
+        }
+
         [JsonProperty("resourceId")]
         public string ResourceId { get; set; }
 

@@ -15,6 +15,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         public abstract bool TryGetGenerator(ITurnContext context, string locale, out ILanguageGenerator generator);
 
+        public virtual string NoLGMatchDiagnosticMessage(string targetLocal) => $"Can not find the corresponding {targetLocal} language LG file";
+
         /// <summary>
         /// This allows you to specify per language the fallback policies you want
         /// </summary>
@@ -35,10 +37,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
 
             List<string> errors = new List<string>();
+            bool hasFound = false;
             foreach (var locale in locales)
             {
                 if (this.TryGetGenerator(turnContext, locale, out ILanguageGenerator generator))
                 {
+                    hasFound = true;
                     try
                     {
                         return await generator.Generate(turnContext, template, data);
@@ -49,7 +53,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     }
                 }
             }
-            throw new Exception(String.Join(",\n", errors.Distinct()));
+            if (!hasFound)
+            {
+                throw new Exception(NoLGMatchDiagnosticMessage(targetLocale));
+            }
+            else
+            {
+                throw new Exception(String.Join(",\n", errors.Distinct()));
+            }
         }
     }
 }
