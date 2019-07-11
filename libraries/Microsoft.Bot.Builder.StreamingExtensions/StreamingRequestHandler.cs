@@ -200,13 +200,13 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
             {
                 var adapter = new BotFrameworkStreamingExtensionsAdapter(_transportServer, _middlewareSet, logger);
 
-                // First check if a bot has been directly set.
-                var bot = _bot;
+                // First check if an IBot type definition is available from the service provider.
+                var bot = _services?.GetService<IBot>();
 
-                // If no bot has been set, check if an IBot type definition is available from the service provider.
+                // If no bot has been set, check if a singleton bot is associated with this request handler.
                 if (bot == null)
                 {
-                    bot = _services?.GetService<IBot>();
+                    bot = _bot;
                 }
 
                 // If a bot still hasn't been set, the request will not be handled correctly, so throw and terminate.
