@@ -20,8 +20,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return (id) =>
             {
                 // import paths are in resource files which can be executed on multiple OS environments
-                // Call GetOsPath() to map / & \ in importPath -> OSPath
-                var importPath = GetOsPath(id);
+                // normalize to map / & \ in importPath -> OSPath
+                var importPath = NormalizePath(id);
                 if (!Path.IsPathRooted(importPath))
                 {
                     // get full path for importPath relative to path which is doing the import.
@@ -51,7 +51,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </remarks>
         /// <param name="ambigiousPath">authoredPath.</param>
         /// <returns>path expressed as OS path.</returns>
-        private static string GetOsPath(string ambigiousPath)
+        private static string NormalizePath(string ambigiousPath)
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
