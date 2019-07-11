@@ -364,6 +364,12 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("xPath(xmlStr, 'getTotal')"), // invalid xpath query
            # endregion
 
+            #region  Short Hand Expression
+            Test("%.xxx"), // not supported shorthand pattern
+            Test("@[city]"), // city is not provided.
+            Test("@[0]"), // entities is not a collection.
+            #endregion
+
             # region Memory access test
             Test("getProperty(bag, 1)"),// second param should be string
             Test("Accessor(1)"),// first param should be string
@@ -415,18 +421,9 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
                 invalidXml = "<?xml version='1.0'?> <produce> <item> <name>Gala</name> <type>apple</type> <count>20</count> </item> <item> <name>Honeycrisp</name> <type>apple</type> <count>10</count>",
                 nestedItems = new[]
                 {
-                    new
-                    {
-                        x = 1
-                    },
-                    new
-                    {
-                        x = 2,
-                    },
-                    new
-                    {
-                        x = 3,
-                    }
+                    new { x = 1 },
+                    new { x = 2 },
+                    new { x = 3 }
                 },
                 timestamp = "2018-03-15T13:00:00.000Z",
                 timestamp2 = "2018-01-01T03:00:00.000Z",
@@ -439,13 +436,16 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
                 relativeUri = "../catalog/shownew.htm?date=today",
                 turn = new
                 {
-                    entities = new
+                    recognized = new
                     {
-                        city = "Seattle"
-                    },
-                    intents = new
-                    {
-                        BookFlight = "BookFlight"
+                        entities = new
+                        {
+                            city = "Seattle"
+                        },
+                        intents = new
+                        {
+                            BookFlight = "BookFlight"
+                        }
                     }
                 },
                 dialog = new
