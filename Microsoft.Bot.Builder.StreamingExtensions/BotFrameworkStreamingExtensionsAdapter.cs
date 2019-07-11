@@ -9,7 +9,6 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.StreamingExtensions;
 using Microsoft.Bot.StreamingExtensions.Payloads;

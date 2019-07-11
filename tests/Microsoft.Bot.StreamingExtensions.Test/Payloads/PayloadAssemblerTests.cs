@@ -3,7 +3,6 @@
 
 using System;
 using Microsoft.Bot.StreamingExtensions.Payloads;
-using Microsoft.Bot.StreamingExtensions.UnitTests.Mocks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.StreamingExtensions.UnitTests.Payloads
