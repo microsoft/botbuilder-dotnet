@@ -6,7 +6,7 @@ using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
 using Microsoft.Rest;
 
-namespace Microsoft.Bot.StreamingExtensions.Integration
+namespace Microsoft.Bot.Builder.StreamingExtensions
 {
 #pragma warning disable IDE0034
     /// <summary>

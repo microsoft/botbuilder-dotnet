@@ -4,11 +4,10 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
-namespace Microsoft.Bot.StreamingExtensions.Integration
+namespace Microsoft.Bot.Builder.StreamingExtensions
 {
     public class NamedPipeConnector
     {

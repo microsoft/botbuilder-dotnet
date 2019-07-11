@@ -4,7 +4,7 @@
 using System;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Microsoft.Bot.StreamingExtensions.Integration
+namespace Microsoft.Bot.Builder.StreamingExtensions
 {
     /// <summary>
     /// An extention to the Service Collection to allow registration of the Bot Framework Protocol Version 3 with Streaming Extensions adapter for use with named pipe connections.

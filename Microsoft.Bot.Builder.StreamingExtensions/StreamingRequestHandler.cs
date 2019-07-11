@@ -7,8 +7,8 @@ using System.Net;
 using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder;
 using Microsoft.Bot.Connector;
+using Microsoft.Bot.StreamingExtensions;
 using Microsoft.Bot.StreamingExtensions.Transport;
 using Microsoft.Bot.StreamingExtensions.Transport.NamedPipes;
 using Microsoft.Bot.StreamingExtensions.Transport.WebSockets;
@@ -16,7 +16,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
-namespace Microsoft.Bot.StreamingExtensions.Integration
+namespace Microsoft.Bot.Builder.StreamingExtensions
 {
 #pragma warning disable SA1202
 #pragma warning disable SA1401
