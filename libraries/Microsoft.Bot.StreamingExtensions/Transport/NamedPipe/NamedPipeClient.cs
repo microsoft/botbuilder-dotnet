@@ -70,9 +70,21 @@ namespace Microsoft.Bot.StreamingExtensions.Transport.NamedPipes
         /// </value>
         public bool IsConnected => IncomingConnected && OutgoingConnected;
 
-        private bool IncomingConnected => _receiver.IsConnected;
+        /// <summary>
+        /// Gets a value indicating whether the NamedPipeClient has an incoming pipe connection.
+        /// </summary>
+        /// <value>
+        /// A boolean value indicating whether or not this client is currently connected to an incoming pipe.
+        /// </value>
+        public bool IncomingConnected => _receiver.IsConnected;
 
-        private bool OutgoingConnected => _receiver.IsConnected;
+        /// <summary>
+        /// Gets a value indicating whether the NamedPipeClient has an outgoing pipe connection.
+        /// </summary>
+        /// <value>
+        /// A boolean value indicating whether or not this client is currently connected to an outgoing pipe.
+        /// </value>
+        public bool OutgoingConnected => _receiver.IsConnected;
 
         /// <summary>
         /// Establish a connection with no custom headers.

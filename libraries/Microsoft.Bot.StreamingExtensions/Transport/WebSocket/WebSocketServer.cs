@@ -99,12 +99,10 @@ namespace Microsoft.Bot.StreamingExtensions.Transport.WebSockets
             return _protocolAdapter.SendRequestAsync(request, cancellationToken);
         }
 
-#if DEBUG
-        public
-#else
-        private
-#endif
-        void Disconnect()
+        /// <summary>
+        /// Disconnects the WebSocketServer.
+        /// </summary>
+        public void Disconnect()
         {
             _sender.Disconnect();
             _receiver.Disconnect();
