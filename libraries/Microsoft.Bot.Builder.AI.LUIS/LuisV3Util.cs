@@ -1,17 +1,14 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime.Models;
 using Newtonsoft.Json.Linq;
 
-namespace Microsoft.Bot.Builder.AI.LuisPreview
+namespace Microsoft.Bot.Builder.AI.Luis
 {
     // Utility functions used to extract and transform data from Luis SDK
-    internal static class LuisUtil
+    internal static class LuisV3Util
     {
         internal const string _metadataKey = "$instance";
         internal const string _geoV2 = "builtin.geographyV2.";
@@ -19,17 +16,22 @@ namespace Microsoft.Bot.Builder.AI.LuisPreview
 
         internal static string NormalizedIntent(string intent) => intent.Replace('.', '_').Replace(' ', '_');
 
-        internal static IDictionary<string, IntentScore> GetIntents(Prediction luisResult)
+        internal static IDictionary<string, IntentScore> GetIntents(JObject luisResult)
         {
-            IDictionary<string, IntentScore> intents = null;
-            if (luisResult.Intents != null)
+            IDictionary<string, IntentScore> result = null;
+            var intents = (JObject)luisResult["intents"];
+            if (intents != null)
             {
-                intents = luisResult.Intents.ToDictionary(
-                    i => NormalizedIntent(i.Key),
-                    i => new IntentScore { Score = i.Value.Score ?? 0 });
+                var dict = new Dictionary<string, IntentScore>();
+                foreach (var intent in intents)
+                {
+                    dict.Add(NormalizedIntent(intent.Key), new IntentScore { Score = intent.Value["score"] == null ? 0.0 : intent.Value["score"].Value<double>() });
+                }
+
+                result = dict;
             }
 
-            return intents;
+            return result;
         }
 
         internal static string NormalizedEntity(string entity)
@@ -168,9 +170,9 @@ namespace Microsoft.Bot.Builder.AI.LuisPreview
             return result;
         }
 
-        internal static JObject ExtractEntitiesAndMetadata(Prediction prediction)
+        internal static JObject ExtractEntitiesAndMetadata(JObject prediction)
         {
-            var entities = (JObject)JObject.FromObject(prediction.Entities);
+            var entities = (JObject)JObject.FromObject(prediction["entities"]);
             var geoTypes = new Dictionary<string, string>();
             GeographyTypes(entities, geoTypes);
             return (JObject)MapProperties(entities, false, geoTypes);
@@ -431,13 +433,14 @@ namespace Microsoft.Bot.Builder.AI.LuisPreview
         }
         */
 
-        internal static void AddProperties(Prediction luis, RecognizerResult result)
+        internal static void AddProperties(JObject luis, RecognizerResult result)
         {
-            if (luis.Sentiment != null)
+            var sentiment = luis["sentiment"];
+            if (luis["sentiment"] != null)
             {
                 result.Properties.Add("sentiment", new JObject(
-                    new JProperty("label", luis.Sentiment.Label),
-                    new JProperty("score", luis.Sentiment.Score)));
+                    new JProperty("label", sentiment["label"]),
+                    new JProperty("score", sentiment["score"])));
             }
         }
     }

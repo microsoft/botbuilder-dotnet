@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.AI.Luis;
 using Microsoft.Bot.Configuration;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -21,9 +22,9 @@ using RichardSzalay.MockHttp;
 
 namespace Microsoft.Bot.Builder.AI.LuisPreview.Tests
 {
-    public class OverrideFillRecognizer : LuisRecognizer
+    public class OverrideFillRecognizer : LuisV3Recognizer
     {
-        public OverrideFillRecognizer(IBotTelemetryClient telemetryClient, LuisApplication application, LuisPredictionOptions predictionOptions = null, bool includeApiResults = false, bool logPersonalInformation = false, HttpClientHandler clientHandler = null)
+        public OverrideFillRecognizer(IBotTelemetryClient telemetryClient, LuisApplication application, LuisV3PredictionOptions predictionOptions = null, bool includeApiResults = false, bool logPersonalInformation = false, HttpClientHandler clientHandler = null)
            : base(application, predictionOptions, includeApiResults, clientHandler)
         {
             LogPersonalInformation = logPersonalInformation;

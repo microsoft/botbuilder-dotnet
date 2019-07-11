@@ -7,12 +7,12 @@ using System.Collections.Generic;
 using Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime.Models;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.AI.LuisPreview
+namespace Microsoft.Bot.Builder.AI.Luis
 {
     /// <summary>
     /// Optional parameters for a LUIS prediction request.
     /// </summary>
-    public class LuisPredictionOptions
+    public class LuisV3PredictionOptions
     {
         /// <summary>
         /// Gets or sets whether all intents come back or only the top one.

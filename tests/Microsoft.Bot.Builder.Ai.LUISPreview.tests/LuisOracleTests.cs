@@ -11,9 +11,8 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.AI.Luis;
 using Microsoft.Bot.Builder.AI.Luis.TestUtils;
-using Microsoft.Bot.Builder.AI.LuisPreview;
-using Microsoft.Bot.Builder.AI.LuisPreview.Tests;
 using Microsoft.Bot.Configuration;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
@@ -70,10 +69,10 @@ namespace Microsoft.Bot.Builder.AI.LuisPreview.Tests
             // theses are GUIDs edited to look right to the parsing and validation code.
             GetEnvironmentVarsLuis();
             var endpoint = "https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/b31aeaf3-3511-495b-a07f-571fc873214b?verbose=true&timezoneOffset=-360&subscription-key=048ec46dc58e495482b0c447cfdbd291&q=";
-            var fieldInfo = typeof(LuisRecognizer).GetField("_application", BindingFlags.NonPublic | BindingFlags.Instance);
+            var fieldInfo = typeof(LuisV3Recognizer).GetField("_application", BindingFlags.NonPublic | BindingFlags.Instance);
 
             // Act
-            var recognizer = new LuisRecognizer(endpoint);
+            var recognizer = new LuisV3Recognizer(endpoint);
 
             // Assert
             var app = (LuisApplication)fieldInfo.GetValue(recognizer);
@@ -86,15 +85,15 @@ namespace Microsoft.Bot.Builder.AI.LuisPreview.Tests
         public void LuisRecognizer_Timeout()
         {
             var endpoint = "https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/b31aeaf3-3511-495b-a07f-571fc873214b?verbose=true&timezoneOffset=-360&subscription-key=048ec46dc58e495482b0c447cfdbd291&q=";
-            var optionsWithTimeout = new LuisPredictionOptions()
+            var optionsWithTimeout = new LuisV3PredictionOptions()
             {
                 Timeout = 300,
             };
             var expectedTimeout = 300;
 
-            var recognizerWithTimeout = new LuisRecognizer(endpoint, optionsWithTimeout);
+            var recognizerWithTimeout = new LuisV3Recognizer(endpoint, optionsWithTimeout);
             Assert.IsNotNull(recognizerWithTimeout);
-            Assert.AreEqual(expectedTimeout, LuisRecognizer.DefaultHttpClient.Timeout.Milliseconds);
+            Assert.AreEqual(expectedTimeout, LuisV3Recognizer.DefaultHttpClient.Timeout.Milliseconds);
         }
 
         [TestMethod]
@@ -102,11 +101,11 @@ namespace Microsoft.Bot.Builder.AI.LuisPreview.Tests
         {
             // Arrange
             GetEnvironmentVarsLuis();
-            var fieldInfo = typeof(LuisRecognizer).GetField("_application", BindingFlags.NonPublic | BindingFlags.Instance);
+            var fieldInfo = typeof(LuisV3Recognizer).GetField("_application", BindingFlags.NonPublic | BindingFlags.Instance);
 
             // Act
             var myappNull = new LuisApplication(_luisAppId, _subscriptionKey, null);
-            var recognizerNull = new LuisRecognizer(myappNull, null);
+            var recognizerNull = new LuisV3Recognizer(myappNull, null);
 
             // Assert
             var app = (LuisApplication)fieldInfo.GetValue(recognizerNull);
@@ -118,11 +117,11 @@ namespace Microsoft.Bot.Builder.AI.LuisPreview.Tests
         {
             // Arrange
             GetEnvironmentVarsLuis();
-            var fieldInfo = typeof(LuisRecognizer).GetField("_application", BindingFlags.NonPublic | BindingFlags.Instance);
+            var fieldInfo = typeof(LuisV3Recognizer).GetField("_application", BindingFlags.NonPublic | BindingFlags.Instance);
 
             // Act
             var myappEmpty = new LuisApplication(_luisAppId, _subscriptionKey, string.Empty);
-            var recognizerEmpty = new LuisRecognizer(myappEmpty, null);
+            var recognizerEmpty = new LuisV3Recognizer(myappEmpty, null);
 
             // Assert
             var app = (LuisApplication)fieldInfo.GetValue(recognizerEmpty);
@@ -146,7 +145,7 @@ namespace Microsoft.Bot.Builder.AI.LuisPreview.Tests
             mockHttp.When(GetRequestUrl()).WithPartialContent(utterance)
                 .Respond("application/json", GetResponse("SingleIntent_SimplyEntity.json"));
 
-            var luisRecognizer = new LuisRecognizer(service, null, false, new MockedHttpClientHandler(mockHttp.ToHttpClient()));
+            var luisRecognizer = new LuisV3Recognizer(service, null, false, new MockedHttpClientHandler(mockHttp.ToHttpClient()));
 
             var context = Utils.GetContext(utterance);
             var result = await luisRecognizer.RecognizeAsync(context, CancellationToken.None);
@@ -172,7 +171,7 @@ namespace Microsoft.Bot.Builder.AI.LuisPreview.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void LuisRecognizer_NullLuisAppArg()
         {
-            var recognizerWithNullLuisApplication = new LuisRecognizer(application: null);
+            var recognizerWithNullLuisApplication = new LuisV3Recognizer(application: null);
             Assert.Fail();
             Assert.IsNotNull(recognizerWithNullLuisApplication);
         }
@@ -185,7 +184,7 @@ namespace Microsoft.Bot.Builder.AI.LuisPreview.Tests
 
             GetEnvironmentVarsLuis();
             var mockHttp = GetMockHttpClientHandlerObject(utterance, responsePath);
-            var luisRecognizer = GetLuisRecognizer(mockHttp, true, new LuisPredictionOptions { IncludeInstanceData = true });
+            var luisRecognizer = GetLuisRecognizer(mockHttp, true, new LuisV3PredictionOptions { IncludeInstanceData = true });
             var context = Utils.GetContext(utterance);
             var result = await luisRecognizer.RecognizeAsync(context, CancellationToken.None);
 
@@ -237,7 +236,7 @@ namespace Microsoft.Bot.Builder.AI.LuisPreview.Tests
 
             GetEnvironmentVarsLuis();
             var mockHttp = GetMockHttpClientHandlerObject(utterance, responsePath);
-            var luisRecognizer = GetLuisRecognizer(mockHttp, true, new LuisPredictionOptions { IncludeAllIntents = true, IncludeInstanceData = true });
+            var luisRecognizer = GetLuisRecognizer(mockHttp, true, new LuisV3PredictionOptions { IncludeAllIntents = true, IncludeInstanceData = true });
             var context = Utils.GetContext(utterance);
             var result = await luisRecognizer.RecognizeAsync(context, CancellationToken.None);
 
@@ -274,7 +273,7 @@ namespace Microsoft.Bot.Builder.AI.LuisPreview.Tests
 
             GetEnvironmentVarsLuis();
             var mockHttp = GetMockHttpClientHandlerObject(utterance, responsePath);
-            var luisRecognizer = GetLuisRecognizer(mockHttp, true, new LuisPredictionOptions { IncludeAllIntents = true });
+            var luisRecognizer = GetLuisRecognizer(mockHttp, true, new LuisV3PredictionOptions { IncludeAllIntents = true });
             var context = Utils.GetContext(utterance);
             var result = await luisRecognizer.RecognizeAsync(context, CancellationToken.None);
 
@@ -300,7 +299,7 @@ namespace Microsoft.Bot.Builder.AI.LuisPreview.Tests
 
             GetEnvironmentVarsLuis();
             var mockHttp = GetMockHttpClientHandlerObject(utterance, responsePath);
-            var luisRecognizer = GetLuisRecognizer(mockHttp, true, new LuisPredictionOptions { IncludeAllIntents = true, IncludeInstanceData = true });
+            var luisRecognizer = GetLuisRecognizer(mockHttp, true, new LuisV3PredictionOptions { IncludeAllIntents = true, IncludeInstanceData = true });
             var context = Utils.GetContext(utterance);
             var result = await luisRecognizer.RecognizeAsync(context, CancellationToken.None);
 
@@ -327,7 +326,7 @@ namespace Microsoft.Bot.Builder.AI.LuisPreview.Tests
 
             GetEnvironmentVarsLuis();
             var mockHttp = GetMockHttpClientHandlerObject(utterance, responsePath);
-            var luisRecognizer = GetLuisRecognizer(mockHttp, true, new LuisPredictionOptions { IncludeAllIntents = true, IncludeInstanceData = true });
+            var luisRecognizer = GetLuisRecognizer(mockHttp, true, new LuisV3PredictionOptions { IncludeAllIntents = true, IncludeInstanceData = true });
             var context = Utils.GetContext(utterance);
             var result = await luisRecognizer.RecognizeAsync(context, CancellationToken.None);
 
@@ -356,7 +355,7 @@ namespace Microsoft.Bot.Builder.AI.LuisPreview.Tests
 
             GetEnvironmentVarsLuis();
             var mockHttp = GetMockHttpClientHandlerObject(utterance, responsePath);
-            var luisRecognizer = GetLuisRecognizer(mockHttp, true, new LuisPredictionOptions { IncludeAllIntents = true, IncludeInstanceData = true });
+            var luisRecognizer = GetLuisRecognizer(mockHttp, true, new LuisV3PredictionOptions { IncludeAllIntents = true, IncludeInstanceData = true });
             var context = Utils.GetContext(utterance);
             var result = await luisRecognizer.RecognizeAsync(context, CancellationToken.None);
 
@@ -399,7 +398,7 @@ namespace Microsoft.Bot.Builder.AI.LuisPreview.Tests
 
             GetEnvironmentVarsLuis();
             var mockHttp = GetMockHttpClientHandlerObject(utterance, responsePath);
-            var luisRecognizer = GetLuisRecognizer(mockHttp, true, new LuisPredictionOptions { IncludeAllIntents = true, IncludeInstanceData = true });
+            var luisRecognizer = GetLuisRecognizer(mockHttp, true, new LuisV3PredictionOptions { IncludeAllIntents = true, IncludeInstanceData = true });
             var context = Utils.GetContext(utterance);
             var result = await luisRecognizer.RecognizeAsync(context, CancellationToken.None);
 
@@ -434,7 +433,7 @@ namespace Microsoft.Bot.Builder.AI.LuisPreview.Tests
                     GetEnvironmentVarsLuis();
                     var mockResponse = new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(oracle[version])));
                     var mockHttp = GetMockHttpClientHandlerObject((string)oracle["text"], mockResponse);
-                    return GetLuisRecognizer(mockHttp, true, new LuisPredictionOptions { IncludeAllIntents = true, IncludeInstanceData = true });
+                    return GetLuisRecognizer(mockHttp, true, new LuisV3PredictionOptions { IncludeAllIntents = true, IncludeInstanceData = true });
                 });
         }
 
@@ -463,8 +462,8 @@ namespace Microsoft.Bot.Builder.AI.LuisPreview.Tests
                 {
                     var traceActivity = activity as ITraceActivity;
                     Assert.IsNotNull(traceActivity);
-                    Assert.AreEqual(LuisRecognizer.LuisTraceType, traceActivity.ValueType);
-                    Assert.AreEqual(LuisRecognizer.LuisTraceLabel, traceActivity.Label);
+                    Assert.AreEqual(LuisV3Recognizer.LuisTraceType, traceActivity.ValueType);
+                    Assert.AreEqual(LuisV3Recognizer.LuisTraceLabel, traceActivity.Label);
 
                     var luisTraceInfo = JObject.FromObject(traceActivity.Value);
                     Assert.IsNotNull(luisTraceInfo);
@@ -515,21 +514,21 @@ namespace Microsoft.Bot.Builder.AI.LuisPreview.Tests
         [TestMethod]
         public void TopIntentReturnsTopIntent()
         {
-            var greetingIntent = LuisRecognizer.TopIntent(_mockedResults);
+            var greetingIntent = LuisV3Recognizer.TopIntent(_mockedResults);
             Assert.AreEqual(greetingIntent, "Greeting");
         }
 
         [TestMethod]
         public void TopIntentReturnsDefaultIntentIfMinScoreIsHigher()
         {
-            var defaultIntent = LuisRecognizer.TopIntent(_mockedResults, minScore: 0.5);
+            var defaultIntent = LuisV3Recognizer.TopIntent(_mockedResults, minScore: 0.5);
             Assert.AreEqual(defaultIntent, "None");
         }
 
         [TestMethod]
         public void TopIntentReturnsDefaultIntentIfProvided()
         {
-            var defaultIntent = LuisRecognizer.TopIntent(_mockedResults, "Test2", 0.5);
+            var defaultIntent = LuisV3Recognizer.TopIntent(_mockedResults, "Test2", 0.5);
             Assert.AreEqual(defaultIntent, "Test2");
         }
 
@@ -538,7 +537,7 @@ namespace Microsoft.Bot.Builder.AI.LuisPreview.Tests
         public void TopIntentThrowsArgumentNullExceptionIfResultsIsNull()
         {
             RecognizerResult nullResults = null;
-            var noIntent = LuisRecognizer.TopIntent(nullResults);
+            var noIntent = LuisV3Recognizer.TopIntent(nullResults);
             Assert.Fail();
             Assert.IsNotNull(noIntent);
         }
@@ -546,7 +545,7 @@ namespace Microsoft.Bot.Builder.AI.LuisPreview.Tests
         [TestMethod]
         public void TopIntentReturnsTopIntentIfScoreEqualsMinScore()
         {
-            var defaultIntent = LuisRecognizer.TopIntent(_mockedResults, minScore: 0.4);
+            var defaultIntent = LuisV3Recognizer.TopIntent(_mockedResults, minScore: 0.4);
             Assert.AreEqual(defaultIntent, "Greeting");
         }
 
@@ -562,7 +561,7 @@ namespace Microsoft.Bot.Builder.AI.LuisPreview.Tests
 
             var clientHandler = new EmptyLuisResponseClientHandler();
 
-            var recognizer = new LuisRecognizer(application, clientHandler: clientHandler);
+            var recognizer = new LuisV3Recognizer(application, clientHandler: clientHandler);
 
             var adapter = new NullAdapter();
             var activity = new Activity
@@ -581,11 +580,8 @@ namespace Microsoft.Bot.Builder.AI.LuisPreview.Tests
 
             var userAgent = clientHandler.UserAgent;
 
-            // Verify we didn't unintentionally stamp on the user-agent from the client.
-            Assert.IsTrue(userAgent.Contains("Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime.LUISRuntimeClient"));
-
             // And that we added the bot.builder package details.
-            Assert.IsTrue(userAgent.Contains("Microsoft.Bot.Builder.AI.LuisPreview/4"));
+            Assert.IsTrue(userAgent.Contains("Microsoft.Bot.Builder.AI.Luis/4"));
         }
 
         [TestMethod]
@@ -595,10 +591,10 @@ namespace Microsoft.Bot.Builder.AI.LuisPreview.Tests
             // Note this is NOT a real LUIS application ID nor a real LUIS subscription-key
             // theses are GUIDs edited to look right to the parsing and validation code.
             var endpoint = "https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/b31aeaf3-3511-495b-a07f-571fc873214b?verbose=true&timezoneOffset=-360&subscription-key=048ec46dc58e495482b0c447cfdbd291&q=";
-            var fieldInfo = typeof(LuisRecognizer).GetField("_application", BindingFlags.NonPublic | BindingFlags.Instance);
+            var fieldInfo = typeof(LuisV3Recognizer).GetField("_application", BindingFlags.NonPublic | BindingFlags.Instance);
 
             // Act
-            var recognizer = new LuisRecognizer(endpoint);
+            var recognizer = new LuisV3Recognizer(endpoint);
 
             // Assert
             var app = (LuisApplication)fieldInfo.GetValue(recognizer);
@@ -619,7 +615,7 @@ namespace Microsoft.Bot.Builder.AI.LuisPreview.Tests
             var luisApp = new LuisApplication(endpoint);
             var telemetryClient = new Mock<IBotTelemetryClient>();
             var adapter = new NullAdapter();
-            var options = new LuisPredictionOptions
+            var options = new LuisV3PredictionOptions
             {
                 TelemetryClient = telemetryClient.Object,
                 LogPersonalInformation = false,
@@ -635,7 +631,7 @@ namespace Microsoft.Bot.Builder.AI.LuisPreview.Tests
             };
 
             var turnContext = new TurnContext(adapter, activity);
-            var recognizer = new LuisRecognizer(luisApp, options, false, clientHandler);
+            var recognizer = new LuisV3Recognizer(luisApp, options, false, clientHandler);
 
             // Act
             var additionalProperties = new Dictionary<string, string>
@@ -682,12 +678,12 @@ namespace Microsoft.Bot.Builder.AI.LuisPreview.Tests
             };
 
             var turnContext = new TurnContext(adapter, activity);
-            var options = new LuisPredictionOptions
+            var options = new LuisV3PredictionOptions
             {
                 TelemetryClient = telemetryClient.Object,
                 LogPersonalInformation = true,
             };
-            var recognizer = new LuisRecognizer(luisApp, options, false, clientHandler);
+            var recognizer = new LuisV3Recognizer(luisApp, options, false, clientHandler);
 
             // Act
             var result = await recognizer.RecognizeAsync(turnContext, null).ConfigureAwait(false);
@@ -729,12 +725,12 @@ namespace Microsoft.Bot.Builder.AI.LuisPreview.Tests
             };
 
             var turnContext = new TurnContext(adapter, activity);
-            var options = new LuisPredictionOptions
+            var options = new LuisV3PredictionOptions
             {
                 TelemetryClient = telemetryClient.Object,
                 LogPersonalInformation = false,
             };
-            var recognizer = new LuisRecognizer(luisApp, options, false, clientHandler);
+            var recognizer = new LuisV3Recognizer(luisApp, options, false, clientHandler);
 
             // Act
             var result = await recognizer.RecognizeAsync(turnContext, null).ConfigureAwait(false);
@@ -777,7 +773,7 @@ namespace Microsoft.Bot.Builder.AI.LuisPreview.Tests
 
             var turnContext = new TurnContext(adapter, activity);
 
-            var options = new LuisPredictionOptions
+            var options = new LuisV3PredictionOptions
             {
                 TelemetryClient = telemetryClient.Object,
                 LogPersonalInformation = false,
@@ -829,7 +825,7 @@ namespace Microsoft.Bot.Builder.AI.LuisPreview.Tests
 
             var turnContext = new TurnContext(adapter, activity);
 
-            var options = new LuisPredictionOptions
+            var options = new LuisV3PredictionOptions
             {
                 TelemetryClient = telemetryClient.Object,
                 LogPersonalInformation = false,
@@ -891,13 +887,13 @@ namespace Microsoft.Bot.Builder.AI.LuisPreview.Tests
             };
 
             var turnContext = new TurnContext(adapter, activity);
-            var options = new LuisPredictionOptions
+            var options = new LuisV3PredictionOptions
             {
                 TelemetryClient = telemetryClient.Object,
                 LogPersonalInformation = false,
             };
 
-            var recognizer = new LuisRecognizer(luisApp, options, false, clientHandler);
+            var recognizer = new LuisV3Recognizer(luisApp, options, false, clientHandler);
 
             // Act
             var result = await recognizer.RecognizeAsync(turnContext, CancellationToken.None).ConfigureAwait(false);
@@ -935,12 +931,12 @@ namespace Microsoft.Bot.Builder.AI.LuisPreview.Tests
             };
 
             var turnContext = new TurnContext(adapter, activity);
-            var options = new LuisPredictionOptions
+            var options = new LuisV3PredictionOptions
             {
                 TelemetryClient = telemetryClient.Object,
                 LogPersonalInformation = false,
             };
-            var recognizer = new LuisRecognizer(luisApp, options, false, clientHandler);
+            var recognizer = new LuisV3Recognizer(luisApp, options, false, clientHandler);
 
             // Act
             // Use a class the converts the Recognizer Result..
@@ -980,12 +976,12 @@ namespace Microsoft.Bot.Builder.AI.LuisPreview.Tests
 
             var turnContext = new TurnContext(adapter, activity);
 
-            var options = new LuisPredictionOptions
+            var options = new LuisV3PredictionOptions
             {
                 TelemetryClient = telemetryClient.Object,
                 LogPersonalInformation = false,
             };
-            var recognizer = new LuisRecognizer(luisApp, options, false, clientHandler);
+            var recognizer = new LuisV3Recognizer(luisApp, options, false, clientHandler);
 
             // Act
             var additionalProperties = new Dictionary<string, string>
@@ -1020,10 +1016,10 @@ namespace Microsoft.Bot.Builder.AI.LuisPreview.Tests
             Assert.AreEqual(((Dictionary<string, double>)telemetryClient.Invocations[0].Arguments[2])["luis"], 1.0001);
         }
 
-        private IRecognizer GetLuisRecognizer(MockedHttpClientHandler httpClientHandler, bool verbose = false, LuisPredictionOptions options = null)
+        private IRecognizer GetLuisRecognizer(MockedHttpClientHandler httpClientHandler, bool verbose = false, LuisV3PredictionOptions options = null)
         {
             var luisApp = new LuisApplication(_luisAppId, _subscriptionKey, _endpoint);
-            return new LuisRecognizer(luisApp, options, verbose, httpClientHandler);
+            return new LuisV3Recognizer(luisApp, options, verbose, httpClientHandler);
         }
 
         private MockedHttpClientHandler GetMockHttpClientHandlerObject(string example, string responsePath)

@@ -11,8 +11,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.AI.Luis;
-using Microsoft.Bot.Builder.AI.Luis.Tests;
 using Microsoft.Bot.Builder.AI.Luis.TestUtils;
 using Microsoft.Bot.Configuration;
 using Microsoft.Bot.Connector;
@@ -42,7 +40,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
 
         // LUIS tests run off of recorded HTTP responses to avoid service dependencies.
         // To update the recorded responses:
-        // 1) Change _mock to false below
+        // 1) Change _mock to false below or defined LUISMOCK=false in your environment
         // 2) Set environment variable LUISSUBSCRIPTIONKEY = any valid LUIS endpoint key
         // 3) Run the LuisRecognizerTests
         // 4) If the http responses have changed there will be a file in this directory of<test>.json.new
