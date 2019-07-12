@@ -446,9 +446,15 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
                 (oracle) =>
                 {
                     GetEnvironmentVarsLuis();
-                    var mockResponse = new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(oracle[version])));
+                    var response = oracle[version];
+                    var mockResponse = new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(response?["response"])));
                     var mockHttp = GetMockHttpClientHandlerObject((string)oracle["text"], mockResponse);
-                    return GetLuisRecognizer(mockHttp, true, new LuisPredictionOptions { IncludeAllIntents = true });
+                    var oracleOptions = response["options"];
+                    var options = (oracleOptions == null || oracleOptions.Type == JTokenType.Null)
+                        ? new LuisPredictionOptions { IncludeAllIntents = true, IncludeInstanceData = true }
+                            : oracleOptions.ToObject<LuisPredictionOptions>();
+                    response["options"] = (JObject)JsonConvert.DeserializeObject(JsonConvert.SerializeObject(options));
+                    return GetLuisRecognizer(mockHttp, true, options);
                 });
         }
 

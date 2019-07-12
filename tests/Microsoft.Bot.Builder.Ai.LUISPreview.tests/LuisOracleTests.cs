@@ -16,6 +16,7 @@ using Microsoft.Bot.Builder.AI.Luis.TestUtils;
 using Microsoft.Bot.Configuration;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
+using Microsoft.Rest;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Newtonsoft.Json;
@@ -431,9 +432,15 @@ namespace Microsoft.Bot.Builder.AI.LuisPreview.Tests
                 (oracle) =>
                 {
                     GetEnvironmentVarsLuis();
-                    var mockResponse = new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(oracle[version])));
+                    var response = oracle[version];
+                    var mockResponse = new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(response?["response"])));
                     var mockHttp = GetMockHttpClientHandlerObject((string)oracle["text"], mockResponse);
-                    return GetLuisRecognizer(mockHttp, true, new LuisV3PredictionOptions { IncludeAllIntents = true, IncludeInstanceData = true });
+                    var oracleOptions = response["options"];
+                    var options = (oracleOptions == null || oracleOptions.Type == JTokenType.Null)
+                        ? new LuisV3PredictionOptions { IncludeAllIntents = true, IncludeInstanceData = true }
+                            : oracleOptions.ToObject<LuisV3PredictionOptions>();
+                    response["options"] = (JObject)JsonConvert.DeserializeObject(JsonConvert.SerializeObject(options));
+                    return GetLuisRecognizer(mockHttp, true, options);
                 });
         }
 
