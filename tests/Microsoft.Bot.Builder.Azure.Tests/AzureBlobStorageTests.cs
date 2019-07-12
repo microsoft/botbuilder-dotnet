@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Blob;
 
 namespace Microsoft.Bot.Builder.Azure.Tests
 {
@@ -15,20 +16,26 @@ namespace Microsoft.Bot.Builder.Azure.Tests
     public class AzureBlobStorageTests
     {
         private const string ConnectionString = @"AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;DefaultEndpointsProtocol=http;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10001/devstoreaccount1;TableEndpoint=http://127.0.0.1:10002/devstoreaccount1;";
-        private const string ContainerName = "test";
+
+        public TestContext TestContext { get; set; }
+
+        public string ContainerName { get { return TestContext.TestName.ToLower(); } }
 
         // These tests require Azure Storage Emulator v5.7
-        [TestInitialize]
-        public void TestInit()
+        [ClassInitialize]
+        public static void ClassInitialize(TestContext a)
         {
             StorageEmulatorHelper.StartStorageEmulator();
         }
 
         // These tests require Azure Storage Emulator v5.7
-        [TestCleanup]
-        public void TestCleanUp()
+        [TestInitialize]
+        public void TestInit()
         {
-            StorageEmulatorHelper.StopStorageEmulator();
+            var container = CloudStorageAccount.Parse(ConnectionString)
+                .CreateCloudBlobClient()
+                .GetContainerReference(ContainerName);
+            container.DeleteIfExists();
         }
 
         [TestMethod]
