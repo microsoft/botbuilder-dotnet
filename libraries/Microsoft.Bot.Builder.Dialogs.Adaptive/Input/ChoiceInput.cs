@@ -127,7 +127,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
         protected override Task<InputState> OnRecognizeInput(DialogContext dc, bool consultation)
         {
-            var input = dc.State.GetValue<string>(INPUT_PROPERTY);
+            var input = dc.State.GetValue<object>(INPUT_PROPERTY);
             var options = dc.State.GetValue<ChoiceInputOptions>(DialogContextState.DIALOG_OPTIONS);
 
             var choices = options.Choices;
@@ -135,11 +135,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             var result = new PromptRecognizerResult<FoundChoice>();
             if (dc.Context.Activity.Type == ActivityTypes.Message)
             {
-                var activity = dc.Context.Activity;
-                var utterance = activity.Text;
                 var opt = this.RecognizerOptions ?? new FindChoicesOptions();
                 opt.Locale = GetCulture(dc);
-                var results = ChoiceRecognizers.RecognizeChoices(utterance, choices, opt);
+                var results = ChoiceRecognizers.RecognizeChoices(input.ToString(), choices, opt);
                 if (results == null || results.Count == 0)
                 {
                     return Task.FromResult(InputState.Unrecognized);

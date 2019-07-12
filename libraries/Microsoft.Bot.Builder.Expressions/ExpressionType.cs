@@ -146,12 +146,7 @@ namespace Microsoft.Bot.Builder.Expressions
         public const string IsMatch = "isMatch";
 
         // short hand functions
-        public const string Intent = "intent";
-        public const string Entity = "entity";
-        public const string Dialog = "dialog";
         public const string SimpleEntity = "simpleEntity";
-        public const string Instance = "instance";
-        public const string Option = "option";
         public const string Callstack = "callstack";
     }
 }
