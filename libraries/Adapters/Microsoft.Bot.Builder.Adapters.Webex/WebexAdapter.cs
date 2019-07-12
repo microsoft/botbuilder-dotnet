@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Builder.BotKit.Core;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
+using Thrzn41.WebexTeams;
 using Thrzn41.WebexTeams.Version1;
 
 namespace Microsoft.Bot.Builder.Adapters.Webex
@@ -40,7 +41,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
 
             if (this.config.AccessToken != null)
             {
-                //this.api = new TeamsAPIClient(this.config.AccessToken, null, new Func<TeamsResultInfo>);
+                this.api = TeamsAPI.CreateVersion1Client(config.AccessToken);
 
                 if (this.api == null)
                 {
@@ -49,7 +50,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
             }
             else
             {
-                // error: access_token required to create controller
+                throw new Exception("AccessToken required to create controller");
             }
 
             if (this.config.PublicAdress != null)
@@ -58,24 +59,17 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
 
                 if (endpoint.Host != null)
                 {
-                    this.config.PublicAdress = endpoint.Host + endpoint.Port;
+                    this.config.PublicAdress = endpoint.Host;
                 }
                 else
                 {
-                    // Could not determine hostname of public address
+                    throw new Exception("Could not determine hostname of public address");
                 }
             }
             else
             {
-                // error: public_address parameter required to receive webhooks
+                throw new Exception("PublicAddress parameter required to receive webhooks");
             }
-
-            if (this.config.Secret == null)
-            {
-                // error: WARNING: No secret specified. Source of incoming webhooks will not be validated. https://developer.webex.com/webhooks-explained.html#auth
-            }
-
-            /** middlewares **/
         }
 
         /// <summary>
@@ -85,7 +79,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         public WebexBotWorker BotkitWorker { get; private set; }
 
         /// <summary>
-        /// Gets the identity of the bot.
+        /// Gets or sets the identity of the bot.
         /// </summary>
         private Person Identity { get; set; }
 
@@ -157,7 +151,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                 }
                 else
                 {
-                    await this.api.CreateWebhookAsync(webHookName, new Uri(hookURL), EventResource.All, EventType.All);
+                    await this.api.CreateWebhookAsync(webHookName, new Uri(hookURL), EventResource.All, EventType.All, null, this.config.Secret);
                 }
             });
         }
@@ -178,10 +172,10 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                 if (activity.Type.Equals(ActivityTypes.Message))
                 {
                     // transform activity into the webex message format
-                    var personIDorEmail = ((activity.ChannelData as dynamic).toPersonEmail != null) ? (activity.ChannelData as dynamic).toPersonEmail : activity.Recipient.Id;
+                    var personIDorEmail = ((activity.ChannelData as dynamic)?.toPersonEmail != null) ? (activity.ChannelData as dynamic).toPersonEmail : activity.Recipient.Id;
                     var text = (activity.ChannelData != null) ? (activity.ChannelData as dynamic).markdown : activity.Text;
-                    Message webexResponse = await this.api.CreateDirectMessageAsync(personIDorEmail, text);
-                    var response = new ResourceResponse(webexResponse.Id);
+                    TeamsResult<Message> webexResponse = await this.api.CreateDirectMessageAsync(personIDorEmail, text);
+                    var response = new ResourceResponse(webexResponse.Data.Id);
                     responses.Add(response);
                 }
                 else
@@ -252,23 +246,29 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
             var bodyStream = new StreamReader(request.Body);
             dynamic payload = JsonConvert.DeserializeObject(bodyStream.ReadToEnd());
 
-            Activity activity;
+            var json = JsonConvert.SerializeObject(payload);
 
-            if (this.config.Secret != null)
+            if (!string.Equals(this.config.Secret, string.Empty))
             {
                 var signature = request.Headers["x-spark-signature"];
-                var hmac = new HMACSHA1(Encoding.UTF8.GetBytes(this.config.Secret));
-                var hash = hmac.ComputeHash(payload);
 
-                if (signature != hash)
+                using (var hmac = new HMACSHA1(Encoding.UTF8.GetBytes(this.config.Secret)))
                 {
-                    throw new Exception("WARNING: Webhook received message with invalid signature. Potential malicious behavior!");
+                    var hashArray = hmac.ComputeHash(Encoding.UTF8.GetBytes(json));
+
+                    string hash = BitConverter.ToString(hashArray).Replace("-", string.Empty).ToLower();
+
+                    if (!string.Equals(signature, hash))
+                    {
+                        throw new Exception("WARNING: Webhook received message with invalid signature. Potential malicious behavior!");
+                    }
                 }
             }
 
-            if (payload.resouece == "messages" && payload["event"] == "created")
+            Activity activity;
+            if (payload.resource == "messages" && payload["event"] == "created")
             {
-                Message decryptedMessage = await this.api.GetMessageAsync(payload.data);
+                Message decryptedMessage = (await this.api.GetMessageAsync(payload.data.id.ToString())).GetData();
                 activity = new Activity()
                 {
                     Id = decryptedMessage.Id,
@@ -276,7 +276,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                     ChannelId = "webex",
                     Conversation = new ConversationAccount()
                     {
-                        Id = (decryptedMessage as dynamic).roomId, // try some other property from Message
+                        Id = (decryptedMessage as dynamic).SpaceId,
                     },
                     From = new ChannelAccount()
                     {
@@ -301,15 +301,14 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
 
                 if (decryptedMessage.HasHtml)
                 {
-                    var pattern = new Regex("^(<p>)?<spark-mention .*?data-object-id=" + this.Identity.Id + ".*?>.*?</spark-mention>");
+                    var pattern = new Regex("^(<p>)?<spark-mention .*?data-object-id=\"" + this.Identity.Id + "\".*?>.*?</spark-mention>");
                     if (!decryptedMessage.Html.Equals(pattern))
                     {
                         var encodedId = this.Identity.Id;
-                        //var decoded = // Needs decoding?
 
                         // this should look like ciscospark://us/PEOPLE/<id string>
                         Match match = Regex.Match(encodedId, "/ciscospark://.*/(.*)/im");
-                        pattern = new Regex("^(<p>)?<spark-mention .*?data-object-id=" + match.Captures[1] + ".*?>.*?</spark-mention>");
+                        pattern = new Regex("^(<p>)?<spark-mention .*?data-object-id=\"" + match.Captures[1] + "\".*?>.*?</spark-mention>");
                     }
 
                     var action = decryptedMessage.Html.Replace(pattern.ToString(), string.Empty);
@@ -335,9 +334,6 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
             }
             else
             {
-                // type == payload.resource + '.' + payload.event
-                // memberships.deleted for example
-                // payload.data contains stuff
                 activity = new Activity()
                 {
                     Id = payload.id,
