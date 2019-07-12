@@ -78,7 +78,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public List<LGResource> DiscoverDependencies(ImportResolverDelegate importResolver)
         {
             var resourcesFound = new HashSet<LGResource>();
-            ResolveImportResources(this, importResolver ?? ImportResolver.FileResolver(), resourcesFound);
+            ResolveImportResources(this, importResolver ?? ImportResolver.FileResolver, resourcesFound);
 
             return resourcesFound.ToList();
         }
@@ -99,7 +99,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 try
                 {
-                    var (content, path) = importResolver(id);
+                    var (content, path) = importResolver(start.Id, id);
                     var childResource = LGParser.Parse(content, path);
                     if (!resourcesFound.Contains(childResource))
                     {
