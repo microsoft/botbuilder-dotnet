@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Tests;
@@ -57,23 +58,31 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [ClassInitialize]
         public static void ClassInitialize(TestContext a)
         {
-            StorageEmulatorHelper.StartStorageEmulator();
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                StorageEmulatorHelper.StartStorageEmulator();
+            }
         }
 
         // These tests require Azure Storage Emulator v5.7
         [TestInitialize]
         public void TestInit()
         {
-            var container = CloudStorageAccount.Parse(ConnectionString)
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                var container = CloudStorageAccount.Parse(ConnectionString)
                 .CreateCloudBlobClient()
                 .GetContainerReference(ContainerName);
-            container.DeleteIfExists();
+                container.DeleteIfExists();
+            }
         }
 
         // These tests require Azure Storage Emulator v5.7
         [TestMethod]
         public void StorageNullTest()
         {
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) return;
+
             Assert.IsNotNull(TranscriptStore);
         }
 
@@ -81,6 +90,8 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestMethod]
         public async Task TranscriptsEmptyTest()
         {
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) return;
+
             var unusedChannelId = Guid.NewGuid().ToString();
             var transcripts = await TranscriptStore.ListTranscriptsAsync(unusedChannelId);
             Assert.AreEqual(transcripts.Items.Length, 0);
@@ -90,6 +101,8 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestMethod]
         public async Task ActivityEmptyTest()
         {
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) return;
+
             foreach (var convoId in ConversationSpecialIds)
             {
                 var activities = await TranscriptStore.GetTranscriptActivitiesAsync(ChannelId, convoId);
@@ -101,6 +114,8 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestMethod]
         public async Task ActivityAddTest()
         {
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) return;
+
             var loggedActivities = new IActivity[5];
             var activities = new List<IActivity>();
             for (var i = 0; i < 5; i++)
@@ -118,6 +133,8 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestMethod]
         public async Task TranscriptRemoveTest()
         {
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) return;
+
             for (var i = 0; i < 5; i++)
             {
                 var a = CreateActivity(i, i, ConversationIds);
@@ -133,6 +150,8 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestMethod]
         public async Task ActivityAddSpecialCharsTest()
         {
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) return;
+
             var loggedActivities = new IActivity[ConversationSpecialIds.Length];
             var activities = new List<IActivity>();
             for (var i = 0; i < ConversationSpecialIds.Length; i++)
@@ -150,6 +169,8 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestMethod]
         public async Task TranscriptRemoveSpecialCharsTest()
         {
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) return;
+
             for (var i = 0; i < ConversationSpecialIds.Length; i++)
             {
                 var a = CreateActivity(i, i, ConversationSpecialIds);
@@ -165,6 +186,8 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestMethod]
         public async Task ActivityAddPagedResultTest()
         {
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) return;
+
             var cleanChanel = Guid.NewGuid().ToString();
 
             var loggedPagedResult = new PagedResult<IActivity>();
@@ -194,6 +217,8 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestMethod]
         public async Task TranscriptRemovePagedTest()
         {
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) return;
+
             var loggedActivities = new PagedResult<IActivity>();
             int i;
             for (i = 0; i < ConversationSpecialIds.Length; i++)
@@ -212,6 +237,8 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [ExpectedException(typeof(StorageException))]
         public async Task LongIdAddTest()
         {
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) return;
+
             var a = CreateActivity(0, 0, LongId);
             await TranscriptStore.LogActivityAsync(a);
         }
@@ -220,6 +247,8 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestMethod]
         public void BlobParamTest()
         {
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) return;
+
             Assert.ThrowsException<FormatException>(() => new AzureBlobTranscriptStore("123", ContainerName));
 
             Assert.ThrowsException<ArgumentNullException>(() =>
@@ -238,6 +267,8 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestMethod]
         public async Task NullBlobTest()
         {
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) return;
+
             AzureBlobTranscriptStore store = null;
 
             await Assert.ThrowsExceptionAsync<NullReferenceException>(async () =>

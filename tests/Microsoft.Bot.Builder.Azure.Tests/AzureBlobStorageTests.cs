@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
@@ -25,22 +26,30 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [ClassInitialize]
         public static void ClassInitialize(TestContext a)
         {
-            StorageEmulatorHelper.StartStorageEmulator();
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                StorageEmulatorHelper.StartStorageEmulator();
+            }
         }
 
         // These tests require Azure Storage Emulator v5.7
         [TestInitialize]
         public void TestInit()
         {
-            var container = CloudStorageAccount.Parse(ConnectionString)
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                var container = CloudStorageAccount.Parse(ConnectionString)
                 .CreateCloudBlobClient()
                 .GetContainerReference(ContainerName);
-            container.DeleteIfExists();
+                container.DeleteIfExists();
+            }
         }
 
         [TestMethod]
         public void BlobParamTest()
         {
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) return;
+
             Assert.ThrowsException<FormatException>(() => new AzureBlobStorage("123", ContainerName));
 
             Assert.ThrowsException<ArgumentNullException>(() =>
@@ -58,15 +67,17 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestMethod]
         public async Task TestBlobStorageWriteRead()
         {
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) return;
+
             // Arrange
             var storageAccount = CloudStorageAccount.Parse(ConnectionString);
             var storage = new AzureBlobStorage(storageAccount, ContainerName);
 
             var changes = new Dictionary<string, object>
-            {
-                { "x", "hello" },
-                { "y", "world" },
-            };
+                {
+                    { "x", "hello" },
+                    { "y", "world" },
+                };
 
             // Act
             await storage.WriteAsync(changes);
@@ -76,20 +87,23 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             Assert.AreEqual(2, result.Count);
             Assert.AreEqual("hello", result["x"]);
             Assert.AreEqual("world", result["y"]);
+
         }
 
         [TestMethod]
         public async Task TestBlobStorageWriteDeleteRead()
         {
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) return;
+
             // Arrange
             var storageAccount = CloudStorageAccount.Parse(ConnectionString);
             var storage = new AzureBlobStorage(storageAccount, ContainerName);
 
             var changes = new Dictionary<string, object>
-            {
-                { "x", "hello" },
-                { "y", "world" },
-            };
+                {
+                    { "x", "hello" },
+                    { "y", "world" },
+                };
 
             // Act
             await storage.WriteAsync(changes);
@@ -104,6 +118,8 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestMethod]
         public async Task TestBlobStorageChanges()
         {
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) return;
+
             // Arrange
             var storageAccount = CloudStorageAccount.Parse(ConnectionString);
             var storage = new AzureBlobStorage(storageAccount, ContainerName);
@@ -124,6 +140,8 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestMethod]
         public async Task TestConversationStateBlobStorage()
         {
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) return;
+
             // Arrange
             var storageAccount = CloudStorageAccount.Parse(ConnectionString);
             var storage = new AzureBlobStorage(storageAccount, ContainerName);
