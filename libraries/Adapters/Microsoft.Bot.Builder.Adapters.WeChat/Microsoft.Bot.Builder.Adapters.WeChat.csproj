@@ -1,19 +1,33 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
+  <PropertyGroup>
+    <Version Condition=" '$(PackageVersion)' == '' ">4.0.0-local</Version>
+    <Version Condition=" '$(PackageVersion)' != '' ">$(PackageVersion)</Version>
+    <PackageVersion Condition=" '$(PackageVersion)' == '' ">4.0.0-local</PackageVersion>
+    <PackageVersion Condition=" '$(PackageVersion)' != '' ">$(PackageVersion)</PackageVersion>
+    <Configurations>Debug;Release;Debug - NuGet Packages</Configurations>
+  </PropertyGroup>
+  
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>Microsoft.BotBuilder.Adapters.WeChat</RootNamespace>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU' ">
+    <SignAssembly>true</SignAssembly>
+    <DelaySign>true</DelaySign>
+    <AssemblyOriginatorKeyFile>..\..\..\build\35MSSharedLib1024.snk</AssemblyOriginatorKeyFile>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Builder.Adapters.WeChat.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="AdaptiveCards.Rendering.Html" Version="1.1.2" />
     <PackageReference Include="Microsoft.MarkedNet" Version="1.0.13" />
-    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\Microsoft.Bot.Builder.ApplicationInsights\Microsoft.Bot.Builder.ApplicationInsights.csproj" />
     <ProjectReference Include="..\..\Microsoft.Bot.Schema\Microsoft.Bot.Schema.csproj" />
-    <ProjectReference Include="..\Microsoft.Bot.Builder.Adapters.WeChat.Schema\Microsoft.Bot.Builder.Adapters.WeChat.Schema.csproj" />
     <ProjectReference Include="..\..\integration\Microsoft.Bot.Builder.Integration.AspNet.Core\Microsoft.Bot.Builder.Integration.AspNet.Core.csproj" />
   </ItemGroup>
 

@@ -17,9 +17,6 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.JsonResult
         public long CreatedAt { get; set; }
 
         // By wechat description temporary media will expired in 3 days
-        public long ExpiredTime
-        {
-            get { return CreatedAt + 259200; }
-        }
+        public long ExpiredTime => CreatedAt + (3 * 24 * 60 * 60);
     }
 }

@@ -302,7 +302,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Test.TestUtilities
             Msg_Signature = "f3187a0efd9709c8f6550190147f43c279e9bc43",
         };
 
-        public static readonly SecretInfo SecretInfoError = new SecretInfo()
+        public static readonly SecretInfo SecretInfoAESKeyError = new SecretInfo()
         {
             Token = "bmwipabotwx",
             EncodingAESKey = "bmwipabotwx",
@@ -313,6 +313,17 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Test.TestUtilities
             Msg_Signature = "4e17212123b3ce5a6b11643dc658af83fdb54c7",
         };
 
+        public static readonly SecretInfo SecretInfoMsgSignatureError = new SecretInfo()
+        {
+            Token = "bmwipabotwx",
+            EncodingAESKey = "P7PIjIGpA7axbjbffRoWYq7G0BsIaEpqdawIir4KqCt",
+            AppId = "wx77f941c869071d99",
+            Signature = "4e17212123b3ce5a6b11643dc658af83fdb54c7d",
+            Timestamp = "1562066088",
+            Nonce = "236161902",
+            Msg_Signature = "4e17212123b3ce5a6b11643dc658af83fdb54c7d",
+        };
+
         public static readonly WeChatJsonResult WeChatJsonResult = new WeChatJsonResult()
         {
             ErrorCode = 0,
@@ -320,8 +331,8 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Test.TestUtilities
         };
 
         public static readonly MessageCryptography TestDecryptMsg = new MessageCryptography(SecretInfo);
-        public static readonly MessageCryptography TestAESKey = new MessageCryptography(SecretInfoError);
-        public static readonly MessageCryptography TestSignature = new MessageCryptography(SecretInfoError);
+        public static readonly MessageCryptography TestAESKey = new MessageCryptography(SecretInfoAESKeyError);
+        public static readonly MessageCryptography TestSignature = new MessageCryptography(SecretInfoMsgSignatureError);
 
         // public const string xmlEvent_Enter_Agent = @"<xml>
         //                                            <ToUserName><![CDATA[toUser]]></ToUserName>
@@ -551,7 +562,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Test.TestUtilities
             return attachmentList;
         }
 
-        public static IConfiguration MockConfiguration()
+        public static IConfiguration MockConfiguration(bool isTemp = true)
         {
             var mockConfSection = new Mock<IConfigurationSection>();
             var tokenSection = new Mock<IConfigurationSection>();
@@ -571,7 +582,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Test.TestUtilities
             appIdSection.Setup(a => a.Value).Returns("wx77f941c869071d99");
             encondingSection.Setup(a => a.Value).Returns("P7PIjIGpA7axbjbffRoWYq7G0BsIaEpqdawIir4KqCt");
             secretSection.Setup(a => a.Value).Returns("secret");
-            isTempSection.Setup(a => a.Value).Returns("true");
+            isTempSection.Setup(a => a.Value).Returns(isTemp.ToString());
 
             var mockConfiguration = new Mock<IConfiguration>();
             mockConfiguration.Setup(a => a.GetSection(It.Is<string>(s => s == "WeChatSetting"))).Returns(mockConfSection.Object);

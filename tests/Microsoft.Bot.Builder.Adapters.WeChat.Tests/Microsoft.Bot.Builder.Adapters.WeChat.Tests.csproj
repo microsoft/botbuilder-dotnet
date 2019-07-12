@@ -15,7 +15,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\libraries\Adapters\Microsoft.Bot.Builder.Adapters.WeChat.Schema\Microsoft.Bot.Builder.Adapters.WeChat.Schema.csproj" />
     <ProjectReference Include="..\..\libraries\Adapters\Microsoft.Bot.Builder.Adapters.WeChat\Microsoft.Bot.Builder.Adapters.WeChat.csproj" />
   </ItemGroup>
 

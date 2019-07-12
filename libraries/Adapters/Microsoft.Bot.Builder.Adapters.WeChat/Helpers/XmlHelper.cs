@@ -2,9 +2,9 @@
 using System.Xml;
 using System.Xml.Linq;
 
-namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Utilities.XmlUtility
+namespace Microsoft.Bot.Builder.Adapters.WeChat
 {
-    public static class XmlUtility
+    public static class XmlHelper
     {
         public static XDocument Convert(Stream stream)
         {
@@ -13,7 +13,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Utilities.XmlUtility
                 stream.Seek(0, SeekOrigin.Begin);
             }
 
-            using (XmlReader xr = XmlReader.Create(stream))
+            using (var xr = XmlReader.Create(stream))
             {
                 return XDocument.Load(xr);
             }

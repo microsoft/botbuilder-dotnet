@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Xml.Linq;
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Request;
-using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Response;
 
-namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Helpers
+namespace Microsoft.Bot.Builder.Adapters.WeChat
 {
     /// <summary>
     /// Message type helper.

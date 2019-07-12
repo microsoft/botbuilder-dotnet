@@ -12,11 +12,12 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Test
     public class AdapterTest
     {
         private WeChatHttpAdapter testAdapter;
+        private WeChatHttpAdapter testAdapterUseTempMedia;
 
         public AdapterTest()
         {
-            var configuration = MockDataUtility.MockConfiguration();
-            testAdapter = new WeChatHttpAdapter(configuration);
+            testAdapter = new WeChatHttpAdapter(MockDataUtility.MockConfiguration());
+            testAdapterUseTempMedia = new WeChatHttpAdapter(MockDataUtility.MockConfiguration(false));
         }
 
         [TestMethod]
@@ -27,6 +28,8 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Test
             var secretInfo = MockDataUtility.GetMockSecretInfo();
             var bot = new EchoBot();
             await testAdapter.ProcessAsync(request, response, bot, secretInfo, true);
+            await testAdapter.ProcessAsync(request, response, bot, secretInfo, false);
+            await testAdapterUseTempMedia.ProcessAsync(request, response, bot, secretInfo, true);
         }
 
         private static Mock<HttpRequest> CreateMockRequest(object body)

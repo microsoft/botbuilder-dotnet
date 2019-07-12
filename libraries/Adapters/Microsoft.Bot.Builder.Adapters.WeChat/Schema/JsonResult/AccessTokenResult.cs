@@ -3,7 +3,7 @@ using Newtonsoft.Json.Serialization;
 
 namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema
 {
-    public class AccessToken
+    public class AccessTokenResult
     {
         [JsonProperty("access_token")]
         public string Token { get; set; }

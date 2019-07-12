@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Xml.Linq;
-using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Helpers;
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Request.Event;
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Request.Event.Common;
 

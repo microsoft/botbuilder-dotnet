@@ -5,6 +5,9 @@ using BotSchema = Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Adapters.WeChat
 {
+    /// <summary>
+    /// Attachment Extensions to easily convert attachemnt type to card, etc.
+    /// </summary>
     public static partial class AttachmentExtensions
     {
         public static T ContentAs<T>(this BotSchema.Attachment attachment)

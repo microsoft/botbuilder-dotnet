@@ -4,7 +4,7 @@ using System.Xml.Linq;
 using System.Xml.Serialization;
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Request;
 
-namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Helpers
+namespace Microsoft.Bot.Builder.Adapters.WeChat
 {
     public static class EntityHelper
     {
@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Helpers
             try
             {
                 var requestMessage = new T();
-                XmlSerializer serializer = new XmlSerializer(typeof(T));
+                var serializer = new XmlSerializer(typeof(T));
                 using (TextReader reader = new StringReader(doc.ToString()))
                 {
                     requestMessage = (T)serializer.Deserialize(reader);
