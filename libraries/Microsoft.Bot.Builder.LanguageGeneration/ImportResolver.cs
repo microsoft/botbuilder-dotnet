@@ -9,37 +9,26 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     /// <summary>
     /// Delegate for resolving resource id of imported lg file.
     /// </summary>
+    /// <param name="sourceId">From which file or the source Id.</param>
     /// <param name="resourceId">Resource id to resolve.</param>
     /// <returns>Resolved resource content and unique id.</returns>
-    public delegate (string content, string id) ImportResolverDelegate(string resourceId);
+    public delegate (string content, string id) ImportResolverDelegate(string sourceId, string resourceId);
 
     public class ImportResolver
     {
-        public static ImportResolverDelegate FilePathResolver(string filePath)
+        public static ImportResolverDelegate FileResolver = (filePath, id) =>
         {
-            return (id) =>
+            // import paths are in resource files which can be executed on multiple OS environments
+            // normalize to map / & \ in importPath -> OSPath
+            var importPath = NormalizePath(id);
+            if (!Path.IsPathRooted(importPath))
             {
-                // import paths are in resource files which can be executed on multiple OS environments
-                // normalize to map / & \ in importPath -> OSPath
-                var importPath = NormalizePath(id);
-                if (!Path.IsPathRooted(importPath))
-                {
-                    // get full path for importPath relative to path which is doing the import.
-                    importPath = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(filePath), id));
-                }
+                // get full path for importPath relative to path which is doing the import.
+                importPath = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(filePath), id));
+            }
 
-                return (File.ReadAllText(importPath), importPath);
-            };
-        }
-
-        public static ImportResolverDelegate FileResolver()
-        {
-            return (id) =>
-            {
-                id = Path.GetFullPath(id);
-                return (File.ReadAllText(id), id);
-            };
-        }
+            return (File.ReadAllText(importPath), importPath);
+        };
 
         /// <summary>
         /// Normalize authored path to os path.
