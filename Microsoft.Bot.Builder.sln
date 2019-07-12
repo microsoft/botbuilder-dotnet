@@ -118,6 +118,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Langu
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.LanguageGeneration.Renderer.Tests", "tests\Microsoft.Bot.Builder.LanguageGeneration.Renderer.Tests\Microsoft.Bot.Builder.LanguageGeneration.Renderer.Tests.csproj", "{240646C5-EFCB-4CF1-AF8E-7036558CD78C}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.StreamingExtensions", "libraries\Microsoft.Bot.StreamingExtensions\Microsoft.Bot.StreamingExtensions.csproj", "{038E1C00-13D6-4923-870E-CD5A97ED97B3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.StreamingExtensions.Tests", "tests\Microsoft.Bot.StreamingExtensions.Test\Microsoft.Bot.StreamingExtensions.Tests.csproj", "{B7DB6561-7D83-4706-9DE0-02C5520DE2B7}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.StreamingExtensions", "libraries\Microsoft.Bot.Builder.StreamingExtensions\Microsoft.Bot.Builder.StreamingExtensions.csproj", "{BDCAC491-8518-4CE6-B56A-9E36936C7E70}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug - NuGet Packages|Any CPU = Debug - NuGet Packages|Any CPU
@@ -437,6 +443,24 @@ Global
 		{240646C5-EFCB-4CF1-AF8E-7036558CD78C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{240646C5-EFCB-4CF1-AF8E-7036558CD78C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{240646C5-EFCB-4CF1-AF8E-7036558CD78C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{038E1C00-13D6-4923-870E-CD5A97ED97B3}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{038E1C00-13D6-4923-870E-CD5A97ED97B3}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
+		{038E1C00-13D6-4923-870E-CD5A97ED97B3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{038E1C00-13D6-4923-870E-CD5A97ED97B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{038E1C00-13D6-4923-870E-CD5A97ED97B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{038E1C00-13D6-4923-870E-CD5A97ED97B3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B7DB6561-7D83-4706-9DE0-02C5520DE2B7}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{B7DB6561-7D83-4706-9DE0-02C5520DE2B7}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
+		{B7DB6561-7D83-4706-9DE0-02C5520DE2B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B7DB6561-7D83-4706-9DE0-02C5520DE2B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B7DB6561-7D83-4706-9DE0-02C5520DE2B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B7DB6561-7D83-4706-9DE0-02C5520DE2B7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BDCAC491-8518-4CE6-B56A-9E36936C7E70}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{BDCAC491-8518-4CE6-B56A-9E36936C7E70}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
+		{BDCAC491-8518-4CE6-B56A-9E36936C7E70}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BDCAC491-8518-4CE6-B56A-9E36936C7E70}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BDCAC491-8518-4CE6-B56A-9E36936C7E70}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BDCAC491-8518-4CE6-B56A-9E36936C7E70}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -497,6 +521,9 @@ Global
 		{F59673EA-2D0D-441A-BB85-CD343DE6BE45} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{72EE26E2-E8BE-4169-82AD-93E021539C34} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{240646C5-EFCB-4CF1-AF8E-7036558CD78C} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
+		{038E1C00-13D6-4923-870E-CD5A97ED97B3} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
+		{B7DB6561-7D83-4706-9DE0-02C5520DE2B7} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
+		{BDCAC491-8518-4CE6-B56A-9E36936C7E70} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7173C9F3-A7F9-496E-9078-9156E35D6E16}

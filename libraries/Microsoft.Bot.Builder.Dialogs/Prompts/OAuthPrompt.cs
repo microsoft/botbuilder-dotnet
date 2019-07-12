@@ -118,12 +118,12 @@ namespace Microsoft.Bot.Builder.Dialogs
                     opt = options as PromptOptions;
                     if (opt.Prompt != null && string.IsNullOrEmpty(opt.Prompt.InputHint))
                     {
-                        opt.Prompt.InputHint = InputHints.ExpectingInput;
+                        opt.Prompt.InputHint = InputHints.AcceptingInput;
                     }
 
                     if (opt.RetryPrompt != null && string.IsNullOrEmpty(opt.RetryPrompt.InputHint))
                     {
-                        opt.RetryPrompt.InputHint = InputHints.ExpectingInput;
+                        opt.RetryPrompt.InputHint = InputHints.AcceptingInput;
                     }
                 }
                 else
@@ -345,7 +345,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             // Set input hint
             if (string.IsNullOrEmpty(prompt.InputHint))
             {
-                prompt.InputHint = InputHints.ExpectingInput;
+                prompt.InputHint = InputHints.AcceptingInput;
             }
 
             await turnContext.SendActivityAsync(prompt, cancellationToken).ConfigureAwait(false);

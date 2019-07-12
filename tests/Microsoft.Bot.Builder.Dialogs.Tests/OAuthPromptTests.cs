@@ -67,6 +67,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 Assert.AreEqual(1, ((Activity)activity).Attachments.Count);
                 Assert.AreEqual(OAuthCard.ContentType, ((Activity)activity).Attachments[0].ContentType);
 
+                Assert.AreEqual(InputHints.AcceptingInput, ((Activity)activity).InputHint);
+
                 // Prepare an EventActivity with a TokenResponse and send it to the botCallbackHandler
                 var eventActivity = CreateEventResponse(adapter, activity, connectionName, token);
                 var ctx = new TurnContext(adapter, (Activity)eventActivity);
@@ -122,6 +124,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 Assert.AreEqual(1, ((Activity)activity).Attachments.Count);
                 Assert.AreEqual(OAuthCard.ContentType, ((Activity)activity).Attachments[0].ContentType);
 
+                Assert.AreEqual(InputHints.AcceptingInput, ((Activity)activity).InputHint);
+
                 // Add a magic code to the adapter
                 adapter.AddUserToken(connectionName, activity.ChannelId, activity.Recipient.Id, token, magicCode);
             })
@@ -174,6 +178,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             {
                 Assert.AreEqual(1, ((Activity)activity).Attachments.Count);
                 Assert.AreEqual(OAuthCard.ContentType, ((Activity)activity).Attachments[0].ContentType);
+
+                Assert.AreEqual(InputHints.AcceptingInput, ((Activity)activity).InputHint);
             })
             .StartTestAsync();
         }
