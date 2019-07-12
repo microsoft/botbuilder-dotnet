@@ -27,10 +27,8 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
                 throw new ArgumentNullException(nameof(applicationBuilder));
             }
 
-            var applicationServices = applicationBuilder.ApplicationServices;
-            var bot = applicationServices.GetRequiredService<IBot>();
             var connector = new NamedPipeConnector();
-            connector.InitializeNamedPipeServer(bot, middlewareSet);
+            connector.InitializeNamedPipeServer(applicationBuilder.ApplicationServices, middlewareSet);
 
             return applicationBuilder;
         }
