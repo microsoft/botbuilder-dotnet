@@ -166,7 +166,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             var locale = GetCulture(dc);
             var prompt = await base.OnRenderPrompt(dc, state);
             var channelId = dc.Context.Activity.ChannelId;
-            var choicePrompt = new ChoicePrompt();
+            var choicePrompt = new ChoicePrompt(this.Id);
             var choiceOptions = this.ChoiceOptions ?? ChoiceInput.DefaultChoiceOptions[locale];
 
             var choices = GetChoices(dc);

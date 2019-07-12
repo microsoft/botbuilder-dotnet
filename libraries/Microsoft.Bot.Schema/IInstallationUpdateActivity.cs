@@ -9,8 +9,9 @@ namespace Microsoft.Bot.Schema
     public interface IInstallationUpdateActivity : IActivity
     {
         /// <summary>
-        /// add|remove
+        /// Gets or Sets add|remove.
         /// </summary>
+        /// <value>Action.</value>
         string Action { get; set; }
     }
 }

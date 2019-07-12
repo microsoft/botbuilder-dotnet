@@ -12,18 +12,35 @@ using Newtonsoft.Json.Linq;
 namespace Microsoft.Bot.Connector.Authentication
 {
     /// <summary>
-    /// The endorsements property within each key contains one or more endorsement 
-    /// strings which you can use to verify that the channel ID specified in the channelId 
+    /// The endorsements property within each key contains one or more endorsement
+    /// strings which you can use to verify that the channel ID specified in the channelId
     /// property within the Activity object of the incoming request is authentic.
     /// More details at:
-    ///     https://docs.microsoft.com/bot-framework/rest-api/bot-framework-rest-connector-authentication
+    ///     https://docs.microsoft.com/bot-framework/rest-api/bot-framework-rest-connector-authentication.
     /// </summary>
     public sealed class EndorsementsRetriever : IDocumentRetriever, IConfigurationRetriever<IDictionary<string, HashSet<string>>>
     {
+        /// <summary>
+        /// JSON Web Key Set Metadata value
+        /// From the OpenID Spec at
+        ///     https://openid.net/specs/openid-connect-discovery-1_0.html
+        ///     URL of the OP's JSON Web Key Set [JWK] document. This contains the signing key(s)
+        ///     the RP uses to validate signatures from the OP. The JWK Set MAY also contain the
+        ///     Server's encryption key(s), which are used by RPs to encrypt requests to the
+        ///     Server. When both signing and encryption keys are made available, a use (Key Use)
+        ///     parameter value is REQUIRED for all keys in the referenced JWK Set to indicate
+        ///     each key's intended usage. Although some algorithms allow the same key to be
+        ///     used for both signatures and encryption, doing so is NOT RECOMMENDED, as it
+        ///     is less secure. The JWK x5c parameter MAY be used to provide X.509 representations
+        ///     of keys provided. When used, the bare key values MUST still be present and MUST
+        ///     match those in the certificate.
+        /// </summary>
+        public const string JsonWebKeySetUri = "jwks_uri";
+
         private readonly HttpClient _httpClient;
 
         /// <summary>
-        /// Creates an instance of the Endorsements Retriever class. 
+        /// Initializes a new instance of the <see cref="EndorsementsRetriever"/> class.
         /// </summary>
         /// <param name="httpClient">Allow the calling layer to manage the lifetime of the HttpClient, complete with
         /// timeouts, pooling, instancing and so on. This is to avoid having to Use/Dispose a new instance
@@ -33,23 +50,6 @@ namespace Microsoft.Bot.Connector.Authentication
         {
             _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
         }
-
-        /// <summary>
-        /// JSON Web Key Set Metadata value
-        /// From the OpenID Spec at 
-        ///     https://openid.net/specs/openid-connect-discovery-1_0.html
-        ///     URL of the OP's JSON Web Key Set [JWK] document. This contains the signing key(s) 
-        ///     the RP uses to validate signatures from the OP. The JWK Set MAY also contain the 
-        ///     Server's encryption key(s), which are used by RPs to encrypt requests to the 
-        ///     Server. When both signing and encryption keys are made available, a use (Key Use) 
-        ///     parameter value is REQUIRED for all keys in the referenced JWK Set to indicate 
-        ///     each key's intended usage. Although some algorithms allow the same key to be 
-        ///     used for both signatures and encryption, doing so is NOT RECOMMENDED, as it 
-        ///     is less secure. The JWK x5c parameter MAY be used to provide X.509 representations 
-        ///     of keys provided. When used, the bare key values MUST still be present and MUST 
-        ///     match those in the certificate.
-        /// </summary>
-        public const string JsonWebKeySetUri = "jwks_uri";
 
         /// <summary>
         /// Retrieves a populated configuration given an address and a document retriever.
@@ -130,7 +130,7 @@ namespace Microsoft.Bot.Connector.Authentication
 
                 var json = await documentResponse.Content.ReadAsStringAsync();
 
-                if(string.IsNullOrWhiteSpace(json))
+                if (string.IsNullOrWhiteSpace(json))
                 {
                     return string.Empty;
                 }

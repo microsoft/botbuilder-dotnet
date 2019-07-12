@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder
 {
@@ -53,7 +54,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
-        public async Task LoadAsync(ITurnContext turnContext, bool force = false, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual async Task LoadAsync(ITurnContext turnContext, bool force = false, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (turnContext == null)
             {
@@ -78,7 +79,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
-        public async Task SaveChangesAsync(ITurnContext turnContext, bool force = false, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual async Task SaveChangesAsync(ITurnContext turnContext, bool force = false, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (turnContext == null)
             {
@@ -106,7 +107,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="cancellationToken">cancellation token.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         /// <remarks>NOTE: that SaveChangesAsync must be called in order for the cleared state to be persisted to the underlying store.</remarks>
-        public Task ClearStateAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task ClearStateAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (turnContext == null)
             {
@@ -125,7 +126,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="turnContext">The context object for this turn.</param>
         /// <param name="cancellationToken">cancellation token.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public async Task DeleteAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual async Task DeleteAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (turnContext == null)
             {
@@ -140,6 +141,23 @@ namespace Microsoft.Bot.Builder
 
             var storageKey = GetStorageKey(turnContext);
             await _storage.DeleteAsync(new[] { storageKey }, cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Returns a copy of the raw cached data from the TurnContext, this can be used for tracing scenarios.
+        /// </summary>
+        /// <param name="turnContext">The context object for this turn.</param>
+        /// <returns>A JSON representation of the cached state.</returns>
+        public JToken Get(ITurnContext turnContext)
+        {
+            if (turnContext == null)
+            {
+                throw new ArgumentNullException(nameof(turnContext));
+            }
+
+            var stateKey = this.GetType().Name;
+            var cachedState = turnContext.TurnState.Get<object>(stateKey);
+            return JObject.FromObject(cachedState)["State"];
         }
 
         /// <summary>

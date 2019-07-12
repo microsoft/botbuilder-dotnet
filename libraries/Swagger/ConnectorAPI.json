@@ -811,12 +811,12 @@
       "type": "object",
       "properties": {
         "viewId": {
-          "description": "Content type of the attachment",
+          "description": "Id of the attachment",
           "type": "string"
         },
         "size": {
           "format": "int32",
-          "description": "Name of the attachment",
+          "description": "Size of the attachment",
           "type": "integer"
         }
       }
@@ -887,6 +887,10 @@
           "description": "(Optional) Topic of the conversation (if supported by the channel)",
           "type": "string"
         },
+        "tenantId": {
+          "description": "(Optional) The tenant ID in which the conversation should be created",
+          "type": "string"
+        },
         "activity": {
           "$ref": "#/definitions/Activity",
           "description": "(Optional) When creating a new conversation, use this activity as the initial message to the conversation"
@@ -894,10 +898,6 @@
         "channelData": {
           "description": "Channel specific payload for creating the conversation",
           "type": "object"
-        },
-        "tenantId":{
-          "description":"(Optional) The tenant ID in which the conversation should be created",
-          "type":"object"
         }
       }
     },
@@ -942,11 +942,15 @@
         },
         "localTimestamp": {
           "format": "date-time",
-          "description": "Contains the date and time that the message was sent, in local time, expressed in ISO-8601 format.\r\nFor example, 2016-09-23T13:07:49.4714686-07:00.",
+          "description": "Contains the local date and time of the message, expressed in ISO-8601 format.\r\nFor example, 2016-09-23T13:07:49.4714686-07:00.",
           "type": "string"
         },
         "localTimezone": {
-          "description": "Contains the name of the timezone in which the message, in local time, expressed in IANA Time Zone database format.\r\nFor example, America/Los_Angeles.",
+          "description": "Contains the name of the local timezone of the message, expressed in IANA Time Zone database format.\r\nFor example, America/Los_Angeles.",
+          "type": "string"
+        },
+        "callerId": {
+          "description": "A string containing an IRI identifying the caller of a bot. This field is not intended to be transmitted\r\nover the wire, but is instead populated by bots and clients based on cryptographically verifiable data\r\nthat asserts the identity of the callers (e.g. tokens).",
           "type": "string"
         },
         "serviceUrl": {
@@ -1121,7 +1125,7 @@
       }
     },
     "ConversationAccount": {
-      "description": "Channel account information for a conversation",
+      "description": "Conversation account represents the identity of the conversation within a channel",
       "type": "object",
       "properties": {
         "isGroup": {
@@ -1130,6 +1134,10 @@
         },
         "conversationType": {
           "description": "Indicates the type of the conversation in channels that distinguish between conversation types",
+          "type": "string"
+        },
+        "tenantId": {
+          "description": "This conversation's tenant ID",
           "type": "string"
         },
         "id": {
@@ -1147,10 +1155,6 @@
         "role": {
           "$ref": "#/definitions/RoleTypes",
           "description": "Role of the entity behind the account (Example: User, Bot, etc.)"
-        },
-        "tenantId": {
-          "description": "This conversation's tenant ID",
-          "type": "object"
         }
       }
     },
@@ -1269,6 +1273,10 @@
       "description": "Represents a reference to a programmatic action",
       "type": "object",
       "properties": {
+        "state": {
+          "$ref": "#/definitions/SemanticActionStates",
+          "description": "State of this action. Allowed values: `start`, `continue`, `done`"
+        },
         "id": {
           "description": "ID of this action",
           "type": "string"
@@ -2131,6 +2139,20 @@
       "properties": {},
       "x-ms-enum": {
         "name": "AttachmentLayoutTypes",
+        "modelAsString": true
+      }
+    },
+    "SemanticActionStates": {
+      "description": "Indicates whether the semantic action is starting, continuing, or done",
+      "enum": [
+        "start",
+        "continue",
+        "done"
+      ],
+      "type": "string",
+      "properties": {},
+      "x-ms-enum": {
+        "name": "SemanticActionStates",
         "modelAsString": true
       }
     },

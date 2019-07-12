@@ -21,18 +21,21 @@ namespace Microsoft.Bot.Configuration
         /// <summary>
         /// Gets or sets instrumentation Key.
         /// </summary>
+        /// <value>The Instrumentation Key.</value>
         [JsonProperty("instrumentationKey")]
         public string InstrumentationKey { get; set; }
 
         /// <summary>
         /// Gets or sets applicationId for programatic access to appInsights.
         /// </summary>
+        /// <value>The Application Id.</value>
         [JsonProperty("applicationId")]
         public string ApplicationId { get; set; }
 
         /// <summary>
         /// Gets or sets apiKeys.
         /// </summary>
+        /// <value>The Api Keys.</value>
         [JsonProperty("apiKeys")]
         public Dictionary<string, string> ApiKeys { get; set; } = new Dictionary<string, string>();
 

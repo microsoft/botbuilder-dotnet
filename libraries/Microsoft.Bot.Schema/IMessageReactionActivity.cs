@@ -6,18 +6,24 @@ using System.Collections.Generic;
 namespace Microsoft.Bot.Schema
 {
     /// <summary>
-    /// A reaction to a Message Activity
+    /// A reaction to a Message Activity.
     /// </summary>
     public interface IMessageReactionActivity : IActivity
     {
         /// <summary>
-        /// Reactions added to the activity
+        /// Gets or sets reactions added to the activity.
         /// </summary>
+        /// <value>
+        /// Reactions added to the activity.
+        /// </value>
         IList<MessageReaction> ReactionsAdded { get; set; }
 
         /// <summary>
-        /// Reactions removed from the activity
+        /// Gets or sets reactions removed from the activity.
         /// </summary>
+        /// <value>
+        /// Reactions removed from the activity.
+        /// </value>
         IList<MessageReaction> ReactionsRemoved { get; set; }
     }
 }

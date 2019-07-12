@@ -66,7 +66,7 @@ namespace Microsoft.Bot.Configuration
             // Get all the Dispatch (Luis) types in the service list
             var dispatchServices = botConfiguration.Services.OfType<DispatchService>();
 
-            // The dispatch service is not always included in the the bot configuration files.
+            // The dispatch service is not always included in the bot configuration files.
             // Therefore, it will only be validated if the bot configuration file contains at least one service of this type.
             if (dispatchServices.Any())
             {

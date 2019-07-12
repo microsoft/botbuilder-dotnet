@@ -17,23 +17,22 @@ namespace Microsoft.Bot.Builder.Tests
                 From = new ChannelAccount()
                 {
                     Id = "user",
-                    Name = "User Name"
+                    Name = "User Name",
                 },
                 Recipient = new ChannelAccount()
                 {
                     Id = "bot",
-                    Name = "Bot Name"
+                    Name = "Bot Name",
                 },
                 Conversation = new ConversationAccount()
                 {
                     Id = "convo",
-                    Name = "Convo Name"
+                    Name = "Convo Name",
                 },
                 ChannelId = "UnitTest",
-                ServiceUrl = "https://example.org"
+                ServiceUrl = "https://example.org",
             };
             return a;
         }
-
     }
 }

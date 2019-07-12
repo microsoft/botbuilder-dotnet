@@ -37,7 +37,7 @@ namespace Microsoft.Bot.Builder.Tests
         {
             MiddlewareSet m = new MiddlewareSet();
 
-            // No middleware. Should not explode. 
+            // No middleware. Should not explode.
             await m.ReceiveActivityWithStatusAsync(null, null, default(CancellationToken));
         }
 
@@ -51,7 +51,8 @@ namespace Microsoft.Bot.Builder.Tests
                 wasCalled = true;
                 return Task.CompletedTask;
             }
-            // No middleware. Should not explode. 
+
+            // No middleware. Should not explode.
             await m.ReceiveActivityWithStatusAsync(null, CallMe, default(CancellationToken));
             Assert.IsTrue(wasCalled, "Delegate was not called");
         }
@@ -74,7 +75,7 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.IsFalse(simple.Called);
             await m.ReceiveActivityWithStatusAsync(null, CallMe, default(CancellationToken));
             Assert.IsTrue(simple.Called);
-            Assert.IsTrue(wasCalled, "Delegate was not called"); 
+            Assert.IsTrue(wasCalled, "Delegate was not called");
         }
 
         [TestMethod]
@@ -139,7 +140,7 @@ namespace Microsoft.Bot.Builder.Tests
             await m.ReceiveActivityWithStatusAsync(null, CallMe, default(CancellationToken));
             Assert.IsTrue(one.Called);
             Assert.IsTrue(two.Called);
-            Assert.IsTrue(called == 1, "Incorrect number of calls to Delegate"); 
+            Assert.IsTrue(called == 1, "Incorrect number of calls to Delegate");
         }
 
         [TestMethod]
@@ -181,12 +182,14 @@ namespace Microsoft.Bot.Builder.Tests
 
             // The middlware in this pipeline calls next(), so the delegate should be called
             bool didAllRun = false;
-            await m.ReceiveActivityWithStatusAsync(null, (ctx, cancellationToken) =>
-            {
-                didAllRun = true;
-                return Task.CompletedTask;
-            },
-            default(CancellationToken));
+            await m.ReceiveActivityWithStatusAsync(
+                null,
+                (ctx, cancellationToken) =>
+                {
+                    didAllRun = true;
+                    return Task.CompletedTask;
+                },
+                default(CancellationToken));
 
             Assert.IsTrue(called1);
             Assert.IsTrue(didAllRun);
@@ -199,13 +202,15 @@ namespace Microsoft.Bot.Builder.Tests
             bool didAllRun = false;
 
             // This middlware pipeline has no entries. This should result in
-            // the status being TRUE. 
-            await m.ReceiveActivityWithStatusAsync(null, (ctx, cancellationToken) =>
-            {
-                didAllRun = true;
-                return Task.CompletedTask;
-            },
-            default(CancellationToken));
+            // the status being TRUE.
+            await m.ReceiveActivityWithStatusAsync(
+                null,
+                (ctx, cancellationToken) =>
+                {
+                    didAllRun = true;
+                    return Task.CompletedTask;
+                },
+                default(CancellationToken));
             Assert.IsTrue(didAllRun);
         }
 
@@ -232,16 +237,18 @@ namespace Microsoft.Bot.Builder.Tests
             m.Use(two);
 
             bool didAllRun = false;
-            await m.ReceiveActivityWithStatusAsync(null, (ctx, cancellationToken) =>
-            {
-                didAllRun = true;
-                return Task.CompletedTask;
-            },
-            default(CancellationToken));
+            await m.ReceiveActivityWithStatusAsync(
+                null,
+                (ctx, cancellationToken) =>
+                {
+                    didAllRun = true;
+                    return Task.CompletedTask;
+                },
+                default(CancellationToken));
             Assert.IsTrue(called1);
             Assert.IsTrue(called2);
 
-            // The 2nd middleware did not call next, so the "final" action should not have run. 
+            // The 2nd middleware did not call next, so the "final" action should not have run.
             Assert.IsFalse(didAllRun);
         }
 
@@ -255,19 +262,21 @@ namespace Microsoft.Bot.Builder.Tests
             var m = new MiddlewareSet();
             m.Use(one);
 
-            // The middlware in this pipeline DOES NOT call next(), so this must not be called 
+            // The middlware in this pipeline DOES NOT call next(), so this must not be called
             bool didAllRun = false;
-            await m.ReceiveActivityWithStatusAsync(null, (ctx, cancellationToken) =>
-            {
-                didAllRun = true;
-                return Task.CompletedTask;
-            },
-            default(CancellationToken));
+            await m.ReceiveActivityWithStatusAsync(
+                null,
+                (ctx, cancellationToken) =>
+                {
+                    didAllRun = true;
+                    return Task.CompletedTask;
+                },
+                default(CancellationToken));
 
             Assert.IsTrue(called1);
 
             // Our "Final" action MUST NOT have been called, as the Middlware Pipeline
-            // didn't complete. 
+            // didn't complete.
             Assert.IsFalse(didAllRun);
         }
 
@@ -387,7 +396,6 @@ namespace Microsoft.Bot.Builder.Tests
                 Assert.IsTrue(didRun1, "First middleware has not been run yet");
                 didRun2 = true;
                 await next(cancellationToken);
-
             }));
 
             await m.ReceiveActivityWithStatusAsync(null, null, default(CancellationToken));
@@ -470,13 +478,16 @@ namespace Microsoft.Bot.Builder.Tests
         public class DoNotCallNextMiddleware : IMiddleware
         {
             private readonly Action _callMe;
+
             public DoNotCallNextMiddleware(Action callMe)
             {
                 _callMe = callMe;
             }
+
             public Task OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken)
             {
                 _callMe();
+
                 // DO NOT call NEXT
                 return Task.CompletedTask;
             }
@@ -485,16 +496,17 @@ namespace Microsoft.Bot.Builder.Tests
         public class CallMeMiddlware : IMiddleware
         {
             private readonly Action _callMe;
+
             public CallMeMiddlware(Action callMe)
             {
                 _callMe = callMe;
             }
+
             public Task OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken)
             {
                 _callMe();
                 return next(cancellationToken);
             }
-
         }
     }
 }

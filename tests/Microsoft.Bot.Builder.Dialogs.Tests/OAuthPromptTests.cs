@@ -15,6 +15,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
     public class OAuthPromptTests
     {
         [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void OAuthPromptWithEmptyIdShouldFail()
+        {
+            var emptyId = string.Empty;
+            var confirmPrompt = new OAuthPrompt(emptyId, new OAuthPromptSettings());
+        }
+
+        [TestMethod]
         public async Task OAuthPrompt()
         {
             var convoState = new ConversationState(new MemoryStorage());
@@ -54,10 +62,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             await new TestFlow(adapter, botCallbackHandler)
             .Send("hello")
-            .AssertReply(activity => {
+            .AssertReply(activity =>
+            {
                 Assert.AreEqual(1, ((Activity)activity).Attachments.Count);
                 Assert.AreEqual(OAuthCard.ContentType, ((Activity)activity).Attachments[0].ContentType);
-                
+
                 // Prepare an EventActivity with a TokenResponse and send it to the botCallbackHandler
                 var eventActivity = CreateEventResponse(adapter, activity, connectionName, token);
                 var ctx = new TurnContext(adapter, (Activity)eventActivity);
@@ -108,7 +117,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             await new TestFlow(adapter, botCallbackHandler)
             .Send("hello")
-            .AssertReply(activity => {
+            .AssertReply(activity =>
+            {
                 Assert.AreEqual(1, ((Activity)activity).Attachments.Count);
                 Assert.AreEqual(OAuthCard.ContentType, ((Activity)activity).Attachments[0].ContentType);
 
@@ -117,6 +127,54 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             })
             .Send(magicCode)
             .AssertReply("Logged in.")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task OAuthPromptDoesNotDetectCodeInBeginDialog()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+
+            var adapter = new TestAdapter()
+                .Use(new AutoSaveStateMiddleware(convoState));
+
+            var connectionName = "myConnection";
+            var token = "abc123";
+            var magicCode = "888999";
+
+            // Create new DialogSet
+            var dialogs = new DialogSet(dialogState);
+            dialogs.Add(new OAuthPrompt("OAuthPrompt", new OAuthPromptSettings() { Text = "Please sign in", ConnectionName = connectionName, Title = "Sign in" }));
+
+            BotCallbackHandler botCallbackHandler = async (turnContext, cancellationToken) =>
+            {
+                // Add a magic code to the adapter preemptively so that we can test if the message that triggers BeginDialogAsync uses magic code detection
+                adapter.AddUserToken(connectionName, turnContext.Activity.ChannelId, turnContext.Activity.From.Id, token, magicCode);
+
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+
+                var results = await dc.ContinueDialogAsync(cancellationToken);
+
+                if (results.Status == DialogTurnStatus.Empty)
+                {
+                    // If magicCode is detected when prompting, this will end the dialog and return the token in tokenResult
+                    var tokenResult = await dc.PromptAsync("OAuthPrompt", new PromptOptions(), cancellationToken: cancellationToken);
+                    if (tokenResult.Result is TokenResponse)
+                    {
+                        Assert.Fail();
+                    }
+                }
+            };
+
+            // Call BeginDialogAsync by sending the magic code as the first message. It SHOULD respond with an OAuthPrompt since we haven't authenticated yet
+            await new TestFlow(adapter, botCallbackHandler)
+            .Send(magicCode)
+            .AssertReply(activity =>
+            {
+                Assert.AreEqual(1, ((Activity)activity).Attachments.Count);
+                Assert.AreEqual(OAuthCard.ContentType, ((Activity)activity).Attachments[0].ContentType);
+            })
             .StartTestAsync();
         }
 
@@ -135,7 +193,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             eventActivity.Value = JObject.FromObject(new TokenResponse()
             {
                 ConnectionName = connectionName,
-                Token = token
+                Token = token,
             });
 
             return eventActivity;

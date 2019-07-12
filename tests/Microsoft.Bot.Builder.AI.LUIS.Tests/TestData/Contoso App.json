@@ -1,9 +1,10 @@
 {
-  "luis_schema_version": "3.1.0",
-  "versionId": "AllEntity",
+  "luis_schema_version": "3.2.0",
+  "versionId": "GeoPeople",
   "name": "Contoso App",
   "desc": "Default Intents for Azure Bot Service V2",
   "culture": "en-us",
+  "tokenizerVersion": "1.0.0",
   "intents": [
     {
       "name": "Cancel"
@@ -24,6 +25,9 @@
       "name": "None"
     },
     {
+      "name": "Roles"
+    },
+    {
       "name": "search"
     },
     {
@@ -33,17 +37,16 @@
       "name": "Travel"
     },
     {
-      "name": "Weather.GetForecast",
-      "inherits": {
-        "domain_name": "Weather",
-        "model_name": "GetForecast"
-      }
+      "name": "Weather.GetForecast"
     }
   ],
   "entities": [
     {
       "name": "Name",
-      "roles": []
+      "roles": [
+        "likee",
+        "liker"
+      ]
     },
     {
       "name": "State",
@@ -51,11 +54,10 @@
     },
     {
       "name": "Weather.Location",
-      "inherits": {
-        "domain_name": "Weather",
-        "model_name": "Location"
-      },
-      "roles": []
+      "roles": [
+        "source",
+        "destination"
+      ]
     },
     {
       "name": "City",
@@ -132,50 +134,81 @@
           ]
         }
       ],
-      "roles": []
+      "roles": [
+        "Buyer",
+        "Seller"
+      ]
     }
   ],
   "patternAnyEntities": [
     {
       "name": "person",
-      "explicitList": [],
-      "roles": []
+      "roles": [
+        "from",
+        "to"
+      ],
+      "explicitList": []
     },
     {
       "name": "subject",
-      "explicitList": [],
       "roles": [
         "extra"
-      ]
+      ],
+      "explicitList": []
     }
   ],
   "regex_entities": [
     {
       "name": "Part",
       "regexPattern": "kb[0-9]+",
-      "roles": []
+      "roles": [
+        "buy",
+        "sell"
+      ]
     }
   ],
   "prebuiltEntities": [
     {
       "name": "age",
-      "roles": []
+      "roles": [
+        "begin",
+        "end"
+      ]
     },
     {
       "name": "datetimeV2",
-      "roles": []
+      "roles": [
+        "arrive",
+        "leave"
+      ]
     },
     {
       "name": "dimension",
-      "roles": []
+      "roles": [
+        "width",
+        "length"
+      ]
     },
     {
       "name": "email",
-      "roles": []
+      "roles": [
+        "receiver",
+        "sender"
+      ]
+    },
+    {
+      "name": "geographyV2",
+      "roles": [
+        "startloc",
+        "endloc"
+      ]
     },
     {
       "name": "money",
-      "roles": []
+      "roles": [
+        "min",
+        "max"
+      ]
     },
     {
       "name": "number",
@@ -183,35 +216,66 @@
     },
     {
       "name": "ordinal",
-      "roles": []
+      "roles": [
+        "start"
+      ]
+    },
+    {
+      "name": "ordinalV2",
+      "roles": [
+        "startpos",
+        "endpos"
+      ]
     },
     {
       "name": "percentage",
-      "roles": []
+      "roles": [
+        "minimum",
+        "maximum"
+      ]
+    },
+    {
+      "name": "personName",
+      "roles": [
+        "child",
+        "parent"
+      ]
     },
     {
       "name": "phonenumber",
-      "roles": []
+      "roles": [
+        "newPhone",
+        "old"
+      ]
     },
     {
       "name": "temperature",
-      "roles": []
+      "roles": [
+        "b",
+        "a"
+      ]
     },
     {
       "name": "url",
-      "roles": []
+      "roles": [
+        "oldURL"
+      ]
     }
   ],
   "model_features": [],
   "regex_features": [],
   "patterns": [
     {
-      "pattern": "email about {subject} [from {person}] [and also {subject:extra}]",
+      "pattern": "deliver from {Address:Source} to {Address:Destination}",
+      "intent": "Roles"
+    },
+    {
+      "pattern": "email from {person:from} to {person:to}",
       "intent": "search"
     },
     {
-      "pattern": "from {Address:Source} to {Address:Destination}",
-      "intent": "Delivery"
+      "pattern": "email about {subject} [from {person}] [and also {subject:extra}]",
+      "intent": "search"
     }
   ],
   "utterances": [
@@ -232,15 +296,323 @@
       ]
     },
     {
-      "text": "12 years old and 3 days old and monday july 3rd and every monday and between 3am and 5:30am and 4 acres and 4 pico meters and chrimc@hotmail.com and $4 and $4.25 and 32 and 210.4 and first and 10% and 10.5% and 425-555-1234 and 3 degrees and -27.5 degrees c",
+      "text": "$2 and $4.25",
+      "intent": "EntityTests",
+      "entities": []
+    },
+    {
+      "text": "$4 and $4.25",
+      "intent": "EntityTests",
+      "entities": []
+    },
+    {
+      "text": "$4 and $99",
+      "intent": "EntityTests",
+      "entities": []
+    },
+    {
+      "text": "$4.25 and $4",
+      "intent": "EntityTests",
+      "entities": []
+    },
+    {
+      "text": "$99 and $4.50",
+      "intent": "EntityTests",
+      "entities": []
+    },
+    {
+      "text": "10 years old and 4 years old",
+      "intent": "EntityTests",
+      "entities": []
+    },
+    {
+      "text": "12 years old and 3 days old",
+      "intent": "EntityTests",
+      "entities": []
+    },
+    {
+      "text": "12 years old and 3 days old and monday july 3rd and every monday and between 3am and 5:30am and 4 acres and 4 pico meters and chrimc@hotmail.com and $4 and $4.25 and also 32 and 210.4 and first and 10% and 10.5% and 425-555-1234 and 3 degrees and -27.5 degrees c and the next one and the previous one",
       "intent": "EntityTests",
       "entities": [
         {
           "entity": "Composite1",
           "startPos": 0,
-          "endPos": 256
+          "endPos": 299
         }
       ]
+    },
+    {
+      "text": "12% and 8%",
+      "intent": "EntityTests",
+      "entities": []
+    },
+    {
+      "text": "12% to 8%",
+      "intent": "Roles",
+      "entities": [
+        {
+          "entity": "percentage",
+          "role": "minimum",
+          "startPos": 0,
+          "endPos": 2
+        },
+        {
+          "entity": "percentage",
+          "role": "maximum",
+          "startPos": 7,
+          "endPos": 8
+        }
+      ]
+    },
+    {
+      "text": "3 degrees and -27.5 degrees c",
+      "intent": "EntityTests",
+      "entities": []
+    },
+    {
+      "text": "3 inches long by 2 inches wide",
+      "intent": "Roles",
+      "entities": [
+        {
+          "entity": "dimension",
+          "role": "length",
+          "startPos": 0,
+          "endPos": 7
+        },
+        {
+          "entity": "dimension",
+          "role": "width",
+          "startPos": 17,
+          "endPos": 24
+        }
+      ]
+    },
+    {
+      "text": "3 inches long by 2 inches wide and 5% to 10% and are you between 6 years old and 8 years old and can i trade kb457 for kb922 and change 425-777-1212 to 206-666-4123 and did delta buy virgin and did the rain from hawaii get to redmond and http://foo.com changed to http://blah.com and i like between 68 degrees and 72 degrees and john likes mary and leave 3pm and arrive 5pm and pay between $400 and $500 and send chrimc@hotmail.com from emad@gmail.com",
+      "intent": "Roles",
+      "entities": [
+        {
+          "entity": "dimension",
+          "role": "length",
+          "startPos": 0,
+          "endPos": 7
+        },
+        {
+          "entity": "dimension",
+          "role": "width",
+          "startPos": 17,
+          "endPos": 24
+        },
+        {
+          "entity": "percentage",
+          "role": "minimum",
+          "startPos": 35,
+          "endPos": 36
+        },
+        {
+          "entity": "percentage",
+          "role": "maximum",
+          "startPos": 41,
+          "endPos": 43
+        },
+        {
+          "entity": "age",
+          "role": "begin",
+          "startPos": 65,
+          "endPos": 75
+        },
+        {
+          "entity": "age",
+          "role": "end",
+          "startPos": 81,
+          "endPos": 91
+        },
+        {
+          "entity": "Part",
+          "role": "buy",
+          "startPos": 119,
+          "endPos": 123
+        },
+        {
+          "entity": "Airline",
+          "role": "Buyer",
+          "startPos": 173,
+          "endPos": 177
+        },
+        {
+          "entity": "Airline",
+          "role": "Seller",
+          "startPos": 183,
+          "endPos": 188
+        },
+        {
+          "entity": "Weather.Location",
+          "role": "source",
+          "startPos": 212,
+          "endPos": 217
+        },
+        {
+          "entity": "Weather.Location",
+          "role": "destination",
+          "startPos": 226,
+          "endPos": 232
+        },
+        {
+          "entity": "temperature",
+          "role": "b",
+          "startPos": 314,
+          "endPos": 323
+        },
+        {
+          "entity": "Name",
+          "role": "liker",
+          "startPos": 329,
+          "endPos": 332
+        },
+        {
+          "entity": "Name",
+          "role": "likee",
+          "startPos": 340,
+          "endPos": 343
+        },
+        {
+          "entity": "datetimeV2",
+          "role": "leave",
+          "startPos": 355,
+          "endPos": 357
+        },
+        {
+          "entity": "datetimeV2",
+          "role": "arrive",
+          "startPos": 370,
+          "endPos": 372
+        },
+        {
+          "entity": "money",
+          "role": "min",
+          "startPos": 390,
+          "endPos": 393
+        },
+        {
+          "entity": "money",
+          "role": "max",
+          "startPos": 399,
+          "endPos": 402
+        },
+        {
+          "entity": "email",
+          "role": "receiver",
+          "startPos": 413,
+          "endPos": 430
+        }
+      ]
+    },
+    {
+      "text": "4% and 5%",
+      "intent": "EntityTests",
+      "entities": []
+    },
+    {
+      "text": "4% to 12%",
+      "intent": "Roles",
+      "entities": [
+        {
+          "entity": "percentage",
+          "role": "minimum",
+          "startPos": 0,
+          "endPos": 1
+        },
+        {
+          "entity": "percentage",
+          "role": "maximum",
+          "startPos": 6,
+          "endPos": 8
+        }
+      ]
+    },
+    {
+      "text": "425-555-1212",
+      "intent": "EntityTests",
+      "entities": []
+    },
+    {
+      "text": "425-555-1234",
+      "intent": "EntityTests",
+      "entities": []
+    },
+    {
+      "text": "5% to 10%",
+      "intent": "Roles",
+      "entities": [
+        {
+          "entity": "percentage",
+          "role": "minimum",
+          "startPos": 0,
+          "endPos": 1
+        },
+        {
+          "entity": "percentage",
+          "role": "maximum",
+          "startPos": 6,
+          "endPos": 8
+        }
+      ]
+    },
+    {
+      "text": "8% and 12%",
+      "intent": "EntityTests",
+      "entities": []
+    },
+    {
+      "text": "8% and 14%",
+      "intent": "EntityTests",
+      "entities": []
+    },
+    {
+      "text": "8% and 9%",
+      "intent": "EntityTests",
+      "entities": []
+    },
+    {
+      "text": "8% to 12%",
+      "intent": "Roles",
+      "entities": [
+        {
+          "entity": "percentage",
+          "role": "minimum",
+          "startPos": 0,
+          "endPos": 1
+        },
+        {
+          "entity": "percentage",
+          "role": "maximum",
+          "startPos": 6,
+          "endPos": 8
+        }
+      ]
+    },
+    {
+      "text": "9 feet long by 4 feet wide",
+      "intent": "Roles",
+      "entities": [
+        {
+          "entity": "dimension",
+          "role": "length",
+          "startPos": 0,
+          "endPos": 5
+        },
+        {
+          "entity": "dimension",
+          "role": "width",
+          "startPos": 15,
+          "endPos": 20
+        }
+      ]
+    },
+    {
+      "text": "9.2% and 10.3%",
+      "intent": "EntityTests",
+      "entities": []
     },
     {
       "text": "abort",
@@ -248,9 +620,207 @@
       "entities": []
     },
     {
+      "text": "and $10 and $20",
+      "intent": "EntityTests",
+      "entities": []
+    },
+    {
+      "text": "and $4 and $4.25",
+      "intent": "EntityTests",
+      "entities": []
+    },
+    {
+      "text": "and 4$",
+      "intent": "EntityTests",
+      "entities": []
+    },
+    {
+      "text": "and 425-765-5555",
+      "intent": "EntityTests",
+      "entities": []
+    },
+    {
+      "text": "and can i trade kb457 for kb922",
+      "intent": "Roles",
+      "entities": [
+        {
+          "entity": "Part",
+          "role": "sell",
+          "startPos": 16,
+          "endPos": 20
+        },
+        {
+          "entity": "Part",
+          "role": "buy",
+          "startPos": 26,
+          "endPos": 30
+        }
+      ]
+    },
+    {
+      "text": "are you between 13 years old and 16 years old",
+      "intent": "Roles",
+      "entities": [
+        {
+          "entity": "age",
+          "role": "begin",
+          "startPos": 16,
+          "endPos": 27
+        },
+        {
+          "entity": "age",
+          "role": "end",
+          "startPos": 33,
+          "endPos": 44
+        }
+      ]
+    },
+    {
+      "text": "are you between 4 years old and 7 years old",
+      "intent": "Roles",
+      "entities": [
+        {
+          "entity": "age",
+          "role": "begin",
+          "startPos": 16,
+          "endPos": 26
+        },
+        {
+          "entity": "age",
+          "role": "end",
+          "startPos": 32,
+          "endPos": 42
+        }
+      ]
+    },
+    {
+      "text": "are you between 6 years old and 10 years old",
+      "intent": "Roles",
+      "entities": [
+        {
+          "entity": "age",
+          "role": "begin",
+          "startPos": 16,
+          "endPos": 26
+        },
+        {
+          "entity": "age",
+          "role": "end",
+          "startPos": 32,
+          "endPos": 43
+        }
+      ]
+    },
+    {
+      "text": "are you between 6 years old and 8 years old",
+      "intent": "Roles",
+      "entities": [
+        {
+          "entity": "age",
+          "role": "end",
+          "startPos": 32,
+          "endPos": 42
+        }
+      ]
+    },
+    {
       "text": "assist",
       "intent": "Help",
       "entities": []
+    },
+    {
+      "text": "bart simpson",
+      "intent": "EntityTests",
+      "entities": []
+    },
+    {
+      "text": "bart simpson helps homer simpson",
+      "intent": "Roles",
+      "entities": [
+        {
+          "entity": "personName",
+          "role": "child",
+          "startPos": 0,
+          "endPos": 11
+        },
+        {
+          "entity": "personName",
+          "role": "parent",
+          "startPos": 19,
+          "endPos": 31
+        }
+      ]
+    },
+    {
+      "text": "bart simpson is parent of lisa simpson to move calcutta to london",
+      "intent": "Roles",
+      "entities": [
+        {
+          "entity": "personName",
+          "role": "parent",
+          "startPos": 0,
+          "endPos": 11
+        },
+        {
+          "entity": "personName",
+          "role": "child",
+          "startPos": 26,
+          "endPos": 37
+        },
+        {
+          "entity": "geographyV2",
+          "role": "startloc",
+          "startPos": 47,
+          "endPos": 54
+        },
+        {
+          "entity": "geographyV2",
+          "role": "endloc",
+          "startPos": 59,
+          "endPos": 64
+        }
+      ]
+    },
+    {
+      "text": "calcutta",
+      "intent": "EntityTests",
+      "entities": []
+    },
+    {
+      "text": "can i trade kb457 for kb922",
+      "intent": "Roles",
+      "entities": [
+        {
+          "entity": "Part",
+          "role": "sell",
+          "startPos": 12,
+          "endPos": 16
+        },
+        {
+          "entity": "Part",
+          "role": "buy",
+          "startPos": 22,
+          "endPos": 26
+        }
+      ]
+    },
+    {
+      "text": "can i trade kb922 for kb457",
+      "intent": "Roles",
+      "entities": [
+        {
+          "entity": "Part",
+          "role": "sell",
+          "startPos": 12,
+          "endPos": 16
+        },
+        {
+          "entity": "Part",
+          "role": "buy",
+          "startPos": 22,
+          "endPos": 26
+        }
+      ]
     },
     {
       "text": "cancel",
@@ -258,28 +828,64 @@
       "entities": []
     },
     {
-      "text": "deliver this from 1234 wa to 5678 va",
+      "text": "change 425-765-1111 to 425-888-4444",
+      "intent": "Roles",
+      "entities": [
+        {
+          "entity": "phonenumber",
+          "role": "old",
+          "startPos": 7,
+          "endPos": 18
+        },
+        {
+          "entity": "phonenumber",
+          "role": "newPhone",
+          "startPos": 23,
+          "endPos": 34
+        }
+      ]
+    },
+    {
+      "text": "change 425-777-1212 to 206-666-4123",
+      "intent": "Roles",
+      "entities": [
+        {
+          "entity": "phonenumber",
+          "role": "old",
+          "startPos": 7,
+          "endPos": 18
+        },
+        {
+          "entity": "phonenumber",
+          "role": "newPhone",
+          "startPos": 23,
+          "endPos": 34
+        }
+      ]
+    },
+    {
+      "text": "deliver 12345 va to 12346 wa",
       "intent": "Delivery",
       "entities": [
         {
           "entity": "Address",
-          "startPos": 18,
-          "endPos": 24
+          "startPos": 8,
+          "endPos": 15
         },
         {
           "entity": "State",
-          "startPos": 23,
-          "endPos": 24
+          "startPos": 14,
+          "endPos": 15
         },
         {
           "entity": "Address",
-          "startPos": 29,
-          "endPos": 35
+          "startPos": 20,
+          "endPos": 27
         },
         {
           "entity": "State",
-          "startPos": 34,
-          "endPos": 35
+          "startPos": 26,
+          "endPos": 27
         }
       ]
     },
@@ -296,6 +902,65 @@
           "entity": "State",
           "startPos": 29,
           "endPos": 30
+        }
+      ]
+    },
+    {
+      "text": "did delta buy virgin",
+      "intent": "Roles",
+      "entities": []
+    },
+    {
+      "text": "did delta buy virgin?",
+      "intent": "Roles",
+      "entities": [
+        {
+          "entity": "Airline",
+          "role": "Buyer",
+          "startPos": 4,
+          "endPos": 8
+        },
+        {
+          "entity": "Airline",
+          "role": "Seller",
+          "startPos": 14,
+          "endPos": 19
+        }
+      ]
+    },
+    {
+      "text": "did the rain from hawaii get to redmond",
+      "intent": "Weather.GetForecast",
+      "entities": [
+        {
+          "entity": "Weather.Location",
+          "role": "source",
+          "startPos": 18,
+          "endPos": 23
+        },
+        {
+          "entity": "Weather.Location",
+          "role": "destination",
+          "startPos": 32,
+          "endPos": 38
+        }
+      ]
+    },
+    {
+      "text": "did virgin buy delta",
+      "intent": "Roles",
+      "entities": [
+        {
+          "entity": "Airline",
+          "role": "Buyer",
+          "startPos": 4,
+          "endPos": 9
+        },
+        {
+          "entity": "Airline",
+          "role": "Seller",
+          "startPos": 15,
+          "endPos": 19
         }
       ]
     },
@@ -385,6 +1050,72 @@
           "entity": "Weather.Location",
           "startPos": 19,
           "endPos": 35
+        }
+      ]
+    },
+    {
+      "text": "go from 3rd to 5th",
+      "intent": "Roles",
+      "entities": [
+        {
+          "entity": "ordinalV2",
+          "role": "startpos",
+          "startPos": 8,
+          "endPos": 10
+        },
+        {
+          "entity": "ordinalV2",
+          "role": "endpos",
+          "startPos": 15,
+          "endPos": 17
+        }
+      ]
+    },
+    {
+      "text": "go from first to last",
+      "intent": "Roles",
+      "entities": [
+        {
+          "entity": "ordinalV2",
+          "role": "startpos",
+          "startPos": 8,
+          "endPos": 12
+        },
+        {
+          "entity": "ordinalV2",
+          "role": "endpos",
+          "startPos": 17,
+          "endPos": 20
+        }
+      ]
+    },
+    {
+      "text": "go from next to last to last move london to jakarta and homer simpson is the parent of lisa simpson",
+      "intent": "Roles",
+      "entities": [
+        {
+          "entity": "ordinalV2",
+          "role": "startpos",
+          "startPos": 8,
+          "endPos": 19
+        },
+        {
+          "entity": "ordinalV2",
+          "role": "endpos",
+          "startPos": 24,
+          "endPos": 27
+        },
+        {
+          "entity": "personName",
+          "role": "parent",
+          "startPos": 56,
+          "endPos": 68
+        },
+        {
+          "entity": "personName",
+          "role": "child",
+          "startPos": 87,
+          "endPos": 98
         }
       ]
     },
@@ -481,6 +1212,53 @@
       "entities": []
     },
     {
+      "text": "homer simpson is parent of bart simpson",
+      "intent": "Roles",
+      "entities": []
+    },
+    {
+      "text": "homer simpson is parent of bart simpson to move jakarta to calcutta",
+      "intent": "Roles",
+      "entities": [
+        {
+          "entity": "personName",
+          "role": "child",
+          "startPos": 27,
+          "endPos": 38
+        },
+        {
+          "entity": "geographyV2",
+          "role": "startloc",
+          "startPos": 48,
+          "endPos": 54
+        },
+        {
+          "entity": "geographyV2",
+          "role": "endloc",
+          "startPos": 59,
+          "endPos": 66
+        }
+      ]
+    },
+    {
+      "text": "homer simpson is parent of lisa simpson",
+      "intent": "Roles",
+      "entities": [
+        {
+          "entity": "personName",
+          "role": "parent",
+          "startPos": 0,
+          "endPos": 12
+        },
+        {
+          "entity": "personName",
+          "role": "child",
+          "startPos": 27,
+          "endPos": 38
+        }
+      ]
+    },
+    {
       "text": "how are you",
       "intent": "Greeting",
       "entities": []
@@ -522,6 +1300,18 @@
       "entities": []
     },
     {
+      "text": "http://blah.com changed to http://foo.com",
+      "intent": "Roles",
+      "entities": [
+        {
+          "entity": "url",
+          "role": "oldURL",
+          "startPos": 0,
+          "endPos": 14
+        }
+      ]
+    },
+    {
       "text": "http://blah.com is where you can fly from dallas to seattle via denver",
       "intent": "EntityTests",
       "entities": [
@@ -546,6 +1336,59 @@
           "endPos": 69
         }
       ]
+    },
+    {
+      "text": "http://foo.com",
+      "intent": "EntityTests",
+      "entities": []
+    },
+    {
+      "text": "http://foo.com changed to http://blah.com",
+      "intent": "Roles",
+      "entities": [
+        {
+          "entity": "url",
+          "role": "oldURL",
+          "startPos": 0,
+          "endPos": 13
+        }
+      ]
+    },
+    {
+      "text": "http://foo.com is ok",
+      "intent": "EntityTests",
+      "entities": []
+    },
+    {
+      "text": "http://foo.com is where you can fly from seattle to dallas via denver",
+      "intent": "EntityTests",
+      "entities": [
+        {
+          "entity": "Composite2",
+          "startPos": 0,
+          "endPos": 68
+        },
+        {
+          "entity": "City::From",
+          "startPos": 41,
+          "endPos": 47
+        },
+        {
+          "entity": "City::To",
+          "startPos": 52,
+          "endPos": 57
+        },
+        {
+          "entity": "City",
+          "startPos": 63,
+          "endPos": 68
+        }
+      ]
+    },
+    {
+      "text": "http://woof.com",
+      "intent": "EntityTests",
+      "entities": []
     },
     {
       "text": "http://woof.com is where you can fly from seattle to dallas via chicago",
@@ -580,7 +1423,7 @@
         {
           "entity": "Composite2",
           "startPos": 0,
-          "endPos": 70
+          "endPos": 79
         },
         {
           "entity": "City::From",
@@ -630,6 +1473,36 @@
       "text": "i am stuck",
       "intent": "Help",
       "entities": []
+    },
+    {
+      "text": "i like between 68 degrees and 72 degrees",
+      "intent": "Roles",
+      "entities": [
+        {
+          "entity": "temperature",
+          "role": "a",
+          "startPos": 15,
+          "endPos": 24
+        }
+      ]
+    },
+    {
+      "text": "i like between 72 degrees and 80 degrees",
+      "intent": "Roles",
+      "entities": [
+        {
+          "entity": "temperature",
+          "role": "a",
+          "startPos": 15,
+          "endPos": 24
+        },
+        {
+          "entity": "temperature",
+          "role": "b",
+          "startPos": 30,
+          "endPos": 39
+        }
+      ]
     },
     {
       "text": "i want this in 98052 wa",
@@ -728,14 +1601,127 @@
       "entities": []
     },
     {
+      "text": "joeseph@hotmail.com",
+      "intent": "EntityTests",
+      "entities": []
+    },
+    {
+      "text": "john likes mary",
+      "intent": "Roles",
+      "entities": [
+        {
+          "entity": "Name",
+          "role": "liker",
+          "startPos": 0,
+          "endPos": 3
+        },
+        {
+          "entity": "Name",
+          "role": "likee",
+          "startPos": 11,
+          "endPos": 14
+        }
+      ]
+    },
+    {
       "text": "kb409 is cool",
       "intent": "EntityTests",
       "entities": []
     },
     {
+      "text": "leave 3pm and arrive 5pm",
+      "intent": "Roles",
+      "entities": [
+        {
+          "entity": "datetimeV2",
+          "role": "leave",
+          "startPos": 6,
+          "endPos": 8
+        },
+        {
+          "entity": "datetimeV2",
+          "role": "arrive",
+          "startPos": 21,
+          "endPos": 23
+        }
+      ]
+    },
+    {
       "text": "mayday",
       "intent": "Help",
       "entities": []
+    },
+    {
+      "text": "move calcutta to mumbai",
+      "intent": "Roles",
+      "entities": [
+        {
+          "entity": "geographyV2",
+          "role": "startloc",
+          "startPos": 5,
+          "endPos": 12
+        },
+        {
+          "entity": "geographyV2",
+          "role": "endloc",
+          "startPos": 17,
+          "endPos": 22
+        }
+      ]
+    },
+    {
+      "text": "move jakarta to london",
+      "intent": "Roles",
+      "entities": [
+        {
+          "entity": "geographyV2",
+          "role": "startloc",
+          "startPos": 5,
+          "endPos": 11
+        },
+        {
+          "entity": "geographyV2",
+          "role": "endloc",
+          "startPos": 16,
+          "endPos": 21
+        }
+      ]
+    },
+    {
+      "text": "move london to calcutta",
+      "intent": "Roles",
+      "entities": [
+        {
+          "entity": "geographyV2",
+          "role": "startloc",
+          "startPos": 5,
+          "endPos": 10
+        },
+        {
+          "entity": "geographyV2",
+          "role": "endloc",
+          "startPos": 15,
+          "endPos": 22
+        }
+      ]
+    },
+    {
+      "text": "move london to jakarta",
+      "intent": "Roles",
+      "entities": [
+        {
+          "entity": "geographyV2",
+          "role": "startloc",
+          "startPos": 5,
+          "endPos": 10
+        },
+        {
+          "entity": "geographyV2",
+          "role": "endloc",
+          "startPos": 15,
+          "endPos": 21
+        }
+      ]
     },
     {
       "text": "my name is emad",
@@ -767,6 +1753,60 @@
       "text": "nope",
       "intent": "Cancel",
       "entities": []
+    },
+    {
+      "text": "pay between $4 and $4.25",
+      "intent": "Roles",
+      "entities": [
+        {
+          "entity": "money",
+          "role": "min",
+          "startPos": 12,
+          "endPos": 13
+        },
+        {
+          "entity": "money",
+          "role": "max",
+          "startPos": 19,
+          "endPos": 23
+        }
+      ]
+    },
+    {
+      "text": "pay between $4 and $40",
+      "intent": "Roles",
+      "entities": [
+        {
+          "entity": "money",
+          "role": "min",
+          "startPos": 12,
+          "endPos": 13
+        },
+        {
+          "entity": "money",
+          "role": "max",
+          "startPos": 19,
+          "endPos": 21
+        }
+      ]
+    },
+    {
+      "text": "pay between $400 and $500",
+      "intent": "Roles",
+      "entities": [
+        {
+          "entity": "money",
+          "role": "min",
+          "startPos": 12,
+          "endPos": 15
+        },
+        {
+          "entity": "money",
+          "role": "max",
+          "startPos": 21,
+          "endPos": 24
+        }
+      ]
     },
     {
       "text": "please cancel",
@@ -837,6 +1877,150 @@
       ]
     },
     {
+      "text": "send bob@foo.com from chris@ark.com",
+      "intent": "Roles",
+      "entities": [
+        {
+          "entity": "email",
+          "role": "receiver",
+          "startPos": 5,
+          "endPos": 15
+        },
+        {
+          "entity": "email",
+          "role": "sender",
+          "startPos": 22,
+          "endPos": 34
+        }
+      ]
+    },
+    {
+      "text": "send bob@hob.com from main@gmail.com",
+      "intent": "Roles",
+      "entities": [
+        {
+          "entity": "email",
+          "role": "receiver",
+          "startPos": 5,
+          "endPos": 15
+        },
+        {
+          "entity": "email",
+          "role": "sender",
+          "startPos": 22,
+          "endPos": 35
+        }
+      ]
+    },
+    {
+      "text": "send cancel@foo.com from help@h.com",
+      "intent": "Roles",
+      "entities": [
+        {
+          "entity": "email",
+          "role": "receiver",
+          "startPos": 5,
+          "endPos": 18
+        },
+        {
+          "entity": "email",
+          "role": "sender",
+          "startPos": 25,
+          "endPos": 34
+        }
+      ]
+    },
+    {
+      "text": "send chrimc@hotmail.com from emad@gmail.com",
+      "intent": "Roles",
+      "entities": [
+        {
+          "entity": "email",
+          "role": "receiver",
+          "startPos": 5,
+          "endPos": 22
+        },
+        {
+          "entity": "email",
+          "role": "sender",
+          "startPos": 29,
+          "endPos": 42
+        }
+      ]
+    },
+    {
+      "text": "send chris@ark.com from bob@foo.com",
+      "intent": "Roles",
+      "entities": [
+        {
+          "entity": "email",
+          "role": "receiver",
+          "startPos": 5,
+          "endPos": 17
+        },
+        {
+          "entity": "email",
+          "role": "sender",
+          "startPos": 24,
+          "endPos": 34
+        }
+      ]
+    },
+    {
+      "text": "send ham@ham.com from chr@live.com",
+      "intent": "Roles",
+      "entities": [
+        {
+          "entity": "email",
+          "role": "receiver",
+          "startPos": 5,
+          "endPos": 15
+        },
+        {
+          "entity": "email",
+          "role": "sender",
+          "startPos": 22,
+          "endPos": 33
+        }
+      ]
+    },
+    {
+      "text": "send help@h.com from cancel@foo.com",
+      "intent": "Roles",
+      "entities": [
+        {
+          "entity": "email",
+          "role": "receiver",
+          "startPos": 5,
+          "endPos": 14
+        },
+        {
+          "entity": "email",
+          "role": "sender",
+          "startPos": 21,
+          "endPos": 34
+        }
+      ]
+    },
+    {
+      "text": "send tom@foo.com from john@hotmail.com",
+      "intent": "Roles",
+      "entities": [
+        {
+          "entity": "email",
+          "role": "receiver",
+          "startPos": 5,
+          "endPos": 15
+        },
+        {
+          "entity": "email",
+          "role": "sender",
+          "startPos": 22,
+          "endPos": 37
+        }
+      ]
+    },
+    {
       "text": "show average rainfall for boise",
       "intent": "None",
       "entities": [
@@ -867,6 +2051,18 @@
       "text": "sos",
       "intent": "Help",
       "entities": []
+    },
+    {
+      "text": "start with the first one",
+      "intent": "Roles",
+      "entities": [
+        {
+          "entity": "ordinal",
+          "role": "start",
+          "startPos": 15,
+          "endPos": 19
+        }
+      ]
     },
     {
       "text": "stop",
@@ -921,9 +2117,32 @@
       "intent": "Delivery",
       "entities": [
         {
+          "entity": "Address",
+          "startPos": 21,
+          "endPos": 28
+        },
+        {
           "entity": "State",
           "startPos": 27,
           "endPos": 28
+        }
+      ]
+    },
+    {
+      "text": "tom likes susan",
+      "intent": "Roles",
+      "entities": [
+        {
+          "entity": "Name",
+          "role": "liker",
+          "startPos": 0,
+          "endPos": 2
+        },
+        {
+          "entity": "Name",
+          "role": "likee",
+          "startPos": 10,
+          "endPos": 14
         }
       ]
     },

@@ -58,7 +58,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             var changes = new Dictionary<string, object>
             {
                 { "x", "hello" },
-                { "y", "world" }
+                { "y", "world" },
             };
 
             // Act
@@ -81,7 +81,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             var changes = new Dictionary<string, object>
             {
                 { "x", "hello" },
-                { "y", "world" }
+                { "y", "world" },
             };
 
             // Act
@@ -126,7 +126,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             var activity = new Activity
             {
                 ChannelId = "123",
-                Conversation = new ConversationAccount { Id = "abc" }
+                Conversation = new ConversationAccount { Id = "abc" },
             };
 
             // Act
@@ -150,6 +150,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             {
                 throw new NotImplementedException();
             }
+
             public override Task<ResourceResponse[]> SendActivitiesAsync(ITurnContext turnContext, Activity[] activities, CancellationToken cancellationToken)
             {
                 throw new NotImplementedException();
@@ -164,7 +165,9 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         private class Prop : IStoreItem
         {
             public string X { get; set; }
+
             public string Y { get; set; }
+
             string IStoreItem.ETag { get; set; }
         }
     }

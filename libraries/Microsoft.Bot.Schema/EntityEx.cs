@@ -7,6 +7,9 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Schema
 {
+    /// <summary>
+    /// Instance of the <see cref="Entity"/> Class.
+    /// </summary>
     public partial class Entity : IEquatable<Entity>
     {
         /// <summary>
@@ -23,8 +26,8 @@ namespace Microsoft.Bot.Schema
         /// <summary>
         /// Retrieve internal payload.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
+        /// <typeparam name="T">T.</typeparam>
+        /// <returns>T as T.</returns>
         public T GetAs<T>()
         {
             return JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(this));
@@ -33,8 +36,8 @@ namespace Microsoft.Bot.Schema
         /// <summary>
         /// Set internal payload.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="obj"></param>
+        /// <typeparam name="T">T.</typeparam>
+        /// <param name="obj">obj.</param>
         public void SetAs<T>(T obj)
         {
             var entity = JsonConvert.DeserializeObject<Entity>(JsonConvert.SerializeObject(obj));

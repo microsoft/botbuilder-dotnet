@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RuleSet Name="Rules for StyleCop.Analyzers" Description="Code analysis rules for StyleCop.Analyzers.csproj." ToolsVersion="15.0">
+  <Rules AnalyzerId="AsyncUsageAnalyzers" RuleNamespace="AsyncUsageAnalyzers">
+    <Rule Id="AvoidAsyncVoid" Action="None" />
+    <Rule Id="UseConfigureAwait" Action="None" />
+  </Rules>
+
+  <Rules AnalyzerId="Microsoft.CodeAnalysis.CSharp" RuleNamespace="Microsoft.CodeAnalysis.CSharp">    
+    <Rule Id="CS1573" Action="None" />
+    <Rule Id="CS1591" Action="None" />  
+    <Rule Id="CS1712" Action="None" />
+  </Rules>
+
+  <Rules AnalyzerId="Microsoft.CodeAnalysis.CSharp.Features" RuleNamespace="Microsoft.CodeAnalysis.CSharp.Features">
+    <Rule Id="IDE0003" Action="None" />
+    <Rule Id="IDE0043" Action="None" />
+  </Rules>  
+
+  <Rules AnalyzerId="Microsoft.CodeAnalysis.VisualBasic.Features" RuleNamespace="Microsoft.CodeAnalysis.VisualBasic.Features">
+    <Rule Id="IDE0043" Action="None" />
+  </Rules>
+
+  <Rules AnalyzerId="StyleCop.Analyzers" RuleNamespace="StyleCop.Analyzers">
+    <Rule Id="SA0001" Action="None" /> <!-- XML documentation comments --> 
+    <Rule Id="SA1101" Action="None" /> <!-- local calls prefixed with this -->  
+    <Rule Id="SA1118" Action="None" />     
+    <Rule Id="SA1129" Action="None" /> <!-- don't use value type constructor-->
+    <Rule Id="SA1200" Action="None" />
+    <Rule Id="SA1204" Action="None" />
+    <Rule Id="SA1214" Action="None"/>  <!-- encapsalate field in property-->
+    <Rule Id="SA1305" Action="None" />
+    <Rule Id="SA1309" Action="None" />
+    <Rule Id="SA1401" Action="None" />
+    <Rule Id="SA1412" Action="None" />
+    <Rule Id="SA1600" Action="None" />
+    <Rule Id="SA1609" Action="None" />
+    <Rule Id="SA1633" Action="None" /> 
+    <Rule Id="SA1652" Action="None" /> <!-- XML documentation comments -->
+  </Rules>
+
+</RuleSet>

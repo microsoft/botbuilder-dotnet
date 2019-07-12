@@ -30,7 +30,7 @@ namespace Microsoft.Bot.Builder.Tests
 
             // Assert
             Assert.AreEqual(1, bot.Record.Count);
-            Assert.AreEqual(bot.Record[0], "OnMessageActivityAsync");
+            Assert.AreEqual("OnMessageActivityAsync", bot.Record[0]);
         }
 
         [TestMethod]
@@ -44,7 +44,7 @@ namespace Microsoft.Bot.Builder.Tests
                 {
                     new ChannelAccount { Id = "b" },
                 },
-                Recipient = new ChannelAccount { Id = "b" }
+                Recipient = new ChannelAccount { Id = "b" },
             };
             var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
 
@@ -54,7 +54,7 @@ namespace Microsoft.Bot.Builder.Tests
 
             // Assert
             Assert.AreEqual(1, bot.Record.Count);
-            Assert.AreEqual(bot.Record[0], "OnConversationUpdateActivityAsync");
+            Assert.AreEqual("OnConversationUpdateActivityAsync", bot.Record[0]);
         }
 
         [TestMethod]
@@ -69,7 +69,7 @@ namespace Microsoft.Bot.Builder.Tests
                     new ChannelAccount { Id = "a" },
                     new ChannelAccount { Id = "b" },
                 },
-                Recipient = new ChannelAccount { Id = "b" }
+                Recipient = new ChannelAccount { Id = "b" },
             };
             var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
 
@@ -79,8 +79,8 @@ namespace Microsoft.Bot.Builder.Tests
 
             // Assert
             Assert.AreEqual(2, bot.Record.Count);
-            Assert.AreEqual(bot.Record[0], "OnConversationUpdateActivityAsync");
-            Assert.AreEqual(bot.Record[1], "OnMembersAddedAsync");
+            Assert.AreEqual("OnConversationUpdateActivityAsync", bot.Record[0]);
+            Assert.AreEqual("OnMembersAddedAsync", bot.Record[1]);
         }
 
         [TestMethod]
@@ -96,7 +96,7 @@ namespace Microsoft.Bot.Builder.Tests
                     new ChannelAccount { Id = "b" },
                     new ChannelAccount { Id = "c" },
                 },
-                Recipient = new ChannelAccount {  Id = "b" }
+                Recipient = new ChannelAccount { Id = "b" },
             };
             var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
 
@@ -106,8 +106,8 @@ namespace Microsoft.Bot.Builder.Tests
 
             // Assert
             Assert.AreEqual(2, bot.Record.Count);
-            Assert.AreEqual(bot.Record[0], "OnConversationUpdateActivityAsync");
-            Assert.AreEqual(bot.Record[1], "OnMembersAddedAsync");
+            Assert.AreEqual("OnConversationUpdateActivityAsync", bot.Record[0]);
+            Assert.AreEqual("OnMembersAddedAsync", bot.Record[1]);
         }
 
         [TestMethod]
@@ -121,7 +121,7 @@ namespace Microsoft.Bot.Builder.Tests
                 {
                     new ChannelAccount { Id = "c" },
                 },
-                Recipient = new ChannelAccount { Id = "c" }
+                Recipient = new ChannelAccount { Id = "c" },
             };
             var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
 
@@ -131,7 +131,7 @@ namespace Microsoft.Bot.Builder.Tests
 
             // Assert
             Assert.AreEqual(1, bot.Record.Count);
-            Assert.AreEqual(bot.Record[0], "OnConversationUpdateActivityAsync");
+            Assert.AreEqual("OnConversationUpdateActivityAsync", bot.Record[0]);
         }
 
         [TestMethod]
@@ -146,7 +146,7 @@ namespace Microsoft.Bot.Builder.Tests
                     new ChannelAccount { Id = "a" },
                     new ChannelAccount { Id = "c" },
                 },
-                Recipient = new ChannelAccount { Id = "c" }
+                Recipient = new ChannelAccount { Id = "c" },
             };
             var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
 
@@ -156,8 +156,8 @@ namespace Microsoft.Bot.Builder.Tests
 
             // Assert
             Assert.AreEqual(2, bot.Record.Count);
-            Assert.AreEqual(bot.Record[0], "OnConversationUpdateActivityAsync");
-            Assert.AreEqual(bot.Record[1], "OnMembersAddedAsync");
+            Assert.AreEqual("OnConversationUpdateActivityAsync", bot.Record[0]);
+            Assert.AreEqual("OnMembersAddedAsync", bot.Record[1]);
         }
 
         [TestMethod]
@@ -173,7 +173,7 @@ namespace Microsoft.Bot.Builder.Tests
                     new ChannelAccount { Id = "b" },
                     new ChannelAccount { Id = "c" },
                 },
-                Recipient = new ChannelAccount { Id = "c" }
+                Recipient = new ChannelAccount { Id = "c" },
             };
             var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
 
@@ -183,8 +183,8 @@ namespace Microsoft.Bot.Builder.Tests
 
             // Assert
             Assert.AreEqual(2, bot.Record.Count);
-            Assert.AreEqual(bot.Record[0], "OnConversationUpdateActivityAsync");
-            Assert.AreEqual(bot.Record[1], "OnMembersAddedAsync");
+            Assert.AreEqual("OnConversationUpdateActivityAsync", bot.Record[0]);
+            Assert.AreEqual("OnMembersAddedAsync", bot.Record[1]);
         }
 
         [TestMethod]
@@ -198,7 +198,7 @@ namespace Microsoft.Bot.Builder.Tests
                 {
                     new ChannelAccount { Id = "b" },
                 },
-                Recipient = new ChannelAccount { Id = "b" }
+                Recipient = new ChannelAccount { Id = "b" },
             };
             var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
 
@@ -208,7 +208,7 @@ namespace Microsoft.Bot.Builder.Tests
 
             // Assert
             Assert.AreEqual(1, bot.Record.Count);
-            Assert.AreEqual(bot.Record[0], "OnConversationUpdateActivityAsync");
+            Assert.AreEqual("OnConversationUpdateActivityAsync", bot.Record[0]);
         }
 
         [TestMethod]
@@ -222,7 +222,7 @@ namespace Microsoft.Bot.Builder.Tests
                 {
                     new ChannelAccount { Id = "c" },
                 },
-                Recipient = new ChannelAccount { Id = "c" }
+                Recipient = new ChannelAccount { Id = "c" },
             };
             var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
 
@@ -232,7 +232,40 @@ namespace Microsoft.Bot.Builder.Tests
 
             // Assert
             Assert.AreEqual(1, bot.Record.Count);
-            Assert.AreEqual(bot.Record[0], "OnConversationUpdateActivityAsync");
+            Assert.AreEqual("OnConversationUpdateActivityAsync", bot.Record[0]);
+        }
+
+        [TestMethod]
+        public async Task TestMessageReaction()
+        {
+            // Note the code supports multiple adds and removes in the same activity though
+            // a channel may decide to send separate activities for each. For example, Teams
+            // sends separate activities each with a single add and a single remove.
+
+            // Arrange
+            var activity = new Activity
+            {
+                Type = ActivityTypes.MessageReaction,
+                ReactionsAdded = new List<MessageReaction>
+                {
+                    new MessageReaction("sad"),
+                },
+                ReactionsRemoved = new List<MessageReaction>
+                {
+                    new MessageReaction("angry"),
+                },
+            };
+            var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
+
+            // Act
+            var bot = new TestActivityHandler();
+            await ((IBot)bot).OnTurnAsync(turnContext);
+
+            // Assert
+            Assert.AreEqual(3, bot.Record.Count);
+            Assert.AreEqual("OnMessageReactionActivityAsync", bot.Record[0]);
+            Assert.AreEqual("OnReactionsAddedAsync", bot.Record[1]);
+            Assert.AreEqual("OnReactionsRemovedAsync", bot.Record[2]);
         }
 
         [TestMethod]
@@ -252,8 +285,8 @@ namespace Microsoft.Bot.Builder.Tests
 
             // Assert
             Assert.AreEqual(2, bot.Record.Count);
-            Assert.AreEqual(bot.Record[0], "OnEventActivityAsync");
-            Assert.AreEqual(bot.Record[1], "OnTokenResponseEventAsync");
+            Assert.AreEqual("OnEventActivityAsync", bot.Record[0]);
+            Assert.AreEqual("OnTokenResponseEventAsync", bot.Record[1]);
         }
 
         [TestMethod]
@@ -273,8 +306,8 @@ namespace Microsoft.Bot.Builder.Tests
 
             // Assert
             Assert.AreEqual(2, bot.Record.Count);
-            Assert.AreEqual(bot.Record[0], "OnEventActivityAsync");
-            Assert.AreEqual(bot.Record[1], "OnEventAsync");
+            Assert.AreEqual("OnEventActivityAsync", bot.Record[0]);
+            Assert.AreEqual("OnEventAsync", bot.Record[1]);
         }
 
         [TestMethod]
@@ -283,7 +316,7 @@ namespace Microsoft.Bot.Builder.Tests
             // Arrange
             var activity = new Activity
             {
-                Type = ActivityTypes.Event
+                Type = ActivityTypes.Event,
             };
             var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
 
@@ -293,8 +326,8 @@ namespace Microsoft.Bot.Builder.Tests
 
             // Assert
             Assert.AreEqual(2, bot.Record.Count);
-            Assert.AreEqual(bot.Record[0], "OnEventActivityAsync");
-            Assert.AreEqual(bot.Record[1], "OnEventAsync");
+            Assert.AreEqual("OnEventActivityAsync", bot.Record[0]);
+            Assert.AreEqual("OnEventAsync", bot.Record[1]);
         }
 
         [TestMethod]
@@ -303,7 +336,7 @@ namespace Microsoft.Bot.Builder.Tests
             // Arrange
             var activity = new Activity
             {
-                Type = "shall.not.pass"
+                Type = "shall.not.pass",
             };
             var turnContext = new TurnContext(new NotImplementedAdapter(), activity);
 
@@ -313,7 +346,7 @@ namespace Microsoft.Bot.Builder.Tests
 
             // Assert
             Assert.AreEqual(1, bot.Record.Count);
-            Assert.AreEqual(bot.Record[0], "OnUnrecognizedActivityTypeAsync");
+            Assert.AreEqual("OnUnrecognizedActivityTypeAsync", bot.Record[0]);
         }
 
         [TestMethod]
@@ -368,6 +401,7 @@ namespace Microsoft.Bot.Builder.Tests
                 throw new NotImplementedException();
             }
         }
+
         private class TestInvokeAdapter : NotImplementedAdapter
         {
             public IActivity Activity { get; private set; }
@@ -407,6 +441,24 @@ namespace Microsoft.Bot.Builder.Tests
                 return base.OnMembersRemovedAsync(membersRemoved, turnContext, cancellationToken);
             }
 
+            protected override Task OnMessageReactionActivityAsync(ITurnContext<IMessageReactionActivity> turnContext, CancellationToken cancellationToken)
+            {
+                Record.Add(MethodBase.GetCurrentMethod().Name);
+                return base.OnMessageReactionActivityAsync(turnContext, cancellationToken);
+            }
+
+            protected override Task OnReactionsAddedAsync(IList<MessageReaction> messageReactions, ITurnContext<IMessageReactionActivity> turnContext, CancellationToken cancellationToken)
+            {
+                Record.Add(MethodBase.GetCurrentMethod().Name);
+                return base.OnReactionsAddedAsync(messageReactions, turnContext, cancellationToken);
+            }
+
+            protected override Task OnReactionsRemovedAsync(IList<MessageReaction> messageReactions, ITurnContext<IMessageReactionActivity> turnContext, CancellationToken cancellationToken)
+            {
+                Record.Add(MethodBase.GetCurrentMethod().Name);
+                return base.OnReactionsRemovedAsync(messageReactions, turnContext, cancellationToken);
+            }
+
             protected override Task OnEventActivityAsync(ITurnContext<IEventActivity> turnContext, CancellationToken cancellationToken)
             {
                 Record.Add(MethodBase.GetCurrentMethod().Name);
@@ -436,7 +488,7 @@ namespace Microsoft.Bot.Builder.Tests
         {
             protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
             {
-                // touch every 
+                // touch every
                 var activity = turnContext.Activity;
                 var adapter = turnContext.Adapter;
                 var turnState = turnContext.TurnState;
