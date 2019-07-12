@@ -19,8 +19,8 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false)
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: false)
                 .AddEnvironmentVariables();
 
             Configuration = builder.Build();

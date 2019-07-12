@@ -234,13 +234,20 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 
         // These tests require Azure Storage Emulator v5.7
         [TestMethod]
-        [ExpectedException(typeof(StorageException))]
         public async Task LongIdAddTest()
         {
             if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) return;
 
-            var a = CreateActivity(0, 0, LongId);
-            await TranscriptStore.LogActivityAsync(a);
+            try
+            {
+                var a = CreateActivity(0, 0, LongId);
+    
+                await TranscriptStore.LogActivityAsync(a);
+                Assert.Fail("Should have thrown ");
+            }
+            catch(StorageException err)
+            {}
+            Assert.Fail("Should have thrown ");
         }
 
         // These tests require Azure Storage Emulator v5.7

@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         public SettingsState_Tests()
         {
             var builder = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false);
 
             this.Configuration = builder.Build();
         }

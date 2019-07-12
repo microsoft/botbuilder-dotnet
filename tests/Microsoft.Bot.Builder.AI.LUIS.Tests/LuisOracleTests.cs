@@ -629,7 +629,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
             Assert.IsTrue(userAgent.Contains("Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime.LUISRuntimeClient"));
 
             // And that we added the bot.builder package details.
-            Assert.IsTrue(userAgent.Contains("Microsoft.Bot.Builder.AI.LUIS/4"));
+            Assert.IsTrue(userAgent.ToLower().Contains("microsoft.bot.builder.ai.luis/4"));
         }
 
         [TestMethod]
