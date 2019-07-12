@@ -9,7 +9,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     /// <summary>
     /// Delegate for resolving resource id of imported lg file.
     /// </summary>
-    /// <param name="sourceId">From which file or the source Id.</param>
+    /// <param name="sourceId">The id or path of source file</param>
     /// <param name="resourceId">Resource id to resolve.</param>
     /// <returns>Resolved resource content and unique id.</returns>
     public delegate (string content, string id) ImportResolverDelegate(string sourceId, string resourceId);
