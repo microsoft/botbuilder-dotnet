@@ -241,7 +241,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             try
             {
                 var a = CreateActivity(0, 0, LongId);
-    
+
                 await TranscriptStore.LogActivityAsync(a);
                 Assert.Fail("Should have thrown ");
             }
