@@ -32,12 +32,10 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 
         // These tests require Azure Storage Emulator v5.7
         [AssemblyInitialize]
-        public static async Task AssemblyInitialize(TestContext a)
+        public static void AssemblyInitialize(TestContext a)
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                StorageEmulatorHelper.StartStorageEmulator();
-                await Task.Delay(1000);
             }
         }
 
@@ -45,7 +43,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestInitialize]
         public async Task TestInit()
         {
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            if (CheckEmulator())
             {
                 var container = CloudStorageAccount.Parse(ConnectionString)
                     .CreateCloudBlobClient()
@@ -58,7 +56,14 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                return true;
+                var (code, output) = StorageEmulatorHelper.Status();
+                if (output.IndexOf("IsRunning: True") > 0)
+                {
+                    return true;
+                }
+
+                (code, output) = StorageEmulatorHelper.StartStorageEmulator();
+                return output.IndexOf("started") > 0;
             }
 
             Assert.Inconclusive("This test requires Azure Storage Emulator to run");

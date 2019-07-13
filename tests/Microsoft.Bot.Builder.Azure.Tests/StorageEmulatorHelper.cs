@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Tests;
@@ -47,17 +48,34 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             Clear,
         }
 
-        public static int StartStorageEmulator()
+        public static bool EnsureStarted()
+        {
+            var (code, output) = StorageEmulatorHelper.Status();
+            if (output.IndexOf("IsRunning: True") > 0)
+            {
+                return true;
+            }
+
+            (code, output) = StorageEmulatorHelper.StartStorageEmulator();
+            return output.IndexOf("started") > 0;
+        }
+
+        public static (int, string) StartStorageEmulator()
         {
             return ExecuteStorageEmulatorCommand(StorageEmulatorCommand.Start);
         }
 
-        public static int StopStorageEmulator()
+        public static (int, string) Status()
+        {
+            return ExecuteStorageEmulatorCommand(StorageEmulatorCommand.Status);
+        }
+
+        public static (int, string) StopStorageEmulator()
         {
             return ExecuteStorageEmulatorCommand(StorageEmulatorCommand.Stop);
         }
 
-        public static int ExecuteStorageEmulatorCommand(StorageEmulatorCommand command)
+        public static (int, string) ExecuteStorageEmulatorCommand(StorageEmulatorCommand command)
         {
             var emulatorPath = System.IO.Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86),
@@ -66,26 +84,28 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 "Storage Emulator",
                 "AzureStorageEmulator.exe");
 
-            var start = new ProcessStartInfo
+            StringBuilder sb = new StringBuilder();
+            var startIInfo = new ProcessStartInfo
             {
                 Arguments = command.ToString(),
                 FileName = emulatorPath,
+                UseShellExecute = false,
+                RedirectStandardOutput = true,
             };
-            var exitCode = ExecuteProcess(start);
-            return exitCode;
+
+            using (var proc = new Process { StartInfo = startIInfo})
+            {
+                proc.OutputDataReceived += (sender, e) => sb.Append(e.Data);
+                proc.Start();
+                proc.BeginOutputReadLine();
+                proc.WaitForExit();
+                return (proc.ExitCode, sb.ToString());
+            }
         }
 
-        private static int ExecuteProcess(ProcessStartInfo startInfo)
+        private static void Proc_OutputDataReceived(object sender, DataReceivedEventArgs e)
         {
-            int exitCode = -1;
-            using (var proc = new Process { StartInfo = startInfo })
-            {
-                proc.Start();
-                proc.WaitForExit();
-                exitCode = proc.ExitCode;
-            }
-
-            return exitCode;
+            throw new NotImplementedException();
         }
     }
 }

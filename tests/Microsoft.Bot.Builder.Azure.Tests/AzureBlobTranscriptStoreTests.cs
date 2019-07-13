@@ -69,9 +69,9 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 
         public bool CheckEmulator()
         {
-            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                return true;
+                return StorageEmulatorHelper.EnsureStarted();
             }
 
             Assert.Inconclusive("This test requires Azure Storage Emulator to run");
