@@ -102,10 +102,5 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 return (proc.ExitCode, sb.ToString());
             }
         }
-
-        private static void Proc_OutputDataReceived(object sender, DataReceivedEventArgs e)
-        {
-            throw new NotImplementedException();
-        }
     }
 }
