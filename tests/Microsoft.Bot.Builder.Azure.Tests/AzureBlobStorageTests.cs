@@ -24,29 +24,30 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 
         // These tests require Azure Storage Emulator v5.7
         [ClassInitialize]
-        public static void ClassInitialize(TestContext a)
+        public static async Task ClassInitialize(TestContext a)
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 StorageEmulatorHelper.StartStorageEmulator();
+                await Task.Delay(1000);
             }
         }
 
         // These tests require Azure Storage Emulator v5.7
         [TestInitialize]
-        public void TestInit()
+        public async Task TestInit()
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 var container = CloudStorageAccount.Parse(ConnectionString)
-                .CreateCloudBlobClient()
-                .GetContainerReference(ContainerName);
-                container.DeleteIfExists();
+                    .CreateCloudBlobClient()
+                    .GetContainerReference(ContainerName);
+                await container.DeleteIfExistsAsync();
             }
         }
 
         [TestMethod]
-        public void BlobParamTest()
+        public void BlobStorageParamTest()
         {
             if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) return;
 

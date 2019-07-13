@@ -252,7 +252,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 
         // These tests require Azure Storage Emulator v5.7
         [TestMethod]
-        public void BlobParamTest()
+        public void BlobTranscriptParamTest()
         {
             if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) return;
 
