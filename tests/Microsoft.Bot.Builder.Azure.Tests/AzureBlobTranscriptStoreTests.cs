@@ -246,7 +246,9 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 Assert.Fail("Should have thrown ");
             }
             catch(StorageException err)
-            {}
+            {
+                return;
+            }
             Assert.Fail("Should have thrown ");
         }
 
