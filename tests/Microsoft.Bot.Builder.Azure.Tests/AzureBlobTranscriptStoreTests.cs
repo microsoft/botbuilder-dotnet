@@ -55,58 +55,52 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         public AzureBlobTranscriptStore TranscriptStore { get { return new AzureBlobTranscriptStore(ConnectionString, ContainerName); } }
 
         // These tests require Azure Storage Emulator v5.7
-        [ClassInitialize]
-        public static void ClassInitialize(TestContext a)
-        {
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                StorageEmulatorHelper.StartStorageEmulator();
-            }
-        }
-
-        // These tests require Azure Storage Emulator v5.7
         [TestInitialize]
         public void TestInit()
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 var container = CloudStorageAccount.Parse(ConnectionString)
-                .CreateCloudBlobClient()
-                .GetContainerReference(ContainerName);
+                    .CreateCloudBlobClient()
+                    .GetContainerReference(ContainerName);
                 container.DeleteIfExists();
             }
         }
 
-        // These tests require Azure Storage Emulator v5.7
-        [TestMethod]
-        public void StorageNullTest()
+        public bool CheckEmulator()
         {
-            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) return;
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                return true;
+            }
 
-            Assert.IsNotNull(TranscriptStore);
+            Assert.Inconclusive("This test requires Azure Storage Emulator to run");
+            return false;
         }
 
         // These tests require Azure Storage Emulator v5.7
         [TestMethod]
         public async Task TranscriptsEmptyTest()
         {
-            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) return;
-
-            var unusedChannelId = Guid.NewGuid().ToString();
-            var transcripts = await TranscriptStore.ListTranscriptsAsync(unusedChannelId);
-            Assert.AreEqual(transcripts.Items.Length, 0);
+            if (CheckEmulator())
+            {
+                var unusedChannelId = Guid.NewGuid().ToString();
+                var transcripts = await TranscriptStore.ListTranscriptsAsync(unusedChannelId);
+                Assert.AreEqual(transcripts.Items.Length, 0);
+            }
         }
 
         // These tests require Azure Storage Emulator v5.7
         [TestMethod]
         public async Task ActivityEmptyTest()
         {
-            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) return;
-
-            foreach (var convoId in ConversationSpecialIds)
+            if (CheckEmulator())
             {
-                var activities = await TranscriptStore.GetTranscriptActivitiesAsync(ChannelId, convoId);
-                Assert.AreEqual(activities.Items.Length, 0);
+                foreach (var convoId in ConversationSpecialIds)
+                {
+                    var activities = await TranscriptStore.GetTranscriptActivitiesAsync(ChannelId, convoId);
+                    Assert.AreEqual(activities.Items.Length, 0);
+                }
             }
         }
 
@@ -114,35 +108,38 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestMethod]
         public async Task ActivityAddTest()
         {
-            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) return;
-
-            var loggedActivities = new IActivity[5];
-            var activities = new List<IActivity>();
-            for (var i = 0; i < 5; i++)
+            if (CheckEmulator())
             {
-                var a = CreateActivity(i, i, ConversationIds);
-                await TranscriptStore.LogActivityAsync(a);
-                activities.Add(a);
-                loggedActivities[i] = TranscriptStore.GetTranscriptActivitiesAsync(ChannelId, ConversationIds[i]).Result.Items[0];
+                var loggedActivities = new IActivity[5];
+                var activities = new List<IActivity>();
+                for (var i = 0; i < 5; i++)
+                {
+                    var a = CreateActivity(i, i, ConversationIds);
+                    await TranscriptStore.LogActivityAsync(a);
+                    activities.Add(a);
+                    loggedActivities[i] = TranscriptStore.GetTranscriptActivitiesAsync(ChannelId, ConversationIds[i]).Result.Items[0];
+                }
+
+                Assert.AreEqual(5, loggedActivities.Length);
             }
 
-            Assert.AreEqual(5, loggedActivities.Length);
         }
 
         // These tests require Azure Storage Emulator v5.7
         [TestMethod]
         public async Task TranscriptRemoveTest()
         {
-            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) return;
-
-            for (var i = 0; i < 5; i++)
+            if (CheckEmulator())
             {
-                var a = CreateActivity(i, i, ConversationIds);
-                await TranscriptStore.DeleteTranscriptAsync(a.ChannelId, a.Conversation.Id);
+                for (var i = 0; i < 5; i++)
+                {
+                    var a = CreateActivity(i, i, ConversationIds);
+                    await TranscriptStore.DeleteTranscriptAsync(a.ChannelId, a.Conversation.Id);
 
-                var loggedActivities =
-                    await TranscriptStore.GetTranscriptActivitiesAsync(ChannelId, ConversationIds[i]);
-                Assert.AreEqual(0, loggedActivities.Items.Length);
+                    var loggedActivities =
+                        await TranscriptStore.GetTranscriptActivitiesAsync(ChannelId, ConversationIds[i]);
+                    Assert.AreEqual(0, loggedActivities.Items.Length);
+                }
             }
         }
 
@@ -150,35 +147,38 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestMethod]
         public async Task ActivityAddSpecialCharsTest()
         {
-            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) return;
-
-            var loggedActivities = new IActivity[ConversationSpecialIds.Length];
-            var activities = new List<IActivity>();
-            for (var i = 0; i < ConversationSpecialIds.Length; i++)
+            if (CheckEmulator())
             {
-                var a = CreateActivity(i, i, ConversationSpecialIds);
-                await TranscriptStore.LogActivityAsync(a);
-                activities.Add(a);
-                loggedActivities[i] = TranscriptStore.GetTranscriptActivitiesAsync(ChannelId, ConversationSpecialIds[i]).Result.Items[0];
-            }
+                var loggedActivities = new IActivity[ConversationSpecialIds.Length];
+                var activities = new List<IActivity>();
+                for (var i = 0; i < ConversationSpecialIds.Length; i++)
+                {
+                    var a = CreateActivity(i, i, ConversationSpecialIds);
+                    await TranscriptStore.LogActivityAsync(a);
+                    activities.Add(a);
+                    loggedActivities[i] = TranscriptStore.GetTranscriptActivitiesAsync(ChannelId, ConversationSpecialIds[i]).Result.Items[0];
+                }
 
-            Assert.AreEqual(activities.Count, loggedActivities.Length);
+                Assert.AreEqual(activities.Count, loggedActivities.Length);
+            }
         }
 
         // These tests require Azure Storage Emulator v5.7
         [TestMethod]
         public async Task TranscriptRemoveSpecialCharsTest()
         {
-            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) return;
-
-            for (var i = 0; i < ConversationSpecialIds.Length; i++)
+            if (CheckEmulator())
             {
-                var a = CreateActivity(i, i, ConversationSpecialIds);
-                await TranscriptStore.DeleteTranscriptAsync(a.ChannelId, a.Conversation.Id);
 
-                var loggedActivities =
-                    await TranscriptStore.GetTranscriptActivitiesAsync(ChannelId, ConversationSpecialIds[i]);
-                Assert.AreEqual(0, loggedActivities.Items.Length);
+                for (var i = 0; i < ConversationSpecialIds.Length; i++)
+                {
+                    var a = CreateActivity(i, i, ConversationSpecialIds);
+                    await TranscriptStore.DeleteTranscriptAsync(a.ChannelId, a.Conversation.Id);
+
+                    var loggedActivities =
+                        await TranscriptStore.GetTranscriptActivitiesAsync(ChannelId, ConversationSpecialIds[i]);
+                    Assert.AreEqual(0, loggedActivities.Items.Length);
+                }
             }
         }
 
@@ -186,104 +186,112 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         [TestMethod]
         public async Task ActivityAddPagedResultTest()
         {
-            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) return;
-
-            var cleanChanel = Guid.NewGuid().ToString();
-
-            var loggedPagedResult = new PagedResult<IActivity>();
-            var activities = new List<IActivity>();
-
-            for (var i = 0; i < ConversationIds.Length; i++)
+            if (CheckEmulator())
             {
-                var a = CreateActivity(0, i, ConversationIds);
-                a.ChannelId = cleanChanel;
 
-                await TranscriptStore.LogActivityAsync(a);
-                activities.Add(a);
+                var cleanChanel = Guid.NewGuid().ToString();
+
+                var loggedPagedResult = new PagedResult<IActivity>();
+                var activities = new List<IActivity>();
+
+                for (var i = 0; i < ConversationIds.Length; i++)
+                {
+                    var a = CreateActivity(0, i, ConversationIds);
+                    a.ChannelId = cleanChanel;
+
+                    await TranscriptStore.LogActivityAsync(a);
+                    activities.Add(a);
+                }
+
+                loggedPagedResult = TranscriptStore.GetTranscriptActivitiesAsync(cleanChanel, ConversationIds[0]).Result;
+                var ct = loggedPagedResult.ContinuationToken;
+                Assert.AreEqual(20, loggedPagedResult.Items.Length);
+                Assert.IsNotNull(ct);
+                Assert.IsTrue(loggedPagedResult.ContinuationToken.Length > 0);
+                loggedPagedResult = TranscriptStore.GetTranscriptActivitiesAsync(cleanChanel, ConversationIds[0], ct).Result;
+                ct = loggedPagedResult.ContinuationToken;
+                Assert.AreEqual(10, loggedPagedResult.Items.Length);
+                Assert.IsNull(ct);
             }
-
-            loggedPagedResult = TranscriptStore.GetTranscriptActivitiesAsync(cleanChanel, ConversationIds[0]).Result;
-            var ct = loggedPagedResult.ContinuationToken;
-            Assert.AreEqual(20, loggedPagedResult.Items.Length);
-            Assert.IsNotNull(ct);
-            Assert.IsTrue(loggedPagedResult.ContinuationToken.Length > 0);
-            loggedPagedResult = TranscriptStore.GetTranscriptActivitiesAsync(cleanChanel, ConversationIds[0], ct).Result;
-            ct = loggedPagedResult.ContinuationToken;
-            Assert.AreEqual(10, loggedPagedResult.Items.Length);
-            Assert.IsNull(ct);
         }
 
         // These tests require Azure Storage Emulator v5.7
         [TestMethod]
         public async Task TranscriptRemovePagedTest()
         {
-            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) return;
-
-            var loggedActivities = new PagedResult<IActivity>();
-            int i;
-            for (i = 0; i < ConversationSpecialIds.Length; i++)
+            if (CheckEmulator())
             {
-                var a = CreateActivity(i, i, ConversationIds);
-                await TranscriptStore.DeleteTranscriptAsync(a.ChannelId, a.Conversation.Id);
-            }
+                var loggedActivities = new PagedResult<IActivity>();
+                int i;
+                for (i = 0; i < ConversationSpecialIds.Length; i++)
+                {
+                    var a = CreateActivity(i, i, ConversationIds);
+                    await TranscriptStore.DeleteTranscriptAsync(a.ChannelId, a.Conversation.Id);
+                }
 
-            loggedActivities =
-                await TranscriptStore.GetTranscriptActivitiesAsync(ChannelId, ConversationIds[i]);
-            Assert.AreEqual(0, loggedActivities.Items.Length);
+                loggedActivities =
+                    await TranscriptStore.GetTranscriptActivitiesAsync(ChannelId, ConversationIds[i]);
+                Assert.AreEqual(0, loggedActivities.Items.Length);
+            }
         }
 
         // These tests require Azure Storage Emulator v5.7
         [TestMethod]
         public async Task LongIdAddTest()
         {
-            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) return;
-
-            try
+            if (CheckEmulator())
             {
-                var a = CreateActivity(0, 0, LongId);
 
-                await TranscriptStore.LogActivityAsync(a);
+                try
+                {
+                    var a = CreateActivity(0, 0, LongId);
+
+                    await TranscriptStore.LogActivityAsync(a);
+                    Assert.Fail("Should have thrown ");
+                }
+                catch (StorageException err)
+                {
+                    return;
+                }
                 Assert.Fail("Should have thrown ");
             }
-            catch(StorageException err)
-            {
-                return;
-            }
-            Assert.Fail("Should have thrown ");
         }
 
         // These tests require Azure Storage Emulator v5.7
         [TestMethod]
         public void BlobTranscriptParamTest()
         {
-            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) return;
+            if (CheckEmulator())
+            {
+                Assert.ThrowsException<FormatException>(() => new AzureBlobTranscriptStore("123", ContainerName));
 
-            Assert.ThrowsException<FormatException>(() => new AzureBlobTranscriptStore("123", ContainerName));
+                Assert.ThrowsException<ArgumentNullException>(() =>
+                    new AzureBlobTranscriptStore((CloudStorageAccount)null, ContainerName));
 
-            Assert.ThrowsException<ArgumentNullException>(() =>
-                new AzureBlobTranscriptStore((CloudStorageAccount)null, ContainerName));
+                Assert.ThrowsException<ArgumentNullException>(() =>
+                    new AzureBlobTranscriptStore((string)null, ContainerName));
 
-            Assert.ThrowsException<ArgumentNullException>(() =>
-                new AzureBlobTranscriptStore((string)null, ContainerName));
+                Assert.ThrowsException<ArgumentNullException>(() =>
+                    new AzureBlobTranscriptStore((CloudStorageAccount)null, null));
 
-            Assert.ThrowsException<ArgumentNullException>(() =>
-                new AzureBlobTranscriptStore((CloudStorageAccount)null, null));
-
-            Assert.ThrowsException<ArgumentNullException>(() => new AzureBlobTranscriptStore((string)null, null));
+                Assert.ThrowsException<ArgumentNullException>(() => new AzureBlobTranscriptStore((string)null, null));
+            }
         }
 
         // These tests require Azure Storage Emulator v5.7
         [TestMethod]
         public async Task NullBlobTest()
         {
-            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) return;
+            if (CheckEmulator())
+            {
 
-            AzureBlobTranscriptStore store = null;
+                AzureBlobTranscriptStore store = null;
 
-            await Assert.ThrowsExceptionAsync<NullReferenceException>(async () =>
-                await store.LogActivityAsync(CreateActivity(0, 0, ConversationIds)));
-            await Assert.ThrowsExceptionAsync<NullReferenceException>(async () =>
-                await store.GetTranscriptActivitiesAsync(ChannelId, ConversationIds[0]));
+                await Assert.ThrowsExceptionAsync<NullReferenceException>(async () =>
+                    await store.LogActivityAsync(CreateActivity(0, 0, ConversationIds)));
+                await Assert.ThrowsExceptionAsync<NullReferenceException>(async () =>
+                    await store.GetTranscriptActivitiesAsync(ChannelId, ConversationIds[0]));
+            }
         }
 
         private static Activity CreateActivity(int i, int j, string[] conversationIds)

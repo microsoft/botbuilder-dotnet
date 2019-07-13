@@ -20,11 +20,19 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 
         public TestContext TestContext { get; set; }
 
-        public string ContainerName { get { return TestContext.TestName.ToLower(); } }
+        public string ContainerName
+        {
+            get
+            {
+                var containerName = TestContext.TestName.ToLower();
+                NameValidator.ValidateContainerName(containerName);
+                return containerName;
+            }
+        }
 
         // These tests require Azure Storage Emulator v5.7
-        [ClassInitialize]
-        public static async Task ClassInitialize(TestContext a)
+        [AssemblyInitialize]
+        public static async Task AssemblyInitialize(TestContext a)
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
@@ -46,128 +54,143 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             }
         }
 
+        public bool CheckEmulator()
+        {
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                return true;
+            }
+
+            Assert.Inconclusive("This test requires Azure Storage Emulator to run");
+            return false;
+        }
+
         [TestMethod]
         public void BlobStorageParamTest()
         {
-            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) return;
+            if (CheckEmulator())
+            {
+                Assert.ThrowsException<FormatException>(() => new AzureBlobStorage("123", ContainerName));
 
-            Assert.ThrowsException<FormatException>(() => new AzureBlobStorage("123", ContainerName));
+                Assert.ThrowsException<ArgumentNullException>(() =>
+                    new AzureBlobStorage((CloudStorageAccount)null, ContainerName));
 
-            Assert.ThrowsException<ArgumentNullException>(() =>
-                new AzureBlobStorage((CloudStorageAccount)null, ContainerName));
+                Assert.ThrowsException<ArgumentNullException>(() =>
+                    new AzureBlobStorage((string)null, ContainerName));
 
-            Assert.ThrowsException<ArgumentNullException>(() =>
-                new AzureBlobStorage((string)null, ContainerName));
+                Assert.ThrowsException<ArgumentNullException>(() =>
+                    new AzureBlobStorage((CloudStorageAccount)null, null));
 
-            Assert.ThrowsException<ArgumentNullException>(() =>
-                new AzureBlobStorage((CloudStorageAccount)null, null));
-
-            Assert.ThrowsException<ArgumentNullException>(() => new AzureBlobStorage((string)null, null));
+                Assert.ThrowsException<ArgumentNullException>(() => new AzureBlobStorage((string)null, null));
+            }
         }
 
         [TestMethod]
         public async Task TestBlobStorageWriteRead()
         {
-            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) return;
+            if (CheckEmulator())
+            {
+                // Arrange
+                var storageAccount = CloudStorageAccount.Parse(ConnectionString);
+                var storage = new AzureBlobStorage(storageAccount, ContainerName);
 
-            // Arrange
-            var storageAccount = CloudStorageAccount.Parse(ConnectionString);
-            var storage = new AzureBlobStorage(storageAccount, ContainerName);
-
-            var changes = new Dictionary<string, object>
+                var changes = new Dictionary<string, object>
                 {
                     { "x", "hello" },
                     { "y", "world" },
                 };
 
-            // Act
-            await storage.WriteAsync(changes);
-            var result = await storage.ReadAsync(new[] { "x", "y" });
+                // Act
+                await storage.WriteAsync(changes);
+                var result = await storage.ReadAsync(new[] { "x", "y" });
 
-            // Assert
-            Assert.AreEqual(2, result.Count);
-            Assert.AreEqual("hello", result["x"]);
-            Assert.AreEqual("world", result["y"]);
-
+                // Assert
+                Assert.AreEqual(2, result.Count);
+                Assert.AreEqual("hello", result["x"]);
+                Assert.AreEqual("world", result["y"]);
+            }
         }
 
         [TestMethod]
         public async Task TestBlobStorageWriteDeleteRead()
         {
-            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) return;
+            if (CheckEmulator())
+            {
+                // Arrange
+                var storageAccount = CloudStorageAccount.Parse(ConnectionString);
+                var storage = new AzureBlobStorage(storageAccount, ContainerName);
 
-            // Arrange
-            var storageAccount = CloudStorageAccount.Parse(ConnectionString);
-            var storage = new AzureBlobStorage(storageAccount, ContainerName);
-
-            var changes = new Dictionary<string, object>
+                var changes = new Dictionary<string, object>
                 {
                     { "x", "hello" },
                     { "y", "world" },
                 };
 
-            // Act
-            await storage.WriteAsync(changes);
-            await storage.DeleteAsync(new[] { "x" });
-            var result = await storage.ReadAsync(new[] { "x", "y" });
+                // Act
+                await storage.WriteAsync(changes);
+                await storage.DeleteAsync(new[] { "x" });
+                var result = await storage.ReadAsync(new[] { "x", "y" });
 
-            // Assert
-            Assert.AreEqual(1, result.Count);
-            Assert.AreEqual("world", result["y"]);
+                // Assert
+                Assert.AreEqual(1, result.Count);
+                Assert.AreEqual("world", result["y"]);
+            }
         }
 
         [TestMethod]
         public async Task TestBlobStorageChanges()
         {
-            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) return;
+            if (CheckEmulator())
+            {
+                // Arrange
+                var storageAccount = CloudStorageAccount.Parse(ConnectionString);
+                var storage = new AzureBlobStorage(storageAccount, ContainerName);
 
-            // Arrange
-            var storageAccount = CloudStorageAccount.Parse(ConnectionString);
-            var storage = new AzureBlobStorage(storageAccount, ContainerName);
+                // Act
+                await storage.WriteAsync(new Dictionary<string, object> { { "a", "1.0" }, { "b", "2.0" } });
+                await storage.WriteAsync(new Dictionary<string, object> { { "c", "3.0" } });
+                await storage.DeleteAsync(new[] { "b" });
+                await storage.WriteAsync(new Dictionary<string, object> { { "a", "1.1" } });
+                var result = await storage.ReadAsync(new[] { "a", "b", "c", "d", "e" });
 
-            // Act
-            await storage.WriteAsync(new Dictionary<string, object> { { "a", "1.0" }, { "b", "2.0" } });
-            await storage.WriteAsync(new Dictionary<string, object> { { "c", "3.0" } });
-            await storage.DeleteAsync(new[] { "b" });
-            await storage.WriteAsync(new Dictionary<string, object> { { "a", "1.1" } });
-            var result = await storage.ReadAsync(new[] { "a", "b", "c", "d", "e" });
-
-            // Assert
-            Assert.AreEqual(2, result.Count);
-            Assert.AreEqual("1.1", result["a"]);
-            Assert.AreEqual("3.0", result["c"]);
+                // Assert
+                Assert.AreEqual(2, result.Count);
+                Assert.AreEqual("1.1", result["a"]);
+                Assert.AreEqual("3.0", result["c"]);
+            }
         }
 
         [TestMethod]
         public async Task TestConversationStateBlobStorage()
         {
-            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) return;
-
-            // Arrange
-            var storageAccount = CloudStorageAccount.Parse(ConnectionString);
-            var storage = new AzureBlobStorage(storageAccount, ContainerName);
-            var conversationState = new ConversationState(storage);
-            var propAccessor = conversationState.CreateProperty<Prop>("prop");
-            var adapter = new TestStorageAdapter();
-            var activity = new Activity
+            if (CheckEmulator())
             {
-                ChannelId = "123",
-                Conversation = new ConversationAccount { Id = "abc" },
-            };
+                // Arrange
+                var storageAccount = CloudStorageAccount.Parse(ConnectionString);
+                var storage = new AzureBlobStorage(storageAccount, ContainerName);
+                var conversationState = new ConversationState(storage);
+                var propAccessor = conversationState.CreateProperty<Prop>("prop");
+                var adapter = new TestStorageAdapter();
+                var activity = new Activity
+                {
+                    ChannelId = "123",
+                    Conversation = new ConversationAccount { Id = "abc" },
+                };
 
-            // Act
-            var turnContext1 = new TurnContext(adapter, activity);
-            var propValue1 = await propAccessor.GetAsync(turnContext1, () => new Prop());
-            propValue1.X = "hello";
-            propValue1.Y = "world";
-            await conversationState.SaveChangesAsync(turnContext1, force: true);
+                // Act
+                var turnContext1 = new TurnContext(adapter, activity);
+                var propValue1 = await propAccessor.GetAsync(turnContext1, () => new Prop());
+                propValue1.X = "hello";
+                propValue1.Y = "world";
+                await conversationState.SaveChangesAsync(turnContext1, force: true);
 
-            var turnContext2 = new TurnContext(adapter, activity);
-            var propValue2 = await propAccessor.GetAsync(turnContext2);
+                var turnContext2 = new TurnContext(adapter, activity);
+                var propValue2 = await propAccessor.GetAsync(turnContext2);
 
-            // Assert
-            Assert.AreEqual("hello", propValue2.X);
-            Assert.AreEqual("world", propValue2.Y);
+                // Assert
+                Assert.AreEqual("hello", propValue2.X);
+                Assert.AreEqual("world", propValue2.Y);
+            }
         }
 
         private class TestStorageAdapter : BotAdapter
