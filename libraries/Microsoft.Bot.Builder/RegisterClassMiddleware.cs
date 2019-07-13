@@ -13,8 +13,6 @@ namespace Microsoft.Bot.Builder
     public class RegisterClassMiddleware<T> : IMiddleware
         where T : class
     {
-        public T Service { get; set; }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="RegisterClassMiddleware{T}"/> class.
         /// </summary>
@@ -23,6 +21,11 @@ namespace Microsoft.Bot.Builder
         {
             this.Service = service;
         }
+
+        /// <summary>
+        /// Gets or sets the Service to be registered into turn context.
+        /// </summary>
+        public T Service { get; set; }
 
         /// <summary>
         /// registers into the turncontext

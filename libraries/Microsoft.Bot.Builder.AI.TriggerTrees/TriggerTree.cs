@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -66,6 +67,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
             public string TreeString;
             public List<IOptimizer> _optimizers;
             public Dictionary<string, IPredicateComparer> _comparers;
+
             public Debugger(TriggerTree triggers)
             {
                 TreeString = triggers.TreeToString();
@@ -111,15 +113,15 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
 
         private static readonly IExpressionParser _parser = new ExpressionEngine(LookupFunction);
 
-        public static Expression Parse(string expr) => _parser.Parse(expr);
-
         /// <summary>
-        /// Construct an empty trigger tree.
+        /// Initializes a new instance of the <see cref="TriggerTree"/> class.
         /// </summary>
         public TriggerTree()
         {
             Root = new Node(new Clause(), this);
         }
+
+        public static Expression Parse(string expr) => _parser.Parse(expr);
 
         public override string ToString() => $"TriggerTree with {TotalTriggers} triggers";
 
@@ -155,10 +157,12 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                     }
                 }
             }
+
             if (added)
             {
                 ++TotalTriggers;
             }
+
             return trigger;
         }
 
@@ -174,6 +178,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
             {
                 --TotalTriggers;
             }
+
             return result;
         }
 
@@ -218,8 +223,8 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
             if (!visited.Contains(node))
             {
                 visited.Add(node);
-                output.Write($"{"".PadLeft(indent)}{NameNode(node)}");
-                var spaces = "".PadLeft(indent + 2);
+                output.Write($"{string.Empty.PadLeft(indent)}{NameNode(node)}");
+                var spaces = string.Empty.PadLeft(indent + 2);
                 var first = true;
                 foreach (var child in node.Specializations)
                 {
@@ -230,7 +235,12 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                     }
                     output.WriteLine($"{spaces}{NameNode(child)}");
                 }
-                if (!first) output.WriteLine($"{"".PadLeft(indent)}}}");
+
+                if (!first)
+                {
+                    output.WriteLine($"{string.Empty.PadLeft(indent)}}}");
+                }
+
                 foreach (var child in node.Specializations)
                 {
                     GenerateGraph(output, child, indent + 2, visited);
@@ -279,6 +289,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                     }
                 }
             }
+
             return badNode;
         }
     }

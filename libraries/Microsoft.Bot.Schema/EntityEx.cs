@@ -48,17 +48,36 @@ namespace Microsoft.Bot.Schema
         public bool Equals(Entity other)
         {
             if (other == null)
+            {
                 return false;
+            }
 
             return JsonConvert.SerializeObject(this).Equals(JsonConvert.SerializeObject(other));
         }
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != GetType()) return false;
+            if (ReferenceEquals(null, obj))
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+
+            if (obj.GetType() != GetType())
+            {
+                return false;
+            }
+
             return Equals(obj as Entity);
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
         }
     }
 }

@@ -181,7 +181,6 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// active after the turn has been processed by the dialog.</remarks>
         public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-
             if (result is CancellationToken)
             {
                 throw new ArgumentException($"{nameof(result)} cannot be a cancellation token");

@@ -20,16 +20,6 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
         private List<Clause> _clauses;
 
         /// <summary>
-        /// Action to take when trigger is true.
-        /// </summary>
-        public object Action { get; }
-
-        /// <summary>
-        /// Expressions are converted into Disjunctive Normal Form where ! is pushed to the leaves and there is an implicit || between clauses and && within a clause. 
-        /// </summary>
-        public IReadOnlyList<Clause> Clauses => _clauses;
-
-        /// <summary>
         /// Construct a trigger expression.
         /// </summary>
         /// <param name="tree">Trigger tree that contains this trigger.</param>
@@ -57,6 +47,16 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                 _clauses = new List<Clause>();
             }
         }
+
+        /// <summary>
+        /// Action to take when trigger is true.
+        /// </summary>
+        public object Action { get; }
+
+        /// <summary>
+        /// Expressions are converted into Disjunctive Normal Form where ! is pushed to the leaves and there is an implicit || between clauses and && within a clause. 
+        /// </summary>
+        public IReadOnlyList<Clause> Clauses => _clauses;
 
         public override string ToString()
         {
@@ -98,6 +98,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                 // All other cases are incomparable
                 result = RelationshipType.Incomparable;
             }
+
             return result;
         }
 
@@ -122,6 +123,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                             }
                         }
                     }
+
                     if (clauseSoFar == RelationshipType.Incomparable || clauseSoFar == RelationshipType.Generalizes)
                     {
                         // Some clause is not comparable
@@ -143,6 +145,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                     }
                 }
             }
+
             // Either incomparable, equal or specializes
             return soFar;
         }
@@ -165,6 +168,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                         builder.Append(' ', indent);
                         builder.Append("|| ");
                     }
+
                     builder.Append(clause.ToString());
                 }
             }

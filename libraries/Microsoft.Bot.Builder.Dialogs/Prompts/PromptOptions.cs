@@ -12,7 +12,6 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// </summary>
     public class PromptOptions
     {
-
         /// <summary>
         /// Gets or sets the initial prompt to send the user as an <see cref="Activity"/>.
         /// </summary>

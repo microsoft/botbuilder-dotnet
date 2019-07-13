@@ -196,9 +196,9 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="dc">The dialog context for the current turn of conversation.</param>
         /// <param name="e">The event being raised.</param>
         /// <returns> Whether the event is handled by the current dialog and further processing should stop.</returns>
-        protected virtual async Task<bool> OnPreBubbleEvent(DialogContext dc, DialogEvent e, CancellationToken cancellationToken)
+        protected virtual Task<bool> OnPreBubbleEvent(DialogContext dc, DialogEvent e, CancellationToken cancellationToken)
         {
-            return false;
+            return Task.FromResult(false);
         }
 
         /// <summary>
@@ -211,9 +211,9 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="dc">The dialog context for the current turn of conversation.</param>
         /// <param name="e">The event being raised.</param>
         /// <returns> Whether the event is handled by the current dialog and further processing should stop.</returns>
-        protected virtual async Task<bool> OnPostBubbleEvent(DialogContext dc, DialogEvent e, CancellationToken cancellationToken)
+        protected virtual Task<bool> OnPostBubbleEvent(DialogContext dc, DialogEvent e, CancellationToken cancellationToken)
         {
-            return false;
+            return Task.FromResult(false);
         }
 
         protected virtual string OnComputeId()

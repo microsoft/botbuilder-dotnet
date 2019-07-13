@@ -45,10 +45,6 @@ namespace Microsoft.Bot.Builder.Adapters
             };
         }
 
-
-        public string Locale { get; set; } = "en-us";
-
-
         /// <summary>
         /// Initializes a new instance of the <see cref="TestAdapter"/> class.
         /// </summary>
@@ -75,6 +71,20 @@ namespace Microsoft.Bot.Builder.Adapters
             }
         }
 
+        public string Locale { get; set; } = "en-us";
+
+        /// <summary>
+        /// Gets the queue of responses from the bot.
+        /// </summary>
+        /// <value>The queue of responses from the bot.</value>
+        public Queue<Activity> ActiveQueue { get; } = new Queue<Activity>();
+
+        /// <summary>
+        /// Gets or sets a reference to the current conversation.
+        /// </summary>
+        /// <value>A reference to the current conversation.</value>
+        public ConversationReference Conversation { get; set; }
+
         /// <summary>
         /// Create a ConversationReference 
         /// </summary>
@@ -93,18 +103,6 @@ namespace Microsoft.Bot.Builder.Adapters
                 Bot = new ChannelAccount(id: bot.ToLower(), name: bot),
             };
         }
-
-        /// <summary>
-        /// Gets the queue of responses from the bot.
-        /// </summary>
-        /// <value>The queue of responses from the bot.</value>
-        public Queue<Activity> ActiveQueue { get; } = new Queue<Activity>();
-
-        /// <summary>
-        /// Gets or sets a reference to the current conversation.
-        /// </summary>
-        /// <value>A reference to the current conversation.</value>
-        public ConversationReference Conversation { get; set; }
 
         /// <summary>
         /// Adds middleware to the adapter's pipeline.

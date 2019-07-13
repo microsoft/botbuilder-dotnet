@@ -177,9 +177,9 @@ namespace Microsoft.Bot.Builder.Dialogs
                     val = null;
                 }
                 else if (value is string || value is byte || value is bool ||
-                        value is Int16 || value is Int32 || value is Int64 ||
-                        value is UInt16 || value is UInt32 || value is UInt64 ||
-                        value is Decimal || value is float || value is double)
+                        value is short || value is int || value is long ||
+                        value is ushort || value is uint || value is ulong ||
+                        value is decimal || value is float || value is double)
                 {
                     val = JValue.FromObject(value);
                 }
@@ -246,7 +246,6 @@ namespace Microsoft.Bot.Builder.Dialogs
             return Assign<T>(startObject, overlayObject);
         }
 
-
         /// <summary>
         /// Equivalent to javascripts ObjectPath.Assign, creates a new object from startObject overlaying any non-null values from the overlay object.
         /// </summary>
@@ -292,6 +291,5 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             return (Type)Activator.CreateInstance(type);
         }
-
     }
 }

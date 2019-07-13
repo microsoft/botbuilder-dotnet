@@ -124,6 +124,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.StreamingExte
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.StreamingExtensions", "libraries\Microsoft.Bot.Builder.StreamingExtensions\Microsoft.Bot.Builder.StreamingExtensions.csproj", "{BDCAC491-8518-4CE6-B56A-9E36936C7E70}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6B6AFE9D-6FA5-4699-B0EB-62335FD431C8}"
+	ProjectSection(SolutionItems) = preProject
+		BotBuilder-DotNet.ruleset = BotBuilder-DotNet.ruleset
+		Directory.Build.props = Directory.Build.props
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug - NuGet Packages|Any CPU = Debug - NuGet Packages|Any CPU

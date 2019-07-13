@@ -149,7 +149,6 @@ namespace Microsoft.Bot.Builder.Dialogs
             await OnEndDialogAsync(turnContext, instance, reason, cancellationToken).ConfigureAwait(false);
         }
 
-
         /// <summary>
         /// Adds a dialog to the component dialog.
         /// </summary>

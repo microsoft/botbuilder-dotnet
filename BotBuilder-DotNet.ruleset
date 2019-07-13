@@ -3,6 +3,7 @@
   <Rules AnalyzerId="AsyncUsageAnalyzers" RuleNamespace="AsyncUsageAnalyzers">
     <Rule Id="AvoidAsyncVoid" Action="Warning" />
     <Rule Id="UseConfigureAwait" Action="Warning" />
+    <Rule Id ="UseAsyncSuffix" Action="None"/>
   </Rules>
 
   <Rules AnalyzerId="Microsoft.CodeAnalysis.CSharp.Features" RuleNamespace="Microsoft.CodeAnalysis.CSharp.Features">
@@ -40,7 +41,7 @@
     <Rule Id="SA1025" Action="Warning" />
     <Rule Id="SA1026" Action="Warning" />
     <Rule Id="SA1027" Action="Warning" />
-    <Rule Id="SA1028" Action="Warning" />
+    <Rule Id="SA1028" Action="None" />
     <Rule Id="SA1100" Action="Warning" />
     <Rule Id="SA1101" Action="None" />
     <Rule Id="SA1102" Action="Warning" />
@@ -99,7 +100,7 @@
     <Rule Id="SA1302" Action="Warning" />
     <Rule Id="SA1303" Action="Warning" />
     <Rule Id="SA1304" Action="Warning" />
-    <Rule Id="SA1305" Action="Warning" />
+    <Rule Id="SA1305" Action="None" />
     <Rule Id="SA1306" Action="Warning" />
     <Rule Id="SA1307" Action="Warning" />
     <Rule Id="SA1308" Action="Warning" />
@@ -121,7 +122,7 @@
     <Rule Id="SA1410" Action="Warning" />
     <Rule Id="SA1411" Action="Warning" />
     <Rule Id="SA1412" Action="Warning" />
-    <Rule Id="SA1413" Action="Warning" />
+    <Rule Id="SA1413" Action="None" />
     <Rule Id="SA1500" Action="Warning" />
     <Rule Id="SA1501" Action="Warning" />
     <Rule Id="SA1502" Action="Warning" />

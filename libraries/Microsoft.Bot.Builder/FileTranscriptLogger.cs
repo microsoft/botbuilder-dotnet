@@ -18,7 +18,6 @@ namespace Microsoft.Bot.Builder
     /// </remarks>
     public class FileTranscriptLogger : ITranscriptLogger
     {
-
         private static JsonSerializerSettings jsonSettings = new JsonSerializerSettings()
         {
             Formatting = Formatting.Indented,

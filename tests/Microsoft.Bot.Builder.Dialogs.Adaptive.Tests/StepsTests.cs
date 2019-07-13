@@ -2,22 +2,25 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Rules;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Steps;
+using Microsoft.Bot.Builder.Dialogs.Choices;
+using Microsoft.Bot.Builder.Dialogs.Declarative;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
 using Microsoft.Bot.Builder.Expressions;
 using Microsoft.Bot.Builder.Expressions.Parser;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
-using Microsoft.Bot.Schema;
-using Microsoft.Bot.Builder.Dialogs.Choices;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Bot.Builder.LanguageGeneration;
+using Microsoft.Bot.Schema;
+using Microsoft.Extensions.Configuration;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 {
@@ -71,7 +74,42 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             .StartTestAsync();
         }
 
+#if needsmoq
+        [TestMethod]
+        public async Task Step_HttpRequest()
+        {
+            var testDialog = new AdaptiveDialog("planningTest");
 
+            testDialog.AddRules(new List<IRule>()
+            {
+                new UnknownIntentRule(
+                    new List<IDialog>()
+                    {
+                        new HttpRequest()
+                        {
+                            Url = "https://translatorbotfn.azurewebsites.net/api/TranslateMessage?code=DFgQcuVqFkvP0nL27sibggKfMGYM8/fjNCZWywCwR1mbXclw0uSk3A==",
+                            Method = HttpRequest.HttpMethod.POST,
+                            ResponseType = HttpRequest.ResponseTypes.Activity,
+                            Body = JObject.FromObject(new
+                                {
+                                    text = "Azure",
+                                    fromLocale ="english",
+                                    toLocale = "italian"
+                                })
+                        },
+                    })
+            });
+
+            await CreateFlow(testDialog)
+            .Send("hi")
+                .AssertReply(reply =>
+                {
+                    var message = reply.AsMessageActivity();
+                    Assert.AreEqual(1, message.Attachments.Count);
+                })
+            .StartTestAsync();
+        }
+#endif
         [TestMethod]
         public async Task Step_TraceActivity()
         {
@@ -869,8 +907,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         new SendActivity("Why did the chicken cross the road?"),
                         new EndTurn(),
                         new SendActivity("To get to the other side")
-                    }
-                 )
+                    })
             });
             tellJokeDialog.Recognizer = new RegexRecognizer() { Intents = new Dictionary<string, string>() { { "EndIntent", "end" } } };
 
@@ -899,7 +936,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             {
                 Steps = new List<IDialog>()
                 {
-                    new TextInput() { Prompt = new ActivityTemplate("Hello, what is your name?"), OutputBinding = "user.name" , Value = "user.name" },
+                    new TextInput() { Prompt = new ActivityTemplate("Hello, what is your name?"), OutputBinding = "user.name", Value = "user.name" },
                     new SendActivity("Hello {user.name}, nice to meet you!"),
                     new EndTurn(),
                     new RepeatDialog()
@@ -915,7 +952,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     .AssertReply("Hello Carlos, nice to meet you!")
                 .StartTestAsync();
         }
-
 
         [TestMethod]
         public async Task Step_EmitEvent()
@@ -936,8 +972,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             {
                                 Intents = new Dictionary<string, string>()
                                 {
-                                    { "EmitIntent" , "emit" },
-                                    { "CowboyIntent" , "moo" }
+                                    { "EmitIntent", "emit" },
+                                    { "CowboyIntent", "moo" }
                                 }
                             },
                             Rules = new List<IRule>()
@@ -968,7 +1004,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 {
                     new EventRule()
                     {
-                        Events = new List<string>() { "CustomEvent"},
+                        Events = new List<string>() { "CustomEvent" },
                         Steps = new List<IDialog>()
                         {
                             new SendActivity("CustomEventFired")
@@ -976,7 +1012,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     }
                 }
             };
-
 
             await CreateFlow(rootDialog)
             .Send("moo")
@@ -1035,7 +1070,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     }
                 }
             };
-
 
             await CreateFlow(rootDialog)
             .Send("hi")
@@ -1123,7 +1157,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     }
                 }
             };
-
 
             await CreateFlow(rootDialog)
             .Send("hi")

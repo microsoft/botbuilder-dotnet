@@ -181,6 +181,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                         activeTags = activeTags.Union(dialog.Tags).ToList();
                     }
                 }
+
                 return activeTags;
             }
         }
@@ -453,6 +454,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
                     notify = true;
                 }
+
                 return new DialogTurnResult(DialogTurnStatus.Cancelled);
             }
             else
@@ -555,6 +557,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="name">Name of the event to raise.</param>
         /// <param name="value">Value to send along with the event.</param>
         /// <param name="bubble">Flag to control whether the event should be bubbled to its parent if not handled locally. Defaults to a value of `true`.</param>
+        /// <param name="fromLeaf"></param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>True if the event was handled.</returns>
         public async Task<bool> EmitEventAsync(string name, object value = null, bool bubble = true, bool fromLeaf = false, CancellationToken cancellationToken = default(CancellationToken))

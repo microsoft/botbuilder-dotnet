@@ -23,7 +23,8 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
     /// <summary>
     /// Relationship between trigger expressions.
     /// </summary>
-    public enum RelationshipType {
+    public enum RelationshipType
+    {
         /// <summary>
         /// First argument specializes the second, i.e. applies to a subset of the states the second argument covers.
         /// </summary>
@@ -42,7 +43,8 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
         /// <summary>
         /// Cannot tell how the first and second arguments relate.
         /// </summary>
-        Incomparable };
+        Incomparable
+    }
 
     /// <summary>
     /// Compare two predicates to identify the relationship between them.
@@ -50,8 +52,11 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
     public interface IPredicateComparer
     {
         /// <summary>
-        /// Name of predicate.
+        /// Gets name of predicate.
         /// </summary>
+        /// <value>
+        /// Name of predicate.
+        /// </value>
         string Predicate { get;  }
 
         /// <summary>
@@ -65,6 +70,4 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
         /// </remarks>
         RelationshipType Relationship(Expression predicate, Expression other);
     }
-
-
 }
