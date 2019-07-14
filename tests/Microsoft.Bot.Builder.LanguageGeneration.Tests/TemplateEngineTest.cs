@@ -413,7 +413,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             // Assert 6.lg is imported only once when there are several relative paths which point to the same file.
             // Assert import cycle loop is handled well as expected when a file imports itself.
-            Assert.AreEqual(11, engine.Templates.Count());
+            Assert.AreEqual(14, engine.Templates.Count());
 
             string evaled = engine.EvaluateTemplate("basicTemplate", null);
             Assert.IsTrue("Hi" == evaled || "Hello" == evaled);
@@ -422,6 +422,9 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.IsTrue("Hi DongLei :)" == evaled ||
                 "Hey DongLei :)" == evaled ||
                 "Hello DongLei :)" == evaled);
+
+            evaled = engine.EvaluateTemplate("template3", null);
+            Assert.IsTrue("Hi 2" == evaled || "Hello 2" == evaled);
 
             evaled = engine.EvaluateTemplate("welcome", new { userName = "DL" });
             Assert.IsTrue("Hi DL :)" == evaled ||
@@ -489,7 +492,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var engine = new TemplateEngine().AddFiles(new List<string>() { GetExampleFilePath("import.lg"), GetExampleFilePath("import2.lg") });
 
             // Assert 6.lg is imported only once and no exceptions are thrown when it is imported from multiple files.
-            Assert.AreEqual(13, engine.Templates.Count());
+            Assert.AreEqual(14, engine.Templates.Count());
 
             string evaled = engine.EvaluateTemplate("basicTemplate", null);
             Assert.IsTrue("Hi" == evaled || "Hello" == evaled);

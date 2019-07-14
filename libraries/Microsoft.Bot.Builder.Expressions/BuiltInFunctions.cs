@@ -44,16 +44,6 @@ namespace Microsoft.Bot.Builder.Expressions
         /// </summary>
         public static readonly string DefaultDateTimeFormat = "yyyy-MM-ddTHH:mm:ss.fffZ";
 
-        public static readonly Dictionary<string, string> PrefixsOfShorthand = new Dictionary<string, string>()
-        {
-            { ExpressionType.Intent, "turn.recognized.intents." },
-            { ExpressionType.Entity, "turn.recognized.entities." },
-            { ExpressionType.Dialog, "dialog." },
-            { ExpressionType.SimpleEntity, "turn.recognized.entities." },
-            { ExpressionType.Instance, "dialog.instance." },
-            { ExpressionType.Option, "dialog.options." },
-        };
-
         /// <summary>
         /// Verify the result of an expression is of the appropriate type and return a string if not.
         /// </summary>
@@ -492,62 +482,31 @@ namespace Microsoft.Bot.Builder.Expressions
         private static (object value, string error) Callstack(Expression expression, object state)
         {
             // get collection
+            // get collection
             var (result, error) = AccessProperty(state, "callstack");
             if (result != null)
             {
                 var items = (IEnumerable<object>)result;
-                var property = (expression.Children[0] as Constant).Value.ToString();
-
-                foreach (var item in items)
+                object property = null;
+                (property, error) = expression.Children[0].TryEvaluate(state);
+                if (property != null && error == null)
                 {
-                    // get property off of item
-                    (result, error) = AccessProperty(item, property);
-
-                    // if not null
-                    if (error == null && result != null)
+                    foreach (var item in items)
                     {
-                        // return it
-                        return (result, null);
+                        // get property off of item
+                        (result, error) = AccessProperty(item, property.ToString());
+
+                        // if not null
+                        if (error == null && result != null)
+                        {
+                            // return it
+                            return (result, null);
+                        }
                     }
                 }
             }
-
             return (null, error);
         }
-
-        public static EvaluateExpressionDelegate ApplyShorthand(string functionName, Func<object, (object, string)> function = null)
-            =>
-            (expression, state) =>
-            {
-                var result = state;
-                string error = null;
-
-                var property = (expression.Children[0] as Constant).Value.ToString();
-                var prefixStr = PrefixsOfShorthand[functionName];
-                var prefixs = prefixStr.Split('.').Where(x => !string.IsNullOrEmpty(x)).ToList();
-                foreach (var prefix in prefixs)
-                {
-                    (result, error) = AccessProperty(result, prefix);
-                    if (error != null)
-                    {
-                        break;
-                    }
-                }
-
-                if (error == null)
-                {
-                    (result, error) = AccessProperty(result, property);
-                }
-
-                if (error == null && function != null)
-                {
-                    (result, error) = function(result);
-                }
-
-                result = ResolveValue(result);
-
-                return (result, error);
-            };
 
         /// <summary>
         /// Generate an expression delegate that applies function on the accumulated value after verifying all children.
@@ -1050,27 +1009,7 @@ namespace Microsoft.Bot.Builder.Expressions
             }
             else
             {
-                // Turn shortcuts into accessors
-                if (path.Type != ExpressionType.SimpleEntity && PrefixsOfShorthand.TryGetValue(path.Type, out string fullPath))
-                {
-                    Expression expr = null;
-                    foreach (var elt in fullPath.Split('.'))
-                    {
-                        if (!string.IsNullOrEmpty(elt))
-                        {
-                            expr = Expression.Accessor(elt, expr);
-                        }
-                    }
-
-                    // TODO: There is no reason you could not do computed functions off shortcuts
-                    var child = path.Children[0] as Constant;
-                    expr = Expression.Accessor((string)child.Value, expr);
-                    (result, error) = SetPathToValue(expr, expected, value, state);
-                }
-                else
-                {
-                    error = $"{path} is not a path that can be set to a value.";
-                }
+                error = $"{path} is not a path that can be set to a value.";
             }
 
             return (result, error);
@@ -3215,30 +3154,23 @@ namespace Microsoft.Bot.Builder.Expressions
                     ValidateIsMatch),
 
                 // Shorthand functions
-                new ExpressionEvaluator(ExpressionType.Intent, ApplyShorthand(ExpressionType.Intent), ReturnType.Object, ValidateUnaryString),
-                new ExpressionEvaluator(ExpressionType.Dialog, ApplyShorthand(ExpressionType.Dialog), ReturnType.Object, ValidateUnaryString),
-                new ExpressionEvaluator(ExpressionType.Instance, ApplyShorthand(ExpressionType.Instance), ReturnType.Object, ValidateUnaryString),
-                new ExpressionEvaluator(ExpressionType.Option, ApplyShorthand(ExpressionType.Option), ReturnType.Object, ValidateUnaryString),
-                new ExpressionEvaluator(ExpressionType.Callstack, Callstack, ReturnType.Object, ValidateUnaryString),
-                new ExpressionEvaluator(ExpressionType.Entity, ApplyShorthand(ExpressionType.Entity), ReturnType.Object, ValidateUnaryString),
+                new ExpressionEvaluator(ExpressionType.Callstack, Callstack, ReturnType.Object, ValidateUnary),
                 new ExpressionEvaluator(
                     ExpressionType.SimpleEntity,
-                    ApplyShorthand(
-                        ExpressionType.SimpleEntity,
-                        entity =>
-                            {
-                                var result = entity;
+                    Apply(args =>
+                    {
+                        var result = args[0];
 
-                                // fix issue: https://github.com/microsoft/botbuilder-dotnet/issues/1969
-                                while (TryParseList(result, out IList list) && list.Count == 1)
-                                {
-                                    result = list[0];
-                                }
+                        // fix issue: https://github.com/microsoft/botbuilder-dotnet/issues/1969
+                        while (TryParseList(result, out IList list) && list.Count == 1)
+                        {
+                            result = list[0];
+                        }
 
-                                return (result, null);
-                        }),
+                        return result;
+                    }),
                     ReturnType.Object,
-                    ValidateUnaryString),
+                    ValidateUnary),
             };
 
             var lookup = new Dictionary<string, ExpressionEvaluator>();

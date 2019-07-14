@@ -23,95 +23,132 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             { "two", 2.0 },
             { "hello", "hello" },
             { "world", "world" },
+            { "cit", "cit" },
+            { "y", "y" },
             { "istrue", true },
             { "nullObj", nullStr },
             { "bag", new Dictionary<string, object>
-            {
-                { "three", 3.0 },
-                { "set", new { four = 4.0 } },
-                { "list", new[] { "red", "blue" } },
-                { "index", 3 },
-                { "name", "mybag" }
-            }},
-            { "items", new string[] { "zero", "one", "two" } },
-            { "nestedItems", new[]
                 {
-                new
-                {
-                    x = 1
-                },
-                new
-                {
-                    x = 2,
-                },
-                new
-                {
-                    x = 3,
+                    { "three", 3.0 },
+                    { "set", new { four = 4.0 } },
+                    { "list", new[] { "red", "blue" } },
+                    { "index", 3 },
+                    { "name", "mybag" }
                 }
-            } },
-            { "user", new
-            {
-                lists = new
+            },
+            { "items", new string[] { "zero", "one", "two" } },
+            { "nestedItems",
+                new[]
                 {
-                    todo = new[]
+                    new { x = 1 },
+                    new { x = 2 },
+                    new { x = 3 }
+                }
+            },
+            { "user",
+                new
+                {
+                    lists = new
                     {
-                        "todo1",
-                        "todo2",
-                        "todo3",
-                    }
-                },
-                listType = "todo",
-            } },
+                        todo = new[]
+                        {
+                            "todo1",
+                            "todo2",
+                            "todo3",
+                        }
+                    },
+                    listType = "todo",
+                }
+            },
             { "timestamp", "2018-03-15T13:00:00.000Z" },
             { "notISOTimestamp", "2018/03/15 13:00:00" },
             { "timestampObj", DateTime.Parse("2018-03-15T13:00:00.000Z").ToUniversalTime() },
             { "unixTimestamp", 1521118800 },
             { "xmlStr", "<?xml version='1.0'?> <produce> <item> <name>Gala</name> <type>apple</type> <count>20</count> </item> <item> <name>Honeycrisp</name> <type>apple</type> <count>10</count> </item> </produce>" },
             { "turn", new
-            {
-                recognized = new
                 {
-                    entities = new Dictionary<string, object>
+                    recognized = new
                     {
-                        { "city",  "Seattle" },
-                        { "ordinal",  new[]
+                        entities = new Dictionary<string, object>
                         {
-                            "1",
-                            "2",
-                            "3"
-                        } },
-                        { "CompositeList1",  new[] {
-                            new[]{ "firstItem" }
-                        } },
-                        { "CompositeList2",  new[] {
-                            new[]{ "firstItem", "secondItem" }
-                        } }
-                    },
-                    intents = new
-                    {
-                        BookFlight = "BookFlight"
+                            { "city",  "Seattle" },
+                            { "ordinal",
+                                new[]
+                                {
+                                    "1",
+                                    "2",
+                                    "3"
+                                }
+                            },
+                            { "CompositeList1",
+                                new[]
+                                {
+                                    new[]
+                                    {
+                                        "firstItem"
+                                    }
+                                }
+                            },
+                            { "CompositeList2",
+                                new[]
+                                {
+                                    new[]
+                                    {
+                                        "firstItem",
+                                        "secondItem"
+                                    }
+                                }
+                            }
+                        },
+                        intents = new
+                        {
+                            BookFlight = "BookFlight",
+                            BookHotel = new[]
+                            {
+                                new
+                                {
+                                    Where = "Bellevue",
+                                    Time = "Tomorrow",
+                                    People= "2"
+                                },
+                                new
+                                {
+                                    Where = "Kirkland",
+                                    Time = "Today",
+                                    People = "4"
+                                }
+                             }
+                         }
                     }
                 }
-            } },
-            { "dialog", new
-            {
-                instance = new
+            },
+            { "dialog",
+                new
                 {
-                    xxx = "instance"
-                },
-                options = new
-                {
-                    xxx = "options"
-                },
-                title = "Dialog Title",
-                subTitle = "Dialog Sub Title"
-            } },
+                    instance = new
+                    {
+                        xxx = "instance",
+                        yyy = new
+                        {
+                            instanceY = "instanceY"
+                        }
+                    },
+                    options = new
+                    {
+                        xxx = "options",
+                        yyy = new[] { "optionY1", "optionY2" }
+                    },
+                    title = "Dialog Title",
+                    subTitle = "Dialog Sub Title"
+                }
+            },
             { "callstack", new object[]
-            {
-                new {x = 3 },
-                new {x = 2, y = 2 },
-                new {x = 1, y = 1, z = 1 },
-            } }
+                {
+                    new {x = 3 },
+                    new {x = 2, y = 2 },
+                    new {x = 1, y = 1, z = 1 },
+                }
+            }
         };
 
         public static IEnumerable<object[]> Data => new[]
@@ -148,9 +185,9 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("(1 + 2) * 3", 9),
             Test("(one + two) * bag.three", 9.0, new HashSet<string> {"one", "two", "bag.three" }),
             Test("(one + two) * bag.set.four", 12.0, new HashSet<string> {"one", "two", "bag.set.four" } ),
-            // BROKEN DUE TO ^ Memory lookup
-            //Test("2^2", 4.0),
-            //Test("3^2^2", 81.0),
+
+            Test("2^2", 4.0),
+            Test("3^2^2", 81.0),
             Test("one > 0.5 && two < 2.5", true),
             Test("one > 0.5 || two < 1.5", true),
             Test("5 % 2", 1),
@@ -494,12 +531,20 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("@city == 'Bellevue'", false, new HashSet<string> {"turn.recognized.entities.city"}),
             Test("@city", "Seattle", new HashSet<string> {"turn.recognized.entities.city"}),
             Test("@city == 'Seattle'", true, new HashSet<string> {"turn.recognized.entities.city"}),
+            Test("@ordinal[1]", "2", new HashSet<string> {"turn.recognized.entities.ordinal"}),
+            Test("@['city']", "Seattle", new HashSet<string> {"turn.recognized.entities.city"}),
+            Test("@[concat('cit', 'y')]", "Seattle", new HashSet<string> {"turn.recognized.entities"}),
+            Test("@[concat(cit, y)]", "Seattle", new HashSet<string> {"turn.recognized.entities", "cit", "y"}),
             Test("#BookFlight == 'BookFlight'", true, new HashSet<string> {"turn.recognized.intents.BookFlight"}),
+            Test("#BookHotel[1].Where", "Kirkland", new HashSet<string> {"turn.recognized.intents.BookHotel[1].Where"}),
             Test("exists(#BookFlight)", true, new HashSet<string> {"turn.recognized.intents.BookFlight"}),
             Test("$title", "Dialog Title", new HashSet<string> {"dialog.title"}),
             Test("$subTitle", "Dialog Sub Title", new HashSet<string> {"dialog.subTitle"}),
             Test("~xxx", "instance", new HashSet<string> {"dialog.instance.xxx"}),
+            Test("~['yyy'].instanceY", "instanceY", new HashSet<string> {"dialog.instance.yyy.instanceY"}),
             Test("%xxx", "options", new HashSet<string> {"dialog.options.xxx"}),
+            Test("%['xxx']", "options", new HashSet<string> {"dialog.options.xxx"}),
+            Test("%yyy[1]", "optionY2", new HashSet<string> {"dialog.options.yyy[1]"}),
             Test("^x", 3),
             Test("^y", 2),
             Test("^z", 1),

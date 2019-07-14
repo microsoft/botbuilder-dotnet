@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
 using Newtonsoft.Json;
@@ -21,8 +22,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var range = new Range(startPosition, stopPosition);
             msg = $"source: {source}. syntax error message: {msg}";
             var diagnostic = new Diagnostic(range, msg, DiagnosticSeverity.Error);
-
-            throw new Exception(JsonConvert.SerializeObject(diagnostic));
+            throw new LGException(diagnostic.ToString(), new List<Diagnostic>() { diagnostic });
         }
     }
 }

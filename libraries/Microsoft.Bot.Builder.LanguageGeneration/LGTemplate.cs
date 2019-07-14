@@ -64,7 +64,18 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </value>
         public LGFileParser.TemplateDefinitionContext ParseTree { get; }
 
-        private string ExtractBody(LGFileParser.TemplateDefinitionContext parseTree) => parseTree.templateBody()?.GetText();
+        private string ExtractBody(LGFileParser.TemplateDefinitionContext parseTree)
+        {
+            var originText = parseTree.templateBody()?.GetText();
+            if (originText == null)
+            {
+                return null;
+            }
+
+            var eof = "<EOF>";
+            var result = originText.EndsWith(eof) ? originText.Substring(0, originText.Length - eof.Length) : originText;
+            return result.TrimEnd('\r', '\n');
+        }
 
         private string ExtractName(LGFileParser.TemplateDefinitionContext parseTree) => parseTree.templateNameLine().templateName().GetText();
 
