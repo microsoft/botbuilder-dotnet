@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             this.resourceExplorer = resourceExplorer;
             foreach (var resource in this.resourceExplorer.GetResources("lg"))
             {
-                LanguageGenerators[resource.Id] = new TemplateEngineLanguageGenerator(resource.ReadTextAsync().GetAwaiter().GetResult(), importResolver: resourceResolver, name: resource.Id);
+                LanguageGenerators[resource.Id] = new TemplateEngineLanguageGenerator(resource.ReadTextAsync().GetAwaiter().GetResult(), importResolver: ResourceResolver, name: resource.Id);
             }
             this.resourceExplorer.Changed += ResourceExplorer_Changed;
         }
@@ -32,7 +32,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             // reload changed LG files
             foreach (var resource in resources.Where(r => Path.GetExtension(r.Id).ToLower() == ".lg"))
             {
-                LanguageGenerators[resource.Id] = new TemplateEngineLanguageGenerator(resource.ReadTextAsync().GetAwaiter().GetResult(), importResolver: resourceResolver, name: resource.Id);
+                LanguageGenerators[resource.Id] = new TemplateEngineLanguageGenerator(resource.ReadTextAsync().GetAwaiter().GetResult(), importResolver: ResourceResolver, name: resource.Id);
             }
         }
 
@@ -41,17 +41,24 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </summary>
         public ConcurrentDictionary<string, ILanguageGenerator> LanguageGenerators { get; set; } = new ConcurrentDictionary<string, ILanguageGenerator>(StringComparer.OrdinalIgnoreCase);
 
-        private (string, string) resourceResolver(string source, string id)
+        private (string, string) ResourceResolver(string source, string id)
         {
-            var res = resourceExplorer.GetResource(id);
+            var importPath = PathUtils.NormalizePath(id);
+            if (Path.IsPathRooted(importPath))
+            {
+                return (File.ReadAllText(importPath), importPath);
+            }
+
+            var fileName = Path.GetFileName(importPath);
+            var res = resourceExplorer.GetResource(fileName);
 
             // If IResource is FileResource, use full name as the resource key to avoid duplicated imports 
             if (res is FileResource fileRes)
             {
-                id = fileRes.FullName;
+                return (res.ReadTextAsync().GetAwaiter().GetResult(), fileRes.FullName);
             }
 
-            return ((res != null) ? res.ReadTextAsync().GetAwaiter().GetResult() : string.Empty, id);
+            return (string.Empty, id);
         }
     }
 }
