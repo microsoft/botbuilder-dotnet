@@ -3161,7 +3161,7 @@ namespace Microsoft.Bot.Builder.Expressions
                         var result = args[0];
 
                         // fix issue: https://github.com/microsoft/botbuilder-dotnet/issues/1969
-                        while (TryParseList(result, out IList list) && list.Count == 1)
+                        while (TryParseList(result, out IList list) && list.Count >= 1)
                         {
                             result = list[0];
                         }
