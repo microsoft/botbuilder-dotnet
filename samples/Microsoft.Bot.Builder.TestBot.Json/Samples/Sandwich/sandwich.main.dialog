@@ -10,6 +10,7 @@
                 {
                     "$comment": "**** Primary ordering dialog ****",
                     "$type": "Microsoft.AdaptiveDialog",
+                    "recognizer":  "OrderSandwichApp.lu",
                     "rules": [
                         {
                             "$comment": "**** Start of slot mapping over conversation.order as frame ****",
@@ -21,12 +22,12 @@
                             "steps": [
                                 {
                                     "$type": "Microsoft.SendActivity",
-                                    "activity": "Set conversation.order.meat to {first(@meat[0])}"
+                                    "activity": "Set conversation.order.meat to {@meat}"
                                 },
                                 {
                                     "$type": "Microsoft.SetProperty",
                                     "property": "conversation.order.meat",
-                                    "value": "first(@meat[0])"
+                                    "value": "@meat"
                                 },
                                 {
                                     "$comment": "This is a mechanism to keep the rule from running more than once per turn.",
@@ -50,12 +51,12 @@
                             "steps": [
                                 {
                                     "$type": "Microsoft.SendActivity",
-                                    "activity": "Set conversation.order.cheese to {first(@cheese[0])}"
+                                    "activity": "Set conversation.order.cheese to {@cheese}"
                                 },
                                 {
                                     "$type": "Microsoft.SetProperty",
                                     "property": "conversation.order.cheese",
-                                    "value": "first(@cheese[0])"
+                                    "value": "@cheese"
                                 },
                                 {
                                     "$type": "Microsoft.SetProperty",
@@ -78,12 +79,12 @@
                             "steps": [
                                 {
                                     "$type": "Microsoft.SendActivity",
-                                    "activity": "Set conversation.order.bread to {first(@bread[0])}"
+                                    "activity": "Set conversation.order.bread to {@bread}"
                                 },
                                 {
                                     "$type": "Microsoft.SetProperty",
                                     "property": "conversation.order.bread",
-                                    "value": "first(@bread[0])"
+                                    "value": "@bread"
                                 },
                                 {
                                     "$type": "Microsoft.SetProperty",
@@ -106,12 +107,12 @@
                             "steps": [
                                 {
                                     "$type": "Microsoft.SendActivity",
-                                    "activity": "Set conversation.order.topping to {join(foreach(@topping, list, first(list)), ', ')}"
+                                    "activity": "Set conversation.order.topping to {join(foreach(@@topping, list, first(list)), ', ')}"
                                 },
                                 {
                                     "$type": "Microsoft.SetProperty",
                                     "property": "conversation.order.topping",
-                                    "value": "foreach(@topping, list, first(list))"
+                                    "value": "foreach(@@topping, list, first(list))"
                                 },
                                 {
                                     "$type": "Microsoft.SetProperty",
@@ -134,12 +135,12 @@
                             "steps": [
                                 {
                                     "$type": "Microsoft.SendActivity",
-                                    "activity": "Set conversation.order.confirmation to {first(@confirmation[0])}"
+                                    "activity": "Set conversation.order.confirmation to {@confirmation}"
                                 },
                                 {
                                     "$type": "Microsoft.SetProperty",
                                     "property": "conversation.order.confirmation",
-                                    "value": "first(@confirmation[0])"
+                                    "value": "@confirmation"
                                 },
                                 {
                                     "$type": "Microsoft.SetProperty",
