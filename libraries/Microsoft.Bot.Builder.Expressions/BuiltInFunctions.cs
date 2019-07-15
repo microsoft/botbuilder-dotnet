@@ -791,7 +791,6 @@ namespace Microsoft.Bot.Builder.Expressions
         private static object SetProperty(object instance, string property, object value)
         {
             object result = value;
-            property = property.ToLower();
 
             if (instance is IDictionary<string, object> idict)
             {
@@ -3162,7 +3161,7 @@ namespace Microsoft.Bot.Builder.Expressions
                         var result = args[0];
 
                         // fix issue: https://github.com/microsoft/botbuilder-dotnet/issues/1969
-                        while (TryParseList(result, out IList list) && list.Count == 1)
+                        while (TryParseList(result, out IList list) && list.Count >= 1)
                         {
                             result = list[0];
                         }
