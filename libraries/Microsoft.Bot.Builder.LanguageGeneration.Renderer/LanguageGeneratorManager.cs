@@ -43,22 +43,17 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         private (string, string) ResourceResolver(string source, string id)
         {
-            var importPath = PathUtils.NormalizePath(id);
-            if (Path.IsPathRooted(importPath))
+            var resourceName = Path.GetFileName(PathUtils.NormalizePath(id));
+            var res = resourceExplorer.GetResource(resourceName);
+
+            var content = string.Empty;
+
+            if (res != null)
             {
-                return (File.ReadAllText(importPath), importPath);
+                content = res.ReadTextAsync().GetAwaiter().GetResult();
             }
 
-            var fileName = Path.GetFileName(importPath);
-            var res = resourceExplorer.GetResource(fileName);
-
-            // If IResource is FileResource, use full name as the resource key to avoid duplicated imports 
-            if (res is FileResource fileRes)
-            {
-                return (res.ReadTextAsync().GetAwaiter().GetResult(), fileRes.FullName);
-            }
-
-            return (string.Empty, id);
+            return (content, resourceName);
         }
     }
 }
