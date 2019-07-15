@@ -791,7 +791,6 @@ namespace Microsoft.Bot.Builder.Expressions
         private static object SetProperty(object instance, string property, object value)
         {
             object result = value;
-            property = property.ToLower();
 
             if (instance is IDictionary<string, object> idict)
             {
