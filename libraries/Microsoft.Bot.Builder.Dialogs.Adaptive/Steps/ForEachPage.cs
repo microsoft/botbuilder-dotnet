@@ -76,7 +76,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
 
                 if (listProperty == null)
                 {
-                    listProperty = this.ListProperty;
+                    listProperty = new ExpressionEngine().Parse(this.ListProperty);
                 }
 
                 var (itemList, error) = listProperty.TryEvaluate(dc.State);

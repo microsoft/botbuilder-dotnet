@@ -1135,7 +1135,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
                     new ForeachPage()
                     {
-                        ListProperty = new ExpressionEngine().Parse("dialog.todo"),
+                        ListProperty = "dialog.todo",
                         PageSize = 3,
                         ValueProperty = "dialog.page",
                         Steps = new List<IDialog>()
