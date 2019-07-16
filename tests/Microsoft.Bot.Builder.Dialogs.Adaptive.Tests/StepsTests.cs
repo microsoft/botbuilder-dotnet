@@ -682,6 +682,61 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
+        public async Task Step_EditStepReplaceSequence()
+        {
+            var testDialog = new AdaptiveDialog("planningTest")
+            {
+                Recognizer = new RegexRecognizer()
+                {
+                    Intents = new Dictionary<string, string>() {
+                        { "Replace", "(?i)replace" }
+                    }
+                }
+            };
+
+            testDialog.AddRules(new List<IRule>()
+            {
+                new UnknownIntentRule()
+                {
+                    Steps = new List<IDialog>()
+                    {
+                        new TextInput() {
+                            Prompt = new ActivityTemplate("Say replace to replace these steps"),
+                            Property = "turn.tempInput"
+                        },
+                        new SendActivity("You should not see this step if you said replace"),
+                        new RepeatDialog()
+                    }
+                },
+                new IntentRule() {
+                    Intent = "Replace",
+                    Steps = new List<IDialog>() {
+                        new SendActivity("I'm going to replace the original steps via EditSteps"),
+                        new EditSteps() {
+                            ChangeType = StepChangeTypes.ReplaceSequence,
+                            Steps = new List<IDialog>() {
+                                new SendActivity("New steps..."),
+                                new TextInput() {
+                                    Prompt = new ActivityTemplate("What's your name?"),
+                                    Property = "turn.tempInput"
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            await CreateFlow(testDialog)
+            .Send("hi")
+                .AssertReply("Say replace to replace these steps")
+            .Send("replace")
+                .AssertReply("I'm going to replace the original steps via EditSteps")
+                .AssertReply("New steps...")
+                .AssertReply("What's your name?")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
         public async Task Step_DoSteps()
         {
             var testDialog = new AdaptiveDialog("planningTest");
