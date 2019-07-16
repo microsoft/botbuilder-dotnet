@@ -383,20 +383,21 @@ namespace Microsoft.Bot.Builder.AI.Luis
 
                     if (options.PreferExternalEntities.HasValue)
                     {
-                        queryOptions.Add("overridePredictions", options.PreferExternalEntities.Value.ToString());
+                        queryOptions.Add("overridePredictions", options.PreferExternalEntities.Value);
                     }
 
-                    content.Add("options", queryOptions.ToString());
+                    content.Add("options", queryOptions);
                 }
 
+                var settings = new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore };
                 if (options.DynamicLists != null)
                 {
-                    content.Add("dynamicLists", JsonConvert.SerializeObject(options.DynamicLists));
+                    content.Add("dynamicLists", (JArray)JsonConvert.DeserializeObject(JsonConvert.SerializeObject(options.DynamicLists, settings)));
                 }
 
                 if (options.ExternalEntities != null)
                 {
-                    content.Add("externalEntities", JsonConvert.SerializeObject(options.ExternalEntities));
+                    content.Add("externalEntities", (JArray)JsonConvert.DeserializeObject(JsonConvert.SerializeObject(options.ExternalEntities, settings)));
                 }
 
                 if (options.Version == null)

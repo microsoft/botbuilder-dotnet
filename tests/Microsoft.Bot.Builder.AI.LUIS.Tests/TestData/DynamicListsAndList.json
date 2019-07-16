@@ -1,0 +1,208 @@
+{
+  "entities": {
+    "$instance": {
+      "Airline": [
+        {
+          "endIndex": 21,
+          "startIndex": 4,
+          "text": "zimbabwe airlines",
+          "type": "Airline"
+        },
+        {
+          "endIndex": 39,
+          "startIndex": 25,
+          "text": "delta airlines",
+          "type": "Airline"
+        }
+      ],
+      "geographyV2": [
+        {
+          "endIndex": 12,
+          "startIndex": 4,
+          "text": "zimbabwe",
+          "type": "builtin.geographyV2.countryRegion"
+        }
+      ]
+    },
+    "Airline": [
+      [
+        "ZimAir"
+      ],
+      [
+        "DeltaAir"
+      ]
+    ],
+    "geographyV2": [
+      {
+        "location": "zimbabwe",
+        "type": "countryRegion"
+      }
+    ]
+  },
+  "intents": {
+    "Cancel": {
+      "score": 0.00482513
+    },
+    "Delivery": {
+      "score": 0.005328356
+    },
+    "EntityTests": {
+      "score": 0.03701389
+    },
+    "Greeting": {
+      "score": 0.00301943021
+    },
+    "Help": {
+      "score": 0.004252343
+    },
+    "None": {
+      "score": 0.0181404836
+    },
+    "Roles": {
+      "score": 0.16424033
+    },
+    "search": {
+      "score": 0.008311689
+    },
+    "SpecifyName": {
+      "score": 0.006090253
+    },
+    "Travel": {
+      "score": 0.0129789291
+    },
+    "Weather_GetForecast": {
+      "score": 0.008601671
+    }
+  },
+  "sentiment": {
+    "label": "neutral",
+    "score": 0.5
+  },
+  "text": "fly zimbabwe airlines or delta airlines",
+  "v3": {
+    "options": {
+      "DynamicLists": [
+        {
+          "listEntityName": "Airline",
+          "requestLists": [
+            {
+              "canonicalForm": "ZimAir",
+              "synonyms": [
+                "zimbabwe airlines"
+              ]
+            },
+            {
+              "canonicalForm": "DeltaAir",
+              "synonyms": [
+                "delta airlines"
+              ]
+            }
+          ]
+        }
+      ],
+      "IncludeAllIntents": true,
+      "IncludeInstanceData": true,
+      "LogPersonalInformation": false,
+      "Slot": "production",
+      "Timeout": 100000.0
+    },
+    "response": {
+      "prediction": {
+        "entities": {
+          "$instance": {
+            "Airline": [
+              {
+                "length": 17,
+                "modelType": "List Entity Extractor",
+                "modelTypeId": 5,
+                "recognitionSources": [
+                  "model"
+                ],
+                "startIndex": 4,
+                "text": "zimbabwe airlines",
+                "type": "Airline"
+              },
+              {
+                "length": 14,
+                "modelType": "List Entity Extractor",
+                "modelTypeId": 5,
+                "recognitionSources": [
+                  "model"
+                ],
+                "startIndex": 25,
+                "text": "delta airlines",
+                "type": "Airline"
+              }
+            ],
+            "geographyV2": [
+              {
+                "length": 8,
+                "modelType": "Prebuilt Entity Extractor",
+                "modelTypeId": 2,
+                "recognitionSources": [
+                  "model"
+                ],
+                "startIndex": 4,
+                "text": "zimbabwe",
+                "type": "builtin.geographyV2.countryRegion"
+              }
+            ]
+          },
+          "Airline": [
+            [
+              "ZimAir"
+            ],
+            [
+              "DeltaAir"
+            ]
+          ],
+          "geographyV2": [
+            "zimbabwe"
+          ]
+        },
+        "intents": {
+          "Cancel": {
+            "score": 0.00482513
+          },
+          "Delivery": {
+            "score": 0.005328356
+          },
+          "EntityTests": {
+            "score": 0.03701389
+          },
+          "Greeting": {
+            "score": 0.00301943021
+          },
+          "Help": {
+            "score": 0.004252343
+          },
+          "None": {
+            "score": 0.0181404836
+          },
+          "Roles": {
+            "score": 0.16424033
+          },
+          "search": {
+            "score": 0.008311689
+          },
+          "SpecifyName": {
+            "score": 0.006090253
+          },
+          "Travel": {
+            "score": 0.0129789291
+          },
+          "Weather.GetForecast": {
+            "score": 0.008601671
+          }
+        },
+        "normalizedQuery": "fly zimbabwe airlines or delta airlines",
+        "sentiment": {
+          "label": "neutral",
+          "score": 0.5
+        },
+        "topIntent": "Roles"
+      },
+      "query": "fly zimbabwe airlines or delta airlines"
+    }
+  }
+}

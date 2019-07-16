@@ -43,27 +43,30 @@ namespace Microsoft.Bot.Builder.AI.Luis
 
         internal static void GeographyTypes(JToken source, Dictionary<string, string> geoTypes)
         {
-            if (source is JObject obj)
+            if (source != null)
             {
-                if (obj.TryGetValue("type", out var type) && type.Type == JTokenType.String && type.Value<string>().StartsWith(_geoV2))
+                if (source is JObject obj)
                 {
-                    var path = type.Path.Replace(_metadataKey + ".", string.Empty);
-                    path = path.Substring(0, path.LastIndexOf('.'));
-                    geoTypes.Add(path, type.Value<string>().Substring(_geoV2.Length));
-                }
-                else
-                {
-                    foreach (var property in obj.Properties())
+                    if (obj.TryGetValue("type", out var type) && type.Type == JTokenType.String && type.Value<string>().StartsWith(_geoV2))
                     {
-                        GeographyTypes(property.Value, geoTypes);
+                        var path = type.Path.Replace(_metadataKey + ".", string.Empty);
+                        path = path.Substring(0, path.LastIndexOf('.'));
+                        geoTypes.Add(path, type.Value<string>().Substring(_geoV2.Length));
+                    }
+                    else
+                    {
+                        foreach (var property in obj.Properties())
+                        {
+                            GeographyTypes(property.Value, geoTypes);
+                        }
                     }
                 }
-            }
-            else if (source is JArray arr)
-            {
-                foreach (var elt in arr)
+                else if (source is JArray arr)
                 {
-                    GeographyTypes(elt, geoTypes);
+                    foreach (var elt in arr)
+                    {
+                        GeographyTypes(elt, geoTypes);
+                    }
                 }
             }
         }

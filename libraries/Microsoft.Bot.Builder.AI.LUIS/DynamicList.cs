@@ -57,7 +57,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
             // Required: ListEntityName, RequestLists
             if (Entity == null || RequestLists == null)
             {
-                throw new Microsoft.Rest.ValidationException($"DynamicList requires ListEntityName and RequestLists be defined.");
+                throw new Microsoft.Rest.ValidationException($"DynamicList requires Entity and RequestLists be defined.");
             }
         }
     }

@@ -191,6 +191,11 @@ namespace Microsoft.Bot.Builder.AI.Luis.TestUtils
                 expectedJson = (JObject)await JToken.ReadFromAsync(expectedJsonReader);
             }
 
+            if (expectedJson[version] == null)
+            {
+                expectedJson[version] = new JObject();
+            }
+
             var oldResponse = expectedJson[version].DeepClone();
             var newPath = expectedPath + ".new";
             var query = expectedJson["text"].ToString();

@@ -6,7 +6,7 @@
           "endIndex": 33,
           "score": 0.9818366,
           "startIndex": 25,
-          "text": "12346 wa",
+          "text": "12346 WA",
           "type": "Address"
         }
       ],
@@ -15,7 +15,7 @@
           "endIndex": 21,
           "score": 0.9345161,
           "startIndex": 13,
-          "text": "12345 va",
+          "text": "12345 VA",
           "type": "Address"
         }
       ]
@@ -36,7 +36,7 @@
               "endIndex": 33,
               "score": 0.9893861,
               "startIndex": 31,
-              "text": "wa",
+              "text": "WA",
               "type": "State"
             }
           ]
@@ -45,7 +45,7 @@
           12346
         ],
         "State": [
-          "wa"
+          "WA"
         ]
       }
     ],
@@ -65,7 +65,7 @@
               "endIndex": 21,
               "score": 0.941649556,
               "startIndex": 19,
-              "text": "va",
+              "text": "VA",
               "type": "State"
             }
           ]
@@ -74,7 +74,7 @@
           12345
         ],
         "State": [
-          "va"
+          "VA"
         ]
       }
     ]
@@ -273,17 +273,11 @@
   },
   "v3": {
     "options": {
-      "DatetimeReference": null,
-      "DynamicLists": null,
-      "ExternalEntities": null,
       "IncludeAllIntents": true,
       "IncludeInstanceData": true,
-      "Log": null,
       "LogPersonalInformation": false,
-      "PreferExternalEntities": null,
       "Slot": "production",
-      "Timeout": 100000.0,
-      "Version": null
+      "Timeout": 100000.0
     },
     "response": {
       "prediction": {

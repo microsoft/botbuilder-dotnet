@@ -19,13 +19,13 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <summary>
         /// Initializes a new instance of the <see cref="ExternalEntity"/> class.
         /// </summary>
-        /// <param name="enntity">The name of the entity to extend.</param>
+        /// <param name="entity">The name of the entity to extend.</param>
         /// <param name="start">The start character index of the predicted entity.</param>
         /// <param name="length">The length of the predicted entity.</param>
         /// <param name="resolution">A user supplied custom resolution to return as the entity's prediction.</param>
-        public ExternalEntity(string enntity, int start, int length, object resolution = null)
+        public ExternalEntity(string entity, int start, int length, object resolution = null)
         {
-            Entity = enntity;
+            Entity = entity;
             Start = start;
             Length = length;
             Resolution = resolution;

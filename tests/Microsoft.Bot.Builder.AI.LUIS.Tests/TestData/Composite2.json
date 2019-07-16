@@ -260,17 +260,11 @@
   },
   "v3": {
     "options": {
-      "DatetimeReference": null,
-      "DynamicLists": null,
-      "ExternalEntities": null,
       "IncludeAllIntents": true,
       "IncludeInstanceData": true,
-      "Log": null,
       "LogPersonalInformation": false,
-      "PreferExternalEntities": null,
       "Slot": "production",
-      "Timeout": 100000.0,
-      "Version": null
+      "Timeout": 100000.0
     },
     "response": {
       "prediction": {
