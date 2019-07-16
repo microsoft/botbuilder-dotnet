@@ -201,6 +201,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             return new TestFlow(adapter, handler);
         }
 
-        private readonly ImportResolverDelegate DefaultResolver = LanguageGeneratorManager.resourceResolver(resourceExplorer);
+        private readonly ImportResolverDelegate DefaultResolver = LanguageGeneratorManager.ResourceResolver(resourceExplorer);
     }
 }
