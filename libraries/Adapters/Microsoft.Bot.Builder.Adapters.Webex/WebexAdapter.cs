@@ -53,13 +53,13 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                 throw new Exception("AccessToken required to create controller");
             }
 
-            if (this.config.PublicAdress != null)
+            if (this.config.PublicAddress != null)
             {
-                var endpoint = new Uri(this.config.PublicAdress);
+                var endpoint = new Uri(this.config.PublicAddress);
 
                 if (endpoint.Host != null)
                 {
-                    this.config.PublicAdress = endpoint.Host;
+                    this.config.PublicAddress = endpoint.Host;
                 }
                 else
                 {
@@ -105,7 +105,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
 
             await this.GetIdentityAsync().ContinueWith((task) => botkit.CompleteDep("webex-identity"));
 
-            botkit.Ready(() => { (botkit.Adapter as WebexAdapter).RegisterWebhookSubscription(botkit.GetConfig("webhook_uri").ToString()); });
+            botkit.Ready(async () => { await (botkit.Adapter as WebexAdapter).RegisterWebhookSubscriptionAsync(botkit.GetConfig("webhook_uri").ToString()); });
         }
 
         /// <summary>
@@ -127,11 +127,12 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// Register a webhook subscription with Webex Teams to start receiving message events.
         /// </summary>
         /// <param name="webhookPath">The path of the webhook endpoint like `/api/messages`.</param>
-        public void RegisterWebhookSubscription(string webhookPath)
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        public async Task RegisterWebhookSubscriptionAsync(string webhookPath)
         {
             var webHookName = this.config.WebhookName ?? "Botkit Firehose";
 
-            this.api.ListWebhooksAsync().ContinueWith(async (task) =>
+            await this.api.ListWebhooksAsync().ContinueWith(async (task) =>
             {
                 string hookId = null;
 
@@ -143,7 +144,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                     }
                 }
 
-                var hookURL = "https://" + this.config.PublicAdress + webhookPath;
+                var hookURL = "https://" + this.config.PublicAddress + webhookPath;
 
                 if (hookId != null)
                 {

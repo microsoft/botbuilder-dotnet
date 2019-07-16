@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// Gets or sets the root URL of your bot application.  Something like `https://mybot.com/`.
         /// </summary>
         /// <value>the root URL of your bot application.</value>
-        string PublicAdress { get; set; }
+        string PublicAddress { get; set; }
 
         /// <summary>
         /// Gets or sets a name for the webhook subscription that will be created to tell Webex to send your bot webhooks.
