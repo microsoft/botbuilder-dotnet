@@ -74,7 +74,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         public string DefaultValue
         {
             get { return defaultValue?.ToString(); }
-            set { lock(this) defaultValue = (defaultValue != null) ? new ExpressionEngine().Parse(value) : null; }
+            set { lock(this) defaultValue = (value != null) ? new ExpressionEngine().Parse(value) : null; }
         }
 
         /// <summary>

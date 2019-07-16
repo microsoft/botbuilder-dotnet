@@ -20,9 +20,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
     /// </summary>
     public class ForeachPage : DialogCommand, IDialogDependencies
     {
+        private Expression listProperty;
+
         // Expression used to compute the list that should be enumerated.
         [JsonProperty("listProperty")]
-        public Expression ListProperty { get; set; }
+        public string ListProperty
+        {
+            get { return listProperty?.ToString(); }
+            set { this.listProperty = (value != null) ? new ExpressionEngine().Parse(value) : null; }
+        }
 
         [JsonProperty("pageSize")]
         public int PageSize { get; set; } = 10;

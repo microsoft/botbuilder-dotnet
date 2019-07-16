@@ -324,6 +324,36 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
+        public async Task Step_NumberInputWithDefaultValue()
+        {
+            var testDialog = new AdaptiveDialog("planningTest");
+
+            testDialog.AddRules(new List<IRule>()
+            {
+                new UnknownIntentRule
+                {
+                    Steps = new List<IDialog>()
+                    {
+                        new NumberInput() {
+                            MaxTurnCount = 1,
+                            DefaultValue = "10",
+                            Prompt = new ActivityTemplate("What is your age?"),
+                            Property = "turn.age"
+                        },
+                        new SendActivity("You said {turn.age}")
+                    }
+                }
+            });
+
+            await CreateFlow(testDialog)
+            .Send("hi")
+                .AssertReply("What is your age?")
+            .Send("hi")
+                .AssertReply("You said 10")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
         public async Task Step_ConfirmInput()
         {
             var testDialog = new AdaptiveDialog("planningTest")
