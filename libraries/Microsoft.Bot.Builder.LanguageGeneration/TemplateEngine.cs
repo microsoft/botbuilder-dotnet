@@ -75,6 +75,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <returns>Template engine with the parsed content.</returns>
         public TemplateEngine AddText(string content, string id, ImportResolverDelegate importResolver)
         {
+            CheckResolverDelegate(id, importResolver);
             var rootResource = LGParser.Parse(content, id);
             var lgResources = rootResource.DiscoverDependencies(importResolver);
             Templates.AddRange(lgResources.SelectMany(x => x.Templates));
@@ -153,6 +154,26 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             var evaluator = new Evaluator(templates, methodBinder);
             return evaluator.EvaluateTemplate(fakeTemplateId, scope);
+        }
+
+        private void CheckResolverDelegate(string id, ImportResolverDelegate importResolver)
+        {
+            // Currently if no resolver is passed into AddText(),
+            // the default fileResolver is used to resolve the imports.
+            // default fileResolver require resource id should be fullPath,
+            // so that it can resolve relative path based on this fullPath.
+            // But we didn't check the id provided with AddText is fullPath or not.
+            // So when id != fullPath, fileResolver won't work.
+            if (importResolver != null)
+            {
+                return;
+            }
+
+            var importPath = ImportResolver.NormalizePath(id);
+            if (!Path.IsPathRooted(importPath) )
+            {
+                throw new Exception("ImportResolver can't be empty when using AddText unless id is full path string");
+            }
         }
     }
 }
