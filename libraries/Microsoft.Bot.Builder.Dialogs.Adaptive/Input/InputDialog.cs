@@ -292,6 +292,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         {
             dynamic input = null;
 
+            // If AlwaysPrompt is set to true, the Property value will be cleared.
+            if (!string.IsNullOrEmpty(this.Property) && this.AlwaysPrompt)
+            {
+                dc.State.SetValue(this.Property, null);
+            }
+            
+            // If AlwaysPrompt is set to false, try to get the Property value first.
             if (!string.IsNullOrEmpty(this.Property) && !this.AlwaysPrompt)
             {
                 input = dc.State.GetValue(this.Property, null);
