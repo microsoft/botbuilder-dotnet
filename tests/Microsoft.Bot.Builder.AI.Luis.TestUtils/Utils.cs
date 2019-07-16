@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.TestUtils
 {
     public class Utils
     {
-        public static TurnContext GetContext(string utterance)
+        public static ITurnContext GetContext(string utterance)
         {
             var testAdapter = new TestAdapter();
             var activity = new Activity
@@ -28,7 +28,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.TestUtils
             return new TurnContext(testAdapter, activity);
         }
 
-        public static TurnContext GetNonMessageContext(string utterance)
+        public static ITurnContext GetNonMessageContext(string utterance)
         {
             var b = new TestAdapter();
             var a = new Activity
@@ -182,7 +182,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.TestUtils
         // 3) Check the .new file and if correct, replace the original .json file with it.
         // The version parameter controls where in the expected json the luisResult is put.  This allows multiple endpoint responses like from
         // LUIS V2 and V3 endpoints.
-        public static async Task TestJsonOracle<T>(string expectedPath, string version, Func<JObject, IRecognizer> buildRecognizer)
+        public static async Task TestJsonOracle<T>(string expectedPath, string version, Func<JObject, IRecognizer> buildRecognizer, ITurnContext turnContext = null)
             where T : IRecognizerConvert, new()
         {
             JObject expectedJson;
@@ -199,7 +199,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.TestUtils
             var oldResponse = expectedJson[version].DeepClone();
             var newPath = expectedPath + ".new";
             var query = expectedJson["text"].ToString();
-            var context = GetContext(query);
+            var context = turnContext ?? GetContext(query);
             var luisRecognizer = buildRecognizer(expectedJson);
             var typedResult = await luisRecognizer.RecognizeAsync<T>(context, CancellationToken.None);
             var typedJson = Utils.Json(typedResult, version, expectedJson);

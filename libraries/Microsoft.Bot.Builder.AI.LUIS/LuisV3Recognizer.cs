@@ -392,11 +392,21 @@ namespace Microsoft.Bot.Builder.AI.Luis
                 var settings = new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore };
                 if (options.DynamicLists != null)
                 {
+                    foreach (var list in options.DynamicLists)
+                    {
+                        list.Validate();
+                    }
+
                     content.Add("dynamicLists", (JArray)JsonConvert.DeserializeObject(JsonConvert.SerializeObject(options.DynamicLists, settings)));
                 }
 
                 if (options.ExternalEntities != null)
                 {
+                    foreach (var entity in options.ExternalEntities)
+                    {
+                        entity.Validate();
+                    }
+
                     content.Add("externalEntities", (JArray)JsonConvert.DeserializeObject(JsonConvert.SerializeObject(options.ExternalEntities, settings)));
                 }
 

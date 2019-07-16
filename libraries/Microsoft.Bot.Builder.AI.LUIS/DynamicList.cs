@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
         public DynamicList(string entity, IList<ListElement> requestLists)
         {
             Entity = entity;
-            RequestLists = requestLists;
+            List = requestLists;
         }
 
         /// <summary>
@@ -44,7 +44,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// The lists to append on the extended list entity.
         /// </value>
         [JsonProperty(PropertyName = "requestLists")]
-        public IList<ListElement> RequestLists { get; set; }
+        public IList<ListElement> List { get; set; }
 
         /// <summary>
         /// Validate the object.
@@ -55,9 +55,9 @@ namespace Microsoft.Bot.Builder.AI.Luis
         public virtual void Validate()
         {
             // Required: ListEntityName, RequestLists
-            if (Entity == null || RequestLists == null)
+            if (Entity == null || List == null)
             {
-                throw new Microsoft.Rest.ValidationException($"DynamicList requires Entity and RequestLists be defined.");
+                throw new Microsoft.Rest.ValidationException($"DynamicList requires Entity and List to be defined.");
             }
         }
     }
