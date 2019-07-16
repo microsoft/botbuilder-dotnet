@@ -46,12 +46,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var resourceName = Path.GetFileName(PathUtils.NormalizePath(id));
             var res = resourceExplorer.GetResource(resourceName);
 
-            var content = string.Empty;
-
-            if (res != null)
-            {
-                content = res.ReadTextAsync().GetAwaiter().GetResult();
-            }
+            var content = res?.ReadTextAsync().GetAwaiter().GetResult();
 
             return (content, resourceName);
         }
