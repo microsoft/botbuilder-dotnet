@@ -62,18 +62,12 @@ namespace Microsoft.Bot.Builder.Dialogs
             // Check for end of inner dialog
             if (turnResult.Status != DialogTurnStatus.Waiting)
             {
-                if (turnResult.Status == DialogTurnStatus.Cancelled)
-                {
-                    await EndComponentAsync(outerDc, turnResult.Result, cancellationToken).ConfigureAwait(false);
-                    return new DialogTurnResult(DialogTurnStatus.Cancelled, turnResult.Result);
-                }
-
                 // Return result to calling dialog
                 return await EndComponentAsync(outerDc, turnResult.Result, cancellationToken).ConfigureAwait(false);
             }
 
             // Just signal waiting
-            return Dialog.EndOfTurn;
+            return EndOfTurn;
         }
 
         public override async Task<DialogTurnResult> ContinueDialogAsync(DialogContext outerDc, CancellationToken cancellationToken = default(CancellationToken))
@@ -91,16 +85,11 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             if (turnResult.Status != DialogTurnStatus.Waiting)
             {
-                if (turnResult.Status == DialogTurnStatus.Cancelled)
-                {
-                    await EndComponentAsync(outerDc, turnResult.Result, cancellationToken).ConfigureAwait(false);
-                    return new DialogTurnResult(DialogTurnStatus.Cancelled, turnResult.Result);
-                }
-
+                // Return result to calling dialog
                 return await EndComponentAsync(outerDc, turnResult.Result, cancellationToken).ConfigureAwait(false);
             }
 
-            return Dialog.EndOfTurn;
+            return EndOfTurn;
         }
 
         public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext outerDc, DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))
