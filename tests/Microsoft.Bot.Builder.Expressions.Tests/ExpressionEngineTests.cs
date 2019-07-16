@@ -531,7 +531,8 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("@city == 'Bellevue'", false, new HashSet<string> {"turn.recognized.entities.city"}),
             Test("@city", "Seattle", new HashSet<string> {"turn.recognized.entities.city"}),
             Test("@city == 'Seattle'", true, new HashSet<string> {"turn.recognized.entities.city"}),
-            Test("@ordinal[1]", "2", new HashSet<string> {"turn.recognized.entities.ordinal"}),
+            Test("@ordinal", "1", new HashSet<string> {"turn.recognized.entities.ordinal"}),
+            Test("@@ordinal[1]", "2", new HashSet<string> {"turn.recognized.entities.ordinal[1]"}),
             Test("@['city']", "Seattle", new HashSet<string> {"turn.recognized.entities.city"}),
             Test("@[concat('cit', 'y')]", "Seattle", new HashSet<string> {"turn.recognized.entities"}),
             Test("@[concat(cit, y)]", "Seattle", new HashSet<string> {"turn.recognized.entities", "cit", "y"}),
@@ -564,12 +565,12 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             #endregion
 
             # region Dialog 
-            Test("user.lists.todo[int(@ordinal[0]) - 1] != null", true),
-            Test("user.lists.todo[int(@ordinal[0]) + 3] != null", false),
-            Test("count(user.lists.todo) > int(@ordinal[0]))", true),
-            Test("count(user.lists.todo) >= int(@ordinal[0]))", true),
-            Test("user.lists.todo[int(@ordinal[0]) - 1]", "todo1"),
-            Test("user.lists[user.listType][int(@ordinal[0]) - 1]", "todo1"),
+            Test("user.lists.todo[int(@@ordinal[0]) - 1] != null", true),
+            Test("user.lists.todo[int(@@ordinal[0]) + 3] != null", false),
+            Test("count(user.lists.todo) > int(@@ordinal[0]))", true),
+            Test("count(user.lists.todo) >= int(@@ordinal[0]))", true),
+            Test("user.lists.todo[int(@@ordinal[0]) - 1]", "todo1"),
+            Test("user.lists[user.listType][int(@@ordinal[0]) - 1]", "todo1"),
             #endregion
 
             # region Regex

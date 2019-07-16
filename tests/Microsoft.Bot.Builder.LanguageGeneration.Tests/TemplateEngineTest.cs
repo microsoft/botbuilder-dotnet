@@ -200,7 +200,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void TestBasicInlineTemplate()
         {
-            var emptyEngine = new TemplateEngine().AddText(content: String.Empty, name: "test", importResolver: null);
+            var emptyEngine = new TemplateEngine().AddText(content: String.Empty, id: "test", importResolver: null);
             Assert.AreEqual(emptyEngine.Evaluate("Hi"), "Hi");
             Assert.AreEqual(emptyEngine.Evaluate("Hi", null), "Hi");
             Assert.AreEqual(emptyEngine.Evaluate("Hi {name}", new { name = "DL" }), "Hi DL");
@@ -436,7 +436,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             // Assert 6.lg of absolute path is imported from text.
             var importedFilePath = GetExampleFilePath("6.lg");
-            engine = new TemplateEngine().AddText(content: "# basicTemplate\r\n- Hi\r\n- Hello\r\n[import](" + importedFilePath + ")", name: "test", importResolver: null);
+            engine = new TemplateEngine().AddText(content: "# basicTemplate\r\n- Hi\r\n- Hello\r\n[import](" + importedFilePath + ")", id: "test", importResolver: null);
 
             Assert.AreEqual(8, engine.Templates.Count());
 
@@ -454,7 +454,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                 "Hello DL :)" == evaled);
 
             // Assert 6.lg of relative path is imported from text.
-            engine = new TemplateEngine().AddText(content: "# basicTemplate\r\n- Hi\r\n- Hello\r\n[import](./Examples/6.lg)", name: "test", importResolver: null);
+            engine = new TemplateEngine().AddText(content: "# basicTemplate\r\n- Hi\r\n- Hello\r\n[import](./Examples/6.lg)", id: "test", importResolver: null);
 
             Assert.AreEqual(8, engine.Templates.Count());
 
