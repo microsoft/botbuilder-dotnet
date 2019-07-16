@@ -70,12 +70,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// Add text as lg file content to template engine.
         /// </summary>
         /// <param name="content">Text content contains lg templates.</param>
-        /// <param name="name">Text name.</param>
+        /// <param name="id">Text name.</param>
         /// <param name="importResolver">resolver to resolve LG import id to template text.</param>
         /// <returns>Template engine with the parsed content.</returns>
-        public TemplateEngine AddText(string content, string name, ImportResolverDelegate importResolver)
+        public TemplateEngine AddText(string content, string id, ImportResolverDelegate importResolver)
         {
-            var rootResource = LGParser.Parse(content, name);
+            var rootResource = LGParser.Parse(content, id);
             var lgResources = rootResource.DiscoverDependencies(importResolver);
             Templates.AddRange(lgResources.SelectMany(x => x.Templates));
             RunStaticCheck(Templates);
