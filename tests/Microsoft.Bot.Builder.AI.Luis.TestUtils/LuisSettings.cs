@@ -24,6 +24,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.TestUtils
         // 5) Run the review.cmd file to review each file if approved the new oracle file will replace the old one.
         // Changing this to false will cause running against the actual LUIS service.
         // This is useful in order to see if the oracles for mocking or testing have changed.
+        // TODO: set to true
         public bool Mock { get; set; } = true;
 
         public void GetEnvironmentVars()

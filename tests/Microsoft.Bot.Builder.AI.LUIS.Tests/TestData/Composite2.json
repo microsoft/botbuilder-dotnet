@@ -4,6 +4,10 @@
       "Composite2": [
         {
           "endIndex": 69,
+          "modelType": "Composite Entity Extractor",
+          "recognitionSources": [
+            "model"
+          ],
           "score": 0.97076714,
           "startIndex": 0,
           "text": "http://foo.com is where you can fly from seattle to dallas via denver",
@@ -13,6 +17,10 @@
       "geographyV2": [
         {
           "endIndex": 48,
+          "modelType": "Prebuilt Entity Extractor",
+          "recognitionSources": [
+            "model"
+          ],
           "startIndex": 41,
           "text": "seattle",
           "type": "builtin.geographyV2.city"
@@ -25,6 +33,10 @@
           "City": [
             {
               "endIndex": 69,
+              "modelType": "Hierarchical Entity Extractor",
+              "recognitionSources": [
+                "model"
+              ],
               "score": 0.984581649,
               "startIndex": 63,
               "text": "denver",
@@ -34,6 +46,10 @@
           "From": [
             {
               "endIndex": 48,
+              "modelType": "Hierarchical Entity Extractor",
+              "recognitionSources": [
+                "model"
+              ],
               "score": 0.999511,
               "startIndex": 41,
               "text": "seattle",
@@ -43,6 +59,10 @@
           "To": [
             {
               "endIndex": 58,
+              "modelType": "Hierarchical Entity Extractor",
+              "recognitionSources": [
+                "model"
+              ],
               "score": 0.9984612,
               "startIndex": 52,
               "text": "dallas",
@@ -52,6 +72,10 @@
           "url": [
             {
               "endIndex": 14,
+              "modelType": "Prebuilt Entity Extractor",
+              "recognitionSources": [
+                "model"
+              ],
               "startIndex": 0,
               "text": "http://foo.com",
               "type": "builtin.url"

@@ -1,0 +1,144 @@
+{
+  "entities": {
+    "Airline": [
+      [
+        "Delta"
+      ]
+    ],
+    "datetime": [
+      {
+        "timex": [
+          "2019-07-17T15"
+        ],
+        "type": "datetime"
+      }
+    ],
+    "dimension": [
+      {
+        "number": 3,
+        "units": "Picometer"
+      }
+    ]
+  },
+  "intents": {
+    "Roles": {
+      "score": 0.489722282
+    }
+  },
+  "sentiment": {
+    "label": "neutral",
+    "score": 0.5
+  },
+  "text": "fly on delta tomorrow at 3pm",
+  "v2": {
+    "options": {
+      "BingSpellCheckSubscriptionKey": null,
+      "IncludeAllIntents": false,
+      "IncludeInstanceData": false,
+      "Log": null,
+      "LogPersonalInformation": false,
+      "SpellCheck": null,
+      "Staging": null,
+      "Timeout": 100000.0,
+      "TimezoneOffset": null
+    },
+    "response": {
+      "entities": [
+        {
+          "endIndex": 27,
+          "entity": "tomorrow at 3pm",
+          "resolution": {
+            "values": [
+              {
+                "timex": "2019-07-17T15",
+                "type": "datetime",
+                "value": "2019-07-17 15:00:00"
+              }
+            ]
+          },
+          "startIndex": 13,
+          "type": "builtin.datetimeV2.datetime"
+        },
+        {
+          "endIndex": 27,
+          "entity": "3pm",
+          "resolution": {
+            "unit": "Picometer",
+            "value": "3"
+          },
+          "startIndex": 25,
+          "type": "builtin.dimension"
+        },
+        {
+          "endIndex": 11,
+          "entity": "delta",
+          "resolution": {
+            "values": [
+              "Delta"
+            ]
+          },
+          "startIndex": 7,
+          "type": "Airline"
+        }
+      ],
+      "query": "fly on delta tomorrow at 3pm",
+      "sentimentAnalysis": {
+        "label": "neutral",
+        "score": 0.5
+      },
+      "topScoringIntent": {
+        "intent": "Roles",
+        "score": 0.489722282
+      }
+    }
+  },
+  "v3": {
+    "options": {
+      "IncludeAllIntents": false,
+      "IncludeInstanceData": false,
+      "LogPersonalInformation": false,
+      "Slot": "production",
+      "Timeout": 100000.0
+    },
+    "response": {
+      "prediction": {
+        "entities": {
+          "Airline": [
+            [
+              "Delta"
+            ]
+          ],
+          "datetimeV2": [
+            {
+              "type": "datetime",
+              "values": [
+                {
+                  "timex": "2019-07-17T15",
+                  "value": "2019-07-17 15:00:00"
+                }
+              ]
+            }
+          ],
+          "dimension": [
+            {
+              "number": 3,
+              "unit": "Picometer"
+            }
+          ]
+        },
+        "intents": {
+          "Roles": {
+            "score": 0.489722282
+          }
+        },
+        "normalizedQuery": "fly on delta tomorrow at 3pm",
+        "sentiment": {
+          "label": "neutral",
+          "score": 0.5
+        },
+        "topIntent": "Roles"
+      },
+      "query": "fly on delta tomorrow at 3pm"
+    }
+  }
+}

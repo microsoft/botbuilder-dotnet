@@ -245,6 +245,12 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
         public async Task GeoPeopleOrdinal() => await TestJson<RecognizerResult>("GeoPeopleOrdinal.json");
 
         [TestMethod]
+        public async Task Minimal() => await TestJson<RecognizerResult>("Minimal.json");
+
+        [TestMethod]
+        public async Task MinimalWithGeo() => await TestJson<RecognizerResult>("MinimalWithGeo.json");
+
+        [TestMethod]
         public async Task PrebuiltDomains() => await TestJson<RecognizerResult>("Prebuilt.json");
 
         [TestMethod]

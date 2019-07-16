@@ -4,6 +4,10 @@
       "Address": [
         {
           "endIndex": 13,
+          "modelType": "Composite Entity Extractor",
+          "recognitionSources": [
+            "model"
+          ],
           "score": 0.7033113,
           "startIndex": 8,
           "text": "37 wa",
@@ -13,6 +17,10 @@
       "number": [
         {
           "endIndex": 19,
+          "modelType": "Prebuilt Entity Extractor",
+          "recognitionSources": [
+            "model"
+          ],
           "startIndex": 17,
           "text": "82",
           "type": "builtin.number"
@@ -21,6 +29,10 @@
       "State": [
         {
           "endIndex": 22,
+          "modelType": "Entity Extractor",
+          "recognitionSources": [
+            "externalEntities"
+          ],
           "startIndex": 20,
           "text": "co",
           "type": "State"
@@ -33,6 +45,10 @@
           "number": [
             {
               "endIndex": 10,
+              "modelType": "Prebuilt Entity Extractor",
+              "recognitionSources": [
+                "model"
+              ],
               "startIndex": 8,
               "text": "37",
               "type": "builtin.number"
@@ -41,6 +57,11 @@
           "State": [
             {
               "endIndex": 13,
+              "modelType": "Entity Extractor",
+              "recognitionSources": [
+                "model",
+                "externalEntities"
+              ],
               "score": 0.5987082,
               "startIndex": 11,
               "text": "wa",

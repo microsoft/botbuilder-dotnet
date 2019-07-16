@@ -4,6 +4,10 @@
       "child": [
         {
           "endIndex": 99,
+          "modelType": "Prebuilt Entity Extractor",
+          "recognitionSources": [
+            "model"
+          ],
           "startIndex": 87,
           "text": "lisa simpson",
           "type": "builtin.personName"
@@ -12,6 +16,10 @@
       "endloc": [
         {
           "endIndex": 51,
+          "modelType": "Prebuilt Entity Extractor",
+          "recognitionSources": [
+            "model"
+          ],
           "startIndex": 44,
           "text": "jakarta",
           "type": "builtin.geographyV2.city"
@@ -20,6 +28,10 @@
       "ordinalV2": [
         {
           "endIndex": 28,
+          "modelType": "Prebuilt Entity Extractor",
+          "recognitionSources": [
+            "model"
+          ],
           "startIndex": 24,
           "text": "last",
           "type": "builtin.ordinalV2.relative"
@@ -28,6 +40,10 @@
       "parent": [
         {
           "endIndex": 69,
+          "modelType": "Prebuilt Entity Extractor",
+          "recognitionSources": [
+            "model"
+          ],
           "startIndex": 56,
           "text": "homer simpson",
           "type": "builtin.personName"
@@ -36,6 +52,10 @@
       "startloc": [
         {
           "endIndex": 40,
+          "modelType": "Prebuilt Entity Extractor",
+          "recognitionSources": [
+            "model"
+          ],
           "startIndex": 34,
           "text": "london",
           "type": "builtin.geographyV2.city"
@@ -44,6 +64,10 @@
       "startpos": [
         {
           "endIndex": 20,
+          "modelType": "Prebuilt Entity Extractor",
+          "recognitionSources": [
+            "model"
+          ],
           "startIndex": 8,
           "text": "next to last",
           "type": "builtin.ordinalV2.relative"

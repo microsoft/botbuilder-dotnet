@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -14,6 +15,11 @@ namespace Microsoft.Bot.Builder.AI.Luis.TestUtils
 {
     public class Utils
     {
+        // These are properties that are found only in V3 or V2.
+        // We copy them over to allow for common oracle files.
+        // subtype is V2 only, the others are from V3
+        private static readonly List<string> _mismatches = new List<string> { "score", "modelType", "recognitionSources", "subtype" };
+
         public static ITurnContext GetContext(string utterance)
         {
             var testAdapter = new TestAdapter();
@@ -60,18 +66,23 @@ namespace Microsoft.Bot.Builder.AI.Luis.TestUtils
                 withinDelta = expected.Count == actual.Count;
                 if (!withinDelta)
                 {
-                    // Try copying score which is added by V3 to some prebuilts
-                    if (expected["score"] != null)
+                    // Try copying extra V2/V3 information
+                    foreach (var prop in _mismatches)
                     {
-                        actual.Add("score", expected["score"]);
-                        var copy = (JObject)actual.DeepClone();
-                        actual.RemoveAll();
-                        foreach (var prop in from cprop in copy.Properties() orderby cprop.Name select cprop)
+                        if (actual[prop] == null && expected[prop] != null)
                         {
-                            actual.Add(prop);
+                            actual.Add(prop, expected[prop]);
                         }
+                    }
 
-                        withinDelta = expected.Count == actual.Count;
+                    withinDelta = expected.Count == actual.Count;
+
+                    // Order alphabetically
+                    var copy = (JObject)actual.DeepClone();
+                    actual.RemoveAll();
+                    foreach (var prop in from cprop in copy.Properties() orderby cprop.Name select cprop)
+                    {
+                        actual.Add(prop);
                     }
                 }
 
@@ -90,13 +101,9 @@ namespace Microsoft.Bot.Builder.AI.Luis.TestUtils
                 var arr1 = (JArray)expectedToken;
                 var arr2 = (JArray)actualToken;
                 withinDelta = arr1.Count == arr2.Count;
-                for (var i = 0; withinDelta && i < arr1.Count; ++i)
+                for (var i = 0; i < arr1.Count; ++i)
                 {
-                    withinDelta = WithinDelta(arr1[i], arr2[i], delta);
-                    if (!withinDelta)
-                    {
-                        break;
-                    }
+                    withinDelta = WithinDelta(arr1[i], arr2[i], delta) || withinDelta;
                 }
             }
             else if (!expectedToken.Equals(actualToken))
@@ -181,7 +188,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.TestUtils
         // 2) Run this test which will fail and generate a <name>.json.new file.
         // 3) Check the .new file and if correct, replace the original .json file with it.
         // The version parameter controls where in the expected json the luisResult is put.  This allows multiple endpoint responses like from
-        // LUIS V2 and V3 endpoints.
+        // LUIS V2 and V3 endpoints.  You should run V3 first since it sometimes adds more information that V2.
         public static async Task TestJsonOracle<T>(string expectedPath, string version, Func<JObject, IRecognizer> buildRecognizer, ITurnContext turnContext = null)
             where T : IRecognizerConvert, new()
         {

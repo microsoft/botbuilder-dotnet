@@ -4,12 +4,20 @@
       "Airline": [
         {
           "endIndex": 21,
+          "modelType": "List Entity Extractor",
+          "recognitionSources": [
+            "model"
+          ],
           "startIndex": 4,
           "text": "zimbabwe airlines",
           "type": "Airline"
         },
         {
           "endIndex": 39,
+          "modelType": "List Entity Extractor",
+          "recognitionSources": [
+            "model"
+          ],
           "startIndex": 25,
           "text": "delta airlines",
           "type": "Airline"
@@ -18,6 +26,10 @@
       "geographyV2": [
         {
           "endIndex": 12,
+          "modelType": "Prebuilt Entity Extractor",
+          "recognitionSources": [
+            "model"
+          ],
           "startIndex": 4,
           "text": "zimbabwe",
           "type": "builtin.geographyV2.countryRegion"

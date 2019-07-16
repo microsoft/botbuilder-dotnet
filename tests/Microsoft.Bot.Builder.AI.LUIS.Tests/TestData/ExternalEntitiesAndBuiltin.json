@@ -4,12 +4,20 @@
       "number": [
         {
           "endIndex": 7,
+          "modelType": "Prebuilt Entity Extractor",
+          "recognitionSources": [
+            "externalEntities"
+          ],
           "startIndex": 4,
           "text": "hul",
           "type": "builtin.number"
         },
         {
           "endIndex": 13,
+          "modelType": "Prebuilt Entity Extractor",
+          "recognitionSources": [
+            "model"
+          ],
           "startIndex": 12,
           "text": "2",
           "type": "builtin.number"

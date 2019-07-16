@@ -4,6 +4,10 @@
       "Destination": [
         {
           "endIndex": 33,
+          "modelType": "Composite Entity Extractor",
+          "recognitionSources": [
+            "model"
+          ],
           "score": 0.9818366,
           "startIndex": 25,
           "text": "12346 WA",
@@ -13,6 +17,10 @@
       "Source": [
         {
           "endIndex": 21,
+          "modelType": "Composite Entity Extractor",
+          "recognitionSources": [
+            "model"
+          ],
           "score": 0.9345161,
           "startIndex": 13,
           "text": "12345 VA",
@@ -26,7 +34,12 @@
           "number": [
             {
               "endIndex": 30,
+              "modelType": "Prebuilt Entity Extractor",
+              "recognitionSources": [
+                "model"
+              ],
               "startIndex": 25,
+              "subtype": "integer",
               "text": "12346",
               "type": "builtin.number"
             }
@@ -34,6 +47,10 @@
           "State": [
             {
               "endIndex": 33,
+              "modelType": "Entity Extractor",
+              "recognitionSources": [
+                "model"
+              ],
               "score": 0.9893861,
               "startIndex": 31,
               "text": "WA",
@@ -55,7 +72,12 @@
           "number": [
             {
               "endIndex": 18,
+              "modelType": "Prebuilt Entity Extractor",
+              "recognitionSources": [
+                "model"
+              ],
               "startIndex": 13,
+              "subtype": "integer",
               "text": "12345",
               "type": "builtin.number"
             }
@@ -63,6 +85,10 @@
           "State": [
             {
               "endIndex": 21,
+              "modelType": "Entity Extractor",
+              "recognitionSources": [
+                "model"
+              ],
               "score": 0.941649556,
               "startIndex": 19,
               "text": "VA",
@@ -277,7 +303,8 @@
       "IncludeInstanceData": true,
       "LogPersonalInformation": false,
       "Slot": "production",
-      "Timeout": 100000.0
+      "Timeout": 100000.0,
+      "Version": "GeoPeople"
     },
     "response": {
       "prediction": {

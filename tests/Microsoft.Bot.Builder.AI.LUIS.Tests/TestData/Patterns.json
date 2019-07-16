@@ -4,6 +4,10 @@
       "extra": [
         {
           "endIndex": 76,
+          "modelType": "Pattern.Any Entity Extractor",
+          "recognitionSources": [
+            "model"
+          ],
           "startIndex": 71,
           "text": "kb435",
           "type": "subject"
@@ -12,6 +16,10 @@
       "Part": [
         {
           "endIndex": 76,
+          "modelType": "Regex Entity Extractor",
+          "recognitionSources": [
+            "model"
+          ],
           "startIndex": 71,
           "text": "kb435",
           "type": "Part"
@@ -20,6 +28,10 @@
       "person": [
         {
           "endIndex": 61,
+          "modelType": "Pattern.Any Entity Extractor",
+          "recognitionSources": [
+            "model"
+          ],
           "startIndex": 49,
           "text": "bart simpson",
           "type": "person"
@@ -28,6 +40,10 @@
       "personName": [
         {
           "endIndex": 61,
+          "modelType": "Prebuilt Entity Extractor",
+          "recognitionSources": [
+            "model"
+          ],
           "startIndex": 49,
           "text": "bart simpson",
           "type": "builtin.personName"
@@ -36,6 +52,10 @@
       "subject": [
         {
           "endIndex": 43,
+          "modelType": "Pattern.Any Entity Extractor",
+          "recognitionSources": [
+            "model"
+          ],
           "startIndex": 12,
           "text": "something wicked this way comes",
           "type": "subject"

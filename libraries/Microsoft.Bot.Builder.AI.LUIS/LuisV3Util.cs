@@ -127,9 +127,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
                             {
                                 nobj.Add("endIndex", property.Value.Value<int>() + property.Parent["startIndex"].Value<int>());
                             }
-                            else if (!((isStr && name == "modelType") ||
-                                       (isInt && name == "modelTypeId") ||
-                                       (isArr && name == "recognitionSources") ||
+                            else if (!((isInt && name == "modelTypeId") ||
                                        (isStr && name == "role")))
                             {
                                 nobj.Add(name, val);

@@ -181,14 +181,12 @@ namespace Microsoft.Bot.Builder.AI.Luis
                     obj.score = (double)score;
                 }
 
-                /* Subtypes are not really useful
 #pragma warning disable IDE0007 // Use implicit type
                 if (entity.AdditionalProperties.TryGetValue("resolution", out dynamic resolution) && resolution.subtype != null)
 #pragma warning restore IDE0007 // Use implicit type
                 {
                     obj.subtype = resolution.subtype;
                 }
-                */
             }
 
             return obj;

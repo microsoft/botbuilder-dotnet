@@ -4,12 +4,20 @@
       "Part": [
         {
           "endIndex": 5,
+          "modelType": "Regex Entity Extractor",
+          "recognitionSources": [
+            "externalEntities"
+          ],
           "startIndex": 0,
           "text": "42ski",
           "type": "Part"
         },
         {
           "endIndex": 26,
+          "modelType": "Regex Entity Extractor",
+          "recognitionSources": [
+            "model"
+          ],
           "startIndex": 21,
           "text": "kb423",
           "type": "Part"

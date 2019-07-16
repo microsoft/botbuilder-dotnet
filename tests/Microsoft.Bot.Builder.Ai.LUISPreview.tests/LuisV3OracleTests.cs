@@ -249,6 +249,13 @@ namespace Microsoft.Bot.Builder.AI.LuisPreview.Tests
         public async Task GeoPeopleOrdinal() => await TestJson<RecognizerResult>("GeoPeopleOrdinal.json");
 
         [TestMethod]
+        public async Task Minimal() => await TestJson<RecognizerResult>("Minimal.json");
+
+        // TODO: This is disabled until the bug requiring instance data for geo is fixed.
+        // [TestMethod]
+        public async Task MinimalWithGeo() => await TestJson<RecognizerResult>("MinimalWithGeo.json");
+
+        [TestMethod]
         public async Task PrebuiltDomains() => await TestJson<RecognizerResult>("Prebuilt.json");
 
         [TestMethod]

@@ -4,6 +4,10 @@
       "Address": [
         {
           "endIndex": 13,
+          "modelType": "Composite Entity Extractor",
+          "recognitionSources": [
+            "model"
+          ],
           "score": 0.7160641,
           "startIndex": 8,
           "text": "35 WA",
@@ -11,6 +15,10 @@
         },
         {
           "endIndex": 33,
+          "modelType": "Composite Entity Extractor",
+          "recognitionSources": [
+            "externalEntities"
+          ],
           "startIndex": 17,
           "text": "repent harelquin",
           "type": "Address"
@@ -23,6 +31,10 @@
           "number": [
             {
               "endIndex": 10,
+              "modelType": "Prebuilt Entity Extractor",
+              "recognitionSources": [
+                "model"
+              ],
               "startIndex": 8,
               "text": "35",
               "type": "builtin.number"
@@ -31,6 +43,10 @@
           "State": [
             {
               "endIndex": 13,
+              "modelType": "Entity Extractor",
+              "recognitionSources": [
+                "model"
+              ],
               "score": 0.614376,
               "startIndex": 11,
               "text": "WA",

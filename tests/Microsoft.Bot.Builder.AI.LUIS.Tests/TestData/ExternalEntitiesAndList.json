@@ -4,12 +4,20 @@
       "Airline": [
         {
           "endIndex": 23,
+          "modelType": "List Entity Extractor",
+          "recognitionSources": [
+            "externalEntities"
+          ],
           "startIndex": 7,
           "text": "humberg airlines",
           "type": "Airline"
         },
         {
           "endIndex": 32,
+          "modelType": "List Entity Extractor",
+          "recognitionSources": [
+            "model"
+          ],
           "startIndex": 27,
           "text": "Delta",
           "type": "Airline"

@@ -4,26 +4,34 @@
       "Name": [
         {
           "endIndex": 15,
+          "modelType": "Entity Extractor",
+          "recognitionSources": [
+            "model"
+          ],
           "score": 0.933022,
           "startIndex": 11,
-          "text": "emad",
+          "text": "Emad",
           "type": "Name"
         }
       ],
       "personName": [
         {
           "endIndex": 15,
+          "modelType": "Prebuilt Entity Extractor",
+          "recognitionSources": [
+            "model"
+          ],
           "startIndex": 11,
-          "text": "emad",
+          "text": "Emad",
           "type": "builtin.personName"
         }
       ]
     },
     "Name": [
-      "emad"
+      "Emad"
     ],
     "personName": [
-      "emad"
+      "Emad"
     ]
   },
   "intents": {
