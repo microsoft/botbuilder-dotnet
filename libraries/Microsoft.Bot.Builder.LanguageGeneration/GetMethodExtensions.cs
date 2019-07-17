@@ -38,7 +38,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 // TODO
                 // 1. add validation function here
-                // 2. handle potential "." in name
                 return new ExpressionEvaluator($"lgTemplate({name})", BuiltInFunctions.Apply(this.TemplateEvaluator(name)), ReturnType.String, null);
             }
 
