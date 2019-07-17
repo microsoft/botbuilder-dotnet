@@ -75,6 +75,16 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             await lg.Generate(context, "[tesdfdfsst]", null);
         }
 
+
+        [TestMethod]
+        public async Task TestImport()
+        {
+            var languageGeneratorManager = new LanguageGeneratorManager(resourceExplorer);
+            var generator = languageGeneratorManager.LanguageGenerators["import.lg"];
+            var result = await generator.Generate(GetTurnContext(""), "[test2]", null);
+            Assert.AreEqual("default2", result);
+        }
+
         [TestMethod]
         public async Task TestMultiLanguageGenerator()
         {

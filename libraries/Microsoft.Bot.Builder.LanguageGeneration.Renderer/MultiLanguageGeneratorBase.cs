@@ -34,21 +34,34 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 }
             }
 
-            List<string> errors = new List<string>();
+            var generators = new List<ILanguageGenerator>();
             foreach (var locale in locales)
             {
                 if (this.TryGetGenerator(turnContext, locale, out ILanguageGenerator generator))
                 {
-                    try
-                    {
-                        return await generator.Generate(turnContext, template, data);
-                    }
-                    catch(Exception err)
-                    {
-                        errors.Add(err.Message);
-                    }
+                    generators.Add(generator);
                 }
             }
+
+            if (generators.Count == 0)
+            {
+                throw new Exception($"No generator found for language {targetLocale}");
+            }
+
+
+            List<string> errors = new List<string>();
+            foreach (var generator in generators)
+            {
+                try
+                {
+                    return await generator.Generate(turnContext, template, data);
+                }
+                catch (Exception err)
+                {
+                    errors.Add(err.Message);
+                }
+            }
+
             throw new Exception(String.Join(",\n", errors.Distinct()));
         }
     }

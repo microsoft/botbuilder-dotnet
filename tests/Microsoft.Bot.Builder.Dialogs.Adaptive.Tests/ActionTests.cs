@@ -350,6 +350,36 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
+        public async Task Step_NumberInputWithDefaultValue()
+        {
+            var testDialog = new AdaptiveDialog("planningTest");
+
+            testDialog.AddEvents(new List<IOnEvent>()
+            {
+                new OnUnknownIntent()
+                {
+                    Actions = new List<IDialog>()
+                    {
+                        new NumberInput() {
+                            MaxTurnCount = 1,
+                            DefaultValue = "10",
+                            Prompt = new ActivityTemplate("What is your age?"),
+                            Property = "turn.age"
+                        },
+                        new SendActivity("You said {turn.age}")
+                    }
+                }
+            });
+
+            await CreateFlow(testDialog)
+            .Send("hi")
+                .AssertReply("What is your age?")
+            .Send("hi")
+                .AssertReply("You said 10")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
         public async Task Step_ConfirmInput()
         {
             var testDialog = new AdaptiveDialog("planningTest")
@@ -704,6 +734,61 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
+        public async Task Step_EditStepReplaceSequence()
+        {
+            var testDialog = new AdaptiveDialog("planningTest")
+            {
+                Recognizer = new RegexRecognizer()
+                {
+                    Intents = new Dictionary<string, string>() {
+                        { "Replace", "(?i)replace" }
+                    }
+                }
+            };
+
+            testDialog.AddEvents(new List<IOnEvent>()
+            {
+                new OnUnknownIntent()
+                {
+                    Actions = new List<IDialog>()
+                    {
+                        new TextInput() {
+                            Prompt = new ActivityTemplate("Say replace to replace these steps"),
+                            Property = "turn.tempInput"
+                        },
+                        new SendActivity("You should not see this step if you said replace"),
+                        new RepeatDialog()
+                    }
+                },
+                new OnIntent() {
+                    Intent = "Replace",
+                    Actions = new List<IDialog>() {
+                        new SendActivity("I'm going to replace the original steps via EditSteps"),
+                        new EditActions() {
+                            ChangeType = ActionChangeType.ReplaceSequence,
+                            Actions = new List<IDialog>() {
+                                new SendActivity("New steps..."),
+                                new TextInput() {
+                                    Prompt = new ActivityTemplate("What's your name?"),
+                                    Property = "turn.tempInput"
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            await CreateFlow(testDialog)
+            .Send("hi")
+                .AssertReply("Say replace to replace these steps")
+            .Send("replace")
+                .AssertReply("I'm going to replace the original steps via EditSteps")
+                .AssertReply("New steps...")
+                .AssertReply("What's your name?")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
         public async Task Step_DoActions()
         {
             var testDialog = new AdaptiveDialog("planningTest");
@@ -811,7 +896,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         new SendActivity("I'm a joke bot. To get started say 'tell me a joke'"),
                         new BeginDialog() { Dialog = askNameDialog }
                     }
-                }, 
+                },
 
                 new OnIntent("JokeIntent",
                     actions: new List<IDialog>()
@@ -1149,7 +1234,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 {
                     new OnBeginDialog()
                     {
-
                         Actions = new List<IDialog>()
                         {
                             new InitProperty()
@@ -1202,7 +1286,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
                             new ForeachPage()
                             {
-                                ListProperty = new ExpressionEngine().Parse("dialog.todo"),
+                                ListProperty = "dialog.todo",
                                 PageSize = 3,
                                 ValueProperty = "dialog.page",
                                 Actions = new List<IDialog>()

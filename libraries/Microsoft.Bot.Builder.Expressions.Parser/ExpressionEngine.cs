@@ -16,15 +16,18 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
     /// </summary>
     public class ExpressionEngine : IExpressionParser
     {
-        private static readonly Dictionary<string, string> ShorthandFunctionMap = new Dictionary<string, string>()
+        /// <summary>
+        /// constant short hand currently have.
+        /// </summary>
+        private static readonly Dictionary<string, string> ShorthandPrefixMap = new Dictionary<string, string>()
         {
-            { "#", ExpressionType.Intent },
-            { "@", ExpressionType.SimpleEntity },
-            { "@@", ExpressionType.Entity },
-            { "$", ExpressionType.Dialog },
-            { "^", ExpressionType.Callstack },
-            { "%", ExpressionType.Option },
-            { "~", ExpressionType.Instance },
+            { "#", $"turn.recognized.intents" },
+            { "@", $"turn.recognized.entities" },
+            { "@@", $"turn.recognized.entities" },
+            { "$", $"dialog" },
+            { "^", $"" },
+            { "%", $"dialog.options" },
+            { "~", $"dialog.instance" },
         };
 
         private readonly EvaluatorLookup _lookup;
@@ -90,17 +93,31 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
                 return MakeExpression(binaryOperationName, left, right);
             }
 
-            public override Expression VisitShortHandExp([NotNull] ExpressionParser.ShortHandExpContext context)
+            public override Expression VisitShorthandAccessorExp([NotNull] ExpressionParser.ShorthandAccessorExpContext context)
             {
-                var prefix = context.GetChild(0).GetText();
-                if (!ShorthandFunctionMap.ContainsKey(prefix))
+                if (context.primaryExpression() is ExpressionParser.ShorthandAtomContext shorthandAtom)
                 {
-                    throw new Exception($"{prefix} is not a shorthand");
+                    var shorthandMark = shorthandAtom.GetText();
+
+                    if (!ShorthandPrefixMap.ContainsKey(shorthandMark))
+                    {
+                        throw new Exception($"{shorthandMark} is not a shorthand");
+                    }
+
+                    var property = Expression.ConstantExpression(context.IDENTIFIER().GetText());
+
+                    if (shorthandMark == "^")
+                    {
+                        return MakeExpression(ExpressionType.Callstack, property);
+                    }
+
+                    var accessorExpression = this.Transform(AntlrParse(ShorthandPrefixMap[shorthandMark]));
+                    var expression = MakeExpression(ExpressionType.Accessor, property, accessorExpression);
+
+                    return shorthandMark == "@" ? MakeExpression(ExpressionType.SimpleEntity, expression) : expression;
                 }
 
-                var functionName = ShorthandFunctionMap[prefix];
-
-                return MakeExpression(functionName, Expression.ConstantExpression(context.IDENTIFIER().GetText()));
+                throw new Exception($"{context.primaryExpression().GetText()} is not a shorthand.");
             }
 
             public override Expression VisitFuncInvokeExp([NotNull] ExpressionParser.FuncInvokeExpContext context)
@@ -143,15 +160,43 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
 
             public override Expression VisitIndexAccessExp([NotNull] ExpressionParser.IndexAccessExpContext context)
             {
-                var instance = Visit(context.primaryExpression());
-                var index = Visit(context.expression());
-                return MakeExpression(ExpressionType.Element, instance, index);
+                Expression instance;
+                var property = Visit(context.expression());
+
+                if (context.primaryExpression() is ExpressionParser.ShorthandAtomContext shorthandAtom)
+                {
+                    var shorthandMark = shorthandAtom.GetText();
+
+                    if (!ShorthandPrefixMap.ContainsKey(shorthandMark))
+                    {
+                        throw new Exception($"{shorthandMark} is not a shorthand");
+                    }
+
+                    if (shorthandMark == "^")
+                    {
+                        return MakeExpression(ExpressionType.Callstack, property);
+                    }
+
+                    instance = this.Transform(AntlrParse(ShorthandPrefixMap[shorthandMark]));
+                    var expression = MakeExpression(ExpressionType.Element, instance, property);
+
+                    return shorthandMark == "@" ? MakeExpression(ExpressionType.SimpleEntity, expression) : expression;
+                }
+
+                instance = Visit(context.primaryExpression());
+                return MakeExpression(ExpressionType.Element, instance, property);
             }
 
             public override Expression VisitMemberAccessExp([NotNull] ExpressionParser.MemberAccessExpContext context)
             {
-                var instance = Visit(context.primaryExpression());
                 var property = context.IDENTIFIER().GetText();
+                if (context.primaryExpression() is ExpressionParser.ShorthandAtomContext shorthandAtom)
+                {
+                    throw new Exception($"{context.GetText()} is not a valid shorthand. Maybe you mean '{context.primaryExpression().GetText()}{property}'?");
+                }
+
+                var instance = Visit(context.primaryExpression());
+
                 return MakeExpression(ExpressionType.Accessor, Expression.ConstantExpression(property), instance);
             }
 

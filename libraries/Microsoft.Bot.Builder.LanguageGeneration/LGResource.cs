@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
@@ -66,6 +68,49 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public override int GetHashCode()
         {
             return this.Id.GetHashCode();
+        }
+
+        /// <summary>
+        /// Discover all imported lg resources from a start resouce.
+        /// </summary>
+        /// <param name="importResolver">resolver to resolve LG import id to template text.</param>
+        /// <returns>LGResource list of parsed lg content.</returns>
+        public List<LGResource> DiscoverDependencies(ImportResolverDelegate importResolver)
+        {
+            var resourcesFound = new HashSet<LGResource>();
+            ResolveImportResources(this, importResolver ?? ImportResolver.FileResolver, resourcesFound);
+
+            return resourcesFound.ToList();
+        }
+
+        /// <summary>
+        /// Resolve imported LG resources from a start resource.
+        /// All the imports will be visited and resolved to LGResouce list.
+        /// </summary>
+        /// <param name="start">The lg resource from which to start resolving imported resources.</param>
+        /// <param name="importResolver">resolver to resolve LG import id to template text.</param>
+        /// <param name="resourcesFound">Resources that have been found.</param>
+        private void ResolveImportResources(LGResource start, ImportResolverDelegate importResolver, HashSet<LGResource> resourcesFound)
+        {
+            var resourceIds = start.Imports.Select(lg => lg.Id).ToList();
+            resourcesFound.Add(start);
+
+            foreach (var id in resourceIds)
+            {
+                try
+                {
+                    var (content, path) = importResolver(start.Id, id);
+                    var childResource = LGParser.Parse(content, path);
+                    if (!resourcesFound.Contains(childResource))
+                    {
+                        ResolveImportResources(childResource, importResolver, resourcesFound);
+                    }
+                }
+                catch (Exception err)
+                {
+                    throw new Exception($"[Error]{id}:{err.Message}", err);
+                }
+            }
         }
     }
 }
