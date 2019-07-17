@@ -10,9 +10,9 @@
             "CancelIntent": "(?i)cancel"
         }
     },
-    "rules": [
+    "events": [
         {
-            "$type": "Microsoft.BeginDialogRule",
+            "$type": "Microsoft.OnBeginDialog",
             "actions": [
                 {
                     "$type": "Microsoft.IfCondition",
@@ -36,7 +36,7 @@
             ]
         },
         {
-            "$type": "Microsoft.IntentRule",
+            "$type": "Microsoft.OnIntent",
             "intent": "JokeIntent",
             "actions": [
                 {
@@ -53,7 +53,7 @@
             ]
         },
         {
-            "$type": "Microsoft.IntentRule",
+            "$type": "Microsoft.OnIntent",
             "intent": "FortuneTellerIntent",
             "actions": [
                 {
@@ -71,7 +71,7 @@
             ]
         },
         {
-            "$type": "Microsoft.IntentRule",
+            "$type": "Microsoft.OnIntent",
             "intent": "CancelIntent",
             "actions": [
                 {
@@ -84,7 +84,7 @@
             ]
         },
         {
-            "$type": "Microsoft.UnknownIntentRule",
+            "$type": "Microsoft.OnUnknownIntent",
             "actions": [
                 {
                     "$type": "Microsoft.SendActivity",

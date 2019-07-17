@@ -4,7 +4,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Rules;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Events;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
@@ -46,9 +46,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var userState = new UserState(new MemoryStorage());
             var dialog = new AdaptiveDialog();
-            dialog.AddRules(new List<IRule>()
+            dialog.AddEvents(new List<IOnEvent>()
             {
-                new UnknownIntentRule(actions:
+                new OnUnknownIntent(actions:
                     new List<IDialog>()
                     {
                         new SendActivity()

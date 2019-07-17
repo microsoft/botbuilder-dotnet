@@ -3,17 +3,17 @@
     "autoEndDialog": false,
     "generator": "sandwich.lg",
     "recognizer": "OrderSandwichApp.lu",
-    "rules": [
+    "events": [
         {
-            "$type": "Microsoft.IntentRule",
+            "$type": "Microsoft.OnIntent",
             "actions": [
                 {
                     "$comment": "**** Primary ordering dialog ****",
                     "$type": "Microsoft.AdaptiveDialog",
-                    "rules": [
+                    "events": [
                         {
                             "$comment": "**** Start of slot mapping over conversation.order as frame ****",
-                            "$type": "Microsoft.EventRule",
+                            "$type": "Microsoft.OnDialogEvent",
                             "events": [
                                 "recognizedIntent"
                             ],
@@ -29,7 +29,7 @@
                                     "value": "first(@meat[0])"
                                 },
                                 {
-                                    "$comment": "This is a mechanism to keep the rule from running more than once per turn.",
+                                    "$comment": "This is a mechanism to keep the event from running more than once per turn.",
                                     "$type": "Microsoft.SetProperty",
                                     "property": "turn.setmeat",
                                     "value": "true"
@@ -42,7 +42,7 @@
                             ]
                         },
                         {
-                            "$type": "Microsoft.EventRule",
+                            "$type": "Microsoft.OnDialogEvent",
                             "events": [
                                 "recognizedIntent"
                             ],
@@ -70,7 +70,7 @@
                             ]
                         },
                         {
-                            "$type": "Microsoft.EventRule",
+                            "$type": "Microsoft.OnDialogEvent",
                             "events": [
                                 "recognizedIntent"
                             ],
@@ -98,7 +98,7 @@
                             ]
                         },
                         {
-                            "$type": "Microsoft.EventRule",
+                            "$type": "Microsoft.OnDialogEvent",
                             "events": [
                                 "recognizedIntent"
                             ],
@@ -126,7 +126,7 @@
                             ]
                         },
                         {
-                            "$type": "Microsoft.EventRule",
+                            "$type": "Microsoft.OnDialogEvent",
                             "events": [
                                 "recognizedIntent"
                             ],
@@ -155,7 +155,7 @@
                         },
                         {
                             "$comment": "**** This is the start of prompts ****",
-                            "$type": "Microsoft.EventRule",
+                            "$type": "Microsoft.OnDialogEvent",
                             "events": [
                                 "recognizedIntent"
                             ],
@@ -168,7 +168,7 @@
                             ]
                         },
                         {
-                            "$type": "Microsoft.EventRule",
+                            "$type": "Microsoft.OnDialogEvent",
                             "events": [
                                 "recognizedIntent"
                             ],
@@ -181,7 +181,7 @@
                             ]
                         },
                         {
-                            "$type": "Microsoft.EventRule",
+                            "$type": "Microsoft.OnDialogEvent",
                             "events": [
                                 "recognizedIntent"
                             ],
@@ -194,7 +194,7 @@
                             ]
                         },
                         {
-                            "$type": "Microsoft.EventRule",
+                            "$type": "Microsoft.OnDialogEvent",
                             "$comment": "Should update this to use actual http with failure.",
                             "events": [
                                 "recognizedIntent"
@@ -213,7 +213,7 @@
                             ]
                         },
                         {
-                            "$type": "Microsoft.EventRule",
+                            "$type": "Microsoft.OnDialogEvent",
                             "events": [
                                 "recognizedIntent"
                             ],
@@ -234,7 +234,7 @@
                             ]
                         },
                         {
-                            "$type": "Microsoft.EventRule",
+                            "$type": "Microsoft.OnDialogEvent",
                             "$comment": "This is the kind of thing we should build in a default for.",
                             "events": [
                                 "recognizedIntent"
@@ -247,7 +247,7 @@
                             ]
                         },
                         {
-                            "$type": "Microsoft.EventRule",
+                            "$type": "Microsoft.OnDialogEvent",
                             "events": [
                                 "recognizedIntent"
                             ],
@@ -260,7 +260,7 @@
                             ]
                         },
                         {
-                            "$type": "Microsoft.EventRule",
+                            "$type": "Microsoft.OnDialogEvent",
                             "events": [
                                 "recognizedIntent"
                             ],
@@ -273,8 +273,8 @@
                             ]
                         },
                         {
-                            "$comment": "*** Ideally these would be a generic template rule against any slot value. ***",
-                            "$type": "Microsoft.EventRule",
+                            "$comment": "*** Ideally these would be a generic template event against any slot value. ***",
+                            "$type": "Microsoft.OnDialogEvent",
                             "events": [
                                 "recognizedIntent"
                             ],
@@ -290,7 +290,7 @@
                             ]
                         },
                         {
-                            "$type": "Microsoft.EventRule",
+                            "$type": "Microsoft.OnDialogEvent",
                             "events": [
                                 "recognizedIntent"
                             ],
@@ -303,7 +303,7 @@
                             ]
                         },
                         {
-                            "$type": "Microsoft.EventRule",
+                            "$type": "Microsoft.OnDialogEvent",
                             "events": [
                                 "recognizedIntent"
                             ],
@@ -316,7 +316,7 @@
                             ]
                         },
                         {
-                            "$type": "Microsoft.EventRule",
+                            "$type": "Microsoft.OnDialogEvent",
                             "events": [
                                 "recognizedIntent"
                             ],
@@ -332,7 +332,7 @@
                 }
             ],
             "intent": "OrderSandwich",
-            "$comment": "**** This is the start of top-level intent rules ****",
+            "$comment": "**** This is the start of top-level intent events ****",
             "$designer": {
                 "createdAt": "2019-05-14T20:33:33.353Z",
                 "updatedAt": "2019-05-14T20:33:33.451Z",
@@ -340,7 +340,7 @@
             }
         },
         {
-            "$type": "Microsoft.IntentRule",
+            "$type": "Microsoft.OnIntent",
             "intent": "SandwichOptions",
             "actions": [
                 {
@@ -350,7 +350,7 @@
             ]
         },
         {
-            "$type": "Microsoft.IntentRule",
+            "$type": "Microsoft.OnIntent",
             "intent": "BreadOptions",
             "actions": [
                 {
@@ -360,7 +360,7 @@
             ]
         },
         {
-            "$type": "Microsoft.IntentRule",
+            "$type": "Microsoft.OnIntent",
             "intent": "ToppingOptions",
             "actions": [
                 {
@@ -370,7 +370,7 @@
             ]
         },
         {
-            "$type": "Microsoft.IntentRule",
+            "$type": "Microsoft.OnIntent",
             "intent": "CheeseOptions",
             "actions": [
                 {
@@ -380,7 +380,7 @@
             ]
         },
         {
-            "$type": "Microsoft.IntentRule",
+            "$type": "Microsoft.OnIntent",
             "intent": "Greeting",
             "actions": [
                 {
@@ -390,7 +390,7 @@
             ]
         },
         {
-            "$type": "Microsoft.EventRule",
+            "$type": "Microsoft.OnDialogEvent",
             "events": [
                 "beginDialog"
             ],

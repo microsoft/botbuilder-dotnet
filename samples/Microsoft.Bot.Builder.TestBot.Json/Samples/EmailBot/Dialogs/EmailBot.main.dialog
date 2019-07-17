@@ -15,9 +15,9 @@
       "CancelIntent": "(?i)cancel|never mind"
     }
   },
-  "rules": [
+  "events": [
     {
-      "$type": "Microsoft.UnknownIntentRule",
+      "$type": "Microsoft.OnUnknownIntent",
       "actions": [
         {
           "$type": "Microsoft.SendActivity",
@@ -26,7 +26,7 @@
       ]
     },
     {
-      "$type": "Microsoft.IntentRule",
+      "$type": "Microsoft.OnIntent",
       "intent": "CancelIntent",
       "actions": [
         {
@@ -39,7 +39,7 @@
       ]
     },
     {
-      "$type": "Microsoft.IntentRule",
+      "$type": "Microsoft.OnIntent",
       "intent": "ShowEmailIntent",
       "actions": [
         "ClearUserData",
@@ -47,7 +47,7 @@
       ]
     },
     {
-      "$type": "Microsoft.IntentRule",
+      "$type": "Microsoft.OnIntent",
       "intent": "ShowNextPageIntent",
       "actions": [
         "NextPage",
@@ -55,7 +55,7 @@
       ]
     },
     {
-      "$type": "Microsoft.IntentRule",
+      "$type": "Microsoft.OnIntent",
       "intent": "SendEmailIntent",
       "actions": [
         "ClearUserData",
@@ -63,7 +63,7 @@
       ]
     },
     {
-      "$type": "Microsoft.IntentRule",
+      "$type": "Microsoft.OnIntent",
       "intent": "FindContactIntent",
       "actions": [
         "ClearUserData",
@@ -71,7 +71,7 @@
       ]
     },
     {
-      "$type": "Microsoft.IntentRule",
+      "$type": "Microsoft.OnIntent",
       "intent": "ForwardEmailIntent",
       "actions": [
         "ClearUserData",
@@ -79,7 +79,7 @@
       ]
     },
     {
-      "$type": "Microsoft.IntentRule",
+      "$type": "Microsoft.OnIntent",
       "intent": "ReplyEmailIntent",
       "actions": [
         "ClearUserData",
@@ -87,7 +87,7 @@
       ]
     },
     {
-      "$type": "Microsoft.IntentRule",
+      "$type": "Microsoft.OnIntent",
       "intent": "HelpIntent",
       "actions": [
         {

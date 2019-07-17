@@ -2,9 +2,9 @@
     "$schema": "../../app.schema",
     "$type": "Microsoft.AdaptiveDialog",
     "generator": "showimage.lg",
-    "rules": [
+    "events": [
         {
-            "$type": "Microsoft.BeginDialogRule",
+            "$type": "Microsoft.OnBeginDialog",
             "actions": [
                 {
                     "$type": "Microsoft.AttachmentInput",

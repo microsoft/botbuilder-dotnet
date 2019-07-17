@@ -5,9 +5,9 @@
     "autoEndDialog": false,
     "generator": "ToDoLuisBot.lg",
     "recognizer": "ToDoLuis.lu",
-    "rules": [
+    "events": [
         {
-            "$type": "Microsoft.BeginDialogRule",
+            "$type": "Microsoft.OnBeginDialog",
             "actions": [
                 {
                     "$type": "Microsoft.SendActivity",
@@ -16,28 +16,28 @@
             ]
         },
         {
-            "$type": "Microsoft.IntentRule",
+            "$type": "Microsoft.OnIntent",
             "intent": "AddToDo",
             "actions": [
                 "ToDoLuisBot.AddItem"
             ]
         },
         {
-            "$type": "Microsoft.IntentRule",
+            "$type": "Microsoft.OnIntent",
             "intent": "DeleteToDo",
             "actions": [
                 "ToDoLuisBot.DeleteItem"
             ]
         },
         {
-            "$type": "Microsoft.IntentRule",
+            "$type": "Microsoft.OnIntent",
             "intent": "ShowToDo",
             "actions": [
                 "ToDoLuisBot.ShowItems"
             ]
         },
         {
-            "$type": "Microsoft.UnknownIntentRule",
+            "$type": "Microsoft.OnUnknownIntent",
             "actions": [
                 {
                     "$type": "Microsoft.SendActivity",

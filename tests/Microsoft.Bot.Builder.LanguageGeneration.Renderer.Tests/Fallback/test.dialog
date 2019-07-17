@@ -1,9 +1,9 @@
 ﻿{
     "$type": "Microsoft.AdaptiveDialog",
     "generator": "root.lg",
-    "rules": [
+    "events": [
         {
-            "$type": "Microsoft.BeginDialogRule",
+            "$type": "Microsoft.OnBeginDialog",
             "actions": [
                 {
                     "$type": "Microsoft.SendActivity",
@@ -12,9 +12,9 @@
                 {
                     "$type": "Microsoft.AdaptiveDialog",
                     "generator": "subDialog.lg",
-                    "rules": [
+                    "events": [
                         {
-                            "$type": "Microsoft.BeginDialogRule",
+                            "$type": "Microsoft.OnBeginDialog",
                             "actions": [
                                 {
                                     "$type": "Microsoft.SendActivity",

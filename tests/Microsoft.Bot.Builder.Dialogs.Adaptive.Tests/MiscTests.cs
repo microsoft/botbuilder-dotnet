@@ -7,7 +7,7 @@ using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Rules;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Events;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Expressions;
 using Microsoft.Bot.Builder.Expressions.Parser;
@@ -54,9 +54,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             var testDialog = new AdaptiveDialog(nameof(AdaptiveDialog))
             {
-                Rules = new List<IRule>()
+                Events = new List<IOnEvent>()
                 {
-                    new BeginDialogRule()
+                    new OnBeginDialog()
                     {
                         Actions = new List<IDialog>()
                         {
@@ -68,7 +68,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             new SendActivity("Hello, {user.name}")
                         },
                     },
-                    new IntentRule("CancelIntent")
+                    new OnIntent("CancelIntent")
                     {
                         Actions = new List<IDialog>()
                         {
@@ -128,9 +128,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         {  "SetName", @"my name is (?<name>.*)" }
                     }
                 },
-                Rules = new List<IRule>()
+                Events = new List<IOnEvent>()
                 {
-                    new BeginDialogRule()
+                    new OnBeginDialog()
                     {
                         Actions = new List<IDialog>()
                         {
@@ -141,7 +141,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             new SendActivity("your name is {user.name}!"),
                         },
                     },
-                    new IntentRule("SetName", new List<string>() { "name" })
+                    new OnIntent("SetName", new List<string>() { "name" })
                     {
                         Actions = new List<IDialog>()
                         {

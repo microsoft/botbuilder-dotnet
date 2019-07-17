@@ -11,7 +11,7 @@ using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Rules;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Events;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
@@ -76,7 +76,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                 handleChoice.Cases.Add(new Case($"{name}", new List<IDialog>() { dialog }));
             }
             choiceInput.Style = ListStyle.Auto;
-            rootDialog.Rules.Add(new BeginDialogRule()
+            rootDialog.Events.Add(new OnBeginDialog()
             {
                 Actions = new List<IDialog>()
                 {

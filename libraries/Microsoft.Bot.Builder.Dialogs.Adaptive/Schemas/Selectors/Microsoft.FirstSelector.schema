@@ -1,7 +1,7 @@
 ﻿{
     "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/master/packages/DialogSchema/src/dialogSchema.schema",
-    "$role": "unionType(Microsoft.IRuleSelector)",
-    "title": "First Rule Selector",
+    "$role": "unionType(Microsoft.IEventSelector)",
+    "title": "First Event Selector",
     "description": "Selector for first true rule",
     "type": "object"
 }

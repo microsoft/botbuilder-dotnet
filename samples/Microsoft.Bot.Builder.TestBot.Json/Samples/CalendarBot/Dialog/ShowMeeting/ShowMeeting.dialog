@@ -12,9 +12,9 @@
       "DeclineMeetingIntent": "(?i)decline meeting"
     }
   },
-  "rules": [
+  "events": [
     {
-      "$type": "Microsoft.BeginDialogRule",
+      "$type": "Microsoft.OnBeginDialog",
       "actions": [
         "GetDisplayMeetings",
         {
@@ -94,21 +94,21 @@
       ]
     },
     {
-      "$type": "Microsoft.IntentRule",
+      "$type": "Microsoft.OnIntent",
       "intent": "UpdateMeetingIntent",
       "actions": [
         "UpdateMeeting"
       ]
     },
     {
-      "$type": "Microsoft.IntentRule",
+      "$type": "Microsoft.OnIntent",
       "intent": "AcceptMeetingIntent",
       "actions": [
         "AcceptMeeting"
       ]
     },
     {
-      "$type": "Microsoft.IntentRule",
+      "$type": "Microsoft.OnIntent",
       "intent": "DeclineMeetingIntent",
       "actions": [
         "DeclineMeeting"

@@ -8,7 +8,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Rules;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Events;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Expressions;
@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 {
 
     /// <summary>
-    /// The Adaptive Dialog models conversation using events and rules to adapt dynamicaly to changing conversation flow
+    /// The Adaptive Dialog models conversation using events and events to adapt dynamicaly to changing conversation flow
     /// </summary>
     public class AdaptiveDialog : DialogContainer
     {
@@ -47,7 +47,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// <summary>
         /// Rules for handling events to dynamic modifying the executing plan 
         /// </summary>
-        public virtual List<IRule> Rules { get; set; } = new List<IRule>();
+        public virtual List<IOnEvent> Events { get; set; } = new List<IOnEvent>();
 
         /// <summary>
         /// Gets or sets the policty to Automatically end the dialog when there are no actions to execute
@@ -59,9 +59,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         public bool AutoEndDialog { get; set; } = true;
 
         /// <summary>
-        /// Gets or sets the selector for picking the possible rules to execute.
+        /// Gets or sets the selector for picking the possible events to execute.
         /// </summary>
-        public IRuleSelector Selector { get; set; }
+        public IEventSelector Selector { get; set; }
 
         /// <summary>
         /// Gets or sets the property to return as the result when the dialog ends when there are no more Actions and AutoEndDialog = true.
@@ -110,7 +110,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 state.Result = state.Options["value"];
             }
 
-            // Evaluate rules and queue up step changes
+            // Evaluate events and queue up step changes
             var dialogEvent = new DialogEvent()
             {
                 Name = AdaptiveEvents.BeginDialog,
@@ -153,7 +153,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             // Save into turn
             sequenceContext.State.SetValue(DialogContextState.TURN_DIALOGEVENT, dialogEvent);
 
-            // Look for triggered rule
+            // Look for triggered evt
             var handled = await this.QueueFirstMatchAsync(sequenceContext, dialogEvent, preBubble, cancellationToken).ConfigureAwait(false);
 
             if (handled)
@@ -265,17 +265,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
         }
 
-        public void AddRule(IRule rule)
+        public void AddEvent(IOnEvent evt)
         {
-            rule.Actions.ForEach(s => _dialogs.Add(s));
-            this.Rules.Add(rule);
+            evt.Actions.ForEach(s => _dialogs.Add(s));
+            this.Events.Add(evt);
         }
 
-        public void AddRules(IEnumerable<IRule> rules)
+        public void AddEvents(IEnumerable<IOnEvent> events)
         {
-            foreach (var rule in rules)
+            foreach (var evt in events)
             {
-                this.AddRule(rule);
+                this.AddEvent(evt);
             }
         }
 
@@ -452,10 +452,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             var selection = await Selector.Select(sequenceContext, cancellationToken).ConfigureAwait(false);
             if (selection.Any())
             {
-                var rule = Rules[selection.First()];
-                await sequenceContext.DebuggerStepAsync(rule, dialogEvent, cancellationToken).ConfigureAwait(false);
-                System.Diagnostics.Trace.TraceInformation($"Executing Dialog: {this.Id} Rule[{selection}]: {rule.GetType().Name}: {rule.GetExpression(null)}");
-                var changes = await rule.ExecuteAsync(sequenceContext).ConfigureAwait(false);
+                var evt = Events[selection.First()];
+                await sequenceContext.DebuggerStepAsync(evt, dialogEvent, cancellationToken).ConfigureAwait(false);
+                System.Diagnostics.Trace.TraceInformation($"Executing Dialog: {this.Id} Rule[{selection}]: {evt.GetType().Name}: {evt.GetExpression(null)}");
+                var changes = await evt.ExecuteAsync(sequenceContext).ConfigureAwait(false);
 
                 if (changes != null && changes.Count > 0)
                 {
@@ -474,9 +474,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 {
                     installedDependencies = true;
 
-                    foreach (var rule in this.Rules)
+                    foreach (var evt in this.Events)
                     {
-                        AddDialog(rule.Actions.ToArray());
+                        AddDialog(evt.Actions.ToArray());
                     }
 
                     // Wire up selector
@@ -488,7 +488,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                             Selector = new FirstSelector()
                         };
                     }
-                    this.Selector.Initialize(this.Rules, true);
+                    this.Selector.Initialize(this.Events, true);
                 }
             }
         }

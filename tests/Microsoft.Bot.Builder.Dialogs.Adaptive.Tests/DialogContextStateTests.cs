@@ -4,7 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Rules;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Events;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
@@ -254,16 +254,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         { "NameIntent", ".*name is (?<name>.*)" }
                     }
                 },
-                Rules = new List<IRule>()
+                Events = new List<IOnEvent>()
                 {
-                    new BeginDialogRule()
+                    new OnBeginDialog()
                     {
                         Actions = new List<IDialog>()
                         {
                             new SendActivity("{turn.activity.text}"),
                         }
                     },
-                    new IntentRule(intent: "IntentNumber1",
+                    new OnIntent(intent: "IntentNumber1",
                         actions:new List<IDialog>()
                         {
                             new SendActivity("{turn.activity.text}"),
@@ -272,7 +272,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             new SendActivity("{turn.recognized.text}"),
                             new SendActivity("{turn.recognized.intents.intentnumber1.score}"),
                         }),
-                    new IntentRule(intent: "NameIntent",
+                    new OnIntent(intent: "NameIntent",
                         actions:new List<IDialog>()
                         {
                             new SendActivity("{turn.recognized.entities.name}"),
@@ -300,9 +300,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var testDialog = new AdaptiveDialog("testDialog")
             {
                 AutoEndDialog = false,
-                Rules = new List<IRule>()
+                Events = new List<IOnEvent>()
                 {
-                    new BeginDialogRule()
+                    new OnBeginDialog()
                     {
 
                         Actions = new List<IDialog>()
@@ -339,9 +339,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var testDialog = new AdaptiveDialog("testDialog")
             {
                 AutoEndDialog = false,
-                Rules = new List<IRule>()
+                Events = new List<IOnEvent>()
                 {
-                    new BeginDialogRule()
+                    new OnBeginDialog()
                     {
                         Actions = new List<IDialog>()
                         {
@@ -350,9 +350,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             new AdaptiveDialog("d1")
                             {
                                 InputBindings = new Dictionary<string, string>() { { "$address.name", "dialog.name" } },
-                                Rules = new List<IRule>()
+                                Events = new List<IOnEvent>()
                                 {
-                                    new BeginDialogRule()
+                                    new OnBeginDialog()
                                     {
                                         Actions = new List<IDialog>()
                                         {
@@ -367,9 +367,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 Dialog = new AdaptiveDialog("d2")
                                 {
                                     InputBindings = new Dictionary<string, string>() { { "$address.name", "dialog.name" } },
-                                    Rules = new List<IRule>()
+                                    Events = new List<IOnEvent>()
                                     {
-                                        new BeginDialogRule()
+                                        new OnBeginDialog()
                                         {
                                             Actions = new List<IDialog>()
                                             {
@@ -398,9 +398,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var testDialog = new AdaptiveDialog("testDialog")
             {
                 AutoEndDialog = false,
-                Rules = new List<IRule>()
+                Events = new List<IOnEvent>()
                 {
-                    new BeginDialogRule()
+                    new OnBeginDialog()
                     {
                         Actions = new List<IDialog>()
                         {
@@ -411,9 +411,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 InputBindings = new Dictionary<string, string>() { { "$xxx", "dialog.name" } },
                                 OutputBinding = "dialog.name",
                                 DefaultResultProperty = "$xxx",
-                                Rules = new List<IRule>()
+                                Events = new List<IOnEvent>()
                                 {
-                                    new BeginDialogRule()
+                                    new OnBeginDialog()
                                     {
                                         Actions = new List<IDialog>()
                                         {
@@ -433,9 +433,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                     DefaultResultProperty = "$zzz",
                                     // test output binding from adaptive dialog
                                     OutputBinding = "dialog.name",
-                                    Rules = new List<IRule>()
+                                    Events = new List<IOnEvent>()
                                     {
-                                        new BeginDialogRule()
+                                        new OnBeginDialog()
                                         {
                                             Actions = new List<IDialog>()
                                             {
@@ -456,9 +456,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 {
                                     InputBindings = new Dictionary<string, string>() { { "$qqq", "dialog.name" } },
                                     DefaultResultProperty = "$qqq",
-                                    Rules = new List<IRule>()
+                                    Events = new List<IOnEvent>()
                                     {
-                                        new BeginDialogRule()
+                                        new OnBeginDialog()
                                         {
                                             Actions = new List<IDialog>()
                                             {
@@ -497,9 +497,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var testDialog = new AdaptiveDialog("testDialog")
             {
                 AutoEndDialog = false,
-                Rules = new List<IRule>()
+                Events = new List<IOnEvent>()
                 {
-                    new BeginDialogRule()
+                    new OnBeginDialog()
                     {
                         Actions = new List<IDialog>()
                         {
@@ -510,9 +510,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             {
                                 Dialog = new AdaptiveDialog("d2")
                                 {
-                                    Rules = new List<IRule>()
+                                    Events = new List<IOnEvent>()
                                     {
-                                        new BeginDialogRule()
+                                        new OnBeginDialog()
                                         {
                                             Actions = new List<IDialog>()
                                             {
@@ -523,9 +523,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                                 {
                                                     Dialog = new AdaptiveDialog("d3")
                                                     {
-                                                        Rules = new List<IRule>()
+                                                        Events = new List<IOnEvent>()
                                                         {
-                                                            new BeginDialogRule()
+                                                            new OnBeginDialog()
                                                             {
 
                                                                 Actions = new List<IDialog>()

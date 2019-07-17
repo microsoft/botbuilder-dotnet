@@ -2,9 +2,9 @@
     "$schema": "../../app.schema",
     "$type": "Microsoft.AdaptiveDialog",
     "$id": "root",
-    "rules": [
+    "events": [
         {
-            "$type": "Microsoft.BeginDialogRule",
+            "$type": "Microsoft.OnBeginDialog",
             "actions": [
                 {
                     "$type": "Microsoft.TextInput",

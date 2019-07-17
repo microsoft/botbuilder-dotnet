@@ -12,7 +12,7 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Rules;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Events;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
@@ -124,22 +124,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
             //TODO: we don't want this static initialization, leaving it here for convenience now
             // while things are changing rapidly still
 
-            // Rules
-            Register("Microsoft.EventRule", typeof(EventRule));
-            Register("Microsoft.IntentRule", typeof(IntentRule));
-            Register("Microsoft.UnknownIntentRule", typeof(UnknownIntentRule));
-            Register("Microsoft.BeginDialogRule", typeof(BeginDialogRule));
-            Register("Microsoft.ActivityRule", typeof(ActivityRule));
-            Register("Microsoft.MessageActivityRule", typeof(MessageActivityRule));
-            Register("Microsoft.MessageUpdateActivityRule", typeof(MessageUpdateActivityRule));
-            Register("Microsoft.MessageDeleteActivityRule", typeof(MessageDeleteActivityRule));
-            Register("Microsoft.MessageReactionActivityRule", typeof(MessageReactionActivityRule));
-            Register("Microsoft.EventActivityRule", typeof(EventActivityRule));
-            Register("Microsoft.InvokeActivityRule", typeof(InvokeActivityRule));
-            Register("Microsoft.ConversationUpdateActivityRule", typeof(ConversationUpdateActivityRule));
-            Register("Microsoft.EndOfConversationActivityRule", typeof(EndOfConversationActivityRule));
-            Register("Microsoft.TypingActivityRule", typeof(TypingActivityRule));
-            Register("Microsoft.HandoffActivityRule", typeof(HandoffActivityRule));
+            // Events
+            Register("Microsoft.OnDialogEvent", typeof(Adaptive.Events.OnDialogEvent));
+            Register("Microsoft.OnIntent", typeof(OnIntent));
+            Register("Microsoft.OnUnknownIntent", typeof(OnUnknownIntent));
+            Register("Microsoft.OnBeginDialog", typeof(OnBeginDialog));
+            Register("Microsoft.OnActivity", typeof(OnActivity));
+            Register("Microsoft.OnMessageActivity", typeof(OnMessageActivity));
+            Register("Microsoft.OnMessageUpdateActivity", typeof(OnMessageUpdateActivity));
+            Register("Microsoft.OnMessageDeleteActivity", typeof(OnMessageDeleteActivity));
+            Register("Microsoft.OnMessageReactionActivity", typeof(OnMessageReactionActivity));
+            Register("Microsoft.OnEventActivity", typeof(OnEventActivity));
+            Register("Microsoft.OnInvokeActivity", typeof(OnInvokeActivity));
+            Register("Microsoft.OnConversationUpdateActivity", typeof(OnConversationUpdateActivity));
+            Register("Microsoft.OnEndOfConversationActivity", typeof(OnEndOfConversationActivity));
+            Register("Microsoft.OnTypingActivity", typeof(OnTypingActivity));
+            Register("Microsoft.OnHandoffActivity", typeof(OnHandoffActivity));
 
             // Actions
             Register("Microsoft.BeginDialog", typeof(BeginDialog));
@@ -156,7 +156,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
             Register("Microsoft.HttpRequest", typeof(HttpRequest));
             Register("Microsoft.IfCondition", typeof(IfCondition));
             Register("Microsoft.InitProperty", typeof(InitProperty));
-            Register("Microsoft.LogStep", typeof(LogStep));
+            Register("Microsoft.LogStep", typeof(LogAction));
             Register("Microsoft.RepeatDialog", typeof(RepeatDialog));
             Register("Microsoft.ReplaceDialog", typeof(ReplaceDialog));
             Register("Microsoft.SendActivity", typeof(SendActivity));

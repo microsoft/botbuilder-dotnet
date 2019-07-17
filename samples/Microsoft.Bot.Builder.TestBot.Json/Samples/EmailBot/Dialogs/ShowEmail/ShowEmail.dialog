@@ -10,23 +10,23 @@
       "ShowEmailIntent": "(?i)show"
     }
   },
-  "rules": [
+  "events": [
     {
-      "$type": "Microsoft.IntentRule",
+      "$type": "Microsoft.OnIntent",
       "intent": "ForwardEmailIntent",
       "actions": [
         "ForwardEmail"
       ]
     },
     {
-      "$type": "Microsoft.IntentRule",
+      "$type": "Microsoft.OnIntent",
       "intent": "ReplyEmailIntent",
       "actions": [
         "ReplyEmail"
       ]
     },
     {
-      "$type": "Microsoft.IntentRule",
+      "$type": "Microsoft.OnIntent",
       "intent": "ShowNextPageIntent",
       "actions": [
         "NextPage",
@@ -34,7 +34,7 @@
       ]
     },
     {
-      "$type": "Microsoft.IntentRule",
+      "$type": "Microsoft.OnIntent",
       "intent": "ShowEmailIntent",
       "actions": [
         "DisplayEmailList"

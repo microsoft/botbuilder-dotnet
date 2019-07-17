@@ -12,30 +12,30 @@
         "CancelIntent":"(?i)cancel"
       }
     },
-  "rules": [
+  "events": [
     {
-      "$type": "Microsoft.IntentRule",
+      "$type": "Microsoft.OnIntent",
       "intent": "ToDoIntent",
       "actions": [
         "ToDoBot.main"
       ]
     },
     {
-      "$type": "Microsoft.IntentRule",
+      "$type": "Microsoft.OnIntent",
       "intent": "EmailIntent",
       "actions": [
         "EmailBot.main"
       ]
     },
     {
-      "$type": "Microsoft.IntentRule",
+      "$type": "Microsoft.OnIntent",
       "intent": "CalendarIntent",
       "actions": [
         "CalendarBot.main"
       ]
     },
     {
-      "$type": "Microsoft.IntentRule",
+      "$type": "Microsoft.OnIntent",
       "intent": "HelpIntent",
       "actions": [
         {
@@ -45,7 +45,7 @@
       ]
     },
     {
-      "$type": "Microsoft.IntentRule",
+      "$type": "Microsoft.OnIntent",
       "intent": "CancelIntent",
       "actions": [
         {
@@ -54,7 +54,7 @@
       ]
     },
     {
-      "$type": "Microsoft.UnknownIntentRule",
+      "$type": "Microsoft.OnUnknownIntent",
       "actions": [
         {
           "$type": "Microsoft.SendActivity",

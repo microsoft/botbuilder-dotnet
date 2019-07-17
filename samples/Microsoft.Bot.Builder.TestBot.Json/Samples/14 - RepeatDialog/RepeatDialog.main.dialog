@@ -8,9 +8,9 @@
             "cancel": "cancel"
         }
     },
-    "rules": [
+    "events": [
         {
-            "$type": "Microsoft.BeginDialogRule",
+            "$type": "Microsoft.OnBeginDialog",
             "actions": [
                 {
                     "$type": "Microsoft.SendActivity",
@@ -35,7 +35,7 @@
             ]
         },
         {
-            "$type": "Microsoft.IntentRule",
+            "$type": "Microsoft.OnIntent",
             "intent": "cancel",
             "actions": [
                 {

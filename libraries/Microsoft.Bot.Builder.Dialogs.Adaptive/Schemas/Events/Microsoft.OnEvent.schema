@@ -1,0 +1,27 @@
+﻿{
+    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/master/packages/DialogSchema/src/dialogSchema.schema",
+    "$role": "unionType(Microsoft.IOnEvent)",
+    "title": "OnEvent",
+    "description": "Defines a rule for an event which is triggered by some source",
+    "type": "object",
+    "properties": {
+        "constraint": {
+            "$role": "expression",
+            "title": "Constraint",
+            "description": "Optional constraint to which must be met for this rule to fire",
+            "examples": [
+                "user.vip == true"
+            ]
+        },
+        "actions": {
+            "type": "array",
+            "description": "Sequence of actions or dialogs to execute",
+            "items": {
+                "$type": "Microsoft.IDialog"
+            }
+        }
+    },
+    "required": [
+        "actions"
+    ]
+}

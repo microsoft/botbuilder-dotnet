@@ -33,7 +33,7 @@
                     "description": "Language generator to use for this dialog. (aka: LG file)"
                 },
                 "selector": {
-                    "$type": "Microsoft.IRuleSelector",
+                    "$type": "Microsoft.IEventSelector",
                     "title": "Selector",
                     "description": "Policy for how to select rule to execute next"
                 },
@@ -41,7 +41,7 @@
                     "type": "array",
                     "description": "Array of rules to use to evaluate conversation",
                     "items": {
-                        "$type": "Microsoft.IRule"
+                        "$type": "Microsoft.IOnEvent"
                     }
                 }
             }

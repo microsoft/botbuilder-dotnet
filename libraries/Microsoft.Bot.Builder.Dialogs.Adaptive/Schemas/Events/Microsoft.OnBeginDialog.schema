@@ -1,0 +1,9 @@
+﻿{
+    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/master/packages/DialogSchema/src/dialogSchema.schema",
+    "$ref": "./Microsoft.OnEvent.schema#",
+    "title": "OnBeginDialog",
+    "description": "This defines the actions to take when a dialog is started via BeginDialog()",
+    "required": [
+        "actions"
+    ]
+}

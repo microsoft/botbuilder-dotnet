@@ -1,0 +1,6 @@
+﻿{
+    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/master/packages/DialogSchema/src/dialogSchema.schema",
+    "title": "Microsoft IEventSelector",
+    "description": "Union of components which implement the IEventSelector interface",
+    "$role": "unionType"
+}

@@ -16,9 +16,9 @@
             "CancelIntent": "(?i)cancel"
         }
     },
-    "rules": [
+    "events": [
         {
-            "$type": "Microsoft.UnknownIntentRule",
+            "$type": "Microsoft.OnUnknownIntent",
             "actions": [
                 {
                     "$type": "Microsoft.SendActivity",
@@ -27,7 +27,7 @@
             ]
         },
         {
-            "$type": "Microsoft.IntentRule",
+            "$type": "Microsoft.OnIntent",
             "intent": "ShowMeetingIntent",
             "actions": [
                 // should be initialize
@@ -37,7 +37,7 @@
             ]
         },
         {
-            "$type": "Microsoft.IntentRule",
+            "$type": "Microsoft.OnIntent",
             "intent": "CreateMeetingIntent",
             "actions": [
                 // should be initialize
@@ -47,7 +47,7 @@
             ]
         },
         {
-            "$type": "Microsoft.IntentRule",
+            "$type": "Microsoft.OnIntent",
             "intent": "UpdateMeetingIntent",
             "actions": [
                 // should be initialize
@@ -57,7 +57,7 @@
             ]
         },
         {
-            "$type": "Microsoft.IntentRule",
+            "$type": "Microsoft.OnIntent",
             "intent": "AcceptMeetingIntent",
             "actions": [
                 // should be initialize
@@ -67,7 +67,7 @@
             ]
         },
         {
-            "$type": "Microsoft.IntentRule",
+            "$type": "Microsoft.OnIntent",
             "intent": "DeclineMeetingIntent",
             "actions": [
                 // should be initialize
@@ -77,7 +77,7 @@
             ]
         },
         {
-            "$type": "Microsoft.IntentRule",
+            "$type": "Microsoft.OnIntent",
             "intent": "HelpIntent",
             "actions": [
                 {
@@ -87,7 +87,7 @@
             ]
         },
         {
-            "$type": "Microsoft.IntentRule",
+            "$type": "Microsoft.OnIntent",
             "intent": "CancelIntent",
             "actions": [
                 {
@@ -96,7 +96,7 @@
             ]
         },
         {
-            "$type": "Microsoft.IntentRule",
+            "$type": "Microsoft.OnIntent",
             "intent": "ShowNextPageIntent",
             "actions": [
                 "CalendarNextPage",

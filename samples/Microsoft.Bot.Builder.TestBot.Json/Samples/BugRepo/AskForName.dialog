@@ -5,9 +5,9 @@
         "$name": "dialog.name"
     },
     "defaultResultProperty": "$name",
-    "rules": [
+    "events": [
         {
-            "$type": "Microsoft.BeginDialogRule",
+            "$type": "Microsoft.OnBeginDialog",
             "actions": [
                 {
                     "$type": "Microsoft.TextInput",

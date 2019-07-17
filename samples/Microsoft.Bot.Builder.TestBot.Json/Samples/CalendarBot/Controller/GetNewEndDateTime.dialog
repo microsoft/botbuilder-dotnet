@@ -1,9 +1,9 @@
 {
   "$schema": "../../app.schema",
   "$type": "Microsoft.AdaptiveDialog",
-  "rules": [
+  "events": [
     {
-      "$type": "Microsoft.BeginDialogRule",
+      "$type": "Microsoft.OnBeginDialog",
       "actions": [
         // todo: need a subtract expression of two timestamp
         //{

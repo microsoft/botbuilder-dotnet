@@ -14,9 +14,9 @@
             "CancelIntent": "(?i)cancel|never mind"
         }
     },
-    "rules": [
+    "events": [
         {
-            "$type":"Microsoft.BeginDialogRule",
+            "$type":"Microsoft.OnBeginDialog",
             "actions": [
                 {
                     "$type": "Microsoft.SendActivity",
@@ -25,35 +25,35 @@
             ]
         },
         {
-            "$type": "Microsoft.IntentRule",
+            "$type": "Microsoft.OnIntent",
             "intent": "AddIntent",
             "actions": [
                 "AddToDo"
             ]
         },
         {
-            "$type": "Microsoft.IntentRule",
+            "$type": "Microsoft.OnIntent",
             "intent": "DeleteIntent",
             "actions": [
                 "DeleteToDo"
             ]
         },
         {
-            "$type": "Microsoft.IntentRule",
+            "$type": "Microsoft.OnIntent",
             "intent": "ClearIntent",
             "actions": [
                 "ClearToDos"
             ]
         },
         {
-            "$type": "Microsoft.IntentRule",
+            "$type": "Microsoft.OnIntent",
             "intent": "ShowIntent",
             "actions": [
                 "ShowToDos"
             ]
         },
         {
-            "$type": "Microsoft.IntentRule",
+            "$type": "Microsoft.OnIntent",
             "intent": "HelpIntent",
             "actions": [
                 {
@@ -63,7 +63,7 @@
             ]
         },
         {
-            "$type": "Microsoft.IntentRule",
+            "$type": "Microsoft.OnIntent",
             "intent": "CancelIntent",
             "actions": [
                 {
@@ -76,7 +76,7 @@
             ]
         },
         {
-            "$type": "Microsoft.UnknownIntentRule",
+            "$type": "Microsoft.OnUnknownIntent",
             "actions": [
                 {
                     "$type": "Microsoft.SendActivity",

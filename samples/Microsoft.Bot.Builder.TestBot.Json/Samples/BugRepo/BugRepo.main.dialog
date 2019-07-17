@@ -11,9 +11,9 @@
             "End": "end"
         }
     },
-    "rules": [
+    "events": [
         {
-            "$type": "Microsoft.IntentRule",
+            "$type": "Microsoft.OnIntent",
             "intent": "End",
             "actions": [
                 {
@@ -22,7 +22,7 @@
             ]
         },
         {
-            "$type": "Microsoft.IntentRule",
+            "$type": "Microsoft.OnIntent",
             "intent": "Test",
             "actions": [
                 {

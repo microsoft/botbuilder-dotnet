@@ -7,7 +7,7 @@ using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Rules;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Events;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Expressions;
 using Microsoft.Bot.Builder.Expressions.Parser;
@@ -54,9 +54,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             var testDialog = new AdaptiveDialog("planningTest");
 
-            testDialog.AddRules(new List<IRule>()
+            testDialog.AddEvents(new List<IOnEvent>()
             {
-                new UnknownIntentRule(
+                new OnUnknownIntent(
                     new List<IDialog>()
                     {
                         new TextInput() { Prompt = new ActivityTemplate("Hello, what is your name?"),  OutputBinding = "user.name" },
@@ -77,9 +77,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             var dialog = new AdaptiveDialog("traceActivity");
 
-            dialog.AddRules(new List<IRule>()
+            dialog.AddEvents(new List<IOnEvent>()
             {
-                new UnknownIntentRule(
+                new OnUnknownIntent(
                     new List<IDialog>()
                     {
                         new SetProperty()
@@ -123,9 +123,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         public async Task Step_IfCondition()
         {
             var testDialog = new AdaptiveDialog("planningTest");
-            testDialog.AddRules(new List<IRule>()
+            testDialog.AddEvents(new List<IOnEvent>()
             {
-                new UnknownIntentRule(
+                new OnUnknownIntent(
                     new List<IDialog>()
                     {
                         new IfCondition()
@@ -161,9 +161,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             var testDialog = new AdaptiveDialog("planningTest")
             {
-                Rules = new List<IRule>()
+                Events = new List<IOnEvent>()
                 {
-                    new BeginDialogRule()
+                    new OnBeginDialog()
                     {
                         Actions = new List<IDialog>()
                             {
@@ -199,9 +199,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             var testDialog = new AdaptiveDialog("planningTest")
             {
-                Rules = new List<IRule>()
+                Events = new List<IOnEvent>()
                 {
-                    new BeginDialogRule()
+                    new OnBeginDialog()
                     {
                         Actions = new List<IDialog>()
                         {
@@ -237,9 +237,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             var testDialog = new AdaptiveDialog("planningTest")
             {
-                Rules = new List<IRule>()
+                Events = new List<IOnEvent>()
                 {
-                    new BeginDialogRule()
+                    new OnBeginDialog()
                     {
 
                         Actions = new List<IDialog>()
@@ -276,9 +276,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             var testDialog = new AdaptiveDialog("planningTest")
             {
-                Rules = new List<IRule>()
+                Events = new List<IOnEvent>()
                 {
-                    new BeginDialogRule()
+                    new OnBeginDialog()
                     {
 
                         Actions = new List<IDialog>()
@@ -314,9 +314,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             var testDialog = new AdaptiveDialog("planningTest");
 
-            testDialog.AddRules(new List<IRule>()
+            testDialog.AddEvents(new List<IOnEvent>()
             {
-                new UnknownIntentRule(
+                new OnUnknownIntent(
                     new List<IDialog>()
                     {
                         new IfCondition()
@@ -355,9 +355,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var testDialog = new AdaptiveDialog("planningTest")
             {
                 AutoEndDialog = false,
-                Rules = new List<IRule>()
+                Events = new List<IOnEvent>()
                 {
-                    new BeginDialogRule()
+                    new OnBeginDialog()
                     {
                         Actions = new List<IDialog>()
                         {
@@ -408,9 +408,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var testDialog = new AdaptiveDialog("planningTest")
             {
                 AutoEndDialog = false,
-                Rules = new List<IRule>()
+                Events = new List<IOnEvent>()
                 {
-                    new BeginDialogRule()
+                    new OnBeginDialog()
                     {
 
                         Actions = new List<IDialog>()
@@ -468,9 +468,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var testDialog = new AdaptiveDialog("planningTest")
             {
                 AutoEndDialog = false,
-                Rules = new List<IRule>()
+                Events = new List<IOnEvent>()
                 {
-                    new BeginDialogRule()
+                    new OnBeginDialog()
                     {
 
                         Actions = new List<IDialog>()
@@ -533,9 +533,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var testDialog = new AdaptiveDialog("planningTest")
             {
                 AutoEndDialog = false,
-                Rules = new List<IRule>()
+                Events = new List<IOnEvent>()
                 {
-                    new BeginDialogRule()
+                    new OnBeginDialog()
                     {
                         Actions = new List<IDialog>()
                         {
@@ -599,9 +599,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 AutoEndDialog = false
             };
 
-            testDialog.AddRules(new List<IRule>()
+            testDialog.AddEvents(new List<IOnEvent>()
             {
-                new UnknownIntentRule(
+                new OnUnknownIntent(
                     new List<IDialog>()
                     {
                         new NumberInput()
@@ -639,9 +639,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 AutoEndDialog = false
             };
 
-            testDialog.AddRules(new List<IRule>()
+            testDialog.AddEvents(new List<IOnEvent>()
             {
-                new UnknownIntentRule(
+                new OnUnknownIntent(
                     new List<IDialog>()
                     {
                         new DateTimeInput()
@@ -667,9 +667,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             var testDialog = new AdaptiveDialog("planningTest");
 
-            testDialog.AddRules(new List<IRule>()
+            testDialog.AddEvents(new List<IOnEvent>()
             {
-                new UnknownIntentRule(
+                new OnUnknownIntent(
                     new List<IDialog>()
                     {
                         new IfCondition()
@@ -710,16 +710,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             testDialog.Recognizer = new RegexRecognizer() { Intents = new Dictionary<string, string>() { { "JokeIntent", "joke" } } };
 
-            testDialog.AddRules(new List<IRule>()
+            testDialog.AddEvents(new List<IOnEvent>()
             {
-                new IntentRule("JokeIntent",
+                new OnIntent("JokeIntent",
                     actions: new List<IDialog>()
                     {
                         new SendActivity("Why did the chicken cross the road?"),
                         new EndTurn(),
                         new SendActivity("To get to the other side")
                     }),
-                new UnknownIntentRule(
+                new OnUnknownIntent(
                     new List<IDialog>()
                     {
                         new IfCondition()
@@ -756,9 +756,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         public async Task Step_BeginDialog()
         {
             var tellJokeDialog = new AdaptiveDialog("TellJokeDialog");
-            tellJokeDialog.AddRules(new List<IRule>()
+            tellJokeDialog.AddEvents(new List<IOnEvent>()
             {
-                new UnknownIntentRule(
+                new OnUnknownIntent(
                     new List<IDialog>()
                     {
                         new SendActivity("Why did the chicken cross the road?"),
@@ -770,9 +770,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             var askNameDialog = new AdaptiveDialog("AskNameDialog")
             {
-                Rules = new List<IRule>()
+                Events = new List<IOnEvent>()
                 {
-                    new BeginDialogRule()
+                    new OnBeginDialog()
                     {
 
                         Actions = new List<IDialog>()
@@ -802,9 +802,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             testDialog.Recognizer = new RegexRecognizer() { Intents = new Dictionary<string, string>() { { "JokeIntent", "joke" } } };
 
 
-            testDialog.AddRules(new List<IRule>()
+            testDialog.AddEvents(new List<IOnEvent>()
             {
-                new BeginDialogRule()
+                new OnBeginDialog()
                 {
                     Actions = new List<IDialog>()
                     {
@@ -813,12 +813,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     }
                 }, 
 
-                new IntentRule("JokeIntent",
+                new OnIntent("JokeIntent",
                     actions: new List<IDialog>()
                     {
                         new BeginDialog() { Dialog = tellJokeDialog }
                     }),
-                new UnknownIntentRule(
+                new OnUnknownIntent(
                     actions: new List<IDialog>()
                     {
                         new SendActivity("I'm a joke bot. To get started say 'tell me a joke'")
@@ -840,9 +840,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         public async Task Step_ReplaceDialog()
         {
             var tellJokeDialog = new AdaptiveDialog("TellJokeDialog");
-            tellJokeDialog.AddRules(new List<IRule>()
+            tellJokeDialog.AddEvents(new List<IOnEvent>()
             {
-                new UnknownIntentRule(
+                new OnUnknownIntent(
                     new List<IDialog>()
                     {
                         new SendActivity("Why did the chicken cross the road?"),
@@ -854,9 +854,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             var askNameDialog = new AdaptiveDialog("AskNameDialog")
             {
-                Rules = new List<IRule>()
+                Events = new List<IOnEvent>()
                 {
-                    new BeginDialogRule()
+                    new OnBeginDialog()
                     {
 
                         Actions = new List<IDialog>()
@@ -885,7 +885,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             testDialog.AutoEndDialog = false;
             testDialog.Recognizer = new RegexRecognizer() { Intents = new Dictionary<string, string>() { { "JokeIntent", "joke" } } };
 
-            testDialog.AddRule(new BeginDialogRule()
+            testDialog.AddEvent(new OnBeginDialog()
             {
                 Actions = new List<IDialog>()
                 {
@@ -894,9 +894,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 }
             });
 
-            testDialog.AddRules(new List<IRule>()
+            testDialog.AddEvents(new List<IOnEvent>()
             {
-                new IntentRule("JokeIntent",
+                new OnIntent("JokeIntent",
                     actions: new List<IDialog>()
                     {
                         new ReplaceDialog("TellJokeDialog")
@@ -930,14 +930,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             testDialog.Recognizer = new RegexRecognizer() { Intents = new Dictionary<string, string>() { { "EndIntent", "end" } } };
 
             var tellJokeDialog = new AdaptiveDialog("TellJokeDialog");
-            tellJokeDialog.AddRules(new List<IRule>()
+            tellJokeDialog.AddEvents(new List<IOnEvent>()
             {
-                new IntentRule("EndIntent",
+                new OnIntent("EndIntent",
                     actions: new List<IDialog>()
                     {
                         new EndDialog()
                     }),
-                new UnknownIntentRule(
+                new OnUnknownIntent(
                     new List<IDialog>()
                     {
                         new SendActivity("Why did the chicken cross the road?"),
@@ -948,9 +948,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             });
             tellJokeDialog.Recognizer = new RegexRecognizer() { Intents = new Dictionary<string, string>() { { "EndIntent", "end" } } };
 
-            testDialog.AddRules(new List<IRule>()
+            testDialog.AddEvents(new List<IOnEvent>()
             {
-                new UnknownIntentRule(
+                new OnUnknownIntent(
                     new List<IDialog>()
                     {
                         new BeginDialog() { Dialog = tellJokeDialog },
@@ -971,9 +971,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             var testDialog = new AdaptiveDialog("testDialog")
             {
-                Rules = new List<IRule>()
+                Events = new List<IOnEvent>()
                 {
-                    new BeginDialogRule()
+                    new OnBeginDialog()
                     {
 
                         Actions = new List<IDialog>()
@@ -1006,9 +1006,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             var rootDialog = new AdaptiveDialog("root")
             {
-                Rules = new List<IRule>()
+                Events = new List<IOnEvent>()
                 {
-                    new BeginDialogRule()
+                    new OnBeginDialog()
                     {
 
                         Actions = new List<IDialog>()
@@ -1026,16 +1026,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                             { "CowboyIntent" , "moo" }
                                         }
                                     },
-                                    Rules = new List<IRule>()
+                                    Events = new List<IOnEvent>()
                                     {
-                                        new IntentRule(intent: "CowboyIntent")
+                                        new OnIntent(intent: "CowboyIntent")
                                         {
                                             Actions = new List<IDialog>()
                                             {
                                                 new SendActivity("Yippee ki-yay!")
                                             }
                                         },
-                                        new IntentRule(intent: "EmitIntent")
+                                        new OnIntent(intent: "EmitIntent")
                                         {
                                             Actions = new List<IDialog>()
                                             {
@@ -1052,7 +1052,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         }
                     },
 
-                    new EventRule()
+                    new OnDialogEvent()
                     {
                         Events = new List<string>() { "CustomEvent"},
                         Actions = new List<IDialog>()
@@ -1082,9 +1082,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             var rootDialog = new AdaptiveDialog("root")
             {
-                Rules = new List<IRule>()
+                Events = new List<IOnEvent>()
                 {
-                    new BeginDialogRule()
+                    new OnBeginDialog()
                     {
                         Actions = new List<IDialog>()
                         {
@@ -1145,9 +1145,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             var rootDialog = new AdaptiveDialog("root")
             {
-                Rules = new List<IRule>()
+                Events = new List<IOnEvent>()
                 {
-                    new BeginDialogRule()
+                    new OnBeginDialog()
                     {
 
                         Actions = new List<IDialog>()
