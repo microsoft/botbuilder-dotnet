@@ -46,7 +46,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.TestUtils
 
             if (string.IsNullOrWhiteSpace(Key))
             {
-                throw new Exception("Environment variable 'LuisSubscriptionKey' not found.");
+                Key = Guid.Empty.ToString();
             }
 
             if (string.IsNullOrWhiteSpace(Endpoint))
