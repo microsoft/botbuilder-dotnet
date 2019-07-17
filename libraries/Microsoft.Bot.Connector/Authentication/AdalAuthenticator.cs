@@ -26,7 +26,7 @@ namespace Microsoft.Bot.Connector.Authentication
         // When everything seems to be OK, this retry policy will be empty.
         // The reason for this is that if a request gets throttled, even if we wait to retry that, another thread will try again right away.
         // With the shared retry policy, if a request gets throttled, we know that other threads have to wait as well.
-        // This variable is guarded by the authContextSemaphore semphore. Don't modify it outside of the semaphore scope.
+        // This variable is guarded by the authContextSemaphore semaphore. Don't modify it outside of the semaphore scope.
         private static volatile RetryParams currentRetryPolicy;
 
         // Our ADAL context. Acquires tokens and manages token caching for us.

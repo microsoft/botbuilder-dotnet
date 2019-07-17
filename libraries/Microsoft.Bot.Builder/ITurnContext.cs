@@ -43,7 +43,7 @@ namespace Microsoft.Bot.Builder
     /// activity.
     /// <para>The activity's <see cref="IActivity.Id"/> indicates the activity in the
     /// conversation to replace.</para>
-    /// <para>If the activity is successfully sent, the <paramref name="next"/> delegater returns
+    /// <para>If the activity is successfully sent, the <paramref name="next"/> delegate returns
     /// a <see cref="ResourceResponse"/> object containing the ID that the receiving
     /// channel assigned to the activity. Use this response object as the return value of this handler.</para>
     /// </remarks>
