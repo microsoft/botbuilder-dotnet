@@ -390,47 +390,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 {
                     exp = exp + "()";
                 }
-
+                // TODO: refine error messag here maybe
                 return CheckExpression(exp, context);
-
-                // TODO
-                // check template ref like check expression
-                /*
-                exp = exp.TrimStart('[').TrimEnd(']').Trim();
-
-                var argsStartPos = exp.IndexOf('(');
-
-                // Do have args
-                if (argsStartPos > 0)
-                {
-                    // EvaluateTemplate all arguments using ExpressoinEngine
-                    var argsEndPos = exp.LastIndexOf(')');
-                    if (argsEndPos < 0 || argsEndPos < argsStartPos + 1)
-                    {
-                        result.Add(BuildLGDiagnostic($"Not a valid template ref: {exp}", context: context));
-                    }
-                    else
-                    {
-                        var templateName = exp.Substring(0, argsStartPos);
-                        if (!templateMap.ContainsKey(templateName))
-                        {
-                            result.Add(BuildLGDiagnostic($"[{templateName}] template not found", context: context));
-                        }
-                        else
-                        {
-                            var argsNumber = exp.Substring(argsStartPos + 1, argsEndPos - argsStartPos - 1).Split(',').Length;
-                            result.AddRange(CheckTemplateParameters(templateName, argsNumber, context));
-                        }
-                    }
-                }
-                else
-                {
-                    if (!templateMap.ContainsKey(exp))
-                    {
-                        result.Add(BuildLGDiagnostic($"[{exp}] template not found", context: context));
-                    }
-                }
-                */
             }
 
             private List<Diagnostic> CheckMultiLineText(string exp, ParserRuleContext context)
