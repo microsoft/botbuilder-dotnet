@@ -16,18 +16,21 @@ namespace Microsoft.Bot.Configuration
         /// <summary>
         /// Gets or sets type of the service.
         /// </summary>
+        /// <value>The type of service.</value>
         [JsonProperty("type")]
         public string Type { get; set; }
 
         /// <summary>
         /// Gets or sets user friendly name of the service.
         /// </summary>
+        /// <value>The name of the service.</value>
         [JsonProperty("name")]
         public string Name { get; set; }
 
         /// <summary>
         /// Gets or sets unique id for the service.
         /// </summary>
+        /// <value>The Id of the service.</value>
         [JsonProperty("id")]
         public string Id { get; set; }
 

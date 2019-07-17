@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Schema.Tests
         [TestMethod]
         public void TestImplicitConversation()
         {
-            SuggestedActions(new CardAction [] { "x", "y", "z" });
+            SuggestedActions(new CardAction[] { "x", "y", "z" });
 
             void SuggestedActions(IList<CardAction> actions)
             {

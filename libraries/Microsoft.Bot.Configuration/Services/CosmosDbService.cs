@@ -19,24 +19,28 @@ namespace Microsoft.Bot.Configuration
         /// <summary>
         /// Gets or sets endpoint for CosmosDB.
         /// </summary>
+        /// <value>The endpoint for CosmosDB.</value>
         [JsonProperty("endpoint")]
         public string Endpoint { get; set; }
 
         /// <summary>
         /// Gets or sets key for accessing CosmosDB.
         /// </summary>
+        /// <value>The key for CosmosDB.</value>
         [JsonProperty("key")]
         public string Key { get; set; }
 
         /// <summary>
         /// Gets or sets database.
         /// </summary>
+        /// <value>The database for CosmosDB.</value>
         [JsonProperty("database")]
         public string Database { get; set; }
 
         /// <summary>
         /// Gets or sets collection.
         /// </summary>
+        /// <value>The collection for CosmosDB.</value>
         [JsonProperty("collection")]
         public string Collection { get; set; }
 

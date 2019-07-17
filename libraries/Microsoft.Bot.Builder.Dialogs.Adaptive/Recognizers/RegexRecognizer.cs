@@ -7,10 +7,10 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Expressions;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Microsoft.Bot.Builder.Expressions;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
 {
@@ -25,11 +25,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         /// Dictionary of patterns -> Intent names
         /// </summary>
         [JsonProperty("intents")]
-        public Dictionary<string, string> Intents = new Dictionary<string, string>();
+        public Dictionary<string, string> Intents { get; set; } = new Dictionary<string, string>();
 
         public RegexRecognizer()
         {
-
         }
 
         public async Task<RecognizerResult> RecognizeAsync(ITurnContext turnContext, CancellationToken cancellationToken)

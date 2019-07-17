@@ -21,6 +21,7 @@ namespace Microsoft.Bot.Configuration
         /// <summary>
         /// Gets or sets appId for the bot.
         /// </summary>
+        /// <value>The App Id.</value>
         [JsonProperty("appId")]
         public string AppId { get; set; }
     }
