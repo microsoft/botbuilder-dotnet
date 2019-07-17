@@ -20,7 +20,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Loaders
             {
                 var authSetting = obj.ToObject<OAuthPromptSettings>();
                 var oauthPrompt = new OAuthPrompt("[OAuthPrompt]", authSetting);
-                oauthPrompt.Property = obj["Property"]?.ToString();
+                // TODO why does OAuthPrompt have a Property?
+                // oauthPrompt.Property = obj["Property"]?.ToString();
                 return oauthPrompt;
             }
 

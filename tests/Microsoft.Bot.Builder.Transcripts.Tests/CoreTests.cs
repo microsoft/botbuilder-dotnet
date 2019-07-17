@@ -47,6 +47,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
                                     throw new Exception("exception to catch");
                             }
                         }
+
                         break;
                     default:
                         await context.SendActivityAsync(context.Activity.Type);

@@ -37,9 +37,9 @@
                     "title": "Selector",
                     "description": "Policy for how to select rule to execute next"
                 },
-                "rules": {
+                "events": {
                     "type": "array",
-                    "description": "Array of rules to use to evaluate conversation",
+                    "description": "Events to use to evaluate conversation",
                     "items": {
                         "$type": "Microsoft.IOnEvent"
                     }

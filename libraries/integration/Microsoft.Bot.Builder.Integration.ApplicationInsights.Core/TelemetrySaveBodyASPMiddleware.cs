@@ -24,7 +24,9 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core
         {
             var request = httpContext.Request;
 
-            if (request.Method == "POST" && request.ContentType.StartsWith("application/json"))
+            if (request.Method == "POST"
+                && !string.IsNullOrEmpty(request.ContentType)
+                && request.ContentType.StartsWith("application/json"))
             {
                 var items = httpContext.Items;
                 request.EnableBuffering();

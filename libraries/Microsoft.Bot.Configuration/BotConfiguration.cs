@@ -24,30 +24,35 @@ namespace Microsoft.Bot.Configuration
         /// <summary>
         /// Gets or sets name of the bot.
         /// </summary>
+        /// <value>The name of the bot.</value>
         [JsonProperty("name")]
         public string Name { get; set; }
 
         /// <summary>
         /// Gets or sets description of the bot.
         /// </summary>
+        /// <value>The description for the bot.</value>
         [JsonProperty("description")]
         public string Description { get; set; }
 
         /// <summary>
         /// Gets or sets padlock - Used to validate that the secret is consistent for all encrypted fields.
         /// </summary>
+        /// <value>The padlock.</value>
         [JsonProperty("padlock")]
         public string Padlock { get; set; }
 
         /// <summary>
         /// Gets or sets the version.
         /// </summary>
+        /// <value>The version.</value>
         [JsonProperty("version")]
         public string Version { get; set; } = "2.0";
 
         /// <summary>
         /// Gets or sets connected services.
         /// </summary>
+        /// <value>The list of connected services.</value>
         [JsonProperty("services")]
         [JsonConverter(typeof(BotServiceConverter))]
         public List<ConnectedService> Services { get; set; } = new List<ConnectedService>();
@@ -259,22 +264,25 @@ namespace Microsoft.Bot.Configuration
                 throw new ArgumentNullException(nameof(newService));
             }
 
-            if (this.Services.Where(s => s.Type == newService.Type && s.Id == newService.Id).Any())
+            if (string.IsNullOrEmpty(newService.Id))
+            {
+                int maxValue = 0;
+                foreach (var service in this.Services)
+                {
+                    if (int.TryParse(service.Id, out int id) && id > maxValue)
+                    {
+                        maxValue = id;
+                    }
+                }
+
+                newService.Id = (++maxValue).ToString();
+            }
+            else if (this.Services.Where(s => s.Type == newService.Type && s.Id == newService.Id).Any())
             {
                 throw new Exception($"service with {newService.Id} is already connected");
             }
-            else
-            {
-                // Assign a unique random id between 0-255 (255 services seems like a LOT of services
-                var rnd = new Random();
-                do
-                {
-                    newService.Id = rnd.Next(byte.MaxValue).ToString();
-                }
-                while (this.Services.Where(s => s.Id == newService.Id).Any());
 
-                this.Services.Add(newService);
-            }
+            this.Services.Add(newService);
         }
 
         /// <summary>

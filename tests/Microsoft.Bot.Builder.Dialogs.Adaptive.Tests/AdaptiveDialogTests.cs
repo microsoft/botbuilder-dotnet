@@ -23,7 +23,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
     public class AdaptiveDialogTests
     {
         public TestContext TestContext { get; set; }
-        public ExpressionEngine expressionEngine = new ExpressionEngine();
+
+        public ExpressionEngine expressionEngine { get; set; } = new ExpressionEngine();
 
         private TestFlow CreateFlow(AdaptiveDialog ruleDialog)
         {
@@ -262,8 +263,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .StartTestAsync();
         }
 
-
-
         [TestMethod]
         public async Task AdaptiveDialog_StringLiteralInExpression()
         {
@@ -312,7 +311,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .AssertReply("Hello Carlos, nice to meet you!")
             .StartTestAsync();
         }
-
 
         [TestMethod]
         public async Task AdaptiveDialog_DoActions()
@@ -438,7 +436,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     actions: new List<IDialog>()
                     {
                         new SendActivity("I'm a joke bot. To get started say 'tell me a joke'")
-                    }),
+                    })
             });
 
             await CreateFlow(ruleDialog)

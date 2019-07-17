@@ -4,7 +4,7 @@
 namespace Microsoft.Bot.Schema
 {
     /// <summary>
-    /// GeoCoordinates extensions
+    /// GeoCoordinates extensions.
     /// </summary>
     public partial class GeoCoordinates : Entity
     {

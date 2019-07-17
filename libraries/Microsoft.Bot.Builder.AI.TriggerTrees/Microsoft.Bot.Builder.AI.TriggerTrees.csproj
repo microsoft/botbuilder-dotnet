@@ -42,11 +42,9 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Documentation|AnyCPU'">
     <DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Builder.AI.TriggerTrees.xml</DocumentationFile>
-    <CodeAnalysisRuleSet>Microsoft.Bot.Builder.AI.TriggerTrees.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
 
   <PropertyGroup>
-    <CodeAnalysisRuleSet>Microsoft.Bot.Builder.AI.TriggerTrees.ruleset</CodeAnalysisRuleSet>
     <AssemblyName>Microsoft.Bot.Builder.AI.TriggerTrees</AssemblyName>
     <RootNamespace>Microsoft.Bot.Builder.AI.TriggerTrees</RootNamespace>
   </PropertyGroup>

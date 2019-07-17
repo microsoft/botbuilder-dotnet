@@ -3,19 +3,18 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.AI.Luis;
+using Microsoft.Bot.Builder.Dialogs.Adaptive;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Events;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Loaders;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Plugins;
-using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Events;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 
 namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
 {
@@ -156,7 +155,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
             Register("Microsoft.HttpRequest", typeof(HttpRequest));
             Register("Microsoft.IfCondition", typeof(IfCondition));
             Register("Microsoft.InitProperty", typeof(InitProperty));
-            Register("Microsoft.LogStep", typeof(LogAction));
+            Register("Microsoft.LogAction", typeof(LogAction));
             Register("Microsoft.RepeatDialog", typeof(RepeatDialog));
             Register("Microsoft.ReplaceDialog", typeof(ReplaceDialog));
             Register("Microsoft.SendActivity", typeof(SendActivity));

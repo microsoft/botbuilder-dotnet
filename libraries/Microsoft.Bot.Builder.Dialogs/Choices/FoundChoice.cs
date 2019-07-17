@@ -3,6 +3,9 @@
 
 namespace Microsoft.Bot.Builder.Dialogs.Choices
 {
+    /// <summary>
+    /// Represents a result from matching user input against a list of choices.
+    /// </summary>
     public class FoundChoice
     {
         /// <summary>

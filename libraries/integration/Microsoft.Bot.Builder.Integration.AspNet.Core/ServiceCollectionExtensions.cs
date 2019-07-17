@@ -164,6 +164,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 
             var botFrameworkAdapter = new BotFrameworkAdapter(
                             options.CredentialProvider,
+                            options.AuthenticationConfiguration,
                             options.ChannelProvider,
                             options.ConnectorClientRetryPolicy,
                             options.HttpClient,

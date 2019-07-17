@@ -104,11 +104,16 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
             Rand = new Random(seed);
         }
 
-        private static readonly string[] comparisons = new string[] {
-            ExpressionType.LessThan, ExpressionType.LessThanOrEqual,
+        private static readonly string[] comparisons = new string[]
+        {
+            ExpressionType.LessThan,
+            ExpressionType.LessThanOrEqual,
             ExpressionType.Equal,
+
             // TODO: null values are always not equal ExpressionType.NotEqual,
-            ExpressionType.GreaterThanOrEqual, ExpressionType.GreaterThan };
+            ExpressionType.GreaterThanOrEqual,
+            ExpressionType.GreaterThan
+        };
 
         /* Predicates */
 
@@ -119,8 +124,9 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
             var builder = new StringBuilder();
             for (var i = 0; i < length; ++i)
             {
-                builder.Append(((char)('a' + Rand.Next(26))));
+                builder.Append((char)('a' + Rand.Next(26)));
             }
+
             return builder.ToString();
         }
 
@@ -136,6 +142,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
                 case ExpressionType.NotEqual: result += epsilon; break;
                 case ExpressionType.GreaterThan: result -= epsilon; break;
             }
+
             return result;
         }
 
@@ -148,6 +155,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
                 case ExpressionType.NotEqual: result += DoubleEpsilon; break;
                 case ExpressionType.GreaterThan: result -= DoubleEpsilon; break;
             }
+
             return result;
         }
 
@@ -166,6 +174,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
                             Expression.Accessor(name),
                             Expression.ConstantExpression(AdjustValue((int)value, type)));
                     }
+
                     break;
                 case 1:
                     {
@@ -175,8 +184,10 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
                             Expression.Accessor(name),
                             Expression.ConstantExpression(AdjustValue((double)value, type)));
                     }
+
                     break;
             }
+
             return new ExpressionInfo(expression, name, value, type);
         }
 
@@ -199,6 +210,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
                     value = RandomString(5);
                     break;
             }
+
             return new ExpressionInfo(expression, name, value, ExpressionType.Not);
         }
 
@@ -215,6 +227,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
                     case 1: expressions.Add(GenerateHasValueComparison(name)); break;
                 }
             }
+
             return expressions;
         }
 
@@ -233,12 +246,15 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
                     {
                         choice = Rand.Next(predicates.Count);
                     } while (used.Contains(choice));
+
                     expressions.Add(predicates[choice]);
                     used.Add(choice);
                 }
+
                 var conjunction = Binary(ExpressionType.And, expressions, out var bindings);
                 conjunctions.Add(new ExpressionInfo(conjunction, bindings));
             }
+
             return conjunctions;
         }
 
@@ -260,9 +276,11 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
                     expressions.Add(predicates[choice]);
                     used.Add(choice);
                 }
+
                 var disjunction = Binary(ExpressionType.Or, expressions, out var bindings);
                 disjunctions.Add(new ExpressionInfo(disjunction, bindings));
             }
+
             return disjunctions;
         }
 
@@ -281,6 +299,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
                     {
                         choice = Rand.Next(predicates.Count);
                     } while (used.Contains(choice));
+
                     var predicate = predicates[choice];
                     if (j == 0)
                     {
@@ -289,22 +308,27 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
                         {
                             optional = Expression.NotExpression(optional);
                         }
+
                         expressions.Add(new ExpressionInfo(optional, predicate.Bindings));
                     }
                     else
                     {
                         expressions.Add(predicate);
                     }
+
                     used.Add(choice);
                 }
+
                 var conjunction = Binary(ExpressionType.And, expressions, out var bindings);
                 optionals.Add(new ExpressionInfo(conjunction, bindings));
             }
+
             return optionals;
         }
 
-        public Expression Binary(string type, IEnumerable<ExpressionInfo> expressions,
-            out Dictionary<string, Comparison> bindings)
+        public Expression Binary(string type,
+                                 IEnumerable<ExpressionInfo> expressions,
+                                 out Dictionary<string, Comparison> bindings)
         {
             bindings = MergeBindings(expressions);
             Expression binaryExpression = null;
@@ -391,6 +415,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
                         {
                             info.Bindings.Add(mem, baseBinding.Value);
                         }
+
                         info.Quantifiers.Add(new Quantifier(baseBinding.Key, QuantifierType.Any, mappings));
                     }
                     else
@@ -402,11 +427,14 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
                                 info.Bindings.Add(mapping, baseBinding.Value);
                             }
                         }
+
                         info.Quantifiers.Add(new Quantifier(baseBinding.Key, QuantifierType.All, mappings));
                     }
                 }
+
                 result.Add(info);
             }
+
             return result;
         }
 
@@ -415,42 +443,73 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
             var value = comparison.Value;
             var type = value.GetType();
             var isNot = false;
+
             if (type != typeof(int) && type != typeof(double) && type != typeof(string))
             {
                 throw new Exception($"Unsupported type {type}");
             }
+
             switch (comparison.Type)
             {
                 case ExpressionType.LessThanOrEqual:
                 case ExpressionType.LessThan:
                     {
-                        if (type == typeof(int)) value = (int)value + 1;
-                        else if (type == typeof(double)) value = (double)value + DoubleEpsilon;
+                        if (type == typeof(int))
+                        {
+                            value = (int)value + 1;
+                        }
+                        else if (type == typeof(double))
+                        {
+                            value = (double)value + DoubleEpsilon;
+                        }
                     }
+
                     break;
                 case ExpressionType.Equal:
                     {
-                        if (type == typeof(int)) value = (int)value - 1;
-                        else if (type == typeof(double)) value = (double)value - DoubleEpsilon;
+                        if (type == typeof(int))
+                        {
+                            value = (int)value - 1;
+                        }
+                        else if (type == typeof(double))
+                        {
+                            value = (double)value - DoubleEpsilon;
+                        }
                     }
+
                     break;
                 case ExpressionType.NotEqual:
                     {
-                        if (type == typeof(int)) value = (int)value - 1;
-                        else if (type == typeof(double)) value = (double)value - DoubleEpsilon;
+                        if (type == typeof(int))
+                        {
+                            value = (int)value - 1;
+                        }
+                        else if (type == typeof(double))
+                        {
+                            value = (double)value - DoubleEpsilon;
+                        }
                     }
+
                     break;
                 case ExpressionType.GreaterThanOrEqual:
                 case ExpressionType.GreaterThan:
                     {
-                        if (type == typeof(int)) value = (int)value - 1;
-                        else if (type == typeof(double)) value = (double)value - DoubleEpsilon;
+                        if (type == typeof(int))
+                        {
+                            value = (int)value - 1;
+                        }
+                        else if (type == typeof(double))
+                        {
+                            value = (double)value - DoubleEpsilon;
+                        }
                     }
+
                     break;
                 case ExpressionType.Not:
                     {
                         isNot = true;
                     }
+
                     break;
 
             }
@@ -471,6 +530,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
                         bindings.Add(binding.Key, comparison);
                     }
                 }
+
                 yield return new ExpressionInfo(Expression.NotExpression(expr.Expression), bindings, expr.Quantifiers);
             }
         }
@@ -485,6 +545,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
                 {
                     result.Add(type, new List<string>());
                 }
+
                 result[type].Add(binding.Key);
             }
             return result;
@@ -500,6 +561,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
                     bindings[binding.Key] = binding.Value;
                 }
             }
+
             return bindings;
         }
 
@@ -533,6 +595,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
                     break;
                 }
             }
+
             return result;
         }
 
@@ -543,6 +606,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
             {
                 totalWeight += weight;
             }
+
             var selection = Rand.NextDouble() * totalWeight;
             var soFar = 0.0;
             var result = 0;
@@ -558,6 +622,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
                     break;
                 }
             }
+
             return result;
         }
     }

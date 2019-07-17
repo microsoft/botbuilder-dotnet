@@ -175,7 +175,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
 
             // complex type paths
+#pragma warning disable CS0168 // The variable 'val' is declared but never used
             object val;
+#pragma warning restore CS0168 // The variable 'val' is declared but never used
             string value;
             state.SetValue("user.name", "joe");
             Assert.AreEqual("joe", state.GetValue("user.name"));

@@ -1,28 +1,26 @@
 ﻿// Licensed under the MIT License.
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.Dialogs.Declarative;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Tests.Recognizers;
-using Microsoft.Bot.Schema;
-using System.Collections.Generic;
-using System;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
-using Microsoft.Bot.Builder.Dialogs.Adaptive;
+using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
-using Microsoft.Bot.Builder.LanguageGeneration;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Tests.Recognizers;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
+using Microsoft.Bot.Schema;
+using Microsoft.Extensions.Configuration;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
 {
     [TestClass]
     public class JsonLoadTests
     {
-        private readonly string samplesDirectory = PathUtils.NormalizePath(@"..\..\..\..\..\samples\Microsoft.Bot.Builder.TestBot.Json\Samples\");
+        private readonly string samplesDirectory = PathUtils.NormalizePath(@"..\..\..\..\..\tests\Microsoft.Bot.Builder.TestBot.Json\Samples\");
 
         private static ResourceExplorer resourceExplorer;
 
@@ -32,7 +30,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
             TypeFactory.Configuration = new ConfigurationBuilder().AddInMemoryCollection().Build();
             TypeFactory.RegisterAdaptiveTypes();
             TypeFactory.Register("Microsoft.RuleRecognizer", typeof(RuleRecognizer));
-            string projPath = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, PathUtils.NormalizePath($@"..\..\..\..\..\samples\Microsoft.Bot.Builder.TestBot.Json\Microsoft.Bot.Builder.TestBot.Json.csproj")));
+            string projPath = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, PathUtils.NormalizePath($@"..\..\..\..\..\tests\Microsoft.Bot.Builder.TestBot.Json\Microsoft.Bot.Builder.TestBot.Json.csproj")));
             resourceExplorer = ResourceExplorer.LoadProject(projPath);
         }
 
