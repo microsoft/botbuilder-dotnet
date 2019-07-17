@@ -124,6 +124,42 @@ namespace Microsoft.Bot.Builder.Tests
                 await Store.LogActivityAsync(activity);
             }
 
+            // modify first record
+            var updateActivity = JsonConvert.DeserializeObject<Activity>(JsonConvert.SerializeObject(activities[0]));
+            updateActivity.Text = "updated";
+            updateActivity.Type = ActivityTypes.MessageUpdate;
+            await Store.LogActivityAsync(updateActivity);
+            activities[0].Text = "updated";
+
+            // modify delete second record
+            var deleteActivity = new Activity()
+            {
+                Type = ActivityTypes.MessageDelete,
+                Timestamp = DateTime.Now,
+                Id = activities[1].Id,
+                ChannelId = activities[1].ChannelId,
+                From = activities[1].From,
+                Conversation = activities[1].Conversation,
+                Recipient = activities[1].Recipient,
+                ServiceUrl = activities[1].ServiceUrl,
+            };
+            await Store.LogActivityAsync(deleteActivity);
+            // tombstone the deleted record
+            activities[1] = new Activity()
+            {
+                Type = ActivityTypes.MessageDelete,
+                Id = activities[1].Id,
+                From = new ChannelAccount(id: "deleted", role: activities[1].From.Role),
+                Recipient = new ChannelAccount(id: "deleted", role: activities[1].Recipient.Role),
+                Locale = activities[1].Locale,
+                LocalTimestamp = activities[1].Timestamp,
+                Timestamp = activities[1].Timestamp,
+                ChannelId = activities[1].ChannelId,
+                Conversation = activities[1].Conversation,
+                ServiceUrl = activities[1].ServiceUrl,
+                ReplyToId = activities[1].ReplyToId,
+            };
+
             // make sure other channels and conversations don't return results
             var pagedResult = await Store.GetTranscriptActivitiesAsync("bogus", conversationId);
             Assert.IsNull(pagedResult.ContinuationToken);
