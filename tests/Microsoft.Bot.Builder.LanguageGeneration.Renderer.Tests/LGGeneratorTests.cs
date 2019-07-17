@@ -40,11 +40,11 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             TypeFactory.RegisterAdaptiveTypes();
             resourceExplorer = ResourceExplorer.LoadProject(GetProjectFolder());
         }
+
         private static string GetProjectFolder()
         {
             return AppContext.BaseDirectory.Substring(0, AppContext.BaseDirectory.IndexOf("bin"));
         }
-
 
         [ClassCleanup]
         public static void ClassCleanup()
@@ -72,6 +72,16 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var context = GetTurnContext("");
             var lg = new TemplateEngineLanguageGenerator("", name: "test");
             await lg.Generate(context, "[tesdfdfsst]", null);
+        }
+
+
+        [TestMethod]
+        public async Task TestImport()
+        {
+            var languageGeneratorManager = new LanguageGeneratorManager(resourceExplorer);
+            var generator = languageGeneratorManager.LanguageGenerators["import.lg"];
+            var result = await generator.Generate(GetTurnContext(""), "[test2]", null);
+            Assert.AreEqual("default2", result);
         }
 
         [TestMethod]

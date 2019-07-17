@@ -34,7 +34,7 @@ namespace Microsoft.Bot.Builder.Azure
         /// Creates an instance of AzureBlobTranscriptStore.
         /// </summary>
         /// <param name="dataConnectionstring">Connection string to connect to Azure Blob Storage.</param>
-        /// <param name="containerName">Name of the continer where transcript blobs will be stored.</param>
+        /// <param name="containerName">Name of the container where transcript blobs will be stored.</param>
         public AzureBlobTranscriptStore(string dataConnectionstring, string containerName)
             : this(CloudStorageAccount.Parse(dataConnectionstring), containerName)
         {
@@ -44,7 +44,7 @@ namespace Microsoft.Bot.Builder.Azure
         /// Initializes a new instance of the <see cref="AzureBlobTranscriptStore"/> class.
         /// </summary>
         /// <param name="storageAccount">Azure Storage Account to store transcripts.</param>
-        /// <param name="containerName">Name of the continer where transcript blobs will be stored.</param>
+        /// <param name="containerName">Name of the container where transcript blobs will be stored.</param>
         public AzureBlobTranscriptStore(CloudStorageAccount storageAccount, string containerName)
         {
             if (storageAccount == null)

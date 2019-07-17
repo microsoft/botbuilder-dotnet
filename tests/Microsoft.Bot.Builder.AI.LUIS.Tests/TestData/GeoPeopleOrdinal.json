@@ -1,0 +1,233 @@
+{
+  "text": "go from next to last to last move london to jakarta and homer simpson is the parent of lisa simpson",
+  "intents": {
+    "Roles": {
+      "score": 0.999204934
+    },
+    "search": {
+      "score": 0.0309635121
+    },
+    "None": {
+      "score": 0.0109820236
+    },
+    "Travel": {
+      "score": 0.01095186
+    },
+    "Weather_GetForecast": {
+      "score": 0.0106523167
+    },
+    "Delivery": {
+      "score": 0.00123035291
+    },
+    "EntityTests": {
+      "score": 0.0009487789
+    },
+    "SpecifyName": {
+      "score": 0.0009410849
+    },
+    "Help": {
+      "score": 0.0001358991
+    },
+    "Cancel": {
+      "score": 0.000107549029
+    },
+    "Greeting": {
+      "score": 5.293933E-05
+    }
+  },
+  "entities": {
+    "$instance": {
+      "startloc": [
+        {
+          "startIndex": 34,
+          "endIndex": 40,
+          "text": "london",
+          "type": "builtin.geographyV2.city"
+        }
+      ],
+      "endloc": [
+        {
+          "startIndex": 44,
+          "endIndex": 51,
+          "text": "jakarta",
+          "type": "builtin.geographyV2.city"
+        }
+      ],
+      "startpos": [
+        {
+          "startIndex": 8,
+          "endIndex": 20,
+          "text": "next to last",
+          "type": "builtin.ordinalV2.relative"
+        }
+      ],
+      "endpos": [
+        {
+          "startIndex": 24,
+          "endIndex": 28,
+          "text": "last",
+          "type": "builtin.ordinalV2.relative"
+        }
+      ],
+      "parent": [
+        {
+          "startIndex": 56,
+          "endIndex": 69,
+          "text": "homer simpson",
+          "type": "builtin.personName"
+        }
+      ],
+      "child": [
+        {
+          "startIndex": 87,
+          "endIndex": 99,
+          "text": "lisa simpson",
+          "type": "builtin.personName"
+        }
+      ]
+    },
+    "startloc": [
+      {
+        "type": "city",
+        "location": "london"
+      }
+    ],
+    "endloc": [
+      {
+        "type": "city",
+        "location": "jakarta"
+      }
+    ],
+    "startpos": [
+      {
+        "relativeTo": "end",
+        "offset": -1
+      }
+    ],
+    "endpos": [
+      {
+        "relativeTo": "end",
+        "offset": 0
+      }
+    ],
+    "parent": [
+      "homer simpson"
+    ],
+    "child": [
+      "lisa simpson"
+    ]
+  },
+  "sentiment": {
+    "label": "neutral",
+    "score": 0.5
+  },
+  "v2": {
+    "query": "go from next to last to last move london to jakarta and homer simpson is the parent of lisa simpson",
+    "topScoringIntent": {
+      "intent": "Roles",
+      "score": 0.999204934
+    },
+    "intents": [
+      {
+        "intent": "Roles",
+        "score": 0.999204934
+      },
+      {
+        "intent": "search",
+        "score": 0.0309635121
+      },
+      {
+        "intent": "None",
+        "score": 0.0109820236
+      },
+      {
+        "intent": "Travel",
+        "score": 0.01095186
+      },
+      {
+        "intent": "Weather.GetForecast",
+        "score": 0.0106523167
+      },
+      {
+        "intent": "Delivery",
+        "score": 0.00123035291
+      },
+      {
+        "intent": "EntityTests",
+        "score": 0.0009487789
+      },
+      {
+        "intent": "SpecifyName",
+        "score": 0.0009410849
+      },
+      {
+        "intent": "Help",
+        "score": 0.0001358991
+      },
+      {
+        "intent": "Cancel",
+        "score": 0.000107549029
+      },
+      {
+        "intent": "Greeting",
+        "score": 5.293933E-05
+      }
+    ],
+    "entities": [
+      {
+        "entity": "london",
+        "type": "builtin.geographyV2.city",
+        "startIndex": 34,
+        "endIndex": 39,
+        "role": "startloc"
+      },
+      {
+        "entity": "jakarta",
+        "type": "builtin.geographyV2.city",
+        "startIndex": 44,
+        "endIndex": 50,
+        "role": "endloc"
+      },
+      {
+        "entity": "next to last",
+        "type": "builtin.ordinalV2.relative",
+        "startIndex": 8,
+        "endIndex": 19,
+        "resolution": {
+          "offset": "-1",
+          "relativeTo": "end"
+        },
+        "role": "startpos"
+      },
+      {
+        "entity": "last",
+        "type": "builtin.ordinalV2.relative",
+        "startIndex": 24,
+        "endIndex": 27,
+        "resolution": {
+          "offset": "0",
+          "relativeTo": "end"
+        },
+        "role": "endpos"
+      },
+      {
+        "entity": "homer simpson",
+        "type": "builtin.personName",
+        "startIndex": 56,
+        "endIndex": 68,
+        "role": "parent"
+      },
+      {
+        "entity": "lisa simpson",
+        "type": "builtin.personName",
+        "startIndex": 87,
+        "endIndex": 98,
+        "role": "child"
+      }
+    ],
+    "sentimentAnalysis": {
+      "label": "neutral",
+      "score": 0.5
+    }
+  }
+}

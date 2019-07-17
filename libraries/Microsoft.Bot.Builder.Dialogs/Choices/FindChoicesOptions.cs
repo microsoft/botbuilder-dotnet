@@ -3,6 +3,9 @@
 
 namespace Microsoft.Bot.Builder.Dialogs.Choices
 {
+    /// <summary>
+    /// Contains options to control how input is matched against a list of choices.
+    /// </summary>
     public class FindChoicesOptions : FindValuesOptions
     {
         /// <summary>

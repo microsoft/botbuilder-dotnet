@@ -226,6 +226,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     break;
 
                 case StepChangeTypes.AppendSteps:
+                case StepChangeTypes.ReplaceSequence:
                     this.Steps.AddRange(change.Steps);
                     break;
             }

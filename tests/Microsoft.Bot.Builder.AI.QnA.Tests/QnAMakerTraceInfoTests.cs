@@ -17,18 +17,18 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
         {
             var qnaMakerTraceInfo = new QnAMakerTraceInfo
             {
-                QueryResults = new QueryResult[] 
+                QueryResults = new QueryResult[]
                 {
                     new QueryResult
                     {
                         Questions = new string[] { "What's your name?" },
                         Answer = "My name is Mike",
                         Score = 0.9F,
-                    }
+                    },
                 },
                 KnowledgeBaseId = Guid.NewGuid().ToString(),
                 ScoreThreshold = 0.5F,
-                Top = 1
+                Top = 1,
             };
 
             var serializerSettings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto };

@@ -37,6 +37,7 @@ namespace Microsoft.Bot.Builder.Tests
             var c = new TurnContext(a, null);
             Assert.Fail("Should Fail due to null Activty");
         }
+
         [TestMethod]
         public void Constructor()
         {
@@ -94,6 +95,7 @@ namespace Microsoft.Bot.Builder.Tests
 
             Assert.AreEqual("foo", result);
         }
+
         [TestMethod]
         public void CacheValueUsingGetAndSetGenericWithTypeAsKeyName()
         {
@@ -166,8 +168,8 @@ namespace Microsoft.Bot.Builder.Tests
             await c.SendActivityAsync(trace);
             Assert.IsFalse(c.Responded);
 
-            // Just to sanity check everything, send a Message and verify the 
-            // responded flag IS set. 
+            // Just to sanity check everything, send a Message and verify the
+            // responded flag IS set.
             var msg = TestMessage.Message().AsMessageActivity();
             await c.SendActivityAsync(msg);
             Assert.IsTrue(c.Responded);
@@ -228,7 +230,8 @@ namespace Microsoft.Bot.Builder.Tests
             {
                 Assert.IsNotNull(activities, "Null Array passed in");
                 count = activities.Count();
-                // Do not call next. 
+
+                // Do not call next.
                 return Task.FromResult<ResourceResponse[]>(null);
             });
 
@@ -335,13 +338,14 @@ namespace Microsoft.Bot.Builder.Tests
             {
                 Assert.IsNotNull(activity, "Null activity passed in");
                 wasCalled = true;
+
                 // Do Not Call Next
                 return Task.FromResult<ResourceResponse>(null);
             });
 
             await c.UpdateActivityAsync(TestMessage.Message());
             Assert.IsTrue(wasCalled); // Interceptor was called
-            Assert.IsFalse(adapterCalled); // Adapter was not                        
+            Assert.IsFalse(adapterCalled); // Adapter was not
         }
 
         [TestMethod]
@@ -366,7 +370,7 @@ namespace Microsoft.Bot.Builder.Tests
             });
 
             await c.UpdateActivityAsync(TestMessage.Message());
-            Assert.IsTrue(adapterCalled); // Adapter was not                        
+            Assert.IsTrue(adapterCalled); // Adapter was not
         }
 
         [TestMethod]
@@ -427,6 +431,7 @@ namespace Microsoft.Bot.Builder.Tests
             {
                 Assert.IsNotNull(convRef, "Null activity passed in");
                 wasCalled = true;
+
                 // Do Not Call Next
                 return Task.FromResult<ResourceResponse[]>(null);
             });
@@ -484,7 +489,6 @@ namespace Microsoft.Bot.Builder.Tests
             }
         }
 
-
         public async Task MyBotLogic(ITurnContext turnContext, CancellationToken cancellationToken)
         {
             switch (turnContext.Activity.AsMessageActivity().Text)
@@ -498,12 +502,17 @@ namespace Microsoft.Bot.Builder.Tests
                     break;
                 case "TestResponded":
                     if (turnContext.Responded == true)
+                    {
                         throw new InvalidOperationException("Responded Is True");
+                    }
 
                     await turnContext.SendActivityAsync(turnContext.Activity.CreateReply("one"));
 
                     if (turnContext.Responded == false)
+                    {
                         throw new InvalidOperationException("Responded Is True");
+                    }
+
                     break;
                 default:
                     await turnContext.SendActivityAsync(
@@ -512,39 +521,4 @@ namespace Microsoft.Bot.Builder.Tests
             }
         }
     }
-    /// <summary>
-    /// ConnectorClient which throws exception when disposed.
-    /// </summary>
-    /// <remarks>Moq failed to create this properly. Boo moq!</remarks>
-    public class ConnectorClientThrowExceptionOnDispose : IConnectorClient
-    {
-        public Uri BaseUri { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-
-        public JsonSerializerSettings SerializationSettings => throw new NotImplementedException();
-
-        public JsonSerializerSettings DeserializationSettings => throw new NotImplementedException();
-
-        public ServiceClientCredentials Credentials => throw new NotImplementedException();
-
-        public IAttachments Attachments => throw new NotImplementedException();
-
-        public IConversations Conversations => throw new NotImplementedException();
-
-        public void Dispose() => throw new Exception("Should not be disposed!");
-    }
-
-    /// <summary>
-    /// Vanilla <see cref="IDisposable"/> tracks if Dispose has been called.
-    /// </summary>
-    /// <remarks>Moq failed to create this properly.  Boo moq!</remarks>
-    public class TrackDisposed : IDisposable
-    {
-        public bool Disposed { get; private set; } = false;
-        public void Dispose()
-        {
-            Disposed = true;
-        }
-    }
-
 }
-

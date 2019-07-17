@@ -7,9 +7,9 @@ using Newtonsoft.Json.Linq;
 namespace Microsoft.Bot.Schema
 {
     /// <summary>
-    /// Channel account information needed to route a message
+    /// Channel account information needed to route a message.
     /// </summary>
-    public partial class ChannelAccount 
+    public partial class ChannelAccount
     {
         /// <summary>
         /// Gets or sets properties that are not otherwise defined by the <see cref="ChannelAccount"/> type but that
