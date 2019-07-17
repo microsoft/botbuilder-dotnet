@@ -248,7 +248,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         private string EvalTemplateRef(string exp)
         {
             exp = exp.TrimStart('[').TrimEnd(']').Trim();
+            if (exp.IndexOf('(') < 0)
+            {
+                exp = exp + "()"; // append () to make this as a function call
+            }
 
+            // TODO: refine the error message
+            return EvalExpression(exp);
+            /*
             var argsStartPos = exp.IndexOf('(');
 
             // Do have args
@@ -273,6 +280,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
 
             return EvaluateTemplate(exp, CurrentTarget().Scope);
+            */
         }
 
         private EvaluationTarget CurrentTarget() =>

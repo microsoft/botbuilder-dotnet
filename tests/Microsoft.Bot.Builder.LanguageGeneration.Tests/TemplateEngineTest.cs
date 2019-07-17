@@ -348,6 +348,22 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.AreEqual(options.Contains(evaled), true);
         }
 
+
+        [TestMethod]
+        public void TestTemplateAsFunction()
+        {
+            var engine = new TemplateEngine().AddFile(GetExampleFilePath("TemplateAsFunction.lg"));
+            string evaled = engine.EvaluateTemplate("Test2", "");
+
+            Assert.AreEqual(evaled, "hello world");
+
+            evaled = engine.EvaluateTemplate("Test3", "");
+            Assert.AreEqual(evaled, "hello world");
+
+            evaled = engine.EvaluateTemplate("Test4", "");
+            Assert.AreEqual(evaled.Trim(), "hello world");
+        }
+
         [TestMethod]
         public void TestAnalyzelgTemplateFunction()
         {

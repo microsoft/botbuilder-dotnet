@@ -384,8 +384,18 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             public List<Diagnostic> CheckTemplateRef(string exp, ParserRuleContext context)
             {
-                var result = new List<Diagnostic>();
+                exp = exp.TrimStart('[').TrimEnd(']').Trim();
 
+                if (exp.IndexOf('(') < 0)
+                {
+                    exp = exp + "()";
+                }
+
+                return CheckExpression(exp, context);
+
+                // TODO
+                // check template ref like check expression
+                /*
                 exp = exp.TrimStart('[').TrimEnd(']').Trim();
 
                 var argsStartPos = exp.IndexOf('(');
@@ -420,8 +430,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                         result.Add(BuildLGDiagnostic($"[{exp}] template not found", context: context));
                     }
                 }
-
-                return result;
+                */
             }
 
             private List<Diagnostic> CheckMultiLineText(string exp, ParserRuleContext context)

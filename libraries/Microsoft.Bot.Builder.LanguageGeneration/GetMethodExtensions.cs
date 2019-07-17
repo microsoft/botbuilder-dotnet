@@ -34,7 +34,26 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     return new ExpressionEvaluator("join", BuiltInFunctions.Apply(this.Join));
             }
 
+            if (_evaluator.TemplateMap.ContainsKey(name))
+            {
+                // TODO
+                // 1. add validation function here
+                // 2. handle potential "." in name
+                return new ExpressionEvaluator($"lgTemplate({name})", BuiltInFunctions.Apply(this.TemplateEvaluator(name)), ReturnType.String, null);
+            }
+
             return BuiltInFunctions.Lookup(name);
+        }
+
+        public Func<IReadOnlyList<object>, object> TemplateEvaluator(string templateName)
+        {
+            return (IReadOnlyList<object> args) =>
+            {
+                var newArgs = new List<object>();
+                newArgs.Add(templateName);
+                newArgs.AddRange(args);
+                return this.LgTemplate(newArgs);
+            };
         }
 
         public object LgTemplate(IReadOnlyList<object> args)
@@ -80,16 +99,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 BuiltInFunctions.TryParseList(parameters[0], out var p0) &&
                 parameters[1] is string sep)
             {
-                result = string.Join(sep + " ", p0.OfType<object>().Select(x => x.ToString())); // "," => ", "
+                result = string.Join(sep, p0.OfType<object>().Select(x => x.ToString())); 
             }
             else if (parameters.Count == 3 &&
                 BuiltInFunctions.TryParseList(parameters[0], out var li) &&
                 parameters[1] is string sep1 &&
                 parameters[2] is string sep2)
             {
-                sep1 = sep1 + " "; // "," => ", "
-                sep2 = " " + sep2 + " "; // "and" => " and "
-
                 if (li.Count < 3)
                 {
                     result = string.Join(sep2, li.OfType<object>().Select(x => x.ToString()));
