@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
 using Microsoft.Bot.Builder.Expressions;
@@ -29,7 +30,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         }
     }
 
-    public class Analyzer : LGFileParserBaseVisitor<AnalyzerResult>
+    public class Analyzer : LGBaseVisitor<AnalyzerResult>
     {
         private readonly Dictionary<string, LGTemplate> templateMap;
 
@@ -110,7 +111,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 var expression = ifRule.ifCondition().EXPRESSION(0);
                 if (expression != null)
                 {
-                    result.Union(AnalyzeExpression(expression.GetText()));
+                    result.Union(VisitExpression(expression.GetText()));
                 }
 
                 if (ifRule.normalTemplateBody() != null)
@@ -131,7 +132,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 var expression = iterNode.switchCaseStat().EXPRESSION();
                 if (expression.Length > 0)
                 {
-                    result.Union(AnalyzeExpression(expression[0].GetText()));
+                    result.Union(VisitExpression(expression[0].GetText()));
                 }
                 if (iterNode.normalTemplateBody() != null)
                 {
@@ -152,19 +153,46 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     case LGFileParser.DASH:
                         break;
                     case LGFileParser.EXPRESSION:
-                        result.Union(AnalyzeExpression(node.GetText()));
+                        result.Union(VisitExpression(node.GetText()));
                         break;
                     case LGFileParser.TEMPLATE_REF:
-                        result.Union(AnalyzeTemplateRef(node.GetText()));
+                        result.Union(VisitTemplateRef(node.GetText()));
                         break;
                     case LGFileLexer.MULTI_LINE_TEXT:
-                        result.Union(AnalyzeMultiLineText(node.GetText()));
+                        result.Union(VisitFenceBlock(node.GetText()));
                         break;
                     default:
                         break;
                 }
             }
 
+            return result;
+        }
+
+        public override AnalyzerResult OnVisitExpression(string exp, ParserRuleContext context = null)
+        {
+            var result = new AnalyzerResult();
+            var parsed = _expressionParser.Parse(exp);
+
+            var references = parsed.References();
+
+            result.Union(new AnalyzerResult(variables: new List<string>(references)));
+            result.Union(this.AnalyzeExpressionDirectly(parsed));
+
+            return result;
+        }
+
+        public override AnalyzerResult OnVisitFenceBlock(string exp, ParserRuleContext context = null)
+        {
+            var result = new AnalyzerResult();
+            var matches = Regex.Matches(exp, @"@\{[^{}]+\}");
+            foreach (Match matchItem in matches)
+            {
+                if (matchItem.Success)
+                {
+                    result.Union(VisitExpression(matchItem.Value));
+                }
+            }
             return result;
         }
 
@@ -204,84 +232,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             else
             {
                 exp.Children.ToList().ForEach(x => result.Union(this.AnalyzeExpressionDirectly(x)));
-            }
-
-            return result;
-        }
-
-        private AnalyzerResult AnalyzeExpression(string exp)
-        {
-            var result = new AnalyzerResult();
-            exp = exp.TrimStart('@').TrimStart('{').TrimEnd('}');
-            var parsed = _expressionParser.Parse(exp);
-
-            var references = parsed.References();
-
-            result.Union(new AnalyzerResult(variables: new List<string>(references)));
-            result.Union(this.AnalyzeExpressionDirectly(parsed));
-
-            return result;
-        }
-
-        private AnalyzerResult AnalyzeTemplateRef(string exp)
-        {
-            var result = new AnalyzerResult();
-            exp = exp.TrimStart('[').TrimEnd(']').Trim();
-
-            var argsStartPos = exp.IndexOf('(');
-
-            // Do have args
-            if (argsStartPos > 0)
-            {
-                // Analyze all arguments using ExpressoinEngine
-                var argsEndPos = exp.LastIndexOf(')');
-
-                var args = exp.Substring(argsStartPos + 1, argsEndPos - argsStartPos - 1).Split(',');
-
-                // Before we have a matural solution to analyze parameterized template, we stop digging into
-                // templates with parameters, we just analyze it's args.
-                // With this approach we may not get a very fine-grained result
-                // but the result will still be accurate
-                var templateAnalyzerResult = args.Select(arg => this.AnalyzeExpression(arg));
-                var templateName = exp.Substring(0, argsStartPos);
-
-                // add this template
-                result.Union(new AnalyzerResult(templateReferences: new List<string>() { templateName }));
-                templateAnalyzerResult.ToList().ForEach(t => result.Union(t));
-            }
-            else
-            {
-                result.Union(new AnalyzerResult(templateReferences: new List<string>() { exp }));
-
-                // We analyze tempalte only if the template has no formal parameters
-                // But we should analyzer template reference names for all situation
-                if (this.templateMap[exp].Parameters == null || this.templateMap[exp].Parameters.Count == 0)
-                {
-                    result.Union(this.AnalyzeTemplate(exp));
-                }
-                else
-                {
-                    result.Union(new AnalyzerResult(templateReferences: this.AnalyzeTemplate(exp).TemplateReferences));
-                }
-            }
-
-            return result;
-        }
-
-        private AnalyzerResult AnalyzeMultiLineText(string exp)
-        {
-            var result = new AnalyzerResult();
-
-            // remove ``` ```
-            exp = exp.Substring(3, exp.Length - 6);
-
-            var matches = Regex.Matches(exp, @"@\{[^{}]+\}");
-            foreach (Match matchItem in matches)
-            {
-                if (matchItem.Success)
-                {
-                    result.Union(AnalyzeExpression(matchItem.Value));
-                }
             }
 
             return result;

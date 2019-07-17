@@ -85,7 +85,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         public static List<Diagnostic> CheckTemplates(List<LGTemplate> templates) => new StaticCheckerInner(templates).Check();
 
-        private class StaticCheckerInner : LGFileParserBaseVisitor<List<Diagnostic>>
+        private class StaticCheckerInner : LGBaseVisitor<List<Diagnostic>>
         {
             private Dictionary<string, LGTemplate> templateMap = new Dictionary<string, LGTemplate>();
 
@@ -242,7 +242,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                         }
                         else
                         {
-                            result.AddRange(CheckExpression(ifRules[idx].ifCondition().EXPRESSION(0).GetText(), conditionNode));
+                            result.AddRange(VisitExpression(ifRules[idx].ifCondition().EXPRESSION(0).GetText(), conditionNode));
                         }
                     }
                     else
@@ -324,7 +324,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                         }
                         else
                         {
-                            result.AddRange(CheckExpression(switchCaseNode.EXPRESSION(0).GetText(), switchCaseNode));
+                            result.AddRange(VisitExpression(switchCaseNode.EXPRESSION(0).GetText(), switchCaseNode));
                         }
                     }
                     else
@@ -363,13 +363,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                             result.Add(BuildLGDiagnostic($"escape character {node.GetText()} is invalid", context: context));
                             break;
                         case LGFileParser.TEMPLATE_REF:
-                            result.AddRange(CheckTemplateRef(node.GetText(), context));
+                            result.AddRange(VisitTemplateRef(node.GetText(), context));
                             break;
                         case LGFileParser.EXPRESSION:
-                            result.AddRange(CheckExpression(node.GetText(), context));
+                            result.AddRange(VisitExpression(node.GetText(), context));
                             break;
                         case LGFileLexer.MULTI_LINE_TEXT:
-                            result.AddRange(CheckMultiLineText(node.GetText(), context));
+                            result.AddRange(VisitFenceBlock(node.GetText(), context));
                             break;
                         case LGFileLexer.TEXT:
                             result.AddRange(CheckText(node.GetText(), context));
@@ -382,60 +382,31 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 return result;
             }
 
-            public List<Diagnostic> CheckTemplateRef(string exp, ParserRuleContext context)
+            public override List<Diagnostic> OnVisitFenceBlock(string exp, ParserRuleContext context = null)
             {
                 var result = new List<Diagnostic>();
-
-                exp = exp.TrimStart('[').TrimEnd(']').Trim();
-
-                var argsStartPos = exp.IndexOf('(');
-
-                // Do have args
-                if (argsStartPos > 0)
-                {
-                    // EvaluateTemplate all arguments using ExpressoinEngine
-                    var argsEndPos = exp.LastIndexOf(')');
-                    if (argsEndPos < 0 || argsEndPos < argsStartPos + 1)
-                    {
-                        result.Add(BuildLGDiagnostic($"Not a valid template ref: {exp}", context: context));
-                    }
-                    else
-                    {
-                        var templateName = exp.Substring(0, argsStartPos);
-                        if (!templateMap.ContainsKey(templateName))
-                        {
-                            result.Add(BuildLGDiagnostic($"[{templateName}] template not found", context: context));
-                        }
-                        else
-                        {
-                            var argsNumber = exp.Substring(argsStartPos + 1, argsEndPos - argsStartPos - 1).Split(',').Length;
-                            result.AddRange(CheckTemplateParameters(templateName, argsNumber, context));
-                        }
-                    }
-                }
-                else
-                {
-                    if (!templateMap.ContainsKey(exp))
-                    {
-                        result.Add(BuildLGDiagnostic($"[{exp}] template not found", context: context));
-                    }
-                }
-
-                return result;
-            }
-
-            private List<Diagnostic> CheckMultiLineText(string exp, ParserRuleContext context)
-            {
-                var result = new List<Diagnostic>();
-
-                // remove ``` ```
-                exp = exp.Substring(3, exp.Length - 6);
                 var reg = @"@\{[^{}]+\}";
                 var mc = Regex.Matches(exp, reg);
 
                 foreach (Match match in mc)
                 {
-                    result.AddRange(CheckExpression(match.Value, context));
+                    result.AddRange(VisitExpression(match.Value, context));
+                }
+
+                return result;
+            }
+
+            public override List<Diagnostic> OnVisitExpression(string exp, ParserRuleContext context = null)
+            {
+                var result = new List<Diagnostic>();
+                try
+                {
+                    new ExpressionEngine(new GetMethodExtensions(new Evaluator(this.Templates, null)).GetMethodX).Parse(exp);
+                }
+                catch (Exception e)
+                {
+                    result.Add(BuildLGDiagnostic(e.Message + $" in expression `{exp}`", context: context));
+                    return result;
                 }
 
                 return result;
@@ -448,36 +419,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 if (exp.StartsWith("```"))
                 {
                     result.Add(BuildLGDiagnostic("Multi line variation must be enclosed in ```", context: context));
-                }
-
-                return result;
-            }
-
-            private List<Diagnostic> CheckTemplateParameters(string templateName, int argsNumber, ParserRuleContext context)
-            {
-                var result = new List<Diagnostic>();
-                var parametersNumber = templateMap[templateName].Parameters.Count;
-
-                if (argsNumber != parametersNumber)
-                {
-                    result.Add(BuildLGDiagnostic($"Arguments count mismatch for template ref {templateName}, expected {parametersNumber}, actual {argsNumber}", context: context));
-                }
-
-                return result;
-            }
-
-            private List<Diagnostic> CheckExpression(string exp, ParserRuleContext context)
-            {
-                var result = new List<Diagnostic>();
-                exp = exp.TrimStart('@').TrimStart('{').TrimEnd('}');
-                try
-                {
-                    new ExpressionEngine(new GetMethodExtensions(new Evaluator(this.Templates, null)).GetMethodX).Parse(exp);
-                }
-                catch (Exception e)
-                {
-                    result.Add(BuildLGDiagnostic(e.Message + $" in expression `{exp}`", context: context));
-                    return result;
                 }
 
                 return result;

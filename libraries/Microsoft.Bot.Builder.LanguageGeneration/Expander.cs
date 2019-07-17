@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
 using Microsoft.Bot.Builder.Expressions;
@@ -12,7 +13,7 @@ using Microsoft.Bot.Builder.Expressions.Parser;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
-    public class Expander : LGFileParserBaseVisitor<List<string>>
+    public class Expander : LGBaseVisitor<List<string>>
     {
         private readonly IGetMethod getMethodX;
         private Stack<EvaluationTarget> evaluationTargetStack = new Stack<EvaluationTarget>();
@@ -93,7 +94,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var switchCaseNodes = context.switchCaseTemplateBody().switchCaseRule();
             var length = switchCaseNodes.Length;
             var switchExprs = switchCaseNodes[0].switchCaseStat().EXPRESSION();
-            var switchExprResult = EvalExpression(switchExprs[0].GetText());
+            var switchExprResult = VisitExpression(switchExprs[0].GetText());
             var idx = 0;
             foreach (var switchCaseNode in switchCaseNodes)
             {
@@ -117,7 +118,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 }
 
                 var caseExprs = switchCaseNode.switchCaseStat().EXPRESSION();
-                var caseExprResult = EvalExpression(caseExprs[0].GetText());
+                var caseExprResult = VisitExpression(caseExprs[0].GetText());
                 if (switchExprResult[0] == caseExprResult[0])
                 {
                     return Visit(switchCaseNode.normalTemplateBody());
@@ -139,16 +140,16 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     case LGFileParser.DASH:
                         break;
                     case LGFileParser.ESCAPE_CHARACTER:
-                        result = StringListConcat(result, new List<string>() { EvalEscapeCharacter(node.GetText()) });
+                        result = StringListConcat(result, VisitEscapeCharacter(node.GetText()));
                         break;
                     case LGFileParser.EXPRESSION:
-                        result = StringListConcat(result, EvalExpression(node.GetText()));
+                        result = StringListConcat(result, VisitExpression(node.GetText()));
                         break;
                     case LGFileParser.TEMPLATE_REF:
-                        result = StringListConcat(result, EvalTemplateRef(node.GetText()));
+                        result = StringListConcat(result, VisitTemplateRef(node.GetText()));
                         break;
                     case LGFileLexer.MULTI_LINE_TEXT:
-                        result = StringListConcat(result, EvalMultiLineText(node.GetText()));
+                        result = StringListConcat(result, VisitFenceBlock(node.GetText()));
                         break;
                     default:
                         result = StringListConcat(result, new List<string>() { node.GetText() });
@@ -181,6 +182,65 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return newScope;
         }
 
+        public override List<string> OnVisitExpression(string exp, ParserRuleContext context = null)
+        {
+            var (result, error) = EvalByExpressionEngine(exp, CurrentTarget().Scope);
+            if (error != null)
+            {
+                throw new Exception($"Error occurs when evaluating expression ${exp}: {error}");
+            }
+
+            if (result == null)
+            {
+                throw new Exception($"Error occurs when evaluating expression '{exp}': {exp} is evaluated to null");
+            }
+
+            if (result is IList &&
+                result.GetType().IsGenericType &&
+                result.GetType().GetGenericTypeDefinition().IsAssignableFrom(typeof(List<>)))
+            {
+                return (List<string>)result;
+            }
+
+            return new List<string>() { result.ToString() };
+        }
+
+        public override List<string> OnVisitFenceBlock(string exp, ParserRuleContext context = null)
+        {
+            var templateRefValues = new Dictionary<string, List<string>>();
+            var reg = @"@\{[^{}]+\}";
+            var matches = Regex.Matches(exp, reg);
+            if (matches != null)
+            {
+                foreach (Match match in matches)
+                {
+                    templateRefValues.Add(match.Value, VisitExpression(match.Value));
+                }
+            }
+
+            var result = new List<string>() { exp };
+            foreach (var templateRefValue in templateRefValues)
+            {
+                var tempRes = new List<string>();
+                foreach (var res in result)
+                {
+                    foreach (var refValue in templateRefValue.Value)
+                    {
+                        tempRes.Add(res.Replace(templateRefValue.Key, refValue));
+                    }
+                }
+
+                result = tempRes;
+            }
+
+            return result;
+        }
+
+        public override List<string> OnVisitEscapeCharacter(string exp, ParserRuleContext context = null)
+        {
+            return new List<string>() { exp };
+        }
+
         private bool EvalCondition(LGFileParser.IfConditionContext condition)
         {
             var expression = condition.EXPRESSION(0);
@@ -191,24 +251,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
 
             return false;
-        }
-
-        private string EvalEscapeCharacter(string exp)
-        {
-            var validCharactersDict = new Dictionary<string, string>
-            {
-                // Top four items :C# later render engine will treat them as escape characters, so the format is unchanged
-                { @"\r", "\r" },
-                { @"\n", "\n" },
-                { @"\t", "\t" },
-                { @"\\", "\\" },
-                { @"\[", "[" },
-                { @"\]", "]" },
-                { @"\{", "{" },
-                { @"\}", "}" },
-            };
-
-            return validCharactersDict[exp];
         }
 
         private bool EvalExpressionInCondition(string exp)
@@ -236,97 +278,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
         }
 
-        private List<string> EvalExpression(string exp)
-        {
-            exp = exp.TrimStart('@').TrimStart('{').TrimEnd('}');
-            var (result, error) = EvalByExpressionEngine(exp, CurrentTarget().Scope);
-            if (error != null)
-            {
-                throw new Exception($"Error occurs when evaluating expression ${exp}: {error}");
-            }
-
-            if (result == null)
-            {
-                throw new Exception($"Error occurs when evaluating expression '{exp}': {exp} is evaluated to null");
-            }
-
-            if (result is IList &&
-                result.GetType().IsGenericType &&
-                result.GetType().GetGenericTypeDefinition().IsAssignableFrom(typeof(List<>)))
-            {
-                return (List<string>)result;
-            }
-
-            return new List<string>() { result.ToString() };
-        }
-
-        private List<string> EvalTemplateRef(string exp)
-        {
-            exp = exp.TrimStart('[').TrimEnd(']').Trim();
-
-            var argsStartPos = exp.IndexOf('(');
-
-            // Do have args
-            if (argsStartPos > 0)
-            {
-                // Evaluate all arguments using ExpressoinEngine
-                var argsEndPos = exp.LastIndexOf(')');
-                if (argsEndPos < 0 || argsEndPos < argsStartPos + 1)
-                {
-                    throw new Exception($"Not a valid template ref: {exp}");
-                }
-
-                var argExpressions = exp.Substring(argsStartPos + 1, argsEndPos - argsStartPos - 1).Split(',');
-                var args = argExpressions.Select(x => EvalByExpressionEngine(x, CurrentTarget().Scope).value).ToList();
-
-                // Construct a new Scope for this template reference
-                // Bind all arguments to parameters
-                var templateName = exp.Substring(0, argsStartPos);
-                var newScope = ConstructScope(templateName, args);
-
-                return EvaluateTemplate(templateName, newScope);
-            }
-
-            return EvaluateTemplate(exp, CurrentTarget().Scope);
-        }
-
         private EvaluationTarget CurrentTarget() =>
 
             // just don't want to write evaluationTargetStack.Peek() everywhere
             evaluationTargetStack.Peek();
-
-        private List<string> EvalMultiLineText(string exp)
-        {
-            // remove ``` ```
-            exp = exp.Substring(3, exp.Length - 6);
-            var templateRefValues = new Dictionary<string, List<string>>();
-            var reg = @"@\{[^{}]+\}";
-            var matches = Regex.Matches(exp, reg);
-            if (matches != null)
-            {
-                foreach (Match match in matches)
-                {
-                    templateRefValues.Add(match.Value, EvalExpression(match.Value));
-                }
-            }
-
-            var result = new List<string>() { exp };
-            foreach (var templateRefValue in templateRefValues)
-            {
-                var tempRes = new List<string>();
-                foreach (var res in result)
-                {
-                    foreach (var refValue in templateRefValue.Value)
-                    {
-                        tempRes.Add(res.Replace(templateRefValue.Key, refValue));
-                    }
-                }
-
-                result = tempRes;
-            }
-
-            return result;
-        }
 
         private (object value, string error) EvalByExpressionEngine(string exp, object scope)
         {

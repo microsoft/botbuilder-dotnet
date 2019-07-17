@@ -624,5 +624,15 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.AreEqual(true, eval1Options.Contains(evaled[0]));
             Assert.AreEqual(true, eval2Options.Contains(evaled[1]));
         }
+
+        [TestMethod]
+        public void TestTemplateWithParametersAsExpression()
+        {
+            var engine = new TemplateEngine().AddFile(GetExampleFilePath("TemplateWithParametersAsExpression.lg"));
+
+            var evaled = engine.EvaluateTemplate("WelcomeUser");
+
+            Assert.AreEqual(evaled, "Hi, I'm the todo bot. How can I help you today? \n \n [Suggestions=Add Todo| Show Todo| Delete Todo| Help| Cancel]");
+        }
     }
 }

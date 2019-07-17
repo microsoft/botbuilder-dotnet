@@ -1,0 +1,8 @@
+﻿# Suggestions (list)
+- \n \[Suggestions={join(list, '|')}\]
+
+# GreetPhrase
+- Hi
+
+# WelcomeUser
+- [GreetPhrase], I'm the todo bot. How can I help you today? \n [Suggestions(createArray('Add Todo', 'Show Todo', 'Delete Todo', 'Help', 'Cancel'))]
