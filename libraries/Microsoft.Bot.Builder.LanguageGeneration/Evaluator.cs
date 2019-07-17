@@ -255,32 +255,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             // TODO: refine the error message
             return EvalExpression(exp);
-            /*
-            var argsStartPos = exp.IndexOf('(');
-
-            // Do have args
-            if (argsStartPos > 0)
-            {
-                // Evaluate all arguments using ExpressoinEngine
-                var argsEndPos = exp.LastIndexOf(')');
-                if (argsEndPos < 0 || argsEndPos < argsStartPos + 1)
-                {
-                    throw new Exception($"Not a valid template ref: {exp}");
-                }
-
-                var argExpressions = exp.Substring(argsStartPos + 1, argsEndPos - argsStartPos - 1).Split(',');
-                var args = argExpressions.Select(x => EvalByExpressionEngine(x, CurrentTarget().Scope).value).ToList();
-
-                // Construct a new Scope for this template reference
-                // Bind all arguments to parameters
-                var templateName = exp.Substring(0, argsStartPos);
-                var newScope = ConstructScope(templateName, args);
-
-                return EvaluateTemplate(templateName, newScope);
-            }
-
-            return EvaluateTemplate(exp, CurrentTarget().Scope);
-            */
         }
 
         private EvaluationTarget CurrentTarget() =>
