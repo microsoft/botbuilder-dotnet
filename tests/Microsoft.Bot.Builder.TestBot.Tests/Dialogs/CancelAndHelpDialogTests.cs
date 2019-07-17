@@ -40,7 +40,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
 
             reply = await testClient.SendActivityAsync<IMessageActivity>(cancelUtterance);
             Assert.Equal("Cancelling", reply.Text);
-            Assert.Equal(DialogTurnStatus.Cancelled, testClient.DialogTurnResult.Status);
+            Assert.Equal(DialogTurnStatus.Complete, testClient.DialogTurnResult.Status);
         }
 
         [Theory]
