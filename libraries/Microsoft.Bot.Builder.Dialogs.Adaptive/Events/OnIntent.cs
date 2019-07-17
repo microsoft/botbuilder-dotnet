@@ -104,7 +104,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
 
         public override string GetIdentity()
         {
-            return $"IntentRule({this.Intent})[{String.Join(",", this.Entities)}]";
+            return $"{this.GetType().Name}({this.Intent})[{String.Join(",", this.Entities)}]";
         }
     }
 }
