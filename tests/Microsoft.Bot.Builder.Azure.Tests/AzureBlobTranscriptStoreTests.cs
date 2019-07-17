@@ -369,8 +369,8 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                         var response = await context.SendActivityAsync(activity);
                         activity.Id = response.Id;
 
-                    // clone the activity, so we can use it to do an update
-                    activityToUpdate = JsonConvert.DeserializeObject<Activity>(JsonConvert.SerializeObject(activity));
+                        // clone the activity, so we can use it to do an update
+                        activityToUpdate = JsonConvert.DeserializeObject<Activity>(JsonConvert.SerializeObject(activity));
                     }
                 })
                     .Send("foo")
@@ -415,8 +415,8 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                         var response = await context.SendActivityAsync(activity);
                         activity.Id = response.Id;
 
-                    // clone the activity, so we can use it to do an update
-                    activityToUpdate = JsonConvert.DeserializeObject<Activity>(JsonConvert.SerializeObject(activity));
+                        // clone the activity, so we can use it to do an update
+                        activityToUpdate = JsonConvert.DeserializeObject<Activity>(JsonConvert.SerializeObject(activity));
                     }
                 })
                     .Send("foo")

@@ -60,65 +60,66 @@ namespace Microsoft.Bot.Builder
         /// <returns>A task that represents the work queued to execute.</returns>
         public async Task LogActivityAsync(IActivity activity)
         {
-            if (activity != null)
+            if (activity == null)
             {
-                var transcriptFile = getTranscriptFile(activity.ChannelId, activity.Conversation.Id);
+                throw new ArgumentNullException(nameof(Activity));
+            }
 
-                if (Debugger.IsAttached && activity.Type == ActivityTypes.Message)
-                {
-                    System.Diagnostics.Trace.TraceInformation($"{activity.From.Name ?? activity.From.Id ?? activity.From.Role} [{activity.Type}] {activity.AsMessageActivity()?.Text}");
-                }
-                else
-                {
-                    System.Diagnostics.Trace.TraceInformation($"{activity.From.Name ?? activity.From.Id ?? activity.From.Role} [{activity.Type}]");
-                }
+            var transcriptFile = getTranscriptFile(activity.ChannelId, activity.Conversation.Id);
 
-                // try 3 times
-                for (int i = 0; i < 3; i++)
+            if (Debugger.IsAttached && activity.Type == ActivityTypes.Message)
+            {
+                System.Diagnostics.Trace.TraceInformation($"{activity.From.Name ?? activity.From.Id ?? activity.From.Role} [{activity.Type}] {activity.AsMessageActivity()?.Text}");
+            }
+            else
+            {
+                System.Diagnostics.Trace.TraceInformation($"{activity.From.Name ?? activity.From.Id ?? activity.From.Role} [{activity.Type}]");
+            }
+
+            // try 3 times
+            for (int i = 0; i < 3; i++)
+            {
+                try
                 {
-                    try
+                    if ((this.unitTestMode == true && !started.Contains(transcriptFile)) || !File.Exists(transcriptFile))
                     {
-                        if ((this.unitTestMode == true && !started.Contains(transcriptFile)) || !File.Exists(transcriptFile))
+                        System.Diagnostics.Trace.TraceInformation($"file://{transcriptFile.Replace("\\", "/")}");
+                        started.Add(transcriptFile);
+                        List<Activity> transcript = new List<Activity>() { (Activity)activity };
+                        using (var stream = File.OpenWrite(transcriptFile))
                         {
-                            System.Diagnostics.Trace.TraceInformation($"file://{transcriptFile.Replace("\\", "/")}");
-                            started.Add(transcriptFile);
-                            List<Activity> transcript = new List<Activity>() { (Activity)activity };
-                            using (var stream = File.OpenWrite(transcriptFile))
+                            using (var writer = new StreamWriter(stream) as TextWriter)
                             {
-                                using (var writer = new StreamWriter(stream) as TextWriter)
-                                {
-                                    await writer.WriteAsync($"[{JsonConvert.SerializeObject(activity, jsonSettings)}]").ConfigureAwait(false);
-                                    return;
-                                }
-                            }
-                        }
-                        else
-                        {
-                            switch (activity.Type)
-                            {
-                                case ActivityTypes.MessageDelete:
-                                    await messageDelete(activity, transcriptFile);
-                                    return;
-
-                                case ActivityTypes.MessageUpdate:
-                                    await messageUpdate(activity, transcriptFile);
-                                    return;
-
-                                default:
-                                    // append
-                                    await logActivity(activity, transcriptFile);
-                                    return;
+                                await writer.WriteAsync($"[{JsonConvert.SerializeObject(activity, jsonSettings)}]").ConfigureAwait(false);
+                                return;
                             }
                         }
                     }
-                    catch (Exception)
+                    else
                     {
-                        // try again
+                        switch (activity.Type)
+                        {
+                            case ActivityTypes.MessageDelete:
+                                await messageDelete(activity, transcriptFile);
+                                return;
+
+                            case ActivityTypes.MessageUpdate:
+                                await messageUpdate(activity, transcriptFile);
+                                return;
+
+                            default:
+                                // append
+                                await logActivity(activity, transcriptFile);
+                                return;
+                        }
                     }
+                }
+                catch (Exception)
+                {
+                    // try again
                 }
             }
         }
-
 
         public async Task<PagedResult<IActivity>> GetTranscriptActivitiesAsync(string channelId, string conversationId, string continuationToken = null, DateTimeOffset startDate = default(DateTimeOffset))
         {
@@ -161,14 +162,28 @@ namespace Microsoft.Bot.Builder
 
         private string getTranscriptFile(string channelId, string conversationId)
         {
-            var channelFolder = getChannelFolder(channelId);
+            if (channelId == null)
+            {
+                throw new ArgumentNullException(channelId);
+            }
 
+            if (conversationId == null)
+            {
+                throw new ArgumentNullException(nameof(conversationId));
+            }
+
+            var channelFolder = getChannelFolder(channelId);
             string transcriptFile = Path.Combine(channelFolder, conversationId + ".transcript");
             return transcriptFile;
         }
 
         private string getChannelFolder(string channelId)
         {
+            if (channelId == null)
+            {
+                throw new ArgumentNullException(channelId);
+            }
+
             var channelFolder = Path.Combine(folder, channelId);
             if (!Directory.Exists(channelFolder))
             {
@@ -226,14 +241,19 @@ namespace Microsoft.Bot.Builder
 
         private static async Task<Activity[]> loadTranscript(string transcriptFile)
         {
-            using (var stream = File.OpenRead(transcriptFile))
+            if (File.Exists(transcriptFile))
             {
-                using (var reader = new StreamReader(stream) as TextReader)
+                using (var stream = File.OpenRead(transcriptFile))
                 {
-                    var json = await reader.ReadToEndAsync().ConfigureAwait(false);
-                    return JsonConvert.DeserializeObject<Activity[]>(json);
+                    using (var reader = new StreamReader(stream) as TextReader)
+                    {
+                        var json = await reader.ReadToEndAsync().ConfigureAwait(false);
+                        return JsonConvert.DeserializeObject<Activity[]>(json);
+                    }
                 }
             }
+
+            return Array.Empty<Activity>();
         }
 
         private async Task messageDelete(IActivity activity, string transcriptFile)
