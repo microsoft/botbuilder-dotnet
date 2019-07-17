@@ -270,6 +270,10 @@
             },
             {
               "endIndex": 167,
+              "modelType": "Prebuilt Entity Extractor",
+              "recognitionSources": [
+                "model"
+              ],
               "startIndex": 163,
               "subtype": "decimal",
               "text": "4.25",
@@ -277,6 +281,10 @@
             },
             {
               "endIndex": 179,
+              "modelType": "Prebuilt Entity Extractor",
+              "recognitionSources": [
+                "model"
+              ],
               "startIndex": 177,
               "subtype": "integer",
               "text": "32",
@@ -284,6 +292,10 @@
             },
             {
               "endIndex": 189,
+              "modelType": "Prebuilt Entity Extractor",
+              "recognitionSources": [
+                "model"
+              ],
               "startIndex": 184,
               "subtype": "decimal",
               "text": "210.4",
@@ -291,6 +303,10 @@
             },
             {
               "endIndex": 206,
+              "modelType": "Prebuilt Entity Extractor",
+              "recognitionSources": [
+                "model"
+              ],
               "startIndex": 204,
               "subtype": "integer",
               "text": "10",
@@ -298,6 +314,10 @@
             },
             {
               "endIndex": 216,
+              "modelType": "Prebuilt Entity Extractor",
+              "recognitionSources": [
+                "model"
+              ],
               "startIndex": 212,
               "subtype": "decimal",
               "text": "10.5",
@@ -305,6 +325,10 @@
             },
             {
               "endIndex": 225,
+              "modelType": "Prebuilt Entity Extractor",
+              "recognitionSources": [
+                "model"
+              ],
               "startIndex": 222,
               "subtype": "integer",
               "text": "425",
@@ -312,6 +336,10 @@
             },
             {
               "endIndex": 229,
+              "modelType": "Prebuilt Entity Extractor",
+              "recognitionSources": [
+                "model"
+              ],
               "startIndex": 226,
               "subtype": "integer",
               "text": "555",
@@ -319,6 +347,10 @@
             },
             {
               "endIndex": 234,
+              "modelType": "Prebuilt Entity Extractor",
+              "recognitionSources": [
+                "model"
+              ],
               "startIndex": 230,
               "subtype": "integer",
               "text": "1234",
@@ -326,6 +358,10 @@
             },
             {
               "endIndex": 240,
+              "modelType": "Prebuilt Entity Extractor",
+              "recognitionSources": [
+                "model"
+              ],
               "startIndex": 239,
               "subtype": "integer",
               "text": "3",
@@ -333,6 +369,10 @@
             },
             {
               "endIndex": 258,
+              "modelType": "Prebuilt Entity Extractor",
+              "recognitionSources": [
+                "model"
+              ],
               "startIndex": 253,
               "subtype": "decimal",
               "text": "-27.5",
@@ -340,6 +380,10 @@
             },
             {
               "endIndex": 285,
+              "modelType": "Prebuilt Entity Extractor",
+              "recognitionSources": [
+                "model"
+              ],
               "startIndex": 282,
               "subtype": "integer",
               "text": "one",
@@ -347,6 +391,10 @@
             },
             {
               "endIndex": 306,
+              "modelType": "Prebuilt Entity Extractor",
+              "recognitionSources": [
+                "model"
+              ],
               "startIndex": 303,
               "subtype": "integer",
               "text": "one",
@@ -356,12 +404,20 @@
           "percentage": [
             {
               "endIndex": 207,
+              "modelType": "Prebuilt Entity Extractor",
+              "recognitionSources": [
+                "model"
+              ],
               "startIndex": 204,
               "text": "10%",
               "type": "builtin.percentage"
             },
             {
               "endIndex": 217,
+              "modelType": "Prebuilt Entity Extractor",
+              "recognitionSources": [
+                "model"
+              ],
               "startIndex": 212,
               "text": "10.5%",
               "type": "builtin.percentage"
@@ -370,6 +426,11 @@
           "phonenumber": [
             {
               "endIndex": 234,
+              "modelType": "Prebuilt Entity Extractor",
+              "recognitionSources": [
+                "model"
+              ],
+              "score": 0.9,
               "startIndex": 222,
               "text": "425-555-1234",
               "type": "builtin.phonenumber"
@@ -378,12 +439,20 @@
           "temperature": [
             {
               "endIndex": 248,
+              "modelType": "Prebuilt Entity Extractor",
+              "recognitionSources": [
+                "model"
+              ],
               "startIndex": 239,
               "text": "3 degrees",
               "type": "builtin.temperature"
             },
             {
               "endIndex": 268,
+              "modelType": "Prebuilt Entity Extractor",
+              "recognitionSources": [
+                "model"
+              ],
               "startIndex": 253,
               "text": "-27.5 degrees c",
               "type": "builtin.temperature"
@@ -1210,6 +1279,7 @@
   },
   "v3": {
     "options": {
+      "DatetimeReference": "2019-07-05T00:00:00",
       "IncludeAllIntents": true,
       "IncludeInstanceData": true,
       "LogPersonalInformation": false,
