@@ -10,6 +10,7 @@ using System.Net.Http;
 using System.Security.Claims;
 using System.Security.Principal;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Integration;
@@ -129,6 +130,10 @@ namespace Microsoft.Bot.Builder
             // This will only occur on activities from teams that include tenant info in channelData but NOT in conversation,
             // thus should be future friendly.  However, once the transition is complete. we can remove this.
             Use(new TenantIdWorkaroundForTeamsMiddleware());
+
+            // Modify the Mention.Text value for Skype mentions. This will only happen for mentions coming from Skype.  This
+            // is done so that RemoveMentionText can remove the user from Activity.Text.
+            Use(new MentionWorkaroundForSkypeMiddleware());
 
             // DefaultRequestHeaders are not thread safe so set them up here because this adapter should be a singleton.
             ConnectorClient.AddDefaultRequestHeaders(_httpClient);
@@ -989,6 +994,39 @@ namespace Microsoft.Bot.Builder
                     if (teamsChannelData["tenant"]?["id"] != null)
                     {
                         turnContext.Activity.Conversation.TenantId = teamsChannelData["tenant"]["id"].ToString();
+                    }
+                }
+
+                await next(cancellationToken).ConfigureAwait(false);
+            }
+        }
+
+        /// <summary>
+        /// Middleware which corrects Entity.Mention.Text for Skype mentions to a value RemoveMentionText can work with.
+        /// </summary>
+        /// <description>
+        /// A Skype Mention.Text is of the format:
+        ///    &lt;at id="28:2bc5b54d-5d48-4ff1-bd25-03dcbb5ce918"&gt;botname&lt;/at&gt;
+        /// But Activity.Text doesn't contain those tags and RemoveMentionText can't remove the user name.
+        /// This will remove the &lt;at&gt; nodes, leaving just the name.
+        /// </description>
+        internal class MentionWorkaroundForSkypeMiddleware : IMiddleware
+        {
+            public async Task OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken = default(CancellationToken))
+            {
+                if (turnContext.Activity.ChannelId == "skype" && turnContext.Activity.Type == ActivityTypes.Message)
+                {
+                    foreach (var entity in turnContext.Activity.Entities)
+                    {
+                        if (entity.Type == "mention")
+                        {
+                            var text = (string)entity.Properties["text"];
+                            var mentionNameMatch = Regex.Match(text, @"(?<=<at.*>)(.*?)(?=<\/at>)", RegexOptions.IgnoreCase);
+                            if (mentionNameMatch.Success)
+                            {
+                                entity.Properties["text"] = mentionNameMatch.Value;
+                            }
+                        }
                     }
                 }
 
