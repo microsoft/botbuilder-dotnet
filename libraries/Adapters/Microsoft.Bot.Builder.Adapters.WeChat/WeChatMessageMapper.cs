@@ -3,12 +3,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using AdaptiveCards;
 using AdaptiveCards.Rendering;
 using AdaptiveCards.Rendering.Html;
+using Microsoft.Bot.Builder.Adapters.WeChat.Extensions;
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema;
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Request;
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Request.Event;
@@ -44,27 +46,19 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
             {
                 // TODO: currently set event body into channel data.
                 var eventActivity = Activity.CreateEventActivity();
-                this.SetValueFromRequest(eventRequest, eventActivity);
+                eventActivity.SetValueFromRequest(eventRequest);
                 return eventActivity;
             }
             else
             {
                 var messageActivity = Activity.CreateMessageActivity();
+                messageActivity.SetValueFromRequest(request);
                 if (request is TextRequest textRequest)
                 {
-                    this.SetValueFromRequest(textRequest, messageActivity);
-
-                    // messageActivity.Type = ActivityTypes.Message;
                     messageActivity.Text = textRequest.Content;
-
-                    // TODO: locale might need to set here;
-                    // Locale = ""
-                    // Message is handled by adapter itself, don't need serviceurl.
-                    // ServiceUrl = $"",
                 }
                 else if (request is ImageRequest imageRequest)
                 {
-                    this.SetValueFromRequest(imageRequest, messageActivity);
                     var attachment = new Attachment
                     {
                         ContentType = MimeTypesMap.GetMimeType(imageRequest.PicUrl) ?? MediaType.Image,
@@ -74,7 +68,6 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 }
                 else if (request is VoiceRequest voiceRequest)
                 {
-                    this.SetValueFromRequest(voiceRequest, messageActivity);
                     messageActivity.Text = voiceRequest.Recognition;
                     var attachment = new Attachment
                     {
@@ -85,7 +78,6 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 }
                 else if (request is VideoRequest videoRequest)
                 {
-                    this.SetValueFromRequest(videoRequest, messageActivity);
                     var attachment = new Attachment
                     {
                         // video request don't have format, type will be value.
@@ -97,7 +89,6 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 }
                 else if (request is ShortVideoRequest shortVideoRequest)
                 {
-                    this.SetValueFromRequest(shortVideoRequest, messageActivity);
                     var attachment = new Attachment
                     {
                         ContentType = MediaType.Video,
@@ -108,7 +99,6 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 }
                 else if (request is LocationRequest locationRequest)
                 {
-                    this.SetValueFromRequest(locationRequest, messageActivity);
                     var geo = new GeoCoordinates
                     {
                         Name = locationRequest.Label,
@@ -119,7 +109,6 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 }
                 else if (request is LinkRequest linkRequest)
                 {
-                    this.SetValueFromRequest(linkRequest, messageActivity);
                     messageActivity.Text = linkRequest.Title + linkRequest.Url;
                     messageActivity.Summary = linkRequest.Description;
                 }
@@ -144,16 +133,6 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
 
                 if (activity is IMessageActivity messageActivity)
                 {
-                    var hostConfig = new AdaptiveHostConfig();
-                    hostConfig.ContainerStyles.Default.BackgroundColor = "#00FFFFFF"; // transparent
-                    hostConfig.FontFamily = "Segoe UI";
-                    hostConfig.FontSizes.Small = 13;
-                    hostConfig.FontSizes.Default = 15;
-                    hostConfig.FontSizes.Medium = 17;
-                    hostConfig.FontSizes.Large = 20;
-                    hostConfig.FontSizes.ExtraLarge = 23;
-                    hostConfig.SupportsInteractivity = false;
-
                     var text = this.ParseActivityText(messageActivity);
 
                     // Chunk message into pieces as necessary
@@ -178,6 +157,15 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                             attachment.ContentType == "application/vnd.microsoft.card.adaptive")
                         {
                             var adaptiveCard = attachment.ContentAs<AdaptiveCard>();
+                            var hostConfig = new AdaptiveHostConfig();
+                            hostConfig.ContainerStyles.Default.BackgroundColor = "#00FFFFFF"; // transparent
+                            hostConfig.FontFamily = "Segoe UI";
+                            hostConfig.FontSizes.Small = 13;
+                            hostConfig.FontSizes.Default = 15;
+                            hostConfig.FontSizes.Medium = 17;
+                            hostConfig.FontSizes.Large = 20;
+                            hostConfig.FontSizes.ExtraLarge = 23;
+                            hostConfig.SupportsInteractivity = false;
                             responseMessageList.AddRange(await this.ProcessAdaptiveCardAsync(messageActivity, adaptiveCard, hostConfig, secretInfo).ConfigureAwait(false));
                         }
                         else if (attachment.ContentType == AudioCard.ContentType)
@@ -246,29 +234,6 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 this.logger.TrackException("Parse to wechat message failed", e);
                 throw e;
             }
-        }
-
-        public void SetValueFromRequest(IRequestMessageBase request, IActivity activity)
-        {
-            if (request is RequestMessage requestMessage)
-            {
-                activity.Id = requestMessage.MsgId.ToString();
-            }
-            else
-            {
-                // Event message don't have Id;
-                activity.Id = new Guid().ToString();
-            }
-
-            activity.ChannelId = Constants.ChannelId;
-            activity.Recipient = new ChannelAccount(request.ToUserName, "Bot", "bot");
-            activity.From = new ChannelAccount(request.FromUserName, "User", "user");
-
-            // Set user ID as conversation id. wechat request don't have conversation id.
-            // TODO: consider how to handle conversation end request if needed. For now Wechat don't have this type.
-            activity.Conversation = new ConversationAccount(false, id: request.FromUserName);
-            activity.Timestamp = DateTimeOffset.FromUnixTimeSeconds(request.CreateTime);
-            activity.ChannelData = request;
         }
 
         /// <summary>
@@ -455,13 +420,13 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
             catch (AdaptiveException ex)
             {
                 // Failed rendering
-                this.logger.TrackException("Failed to rending Adaptive card", exception: ex);
+                this.logger.TrackException("Failed to rending Adaptive card", ex);
                 throw ex;
             }
             catch (Exception ex)
             {
                 // upload graphic message failed.
-                this.logger.TrackException("Error when uploading adaptive card", exception: ex);
+                this.logger.TrackException("Error when uploading adaptive card", ex);
                 throw ex;
             }
         }
@@ -488,36 +453,14 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// <returns>Response message to WeChat.</returns>
         private async Task<IResponseMessageBase> AttachmentDataToWeChatMessage(IMessageActivity activity, AttachmentData attachmentData)
         {
-            if (AttachmentHelper.IsValidAttachmentData(attachmentData))
+            if (!AttachmentHelper.IsValidAttachmentData(attachmentData))
             {
-                string mediaId;
-                string type;
-
-                if (attachmentData.Type.Contains(MediaType.Image))
-                {
-                    type = UploadMediaType.Image;
-                    mediaId = await this.UploadToGetMediaId(attachmentData, type);
-                    return new ImageResponse(mediaId);
-                }
-
-                if (attachmentData.Type.Contains(MediaType.Video))
-                {
-                    type = UploadMediaType.Video;
-                    mediaId = await this.UploadToGetMediaId(attachmentData, type);
-                    return new VideoResponse(mediaId);
-                }
-
-                if (attachmentData.Type.Contains(MediaType.Audio))
-                {
-                    type = UploadMediaType.Voice;
-                    mediaId = await this.UploadToGetMediaId(attachmentData, type);
-                    return new VoiceResponse(mediaId);
-                }
+                this.logger.TrackTrace($"InValid AttachmentData.");
+                return null;
             }
 
-            // TODO: throw exception maybe a better choice.
-            // throw new NotSupportedException($"Attachment type: {attachmentData.Type} not supported yet.");
-            return new TextResponse() { Content = "Attachment type not supported." };
+            var mediaId = await this.UploadMediaAsync(attachmentData);
+            return CreateMediaResponse(mediaId, attachmentData.Type, activity);
         }
 
         private Task<string> UploadToGetMediaUrl(SecretInfo secretInfo, AttachmentData attachmentData, UploadMediaType type)
@@ -525,8 +468,34 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
             throw new NotImplementedException();
         }
 
-        private async Task<string> UploadToGetMediaId(AttachmentData attachmentData, string type)
+        /// <summary>
+        /// Upload the media to WeChat.
+        /// </summary>
+        /// <param name="attachmentData">AttachmentData need to be uploaded.</param>
+        /// <returns>Media id.</returns>
+        private async Task<string> UploadMediaAsync(AttachmentData attachmentData)
         {
+            string type = string.Empty;
+            if (attachmentData.Type.Contains(MediaType.Image))
+            {
+                type = UploadMediaType.Image;
+            }
+
+            if (attachmentData.Type.Contains(MediaType.Video))
+            {
+                type = UploadMediaType.Video;
+            }
+
+            if (attachmentData.Type.Contains(MediaType.Audio))
+            {
+                type = UploadMediaType.Voice;
+            }
+
+            if (string.IsNullOrEmpty(type))
+            {
+                throw new NotSupportedException($"Attachment type: {attachmentData.Type} not supported yet.");
+            }
+
             string mediaId;
 
             // document said mp news should not use temp media_id, but is working actually.
@@ -554,7 +523,13 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         private async Task<IList<IResponseMessageBase>> AttachmentToWeChatMessageAsync(IMessageActivity activity, Attachment attachment, SecretInfo secretInfo)
         {
             var responseList = new List<IResponseMessageBase>();
-            if (attachment.ContentUrl != null)
+            attachment.Properties.TryGetValue("MediaId", StringComparison.InvariantCultureIgnoreCase, out var mediaId);
+            if (!string.IsNullOrEmpty(mediaId?.ToString()))
+            {
+                var response = this.CreateMediaResponse(mediaId.ToString(), attachment.ContentType, activity);
+                responseList.Add(response);
+            }
+            else if (attachment.ContentUrl != null)
             {
                 // ContentUrl can contain a url or dataUrl of the form "data:image/jpeg;base64,XXXXXXXXX..."
                 var attachmentData = new AttachmentData(name: attachment.Name ?? new Guid().ToString());
@@ -574,11 +549,35 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 }
 
                 var response = await this.AttachmentDataToWeChatMessage(activity, attachmentData).ConfigureAwait(false);
-                responseList.Add(response);
+                if (response != null)
+                {
+                    responseList.Add(response);
+                }
             }
 
-            // TODO: may need to upload attachment content here, but wechat will not accept data with no specify type.
             return responseList;
+        }
+
+        private ResponseMessage CreateMediaResponse(string mediaId, string type, IActivity activity)
+        {
+            ResponseMessage response = null;
+            if (type.Contains(MediaType.Image))
+            {
+                response = new ImageResponse(mediaId);
+            }
+
+            if (type.Contains(MediaType.Video))
+            {
+                response = new VideoResponse(mediaId);
+            }
+
+            if (type.Contains(MediaType.Audio))
+            {
+                response = new VoiceResponse(mediaId);
+            }
+
+            response.SetProperties(activity);
+            return response;
         }
 
         /// <summary>

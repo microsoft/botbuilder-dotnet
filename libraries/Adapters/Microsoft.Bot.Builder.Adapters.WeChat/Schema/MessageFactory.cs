@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Xml.Linq;
+using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Helpers;
+using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Request;
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Request.Event;
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Request.Event.Common;
+using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Response;
 
-namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Request
+namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema
 {
-    public static class RequestMessageFactory
+    public class MessageFactory
     {
         public static IRequestMessageBase GetRequestEntity(XDocument doc)
         {
@@ -90,50 +93,47 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Request
                                 requestMessage = EntityHelper.FillEntityWithXml<ViewMiniProgramEvent>(doc);
                                 break;
 
-                            /* Not support right now
-                            case "CARD_PASS_CHECK":
-                                requestMessage = EntityHelper.FillEntityWithXml<CardReviewSuccessfulEvent>(doc);
-                                break;
-                            case "CARD_NOT_PASS_CHECK":
-                                requestMessage = EntityHelper.FillEntityWithXml<CardReviewFailedEvent>(doc);
-                                break;
-                            case "USER_GET_CARD":
-                                requestMessage = EntityHelper.FillEntityWithXml<CardCollectedEvent>(doc);
-                                break;
-                            case "USER_DEL_CARD":
-                                requestMessage = EntityHelper.FillEntityWithXml<CardDeletedEvent>(doc);
-                                break;
-                            case "USER_GIFTING_CARD":
-                                requestMessage = EntityHelper.FillEntityWithXml<CardGiftingEvent>(doc);
-                                break;
-                            case "USER_CONSUME_CARD":
-                                requestMessage = EntityHelper.FillEntityWithXml<RemoveAfterUseEvent>(doc);
-                                break;
-                            case "USER_VIEW_CARD":
-                                requestMessage = EntityHelper.FillEntityWithXml<ViewCardEvent>(doc);
-                                break;
-                            case "UPDATE_MEMBER_CARD":
-                                requestMessage = EntityHelper.FillEntityWithXml<MemberCardUpdatedEvent>(doc);
-                                break;
-                            case "CARD_SKU_REMIND":
-                                requestMessage = EntityHelper.FillEntityWithXml<CardLowInStockEvent>(doc);
-                                break;
-                            case "CARD_PAY_ORDER":
-                                requestMessage = EntityHelper.FillEntityWithXml<CardPointChangeEvent>(doc);
-                                break;
-                            case "SUBMIT_MEMBERCARD_USER_INFO":
-                                requestMessage = EntityHelper.FillEntityWithXml<MemberShipActivatedEvent>(doc);
-                                break;
-                            */
+                                /* Not support right now
+                                case "CARD_PASS_CHECK":
+                                    requestMessage = EntityHelper.FillEntityWithXml<CardReviewSuccessfulEvent>(doc);
+                                    break;
+                                case "CARD_NOT_PASS_CHECK":
+                                    requestMessage = EntityHelper.FillEntityWithXml<CardReviewFailedEvent>(doc);
+                                    break;
+                                case "USER_GET_CARD":
+                                    requestMessage = EntityHelper.FillEntityWithXml<CardCollectedEvent>(doc);
+                                    break;
+                                case "USER_DEL_CARD":
+                                    requestMessage = EntityHelper.FillEntityWithXml<CardDeletedEvent>(doc);
+                                    break;
+                                case "USER_GIFTING_CARD":
+                                    requestMessage = EntityHelper.FillEntityWithXml<CardGiftingEvent>(doc);
+                                    break;
+                                case "USER_CONSUME_CARD":
+                                    requestMessage = EntityHelper.FillEntityWithXml<RemoveAfterUseEvent>(doc);
+                                    break;
+                                case "USER_VIEW_CARD":
+                                    requestMessage = EntityHelper.FillEntityWithXml<ViewCardEvent>(doc);
+                                    break;
+                                case "UPDATE_MEMBER_CARD":
+                                    requestMessage = EntityHelper.FillEntityWithXml<MemberCardUpdatedEvent>(doc);
+                                    break;
+                                case "CARD_SKU_REMIND":
+                                    requestMessage = EntityHelper.FillEntityWithXml<CardLowInStockEvent>(doc);
+                                    break;
+                                case "CARD_PAY_ORDER":
+                                    requestMessage = EntityHelper.FillEntityWithXml<CardPointChangeEvent>(doc);
+                                    break;
+                                case "SUBMIT_MEMBERCARD_USER_INFO":
+                                    requestMessage = EntityHelper.FillEntityWithXml<MemberShipActivatedEvent>(doc);
+                                    break;
+                                */
 
                                 // TODO: kf, verify, WeApp, Wxa
                         }
 
                         break;
 
-                    // case RequestMessageType.File:
-                    //    requestMessage = EntityHelper.FillEntityWithXml<FileRequest>(doc);
-                    //    break;
                     default:
                         {
                             requestMessage = new UnknowRequest()
@@ -150,6 +150,48 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Request
             }
 
             return requestMessage;
+        }
+
+        public static string ConvertResponseToXml(object entity)
+        {
+            var responseXmlString = string.Empty;
+            try
+            {
+                if (entity is IResponseMessageBase responseMessage)
+                {
+                    switch (responseMessage.MsgType)
+                    {
+                        case ResponseMessageType.Text:
+                            responseXmlString = EntityHelper.ConvertEntityToXmlString<TextResponse>(responseMessage);
+                            break;
+                        case ResponseMessageType.Image:
+                            responseXmlString = EntityHelper.ConvertEntityToXmlString<ImageResponse>(responseMessage);
+                            break;
+                        case ResponseMessageType.Voice:
+                            responseXmlString = EntityHelper.ConvertEntityToXmlString<VoiceResponse>(responseMessage);
+                            break;
+                        case ResponseMessageType.Video:
+                            responseXmlString = EntityHelper.ConvertEntityToXmlString<VideoResponse>(responseMessage);
+                            break;
+                        case ResponseMessageType.Music:
+                            responseXmlString = EntityHelper.ConvertEntityToXmlString<MusicResponse>(responseMessage);
+                            break;
+                        case ResponseMessageType.News:
+                            responseXmlString = EntityHelper.ConvertEntityToXmlString<NewsResponse>(responseMessage);
+                            break;
+                    }
+                }
+                else
+                {
+                    responseXmlString = entity.ToString();
+                }
+            }
+            catch (ArgumentException ex)
+            {
+                throw new Exception(ex.Message + ex.InnerException.Message);
+            }
+
+            return responseXmlString;
         }
     }
 }

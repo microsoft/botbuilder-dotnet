@@ -1,85 +1,70 @@
 ﻿namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Response
 {
-    public enum ResponseMessageType
+    public interface IResponseMessageBase
+    {
+        string MsgType { get; set; }
+    }
+
+    public class ResponseMessageType
     {
         /// <summary>
         /// Text message.
         /// </summary>
-        Text = 0,
+        public const string Text = "text";
 
         /// <summary>
         /// News message.
         /// </summary>
-        News = 1,
+        public const string News = "news";
 
         /// <summary>
         /// Music message.
         /// </summary>
-        Music = 2,
+        public const string Music = "music";
 
         /// <summary>
         /// Image message.
         /// </summary>
-        Image = 3,
+        public const string Image = "image";
 
         /// <summary>
         /// Voice message.
         /// </summary>
-        Voice = 4,
+        public const string Voice = "voice";
 
         /// <summary>
         /// Video message.
         /// </summary>
-        Video = 5,
-
-        /// <summary>
-        /// Transfer customer service message.
-        /// </summary>
-        Transfer_Customer_Service = 6,
+        public const string Video = "video";
 
         /// <summary>
         /// MpNews message.
         /// </summary>
-        MpNews = 7,
+        public const string MpNews = "mpnews";
 
         /// <summary>
         /// MultipleNews message.
         /// </summary>
-        MultipleNews = 106,
+        public const string MultipleNews = "mutiplenews";
 
         /// <summary>
         /// Location message.
         /// </summary>
-        LocationMessage = 107,
+        public const string LocationMessage = "location";
 
         /// <summary>
         /// No responese message.
         /// </summary>
-        NoResponse = 110,
+        public const string NoResponse = "noresponse";
 
         /// <summary>
         /// Success response message.
         /// </summary>
-        SuccessResponse = 200,
-
-        /// <summary>
-        /// Use api message.
-        /// </summary>
-        UseApi = 998,
-
-        /// <summary>
-        /// Other message.
-        /// </summary>
-        Other = -2,
+        public const string SuccessResponse = "successresponse";
 
         /// <summary>
         /// Unknown message.
         /// </summary>
-        Unknown = -1,
-    }
-
-    public interface IResponseMessageBase
-    {
-        ResponseMessageType MsgType { get; }
+        public const string Unknown = "unknown";
     }
 }

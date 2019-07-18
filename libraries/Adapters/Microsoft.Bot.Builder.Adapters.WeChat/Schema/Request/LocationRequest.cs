@@ -8,26 +8,38 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Request
         public override RequestMessageType MsgType => RequestMessageType.Location;
 
         /// <summary>
-        /// The Latitude.
+        /// Gets or sets Location_X.
         /// </summary>
+        /// <value>
+        /// The Latitude.
+        /// </value>
         [XmlElement(ElementName = "Location_X")]
         public double Location_X { get; set; }
 
         /// <summary>
-        /// The longtitude.
+        /// Gets or sets Location_Y.
         /// </summary>
+        /// <value>
+        /// The longtitude.
+        /// </value>
         [XmlElement(ElementName = "Location_Y")]
         public double Location_Y { get; set; }
 
         /// <summary>
-        /// Map Zoom Size.
+        /// Gets or sets Scale.
         /// </summary>
+        /// <value>
+        /// Map Zoom Size.
+        /// </value>
         [XmlElement(ElementName = "Scale")]
         public int Scale { get; set; }
 
         /// <summary>
-        /// Geolocation information in Text.
+        /// Gets or sets Label.
         /// </summary>
+        /// <value>
+        /// Geolocation information in Text.
+        /// </value>
         [XmlElement(ElementName = "Label")]
         public string Label { get; set; }
     }

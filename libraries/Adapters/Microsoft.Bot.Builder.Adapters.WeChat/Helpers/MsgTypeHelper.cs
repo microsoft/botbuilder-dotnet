@@ -50,27 +50,5 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 return RequestMessageType.Unknown;
             }
         }
-
-        /*
-        /// <summary>
-        /// Return ResponseMessageType based on xml info.
-        /// </summary>
-        /// <param name="doc">Xml document.</param>
-        /// <returns>Response message type.</returns>
-        public static ResponseMessageType GetResponseMsgType(XDocument doc)
-        {
-            return GetResponseMsgType(doc.Root.Element("MsgType").Value);
-        }
-
-        /// <summary>
-        /// Return ResponseMessageType based on xml info.
-        /// </summary>
-        /// <param name="str">Response message type string.</param>
-        /// <returns>Response message type.</returns>
-        public static ResponseMessageType GetResponseMsgType(string str)
-        {
-            return (ResponseMessageType)Enum.Parse(typeof(ResponseMessageType), str, true);
-        }
-        */
     }
 }

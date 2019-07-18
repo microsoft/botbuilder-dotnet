@@ -2,9 +2,9 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 
-namespace Microsoft.Microsoft.Bot.Builder.Adapters.WeChat.TaskExtensions
+namespace Microsoft.Bot.Builder.Adapters.WeChat.TaskExtensions
 {
-    public abstract class BackgroundService : IHostedService
+    public abstract class AdapterBackgroundService : IHostedService
     {
         private readonly CancellationTokenSource _stoppingCts = new CancellationTokenSource();
 

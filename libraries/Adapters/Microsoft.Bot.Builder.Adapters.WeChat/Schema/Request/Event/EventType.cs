@@ -1,6 +1,4 @@
-﻿using System.Xml.Serialization;
-
-namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Request.Event
+﻿namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Request.Event
 {
     /// <summary>
     /// Detail Event type from wechat.

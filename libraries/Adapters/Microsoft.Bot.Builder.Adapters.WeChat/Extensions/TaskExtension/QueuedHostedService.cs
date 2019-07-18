@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Adapters.WeChat;
 
-namespace Microsoft.Microsoft.Bot.Builder.Adapters.WeChat.TaskExtensions
+namespace Microsoft.Bot.Builder.Adapters.WeChat.TaskExtensions
 {
-    public class QueuedHostedService : BackgroundService
+    public class QueuedHostedService : AdapterBackgroundService
     {
         private readonly WeChatLogger logger;
 
-        public QueuedHostedService(IBackgroundTaskQueue queue, WeChatLogger logger = null)
+        public QueuedHostedService(IBackgroundTaskQueue queue = null, WeChatLogger logger = null)
         {
-            this.TaskQueue = queue;
+            this.TaskQueue = queue ?? BackgroundTaskQueue.Instance;
             this.logger = logger ?? WeChatLogger.Instance;
         }
 

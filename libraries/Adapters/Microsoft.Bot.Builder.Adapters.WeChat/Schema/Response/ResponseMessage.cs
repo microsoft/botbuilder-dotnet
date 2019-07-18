@@ -10,8 +10,22 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Response
         /// <value>
         /// Recipient openId.
         /// </value>
-        [XmlElement(ElementName = "ToUserName")]
+        [XmlIgnore]
         public string ToUserName { get; set; }
+
+        [XmlElement(ElementName = "ToUserName")]
+        public System.Xml.XmlCDataSection ToUserNameCDATA
+        {
+            get
+            {
+                return new System.Xml.XmlDocument().CreateCDataSection(ToUserName);
+            }
+
+            set
+            {
+                ToUserName = value.Value;
+            }
+        }
 
         /// <summary>
         /// Gets or sets FromUserName.
@@ -19,8 +33,22 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Response
         /// <value>
         /// Sender openId.
         /// </value>
-        [XmlElement(ElementName = "FromUserName")]
+        [XmlIgnore]
         public string FromUserName { get; set; }
+
+        [XmlElement(ElementName = "FromUserName")]
+        public System.Xml.XmlCDataSection FromUserNameCDATA
+        {
+            get
+            {
+                return new System.Xml.XmlDocument().CreateCDataSection(FromUserName);
+            }
+
+            set
+            {
+                FromUserName = value.Value;
+            }
+        }
 
         /// <summary>
         /// Gets or sets creation time.
@@ -31,6 +59,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Response
         [XmlElement(ElementName = "CreateTime")]
         public long CreateTime { get; set; }
 
-        public virtual ResponseMessageType MsgType { get; }
+        [XmlIgnore]
+        public virtual string MsgType { get; set; }
     }
 }

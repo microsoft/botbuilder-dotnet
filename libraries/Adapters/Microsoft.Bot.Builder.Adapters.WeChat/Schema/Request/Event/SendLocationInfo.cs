@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Xml.Serialization;
+﻿using System.Xml.Serialization;
 
 namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Request.Event
 {
@@ -11,7 +8,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Request.Event
         /// Gets or sets location_X.
         /// </summary>
         /// <value>
-        /// Location_X infomation.
+        /// The Latitude infomation.
         /// </value>
         [XmlElement(ElementName = "Location_X")]
         public string Location_X { get; set; }
@@ -20,7 +17,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Request.Event
         /// Gets or sets location_Y.
         /// </summary>
         /// <value>
-        /// Location_Y information.
+        /// The longtitude information.
         /// </value>
         [XmlElement(ElementName = "Location_Y")]
         public string Location_Y { get; set; }
@@ -29,7 +26,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Request.Event
         /// Gets or sets scale.
         /// </summary>
         /// <value>
-        /// Scale information.
+        /// Map Zoom Size information.
         /// </value>
         [XmlElement(ElementName = "Scale")]
         public string Scale { get; set; }
@@ -38,7 +35,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Request.Event
         /// Gets or sets Label.
         /// </summary>
         /// <value>
-        /// String of location information.
+        /// Geolocation information in Text.
         /// </value>
         [XmlElement(ElementName = "Label")]
         public string Label { get; set; }

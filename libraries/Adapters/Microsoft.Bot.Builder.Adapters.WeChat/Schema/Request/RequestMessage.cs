@@ -10,8 +10,11 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Request
     public abstract class RequestMessage : IRequestMessageBase
     {
         /// <summary>
-        /// Message id, required except event message.
+        /// Gets or sets MsgId.
         /// </summary>
+        /// <value>
+        /// Message id, required except event message.
+        /// </value>
         [XmlElement(ElementName = "MsgId")]
         public long MsgId { get; set; }
 
@@ -19,26 +22,38 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Request
         public string Encrypt { get; set; }
 
         /// <summary>
-        /// Message type of the request message, override it if needed.
+        /// Gets MsgType.
         /// </summary>
+        /// <value>
+        /// Message type of the request message, override it if needed.
+        /// </value>
         [XmlElement(ElementName = "MsgType")]
         public abstract RequestMessageType MsgType { get; }
 
         /// <summary>
-        /// Recipient openId.
+        /// Gets or sets ToUserName.
         /// </summary>
+        /// <value>
+        /// Recipient openId.
+        /// </value>
         [XmlElement(ElementName = "ToUserName")]
         public string ToUserName { get; set; }
 
         /// <summary>
-        /// Sender openId.
+        /// Gets or sets FromUserName.
         /// </summary>
+        /// <value>
+        /// Sender openId.
+        /// </value>
         [XmlElement(ElementName = "FromUserName")]
         public string FromUserName { get; set; }
 
         /// <summary>
-        /// Message creation time.
+        /// Gets or sets CreateTime.
         /// </summary>
+        /// <value>
+        /// Message creation time.
+        /// </value>
         [XmlElement(ElementName = "CreateTime")]
         public long CreateTime { get; set; }
     }

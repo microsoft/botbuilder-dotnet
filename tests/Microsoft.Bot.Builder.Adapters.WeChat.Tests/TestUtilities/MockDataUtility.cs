@@ -7,6 +7,7 @@ using System.Xml.Linq;
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema;
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema.JsonResult;
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Request;
+using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Response;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Moq;
@@ -291,6 +292,18 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Test.TestUtilities
 <MsgId>22363405356629000</MsgId>
 </xml>";
 
+        public const string PassiveXmlText = "<xml>\r\n  <ToUserName><![CDATA[toUser]]></ToUserName>\r\n  <FromUserName><![CDATA[fromUser]]></FromUserName>\r\n  <CreateTime>12345678</CreateTime>\r\n  <MsgType><![CDATA[text]]></MsgType>\r\n  <Content><![CDATA[Hi]]></Content>\r\n</xml>";
+
+        public const string PassiveXmlImage = "<xml>\r\n  <ToUserName><![CDATA[toUser]]></ToUserName>\r\n  <FromUserName><![CDATA[fromUser]]></FromUserName>\r\n  <CreateTime>12345678</CreateTime>\r\n  <MsgType><![CDATA[image]]></MsgType>\r\n  <Image>\r\n    <MediaId><![CDATA[media_id]]></MediaId>\r\n  </Image>\r\n</xml>";
+
+        public const string PassiveXmlVoice = "<xml>\r\n  <ToUserName><![CDATA[toUser]]></ToUserName>\r\n  <FromUserName><![CDATA[fromUser]]></FromUserName>\r\n  <CreateTime>12345678</CreateTime>\r\n  <MsgType><![CDATA[voice]]></MsgType>\r\n  <Voice>\r\n    <MediaId><![CDATA[media_id]]></MediaId>\r\n  </Voice>\r\n</xml>";
+
+        public const string PassiveXmlVideo = "<xml>\r\n  <ToUserName><![CDATA[toUser]]></ToUserName>\r\n  <FromUserName><![CDATA[fromUser]]></FromUserName>\r\n  <CreateTime>12345678</CreateTime>\r\n  <MsgType><![CDATA[video]]></MsgType>\r\n  <Video>\r\n    <MediaId><![CDATA[media_id]]></MediaId>\r\n    <Title><![CDATA[title]]></Title>\r\n    <Description><![CDATA[description]]></Description>\r\n  </Video>\r\n</xml>";
+
+        public const string PassiveXmlMusic = "<xml>\r\n  <ToUserName><![CDATA[toUser]]></ToUserName>\r\n  <FromUserName><![CDATA[fromUser]]></FromUserName>\r\n  <CreateTime>12345678</CreateTime>\r\n  <MsgType><![CDATA[music]]></MsgType>\r\n  <Music>\r\n    <Title><![CDATA[TITLE]]></Title>\r\n    <Description><![CDATA[DESCRIPTION]]></Description>\r\n    <MusicUrl><![CDATA[MUSIC_Url]]></MusicUrl>\r\n    <HQMusicUrl><![CDATA[HQ_MUSIC_Url]]></HQMusicUrl>\r\n    <ThumbMediaId><![CDATA[media_id]]></ThumbMediaId>\r\n  </Music>\r\n</xml>";
+
+        public const string PassiveXmlNews = "<xml>\r\n  <ToUserName><![CDATA[toUser]]></ToUserName>\r\n  <FromUserName><![CDATA[fromUser]]></FromUserName>\r\n  <CreateTime>12345678</CreateTime>\r\n  <MsgType><![CDATA[news]]></MsgType>\r\n  <ArticleCount>2</ArticleCount>\r\n  <item>\r\n    <Title><![CDATA[title1]]></Title>\r\n    <Description><![CDATA[description1]]></Description>\r\n    <Url><![CDATA[url1]]></Url>\r\n    <PicUrl><![CDATA[picurl1]]></PicUrl>\r\n  </item>\r\n  <item>\r\n    <Title><![CDATA[title2]]></Title>\r\n    <Description><![CDATA[description2]]></Description>\r\n    <Url><![CDATA[url2]]></Url>\r\n    <PicUrl><![CDATA[picurl2]]></PicUrl>\r\n  </item>\r\n</xml>";
+
         public static readonly SecretInfo SecretInfo = new SecretInfo()
         {
             Token = "bmwipabotwx",
@@ -333,6 +346,92 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Test.TestUtilities
         public static readonly MessageCryptography TestDecryptMsg = new MessageCryptography(SecretInfo);
         public static readonly MessageCryptography TestAESKey = new MessageCryptography(SecretInfoAESKeyError);
         public static readonly MessageCryptography TestSignature = new MessageCryptography(SecretInfoMsgSignatureError);
+
+        public static readonly TextResponse TextResponse = new TextResponse()
+        {
+            ToUserName = "toUser",
+            FromUserName = "fromUser",
+            CreateTime = 12345678,
+            Content = "Hi",
+        };
+
+        public static readonly Image Image = new Image()
+        {
+            MediaId = "media_id",
+        };
+
+        public static readonly ImageResponse ImageResponse = new ImageResponse(Image)
+        {
+            ToUserName = "toUser",
+            FromUserName = "fromUser",
+            CreateTime = 12345678,
+        };
+
+        public static readonly Voice Voice = new Voice()
+        {
+            MediaId = "media_id",
+        };
+
+        public static readonly VoiceResponse VoiceResponse = new VoiceResponse(Voice)
+        {
+            ToUserName = "toUser",
+            FromUserName = "fromUser",
+            CreateTime = 12345678,
+        };
+
+        public static readonly Video Video = new Video()
+        {
+            MediaId = "media_id",
+            Title = "title",
+            Description = "description",
+        };
+
+        public static readonly VideoResponse VideoResponse = new VideoResponse(Video)
+        {
+            ToUserName = "toUser",
+            FromUserName = "fromUser",
+            CreateTime = 12345678,
+        };
+
+        public static readonly Music Music = new Music()
+        {
+            Title = "TITLE",
+            Description = "DESCRIPTION",
+            MusicUrl = "MUSIC_Url",
+            HQMusicUrl = "HQ_MUSIC_Url",
+            ThumbMediaId = "media_id",
+        };
+
+        public static readonly MusicResponse MusicResponse = new MusicResponse(Music)
+        {
+            ToUserName = "toUser",
+            FromUserName = "fromUser",
+            CreateTime = 12345678,
+        };
+
+        public static readonly Article Article1 = new Article()
+        {
+            Title = "title1",
+            Description = "description1",
+            PicUrl = "picurl1",
+            Url = "url1",
+        };
+
+        public static readonly Article Article2 = new Article()
+        {
+            Title = "title2",
+            Description = "description2",
+            PicUrl = "picurl2",
+            Url = "url2",
+        };
+
+        public static readonly NewsResponse NewsResponse = new NewsResponse()
+        {
+            ToUserName = "toUser",
+            FromUserName = "fromUser",
+            CreateTime = 12345678,
+            Articles = new List<Article>() { Article1, Article2 },
+        };
 
         // public const string xmlEvent_Enter_Agent = @"<xml>
         //                                            <ToUserName><![CDATA[toUser]]></ToUserName>
@@ -377,27 +476,24 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Test.TestUtilities
         //                            <ErrMsg><![CDATA[ok]]></ErrMsg>
         //                            </BatchJob>
         //                            </xml>";
-        public static SecretInfo GetMockSecretInfo()
-        {
-            return SecretInfo;
-        }
+        public static SecretInfo GetMockSecretInfo() => SecretInfo;
 
         public static List<IRequestMessageBase> GetMockRequestMessageList()
         {
             var requestList = new List<IRequestMessageBase>
             {
-                RequestMessageFactory.GetRequestEntity(XDocument.Parse(XmlText)),
-                RequestMessageFactory.GetRequestEntity(XDocument.Parse(XmlImage)),
-                RequestMessageFactory.GetRequestEntity(XDocument.Parse(XmlVoice)),
-                RequestMessageFactory.GetRequestEntity(XDocument.Parse(XmlVideo)),
-                RequestMessageFactory.GetRequestEntity(XDocument.Parse(XmlShortVideo)),
-                RequestMessageFactory.GetRequestEntity(XDocument.Parse(XmlLocation)),
-                RequestMessageFactory.GetRequestEntity(XDocument.Parse(XmlLink)),
-                RequestMessageFactory.GetRequestEntity(XDocument.Parse(XmlEventClick)),
-                RequestMessageFactory.GetRequestEntity(XDocument.Parse(XmlEventLocation)),
-                RequestMessageFactory.GetRequestEntity(XDocument.Parse(XmlEventView)),
-                RequestMessageFactory.GetRequestEntity(XDocument.Parse(XmlEventSubscribe)),
-                RequestMessageFactory.GetRequestEntity(XDocument.Parse(XmlEventScan)),
+                Schema.MessageFactory.GetRequestEntity(XDocument.Parse(XmlText)),
+                Schema.MessageFactory.GetRequestEntity(XDocument.Parse(XmlImage)),
+                Schema.MessageFactory.GetRequestEntity(XDocument.Parse(XmlVoice)),
+                Schema.MessageFactory.GetRequestEntity(XDocument.Parse(XmlVideo)),
+                Schema.MessageFactory.GetRequestEntity(XDocument.Parse(XmlShortVideo)),
+                Schema.MessageFactory.GetRequestEntity(XDocument.Parse(XmlLocation)),
+                Schema.MessageFactory.GetRequestEntity(XDocument.Parse(XmlLink)),
+                Schema.MessageFactory.GetRequestEntity(XDocument.Parse(XmlEventClick)),
+                Schema.MessageFactory.GetRequestEntity(XDocument.Parse(XmlEventLocation)),
+                Schema.MessageFactory.GetRequestEntity(XDocument.Parse(XmlEventView)),
+                Schema.MessageFactory.GetRequestEntity(XDocument.Parse(XmlEventSubscribe)),
+                Schema.MessageFactory.GetRequestEntity(XDocument.Parse(XmlEventScan)),
             };
             return requestList;
         }

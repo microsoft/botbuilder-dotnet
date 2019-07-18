@@ -7,7 +7,7 @@
             MediaId = mediaId;
         }
 
-        public override ResponseMessageType MsgType => ResponseMessageType.MpNews;
+        public override string MsgType => ResponseMessageType.MpNews;
 
         public string MediaId { get; set; }
     }

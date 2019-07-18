@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Bot.Builder.Adapters.WeChat.TaskExtensions;
 using Microsoft.Bot.Builder.Adapters.WeChat.Test.TestUtilities;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -16,8 +17,8 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Test
 
         public AdapterTest()
         {
-            testAdapter = new WeChatHttpAdapter(MockDataUtility.MockConfiguration());
-            testAdapterUseTempMedia = new WeChatHttpAdapter(MockDataUtility.MockConfiguration(false));
+            testAdapter = new WeChatHttpAdapter(MockDataUtility.MockConfiguration(), backgroundService: new QueuedHostedService());
+            testAdapterUseTempMedia = new WeChatHttpAdapter(MockDataUtility.MockConfiguration(false), backgroundService: new QueuedHostedService());
         }
 
         [TestMethod]
@@ -29,7 +30,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Test
             var bot = new EchoBot();
             await testAdapter.ProcessAsync(request, response, bot, secretInfo, true);
             await testAdapter.ProcessAsync(request, response, bot, secretInfo, false);
-            await testAdapterUseTempMedia.ProcessAsync(request, response, bot, secretInfo, true);
+            await testAdapterUseTempMedia.ProcessAsync(request, response, bot, secretInfo, false);
         }
 
         private static Mock<HttpRequest> CreateMockRequest(object body)

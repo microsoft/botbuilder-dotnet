@@ -7,6 +7,6 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
 {
     public interface IWeChatHttpAdapter
     {
-        Task ProcessAsync(HttpRequest httpRequest, HttpResponse httpResponse, IBot botl, SecretInfo postModal, bool replyAsync, CancellationToken cancellationToken = default);
+        Task ProcessAsync(HttpRequest httpRequest, HttpResponse httpResponse, IBot bot, SecretInfo postModal, bool passiveResponse = false, CancellationToken cancellationToken = default);
     }
 }
