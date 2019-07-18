@@ -6,6 +6,9 @@ using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Dialogs.Choices
 {
+    /// <summary>
+    /// Represents a choice for a choice prompt.
+    /// </summary>
     public class Choice
     {
         public Choice(string value = null)

@@ -11,7 +11,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
     [TestClass]
     public class DialogSetTests
     {
-
         [TestMethod]
         public void DialogSet_ConstructorValid()
         {
@@ -72,8 +71,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.IsTrue(ds.Find("A").TelemetryClient is NullBotTelemetryClient, "A not NullBotTelemetryClient");
             Assert.IsTrue(ds.Find("B").TelemetryClient is NullBotTelemetryClient, "A not NullBotTelemetryClient");
 
-            var myTelemetryClient = new MyBotTelemetryClient();
-            ds.TelemetryClient = myTelemetryClient;
+            var botTelemetryClient = new MyBotTelemetryClient();
+            ds.TelemetryClient = botTelemetryClient;
 
             Assert.IsTrue(ds.Find("A").TelemetryClient is MyBotTelemetryClient, "A not MyBotTelemetryClient");
             Assert.IsTrue(ds.Find("B").TelemetryClient is MyBotTelemetryClient, "A not MyBotTelemetryClient");
@@ -83,7 +82,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public async Task DialogSet_NullTelemetrySet()
         {
-
             var convoState = new ConversationState(new MemoryStorage());
             var dialogStateProperty = convoState.CreateProperty<DialogState>("dialogstate");
             var ds = new DialogSet(dialogStateProperty)
@@ -95,13 +93,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.IsTrue(ds.Find("A").TelemetryClient is NullBotTelemetryClient, "A not NullBotTelemetryClient");
             Assert.IsTrue(ds.Find("B").TelemetryClient is NullBotTelemetryClient, "A not NullBotTelemetryClient");
             await Task.CompletedTask;
-
         }
 
         [TestMethod]
         public async Task DialogSet_AddTelemetrySet()
         {
-
             var convoState = new ConversationState(new MemoryStorage());
             var dialogStateProperty = convoState.CreateProperty<DialogState>("dialogstate");
             var ds = new DialogSet(dialogStateProperty)
@@ -118,7 +114,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public async Task DialogSet_HeterogeneousLoggers()
         {
-
             var convoState = new ConversationState(new MemoryStorage());
             var dialogStateProperty = convoState.CreateProperty<DialogState>("dialogstate");
             var ds = new DialogSet(dialogStateProperty)
@@ -135,12 +130,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             await Task.CompletedTask;
         }
 
-
         private class MyBotTelemetryClient : IBotTelemetryClient
         {
             public MyBotTelemetryClient()
             {
-
             }
 
             public void Flush()
@@ -173,6 +166,5 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 throw new NotImplementedException();
             }
         }
-
     }
 }

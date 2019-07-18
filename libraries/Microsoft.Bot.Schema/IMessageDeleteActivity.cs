@@ -10,4 +10,3 @@ namespace Microsoft.Bot.Schema
     {
     }
 }
-

@@ -11,7 +11,7 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
         public Startup()
         {
             var builder = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false);
 
             Configuration = builder.Build();
         }

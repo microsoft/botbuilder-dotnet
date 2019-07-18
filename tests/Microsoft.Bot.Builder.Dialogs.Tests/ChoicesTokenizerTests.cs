@@ -83,7 +83,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.AreEqual(start, token.Start);
             Assert.AreEqual(end, token.End);
             Assert.AreEqual(text, token.Text);
-            Assert.AreEqual((normalized ?? text), token.Normalized);
+            Assert.AreEqual(normalized ?? text, token.Normalized);
         }
     }
 }

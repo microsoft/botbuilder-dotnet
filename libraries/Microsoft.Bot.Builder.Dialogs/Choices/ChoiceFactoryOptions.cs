@@ -3,6 +3,9 @@
 
 namespace Microsoft.Bot.Builder.Dialogs.Choices
 {
+    /// <summary>
+    /// Contains formatting options for presenting a list of choices.
+    /// </summary>
     public class ChoiceFactoryOptions
     {
         /// <summary>

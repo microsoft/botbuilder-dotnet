@@ -1,7 +1,7 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Bot.Configuration;
 using Microsoft.Bot.Configuration.Encryption;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.Configuration.Tests
 {
@@ -58,7 +58,6 @@ namespace Microsoft.Bot.Configuration.Tests
             Assert.AreEqual(value, decrypted, "decryption failed");
         }
 
-
         [TestMethod]
         public void EncryptWithNullKeyThrows()
         {
@@ -71,10 +70,8 @@ namespace Microsoft.Bot.Configuration.Tests
             }
             catch (Exception)
             {
-
             }
         }
-
 
         [TestMethod]
         public void DecryptWithNullKeyThrows()
@@ -90,7 +87,6 @@ namespace Microsoft.Bot.Configuration.Tests
             }
             catch (Exception)
             {
-
             }
         }
 
@@ -108,7 +104,6 @@ namespace Microsoft.Bot.Configuration.Tests
             }
             catch (Exception)
             {
-
             }
 
             try
@@ -122,9 +117,7 @@ namespace Microsoft.Bot.Configuration.Tests
             }
             catch (Exception)
             {
-
             }
-
         }
     }
 }

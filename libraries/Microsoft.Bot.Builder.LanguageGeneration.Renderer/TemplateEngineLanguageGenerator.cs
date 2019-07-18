@@ -1,15 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Builder.Dialogs.Declarative;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
-using static Microsoft.Bot.Builder.LanguageGeneration.TemplateEngine;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
@@ -31,11 +22,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </summary>
         /// <param name="lgText">lg template text</param>
         /// <param name="importResolver">template resource loader (id) => templateText</param>
-        /// <param name="name">optional label for the source of the templates (used for labeling source of template errors)</param>
-        public TemplateEngineLanguageGenerator(string lgText, ImportResolverDelegate importResolver = null, string name = null)
+        /// <param name="id">optional label for the source of the templates (used for labeling source of template errors)</param>
+        public TemplateEngineLanguageGenerator(string lgText, string id = null, ImportResolverDelegate importResolver = null)
         {
-            this.Name = name ?? DEFAULTLABEL;
-            this.engine = new TemplateEngine().AddText(lgText ?? String.Empty, this.Name, importResolver: importResolver);
+            this.Id = id ?? DEFAULTLABEL;
+            this.engine = new TemplateEngine().AddText(lgText ?? String.Empty, this.Id, importResolver: importResolver);
         }
 
         /// <summary>
@@ -49,9 +40,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         }
 
         /// <summary>
-        /// Name of the source of this template (used for labeling errors)
+        /// id of the source of this template (used for labeling errors)
         /// </summary>
-        public string Name { get; set; } = String.Empty;
+        public string Id { get; set; } = String.Empty;
 
         public async Task<string> Generate(ITurnContext turnContext, string template, object data)
         {
@@ -61,9 +52,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
             catch (Exception err)
             {
-                if (!String.IsNullOrEmpty(this.Name))
+                if (!String.IsNullOrEmpty(this.Id))
                 {
-                    throw new Exception($"{Name}:{err.Message}");
+                    throw new Exception($"{Id}:{err.Message}");
                 }
                 throw;
             }
