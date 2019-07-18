@@ -67,13 +67,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public TemplateEngine AddFile(string filePath, ImportResolverDelegate importResolver = null) => AddFiles(new List<string> { filePath }, importResolver);
 
         /// <summary>
-        /// Add text as lg file content to template engine.
+        /// Add text as lg file content to template engine. A fullpath id is needed when importResolver is empty, or simply pass in customized importResolver.
         /// </summary>
         /// <param name="content">Text content contains lg templates.</param>
         /// <param name="id">id is the content identifier. If <see cref="importResolver"/> is null, id should must be a full path string. </param>
         /// <param name="importResolver">resolver to resolve LG import id to template text.</param>
         /// <returns>Template engine with the parsed content.</returns>
-        public TemplateEngine AddText(string content, string id, ImportResolverDelegate importResolver)
+        public TemplateEngine AddText(string content, string id = "", ImportResolverDelegate importResolver = null)
         {
             CheckImportResolver(id, importResolver);
 

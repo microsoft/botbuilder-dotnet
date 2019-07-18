@@ -434,7 +434,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.IsTrue("Hi 2" == evaled || "Hello 2" == evaled);
 
             // Assert 6.lg of relative path is imported from text.
-            engine = new TemplateEngine().AddText(content: "# basicTemplate\r\n- Hi\r\n- Hello\r\n[import](./6.lg)", id: GetExampleFilePath("xx.lg"), importResolver: null);
+            engine = new TemplateEngine().AddText(content: "# basicTemplate\r\n- Hi\r\n- Hello\r\n[import](./6.lg)", id: GetExampleFilePath("xx.lg"));
 
             Assert.AreEqual(8, engine.Templates.Count());
 

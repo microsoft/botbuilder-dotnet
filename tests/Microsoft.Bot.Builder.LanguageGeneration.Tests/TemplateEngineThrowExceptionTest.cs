@@ -175,7 +175,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [ExpectedException(typeof(Exception))]
         public void AddTextWithWrongId()
         {
-            new TemplateEngine().AddText("# t \n - hi", "a.lg", null);
+            new TemplateEngine().AddText("# t \n - hi", "a.lg");
         }
     }
 }

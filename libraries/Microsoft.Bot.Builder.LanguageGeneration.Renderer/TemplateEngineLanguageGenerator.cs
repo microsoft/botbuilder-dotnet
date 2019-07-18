@@ -33,6 +33,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <param name="name">optional label for the source of the templates (used for labeling source of template errors)</param>
         public TemplateEngineLanguageGenerator(string lgText, string name, ImportResolverDelegate importResolver = null)
         {
+            Name = name ?? string.Empty;
             this.engine = new TemplateEngine().AddText(lgText ?? String.Empty, this.Name, importResolver: importResolver);
         }
 
