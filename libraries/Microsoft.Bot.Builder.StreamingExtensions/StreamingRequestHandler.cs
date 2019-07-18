@@ -202,7 +202,7 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
                 IBot bot = null;
 
                 // First check if an IBot type definition is available from the service provider.
-                if (_services?.GetService<IBot>() != null)
+                if (_services != null)
                 {
                     /* Creating a new scope for each request allows us to support
                      * bots that inject scoped services as dependencies.
