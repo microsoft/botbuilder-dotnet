@@ -67,14 +67,16 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public TemplateEngine AddFile(string filePath, ImportResolverDelegate importResolver = null) => AddFiles(new List<string> { filePath }, importResolver);
 
         /// <summary>
-        /// Add text as lg file content to template engine.
+        /// Add text as lg file content to template engine. A fullpath id is needed when importResolver is empty, or simply pass in customized importResolver.
         /// </summary>
         /// <param name="content">Text content contains lg templates.</param>
-        /// <param name="id">Text name.</param>
+        /// <param name="id">id is the content identifier. If <see cref="importResolver"/> is null, id should must be a full path string. </param>
         /// <param name="importResolver">resolver to resolve LG import id to template text.</param>
         /// <returns>Template engine with the parsed content.</returns>
-        public TemplateEngine AddText(string content, string id, ImportResolverDelegate importResolver)
+        public TemplateEngine AddText(string content, string id = "", ImportResolverDelegate importResolver = null)
         {
+            CheckImportResolver(id, importResolver);
+
             var rootResource = LGParser.Parse(content, id);
             var lgResources = rootResource.DiscoverDependencies(importResolver);
             Templates.AddRange(lgResources.SelectMany(x => x.Templates));
@@ -153,6 +155,24 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             var evaluator = new Evaluator(templates, methodBinder);
             return evaluator.EvaluateTemplate(fakeTemplateId, scope);
+        }
+
+        private void CheckImportResolver(string id, ImportResolverDelegate importResolver)
+        {
+            // Currently if no resolver is passed into AddText(),
+            // the default fileResolver is used to resolve the imports.
+            // default fileResolver require resource id should be fullPath,
+            // so that it can resolve relative path based on this fullPath.
+            // But we didn't check the id provided with AddText is fullPath or not.
+            // So when id != fullPath, fileResolver won't work.
+            if (importResolver == null)
+            {
+                var importPath = ImportResolver.NormalizePath(id);
+                if (!Path.IsPathRooted(importPath))
+                {
+                    throw new Exception("[Error] id must be full path when importResolver is null");
+                }
+            }
         }
     }
 }

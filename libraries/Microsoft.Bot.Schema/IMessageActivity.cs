@@ -7,90 +7,135 @@ using System.Collections.Generic;
 namespace Microsoft.Bot.Schema
 {
     /// <summary>
-    /// A message in a conversation
+    /// A message in a conversation.
     /// </summary>
     public interface IMessageActivity : IActivity
     {
         /// <summary>
-        /// The language code of the Text field
+        /// Gets or sets the language code of the Text field.
         /// </summary>
         /// <remarks>
-        /// See https://msdn.microsoft.com/library/hh456380.aspx for a list of valid language codes
+        /// See https://msdn.microsoft.com/library/hh456380.aspx for a list of valid language codes.
         /// </remarks>
+        /// <value>
+        /// The language code of the Text field.
+        /// </value>
         string Locale { get; set; }
 
         /// <summary>
-        /// Content for the message
+        /// Gets or sets content for the message.
         /// </summary>
+        /// <value>
+        /// Content for the message.
+        /// </value>
         string Text { get; set; }
 
         /// <summary>
-        /// Speak tag (SSML markup for text to speech)
+        /// Gets or sets speak tag (SSML markup for text to speech).
         /// </summary>
+        /// <value>
+        /// Speak tag (SSML markup for text to speech).
+        /// </value>
         string Speak { get; set; }
 
         /// <summary>
-        /// Indicates whether the bot is accepting, expecting, or ignoring input
+        /// Gets or sets indicates whether the bot is accepting, expecting, or ignoring input.
         /// </summary>
+        /// <value>
+        /// Indicates whether the bot is accepting, expecting, or ignoring input.
+        /// </value>
         string InputHint { get; set; }
 
         /// <summary>
-        /// Text to display if the channel cannot render cards
+        /// Gets or sets text to display if the channel cannot render cards.
         /// </summary>
+        /// <value>
+        /// Text to display if the channel cannot render cards.
+        /// </value>
         string Summary { get; set; }
 
         /// <summary>
-        /// Format of text fields [plain|markdown] Default:markdown
+        /// Gets or sets format of text fields [plain|markdown] Default:markdown.
         /// </summary>
+        /// <value>
+        /// Format of text fields [plain|markdown] Default:markdown.
+        /// </value>
         string TextFormat { get; set; }
 
         /// <summary>
-        /// Hint for how to deal with multiple attachments: [list|carousel] Default:list
+        /// Gets or sets hint for how to deal with multiple attachments: [list|carousel] Default:list.
         /// </summary>
+        /// <value>
+        /// Hint for how to deal with multiple attachments: [list|carousel] Default:list.
+        /// </value>
         string AttachmentLayout { get; set; }
 
         /// <summary>
-        /// Attachments
+        /// Gets or sets attachments.
         /// </summary>
+        /// <value>
+        /// Attachments.
+        /// </value>
         IList<Attachment> Attachments { get; set; }
 
         /// <summary>
-        /// SuggestedActions are used to express actions for interacting with a card like keyboards/quickReplies
+        /// Gets or sets suggestedActions are used to express actions for interacting with a card like keyboards/quickReplies.
         /// </summary>
+        /// <value>
+        /// SuggestedActions are used to express actions for interacting with a card like keyboards/quickReplies.
+        /// </value>
         SuggestedActions SuggestedActions { get; set; }
 
         /// <summary>
-        /// Importance of the activity 
-        /// Valid values are "low", "normal", and "high". Default value is "normal."
+        /// Gets or sets importance of the activity
+        /// Valid values are "low", "normal", and "high". Default value is "normal.".
         /// </summary>
+        /// <value>
+        /// Importance of the activity
+        /// Valid values are "low", "normal", and "high". Default value is "normal.".
+        /// </value>
         string Importance { get; set; }
 
         /// <summary>
-        /// Hint to describe how this activity should be delivered.  
+        /// Gets or sets hint to describe how this activity should be delivered.
         /// null or "default" = default delivery
         /// "notification" = notification semantics
-        /// See DeliveryModes for current constants
+        /// See DeliveryModes for current constants.
         /// </summary>
+        /// <value>
+        /// Hint to describe how this activity should be delivered.
+        /// null or "default" = default delivery
+        /// "notification" = notification semantics
+        /// See DeliveryModes for current constants.
+        /// </value>
         string DeliveryMode { get; set; }
 
         /// <summary>
-        /// DateTime to expire the activity as ISO 8601 encoded datetime
+        /// Gets or sets dateTime to expire the activity as ISO 8601 encoded datetime.
         /// </summary>
+        /// <value>
+        /// DateTime to expire the activity as ISO 8601 encoded datetime.
+        /// </value>
         DateTimeOffset? Expiration { get; set; }
 
         /// <summary>
-        /// Get mentions
+        /// Gets or sets value provided with CardAction.
         /// </summary>
-        Mention[] GetMentions();
-
-        /// <summary>
-        /// Value provided with CardAction
-        /// </summary>
+        /// <value>
+        /// Value provided with CardAction.
+        /// </value>
         object Value { get; set; }
 
         /// <summary>
-        /// True if this activity has text, attachments, or channelData
+        /// Get mentions.
         /// </summary>
+        /// <returns>mentions.</returns>
+        Mention[] GetMentions();
+
+        /// <summary>
+        /// True if this activity has text, attachments, or channelData.
+        /// </summary>
+        /// <returns>True or false.</returns>
         bool HasContent();
     }
 }

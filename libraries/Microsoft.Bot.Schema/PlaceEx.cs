@@ -1,10 +1,10 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
 namespace Microsoft.Bot.Schema
 {
     /// <summary>
-    /// GeoCoordinates extensions
+    /// GeoCoordinates extensions.
     /// </summary>
     public partial class Place : Entity
     {

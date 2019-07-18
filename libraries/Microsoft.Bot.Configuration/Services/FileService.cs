@@ -3,9 +3,6 @@
 
 namespace Microsoft.Bot.Configuration
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Text;
     using Newtonsoft.Json;
 
     public class FileService : ConnectedService
@@ -18,6 +15,7 @@ namespace Microsoft.Bot.Configuration
         /// <summary>
         /// Gets or sets file path.
         /// </summary>
+        /// <value>The Path for the file.</value>
         [JsonProperty("path")]
         public string Path { get; set; }
     }

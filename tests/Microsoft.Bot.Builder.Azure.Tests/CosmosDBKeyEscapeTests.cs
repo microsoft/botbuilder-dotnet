@@ -44,7 +44,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             var hash = tooLongKey.GetHashCode().ToString("x");
             var correctKey = sanitizedKey.Substring(0, CosmosDbKeyEscape.MaxKeyLength - hash.Length) + hash;
 
-            Assert.AreEqual(correctKey, sanitizedKey);            
+            Assert.AreEqual(correctKey, sanitizedKey);
         }
 
         [TestMethod]
@@ -57,7 +57,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             Assert.IsTrue(sanitizedKey.Length <= CosmosDbKeyEscape.MaxKeyLength, "Key too long");
 
             // Make sure the escaping still happened
-            Assert.IsTrue(sanitizedKey.StartsWith("*3ftest*3f"));                                   
+            Assert.IsTrue(sanitizedKey.StartsWith("*3ftest*3f"));
         }
 
         [TestMethod]
@@ -96,13 +96,13 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 
             // If we failed to esacpe the "*", then validKey2 would
             // escape to the same value as validKey. To prevent this
-            // we makes sure to escape the *. 
+            // we makes sure to escape the *.
 
             // Ascii code of "*" is "2a".
             var escaped1 = CosmosDbKeyEscape.EscapeKey(validKey);
             var escaped2 = CosmosDbKeyEscape.EscapeKey(validKey2);
 
-            Assert.AreNotEqual(escaped1, escaped2); 
+            Assert.AreNotEqual(escaped1, escaped2);
         }
     }
 }

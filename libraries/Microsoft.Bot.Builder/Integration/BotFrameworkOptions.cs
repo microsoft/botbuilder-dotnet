@@ -86,5 +86,14 @@ namespace Microsoft.Bot.Builder.Integration
         /// <value>The path strings.</value>
         /// <seealso cref="BotFrameworkPaths"/>
         public BotFrameworkPaths Paths { get; set; } = new BotFrameworkPaths();
+
+        /// <summary>
+        /// Gets or sets the general configuration settings for authentication.
+        /// </summary>
+        /// <seealso cref="AuthenticationConfiguration"/>
+        /// <value>
+        /// The general configuration settings for authentication.
+        /// </value>
+        public AuthenticationConfiguration AuthenticationConfiguration { get; set; } = new AuthenticationConfiguration();
     }
 }

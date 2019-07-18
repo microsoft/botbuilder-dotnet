@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder
         /// Initializes a new instance of the <see cref="TelemetryLoggerMiddleware"/> class.
         /// </summary>
         /// <param name="telemetryClient">The IBotTelemetryClient implementation used for registering telemetry events.</param>
-        /// <param name="logPersonalInformation"> (Optional) TRUE to include personally indentifiable information.</param>
+        /// <param name="logPersonalInformation"> (Optional) TRUE to include personally identifiable information.</param>
         public TelemetryLoggerMiddleware(IBotTelemetryClient telemetryClient, bool logPersonalInformation = false)
         {
             TelemetryClient = telemetryClient ?? new NullBotTelemetryClient();
@@ -49,7 +49,7 @@ namespace Microsoft.Bot.Builder
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <seealso cref="ITurnContext"/>
         /// <seealso cref="Bot.Schema.IActivity"/>
-        public async Task OnTurnAsync(ITurnContext context, NextDelegate nextTurn, CancellationToken cancellationToken)
+        public virtual async Task OnTurnAsync(ITurnContext context, NextDelegate nextTurn, CancellationToken cancellationToken)
         {
             BotAssert.ContextNotNull(context);
 
@@ -169,7 +169,7 @@ namespace Microsoft.Bot.Builder
             TelemetryClient.TrackEvent(TelemetryLoggerConstants.BotMsgDeleteEvent, await FillDeleteEventPropertiesAsync(activity).ConfigureAwait(false));
             return;
         }
- 
+
         /// <summary>
         /// Fills the event properties for the BotMessageReceived.
         /// Adheres to the LogPersonalInformation flag to filter Name, Text and Speak properties.

@@ -17,10 +17,24 @@ namespace Microsoft.Bot.Builder.Tests
         private readonly Action<Activity> _callOnUpdate = null;
         private readonly Action<ConversationReference> _callOnDelete = null;
 
-        public SimpleAdapter() { }
-        public SimpleAdapter(Action<Activity[]> callOnSend) { _callOnSend = callOnSend; }
-        public SimpleAdapter(Action<Activity> callOnUpdate) { _callOnUpdate = callOnUpdate; }
-        public SimpleAdapter(Action<ConversationReference> callOnDelete) { _callOnDelete = callOnDelete; }
+        public SimpleAdapter()
+        {
+        }
+
+        public SimpleAdapter(Action<Activity[]> callOnSend)
+        {
+            _callOnSend = callOnSend;
+        }
+
+        public SimpleAdapter(Action<Activity> callOnUpdate)
+        {
+            _callOnUpdate = callOnUpdate;
+        }
+
+        public SimpleAdapter(Action<ConversationReference> callOnDelete)
+        {
+            _callOnDelete = callOnDelete;
+        }
 
         public override Task DeleteActivityAsync(ITurnContext turnContext, ConversationReference reference, CancellationToken cancellationToken)
         {
@@ -36,7 +50,8 @@ namespace Microsoft.Bot.Builder.Tests
 
             _callOnSend?.Invoke(activities);
             List<ResourceResponse> responses = new List<ResourceResponse>();
-            foreach(var activity in activities)
+
+            foreach (var activity in activities)
             {
                 responses.Add(new ResourceResponse(activity.Id));
             }
@@ -59,5 +74,4 @@ namespace Microsoft.Bot.Builder.Tests
             }
         }
     }
-
 }

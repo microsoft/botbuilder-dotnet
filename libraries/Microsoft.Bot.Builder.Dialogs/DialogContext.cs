@@ -76,11 +76,14 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <summary>
         /// Turn context.
         /// </summary>
+        /// <value>
+        /// The context for the current turn of conversation.
+        /// </value>
         public ITurnContext Context { get; private set; }
 
-        /// <summary>
-        /// Stack of active dialogs and their dialog state.
-        /// </summary>
+        /// <value>
+        /// The current dialog stack.
+        /// </value>
         public IList<DialogInstance> Stack { get; private set; }
 
         /// <summary>
@@ -175,6 +178,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                         activeTags = activeTags.Union(dialog.Tags).ToList();
                     }
                 }
+
                 return activeTags;
             }
         }
@@ -213,7 +217,10 @@ namespace Microsoft.Bot.Builder.Dialogs
             var dialog = this.FindDialog(dialogId);
             if (dialog == null)
             {
-                throw new Exception($"DialogContext.BeginDialogAsync(): A dialog with an id of '{dialogId}' wasn't found.");
+                throw new Exception(
+                    $"DialogContext.BeginDialogAsync(): A dialog with an id of '{dialogId}' wasn't found." +
+                    " The dialog must be included in the current or parent DialogSet." +
+                    " For example, if subclassing a ComponentDialog you can call AddDialog() within your constructor.");
             }
 
             // Process dialogs input bindings
@@ -365,7 +372,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// automatically ended as well and the result passed to its parent. If there are no more
         /// parent dialogs on the stack then processing of the turn will end.
         /// </summary>
-        /// <param name="result"> (Optional) result to pass to the parent dialogs.</param>
+        /// <param name="result">(Optional) result to pass to the parent dialogs.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task<DialogTurnResult> EndDialogAsync(object result = null, CancellationToken cancellationToken = default(CancellationToken))
@@ -404,11 +411,6 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The dialog context.</returns>
-        public Task<DialogTurnResult> CancelAllDialogsAsync(CancellationToken cancellationToken)
-        {
-            return CancelAllDialogsAsync(DialogEvents.CancelDialog, null, cancellationToken);
-        }
-
         public async Task<DialogTurnResult> CancelAllDialogsAsync(string eventName = DialogEvents.CancelDialog, object eventValue = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (eventValue is CancellationToken)
@@ -474,11 +476,8 @@ namespace Microsoft.Bot.Builder.Dialogs
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            // Pop stack
-            if (Stack.Any())
-            {
-                Stack.RemoveAt(0);
-            }
+            // End the current dialog and giving the reason.
+            await EndActiveDialogAsync(DialogReason.ReplaceCalled, cancellationToken: cancellationToken).ConfigureAwait(false);
 
             this.State.Turn["__repeatDialogId"] = dialogId;
             // Start replacement dialog
@@ -555,6 +554,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="name">Name of the event to raise.</param>
         /// <param name="value">Value to send along with the event.</param>
         /// <param name="bubble">Flag to control whether the event should be bubbled to its parent if not handled locally. Defaults to a value of `true`.</param>
+        /// <param name="fromLeaf"></param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>True if the event was handled.</returns>
         public async Task<bool> EmitEventAsync(string name, object value = null, bool bubble = true, bool fromLeaf = false, CancellationToken cancellationToken = default(CancellationToken))

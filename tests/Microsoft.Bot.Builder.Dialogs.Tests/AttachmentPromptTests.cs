@@ -17,16 +17,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         public TestContext TestContext { get; set; }
 
         [TestMethod]
-        public void AttachmentPromptWithEmptyIdShouldNotFail()
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void AttachmentPromptWithEmptyIdShouldFail()
         {
-            var emptyId = "";
+            var emptyId = string.Empty;
             var attachmentPrompt = new AttachmentPrompt(emptyId);
         }
 
         [TestMethod]
-        public void AttachmentPromptWithNullIdShouldNotFail()
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void AttachmentPromptWithNullIdShouldFail()
         {
-            var nullId = "";
+            var nullId = string.Empty;
             nullId = null;
             var attachmentPrompt = new AttachmentPrompt(nullId);
         }
@@ -69,7 +71,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     var attachments = results.Result as List<Attachment>;
                     var content = MessageFactory.Text((string)attachments[0].Content);
                     await turnContext.SendActivityAsync(content, cancellationToken);
-
                 }
             })
             .Send("hello")
@@ -114,7 +115,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     var attachments = results.Result as List<Attachment>;
                     var content = MessageFactory.Text((string)attachments[0].Content);
                     await turnContext.SendActivityAsync(content, cancellationToken);
-
                 }
             })
             .Send("hello")

@@ -7,8 +7,18 @@ using System.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Choices
 {
+    /// <summary>
+    /// Contains methods for matching user input against a list of choices.
+    /// </summary>
     public static class Find
     {
+        /// <summary>
+        /// Matches user input against a list of choices.
+        /// </summary>
+        /// <param name="utterance">The input.</param>
+        /// <param name="choices">The list of choices.</param>
+        /// <param name="options">Optional, options to control the recognition strategy.</param>
+        /// <returns>A list of found choices, sorted by most relevant first.</returns>
         public static List<ModelResult<FoundChoice>> FindChoices(string utterance, IList<string> choices, FindChoicesOptions options = null)
         {
             if (choices == null)
@@ -19,6 +29,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
             return FindChoices(utterance, choices.Select(s => new Choice { Value = s }).ToList(), options);
         }
 
+        /// <summary>
+        /// Matches user input against a list of choices.
+        /// </summary>
+        /// <param name="utterance">The input.</param>
+        /// <param name="choices">The list of choices.</param>
+        /// <param name="options">Optional, options to control the recognition strategy.</param>
+        /// <returns>A list of found choices, sorted by most relevant first.</returns>
         public static List<ModelResult<FoundChoice>> FindChoices(string utterance, IList<Choice> choices, FindChoicesOptions options = null)
         {
             if (choices == null)
@@ -77,6 +94,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
              }).ToList();
         }
 
+        /// <summary>This method is internal and should not be used.</summary>
+        /// <remarks>Please use <see cref="FindChoices(string, IList{Choice}, FindChoicesOptions)"/> or
+        /// <see cref="FindChoices(string, IList{string}, FindChoicesOptions)"/> instead.</remarks>
+        /// <param name="utterance">The input.</param>
+        /// <param name="values">The values.</param>
+        /// <param name="options">The options for the search.</param>
+        /// <returns>A list of found values.</returns>
         public static List<ModelResult<FoundValue>> FindValues(string utterance, List<SortedValue> values, FindValuesOptions options = null)
         {
             // Sort values in descending order by length so that the longest value is searched over first.
@@ -116,7 +140,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
             }
 
             // Sort matches by score descending
-            matches.Sort((a, b) => (int)(b.Resolution.Score - a.Resolution.Score));
+            matches.Sort((a, b) => b.Resolution.Score.CompareTo(a.Resolution.Score));
 
             // Filter out duplicate matching indexes and overlapping characters.
             // - The start & end positions are token positions and need to be translated to
@@ -232,7 +256,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
                 // occurring in the value that weren't in the utterance. So an utterance
                 // of "second last" matched against a value of "second from last" would
                 // result in an accuracy of 0.5.
-                var accuracy = matched / (matched + totalDeviation);
+                var accuracy = (float)matched / (matched + totalDeviation);
 
                 // The final score is simply the completeness multiplied by the accuracy.
                 var score = completeness * accuracy;

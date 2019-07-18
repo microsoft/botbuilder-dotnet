@@ -16,24 +16,28 @@ namespace Microsoft.Bot.Configuration
         /// <summary>
         /// Gets or sets appId for the bot.
         /// </summary>
+        /// <value>The App Id.</value>
         [JsonProperty("appId")]
         public string AppId { get; set; }
 
         /// <summary>
         /// Gets or sets app password for the bot.
         /// </summary>
+        /// <value>The App password.</value>
         [JsonProperty("appPassword")]
         public string AppPassword { get; set; }
 
         /// <summary>
         /// Gets or sets the channel service (Azure or US Government Azure) for the bot.
         /// </summary>
+        /// <value>The Channel Service.</value>
         [JsonProperty("channelService")]
         public string ChannelService { get; set; }
 
         /// <summary>
         /// Gets or sets endpoint url for the bot.
         /// </summary>
+        /// <value>The Endpoint for the Bot.</value>
         [JsonProperty("endpoint")]
         public string Endpoint { get; set; }
 

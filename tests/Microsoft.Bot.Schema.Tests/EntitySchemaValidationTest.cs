@@ -7,10 +7,10 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Schema.Tests
 {
-    [TestClass]
     /// <summary>
     /// Entity schema validation tests to ensure that serilization and deserialization work as expected.
     /// </summary>
+    [TestClass]
     public class EntitySchemaValidationTest
     {
         /// <summary>
@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Schema.Tests
         {
             Mention mentionEntity = new Mention()
             {
-                Text = "TESTTEST"
+                Text = "TESTTEST",
             };
 
             Assert.AreEqual("mention", mentionEntity.Type);
@@ -62,7 +62,7 @@ namespace Microsoft.Bot.Schema.Tests
         {
             Place placeEntity = new Place()
             {
-                Name = "TESTTEST"
+                Name = "TESTTEST",
             };
 
             Assert.AreEqual("Place", placeEntity.Type);

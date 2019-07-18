@@ -135,6 +135,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                                 activity.Speak += "\n";
                             }
                         }
+
                         break;
                 }
             }
@@ -239,6 +240,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 {
                     return JsonConvert.DeserializeObject(result);
                 }
+
                 throw new Exception("No template found!");
             }
             else
@@ -246,7 +248,6 @@ namespace Microsoft.Bot.Builder.Dialogs
                 return $"data:{contentType}; base64, {Convert.ToBase64String(File.ReadAllBytes(resolvedFileLocation))}";
             }
         }
-
 
         private static int AddJsonAttachment(IMessageActivity activity, string[] lines, int iLine)
         {
@@ -354,6 +355,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                                 var urlObj = new JObject() { { "url", value } };
                                 card["image"] = urlObj;
                             }
+
                             break;
 
                         case "media":
@@ -377,6 +379,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                                 var buttonObj = new JObject() { { "title", button.Trim() }, { "type", "imBack" }, { "value", button.Trim() } };
                                 ((JArray)card[property]).Add(buttonObj);
                             }
+
                             break;
 
                         case "autostart":
@@ -400,6 +403,5 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             return iLine;
         }
-
     }
 }

@@ -13,6 +13,14 @@ namespace Microsoft.Bot.Builder.Azure
     public class CosmosDbStorageOptions
     {
         /// <summary>
+        /// Gets or sets the partitionKey value.
+        /// </summary>
+        /// <value>
+        /// The Partition Key.
+        /// </value>
+        public string PartitionKey { get; set; }
+
+        /// <summary>
         /// Gets or sets the CosmosDB endpoint.
         /// </summary>
         /// <value>

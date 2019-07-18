@@ -3,6 +3,8 @@
 
 namespace Microsoft.Bot.Builder.Dialogs.Choices
 {
+    /// <summary>This class is internal and should not be used.</summary>
+    /// <remarks>Please use <see cref="FoundChoice"/> instead.</remarks>
     public class FoundValue
     {
         /// <summary>

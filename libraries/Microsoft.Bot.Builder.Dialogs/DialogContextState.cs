@@ -122,7 +122,6 @@ namespace Microsoft.Bot.Builder.Dialogs
                 }
 
                 instance.State = value;
-
             }
         }
 
@@ -430,6 +429,5 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             throw new NotImplementedException();
         }
-
     }
 }

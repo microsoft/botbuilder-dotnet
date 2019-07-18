@@ -13,10 +13,12 @@ namespace Microsoft.Bot.Builder.Tests
     {
         private IStorage storage;
 
-        public MemoryStorageTests() { }
+        public MemoryStorageTests()
+        {
+        }
 
         [TestInitialize]
-        public void initialize()
+        public void Initialize()
         {
             storage = new MemoryStorage();
         }
@@ -24,31 +26,31 @@ namespace Microsoft.Bot.Builder.Tests
         [TestMethod]
         public async Task MemoryStorage_CreateObjectTest()
         {
-            await base._createObjectTest(storage);
+            await CreateObjectTest(storage);
         }
 
         [TestMethod]
         public async Task MemoryStorage_ReadUnknownTest()
         {
-            await base._readUnknownTest(storage);
+            await ReadUnknownTest(storage);
         }
 
         [TestMethod]
         public async Task MemoryStorage_UpdateObjectTest()
         {
-            await base._updateObjectTest(storage);
+            await UpdateObjectTest(storage);
         }
 
         [TestMethod]
         public async Task MemoryStorage_DeleteObjectTest()
         {
-            await base._deleteObjectTest(storage);
+            await DeleteObjectTest(storage);
         }
 
         [TestMethod]
         public async Task MemoryStorage_HandleCrazyKeys()
         {
-            await base._handleCrazyKeys(storage);
+            await HandleCrazyKeys(storage);
         }
     }
 }

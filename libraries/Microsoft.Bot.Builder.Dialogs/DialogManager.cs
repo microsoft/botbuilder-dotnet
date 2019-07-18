@@ -131,8 +131,6 @@ namespace Microsoft.Bot.Builder.Dialogs
                 };
             }
         }
-
-
         private static async Task<StoredBotState> LoadBotState(IStorage storage, BotStateStorageKeys keys)
         {
             var data = await storage.ReadAsync(new[] { keys.UserState, keys.ConversationState, keys.DialogState }).ConfigureAwait(false);

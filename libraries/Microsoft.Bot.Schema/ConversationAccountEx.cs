@@ -8,9 +8,9 @@ using Newtonsoft.Json.Linq;
 namespace Microsoft.Bot.Schema
 {
     /// <summary>
-    /// ConversationAccount extension
+    /// ConversationAccount extension.
     /// </summary>
-    public partial class ConversationAccount 
+    public partial class ConversationAccount
     {
         /// <summary>
         /// Gets or sets properties that are not otherwise defined by the <see cref="ConversationAccount"/> type but that

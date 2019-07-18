@@ -7,7 +7,6 @@
 
 // This will verify the tree as it is built by checking invariants
 // #define VerifyTree
-
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -21,13 +20,21 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
     /// </summary>
     public class Node
     {
+        private List<Trigger> _allTriggers = new List<Trigger>();
+        private List<Trigger> _triggers = new List<Trigger>();
+        private List<Node> _specializations = new List<Node>();
+
+#if Count
+        private static int _count = 0;
+#endif
+
         /// <summary>
-        /// All of the most specific triggers that contain the <see cref="Clause"/> in this node.
+        /// Gets all of the most specific triggers that contain the <see cref="Clause"/> in this node.
         /// </summary>
         public IReadOnlyList<Trigger> Triggers => _triggers;
 
         /// <summary>
-        /// All triggers that contain the <see cref="Clause"/> in this node. 
+        /// Gets all triggers that contain the <see cref="Clause"/> in this node. 
         /// </summary>
         /// <remarks>
         /// Triggers only contain the most specific trigger, so if this node 
@@ -38,12 +45,12 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
         public IReadOnlyList<Trigger> AllTriggers => _allTriggers;
 
         /// <summary>
-        /// Specialized children of this node.
+        /// Gets specialized children of this node.
         /// </summary>
         public IReadOnlyList<Node> Specializations => _specializations;
 
         /// <summary>
-        /// The logical conjunction this node represents.
+        /// Gets the logical conjunction this node represents.
         /// </summary>
         public Clause Clause { get; }
 
@@ -57,13 +64,6 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
         /// </summary>
         public TriggerTree Tree { get; }
 
-        private List<Trigger> _allTriggers = new List<Trigger>();
-        private List<Trigger> _triggers = new List<Trigger>();
-        private List<Node> _specializations = new List<Node>();
-
-#if Count
-        private static int _count = 0;
-#endif
 
 #if TraceTree
         public static bool ShowTrace = true;
@@ -94,14 +94,17 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                         {
                             predicate = child.Children[0];
                         }
+
                         children.Add(predicate);
                     }
+
                     if (children.Any())
                     {
                         Expression = Expression.MakeExpression(ExpressionType.And, children.ToArray());
                     }
                 }
             }
+
             if (Expression == null)
             {
                 Expression = Expression.ConstantExpression(true);
@@ -138,7 +141,14 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
         public RelationshipType Relationship(Node other)
             => Clause.Relationship(other.Clause, Tree.Comparers);
 
-        private enum Operation { None, Found, Added, Removed, Inserted };
+        private enum Operation
+        {
+            None,
+            Found,
+            Added,
+            Removed,
+            Inserted
+        }
 
 #pragma warning disable IDE0022
         internal bool AddNode(Node triggerNode)
@@ -208,6 +218,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                                     break;
                                 }
                             }
+
                             op = Operation.Found;
                             if (!found)
                             {
@@ -237,6 +248,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                                         ++i;
                                     }
                                 }
+
                                 if (add)
                                 {
 #if TraceTree
@@ -245,11 +257,12 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                                     _triggers.Add(trigger);
                                 }
 #if DEBUG
-                                Debug.Assert(CheckInvariants());
+                                Debug.Assert(CheckInvariants(), "invariants bad");
 #endif
                                 op = Operation.Added;
                             }
                         }
+
                         break;
                     case RelationshipType.Incomparable:
                         {
@@ -258,12 +271,14 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                                 child.AddNode(triggerNode, ops);
                             }
                         }
+
                         break;
                     case RelationshipType.Specializes:
                         {
                             triggerNode.AddSpecialization(this);
                             op = Operation.Inserted;
                         }
+
                         break;
                     case RelationshipType.Generalizes:
                         {
@@ -284,6 +299,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                                         {
                                             removals = new List<Node>();
                                         }
+
                                         removals.Add(child);
                                         op = Operation.Added;
                                     }
@@ -315,23 +331,27 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
 #endif
                                 _specializations.Add(triggerNode);
 #if DEBUG
-                                Debug.Assert(CheckInvariants());
+                                Debug.Assert(CheckInvariants(), "bad invariants");
 #endif
                             }
+
                             if (!foundOne)
                             {
                                 _specializations.Add(triggerNode);
 #if DEBUG
-                                Debug.Assert(CheckInvariants());
+                                Debug.Assert(CheckInvariants(), "bad invariants");
 #endif
                                 op = Operation.Added;
                             }
                         }
+
                         break;
                 }
+
                 // Prevent visiting this node again
                 ops[this] = op;
             }
+
             return op;
         }
 
@@ -414,9 +434,14 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
 #endif
                     break;
                 }
+
                 if (reln == RelationshipType.Generalizes)
                 {
-                    if (removals == null) removals = new List<Node>();
+                    if (removals == null)
+                    {
+                        removals = new List<Node>();
+                    }
+
                     removals.Add(child);
                 }
                 else if (reln == RelationshipType.Specializes)
@@ -428,6 +453,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                     break;
                 }
             }
+
             if (!skip)
             {
                 if (removals != null)
@@ -450,6 +476,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
 #endif
                     }
                 }
+
                 _specializations.Add(specialization);
                 added = true;
 #if TraceTree
@@ -457,7 +484,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
 
 #endif
 #if DEBUG
-                Debug.Assert(CheckInvariants());
+                Debug.Assert(CheckInvariants(), "bad invariants");
 #endif
             }
             return added;
@@ -526,9 +553,11 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                         {
                             emptyChildren = new List<Node>();
                         }
+
                         emptyChildren.Add(child);
                     }
                 }
+
                 if (emptyChildren != null)
                 {
                     // Remove children if no triggers left
@@ -550,6 +579,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                                     break;
                                 }
                             }
+
                             if (add)
                             {
 #if TraceTree
@@ -575,6 +605,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                         found = true;
                     }
                 }
+
                 // No child matched so we might
                 if (!found)
                 {
@@ -585,8 +616,10 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                         found = true;
                     }
                 }
+
                 matched.Add(this, found);
             }
+
             return found;
         }
     }
