@@ -18,6 +18,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     /// </summary>
     public class TemplateEngineLanguageGenerator : ILanguageGenerator
     {
+        private const string DEFAULTLABEL = "Unknown";
         private TemplateEngine engine;
 
         public TemplateEngineLanguageGenerator()
@@ -31,9 +32,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <param name="lgText">lg template text</param>
         /// <param name="importResolver">template resource loader (id) => templateText</param>
         /// <param name="name">optional label for the source of the templates (used for labeling source of template errors)</param>
-        public TemplateEngineLanguageGenerator(string lgText, string name, ImportResolverDelegate importResolver = null)
+        public TemplateEngineLanguageGenerator(string lgText, string name = null, ImportResolverDelegate importResolver = null)
         {
-            Name = name ?? string.Empty;
+            this.Name = name ?? DEFAULTLABEL;
             this.engine = new TemplateEngine().AddText(lgText ?? String.Empty, this.Name, importResolver: importResolver);
         }
 
