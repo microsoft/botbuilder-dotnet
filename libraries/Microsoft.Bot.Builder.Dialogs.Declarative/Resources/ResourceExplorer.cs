@@ -138,9 +138,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             {
                 string packageName = node.Attributes["Include"]?.Value;
                 string version = node.Attributes["Version"]?.Value;
-                if (!String.IsNullOrEmpty(packageName) && !String.IsNullOrEmpty(version))
+                NuGetVersion nugetVersion;
+                if (!String.IsNullOrEmpty(packageName) && !String.IsNullOrEmpty(version) && NuGetVersion.TryParse(version, out nugetVersion))
                 {
-                    var package = new PackageIdentity(packageName, new NuGetVersion(version));
+                    var package = new PackageIdentity(packageName, nugetVersion);
                     var folder = Path.Combine(packages, PathUtils.NormalizePath(pathResolver.GetPackageDirectoryName(package)));
                     if (Directory.Exists(folder))
                     {
