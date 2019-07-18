@@ -170,7 +170,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 var importPath = ImportResolver.NormalizePath(id);
                 if (!Path.IsPathRooted(importPath))
                 {
-                    throw new Exception("[Error] ImportResolver can't be empty when using AddText unless id is full path string");
+                    throw new Exception("[Error] id must be full path when importResolver is null");
                 }
             }
         }
