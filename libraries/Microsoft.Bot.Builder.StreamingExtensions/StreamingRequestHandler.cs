@@ -248,5 +248,5 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
 
             return response;
         }
-        }
-   }
+    }
+}
