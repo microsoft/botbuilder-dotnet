@@ -131,6 +131,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 };
             }
         }
+
         private static async Task<StoredBotState> LoadBotState(IStorage storage, BotStateStorageKeys keys)
         {
             var data = await storage.ReadAsync(new[] { keys.UserState, keys.ConversationState, keys.DialogState }).ConfigureAwait(false);
@@ -139,7 +140,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 UserState = data.ContainsKey(keys.UserState) ? data[keys.UserState] as Dictionary<string, object> : new Dictionary<string, object>(),
                 ConversationState = data.ContainsKey(keys.ConversationState) ? data[keys.ConversationState] as Dictionary<string, object> : new Dictionary<string, object>(),
-                DialogStack = data.ContainsKey(keys.DialogState) ? data[keys.DialogState] as List<DialogInstance> : new List<DialogInstance>(),
+                DialogStack = (data.ContainsKey(keys.DialogState) && data.ContainsKey(keys.ConversationState) && data[keys.ConversationState] != null) ? data[keys.DialogState] as List<DialogInstance> : new List<DialogInstance>(),
             };
         }
 
