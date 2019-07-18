@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -19,8 +20,9 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
         /// </summary>
         /// <param name="applicationBuilder">The application builder that defines the bot's pipeline.<see cref="IApplicationBuilder"/>.</param>
         /// <param name="middlewareSet">The set of middleware the bot executes on each turn. <see cref="MiddlewareSet"/>.</param>
+        /// <param name="onTurnError">Callback to execute when an error occurs while executing the pipeline.</param>
         /// <returns>A reference to this instance after the operation has completed.</returns>
-        public static IApplicationBuilder UseBotFrameworkNamedPipe(this IApplicationBuilder applicationBuilder, IList<IMiddleware> middlewareSet = null)
+        public static IApplicationBuilder UseBotFrameworkNamedPipe(this IApplicationBuilder applicationBuilder, IList<IMiddleware> middlewareSet = null, Func<ITurnContext, Exception, Task> onTurnError = null)
         {
             if (applicationBuilder == null)
             {
@@ -28,7 +30,7 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
             }
 
             var connector = new NamedPipeConnector();
-            connector.InitializeNamedPipeServer(applicationBuilder.ApplicationServices, middlewareSet);
+            connector.InitializeNamedPipeServer(applicationBuilder.ApplicationServices, middlewareSet, onTurnError);
 
             return applicationBuilder;
         }
