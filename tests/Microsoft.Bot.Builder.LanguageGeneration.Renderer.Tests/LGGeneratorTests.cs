@@ -40,11 +40,11 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             TypeFactory.RegisterAdaptiveTypes();
             resourceExplorer = ResourceExplorer.LoadProject(GetProjectFolder());
         }
+
         private static string GetProjectFolder()
         {
             return AppContext.BaseDirectory.Substring(0, AppContext.BaseDirectory.IndexOf("bin"));
         }
-
 
         [ClassCleanup]
         public static void ClassCleanup()

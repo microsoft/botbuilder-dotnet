@@ -11,17 +11,7 @@ namespace Microsoft.Bot.Connector.Authentication
     public class SimpleCredentialProvider : ICredentialProvider
     {
         /// <summary>
-        /// Gets or sets the app ID for this credential.
-        /// </summary>
-        public string AppId { get; set; }
-
-        /// <summary>
-        /// Gets or sets the app password for this credential.
-        /// </summary>
-        public string Password { get; set; }
-
-        /// <summary>
-        /// Creates a new instance of the <see cref="SimpleCredentialProvider"/> class
+        /// Initializes a new instance of the <see cref="SimpleCredentialProvider"/> class.
         /// with empty credentials.
         /// </summary>
         public SimpleCredentialProvider()
@@ -29,7 +19,7 @@ namespace Microsoft.Bot.Connector.Authentication
         }
 
         /// <summary>
-        /// Creates a new instance of the <see cref="SimpleCredentialProvider"/> class
+        /// Initializes a new instance of the <see cref="SimpleCredentialProvider"/> class.
         /// with the provided credentials.
         /// </summary>
         /// <param name="appId">The app ID.</param>
@@ -39,6 +29,22 @@ namespace Microsoft.Bot.Connector.Authentication
             this.AppId = appId;
             this.Password = password;
         }
+
+        /// <summary>
+        /// Gets or sets the app ID for this credential.
+        /// </summary>
+        /// <value>
+        /// The app ID for this credential.
+        /// </value>
+        public string AppId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the app password for this credential.
+        /// </summary>
+        /// <value>
+        /// The app password for this credential.
+        /// </value>
+        public string Password { get; set; }
 
         /// <summary>
         /// Validates an app ID.

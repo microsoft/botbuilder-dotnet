@@ -20,6 +20,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                     relationship = RelationshipType.Specializes;
                     break;
             }
+
             return relationship;
         }
     }

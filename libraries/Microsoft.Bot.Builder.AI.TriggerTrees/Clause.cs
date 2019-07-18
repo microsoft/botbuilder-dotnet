@@ -1,19 +1,20 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using Microsoft.Bot.Builder.Expressions;
-
-namespace Microsoft.Bot.Builder.AI.TriggerTrees
+﻿namespace Microsoft.Bot.Builder.AI.TriggerTrees
 {
-    public class Clause: Expression
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Reflection;
+    using System.Text;
+    using Microsoft.Bot.Builder.Expressions;
+
+    public class Clause : Expression
     {
-        public Dictionary<string, string> AnyBindings = new Dictionary<string, string>();
+        private Dictionary<string, string> anyBindings = new Dictionary<string, string>();
         internal bool Subsumed = false;
 
         internal Clause()
             : base(ExpressionType.And)
-        { }
+        {
+        }
 
         internal Clause(Clause fromClause)
             : base(ExpressionType.And)
@@ -34,6 +35,8 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
         {
         }
 
+        public Dictionary<string, string> AnyBindings { get => anyBindings; set => anyBindings = value; }
+
         public override string ToString()
         {
             var builder = new StringBuilder();
@@ -48,6 +51,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
             {
                 builder.Append('*');
             }
+
             builder.Append('(');
             var first = true;
             foreach (var child in Children)
@@ -60,8 +64,10 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                 {
                     builder.Append(" && ");
                 }
+
                 builder.Append(child.ToString());
             }
+
             builder.Append(')');
             foreach (var binding in AnyBindings)
             {
@@ -86,6 +92,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                 shorterCount = tmp;
                 swapped = true;
             }
+
             if (shorterCount == 0)
             {
                 if (longerCount == 0)
@@ -114,6 +121,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                                 break;
                             }
                         }
+
                         if (shorterRel == RelationshipType.Incomparable)
                         {
                             // Predicate in shorter is incomparable so done
@@ -126,6 +134,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                             {
                                 soFar = shorterRel;
                             }
+
                             if (soFar == RelationshipType.Equal)
                             {
                                 if (shorterRel == RelationshipType.Generalizes
@@ -147,6 +156,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                         }
                     }
                 }
+
                 if (shorterCount != longerCount)
                 {
                     switch (soFar)
@@ -156,8 +166,10 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                         default: soFar = RelationshipType.Incomparable; break;
                     }
                 }
+
                 soFar = BindingsRelationship(soFar, shorter, longer);
             }
+
             soFar = IgnoreRelationship(soFar, shorter, longer);
             return swapped ? soFar.Swap() : soFar;
         }
@@ -175,6 +187,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                     longer = shorterClause.AnyBindings;
                     swapped = true;
                 }
+
                 foreach (var shortBinding in shorter)
                 {
                     var found = false;
@@ -186,18 +199,22 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                             break;
                         }
                     }
+
                     if (!found)
                     {
                         soFar = RelationshipType.Incomparable;
                         break;
                     }
                 }
+
                 if (soFar == RelationshipType.Equal && shorter.Count < longer.Count)
                 {
                     soFar = RelationshipType.Specializes;
                 }
+
                 soFar = Swap(soFar, swapped);
             }
+
             return soFar;
         }
 
@@ -211,6 +228,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                     case RelationshipType.Generalizes: soFar = RelationshipType.Specializes; break;
                 }
             }
+
             return soFar;
         }
 
@@ -240,12 +258,14 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                             break;
                         }
                     }
+
                     if (!found)
                     {
                         soFar = RelationshipType.Incomparable;
                         break;
                     }
                 }
+
                 if (soFar == RelationshipType.Equal)
                 {
                     if (shorterClause.Children.Count() == 0 && longerClause.Children.Count() > 0)
@@ -257,8 +277,10 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                         soFar = RelationshipType.Incomparable;
                     }
                 }
+
                 soFar = Swap(soFar, swapped);
             }
+
             return soFar;
         }
 
@@ -271,13 +293,14 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
             {
                 root = expr.Children[0];
                 rootOther = other.Children[0];
-
             }
+
             IPredicateComparer comparer = null;
             if (root.Type == other.Type)
             {
                 comparers.TryGetValue(root.Type, out comparer);
             }
+
             if (comparer != null)
             {
                 relationship = comparer.Relationship(root, rootOther);
@@ -286,6 +309,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
             {
                 relationship = expr.DeepEquals(other) ? RelationshipType.Equal : RelationshipType.Incomparable;
             }
+
             return relationship;
         }
 

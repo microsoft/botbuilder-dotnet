@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Threading.Tasks;
-using Connector.Tests;
-using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
 using Microsoft.Rest;
 using Xunit;
 
-namespace Connector.Tests
+namespace Microsoft.Bot.Connector.Tests
 {
     public class OAuthConnectorTests : BaseTest
     {
@@ -60,24 +59,6 @@ namespace Connector.Tests
              });
         }
 
-        // [Fact] - Disabled due to bug in service
-        //public async Task GetSignInLinkAsync_ShouldReturnValidUrl()
-        //{
-        //    var activity = new Activity()
-        //    {
-        //        Id = "myid",
-        //        From = new ChannelAccount() { Id = "fromId" },
-        //        ServiceUrl = "https://localhost"
-        //    };
-        //    await UseOAuthClientFor(async client =>
-        //     {
-        //         var uri = await client.GetSignInLinkAsync(activity, "mygithubconnection");
-        //         Assert.False(string.IsNullOrEmpty(uri));
-        //         Uri uriResult;
-        //         Assert.True(Uri.TryCreate(uri, UriKind.Absolute, out uriResult) && uriResult.Scheme == Uri.UriSchemeHttps);
-        //     });
-        //}
-
         [Fact]
         public async Task SignOutUser_ShouldThrowOnEmptyUserId()
         {
@@ -119,5 +100,23 @@ namespace Connector.Tests
             var client = new OAuthClient(new Uri("http://localhost"), new BotAccessTokenStub("token"));
             await Assert.ThrowsAsync<ValidationException>(() => client.UserToken.GetAadTokensAsync("user", "connection", null));
         }
+
+        // [Fact] - Disabled due to bug in service
+        // public async Task GetSignInLinkAsync_ShouldReturnValidUrl()
+        // {
+        //    var activity = new Activity()
+        //    {
+        //        Id = "myid",
+        //        From = new ChannelAccount() { Id = "fromId" },
+        //        ServiceUrl = "https://localhost"
+        //    };
+        //    await UseOAuthClientFor(async client =>
+        //     {
+        //         var uri = await client.GetSignInLinkAsync(activity, "mygithubconnection");
+        //         Assert.False(string.IsNullOrEmpty(uri));
+        //         Uri uriResult;
+        //         Assert.True(Uri.TryCreate(uri, UriKind.Absolute, out uriResult) && uriResult.Scheme == Uri.UriSchemeHttps);
+        //     });
+        // }
     }
 }
