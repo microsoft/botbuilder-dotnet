@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <RuleSet Name="Rules for StyleCop.Analyzers" Description="Source analysis rules treat as errors for BotBuilder-DotNet solution." ToolsVersion="15.0">
   <Rules AnalyzerId="AsyncUsageAnalyzers" RuleNamespace="AsyncUsageAnalyzers">
-    <Rule Id="AvoidAsyncVoid" Action="Warning" />
-    <Rule Id="UseConfigureAwait" Action="Warning" />
+    <Rule Id="AvoidAsyncVoid" Action="Error" />
+    <Rule Id="UseConfigureAwait" Action="Error" />
   </Rules>
 
   <Rules AnalyzerId="Microsoft.CodeAnalysis.CSharp.Features" RuleNamespace="Microsoft.CodeAnalysis.CSharp.Features">
