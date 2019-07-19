@@ -621,10 +621,12 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.AreEqual(evaled, "HiMS");
 
             evaled = engine.EvaluateTemplate("template4", new { userName });
-            Assert.AreEqual(evaled, $"{Environment.NewLine}Hi MS{Environment.NewLine}");
+            var eval1Options = new List<string>() { "\r\nHi MS\r\n", "\nHi MS\n" };
+            Assert.IsTrue(eval1Options.Contains(evaled));
 
             evaled = engine.EvaluateTemplate("template5", new { userName });
-            Assert.AreEqual(evaled, $"{Environment.NewLine}HiMS{Environment.NewLine}");
+            var eval2Options = new List<string>() { "\r\nHiMS\r\n", "\nHiMS\n" };
+            Assert.IsTrue(eval2Options.Contains(evaled));
         }
     }
 }
