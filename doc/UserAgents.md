@@ -96,7 +96,7 @@ Implementation is platform specific.
 
 For static (build-time) strings, attributes SHOULD be put on Middleware to define the names that are used by the User Agent strings, and the BotAdapter can scan for those attributes. C#, TS, JS, Java, and Python all support this. 
 
-For more dynamic strings (O/S, LUIS API Version, QnA Maker API Verion), relevant libraries will need to look for a shared list of "Active" components and update accordingly. 
+For more dynamic strings (O/S, LUIS API Version, QnA Maker API Version), relevant libraries will need to look for a shared list of "Active" components and update accordingly. 
 
 
 

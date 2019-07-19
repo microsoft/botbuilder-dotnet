@@ -230,7 +230,7 @@ namespace Microsoft.Bot.Builder.Expressions
         /// <param name="value">Value to check.</param>
         /// <param name="expression">Expression that led to value.</param>
         /// <returns>Error or null if valid.</returns>
-        public static string VerifyNumber(object value, Expression expression, int _)
+        public static string VerifyNumber(object value, Expression expression, int number)
         {
             string error = null;
             if (!value.IsNumber())
@@ -246,7 +246,7 @@ namespace Microsoft.Bot.Builder.Expressions
         /// <param name="value">Value to check.</param>
         /// <param name="expression">Expression that led to value.</param>
         /// <returns>Error or null if valid.</returns>
-        public static string VerifyNumericList(object value, Expression expression, int _)
+        public static string VerifyNumericList(object value, Expression expression, int number)
         {
             string error = null;
             if (!TryParseList(value, out var list))
@@ -273,7 +273,7 @@ namespace Microsoft.Bot.Builder.Expressions
         /// <param name="value">Value to check.</param>
         /// <param name="expression">Expression that led to value.</param>
         /// <returns>Error or null if valid.</returns>
-        public static string VerifyContainer(object value, Expression expression, int _)
+        public static string VerifyContainer(object value, Expression expression, int number)
         {
             string error = null;
             if (!(value is string) && !(value is IList) && !(value is IEnumerable))
@@ -289,7 +289,7 @@ namespace Microsoft.Bot.Builder.Expressions
         /// <param name="value">Value to check.</param>
         /// <param name="expression">Expression that led to value.</param>
         /// <returns>Error or null if valid.</returns>
-        public static string VerifyList(object value, Expression expression, int _)
+        public static string VerifyList(object value, Expression expression, int number)
         {
             string error = null;
             if (!TryParseList(value, out var _))
@@ -323,7 +323,7 @@ namespace Microsoft.Bot.Builder.Expressions
         /// <param name="value">Value to check.</param>
         /// <param name="expression">Expression that led to value.</param>
         /// <returns>Error or null if valid.</returns>
-        public static string VerifyInteger(object value, Expression expression, int _)
+        public static string VerifyInteger(object value, Expression expression, int number)
         {
             string error = null;
             if (!value.IsInteger())
@@ -339,7 +339,7 @@ namespace Microsoft.Bot.Builder.Expressions
         /// <param name="value">Value to check.</param>
         /// <param name="expression">Expression that led to value.</param>
         /// <returns>Error or null if valid.</returns>
-        public static string VerifyString(object value, Expression expression, int _)
+        public static string VerifyString(object value, Expression expression, int number)
         {
             string error = null;
             if (!(value is string))
@@ -355,7 +355,7 @@ namespace Microsoft.Bot.Builder.Expressions
         /// <param name="value">Value to check.</param>
         /// <param name="expression">Expression that led to value.</param>
         /// <returns>Error or null if valid.</returns>
-        public static string VerifyNumberOrString(object value, Expression expression, int _)
+        public static string VerifyNumberOrString(object value, Expression expression, int number)
         {
             string error = null;
             if (value == null || (!value.IsNumber() && !(value is string)))
@@ -371,7 +371,7 @@ namespace Microsoft.Bot.Builder.Expressions
         /// <param name="value">Value to check.</param>
         /// <param name="expression">Expression that led to value.</param>
         /// <returns>Error or null if valid.</returns>
-        public static string VerifyBoolean(object value, Expression expression, int _)
+        public static string VerifyBoolean(object value, Expression expression, int number)
         {
             string error = null;
             if (!(value is bool))
@@ -2740,7 +2740,6 @@ namespace Microsoft.Bot.Builder.Expressions
                             {
                                 error = $"{expr} can't evaluate.";
                             }
-
                         }
 
                         return (value, error);
@@ -2978,15 +2977,14 @@ namespace Microsoft.Bot.Builder.Expressions
                         (args, error) = EvaluateChildren(expr, state);
                         if (error == null)
                         {
-
-                                if (args[0] is string uri )
-                                {
-                                    (value, error) = UriScheme(uri);
-                                }
-                                else
-                                {
-                                    error = $"{expr} can't evaluate.";
-                                }
+                            if (args[0] is string uri )
+                            {
+                                (value, error) = UriScheme(uri);
+                            }
+                            else
+                            {
+                                error = $"{expr} can't evaluate.";
+                            }
                         }
 
                         return (value, error);

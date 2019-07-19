@@ -141,33 +141,6 @@ namespace Microsoft.Bot.Builder.Dialogs
                 return result;
             }
 
-            // If we get to this point, we may be in a situation in which dialogs were added to the
-            // DialogSet but at the point of being added there dependencies were different.
-            // We do an effort here to re-install depdendencies in case they changed.
-            //var dependencies = new List<IDialog>();
-
-            //foreach (var dialog in _dialogs)
-            //{
-            //    // Automatically add any dependencies the dialog might have
-            //    if (dialog.Value is IDialogDependencies dialogWithDependencies)
-            //    {
-            //        var currentDependencies = dialogWithDependencies.ListDependencies();
-
-            //        if (currentDependencies != null)
-            //        {
-            //            dependencies.AddRange(currentDependencies);
-            //        }
-            //    }
-            //}
-
-            //dependencies.ForEach(d => Add(d));
-
-            //// Try again with the newly populated dependencies
-            //if (_dialogs.TryGetValue(dialogId, out result))
-            //{
-            //    return result;
-            //}
-
             return null;
         }
 

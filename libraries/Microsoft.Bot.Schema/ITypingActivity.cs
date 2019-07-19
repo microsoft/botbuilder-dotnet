@@ -4,7 +4,7 @@
 namespace Microsoft.Bot.Schema
 {
     /// <summary>
-    /// The From address is typing
+    /// The From address is typing.
     /// </summary>
     public interface ITypingActivity : IActivity
     {

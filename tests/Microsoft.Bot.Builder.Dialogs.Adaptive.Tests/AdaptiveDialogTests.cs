@@ -23,7 +23,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
     public class AdaptiveDialogTests
     {
         public TestContext TestContext { get; set; }
-        public ExpressionEngine expressionEngine = new ExpressionEngine();
+
+        public ExpressionEngine expressionEngine { get; set; } = new ExpressionEngine();
 
         private TestFlow CreateFlow(AdaptiveDialog ruleDialog)
         {
@@ -116,7 +117,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             dialog.Steps = new List<IDialog>()
             {
                 // Add item
-                new TextInput() {
+                new TextInput()
+                {
                     AlwaysPrompt = true,
                     Prompt = new ActivityTemplate("Please add an item to todos."),
                     Property = "dialog.todo"
@@ -129,13 +131,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     AlwaysPrompt = true,
                     Prompt = new ActivityTemplate("Please add an item to todos."),
                     Property = "dialog.todo"
-
                 },
                 new EditArray(EditArray.ArrayChangeType.Push, "user.todos", "dialog.todo"),
                 new SendActivity() { Activity = new ActivityTemplate("Your todos: {join(user.todos, ', ')}") },
 
                 // Remove item
-                new TextInput() {
+                new TextInput()
+                {
                     AlwaysPrompt = true,
                     Prompt = new ActivityTemplate("Enter a item to remove."),
                     Property = "dialog.todo"
@@ -144,7 +146,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 new SendActivity() { Activity = new ActivityTemplate("Your todos: {join(user.todos, ', ')}") },
 
                 // Add item and pop item
-                new TextInput() {
+                new TextInput()
+                {
                     AlwaysPrompt = true,
                     Prompt = new ActivityTemplate("Please add an item to todos."),
                     Property = "dialog.todo"
@@ -253,8 +256,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .StartTestAsync();
         }
 
-
-
         [TestMethod]
         public async Task AdaptiveDialog_StringLiteralInExpression()
         {
@@ -304,7 +305,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             .StartTestAsync();
         }
 
-
         [TestMethod]
         public async Task AdaptiveDialog_DoSteps()
         {
@@ -324,14 +324,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     new IfCondition()
                     {
                         Condition = "user.name == null",
-                            Steps = new List<IDialog>()
+                        Steps = new List<IDialog>()
+                        {
+                            new TextInput()
                             {
-                                new TextInput()
-                                {
-                                    Prompt = new ActivityTemplate("Hello, what is your name?"),
-                                    Property = "user.name"
-                                }
+                                Prompt = new ActivityTemplate("Hello, what is your name?"),
+                                Property = "user.name"
                             }
+                        }
                     },
                     new SendActivity("Hello {user.name}, nice to meet you!")
                 },
@@ -339,7 +339,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 {
                     new IntentRule()
                     {
-                        Intent="JokeIntent",
+                        Intent = "JokeIntent",
                         Steps = new List<IDialog>()
                         {
                             new SendActivity("Why did the chicken cross the road?"),
@@ -349,7 +349,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     },
                     new IntentRule()
                     {
-                        Intent="HelloIntent",
+                        Intent = "HelloIntent",
                         Steps = new List<IDialog>()
                         {
                             new SendActivity("Hello {user.name}, nice to meet you!")
@@ -406,13 +406,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             {
                 new IntentRule()
                 {
-                    Intent= "GreetingIntent",
+                    Intent = "GreetingIntent",
                     Steps = new List<IDialog>()
                     {
                         new SendActivity("Hello {user.name}, nice to meet you!")
                     }
                 },
-                new IntentRule("JokeIntent",
+                new IntentRule(
+                    "JokeIntent",
                     steps: new List<IDialog>()
                     {
                         new SendActivity("Why did the chicken cross the road?"),
@@ -423,7 +424,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     steps: new List<IDialog>()
                     {
                         new SendActivity("I'm a joke bot. To get started say 'tell me a joke'")
-                    }),
+                    })
             });
 
             await CreateFlow(ruleDialog)

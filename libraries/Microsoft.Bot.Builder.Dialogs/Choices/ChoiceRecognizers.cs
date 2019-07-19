@@ -8,13 +8,30 @@ using Microsoft.Recognizers.Text.Number;
 
 namespace Microsoft.Bot.Builder.Dialogs.Choices
 {
+    /// <summary>
+    /// Contains methods for matching user input against a list of choices.
+    /// </summary>
     public class ChoiceRecognizers
     {
+        /// <summary>
+        /// Matches user input against a list of choices.
+        /// </summary>
+        /// <param name="utterance">The input.</param>
+        /// <param name="choices">The list of choices.</param>
+        /// <param name="options">Optional, options to control the recognition strategy.</param>
+        /// <returns>A list of found choices, sorted by most relevant first.</returns>
         public static List<ModelResult<FoundChoice>> RecognizeChoices(string utterance, IList<string> choices, FindChoicesOptions options = null)
         {
             return RecognizeChoices(utterance, choices.Select(s => new Choice { Value = s }).ToList(), options);
         }
 
+        /// <summary>
+        /// Matches user input against a list of choices.
+        /// </summary>
+        /// <param name="utterance">The input.</param>
+        /// <param name="list">The list of choices.</param>
+        /// <param name="options">Optional, options to control the recognition strategy.</param>
+        /// <returns>A list of found choices, sorted by most relevant first.</returns>
         public static List<ModelResult<FoundChoice>> RecognizeChoices(string utterance, IList<Choice> list, FindChoicesOptions options = null)
         {
             if (utterance == null)

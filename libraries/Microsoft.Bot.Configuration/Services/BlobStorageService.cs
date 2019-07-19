@@ -19,12 +19,14 @@ namespace Microsoft.Bot.Configuration
         /// <summary>
         /// Gets or sets connection string.
         /// </summary>
+        /// <value>The connection String.</value>
         [JsonProperty("connectionString")]
         public string ConnectionString { get; set; }
 
         /// <summary>
         /// Gets or sets container.
         /// </summary>
+        /// <value>The container.</value>
         [JsonProperty("container")]
         public string Container { get; set; }
 

@@ -46,21 +46,21 @@
             "title": "Http headers",
             "description": "Http headers to include with the HTTP request (supports data binding)"
         },
-        "responseTypes": {
+        "responseType": {
             "type": "string",
-            "title": "Response Types",
+            "title": "Response Type",
             "description": "Describes how to parse the response from the http request. If Activity or Activities, then the they will be sent to the user.",
             "enum": [
-                "none",
-                "json",
-                "activity",
-                "activities"
+                "None",
+                "Json",
+                "Activity",
+                "Activities"
             ],
-            "default": "json"
+            "default": "Json"
         }
     },
     "required": [
         "url",
-        "entity"
+        "method"
     ]
 }

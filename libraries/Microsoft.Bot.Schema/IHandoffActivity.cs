@@ -4,7 +4,7 @@
 namespace Microsoft.Bot.Schema
 {
     /// <summary>
-    /// Control of the conversation has been transferred, or a request to transfer control of the conversation
+    /// Control of the conversation has been transferred, or a request to transfer control of the conversation.
     /// </summary>
     public interface IHandoffActivity : IActivity
     {

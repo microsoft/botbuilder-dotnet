@@ -64,7 +64,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             var context = new TurnContext(new TestAdapter(), new Activity());
             var lgText = await resourceExplorer.GetResource(lgFile).ReadTextAsync();
-            context.TurnState.Add<ILanguageGenerator>(new TemplateEngineLanguageGenerator(lgText, name: "test"));
+            context.TurnState.Add<ILanguageGenerator>(new TemplateEngineLanguageGenerator(lgText, "test", LanguageGeneratorManager.ResourceResolver(resourceExplorer)));
             return context;
         }
 

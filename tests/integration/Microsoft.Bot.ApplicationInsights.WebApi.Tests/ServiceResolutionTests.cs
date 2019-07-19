@@ -9,10 +9,12 @@ namespace Microsoft.Bot.Integration.ApplicationInsights.WebApi.Tests
         [TestCategory("ApplicationInsights")]
         public class ServiceResolutionTests
         {
+            /// <summary>
+            /// Initializes a new instance of the <see cref="ServiceResolutionTests"/> class.
+            /// </summary>
             public ServiceResolutionTests()
             {
                 // TEST: See if this unblocks the build.
             }
         }
-
 }

@@ -7,9 +7,9 @@ using Newtonsoft.Json.Linq;
 namespace Microsoft.Bot.Schema
 {
     /// <summary>
-    /// Addition helper code for Attachment objects
+    /// Addition helper code for Attachment objects.
     /// </summary>
-    public partial class Attachment 
+    public partial class Attachment
     {
         /// <summary>
         /// Gets or sets properties that are not otherwise defined by the <see cref="Attachment"/> type but that

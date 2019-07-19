@@ -4,18 +4,20 @@
 namespace Microsoft.Bot.Schema
 {
     /// <summary>
-    /// Conversation is ending, or a request to end the conversation
+    /// Conversation is ending, or a request to end the conversation.
     /// </summary>
     public interface IEndOfConversationActivity : IActivity
     {
         /// <summary>
-        /// Code indicating why the conversation has ended
+        /// Gets or Sets Code indicating why the conversation has ended.
         /// </summary>
+        /// <value>Code.</value>
         string Code { get; set; }
 
         /// <summary>
-        /// Content to display when ending the conversation
+        /// Gets or Sets Content to display when ending the conversation.
         /// </summary>
+        /// <value>Text.</value>
         string Text { get; set; }
     }
 }

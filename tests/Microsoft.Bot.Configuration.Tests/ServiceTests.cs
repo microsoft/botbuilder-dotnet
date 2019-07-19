@@ -22,7 +22,6 @@ namespace Microsoft.Bot.Configuration.Tests
             Assert.AreEqual(luis.GetEndpoint(), "https://usgoviowa.api.cognitive.microsoft.us");
         }
 
-
         [TestMethod]
         public void QnaMakerSuffixTest()
         {

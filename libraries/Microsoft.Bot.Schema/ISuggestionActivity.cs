@@ -15,8 +15,9 @@ namespace Microsoft.Bot.Schema
     public interface ISuggestionActivity : IMessageActivity
     {
         /// <summary>
-        /// Indicates the sections of text in the referenced message to highlight.
+        /// Gets or Sets Indicates the sections of text in the referenced message to highlight.
         /// </summary>
+        /// <value>TextHighlights.</value>
         IList<TextHighlight> TextHighlights { get; set; }
     }
 }

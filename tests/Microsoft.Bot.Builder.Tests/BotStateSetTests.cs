@@ -11,7 +11,6 @@ namespace Microsoft.Bot.Builder.Tests
     [TestCategory("State Management")]
     public class BotStateSetTests
     {
-
         [TestMethod]
         public void BotStateSet_Properties()
         {
@@ -80,7 +79,6 @@ namespace Microsoft.Bot.Builder.Tests
                 var convCount = await convProperty.GetAsync(turnContext, () => 0);
                 Assert.AreEqual(20, convCount);
             }
-
         }
 
         [TestMethod]
@@ -118,6 +116,5 @@ namespace Microsoft.Bot.Builder.Tests
             convCount = await convProperty.GetAsync(context, () => 0);
             Assert.AreEqual(20, convCount);
         }
-
     }
 }
