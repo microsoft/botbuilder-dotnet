@@ -10,7 +10,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
 {
     public class TelemetryOverrideRecognizer : LuisRecognizer
     {
-        public TelemetryOverrideRecognizer(IBotTelemetryClient telemetryClient, LuisApplication application, LuisPredictionOptions predictionOptions = null, bool includeApiResults = false, bool logPersonalInformation = false, HttpClientHandler clientHandler = null)
+        public TelemetryOverrideRecognizer(LuisApplication application, LuisPredictionOptions predictionOptions = null, bool includeApiResults = false, bool logPersonalInformation = false, HttpClientHandler clientHandler = null)
            : base(application, predictionOptions, includeApiResults, clientHandler)
         {
             LogPersonalInformation = logPersonalInformation;

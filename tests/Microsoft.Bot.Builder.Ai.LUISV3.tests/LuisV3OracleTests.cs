@@ -105,7 +105,7 @@ namespace Microsoft.Bot.Builder.AI.LuisV3.Tests
 
             GetEnvironmentVars();
             var mockHttp = GetMockHttpClientHandlerObject(utterance, responsePath);
-            var luisRecognizer = GetLuisRecognizer(mockHttp, verbose: true);
+            var luisRecognizer = GetLuisRecognizer(mockHttp);
             var context = GetContext(utterance);
             var result = await luisRecognizer.RecognizeAsync(context, CancellationToken.None);
 
@@ -167,11 +167,11 @@ namespace Microsoft.Bot.Builder.AI.LuisV3.Tests
             var mockHttp = GetMockHttpClientHandlerObject((string)oracle["text"], mockResponse);
             var oracleOptions = response["options"];
             var options = (oracleOptions == null || oracleOptions.Type == JTokenType.Null)
-                ? new LuisPredictionOptions { IncludeAllIntents = true, IncludeInstanceData = true }
+                ? new LuisPredictionOptions { IncludeAllIntents = true, IncludeInstanceData = true, IncludeAPIResults = true }
                     : oracleOptions.ToObject<LuisPredictionOptions>();
             var settings = new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore };
             response["options"] = (JObject)JsonConvert.DeserializeObject(JsonConvert.SerializeObject(options, settings));
-            var luisRecognizer = GetLuisRecognizer(mockHttp, true, options);
+            var luisRecognizer = GetLuisRecognizer(mockHttp, options);
             var typedResult = await luisRecognizer.RecognizeAsync<T>(context, CancellationToken.None);
             var typedJson = Utils.Json(typedResult, version, oracle);
 
@@ -340,7 +340,7 @@ namespace Microsoft.Bot.Builder.AI.LuisV3.Tests
 
             var clientHandler = new EmptyLuisResponseClientHandler();
 
-            var recognizer = new LuisRecognizer(application, clientHandler: clientHandler);
+            var recognizer = new LuisRecognizer(application, new LuisRecognizerOptions { HttpClient = clientHandler });
 
             var adapter = new NullAdapter();
             var activity = new Activity
@@ -398,6 +398,7 @@ namespace Microsoft.Bot.Builder.AI.LuisV3.Tests
             {
                 TelemetryClient = telemetryClient.Object,
                 LogPersonalInformation = false,
+                HttpClient = clientHandler,
             };
 
             var activity = new Activity
@@ -410,7 +411,7 @@ namespace Microsoft.Bot.Builder.AI.LuisV3.Tests
             };
 
             var turnContext = new TurnContext(adapter, activity);
-            var recognizer = new LuisRecognizer(luisApp, options, clientHandler: clientHandler);
+            var recognizer = new LuisRecognizer(luisApp, options);
 
             // Act
             var additionalProperties = new Dictionary<string, string>
@@ -461,8 +462,9 @@ namespace Microsoft.Bot.Builder.AI.LuisV3.Tests
             {
                 TelemetryClient = telemetryClient.Object,
                 LogPersonalInformation = true,
+                HttpClient = clientHandler,
             };
-            var recognizer = new LuisRecognizer(luisApp, options, clientHandler: clientHandler);
+            var recognizer = new LuisRecognizer(luisApp, options);
 
             // Act
             var result = await recognizer.RecognizeAsync(turnContext).ConfigureAwait(false);
@@ -508,8 +510,9 @@ namespace Microsoft.Bot.Builder.AI.LuisV3.Tests
             {
                 TelemetryClient = telemetryClient.Object,
                 LogPersonalInformation = false,
+                HttpClient = clientHandler,
             };
-            var recognizer = new LuisRecognizer(luisApp, options, clientHandler: clientHandler);
+            var recognizer = new LuisRecognizer(luisApp, options);
 
             // Act
             var result = await recognizer.RecognizeAsync(turnContext).ConfigureAwait(false);
@@ -556,8 +559,9 @@ namespace Microsoft.Bot.Builder.AI.LuisV3.Tests
             {
                 TelemetryClient = telemetryClient.Object,
                 LogPersonalInformation = false,
+                HttpClient = clientHandler,
             };
-            var recognizer = new TelemetryOverrideRecognizer(telemetryClient.Object, luisApp, options, false, false, clientHandler);
+            var recognizer = new TelemetryOverrideRecognizer(luisApp, options);
 
             var additionalProperties = new Dictionary<string, string>
             {
@@ -608,8 +612,9 @@ namespace Microsoft.Bot.Builder.AI.LuisV3.Tests
             {
                 TelemetryClient = telemetryClient.Object,
                 LogPersonalInformation = false,
+                HttpClient = clientHandler,
             };
-            var recognizer = new OverrideFillRecognizer(telemetryClient.Object, luisApp, options, false, false, clientHandler);
+            var recognizer = new OverrideFillRecognizer(luisApp, options);
 
             var additionalProperties = new Dictionary<string, string>
             {
@@ -670,9 +675,10 @@ namespace Microsoft.Bot.Builder.AI.LuisV3.Tests
             {
                 TelemetryClient = telemetryClient.Object,
                 LogPersonalInformation = false,
+                HttpClient = clientHandler,
             };
 
-            var recognizer = new LuisRecognizer(luisApp, options, clientHandler: clientHandler);
+            var recognizer = new LuisRecognizer(luisApp, options);
 
             // Act
             var result = await recognizer.RecognizeAsync(turnContext, CancellationToken.None).ConfigureAwait(false);
@@ -714,12 +720,13 @@ namespace Microsoft.Bot.Builder.AI.LuisV3.Tests
             {
                 TelemetryClient = telemetryClient.Object,
                 LogPersonalInformation = false,
+                HttpClient = clientHandler,
             };
-            var recognizer = new LuisRecognizer(luisApp, options, clientHandler: clientHandler);
+            var recognizer = new LuisRecognizer(luisApp, options);
 
             // Act
             // Use a class the converts the Recognizer Result..
-            var result = await recognizer.RecognizeAsync<TelemetryConvertResult>(turnContext, CancellationToken.None).ConfigureAwait(false);
+            var result = await recognizer.RecognizeAsync(turnContext, CancellationToken.None).ConfigureAwait(false);
 
             // Assert
             Assert.IsNotNull(result);
@@ -759,8 +766,9 @@ namespace Microsoft.Bot.Builder.AI.LuisV3.Tests
             {
                 TelemetryClient = telemetryClient.Object,
                 LogPersonalInformation = false,
+                HttpClient = clientHandler,
             };
-            var recognizer = new LuisRecognizer(luisApp, options, clientHandler: clientHandler);
+            var recognizer = new LuisRecognizer(luisApp, options);
 
             // Act
             var additionalProperties = new Dictionary<string, string>
@@ -774,7 +782,7 @@ namespace Microsoft.Bot.Builder.AI.LuisV3.Tests
                 { "luis", 1.0001 },
             };
 
-            var result = await recognizer.RecognizeAsync<TelemetryConvertResult>(turnContext, additionalProperties, additionalMetrics, CancellationToken.None).ConfigureAwait(false);
+            var result = await recognizer.RecognizeAsync(turnContext, additionalProperties, additionalMetrics, CancellationToken.None).ConfigureAwait(false);
 
             // Assert
             Assert.IsNotNull(result);
@@ -795,10 +803,10 @@ namespace Microsoft.Bot.Builder.AI.LuisV3.Tests
             Assert.AreEqual(((Dictionary<string, double>)telemetryClient.Invocations[0].Arguments[2])["luis"], 1.0001);
         }
 
-        private IRecognizer GetLuisRecognizer(MockedHttpClientHandler httpClientHandler, bool verbose = false, LuisPredictionOptions options = null)
+        private IRecognizer GetLuisRecognizer(MockedHttpClientHandler httpClientHandler, LuisPredictionOptions options = null)
         {
             var luisApp = new LuisApplication(AppId, Key, Endpoint);
-            return new LuisRecognizer(luisApp, null, options, verbose, httpClientHandler);
+            return new LuisRecognizer(luisApp, new LuisRecognizerOptions { HttpClient = httpClientHandler }, options);
         }
 
         private MockedHttpClientHandler GetMockHttpClientHandlerObject(string example, string responsePath)

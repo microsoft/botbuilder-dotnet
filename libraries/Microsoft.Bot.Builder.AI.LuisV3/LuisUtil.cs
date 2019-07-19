@@ -10,8 +10,8 @@ namespace Microsoft.Bot.Builder.AI.Luis
     // Utility functions used to extract and transform data from Luis SDK
     internal static class LuisUtil
     {
-        internal const string _metadataKey = "$instance";
-        internal const string _geoV2 = "builtin.geographyV2.";
+        internal const string MetadataKey = "$instance";
+        internal const string GeoV2 = "builtin.geographyV2.";
         internal static readonly HashSet<string> _dateSubtypes = new HashSet<string> { "date", "daterange", "datetime", "datetimerange", "duration", "set", "time", "timerange" };
 
         internal static string NormalizedIntent(string intent) => intent.Replace('.', '_').Replace(' ', '_');
@@ -48,11 +48,11 @@ namespace Microsoft.Bot.Builder.AI.Luis
             {
                 if (source is JObject obj)
                 {
-                    if (obj.TryGetValue("type", out var type) && type.Type == JTokenType.String && type.Value<string>().StartsWith(_geoV2))
+                    if (obj.TryGetValue("type", out var type) && type.Type == JTokenType.String && type.Value<string>().StartsWith(GeoV2))
                     {
-                        var path = type.Path.Replace(_metadataKey + ".", string.Empty);
+                        var path = type.Path.Replace(MetadataKey + ".", string.Empty);
                         path = path.Substring(0, path.LastIndexOf('.'));
-                        geoTypes.Add(path, type.Value<string>().Substring(_geoV2.Length));
+                        geoTypes.Add(path, type.Value<string>().Substring(GeoV2.Length));
                     }
                     else
                     {
@@ -112,7 +112,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
                         var isArr = property.Value.Type == JTokenType.Array;
                         var isStr = property.Value.Type == JTokenType.String;
                         var isInt = property.Value.Type == JTokenType.Integer;
-                        var val = MapProperties(property.Value, inInstance || property.Name == _metadataKey, geoTypes);
+                        var val = MapProperties(property.Value, inInstance || property.Name == MetadataKey, geoTypes);
                         if (name == "datetime" && isArr)
                         {
                             nobj.Add("datetimeV1", val);

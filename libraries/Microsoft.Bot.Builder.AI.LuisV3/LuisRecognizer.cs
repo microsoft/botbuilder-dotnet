@@ -33,7 +33,6 @@ namespace Microsoft.Bot.Builder.AI.Luis
 
         private readonly LuisApplication _application;
         private readonly LuisPredictionOptions _predictionOptions;
-        private readonly bool _includeApiResults;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LuisRecognizer"/> class.
@@ -41,20 +40,18 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <param name="application">The LUIS application to use to recognize text.</param>
         /// <param name="recognizerOptions">(Optional) Options for the created recognizer.</param>
         /// <param name="predictionOptions">(Optional) The default LUIS prediction options to use.</param>
-        /// <param name="includeApiResults">(Optional) TRUE to include raw LUIS API response.</param>
         /// <param name="clientHandler">(Optional) Custom handler for LUIS API calls to allow mocking.</param>
-        public LuisRecognizer(LuisApplication application, LuisRecognizerOptions recognizerOptions = null, LuisPredictionOptions predictionOptions = null, bool includeApiResults = false, HttpClientHandler clientHandler = null)
+        public LuisRecognizer(LuisApplication application, LuisRecognizerOptions recognizerOptions = null, LuisPredictionOptions predictionOptions = null)
         {
             recognizerOptions = recognizerOptions ?? new LuisRecognizerOptions();
             _application = application ?? throw new ArgumentNullException(nameof(application));
             _predictionOptions = predictionOptions ?? new LuisPredictionOptions();
-            _includeApiResults = includeApiResults;
 
             TelemetryClient = recognizerOptions.TelemetryClient;
             LogPersonalInformation = recognizerOptions.LogPersonalInformation;
 
             var delegatingHandler = new LuisDelegatingHandler();
-            var httpClientHandler = clientHandler ?? CreateRootHandler();
+            var httpClientHandler = recognizerOptions.HttpClient ?? CreateRootHandler();
             var currentHandler = CreateHttpHandlerPipeline(httpClientHandler, delegatingHandler);
 
             DefaultHttpClient = new HttpClient(currentHandler, false)
@@ -221,11 +218,9 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <param name="turnContext">Context object containing information for a single turn of conversation with a user.</param>
         /// <param name="telemetryProperties">Additional properties to be logged to telemetry with the LuisResult event.</param>
         /// <param name="telemetryMetrics">Additional metrics to be logged to telemetry with the LuisResult event.</param>
-        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <returns><see cref="Task"/>.</returns>
-        protected virtual async Task OnRecognizerResultAsync(RecognizerResult recognizerResult, ITurnContext turnContext, Dictionary<string, string> telemetryProperties = null, Dictionary<string, double> telemetryMetrics = null, CancellationToken cancellationToken = default)
+        protected virtual void OnRecognizerResult(RecognizerResult recognizerResult, ITurnContext turnContext, Dictionary<string, string> telemetryProperties = null, Dictionary<string, double> telemetryMetrics = null)
         {
-            var properties = await FillLuisEventPropertiesAsync(recognizerResult, turnContext, telemetryProperties, cancellationToken).ConfigureAwait(false);
+            var properties = FillLuisEventProperties(recognizerResult, turnContext, telemetryProperties);
 
             // Track the event
             TelemetryClient.TrackEvent(LuisTelemetryConstants.LuisResult, properties, telemetryMetrics);
@@ -238,10 +233,8 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <param name="recognizerResult">Last activity sent from user.</param>
         /// <param name="turnContext">Context object containing information for a single turn of conversation with a user.</param>
         /// <param name="telemetryProperties">Additional properties to be logged to telemetry with the LuisResult event.</param>
-        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// additionalProperties
         /// <returns>A dictionary that is sent as "Properties" to IBotTelemetryClient.TrackEvent method for the BotMessageSend event.</returns>
-        protected Task<Dictionary<string, string>> FillLuisEventPropertiesAsync(RecognizerResult recognizerResult, ITurnContext turnContext, Dictionary<string, string> telemetryProperties = null, CancellationToken cancellationToken = default)
+        protected Dictionary<string, string> FillLuisEventProperties(RecognizerResult recognizerResult, ITurnContext turnContext, Dictionary<string, string> telemetryProperties = null)
         {
             var topTwoIntents = (recognizerResult.Intents.Count > 0) ? recognizerResult.Intents.OrderByDescending(x => x.Value.Score).Take(2).ToArray() : null;
 
@@ -281,12 +274,12 @@ namespace Microsoft.Bot.Builder.AI.Luis
             // Additional Properties can override "stock" properties.
             if (telemetryProperties != null)
             {
-                return Task.FromResult(telemetryProperties.Concat(properties)
+                properties = telemetryProperties.Concat(properties)
                            .GroupBy(kv => kv.Key)
-                           .ToDictionary(g => g.Key, g => g.First().Value));
+                           .ToDictionary(g => g.Key, g => g.First().Value);
             }
 
-            return Task.FromResult(properties);
+            return properties;
         }
 
         private string AddParam(string query, string prop, bool? val)
@@ -394,14 +387,14 @@ namespace Microsoft.Bot.Builder.AI.Luis
                     Entities = LuisUtil.ExtractEntitiesAndMetadata(prediction),
                 };
                 LuisUtil.AddProperties(prediction, recognizerResult);
-                if (_includeApiResults)
+                if (options.IncludeAPIResults)
                 {
                     recognizerResult.Properties.Add("luisResult", luisResponse);
                 }
             }
 
             // Log telemetry
-            await OnRecognizerResultAsync(recognizerResult, turnContext, telemetryProperties, telemetryMetrics, cancellationToken).ConfigureAwait(false);
+            OnRecognizerResult(recognizerResult, turnContext, telemetryProperties, telemetryMetrics);
 
             var traceInfo = JObject.FromObject(
                 new

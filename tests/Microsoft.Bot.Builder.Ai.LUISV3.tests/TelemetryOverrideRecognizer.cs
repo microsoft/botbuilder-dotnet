@@ -11,13 +11,12 @@ namespace Microsoft.Bot.Builder.AI.LuisV3.Tests
 {
     public class TelemetryOverrideRecognizer : LuisRecognizer
     {
-        public TelemetryOverrideRecognizer(IBotTelemetryClient telemetryClient, LuisApplication application, LuisRecognizerOptions recognizerOptions = null, bool includeApiResults = false, bool logPersonalInformation = false, HttpClientHandler clientHandler = null)
-           : base(application, recognizerOptions, null, includeApiResults, clientHandler)
+        public TelemetryOverrideRecognizer(LuisApplication application, LuisRecognizerOptions recognizerOptions = null)
+           : base(application, recognizerOptions)
         {
-            LogPersonalInformation = logPersonalInformation;
         }
 
-        protected override Task OnRecognizerResultAsync(RecognizerResult recognizerResult, ITurnContext turnContext, Dictionary<string, string> properties = null, Dictionary<string, double> metrics = null, CancellationToken cancellationToken = default)
+        protected override void OnRecognizerResult(RecognizerResult recognizerResult, ITurnContext turnContext, Dictionary<string, string> properties = null, Dictionary<string, double> metrics = null)
         {
             properties.TryAdd("MyImportantProperty", "myImportantValue");
 
@@ -38,7 +37,6 @@ namespace Microsoft.Bot.Builder.AI.LuisV3.Tests
             TelemetryClient.TrackEvent(
                             "MySecondEvent",
                             secondEventProperties);
-            return Task.CompletedTask;
         }
     }
 }

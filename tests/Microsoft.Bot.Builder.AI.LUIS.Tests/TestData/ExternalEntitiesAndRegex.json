@@ -79,6 +79,7 @@
         }
       ],
       "IncludeAllIntents": true,
+      "IncludeAPIResults": true,
       "IncludeInstanceData": true,
       "Log": true,
       "PreferExternalEntities": true,

@@ -579,7 +579,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
                 TelemetryClient = telemetryClient.Object,
                 LogPersonalInformation = false,
             };
-            var recognizer = new TelemetryOverrideRecognizer(telemetryClient.Object, luisApp, options, false, false, clientHandler);
+            var recognizer = new TelemetryOverrideRecognizer(luisApp, options, false, false, clientHandler);
 
             var additionalProperties = new Dictionary<string, string>
             {

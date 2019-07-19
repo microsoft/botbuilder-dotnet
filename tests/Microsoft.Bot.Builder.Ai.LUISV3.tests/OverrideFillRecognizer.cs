@@ -11,15 +11,14 @@ namespace Microsoft.Bot.Builder.AI.LuisV3.Tests
 {
     public class OverrideFillRecognizer : LuisRecognizer
     {
-        public OverrideFillRecognizer(IBotTelemetryClient telemetryClient, LuisApplication application, LuisRecognizerOptions recognizerOptions = null, bool includeApiResults = false, bool logPersonalInformation = false, HttpClientHandler clientHandler = null)
-           : base(application, recognizerOptions, null, includeApiResults, clientHandler)
+        public OverrideFillRecognizer(LuisApplication application, LuisRecognizerOptions recognizerOptions = null)
+           : base(application, recognizerOptions)
         {
-            LogPersonalInformation = logPersonalInformation;
         }
 
-        protected override async Task OnRecognizerResultAsync(RecognizerResult recognizerResult, ITurnContext turnContext, Dictionary<string, string> telemetryProperties = null, Dictionary<string, double> telemetryMetrics = null, CancellationToken cancellationToken = default)
+        protected override void OnRecognizerResult(RecognizerResult recognizerResult, ITurnContext turnContext, Dictionary<string, string> telemetryProperties = null, Dictionary<string, double> telemetryMetrics = null)
         {
-            var properties = await FillLuisEventPropertiesAsync(recognizerResult, turnContext, telemetryProperties, cancellationToken).ConfigureAwait(false);
+            var properties = FillLuisEventProperties(recognizerResult, turnContext, telemetryProperties);
 
             properties.TryAdd("MyImportantProperty", "myImportantValue");
 

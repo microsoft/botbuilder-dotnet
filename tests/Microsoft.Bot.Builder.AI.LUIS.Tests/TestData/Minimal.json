@@ -90,6 +90,7 @@
   "v3": {
     "options": {
       "IncludeAllIntents": false,
+      "IncludeAPIResults": true,
       "IncludeInstanceData": false,
       "Log": true,
       "PreferExternalEntities": true,

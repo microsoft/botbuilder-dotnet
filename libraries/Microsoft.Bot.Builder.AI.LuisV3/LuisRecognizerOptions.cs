@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license.
+using System.Net.Http;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.AI.Luis
@@ -31,5 +32,13 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// </summary>
         /// <value>If true, personal information is logged to Telemetry; otherwise the properties will be filtered.</value>
         public bool LogPersonalInformation { get; set; } = false;
+
+        /// <summary>
+        /// Gets or sets the handler for sending http calls.
+        /// </summary>
+        /// <value>
+        /// Handler for intercepting http calls for logging or testing.
+        /// </value>
+        public HttpClientHandler HttpClient { get; set; }
     }
 }

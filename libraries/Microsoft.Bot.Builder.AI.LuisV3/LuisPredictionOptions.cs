@@ -26,6 +26,13 @@ namespace Microsoft.Bot.Builder.AI.Luis
         public bool IncludeInstanceData { get; set; } = false;
 
         /// <summary>
+        /// Gets or sets a value indicating whether API results should be included.
+        /// </summary>
+        /// <value>True to include API results.</value>
+        /// <remarks>This is mainly useful for testing or getting access to LUIS features not yet in the SDK.</remarks>
+        public bool IncludeAPIResults { get; set; } = false;
+
+        /// <summary>
         /// Gets or sets a value indicating whether queries should be logged in LUIS.
         /// </summary>
         /// <value>
