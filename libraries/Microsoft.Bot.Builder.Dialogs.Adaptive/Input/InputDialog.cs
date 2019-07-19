@@ -139,7 +139,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             // if the messaged id = the message id we recorded when interrupted, means the same message is pushed back to this input
             //   we won't blindly re-prompt
             // else means the message we get interruppted is overtaked by someone else, we will re-prompt first
-            if (interruptedMessageId != dc.Context.Activity.Id)
+            if (interruptedMessageId != null && interruptedMessageId != dc.Context.Activity.Id)
             {
                 return await this.PromptUser(dc, InputState.Missing);
             }
@@ -190,6 +190,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                     {
                         // about to be interrupted
                         dc.State.SetValue(INTERRUPTED_MESSAGE_ID, dc.Context.Activity.Id);
+                    } else
+                    {
+                        dc.State.SetValue(INTERRUPTED_MESSAGE_ID, null);
                     }
 
                     return valid;
