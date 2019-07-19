@@ -248,17 +248,17 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         {
             var engine = new TemplateEngine().AddFile(GetExampleFilePath("MultilineTextForAdaptiveCard.lg"));
             var evaled1 = engine.EvaluateTemplate("wPhrase", "");
-            var options1 = new List<string> { "\r\ncardContent\r\n", "hello", "\ncardContent\n" };
+            var options1 = new List<string> { "cardContent", "hello"};
             Assert.IsTrue(options1.Contains(evaled1), $"Evaled is {evaled1}");
 
             var evaled2 = engine.EvaluateTemplate("nameTemplate", new { name = "N" });
-            var options2 = new List<string> { "\r\nN\r\n", "N", "\nN\n" };
+            var options2 = new List<string> { "N", "N"};
             Assert.IsTrue(options2.Contains(evaled2), $"Evaled is {evaled2}");
 
             var evaled3 = engine.EvaluateTemplate("adaptivecardsTemplate", "");
 
             var evaled4 = engine.EvaluateTemplate("refTemplate", "");
-            var options4 = new List<string> { "\r\nhi\r\n", "\nhi\n" };
+            var options4 = new List<string> { "hi"};
             Assert.IsTrue(options4.Contains(evaled4), $"Evaled is {evaled4}");
         }
 
@@ -599,8 +599,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             var evaled = engine.ExpandTemplate("ShowAlarmsWithMultiLine", new { alarms = alarms });
             Assert.AreEqual(2, evaled.Count);
-            var eval1Options = new List<string>() { "\r\nYou have 2 alarms.\r\nThey are 8 pm at tomorrow\r\n", "\nYou have 2 alarms.\nThey are 8 pm at tomorrow\n" };
-            var eval2Options = new List<string>() { "\r\nYou have 2 alarms.\r\nThey are 8 pm of tomorrow\r\n", "\nYou have 2 alarms.\nThey are 8 pm of tomorrow\n" };
+            var eval1Options = new List<string>() { $"You have 2 alarms.\r\nThey are 8 pm at tomorrow", "You have 2 alarms.\nThey are 8 pm at tomorrow" };
+            var eval2Options = new List<string>() { $"You have 2 alarms.\r\nThey are 8 pm of tomorrow", "You have 2 alarms.\nThey are 8 pm of tomorrow" };
             Assert.AreEqual(true, eval1Options.Contains(evaled[0]));
             Assert.AreEqual(true, eval2Options.Contains(evaled[1]));
         }

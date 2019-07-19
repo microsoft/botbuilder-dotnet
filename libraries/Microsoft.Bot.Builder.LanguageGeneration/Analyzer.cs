@@ -273,7 +273,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var result = new AnalyzerResult();
 
             // remove ``` ```
-            exp = exp.Substring(3, exp.Length - 6);
+            exp = exp.Substring(3, exp.Length - 6).Trim('\r', '\n');
 
             var matches = Regex.Matches(exp, @"@\{[^{}]+\}");
             foreach (Match matchItem in matches)

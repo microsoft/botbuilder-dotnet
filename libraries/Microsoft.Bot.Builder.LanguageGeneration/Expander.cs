@@ -298,7 +298,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         private List<string> EvalMultiLineText(string exp)
         {
             // remove ``` ```
-            exp = exp.Substring(3, exp.Length - 6);
+            exp = exp.Substring(3, exp.Length - 6).Trim('\r', '\n');
             var templateRefValues = new Dictionary<string, List<string>>();
             var reg = @"@\{[^{}]+\}";
             var matches = Regex.Matches(exp, reg);
