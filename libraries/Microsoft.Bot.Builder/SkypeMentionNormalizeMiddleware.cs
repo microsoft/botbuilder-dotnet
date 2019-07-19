@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder
     /// </summary>
     /// <description>
     ///  A Skype mention "text" field is of the format:
-    ///    &lt;at&gt; id=\"28:2bc5b54d-5d48-4ff1-bd25-03dcbb5ce918\">botname&lt;/at&gt;
+    ///    &lt;at id=\"28:2bc5b54d-5d48-4ff1-bd25-03dcbb5ce918\">botname&lt;/at&gt;
     ///  But Activity.Text doesn't contain those tags and RemoveMentionText can't remove
     ///  the entity from Activity.Text.
     ///  This will remove the &lt;at&gt; nodes, leaving just the name.
