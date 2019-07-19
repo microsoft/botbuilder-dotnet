@@ -184,11 +184,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             {
                 if (this.AllowInterruptions)
                 {
-                    // if we allow interruption, why we want to reconginze here
-                    // this will cause we only bubble up the first time, we should get bubble, right?
-                    // var state = await this.RecognizeInput(dc, true).ConfigureAwait(false);
-                    dc.State.SetValue(INTERRUPTED_MESSAGE_ID, dc.Context.Activity.Id);
-                    return false;
+                    var state = await this.RecognizeInput(dc, true).ConfigureAwait(false);
+                    var valid = state == InputState.Valid;
+                    if (!valid) 
+                    {
+                        // about to be interrupted
+                        dc.State.SetValue(INTERRUPTED_MESSAGE_ID, dc.Context.Activity.Id);
+                    } else
+                    {
+                        dc.State.SetValue(INTERRUPTED_MESSAGE_ID, null);
+                    }
+
+                    return valid;
                 }
                 else
                 {
