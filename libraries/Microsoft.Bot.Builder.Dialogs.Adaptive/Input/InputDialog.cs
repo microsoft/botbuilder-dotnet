@@ -141,6 +141,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             // else means the message we get interruppted is overtaked by someone else, we will re-prompt first
             if (interruptedMessageId != null && interruptedMessageId != dc.Context.Activity.Id)
             {
+                dc.State.SetValue(INTERRUPTED_MESSAGE_ID, null); // clean up
                 return await this.PromptUser(dc, InputState.Missing);
             }
 
@@ -186,14 +187,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 {
                     var state = await this.RecognizeInput(dc, true).ConfigureAwait(false);
                     var valid = state == InputState.Valid;
-                    if (!valid) 
-                    {
-                        // about to be interrupted
-                        dc.State.SetValue(INTERRUPTED_MESSAGE_ID, dc.Context.Activity.Id);
-                    } else
-                    {
-                        dc.State.SetValue(INTERRUPTED_MESSAGE_ID, null);
-                    }
+
+                    // track message id if it's about to be interrupted
+                    var messageID = valid ? null : dc.Context.Activity.Id;
+                    dc.State.SetValue(INTERRUPTED_MESSAGE_ID, messageID);
 
                     return valid;
                 }
