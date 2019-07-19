@@ -25,6 +25,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         public ExpressionEvaluator GetMethodX(string name)
         {
+            if (name.StartsWith("builtin."))
+            {
+                return BuiltInFunctions.Lookup(name.Substring("builtin.".Length));
+            }
+
             // TODO: Should add verifiers and validators
             switch (name)
             {

@@ -253,7 +253,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 exp = exp + "()"; // append () to make this as a function call
             }
 
-            // TODO: refine the error message
             return EvalExpression(exp);
         }
 
