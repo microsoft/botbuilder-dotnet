@@ -94,6 +94,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         }
 
         public const string TURN_COUNT_PROPERTY = "dialog.turnCount";
+        // the message id get interrupted
+        // use this id again the id when continue this dialog to decide whether we reprompt again or process again
+        public const string INTERRUPTED_MESSAGE_ID = "dialog.interruptedMessageID";
         public const string INPUT_PROPERTY = "turn.value";
 
         private const string PersistedOptions = "options";
@@ -131,9 +134,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 return Dialog.EndOfTurn;
             }
 
-            var stepCount = dc.State.GetValue<int>(DialogContextState.TURN_STEPCOUNT, 0);
+            var interruptedMessageId = dc.State.GetValue<string>(INTERRUPTED_MESSAGE_ID, null);
 
-            if (stepCount > 0)
+            // if the messaged id = the message id we recorded when interrupted, means the same message is pushed back to this input
+            //   we won't blindly re-prompt
+            // else means the message we get interruppted is overtaked by someone else, we will re-prompt first
+            if (interruptedMessageId != dc.Context.Activity.Id)
             {
                 return await this.PromptUser(dc, InputState.Missing);
             }
@@ -179,7 +185,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 if (this.AllowInterruptions)
                 {
                     var state = await this.RecognizeInput(dc, true).ConfigureAwait(false);
-                    return state == InputState.Valid;
+                    var valid = state == InputState.Valid;
+                    if (!valid) 
+                    {
+                        // about to be interrupted
+                        dc.State.SetValue(INTERRUPTED_MESSAGE_ID, dc.Context.Activity.Id);
+                    }
+
+                    return valid;
                 }
                 else
                 {
