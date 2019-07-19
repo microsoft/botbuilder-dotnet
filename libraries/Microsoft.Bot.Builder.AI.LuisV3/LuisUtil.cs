@@ -8,7 +8,7 @@ using Newtonsoft.Json.Linq;
 namespace Microsoft.Bot.Builder.AI.Luis
 {
     // Utility functions used to extract and transform data from Luis SDK
-    internal static class LuisV3Util
+    internal static class LuisUtil
     {
         internal const string _metadataKey = "$instance";
         internal const string _geoV2 = "builtin.geographyV2.";
@@ -18,30 +18,31 @@ namespace Microsoft.Bot.Builder.AI.Luis
 
         internal static IDictionary<string, IntentScore> GetIntents(JObject luisResult)
         {
-            IDictionary<string, IntentScore> result = null;
+            var result = new Dictionary<string, IntentScore>();
             var intents = (JObject)luisResult["intents"];
             if (intents != null)
             {
-                var dict = new Dictionary<string, IntentScore>();
                 foreach (var intent in intents)
                 {
-                    dict.Add(NormalizedIntent(intent.Key), new IntentScore { Score = intent.Value["score"] == null ? 0.0 : intent.Value["score"].Value<double>() });
+                    result.Add(NormalizedIntent(intent.Key), new IntentScore { Score = intent.Value["score"] == null ? 0.0 : intent.Value["score"].Value<double>() });
                 }
-
-                result = dict;
             }
 
             return result;
         }
 
-        internal static string NormalizedEntity(string entity)
+        // Remove role and ensure that dot and space are not a part of entity names since we want to do JSON paths.
+        internal static string NormalizeEntity(string entity)
         {
             // Type::Role -> Role
             var type = entity.Split(':').Last();
             return type.Replace('.', '_').Replace(' ', '_');
         }
 
-        internal static void GeographyTypes(JToken source, Dictionary<string, string> geoTypes)
+        // TODO: This code should be removed once V3.1 returns a geography object.
+        // It exists to find the type field in $instance if present in order to create
+        // a geography object with type and value.
+        internal static void FindGeographyTypes(JToken source, Dictionary<string, string> geoTypes)
         {
             if (source != null)
             {
@@ -57,7 +58,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
                     {
                         foreach (var property in obj.Properties())
                         {
-                            GeographyTypes(property.Value, geoTypes);
+                            FindGeographyTypes(property.Value, geoTypes);
                         }
                     }
                 }
@@ -65,7 +66,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
                 {
                     foreach (var elt in arr)
                     {
-                        GeographyTypes(elt, geoTypes);
+                        FindGeographyTypes(elt, geoTypes);
                     }
                 }
             }
@@ -106,7 +107,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
                     // Map or remove properties
                     foreach (var property in obj.Properties())
                     {
-                        var name = NormalizedEntity(property.Name);
+                        var name = NormalizeEntity(property.Name);
                         var isObj = property.Value.Type == JTokenType.Object;
                         var isArr = property.Value.Type == JTokenType.Array;
                         var isStr = property.Value.Type == JTokenType.String;
@@ -175,7 +176,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
         {
             var entities = (JObject)JObject.FromObject(prediction["entities"]);
             var geoTypes = new Dictionary<string, string>();
-            GeographyTypes(entities, geoTypes);
+            FindGeographyTypes(entities, geoTypes);
             return (JObject)MapProperties(entities, false, geoTypes);
         }
 

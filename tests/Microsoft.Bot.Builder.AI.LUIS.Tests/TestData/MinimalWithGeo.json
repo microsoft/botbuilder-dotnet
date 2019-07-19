@@ -23,15 +23,10 @@
   "text": "fly to dallas, texas",
   "v2": {
     "options": {
-      "BingSpellCheckSubscriptionKey": null,
       "IncludeAllIntents": false,
       "IncludeInstanceData": false,
-      "Log": null,
       "LogPersonalInformation": false,
-      "SpellCheck": null,
-      "Staging": null,
-      "Timeout": 100000.0,
-      "TimezoneOffset": null
+      "Timeout": 100000.0
     },
     "response": {
       "entities": [

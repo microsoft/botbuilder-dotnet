@@ -20,7 +20,7 @@ echo Running LUIS tests with LUISMOCK=%LUISMOCK% and LUISSUBSCRIPTIONKEY=%LUISSU
 dotnet test
 if %errorlevel% neq 0 goto review
 
-pushd ..\Microsoft.Bot.Builder.Ai.LUISPreview.tests
+pushd ..\Microsoft.Bot.Builder.Ai.LuisV3.Tests
 dotnet test
 popd
 if %errorlevel% == 0 goto done

@@ -625,15 +625,10 @@
   "text": "12 years old and 3 days old and monday july 3rd, 2019 and every monday and between 3am and 5:30am and 4 acres and 4 pico meters and chrimc@hotmail.com and $4 and $4.25 and also 32 and 210.4 and first and 10% and 10.5% and 425-555-1234 and 3 degrees and -27.5 degrees c and the next one and the previous one",
   "v2": {
     "options": {
-      "BingSpellCheckSubscriptionKey": null,
       "IncludeAllIntents": true,
       "IncludeInstanceData": true,
-      "Log": null,
       "LogPersonalInformation": false,
-      "SpellCheck": null,
-      "Staging": null,
-      "Timeout": 100000.0,
-      "TimezoneOffset": null
+      "Timeout": 100000.0
     },
     "response": {
       "compositeEntities": [
@@ -1279,12 +1274,11 @@
   },
   "v3": {
     "options": {
-      "DatetimeReference": "2019-07-05T00:00:00",
       "IncludeAllIntents": true,
       "IncludeInstanceData": true,
-      "LogPersonalInformation": false,
-      "Slot": "production",
-      "Timeout": 100000.0
+      "Log": true,
+      "PreferExternalEntities": true,
+      "Staging": false
     },
     "response": {
       "prediction": {

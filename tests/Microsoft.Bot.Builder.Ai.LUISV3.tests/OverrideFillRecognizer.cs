@@ -5,13 +5,14 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.AI.Luis;
 
-namespace Microsoft.Bot.Builder.AI.Luis.Tests
+namespace Microsoft.Bot.Builder.AI.LuisV3.Tests
 {
     public class OverrideFillRecognizer : LuisRecognizer
     {
-        public OverrideFillRecognizer(IBotTelemetryClient telemetryClient, LuisApplication application, LuisPredictionOptions predictionOptions = null, bool includeApiResults = false, bool logPersonalInformation = false, HttpClientHandler clientHandler = null)
-           : base(application, predictionOptions, includeApiResults, clientHandler)
+        public OverrideFillRecognizer(IBotTelemetryClient telemetryClient, LuisApplication application, LuisRecognizerOptions recognizerOptions = null, bool includeApiResults = false, bool logPersonalInformation = false, HttpClientHandler clientHandler = null)
+           : base(application, recognizerOptions, null, includeApiResults, clientHandler)
         {
             LogPersonalInformation = logPersonalInformation;
         }
@@ -29,8 +30,12 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
                             telemetryMetrics);
 
             // Create second event.
-            var secondEventProperties = new Dictionary<string, string> {
-                { "MyImportantProperty2", "myImportantValue2" },
+            var secondEventProperties = new Dictionary<string, string>
+            {
+                {
+                    "MyImportantProperty2",
+                    "myImportantValue2"
+                },
             };
             TelemetryClient.TrackEvent(
                             "MySecondEvent",

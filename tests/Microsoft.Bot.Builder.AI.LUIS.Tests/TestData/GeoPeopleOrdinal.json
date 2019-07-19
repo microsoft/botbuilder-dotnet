@@ -147,15 +147,10 @@
   "text": "go from next to last to last move london to jakarta and homer simpson is the parent of lisa simpson",
   "v2": {
     "options": {
-      "BingSpellCheckSubscriptionKey": null,
       "IncludeAllIntents": true,
       "IncludeInstanceData": true,
-      "Log": null,
       "LogPersonalInformation": false,
-      "SpellCheck": null,
-      "Staging": null,
-      "Timeout": 100000.0,
-      "TimezoneOffset": null
+      "Timeout": 100000.0
     },
     "response": {
       "entities": [
@@ -270,9 +265,9 @@
     "options": {
       "IncludeAllIntents": true,
       "IncludeInstanceData": true,
-      "LogPersonalInformation": false,
-      "Slot": "production",
-      "Timeout": 100000.0
+      "Log": true,
+      "PreferExternalEntities": true,
+      "Staging": false
     },
     "response": {
       "prediction": {

@@ -3,11 +3,10 @@
 
 using System;
 using Microsoft.Bot.Builder.AI.Luis;
-using Microsoft.Bot.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.AI.LuisPreview.Tests
+namespace Microsoft.Bot.Builder.AI.LuisV3.Tests
 {
     [TestClass]
     public class LuisApplicationTests
@@ -42,26 +41,6 @@ namespace Microsoft.Bot.Builder.AI.LuisPreview.Tests
             Assert.AreEqual(model.ApplicationId, deserialized.ApplicationId);
             Assert.AreEqual(model.EndpointKey, deserialized.EndpointKey);
             Assert.AreEqual(model.Endpoint, deserialized.Endpoint);
-        }
-
-        [TestMethod]
-        public void LuisApplication_Configuration()
-        {
-            // Arrange
-            var service = new LuisService
-            {
-                AppId = Guid.NewGuid().ToString(),
-                SubscriptionKey = Guid.NewGuid().ToString(),
-                Region = "westus",
-            };
-
-            // Act
-            var model = new LuisApplication(service);
-
-            // Assert
-            Assert.AreEqual(service.AppId, model.ApplicationId);
-            Assert.AreEqual(service.SubscriptionKey, model.EndpointKey);
-            Assert.AreEqual(service.GetEndpoint(), model.Endpoint);
         }
 
         [TestMethod]

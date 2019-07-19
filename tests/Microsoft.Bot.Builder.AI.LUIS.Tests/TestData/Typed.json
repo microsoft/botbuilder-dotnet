@@ -231,9 +231,9 @@
                 "model"
               ],
               "startIndex": 91,
+              "subtype": "integer",
               "text": "5",
-              "type": "builtin.number",
-              "subtype": "integer"
+              "type": "builtin.number"
             },
             {
               "endIndex": 103,
@@ -242,6 +242,7 @@
                 "model"
               ],
               "startIndex": 102,
+              "subtype": "integer",
               "text": "4",
               "type": "builtin.number"
             },
@@ -252,6 +253,7 @@
                 "model"
               ],
               "startIndex": 114,
+              "subtype": "integer",
               "text": "4",
               "type": "builtin.number"
             },
@@ -262,6 +264,7 @@
                 "model"
               ],
               "startIndex": 156,
+              "subtype": "integer",
               "text": "4",
               "type": "builtin.number"
             },
@@ -272,6 +275,7 @@
                 "model"
               ],
               "startIndex": 163,
+              "subtype": "decimal",
               "text": "4.25",
               "type": "builtin.number"
             },
@@ -282,6 +286,7 @@
                 "model"
               ],
               "startIndex": 177,
+              "subtype": "integer",
               "text": "32",
               "type": "builtin.number"
             },
@@ -292,6 +297,7 @@
                 "model"
               ],
               "startIndex": 184,
+              "subtype": "decimal",
               "text": "210.4",
               "type": "builtin.number"
             },
@@ -302,6 +308,7 @@
                 "model"
               ],
               "startIndex": 204,
+              "subtype": "integer",
               "text": "10",
               "type": "builtin.number"
             },
@@ -312,6 +319,7 @@
                 "model"
               ],
               "startIndex": 212,
+              "subtype": "decimal",
               "text": "10.5",
               "type": "builtin.number"
             },
@@ -322,6 +330,7 @@
                 "model"
               ],
               "startIndex": 222,
+              "subtype": "integer",
               "text": "425",
               "type": "builtin.number"
             },
@@ -332,6 +341,7 @@
                 "model"
               ],
               "startIndex": 226,
+              "subtype": "integer",
               "text": "555",
               "type": "builtin.number"
             },
@@ -342,6 +352,7 @@
                 "model"
               ],
               "startIndex": 230,
+              "subtype": "integer",
               "text": "1234",
               "type": "builtin.number"
             },
@@ -352,6 +363,7 @@
                 "model"
               ],
               "startIndex": 239,
+              "subtype": "integer",
               "text": "3",
               "type": "builtin.number"
             },
@@ -362,6 +374,7 @@
                 "model"
               ],
               "startIndex": 253,
+              "subtype": "decimal",
               "text": "-27.5",
               "type": "builtin.number"
             },
@@ -372,6 +385,7 @@
                 "model"
               ],
               "startIndex": 282,
+              "subtype": "integer",
               "text": "one",
               "type": "builtin.number"
             },
@@ -382,6 +396,7 @@
                 "model"
               ],
               "startIndex": 303,
+              "subtype": "integer",
               "text": "one",
               "type": "builtin.number"
             }
@@ -610,15 +625,10 @@
   "text": "12 years old and 3 days old and monday july 3rd, 2019 and every monday and between 3am and 5:30am and 4 acres and 4 pico meters and chrimc@hotmail.com and $4 and $4.25 and also 32 and 210.4 and first and 10% and 10.5% and 425-555-1234 and 3 degrees and -27.5 degrees c and the next one and the previous one",
   "v2": {
     "options": {
-      "BingSpellCheckSubscriptionKey": null,
       "IncludeAllIntents": true,
       "IncludeInstanceData": true,
-      "Log": null,
       "LogPersonalInformation": false,
-      "SpellCheck": null,
-      "Staging": null,
-      "Timeout": 100000.0,
-      "TimezoneOffset": null
+      "Timeout": 100000.0
     },
     "response": {
       "compositeEntities": [
@@ -1266,9 +1276,9 @@
     "options": {
       "IncludeAllIntents": true,
       "IncludeInstanceData": true,
-      "LogPersonalInformation": false,
-      "Slot": "production",
-      "Timeout": 100000.0
+      "Log": true,
+      "PreferExternalEntities": true,
+      "Staging": false
     },
     "response": {
       "prediction": {

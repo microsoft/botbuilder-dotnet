@@ -426,13 +426,6 @@ namespace Microsoft.Bot.Builder.AI.Luis
             return currentHandler;
         }
 
-        private HttpClientHandler CreateRootHandler() =>
-
-            // Create our root handler
-#if FullNetFx
-            return new WebRequestHandler();
-#else
-            new HttpClientHandler();
-#endif
+        private HttpClientHandler CreateRootHandler() => new HttpClientHandler();
     }
 }

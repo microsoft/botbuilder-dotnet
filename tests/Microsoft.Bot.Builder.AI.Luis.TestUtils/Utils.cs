@@ -1,12 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -19,34 +13,6 @@ namespace Microsoft.Bot.Builder.AI.Luis.TestUtils
         // We copy them over to allow for common oracle files.
         // subtype is V2 only, the others are from V3
         private static readonly List<string> _mismatches = new List<string> { "score", "modelType", "recognitionSources", "subtype" };
-
-        public static ITurnContext GetContext(string utterance)
-        {
-            var testAdapter = new TestAdapter();
-            var activity = new Activity
-            {
-                Type = ActivityTypes.Message,
-                Text = utterance,
-                Conversation = new ConversationAccount(),
-                Recipient = new ChannelAccount(),
-                From = new ChannelAccount(),
-            };
-            return new TurnContext(testAdapter, activity);
-        }
-
-        public static ITurnContext GetNonMessageContext(string utterance)
-        {
-            var b = new TestAdapter();
-            var a = new Activity
-            {
-                Type = ActivityTypes.ConversationUpdate,
-                Text = utterance,
-                Conversation = new ConversationAccount(),
-                Recipient = new ChannelAccount(),
-                From = new ChannelAccount(),
-            };
-            return new TurnContext(b, a);
-        }
 
         public static void AssertScore(JToken scoreToken)
         {
@@ -181,50 +147,6 @@ namespace Microsoft.Bot.Builder.AI.Luis.TestUtils
                 new JProperty("options", oracle[version]?["options"]));
             json.Remove("luisResult");
             return (JObject)Utils.SortJSON(json);
-        }
-
-        // To create a file to test:
-        // 1) Create a <name>.json file with an object { text:<query> } in it.
-        // 2) Run this test which will fail and generate a <name>.json.new file.
-        // 3) Check the .new file and if correct, replace the original .json file with it.
-        // The version parameter controls where in the expected json the luisResult is put.  This allows multiple endpoint responses like from
-        // LUIS V2 and V3 endpoints.  You should run V3 first since it sometimes adds more information that V2.
-        public static async Task TestJsonOracle<T>(string expectedPath, string version, Func<JObject, IRecognizer> buildRecognizer, ITurnContext turnContext = null)
-            where T : IRecognizerConvert, new()
-        {
-            JObject expectedJson;
-            using (var expectedJsonReader = new JsonTextReader(new StreamReader(expectedPath)))
-            {
-                expectedJson = (JObject)await JToken.ReadFromAsync(expectedJsonReader);
-            }
-
-            if (expectedJson[version] == null)
-            {
-                expectedJson[version] = new JObject();
-            }
-
-            var oldResponse = expectedJson[version].DeepClone();
-            var newPath = expectedPath + ".new";
-            var query = expectedJson["text"].ToString();
-            var context = turnContext ?? GetContext(query);
-            var luisRecognizer = buildRecognizer(expectedJson);
-            var typedResult = await luisRecognizer.RecognizeAsync<T>(context, CancellationToken.None);
-            var typedJson = Utils.Json(typedResult, version, expectedJson);
-
-            // Threshold is 0.0 so when hitting endpoint get exact and when mocking isn't needed.
-            if (!Utils.WithinDelta(expectedJson, typedJson, 0.0) || !JToken.DeepEquals(typedJson[version], oldResponse))
-            {
-                using (var writer = new StreamWriter(newPath))
-                {
-                    writer.Write(typedJson);
-                }
-
-                Assert.Fail($"Returned JSON in {newPath} != expected JSON in {expectedPath}");
-            }
-            else
-            {
-                File.Delete(expectedPath + ".new");
-            }
         }
     }
 }

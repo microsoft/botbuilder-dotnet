@@ -6,7 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 
-namespace Microsoft.Bot.Builder.AI.LuisPreview.Tests
+namespace Microsoft.Bot.Builder.AI.LuisV3.Tests
 {
     /// <summary>
     /// This is a BotAdapter that does nothing on the Send operation, equivallent to piping to /dev/null.

@@ -150,10 +150,9 @@
       ],
       "IncludeAllIntents": true,
       "IncludeInstanceData": true,
-      "LogPersonalInformation": false,
+      "Log": true,
       "PreferExternalEntities": true,
-      "Slot": "production",
-      "Timeout": 100000.0
+      "Staging": false
     },
     "response": {
       "prediction": {

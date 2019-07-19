@@ -6,7 +6,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Microsoft.Bot.Builder.AI.LuisPreview.Tests
+namespace Microsoft.Bot.Builder.AI.LuisV3.Tests
 {
     /// <inheritdoc />
     /// <summary>

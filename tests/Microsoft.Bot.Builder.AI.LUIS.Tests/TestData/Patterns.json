@@ -120,15 +120,10 @@
   "text": "email about something wicked this way comes from bart simpson and also kb435",
   "v2": {
     "options": {
-      "BingSpellCheckSubscriptionKey": null,
       "IncludeAllIntents": true,
       "IncludeInstanceData": true,
-      "Log": null,
       "LogPersonalInformation": false,
-      "SpellCheck": null,
-      "Staging": null,
-      "Timeout": 100000.0,
-      "TimezoneOffset": null
+      "Timeout": 100000.0
     },
     "response": {
       "entities": [
@@ -227,9 +222,9 @@
     "options": {
       "IncludeAllIntents": true,
       "IncludeInstanceData": true,
-      "LogPersonalInformation": false,
-      "Slot": "production",
-      "Timeout": 100000.0
+      "Log": true,
+      "PreferExternalEntities": true,
+      "Staging": false
     },
     "response": {
       "prediction": {

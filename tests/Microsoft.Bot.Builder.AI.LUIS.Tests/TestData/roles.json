@@ -320,9 +320,9 @@
             "model"
           ],
           "startIndex": 400,
+          "subtype": "integer",
           "text": "500",
-          "type": "builtin.number",
-          "subtype": "integer"
+          "type": "builtin.number"
         }
       ],
       "old": [
@@ -513,6 +513,7 @@
                 "model"
               ],
               "startIndex": 0,
+              "subtype": "integer",
               "text": "3",
               "type": "builtin.number"
             },
@@ -523,6 +524,7 @@
                 "model"
               ],
               "startIndex": 17,
+              "subtype": "integer",
               "text": "2",
               "type": "builtin.number"
             },
@@ -533,6 +535,7 @@
                 "model"
               ],
               "startIndex": 35,
+              "subtype": "integer",
               "text": "5",
               "type": "builtin.number"
             },
@@ -543,6 +546,7 @@
                 "model"
               ],
               "startIndex": 41,
+              "subtype": "integer",
               "text": "10",
               "type": "builtin.number"
             },
@@ -553,6 +557,7 @@
                 "model"
               ],
               "startIndex": 65,
+              "subtype": "integer",
               "text": "6",
               "type": "builtin.number"
             },
@@ -563,6 +568,7 @@
                 "model"
               ],
               "startIndex": 81,
+              "subtype": "integer",
               "text": "8",
               "type": "builtin.number"
             },
@@ -573,6 +579,7 @@
                 "model"
               ],
               "startIndex": 136,
+              "subtype": "integer",
               "text": "425",
               "type": "builtin.number"
             },
@@ -583,6 +590,7 @@
                 "model"
               ],
               "startIndex": 140,
+              "subtype": "integer",
               "text": "777",
               "type": "builtin.number"
             },
@@ -593,6 +601,7 @@
                 "model"
               ],
               "startIndex": 144,
+              "subtype": "integer",
               "text": "1212",
               "type": "builtin.number"
             },
@@ -603,6 +612,7 @@
                 "model"
               ],
               "startIndex": 152,
+              "subtype": "integer",
               "text": "206",
               "type": "builtin.number"
             },
@@ -613,6 +623,7 @@
                 "model"
               ],
               "startIndex": 156,
+              "subtype": "integer",
               "text": "666",
               "type": "builtin.number"
             },
@@ -623,6 +634,7 @@
                 "model"
               ],
               "startIndex": 160,
+              "subtype": "integer",
               "text": "4123",
               "type": "builtin.number"
             }
@@ -831,15 +843,10 @@
   "text": "3 inches long by 2 inches wide and 5% to 10% and are you between 6 years old and 8 years old and can i trade kb457 for kb922 and change 425-777-1212 to 206-666-4123 and did delta buy virgin and did the rain from hawaii get to redmond and http://foo.com changed to http://blah.com and i like between 68 degrees and 72 degrees and john likes mary and leave 3pm and arrive 5pm and pay between $400 and $500 and send chrimc@hotmail.com from emad@gmail.com",
   "v2": {
     "options": {
-      "BingSpellCheckSubscriptionKey": null,
       "IncludeAllIntents": true,
       "IncludeInstanceData": true,
-      "Log": null,
       "LogPersonalInformation": false,
-      "SpellCheck": null,
-      "Staging": null,
-      "Timeout": 100000.0,
-      "TimezoneOffset": null
+      "Timeout": 100000.0
     },
     "response": {
       "compositeEntities": [
@@ -1498,9 +1505,9 @@
     "options": {
       "IncludeAllIntents": true,
       "IncludeInstanceData": true,
-      "LogPersonalInformation": false,
-      "Slot": "production",
-      "Timeout": 100000.0
+      "Log": true,
+      "PreferExternalEntities": true,
+      "Staging": false
     },
     "response": {
       "prediction": {

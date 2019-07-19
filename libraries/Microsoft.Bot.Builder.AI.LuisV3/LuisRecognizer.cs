@@ -7,13 +7,9 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime;
-using Microsoft.Azure.CognitiveServices.Language.LUIS.Runtime.Models;
 using Microsoft.Bot.Builder.TraceExtensions;
-using Microsoft.Bot.Configuration;
 using Microsoft.Bot.Schema;
 using Microsoft.Rest;
-using Microsoft.Rest.Azure.OData;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -23,7 +19,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
     /// <summary>
     /// A LUIS based implementation of <see cref="ITelemetryRecognizer"/> for the V3 endpoint.
     /// </summary>
-    public class LuisV3Recognizer : ITelemetryRecognizer
+    public class LuisRecognizer : ITelemetryRecognizer
     {
         /// <summary>
         /// The value type for a LUIS trace activity.
@@ -36,24 +32,26 @@ namespace Microsoft.Bot.Builder.AI.Luis
         public const string LuisTraceLabel = "LuisV3 Trace";
 
         private readonly LuisApplication _application;
-        private readonly LuisV3PredictionOptions _options;
+        private readonly LuisPredictionOptions _predictionOptions;
         private readonly bool _includeApiResults;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="LuisV3Recognizer"/> class.
+        /// Initializes a new instance of the <see cref="LuisRecognizer"/> class.
         /// </summary>
         /// <param name="application">The LUIS application to use to recognize text.</param>
-        /// <param name="predictionOptions">(Optional) The LUIS prediction options to use.</param>
+        /// <param name="recognizerOptions">(Optional) Options for the created recognizer.</param>
+        /// <param name="predictionOptions">(Optional) The default LUIS prediction options to use.</param>
         /// <param name="includeApiResults">(Optional) TRUE to include raw LUIS API response.</param>
         /// <param name="clientHandler">(Optional) Custom handler for LUIS API calls to allow mocking.</param>
-        public LuisV3Recognizer(LuisApplication application, LuisV3PredictionOptions predictionOptions = null, bool includeApiResults = false, HttpClientHandler clientHandler = null)
+        public LuisRecognizer(LuisApplication application, LuisRecognizerOptions recognizerOptions = null, LuisPredictionOptions predictionOptions = null, bool includeApiResults = false, HttpClientHandler clientHandler = null)
         {
+            recognizerOptions = recognizerOptions ?? new LuisRecognizerOptions();
             _application = application ?? throw new ArgumentNullException(nameof(application));
-            _options = predictionOptions ?? new LuisV3PredictionOptions();
+            _predictionOptions = predictionOptions ?? new LuisPredictionOptions();
             _includeApiResults = includeApiResults;
 
-            TelemetryClient = _options.TelemetryClient;
-            LogPersonalInformation = _options.LogPersonalInformation;
+            TelemetryClient = recognizerOptions.TelemetryClient;
+            LogPersonalInformation = recognizerOptions.LogPersonalInformation;
 
             var delegatingHandler = new LuisDelegatingHandler();
             var httpClientHandler = clientHandler ?? CreateRootHandler();
@@ -61,34 +59,10 @@ namespace Microsoft.Bot.Builder.AI.Luis
 
             DefaultHttpClient = new HttpClient(currentHandler, false)
             {
-                Timeout = TimeSpan.FromMilliseconds(_options.Timeout),
+                Timeout = TimeSpan.FromMilliseconds(recognizerOptions.Timeout),
             };
 
             DefaultHttpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", _application.EndpointKey);
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LuisV3Recognizer"/> class.
-        /// </summary>
-        /// <param name="service">The LUIS service from configuration.</param>
-        /// <param name="predictionOptions">(Optional) The LUIS prediction options to use.</param>
-        /// <param name="includeApiResults">(Optional) TRUE to include raw LUIS API response.</param>
-        /// <param name="clientHandler">(Optional) Custom handler for LUIS API calls to allow mocking.</param>
-        public LuisV3Recognizer(LuisService service, LuisV3PredictionOptions predictionOptions = null, bool includeApiResults = false, HttpClientHandler clientHandler = null)
-            : this(new LuisApplication(service), predictionOptions, includeApiResults, clientHandler)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LuisV3Recognizer"/> class.
-        /// </summary>
-        /// <param name="applicationEndpoint">The LUIS endpoint as shown in https://luis.ai .</param>
-        /// <param name="predictionOptions">(Optional) The LUIS prediction options to use.</param>
-        /// <param name="includeApiResults">(Optional) TRUE to include raw LUIS API response.</param>
-        /// <param name="clientHandler">(Optional) Custom handler for LUIS API calls to allow mocking.</param>
-        public LuisV3Recognizer(string applicationEndpoint, LuisV3PredictionOptions predictionOptions = null, bool includeApiResults = false, HttpClientHandler clientHandler = null)
-            : this(new LuisApplication(applicationEndpoint), predictionOptions, includeApiResults, clientHandler)
-        {
         }
 
         /// <summary>
@@ -127,21 +101,20 @@ namespace Microsoft.Bot.Builder.AI.Luis
 
             string topIntent = null;
             var topScore = -1.0;
-            if (results.Intents.Count > 0)
+            foreach (var intent in results.Intents)
             {
-                foreach (var intent in results.Intents)
+                var score = (double)intent.Value.Score;
+                if (score > topScore && score >= minScore)
                 {
-                    var score = (double)intent.Value.Score;
-                    if (score > topScore && score >= minScore)
-                    {
-                        topIntent = intent.Key;
-                        topScore = score;
-                    }
+                    topIntent = intent.Key;
+                    topScore = score;
                 }
             }
 
             return !string.IsNullOrEmpty(topIntent) ? topIntent : defaultIntent;
         }
+
+        /* IRecognizer */
 
         /// <inheritdoc />
         public virtual async Task<RecognizerResult> RecognizeAsync(ITurnContext turnContext, CancellationToken cancellationToken)
@@ -155,7 +128,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// This parameter gets merged with the default <see cref="LuisV3PredictionOptions"/> passed in the constructor.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Analysis of utterance.</returns>
-        public virtual async Task<RecognizerResult> RecognizeAsync(ITurnContext turnContext, LuisV3PredictionOptions predictionOptions, CancellationToken cancellationToken)
+        public virtual async Task<RecognizerResult> RecognizeAsync(ITurnContext turnContext, LuisPredictionOptions predictionOptions, CancellationToken cancellationToken)
             => await RecognizeInternalAsync(turnContext, predictionOptions, null, null, cancellationToken).ConfigureAwait(false);
 
         /// <inheritdoc />
@@ -167,22 +140,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
             return result;
         }
 
-        /// <summary>
-        /// Runs an utterance through a recognizer and returns a strongly-typed recognizer result.
-        /// </summary>
-        /// <typeparam name="T">The recognition result type.</typeparam>
-        /// <param name="turnContext">Turn context.</param>
-        /// <param name="predictionOptions">A <see cref="LuisV3PredictionOptions"/> instance to be used by the call.
-        /// This parameter gets merged with the default <see cref="LuisV3PredictionOptions"/> passed in the constructor.</param>
-        /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns>Analysis of utterance.</returns>
-        public virtual async Task<T> RecognizeAsync<T>(ITurnContext turnContext, LuisV3PredictionOptions predictionOptions, CancellationToken cancellationToken)
-            where T : IRecognizerConvert, new()
-        {
-            var result = new T();
-            result.Convert(await RecognizeInternalAsync(turnContext, predictionOptions, null, null, cancellationToken).ConfigureAwait(false));
-            return result;
-        }
+        /* ITelemetryRecognizer */
 
         /// <summary>
         /// Return results of the analysis (Suggested actions and intents).
@@ -194,19 +152,6 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <returns>The LUIS results of the analysis of the current message text in the current turn's context activity.</returns>
         public virtual async Task<RecognizerResult> RecognizeAsync(ITurnContext turnContext, Dictionary<string, string> telemetryProperties, Dictionary<string, double> telemetryMetrics = null, CancellationToken cancellationToken = default)
         => await RecognizeInternalAsync(turnContext, null, telemetryProperties, telemetryMetrics, cancellationToken).ConfigureAwait(false);
-
-        /// <summary>
-        /// Return results of the analysis (Suggested actions and intents).
-        /// </summary>
-        /// <param name="turnContext">Context object containing information for a single turn of conversation with a user.</param>
-        /// <param name="predictionOptions">A <see cref="LuisV3PredictionOptions"/> instance to be used by the call.
-        /// This parameter gets merged with the default <see cref="LuisV3PredictionOptions"/> passed in the constructor.</param>
-        /// <param name="telemetryProperties">Additional properties to be logged to telemetry with the LuisResult event.</param>
-        /// <param name="telemetryMetrics">Additional metrics to be logged to telemetry with the LuisResult event.</param>
-        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <returns>The LUIS results of the analysis of the current message text in the current turn's context activity.</returns>
-        public virtual async Task<RecognizerResult> RecognizeAsync(ITurnContext turnContext, LuisV3PredictionOptions predictionOptions, Dictionary<string, string> telemetryProperties, Dictionary<string, double> telemetryMetrics = null, CancellationToken cancellationToken = default)
-        => await RecognizeInternalAsync(turnContext, predictionOptions, telemetryProperties, telemetryMetrics, cancellationToken).ConfigureAwait(false);
 
         /// <summary>
         /// Return results of the analysis (Suggested actions and intents).
@@ -225,6 +170,26 @@ namespace Microsoft.Bot.Builder.AI.Luis
             return result;
         }
 
+        /* LUIS specific methods */
+
+        /// <summary>
+        /// Return results of the analysis (Suggested actions and intents).
+        /// </summary>
+        /// <param name="turnContext">Context object containing information for a single turn of conversation with a user.</param>
+        /// <param name="predictionOptions">A <see cref="LuisV3PredictionOptions"/> instance to be used by the call.
+        /// This parameter gets merged with the default <see cref="LuisV3PredictionOptions"/> passed in the constructor.</param>
+        /// <param name="telemetryProperties">Additional properties to be logged to telemetry with the LuisResult event.</param>
+        /// <param name="telemetryMetrics">Additional metrics to be logged to telemetry with the LuisResult event.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>The LUIS results of the analysis of the current message text in the current turn's context activity.</returns>
+        public virtual async Task<RecognizerResult> RecognizeAsync(
+            ITurnContext turnContext,
+            LuisPredictionOptions predictionOptions = null,
+            Dictionary<string, string> telemetryProperties = null,
+            Dictionary<string, double> telemetryMetrics = null,
+            CancellationToken cancellationToken = default)
+        => await RecognizeInternalAsync(turnContext, predictionOptions, telemetryProperties, telemetryMetrics, cancellationToken).ConfigureAwait(false);
+
         /// <summary>
         /// Return results of the analysis (Suggested actions and intents).
         /// </summary>
@@ -236,7 +201,12 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <param name="telemetryMetrics">Additional metrics to be logged to telemetry with the LuisResult event.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>The LUIS results of the analysis of the current message text in the current turn's context activity.</returns>
-        public virtual async Task<T> RecognizeAsync<T>(ITurnContext turnContext, LuisV3PredictionOptions predictionOptions, Dictionary<string, string> telemetryProperties, Dictionary<string, double> telemetryMetrics = null, CancellationToken cancellationToken = default)
+        public virtual async Task<T> RecognizeAsync<T>(
+            ITurnContext turnContext,
+            LuisPredictionOptions predictionOptions = null,
+            Dictionary<string, string> telemetryProperties = null,
+            Dictionary<string, double> telemetryMetrics = null,
+            CancellationToken cancellationToken = default)
             where T : IRecognizerConvert, new()
         {
             var result = new T();
@@ -337,17 +307,15 @@ namespace Microsoft.Bot.Builder.AI.Luis
             return result;
         }
 
-        private async Task<RecognizerResult> RecognizeInternalAsync(ITurnContext turnContext, LuisV3PredictionOptions predictionOptions, Dictionary<string, string> telemetryProperties, Dictionary<string, double> telemetryMetrics, CancellationToken cancellationToken)
+        private async Task<RecognizerResult> RecognizeInternalAsync(ITurnContext turnContext, LuisPredictionOptions predictionOptions, Dictionary<string, string> telemetryProperties, Dictionary<string, double> telemetryMetrics, CancellationToken cancellationToken)
         {
-            var options = predictionOptions == null ? _options : MergeDefaultOptionsWithProvidedOptions(_options, predictionOptions);
-
             BotAssert.ContextNotNull(turnContext);
-
             if (turnContext.Activity.Type != ActivityTypes.Message)
             {
                 return null;
             }
 
+            var options = predictionOptions ?? _predictionOptions;
             var utterance = turnContext.Activity?.AsMessageActivity()?.Text;
             RecognizerResult recognizerResult;
             JObject luisResponse = null;
@@ -364,6 +332,8 @@ namespace Microsoft.Bot.Builder.AI.Luis
             else
             {
                 var uri = new UriBuilder(_application.Endpoint);
+
+                // TODO: When the endpoint GAs, we will need to change this.  I could make it an option, but other code is likely to need to change.
                 uri.Path += $"luis/v3.0-preview/apps/{_application.ApplicationId}";
 
                 var query = AddParam(null, "verbose", options.IncludeInstanceData);
@@ -371,23 +341,15 @@ namespace Microsoft.Bot.Builder.AI.Luis
                 query = AddParam(query, "show-all-intents", options.IncludeAllIntents);
                 uri.Query = query;
 
-                var content = new JObject();
-                content.Add("query", utterance);
-                if (options.DatetimeReference.HasValue || options.PreferExternalEntities.HasValue)
+                var content = new JObject
                 {
-                    var queryOptions = new JObject();
-                    if (options.DatetimeReference.HasValue)
-                    {
-                        queryOptions.Add("datetimeReference", options.DatetimeReference.Value.ToString("o"));
-                    }
-
-                    if (options.PreferExternalEntities.HasValue)
-                    {
-                        queryOptions.Add("overridePredictions", options.PreferExternalEntities.Value);
-                    }
-
-                    content.Add("options", queryOptions);
-                }
+                    { "query", utterance },
+                };
+                var queryOptions = new JObject
+                {
+                    { "overridePredictions", options.PreferExternalEntities },
+                };
+                content.Add("options", queryOptions);
 
                 var settings = new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore };
                 if (options.DynamicLists != null)
@@ -412,11 +374,12 @@ namespace Microsoft.Bot.Builder.AI.Luis
 
                 if (options.Version == null)
                 {
-                    uri.Path += $"/slots/{options.Slot}/predict";
+                    var slot = options.Staging ? "staging" : "production";
+                    uri.Path += $"/slots/{slot}/predict";
                 }
                 else
                 {
-                    uri.Path += $"/versions/{_options.Version}/predict";
+                    uri.Path += $"/versions/{options.Version}/predict";
                 }
 
                 var response = await DefaultHttpClient.PostAsync(uri.Uri, new StringContent(content.ToString(), System.Text.Encoding.UTF8, "application/json")).ConfigureAwait(false);
@@ -427,10 +390,10 @@ namespace Microsoft.Bot.Builder.AI.Luis
                 {
                     Text = utterance,
                     AlteredText = prediction["alteredQuery"]?.Value<string>(),
-                    Intents = LuisV3Util.GetIntents(prediction),
-                    Entities = LuisV3Util.ExtractEntitiesAndMetadata(prediction),
+                    Intents = LuisUtil.GetIntents(prediction),
+                    Entities = LuisUtil.ExtractEntitiesAndMetadata(prediction),
                 };
-                LuisV3Util.AddProperties(prediction, recognizerResult);
+                LuisUtil.AddProperties(prediction, recognizerResult);
                 if (_includeApiResults)
                 {
                     recognizerResult.Properties.Add("luisResult", luisResponse);
@@ -452,23 +415,9 @@ namespace Microsoft.Bot.Builder.AI.Luis
                     luisResult = luisResponse,
                 });
 
-            await turnContext.TraceActivityAsync("LuisV3Recognizer", traceInfo, LuisTraceType, LuisTraceLabel, cancellationToken).ConfigureAwait(false);
+            await turnContext.TraceActivityAsync("LuisRecognizer", traceInfo, LuisTraceType, LuisTraceLabel, cancellationToken).ConfigureAwait(false);
             return recognizerResult;
         }
-
-        private LuisV3PredictionOptions MergeDefaultOptionsWithProvidedOptions(LuisV3PredictionOptions defaultOptions, LuisV3PredictionOptions overridenOptions)
-            => new LuisV3PredictionOptions()
-            {
-                DatetimeReference = overridenOptions.DatetimeReference ?? defaultOptions.DatetimeReference,
-                DynamicLists = overridenOptions.DynamicLists ?? defaultOptions.DynamicLists,
-                ExternalEntities = overridenOptions.ExternalEntities ?? defaultOptions.ExternalEntities,
-                IncludeAllIntents = overridenOptions.IncludeAllIntents ?? defaultOptions.IncludeAllIntents,
-                IncludeInstanceData = overridenOptions.IncludeInstanceData ?? defaultOptions.IncludeInstanceData,
-                Log = overridenOptions.Log ?? defaultOptions.Log,
-                PreferExternalEntities = overridenOptions.PreferExternalEntities ?? defaultOptions.PreferExternalEntities,
-                Slot = overridenOptions.Slot ?? defaultOptions.Slot,
-                Version = overridenOptions.Version ?? defaultOptions.Version,
-            };
 
         private DelegatingHandler CreateHttpHandlerPipeline(HttpClientHandler httpClientHandler, params DelegatingHandler[] handlers)
         {
@@ -498,13 +447,6 @@ namespace Microsoft.Bot.Builder.AI.Luis
             return currentHandler;
         }
 
-        private HttpClientHandler CreateRootHandler() =>
-
-            // Create our root handler
-#if FullNetFx
-            return new WebRequestHandler();
-#else
-            new HttpClientHandler();
-#endif
+        private HttpClientHandler CreateRootHandler() => new HttpClientHandler();
     }
 }
