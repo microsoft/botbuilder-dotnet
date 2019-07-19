@@ -47,6 +47,15 @@ namespace Microsoft.Bot.Schema
         /// Remove any mention text for given id from Text property.  For example, given the message
         /// @echoBot Hi Bot, this will remove "@echoBot", leaving "Hi Bot".
         /// </summary>
+        /// <description>
+        /// The format of a mention Activity.Entity is dependent on the Channel.  But in all cases we
+        /// expect the Mention.Text to contain the exact text for the user as it appears in
+        /// Activity.Text.
+        /// 
+        /// For example, Teams uses &lt;at&gt;username&lt;/at&gt;, whereas slack use @username. It
+        /// is expected that text is in Activity.Text and this method will remove that value from
+        /// Activity.Text.
+        /// </description>
         /// <param name="activity">activity.</param>
         /// <param name="id">id to match.</param>
         /// <returns>new .Text property value.</returns>
