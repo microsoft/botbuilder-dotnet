@@ -1,8 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
@@ -14,37 +12,28 @@ namespace Microsoft.Bot.Builder.Tests
     public class MentionTests
     {
         [TestMethod]
-        public async Task Mention_SkypeAsync()
+        public void Mention_Skype()
         {
-            TestAdapter adapter = new TestAdapter();
-            adapter.Use(new SkypeMiddleware());
-            adapter.Conversation = new ConversationReference
-            {
-                ChannelId = "skype",
-                ServiceUrl = "https://test.com",
-                User = new ChannelAccount("user1", "User1"),
-                Bot = new ChannelAccount("bot", "Bot"),
-                Conversation = new ConversationAccount(false, "convo1", "Conversation1"),
-            };
-
             // A Skype mention contains the user mention enclosed in <at> tags.  But the Activity.Text (as below)
-            // does not.  The SkpeMiddleware will modify the Mention.Text to just contain the user so that
-            // RemoveMentionText works.
+            // does not.
             var mentionJson = "{\"mentioned\": {\"id\": \"recipientid\"},\"text\": \"<at id=\\\"28: 841caffa-9e92-425d-8d84-b503b3ded285\\\">botname</at>\"}";
             var mention = JsonConvert.DeserializeObject<Entity>(mentionJson);
             mention.Type = "mention";
 
             var activity = MessageFactory.Text("botname sometext");
+            activity.ChannelId = "skype";
             activity.Entities.Add(mention);
 
-            await adapter.ProcessActivityAsync(activity, async (turnContext, cancellationToken) =>
-            {
-                turnContext.Activity.RemoveMentionText("recipientid");
+            // Normalize the Skype mention so that it is in a format RemoveMentionText can handle.
+            // If SkypeMentionNormalizeMiddleware is added to the adapters Middleware set, this
+            // will be called on every Skype message.
+            SkypeMentionNormalizeMiddleware.NormalizeSkypMentionText(activity);
 
-                Assert.AreEqual(turnContext.Activity.Text, "sometext");
+            // This will remove the Mention.Text from the Activity.Text.  This should just leave before/after the
+            // mention.
+            activity.RemoveMentionText("recipientid");
 
-                await Task.CompletedTask;
-            });
+            Assert.AreEqual(activity.Text, "sometext");
         }
 
         [TestMethod]
