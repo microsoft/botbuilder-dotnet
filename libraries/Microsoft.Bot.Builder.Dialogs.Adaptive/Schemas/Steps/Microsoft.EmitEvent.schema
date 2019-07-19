@@ -12,8 +12,10 @@
                 {
                     "enum": [
                         "beginDialog",
-                        "consultDialog",
+                        "resumeDialog",
+                        "repromptDialog",
                         "cancelDialog",
+                        "endDialog",
                         "activityReceived",
                         "recognizedIntent",
                         "unknownIntent",
