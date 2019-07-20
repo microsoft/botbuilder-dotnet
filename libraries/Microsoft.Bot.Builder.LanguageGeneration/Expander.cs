@@ -346,6 +346,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         public ExpressionEvaluator GetMethodX(string name)
         {
+            // user can always choose to use builtin.xxx to disambiguate with template xxx
+            var builtInPrefix = "builtin.";
+
+            if (name.StartsWith(builtInPrefix))
+            {
+                return BuiltInFunctions.Lookup(name.Substring(builtInPrefix.Length));
+            }
+
             // TODO: Should add verifiers and validators
             switch (name)
             {
@@ -359,7 +367,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 // TODO
                 // 1. add validation function here
-                return new ExpressionEvaluator($"lgTemplate({name})", BuiltInFunctions.Apply(this.TemplateEvaluator(name)), ReturnType.String, null);
+                return new ExpressionEvaluator($"lgTemplate({name})", BuiltInFunctions.Apply(this.TemplateEvaluator(name)), ReturnType.String, this.ValidTemplateReference);
             }
 
             return BuiltInFunctions.Lookup(name);
@@ -405,6 +413,33 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             var expectedArgsCount = _expander.TemplateMap[templateName].Parameters.Count();
             var actualArgsCount = expression.Children.Length - 1;
+
+            if (expectedArgsCount != actualArgsCount)
+            {
+                throw new Exception($"arguments mismatch for template {templateName}, expect {expectedArgsCount} actual {actualArgsCount}");
+            }
+        }
+
+        public void ValidTemplateReference(Expression expression)
+        {
+            var type = expression.Type;
+            var argsStartPos = type.IndexOf('(');
+            var argsEndPos = type.IndexOf(')');
+
+            if (argsStartPos < 0 || argsEndPos < 0 || argsEndPos <= argsStartPos)
+            {
+                throw new Exception($"Not a valid template ref: {expression}");
+            }
+
+            var templateName = type.Substring(argsStartPos + 1, argsEndPos - argsStartPos - 1);
+
+            if (!_expander.TemplateMap.ContainsKey(templateName))
+            {
+                throw new Exception($"no such template '{templateName}' to call in {expression}");
+            }
+
+            var expectedArgsCount = _expander.TemplateMap[templateName].Parameters.Count();
+            var actualArgsCount = expression.Children.Length;
 
             if (expectedArgsCount != actualArgsCount)
             {

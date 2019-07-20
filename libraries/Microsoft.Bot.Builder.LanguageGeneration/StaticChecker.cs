@@ -390,7 +390,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 {
                     exp = exp + "()";
                 }
-                // TODO: refine error messag here maybe
+
                 return CheckExpression(exp, context);
             }
 
@@ -418,19 +418,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 if (exp.StartsWith("```"))
                 {
                     result.Add(BuildLGDiagnostic("Multi line variation must be enclosed in ```", context: context));
-                }
-
-                return result;
-            }
-
-            private List<Diagnostic> CheckTemplateParameters(string templateName, int argsNumber, ParserRuleContext context)
-            {
-                var result = new List<Diagnostic>();
-                var parametersNumber = templateMap[templateName].Parameters.Count;
-
-                if (argsNumber != parametersNumber)
-                {
-                    result.Add(BuildLGDiagnostic($"Arguments count mismatch for template ref {templateName}, expected {parametersNumber}, actual {argsNumber}", context: context));
                 }
 
                 return result;
