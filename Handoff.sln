@@ -5,6 +5,10 @@ VisualStudioVersion = 16.0.29025.244
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Handoff", "libraries\Microsoft.Bot.Builder.Handoff\Microsoft.Bot.Builder.Handoff.csproj", "{09BF44BE-AA88-440C-B8B8-1D6196DED3D1}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HandoffBot", "tests\Microsoft.Bot.Builder.HandoffBot\HandoffBot.csproj", "{7CDB3D4A-15BF-4912-B373-01D0115219F6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Handoff.Test", "tests\Microsoft.Bot.Builder.Handoff.Test\Microsoft.Bot.Builder.Handoff.Test.csproj", "{FA8ED2FC-077C-45B2-971B-A214C884C909}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{09BF44BE-AA88-440C-B8B8-1D6196DED3D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{09BF44BE-AA88-440C-B8B8-1D6196DED3D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{09BF44BE-AA88-440C-B8B8-1D6196DED3D1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7CDB3D4A-15BF-4912-B373-01D0115219F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7CDB3D4A-15BF-4912-B373-01D0115219F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7CDB3D4A-15BF-4912-B373-01D0115219F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7CDB3D4A-15BF-4912-B373-01D0115219F6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FA8ED2FC-077C-45B2-971B-A214C884C909}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FA8ED2FC-077C-45B2-971B-A214C884C909}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FA8ED2FC-077C-45B2-971B-A214C884C909}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FA8ED2FC-077C-45B2-971B-A214C884C909}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
