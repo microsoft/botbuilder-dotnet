@@ -28,7 +28,7 @@ namespace Microsoft.Bot.Builder
             try
             {
                 var result = await HandoffHttpSupport.GetHandoffStatusWithHttpMessagesAsync((IServiceOperations<ConnectorClient>)conversations, conversationId).ConfigureAwait(false);
-                return result.Body == "completed";
+                return result.Body == "Completed";
             }
             catch
             {
