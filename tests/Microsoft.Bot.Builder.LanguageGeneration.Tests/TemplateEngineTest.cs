@@ -620,5 +620,23 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.AreEqual(true, eval1Options.Contains(evaled[0]));
             Assert.AreEqual(true, eval2Options.Contains(evaled[1]));
         }
+
+        [TestMethod]
+        public void TestTemplateFunction()
+        {
+            var engine = new TemplateEngine().AddFile(GetExampleFilePath("TemplateFunction.lg"));
+
+            var evaled = engine.EvaluateTemplate("callTemplate");
+            Assert.AreEqual(evaled, "hi");
+
+            evaled = engine.EvaluateTemplate("callTemplateWithParamFunc");
+            Assert.AreEqual(evaled, "hi ms");
+
+            evaled = engine.EvaluateTemplate("dupNameWithTemplate");
+            Assert.AreEqual(evaled, "calculate length of ms by user's template");
+
+            evaled = engine.EvaluateTemplate("dupNameWithBuiltinFunc");
+            Assert.AreEqual(evaled, "2");
+        }
     }
 }

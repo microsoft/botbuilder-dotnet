@@ -14,7 +14,7 @@
 # showSingleItem(x)
 - * {x}
 
-# ShowItems(user, listName)
+# ShowItems
 - IF: {listName == "shopping"}
     - ```
     You most recent @{count(user.lists.shopping)} shopping items are
