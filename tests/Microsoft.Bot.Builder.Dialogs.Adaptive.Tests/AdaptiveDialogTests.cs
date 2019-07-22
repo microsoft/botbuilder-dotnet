@@ -875,5 +875,45 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             .StartTestAsync();
         }
 
+        [TestMethod]
+        public async Task AdaptiveDialog_BindingReferValueInLaterStep()
+        {
+            var rootDialog = new AdaptiveDialog(nameof(AdaptiveDialog))
+            {
+                Generator = new TemplateEngineLanguageGenerator(),
+                Rules = new List<IRule>()
+                {
+                    new UnknownIntentRule()
+                    {
+                        Steps = new List<IDialog>()
+                        {
+                            new TextInput()
+                            {
+                                Property = "$name",
+                                Prompt = new ActivityTemplate("What is your name?")
+                            },
+                            new NumberInput()
+                            {
+                                Property = "$age",
+                                Prompt = new ActivityTemplate("Hello {$name}, how old are you?")
+                            },
+                            new SendActivity()
+                            {
+                                Activity = new ActivityTemplate("Hello {$name}, I have your age as {$age}")
+                            }
+                        }
+                    }
+                }
+            };
+
+            await CreateFlow(rootDialog)
+            .Send("Hi")
+                .AssertReply("What is your name?")
+            .Send("zoidberg")
+                .AssertReply("Hello zoidberg, how old are you?")
+            .Send("22")
+                .AssertReply("Hello zoidberg, I have your age as 22")
+            .StartTestAsync();
+        }
     }
 }
