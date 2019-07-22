@@ -59,6 +59,11 @@ namespace Microsoft.Bot.Builder.AI.Luis
             {
                 throw new Microsoft.Rest.ValidationException($"DynamicList requires Entity and List to be defined.");
             }
+
+            foreach (var elt in List)
+            {
+                elt.Validate();
+            }
         }
     }
 }

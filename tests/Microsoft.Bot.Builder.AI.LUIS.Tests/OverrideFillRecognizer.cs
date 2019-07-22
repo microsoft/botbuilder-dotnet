@@ -10,7 +10,7 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
 {
     public class OverrideFillRecognizer : LuisRecognizer
     {
-        public OverrideFillRecognizer(IBotTelemetryClient telemetryClient, LuisApplication application, LuisPredictionOptions predictionOptions = null, bool includeApiResults = false, bool logPersonalInformation = false, HttpClientHandler clientHandler = null)
+        public OverrideFillRecognizer(LuisApplication application, LuisPredictionOptions predictionOptions = null, bool includeApiResults = false, bool logPersonalInformation = false, HttpClientHandler clientHandler = null)
            : base(application, predictionOptions, includeApiResults, clientHandler)
         {
             LogPersonalInformation = logPersonalInformation;
@@ -29,7 +29,8 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
                             telemetryMetrics);
 
             // Create second event.
-            var secondEventProperties = new Dictionary<string, string> {
+            var secondEventProperties = new Dictionary<string, string>
+            {
                 { "MyImportantProperty2", "myImportantValue2" },
             };
             TelemetryClient.TrackEvent(

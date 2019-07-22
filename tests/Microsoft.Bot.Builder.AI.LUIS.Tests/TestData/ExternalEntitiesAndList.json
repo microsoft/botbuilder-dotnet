@@ -90,7 +90,7 @@
       "IncludeInstanceData": true,
       "Log": true,
       "PreferExternalEntities": true,
-      "Staging": false
+      "Slot": "production"
     },
     "response": {
       "prediction": {

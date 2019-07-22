@@ -11,11 +11,8 @@ namespace Microsoft.Bot.Builder.AI.LuisV3.Tests
         {
         }
 
-        /// <summary>
-        /// Convert recognizer result.
-        /// </summary>
-        /// <param name="result">Result to convert.</param>
         public void Convert(dynamic _)
-        { }
+        {
+        }
     }
 }

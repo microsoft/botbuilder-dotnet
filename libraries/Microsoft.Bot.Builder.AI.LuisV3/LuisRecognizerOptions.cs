@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license.
+using System;
 using System.Net.Http;
 using Newtonsoft.Json;
 
@@ -11,12 +12,12 @@ namespace Microsoft.Bot.Builder.AI.Luis
      public class LuisRecognizerOptions
     {
         /// <summary>
-        /// Gets or sets the time in milliseconds to wait before the request times out.
+        /// Gets or sets the time span to wait before the request times out.
         /// </summary>
         /// <value>
-        /// The time in milliseconds to wait before the request times out. Default is 100000 milliseconds.
+        /// The time span to wait before the request times out. Default is 2 seconds.
         /// </value>
-        public uint Timeout { get; set; } = 100000;
+        public TimeSpan Timeout { get; set; } = new TimeSpan(0, 2, 0);
 
         /// <summary>
         /// Gets or sets the IBotTelemetryClient used to log the LuisResult event.

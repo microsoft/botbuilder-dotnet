@@ -21,9 +21,9 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// Initializes a new instance of the <see cref="ListElement"/> class.
         /// </summary>
         /// <param name="canonicalForm">The canonical form of the sub-list.</param>
-        /// <param name="name">The name of the sub-list.</param>
         /// <param name="synonyms">The synonyms of the canonical form.</param>
-        public ListElement(string canonicalForm, string name = null, IList<string> synonyms = null)
+        /// <param name="name">The name of the sub-list.</param>
+        public ListElement(string canonicalForm, IList<string> synonyms, string name = null)
         {
             CanonicalForm = canonicalForm;
             Name = name;

@@ -27,7 +27,8 @@ namespace Microsoft.Bot.Builder.AI.Luis.Tests
                             metrics);
 
             // Create second event.
-            var secondEventProperties = new Dictionary<string, string> {
+            var secondEventProperties = new Dictionary<string, string>
+            {
                 { "MyImportantProperty2", "myImportantValue2" },
             };
             TelemetryClient.TrackEvent(

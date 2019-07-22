@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license.
 using System.Collections.Generic;
+using Microsoft.Bot.Builder.AI.LuisV3;
 
 namespace Microsoft.Bot.Builder.AI.Luis
 {
@@ -38,7 +39,8 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <value>
         /// If queries should be logged in LUIS in order to help build better models through active learning.
         /// </value>
-        public bool Log { get; set; } = true;
+        /// <remarks>The default is to defer to how LUIS has defined the flag for the application.</remarks>
+        public bool? Log { get; set; }
 
         /// <summary>
         /// Gets or sets dynamic lists used to recognize entities for a particular query.
@@ -65,26 +67,26 @@ namespace Microsoft.Bot.Builder.AI.Luis
         public bool PreferExternalEntities { get; set; } = true;
 
         /// <summary>
-        /// Gets or sets a value indicating whether production (false) or staging (true) slot should be used.
+        /// Gets or sets the LUIS slot to use for the application.
         /// </summary>
         /// <value>
-        /// True for staging or false for production.
+        /// The LUIS slot to use for the application.
         /// </value>
-        /// <remarks> 
-        /// LUIS supports both a production slot and a staging slot and this controls which is used.
-        /// If you specify a Version, then a private versioned slot is used instead.
+        /// <remarks>
+        /// By default this uses the production slot.  You can find other standard slots in <see cref="LuisSlot"/>.
+        /// If you specify a Version, then a private version of the application is used instead of a slot.
         /// </remarks>
-        public bool Staging { get; set; } = false;
+        public string Slot { get; set; } = LuisSlot.Production;
 
         /// <summary>
-        /// Gets or sets the specific version of the model to access.
+        /// Gets or sets the specific version of the application to access.
         /// </summary>
         /// <value>
         /// Version to access.
         /// </value>
         /// <remarks>
-        /// LUIS supports versions and this is the version name to use instead of a production/staging slots.
-        /// If this is specified, then the <see cref="Staging"/> flag is ignored.
+        /// LUIS supports versions and this is the version to use instead of a slot.
+        /// If this is specified, then the <see cref="Slot"/> is ignored.
         /// </remarks>
         public string Version { get; set; }
     }

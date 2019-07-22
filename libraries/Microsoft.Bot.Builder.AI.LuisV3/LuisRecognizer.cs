@@ -40,7 +40,6 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <param name="application">The LUIS application to use to recognize text.</param>
         /// <param name="recognizerOptions">(Optional) Options for the created recognizer.</param>
         /// <param name="predictionOptions">(Optional) The default LUIS prediction options to use.</param>
-        /// <param name="clientHandler">(Optional) Custom handler for LUIS API calls to allow mocking.</param>
         public LuisRecognizer(LuisApplication application, LuisRecognizerOptions recognizerOptions = null, LuisPredictionOptions predictionOptions = null)
         {
             recognizerOptions = recognizerOptions ?? new LuisRecognizerOptions();
@@ -56,7 +55,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
 
             DefaultHttpClient = new HttpClient(currentHandler, false)
             {
-                Timeout = TimeSpan.FromMilliseconds(recognizerOptions.Timeout),
+                Timeout = recognizerOptions.Timeout,
             };
 
             DefaultHttpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", _application.EndpointKey);
@@ -367,8 +366,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
 
                 if (options.Version == null)
                 {
-                    var slot = options.Staging ? "staging" : "production";
-                    uri.Path += $"/slots/{slot}/predict";
+                    uri.Path += $"/slots/{options.Slot}/predict";
                 }
                 else
                 {
