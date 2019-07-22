@@ -385,11 +385,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             public List<Diagnostic> CheckTemplateRef(string exp, ParserRuleContext context)
             {
                 exp = exp.TrimStart('[').TrimEnd(']').Trim();
-
-                if (exp.IndexOf('(') < 0)
-                {
-                    exp = exp + "()";
-                }
+                exp = exp.IndexOf('(') < 0 ? exp + "()" : exp;
 
                 return CheckExpression(exp, context);
             }

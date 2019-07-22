@@ -256,10 +256,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         private List<string> EvalTemplateRef(string exp)
         {
             exp = exp.TrimStart('[').TrimEnd(']').Trim();
-            if (exp.IndexOf('(') < 0)
-            {
-                exp += "()";
-            }
+            exp = exp.IndexOf('(') < 0 ? exp + "()" : exp;
 
             return EvalExpression(exp);
         }
