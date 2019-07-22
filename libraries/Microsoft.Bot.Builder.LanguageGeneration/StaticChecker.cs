@@ -53,14 +53,23 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         public static List<Diagnostic> CheckFile(string filePath, ImportResolverDelegate importResolver = null) => CheckFiles(new List<string>() { filePath }, importResolver);
 
-        public static List<Diagnostic> CheckText(string content, string name, ImportResolverDelegate importResolver)
+        public static List<Diagnostic> CheckText(string content, string id = "", ImportResolverDelegate importResolver = null)
         {
+            if (importResolver == null)
+            {
+                var importPath = ImportResolver.NormalizePath(id);
+                if (!Path.IsPathRooted(importPath))
+                {
+                    throw new Exception("[Error] id must be full path when importResolver is null");
+                }
+            }
+
             var result = new List<Diagnostic>();
             var templates = new List<LGTemplate>();
             var isParseSuccess = true;
             try
             {
-                var rootResource = LGParser.Parse(content, name);
+                var rootResource = LGParser.Parse(content, id);
                 var resources = rootResource.DiscoverDependencies(importResolver);
                 templates = resources.SelectMany(x => x.Templates).ToList();
             }
