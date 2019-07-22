@@ -597,6 +597,11 @@ namespace Microsoft.Bot.Builder.Dialogs
             return false;
         }
 
+        /// <summary>
+        /// Specifies whether a given dialog should inherit dialog-level state. 
+        /// </summary>
+        /// <param name="dialog">The dialog to be tested.</param>
+        /// <returns>Whether the passed dialog should inherit dialog-level state.</returns>
         protected virtual bool ShouldInheritState(IDialog dialog)
         {
             return dialog is DialogCommand;
