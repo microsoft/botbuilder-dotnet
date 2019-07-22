@@ -161,13 +161,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 return CurrentTarget().Scope;
             }
 
-            if (args.Count == 1 && parameters.Count == 0)
-            {
-                // Special case, if no parameters defined, and only one arg, don't wrap
-                // this is for directly calling an parameterized template
-                return args[0];
-            }
-
             var newScope = parameters.Zip(args, (k, v) => new { k, v })
                                     .ToDictionary(x => x.k, x => x.v);
             return newScope;

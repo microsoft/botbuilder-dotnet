@@ -9,6 +9,7 @@
 
 # callTemplateWithParamFunc
 - {templateWithParam('ms')}
+- [templateWithParam('ms')]
 
 
 # length(str)
@@ -16,6 +17,7 @@
 
 # dupNameWithTemplate
 - {length('ms')}
+- [length('ms')]
 
 # dupNameWithBuiltinFunc
 - {builtin.length('ms')}

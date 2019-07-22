@@ -36,80 +36,28 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             // TODO: Should add verifiers and validators
             switch (name)
             {
-                case "lgTemplate":
-                    return new ExpressionEvaluator("lgTemplate", BuiltInFunctions.Apply(this.LgTemplate), ReturnType.String, this.ValidLgTemplate);
                 case "join":
                     return new ExpressionEvaluator("join", BuiltInFunctions.Apply(this.Join));
             }
 
             if (_evaluator.TemplateMap.ContainsKey(name))
             {
-                // for template reference, expression type = lgTemplate(name)
-                return new ExpressionEvaluator($"lgTemplate({name})", BuiltInFunctions.Apply(this.TemplateEvaluator(name)), ReturnType.String, this.ValidTemplateReference);
+                return new ExpressionEvaluator($"{name}", BuiltInFunctions.Apply(this.TemplateEvaluator(name)), ReturnType.String, this.ValidTemplateReference);
             }
 
             return BuiltInFunctions.Lookup(name);
         }
 
         public Func<IReadOnlyList<object>, object> TemplateEvaluator(string templateName)
-        {
-            return (IReadOnlyList<object> args) =>
+            => (IReadOnlyList<object> args) =>
             {
-                var newArgs = new List<object>();
-                newArgs.Add(templateName);
-                newArgs.AddRange(args);
-                return this.LgTemplate(newArgs);
+                var newScope = _evaluator.ConstructScope(templateName, args.ToList());
+                return _evaluator.EvaluateTemplate(templateName, newScope);
             };
-        }
-
-        public object LgTemplate(IReadOnlyList<object> args)
-        {
-            var templateName = (string)args[0];
-            var newScope = _evaluator.ConstructScope(templateName, args.Skip(1).ToList());
-            var result = _evaluator.EvaluateTemplate(templateName, newScope);
-            return result;
-        }
-
-        public void ValidLgTemplate(Expression expression)
-        {
-            if (expression.Children.Length == 0)
-            {
-                throw new Exception("lgTemplate requires 1 or more arguments");
-            }
-
-            if (!(expression.Children[0] is Constant cnst && cnst.Value is string))
-            {
-                throw new Exception($"lgTemplate expect a string as first argument, acutal {expression.Children[0]}");
-            }
-
-            var templateName = (string)(expression.Children[0] as Constant).Value;
-
-            if (!_evaluator.TemplateMap.ContainsKey(templateName))
-            {
-                throw new Exception($"no such template '{templateName}' to call in {expression}");
-            }
-
-            var expectedArgsCount = _evaluator.TemplateMap[templateName].Parameters.Count();
-            var actualArgsCount = expression.Children.Length - 1;
-
-            if (expectedArgsCount != actualArgsCount)
-            {
-                throw new Exception($"arguments mismatch for template {templateName}, expect {expectedArgsCount} actual {actualArgsCount}");
-            }
-        }
 
         public void ValidTemplateReference(Expression expression)
         {
-            var type = expression.Type;
-            var argsStartPos = type.IndexOf('(');
-            var argsEndPos = type.IndexOf(')');
-
-            if (argsStartPos < 0 || argsEndPos < 0 || argsEndPos <= argsStartPos)
-            {
-                throw new Exception($"Not a valid template ref: {expression}");
-            }
-
-            var templateName = type.Substring(argsStartPos + 1, argsEndPos - argsStartPos - 1);
+            var templateName = expression.Type;
 
             if (!_evaluator.TemplateMap.ContainsKey(templateName))
             {

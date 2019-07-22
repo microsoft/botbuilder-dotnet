@@ -182,53 +182,24 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         private AnalyzerResult AnalyzeExpressionDirectly(Expression exp)
         {
             var result = new AnalyzerResult();
-            var type = exp.Type;
 
-            if (type.StartsWith("lgTemplate("))
+            if (templateMap.ContainsKey(exp.Type))
             {
-                // [ ] templates
-                var argsStartPos = type.IndexOf('(');
-                var argsEndPos = type.IndexOf(')');
-                var templateName = type.Substring(argsStartPos + 1, argsEndPos - argsStartPos - 1);
-
-                if (templateMap.ContainsKey(templateName))
-                {
-                    result.Union(new AnalyzerResult(templateReferences: new List<string>() { templateName }));
-
-                    // expression is template
-                    if (exp.Children.Length == 0)
-                    {
-                        result.Union(this.AnalyzeTemplate(templateName));
-                    }
-                    else
-                    {
-                        var templateRefNames = this.AnalyzeTemplate(templateName).TemplateReferences;
-                        result.Union(new AnalyzerResult(templateReferences: templateRefNames));
-                        exp.Children.ToList().ForEach(x => result.Union(this.AnalyzeExpressionDirectly(x)));
-                    }
-                }
-            }
-            else if (type == "lgTemplate")
-            {
-                // lgTemplate function, will be depracated in the future
-                var templateName = (exp.Children[0] as Constant).Value.ToString();
+                var templateName = exp.Type;
                 result.Union(new AnalyzerResult(templateReferences: new List<string>() { templateName }));
 
-                if (exp.Children.Length == 1)
+                if (templateMap[templateName].Parameters.Count == 0)
                 {
-                    result.Union(this.AnalyzeTemplate((exp.Children[0] as Constant).Value.ToString()));
+                    result.Union(this.AnalyzeTemplate(templateName));
                 }
                 else
                 {
-                    // only get template ref names
-                    var templateRefNames = this.AnalyzeTemplate((exp.Children[0] as Constant).Value.ToString()).TemplateReferences;
+                    var templateRefNames = this.AnalyzeTemplate(templateName).TemplateReferences;
                     result.Union(new AnalyzerResult(templateReferences: templateRefNames));
-
-                    // analyzer other children
-                    exp.Children.ToList().ForEach(x => result.Union(this.AnalyzeExpressionDirectly(x)));
                 }
             }
-            else
+
+            if (exp.Children != null)
             {
                 exp.Children.ToList().ForEach(x => result.Union(this.AnalyzeExpressionDirectly(x)));
             }
@@ -256,7 +227,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             if (exp.IndexOf('(') < 0)
             {
-                exp = exp + "()";
+                exp += "()";
             }
 
             return AnalyzeExpression(exp);
