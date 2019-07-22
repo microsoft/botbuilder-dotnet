@@ -19,7 +19,7 @@ namespace Microsoft.BotBuilderSamples.Bots
                 var a1 = MessageFactory.Text($"msg1");
                 var a2 = MessageFactory.Text($"msg2");
                 var transcript = new Activity[] { a1, a2 };
-                var context = new { Skill = "credit cards ", CallerId = "CCI" };
+                var context = new { Skill = "credit cards ", MSCallerId = "CCI" };
                 IHandoffRequest request = await turnContext.InitiateHandoffAsync(transcript, context, cancellationToken);
 
                 if(await request.IsCompletedAsync())
