@@ -438,7 +438,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 var result = new List<Diagnostic>();
 
                 // remove ``` ```
-                exp = exp.Substring(3, exp.Length - 6).Trim('\r', '\n');
+                exp = exp.Substring(3, exp.Length - 6);
                 var reg = @"@\{[^{}]+\}";
                 var mc = Regex.Matches(exp, reg);
 
