@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive
@@ -20,12 +21,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         public AdaptiveDialogState Plans { get; private set; }
 
         /// <summary>
-        /// List of steps being executed
+        /// List of steps being executed.
         /// </summary>
         public List<StepState> Steps { get; set; }
         
         /// <summary>
-        /// List of changes that are queued to be applied
+        /// List of changes that are queued to be applied.
         /// </summary>
         public List<StepChangeList> Changes
         {
@@ -249,6 +250,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
 
             return false;
+        }
+
+        protected override bool ShouldInheritState(IDialog dialog)
+        {
+            return base.ShouldInheritState(dialog) || dialog is InputDialog;
         }
     }
 
