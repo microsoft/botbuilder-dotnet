@@ -1944,13 +1944,13 @@ namespace Microsoft.Bot.Builder.Expressions
             return (result, error);
         }
 
-        private static (object, string) JPath(object jobject, string jpath)
+        private static (object, string) JPath(object jsonEntity, string jpath)
         {
             object result = null;
             string error = null;
             object value = null;
             JObject jsonObj = null;
-            if (jobject is string jsonStr)
+            if (jsonEntity is string jsonStr)
             {
                 try
                 {
@@ -1961,16 +1961,13 @@ namespace Microsoft.Bot.Builder.Expressions
                     error = $"{jsonStr} is not a valid JSON string";
                 }
             }
+            else if (jsonEntity is JObject parsed )
+            {
+                jsonObj = parsed;
+            }
             else
             {
-                try
-                {
-                    jsonObj = (JObject)jobject;
-                }
-                catch
-                {
-                    error = $"{jobject.ToString()} is not a valid JSON object";
-                }
+                error = $"{jsonEntity} is not a valid JSON object or a valid JSON string";
             }
 
             if (error == null)
