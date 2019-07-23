@@ -361,6 +361,12 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             evaled = engine.EvaluateTemplate("Test4", "");
             Assert.AreEqual(evaled.Trim(), "hello world");
+
+            evaled = engine.EvaluateTemplate("dupNameWithTemplate");
+            Assert.AreEqual(evaled, "calculate length of ms by user's template");
+
+            evaled = engine.EvaluateTemplate("dupNameWithBuiltinFunc");
+            Assert.AreEqual(evaled, "2");
         }
 
         [TestMethod]
@@ -619,24 +625,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var eval2Options = new List<string>() { "\r\nYou have 2 alarms.\r\nThey are 8 pm of tomorrow\r\n", "\nYou have 2 alarms.\nThey are 8 pm of tomorrow\n" };
             Assert.AreEqual(true, eval1Options.Contains(evaled[0]));
             Assert.AreEqual(true, eval2Options.Contains(evaled[1]));
-        }
-
-        [TestMethod]
-        public void TestTemplateFunction()
-        {
-            var engine = new TemplateEngine().AddFile(GetExampleFilePath("TemplateFunction.lg"));
-
-            var evaled = engine.EvaluateTemplate("callTemplate");
-            Assert.AreEqual(evaled, "hi");
-
-            evaled = engine.EvaluateTemplate("callTemplateWithParamFunc");
-            Assert.AreEqual(evaled, "hi ms");
-
-            evaled = engine.EvaluateTemplate("dupNameWithTemplate");
-            Assert.AreEqual(evaled, "calculate length of ms by user's template");
-
-            evaled = engine.EvaluateTemplate("dupNameWithBuiltinFunc");
-            Assert.AreEqual(evaled, "2");
         }
     }
 }

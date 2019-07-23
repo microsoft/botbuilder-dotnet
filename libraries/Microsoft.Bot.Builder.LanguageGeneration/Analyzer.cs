@@ -185,6 +185,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             if (templateMap.ContainsKey(exp.Type))
             {
+                // template function
                 var templateName = exp.Type;
                 result.Union(new AnalyzerResult(templateReferences: new List<string>() { templateName }));
 
@@ -194,8 +195,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 }
                 else
                 {
-                    var templateRefNames = this.AnalyzeTemplate(templateName).TemplateReferences;
-                    result.Union(new AnalyzerResult(templateReferences: templateRefNames));
+                    // if template has params, just get the templateref without variables.
+                    result.Union(new AnalyzerResult(templateReferences: this.AnalyzeTemplate(templateName).TemplateReferences));
                 }
             }
 

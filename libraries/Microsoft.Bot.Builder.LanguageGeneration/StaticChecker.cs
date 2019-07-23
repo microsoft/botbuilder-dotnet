@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 {
                     importResolver = importResolver ?? ImportResolver.FileResolver;
 
-                    var fullPath = Path.GetFullPath(filePath);
+                    var fullPath = Path.GetFullPath(ImportResolver.NormalizePath(filePath));
                     var rootResource = LGParser.Parse(File.ReadAllText(fullPath), fullPath);
                     var resources = rootResource.DiscoverDependencies(importResolver);
                     totalLGResources.AddRange(resources);

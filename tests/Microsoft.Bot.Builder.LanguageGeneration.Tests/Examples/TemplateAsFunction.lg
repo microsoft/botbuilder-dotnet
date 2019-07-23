@@ -11,3 +11,13 @@
 - ```
   @{ShowList(createArray('hello', 'world'))}
 ```
+
+# length(str)
+- calculate length of {str} by user's template
+
+# dupNameWithTemplate
+- {length('ms')}
+
+# dupNameWithBuiltinFunc
+- {builtin.length('ms')}
+
