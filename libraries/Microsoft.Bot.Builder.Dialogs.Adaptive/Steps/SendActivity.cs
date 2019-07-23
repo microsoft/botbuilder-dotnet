@@ -11,7 +11,7 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
 {
     /// <summary>
-    /// Send an activity back to the user
+    /// Send an activity back to the user.
     /// </summary>
     public class SendActivity : DialogCommand
     {
