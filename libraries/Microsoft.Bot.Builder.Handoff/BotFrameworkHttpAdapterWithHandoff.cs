@@ -35,7 +35,7 @@ namespace Microsoft.Bot.Builder.Handoff
             var connectorClient = turnContext.TurnState.Get<IConnectorClient>();
 
             string conversationId = turnContext.Activity.Conversation.Id;
-            var handoffParameters = new HandoffParameters(activities, handoffContext);
+            var handoffParameters = new HandoffParameters(new Transcript { Activities = activities }, handoffContext);
             var response = await HandoffHttpSupport.HandoffWithHttpMessagesAsync((IServiceOperations<ConnectorClient>)connectorClient.Conversations, conversationId, handoffParameters, null, cancellationToken).ConfigureAwait(false);
 
             return new HandoffRequest(conversationId, connectorClient.Conversations);

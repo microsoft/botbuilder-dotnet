@@ -34,7 +34,7 @@ namespace Microsoft.Bot.Schema.Handoff
         /// <param name="transcript">Activities so far.</param>
         /// <param name="handoffContext">Channel specific payload for creating
         /// the conversation</param>
-        public HandoffParameters(IList<Activity> transcript = default(IList<Activity>), object handoffContext = default(object))
+        public HandoffParameters(Transcript transcript, object handoffContext = default(object))
         {
             Transcript = transcript;
             HandoffContext = handoffContext;
@@ -50,7 +50,7 @@ namespace Microsoft.Bot.Schema.Handoff
         /// Gets or sets activities so far.
         /// </summary>
         [JsonProperty(PropertyName = "transcript")]
-        public IList<Activity> Transcript { get; set; }
+        public Transcript Transcript { get; set; }
 
         /// <summary>
         /// Gets or sets channel specific payload for creating the conversation
