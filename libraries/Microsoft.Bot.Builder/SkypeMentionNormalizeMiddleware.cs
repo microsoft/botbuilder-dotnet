@@ -5,6 +5,7 @@ using System;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder
@@ -31,7 +32,7 @@ namespace Microsoft.Bot.Builder
 
         public static void NormalizeSkypMentionText(Activity activity)
         {
-            if (activity.ChannelId == "skype" && activity.Type == ActivityTypes.Message)
+            if (activity.ChannelId == Channels.Skype && activity.Type == ActivityTypes.Message)
             {
                 foreach (var entity in activity.Entities)
                 {
