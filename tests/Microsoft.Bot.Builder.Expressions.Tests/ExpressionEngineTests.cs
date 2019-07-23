@@ -65,6 +65,36 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             { "timestampObj", DateTime.Parse("2018-03-15T13:00:00.000Z").ToUniversalTime() },
             { "unixTimestamp", 1521118800 },
             { "xmlStr", "<?xml version='1.0'?> <produce> <item> <name>Gala</name> <type>apple</type> <count>20</count> </item> <item> <name>Honeycrisp</name> <type>apple</type> <count>10</count> </item> </produce>" },
+            {"jsonStr", @"{
+                          'Stores': [
+                            'Lambton Quay',
+                            'Willis Street'
+                          ],
+                          'Manufacturers': [
+                            {
+                              'Name': 'Acme Co',
+                              'Products': [
+                                {
+                                  'Name': 'Anvil',
+                                  'Price': 50
+                                }
+                              ]
+                            },
+                            {
+                              'Name': 'Contoso',
+                              'Products': [
+                                {
+                                  'Name': 'Elbow Grease',
+                                  'Price': 99.95
+                                },
+                                {
+                                  'Name': 'Headlight Fluid',
+                                  'Price': 4
+                                }
+                              ]
+                            }
+                          ]
+                        }"},
             { "turn", new
                 {
                     recognized = new
@@ -523,8 +553,10 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("string(setProperty(json('{\"key1\":\"value1\"}'), 'key1','value2'))", "{\"key1\":\"value2\"}"),
             Test("string(removeProperty(json('{\"key1\":\"value1\",\"key2\":\"value2\"}'), 'key2'))", "{\"key1\":\"value1\"}"),
             Test("coalesce(nullObj,hello,nullObj)", "hello"),
-            //Test("xPath(xmlStr,'/produce/item/name')", new[] { "<name>Gala</name>", "<name>Honeycrisp</name>"}),
+            Test("xPath(xmlStr,'/produce/item/name')", new[] { "<name>Gala</name>", "<name>Honeycrisp</name>"}),
             Test("xPath(xmlStr,'sum(/produce/item/count)')", 30),
+            Test("jPath(jsonStr,'Manufacturers[0].Products[0].Price')", 50),
+            Test("jPath(jsonStr,'$..Products[?(@.Price >= 50)].Name')", new[] {"Anvil", "Elbow Grease" }),
             # endregion
 
             # region  Short Hand Expression

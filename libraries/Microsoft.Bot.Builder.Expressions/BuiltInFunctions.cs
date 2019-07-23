@@ -1944,6 +1944,75 @@ namespace Microsoft.Bot.Builder.Expressions
             return (result, error);
         }
 
+        private static (object, string) JPath(object jobject, string jpath)
+        {
+            object result = null;
+            string error = null;
+            object value = null;
+            JObject jsonObj = null;
+            if (jobject is string jsonStr)
+            {
+                try
+                {
+                    jsonObj = JObject.Parse(jsonStr);
+                }
+                catch
+                {
+                    error = $"{jsonStr} is not a valid JSON string";
+                }
+            }
+            else
+            {
+                try
+                {
+                    jsonObj = (JObject)jobject;
+                }
+                catch
+                {
+                    error = $"{jobject.ToString()} is not a valid JSON object";
+                }
+            }
+
+            if (error == null)
+                {
+                    try
+                    {
+                        value = jsonObj.SelectTokens(jpath);
+                    }
+                    catch
+                    {
+                        error = $"{jpath} is not a valid path";
+                    }
+                }
+
+            if (error == null)
+            {
+                if (value is IEnumerable<JToken> products)
+                {
+                    if (products.Count() == 1)
+                    {
+                        result = ResolveValue(products.ElementAt(0)); ;
+                    }
+                    else if (products.Count() >= 1)
+                    {
+                        var nodeList = new List<object>();
+                        foreach (JToken item in products)
+                        {
+                            nodeList.Add(ResolveValue(item));
+                        }
+
+                        result = nodeList;
+                    }
+                    else
+                    {
+                        error = $"there is no matching node for path: ${jpath} in the given JSON";
+                    }
+                }
+            }
+
+            return (result, error);
+        }
+
         // conversion functions
         private static string ToBinary(string strToConvert)
         {
@@ -3126,6 +3195,7 @@ namespace Microsoft.Bot.Builder.Expressions
                 new ExpressionEvaluator(ExpressionType.Where, Where, ReturnType.Object, ValidateWhere),
                 new ExpressionEvaluator(ExpressionType.Coalesce, Apply(args => Coalesce(args.ToArray<object>())), ReturnType.Object, ValidateAtLeastOne),
                 new ExpressionEvaluator(ExpressionType.XPath, ApplyWithError(args => XPath(args[0], args[1])), ReturnType.Object, (expr) => ValidateOrder(expr, null, ReturnType.Object, ReturnType.String)),
+                new ExpressionEvaluator(ExpressionType.JPath, ApplyWithError(args => JPath(args[0], args[1])), ReturnType.Object, (expr) => ValidateOrder(expr, null, ReturnType.Object, ReturnType.String)),
 
                 // Regex expression
                 new ExpressionEvaluator(
