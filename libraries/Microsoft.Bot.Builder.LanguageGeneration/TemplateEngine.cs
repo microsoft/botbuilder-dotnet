@@ -43,7 +43,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var totalLGResources = new List<LGResource>();
             foreach (var filePath in filePaths)
             {
-                var fullPath = Path.GetFullPath(filePath);
+                var fullPath = Path.GetFullPath(ImportResolver.NormalizePath(filePath));
                 var rootResource = LGParser.Parse(File.ReadAllText(fullPath), fullPath);
                 var lgResources = rootResource.DiscoverDependencies(importResolver);
                 totalLGResources.AddRange(lgResources);
