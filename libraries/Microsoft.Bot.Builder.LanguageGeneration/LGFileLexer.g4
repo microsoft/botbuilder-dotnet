@@ -167,5 +167,5 @@ TEXT_SEPARATOR
   ;
 
 TEXT
-  : ~[ \\\t\r\n{}[\]()]+  { ignoreWS = false; expectKeywords = false;}
+  : ~[ \\\t\r\n{}[\]()]+?  { ignoreWS = false; expectKeywords = false;}
   ;
