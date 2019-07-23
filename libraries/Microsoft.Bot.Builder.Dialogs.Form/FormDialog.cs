@@ -9,6 +9,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
         public FormSchema Schema { get; set; }
 
         protected void GenerateRules()
-        { }
+        {
+            foreach (var )
+        }
     }
 }
