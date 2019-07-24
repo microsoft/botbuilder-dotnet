@@ -393,10 +393,21 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             public List<Diagnostic> CheckTemplateRef(string exp, ParserRuleContext context)
             {
-                exp = exp.TrimStart('[').TrimEnd(']').Trim();
-                exp = exp.IndexOf('(') < 0 ? exp + "()" : exp;
+                var result = new List<Diagnostic>();
 
-                return CheckExpression(exp, context);
+                exp = exp.TrimStart('[').TrimEnd(']').Trim();
+                var expression = exp.IndexOf('(') < 0 ? exp + "()" : exp;
+
+                try
+                {
+                    new ExpressionEngine(new GetMethodExtensions(new Evaluator(this.Templates, null)).GetMethodX).Parse(expression);
+                }
+                catch (Exception e)
+                {
+                    result.Add(BuildLGDiagnostic(e.Message + $" in template reference `{exp}`", context: context));
+                    return result;
+                }
+                return result;
             }
 
             private List<Diagnostic> CheckMultiLineText(string exp, ParserRuleContext context)
