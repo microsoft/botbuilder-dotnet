@@ -7,17 +7,17 @@ using Microsoft.Rest;
 namespace Microsoft.Bot.Connector.Authentication
 {
     /// <summary>
-    /// ServiceCredentialProvider interface. This interface allows Bots to provide their own
+    /// ServiceClientCredentialProvider interface. This interface allows Bots to provide their own
     /// proof of service identity for the purpose of making service calls from the bot to 
     /// channels. The implementor should return ServiceClientCredentails from GetCredentials 
-    /// method
+    /// method.
     /// </summary>
-    public interface IServiceCredentialProvider : ICredentialProvider
+    public interface IServiceClientCredentialProvider : ICredentialProvider
     {
         /// <summary>
-        /// Get the credential necessary to provide identity/authorization to use
+        /// Get the credential necessary to provide identity/authorization to use.
         /// </summary>
-        /// <returns>ServiceClientCedentials</returns>
+        /// <returns>ServiceClientCedentials.</returns>
         ServiceClientCredentials GetCredentials();
     }
 }
