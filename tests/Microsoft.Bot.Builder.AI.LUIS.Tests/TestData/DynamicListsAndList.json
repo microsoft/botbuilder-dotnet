@@ -13,13 +13,13 @@
           "type": "Airline"
         },
         {
-          "endIndex": 39,
+          "endIndex": 33,
           "modelType": "List Entity Extractor",
           "recognitionSources": [
             "model"
           ],
           "startIndex": 25,
-          "text": "delta airlines",
+          "text": "deltaair",
           "type": "Airline"
         }
       ],
@@ -53,44 +53,44 @@
   },
   "intents": {
     "Cancel": {
-      "score": 0.00482513
+      "score": 0.006612578
     },
     "Delivery": {
-      "score": 0.005328356
+      "score": 0.00618253648
     },
     "EntityTests": {
-      "score": 0.03701389
+      "score": 0.05013815
     },
     "Greeting": {
-      "score": 0.00301943021
+      "score": 0.005450715
     },
     "Help": {
-      "score": 0.004252343
+      "score": 0.00571808033
     },
     "None": {
-      "score": 0.0181404836
+      "score": 0.0357324854
     },
     "Roles": {
-      "score": 0.16424033
+      "score": 0.0241017919
     },
     "search": {
-      "score": 0.008311689
+      "score": 0.00722271856
     },
     "SpecifyName": {
-      "score": 0.006090253
+      "score": 0.007082664
     },
     "Travel": {
-      "score": 0.0129789291
+      "score": 0.0149908112
     },
     "Weather_GetForecast": {
-      "score": 0.008601671
+      "score": 0.006921158
     }
   },
   "sentiment": {
     "label": "neutral",
     "score": 0.5
   },
-  "text": "fly zimbabwe airlines or delta airlines",
+  "text": "fly zimbabwe airlines or deltaair",
   "v3": {
     "options": {
       "DynamicLists": [
@@ -104,10 +104,7 @@
               ]
             },
             {
-              "canonicalForm": "DeltaAir",
-              "synonyms": [
-                "delta airlines"
-              ]
+              "canonicalForm": "DeltaAir"
             }
           ]
         }
@@ -136,14 +133,14 @@
                 "type": "Airline"
               },
               {
-                "length": 14,
+                "length": 8,
                 "modelType": "List Entity Extractor",
                 "modelTypeId": 5,
                 "recognitionSources": [
                   "model"
                 ],
                 "startIndex": 25,
-                "text": "delta airlines",
+                "text": "deltaair",
                 "type": "Airline"
               }
             ],
@@ -175,47 +172,47 @@
         },
         "intents": {
           "Cancel": {
-            "score": 0.00482513
+            "score": 0.006612578
           },
           "Delivery": {
-            "score": 0.005328356
+            "score": 0.00618253648
           },
           "EntityTests": {
-            "score": 0.03701389
+            "score": 0.05013815
           },
           "Greeting": {
-            "score": 0.00301943021
+            "score": 0.005450715
           },
           "Help": {
-            "score": 0.004252343
+            "score": 0.00571808033
           },
           "None": {
-            "score": 0.0181404836
+            "score": 0.0357324854
           },
           "Roles": {
-            "score": 0.16424033
+            "score": 0.0241017919
           },
           "search": {
-            "score": 0.008311689
+            "score": 0.00722271856
           },
           "SpecifyName": {
-            "score": 0.006090253
+            "score": 0.007082664
           },
           "Travel": {
-            "score": 0.0129789291
+            "score": 0.0149908112
           },
           "Weather.GetForecast": {
-            "score": 0.008601671
+            "score": 0.006921158
           }
         },
-        "normalizedQuery": "fly zimbabwe airlines or delta airlines",
+        "normalizedQuery": "fly zimbabwe airlines or deltaair",
         "sentiment": {
           "label": "neutral",
           "score": 0.5
         },
-        "topIntent": "Roles"
+        "topIntent": "EntityTests"
       },
-      "query": "fly zimbabwe airlines or delta airlines"
+      "query": "fly zimbabwe airlines or deltaair"
     }
   }
 }

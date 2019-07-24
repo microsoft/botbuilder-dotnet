@@ -22,22 +22,11 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// </summary>
         /// <param name="canonicalForm">The canonical form of the sub-list.</param>
         /// <param name="synonyms">The synonyms of the canonical form.</param>
-        /// <param name="name">The name of the sub-list.</param>
-        public ListElement(string canonicalForm, IList<string> synonyms, string name = null)
+        public ListElement(string canonicalForm, IList<string> synonyms = null)
         {
             CanonicalForm = canonicalForm;
-            Name = name;
             Synonyms = synonyms;
         }
-
-        /// <summary>
-        /// Gets or sets the name of the sub-list.
-        /// </summary>
-        /// <value>
-        /// The name of the sub-list.
-        /// </value>
-        [JsonProperty(PropertyName = "name")]
-        public string Name { get; set; }
 
         /// <summary>
         /// Gets or sets the canonical form of the sub-list.
@@ -65,9 +54,9 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// </exception>
         public virtual void Validate()
         {
-            if (CanonicalForm == null || Synonyms == null)
+            if (CanonicalForm == null)
             {
-                throw new Microsoft.Rest.ValidationException($"RequestList requires CanonicalForm and Synonyms to be defined.");
+                throw new Microsoft.Rest.ValidationException($"RequestList requires CanonicalForm to be defined.");
             }
         }
     }
