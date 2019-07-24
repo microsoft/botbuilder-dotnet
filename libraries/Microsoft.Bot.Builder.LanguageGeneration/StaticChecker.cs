@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 {
                     importResolver = importResolver ?? ImportResolver.FileResolver;
 
-                    var fullPath = Path.GetFullPath(filePath);
+                    var fullPath = Path.GetFullPath(ImportResolver.NormalizePath(filePath));
                     var rootResource = LGParser.Parse(File.ReadAllText(fullPath), fullPath);
                     var resources = rootResource.DiscoverDependencies(importResolver);
                     totalLGResources.AddRange(resources);
@@ -396,40 +396,17 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 var result = new List<Diagnostic>();
 
                 exp = exp.TrimStart('[').TrimEnd(']').Trim();
+                var expression = exp.IndexOf('(') < 0 ? exp + "()" : exp;
 
-                var argsStartPos = exp.IndexOf('(');
-
-                // Do have args
-                if (argsStartPos > 0)
+                try
                 {
-                    // EvaluateTemplate all arguments using ExpressoinEngine
-                    var argsEndPos = exp.LastIndexOf(')');
-                    if (argsEndPos < 0 || argsEndPos < argsStartPos + 1)
-                    {
-                        result.Add(BuildLGDiagnostic($"Not a valid template ref: {exp}", context: context));
-                    }
-                    else
-                    {
-                        var templateName = exp.Substring(0, argsStartPos);
-                        if (!templateMap.ContainsKey(templateName))
-                        {
-                            result.Add(BuildLGDiagnostic($"[{templateName}] template not found", context: context));
-                        }
-                        else
-                        {
-                            var argsNumber = exp.Substring(argsStartPos + 1, argsEndPos - argsStartPos - 1).Split(',').Length;
-                            result.AddRange(CheckTemplateParameters(templateName, argsNumber, context));
-                        }
-                    }
+                    new ExpressionEngine(new GetMethodExtensions(new Evaluator(this.Templates, null)).GetMethodX).Parse(expression);
                 }
-                else
+                catch (Exception e)
                 {
-                    if (!templateMap.ContainsKey(exp))
-                    {
-                        result.Add(BuildLGDiagnostic($"[{exp}] template not found", context: context));
-                    }
+                    result.Add(BuildLGDiagnostic(e.Message + $" in template reference `{exp}`", context: context));
+                    return result;
                 }
-
                 return result;
             }
 
@@ -457,19 +434,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 if (exp.StartsWith("```"))
                 {
                     result.Add(BuildLGDiagnostic("Multi line variation must be enclosed in ```", context: context));
-                }
-
-                return result;
-            }
-
-            private List<Diagnostic> CheckTemplateParameters(string templateName, int argsNumber, ParserRuleContext context)
-            {
-                var result = new List<Diagnostic>();
-                var parametersNumber = templateMap[templateName].Parameters.Count;
-
-                if (argsNumber != parametersNumber)
-                {
-                    result.Add(BuildLGDiagnostic($"Arguments count mismatch for template ref {templateName}, expected {parametersNumber}, actual {argsNumber}", context: context));
                 }
 
                 return result;

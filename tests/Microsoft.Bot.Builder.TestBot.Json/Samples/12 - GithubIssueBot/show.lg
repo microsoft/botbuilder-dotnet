@@ -1,5 +1,5 @@
 # Show
-- You have following issues : \n {join(foreach(dialog.getResponse, x, lgTemplate('showSingleUrl', x)), '\n')}
+- You have following issues : \n {join(foreach(dialog.getResponse, x, showSingleUrl(x)), '\n')}
 
 # showSingleUrl(x)
 - ```
