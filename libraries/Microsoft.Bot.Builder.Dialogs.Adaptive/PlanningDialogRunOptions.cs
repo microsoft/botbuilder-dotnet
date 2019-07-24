@@ -13,6 +13,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
         public int? ExpireAfter { get; set; }
 
-        public Dictionary<string, object> UserState { get; set; }
+        public IDictionary<string, object> UserState { get; set; }
     }
 }
