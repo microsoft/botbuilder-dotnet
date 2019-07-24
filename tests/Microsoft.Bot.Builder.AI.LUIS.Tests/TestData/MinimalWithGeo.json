@@ -1,0 +1,734 @@
+{
+  "entities": {
+    "geographyV2": [
+      {
+        "location": "dallas",
+        "type": "city"
+      },
+      {
+        "location": "texas",
+        "type": "state"
+      }
+    ]
+  },
+  "intents": {
+    "EntityTests": {
+      "score": 0.149930492
+    }
+  },
+  "sentiment": {
+    "label": "neutral",
+    "score": 0.5
+  },
+  "text": "fly to dallas, texas",
+  "v2": {
+    "options": {
+      "IncludeAllIntents": false,
+      "IncludeInstanceData": false,
+      "LogPersonalInformation": false,
+      "Timeout": 100000.0
+    },
+    "response": {
+      "entities": [
+        {
+          "endIndex": 12,
+          "entity": "dallas",
+          "startIndex": 7,
+          "type": "builtin.geographyV2.city"
+        },
+        {
+          "endIndex": 19,
+          "entity": "texas",
+          "startIndex": 15,
+          "type": "builtin.geographyV2.state"
+        }
+      ],
+      "query": "fly to dallas, texas",
+      "sentimentAnalysis": {
+        "label": "neutral",
+        "score": 0.5
+      },
+      "topScoringIntent": {
+        "intent": "EntityTests",
+        "score": 0.149930492
+      }
+    }
+  },
+  "v3": {
+    "options": {
+      "IncludeAllIntents": false,
+      "IncludeInstanceData": false,
+      "LogPersonalInformation": false,
+      "Slot": "production",
+      "Timeout": 100000.0
+    },
+    "response": {
+      "prediction": {
+        "entities": {
+          "$instance": {
+            "Composite1": [
+              {
+                "length": 306,
+                "modelType": "Composite Entity Extractor",
+                "modelTypeId": 4,
+                "recognitionSources": [
+                  "model"
+                ],
+                "score": 0.880988955,
+                "startIndex": 0,
+                "text": "12 years old and 3 days old and monday july 3rd, 2019 and every monday and between 3am and 5:30am and 4 acres and 4 pico meters and chrimc@hotmail.com and $4 and $4.25 and also 32 and 210.4 and first and 10% and 10.5% and 425-555-1234 and 3 degrees and -27.5 degrees c and the next one and the previous one",
+                "type": "Composite1"
+              }
+            ],
+            "ordinalV2": [
+              {
+                "length": 3,
+                "modelType": "Prebuilt Entity Extractor",
+                "modelTypeId": 2,
+                "recognitionSources": [
+                  "model"
+                ],
+                "startIndex": 44,
+                "text": "3rd",
+                "type": "builtin.ordinalV2"
+              },
+              {
+                "length": 5,
+                "modelType": "Prebuilt Entity Extractor",
+                "modelTypeId": 2,
+                "recognitionSources": [
+                  "model"
+                ],
+                "startIndex": 194,
+                "text": "first",
+                "type": "builtin.ordinalV2"
+              },
+              {
+                "length": 8,
+                "modelType": "Prebuilt Entity Extractor",
+                "modelTypeId": 2,
+                "recognitionSources": [
+                  "model"
+                ],
+                "startIndex": 277,
+                "text": "next one",
+                "type": "builtin.ordinalV2.relative"
+              },
+              {
+                "length": 12,
+                "modelType": "Prebuilt Entity Extractor",
+                "modelTypeId": 2,
+                "recognitionSources": [
+                  "model"
+                ],
+                "startIndex": 294,
+                "text": "previous one",
+                "type": "builtin.ordinalV2.relative"
+              }
+            ]
+          },
+          "Composite1": [
+            {
+              "$instance": {
+                "age": [
+                  {
+                    "length": 12,
+                    "modelType": "Prebuilt Entity Extractor",
+                    "modelTypeId": 2,
+                    "recognitionSources": [
+                      "model"
+                    ],
+                    "startIndex": 0,
+                    "text": "12 years old",
+                    "type": "builtin.age"
+                  },
+                  {
+                    "length": 10,
+                    "modelType": "Prebuilt Entity Extractor",
+                    "modelTypeId": 2,
+                    "recognitionSources": [
+                      "model"
+                    ],
+                    "startIndex": 17,
+                    "text": "3 days old",
+                    "type": "builtin.age"
+                  }
+                ],
+                "datetimeV2": [
+                  {
+                    "length": 8,
+                    "modelType": "Prebuilt Entity Extractor",
+                    "modelTypeId": 2,
+                    "recognitionSources": [
+                      "model"
+                    ],
+                    "startIndex": 0,
+                    "text": "12 years",
+                    "type": "builtin.datetimeV2.duration"
+                  },
+                  {
+                    "length": 6,
+                    "modelType": "Prebuilt Entity Extractor",
+                    "modelTypeId": 2,
+                    "recognitionSources": [
+                      "model"
+                    ],
+                    "startIndex": 17,
+                    "text": "3 days",
+                    "type": "builtin.datetimeV2.duration"
+                  },
+                  {
+                    "length": 21,
+                    "modelType": "Prebuilt Entity Extractor",
+                    "modelTypeId": 2,
+                    "recognitionSources": [
+                      "model"
+                    ],
+                    "startIndex": 32,
+                    "text": "monday july 3rd, 2019",
+                    "type": "builtin.datetimeV2.date"
+                  },
+                  {
+                    "length": 12,
+                    "modelType": "Prebuilt Entity Extractor",
+                    "modelTypeId": 2,
+                    "recognitionSources": [
+                      "model"
+                    ],
+                    "startIndex": 58,
+                    "text": "every monday",
+                    "type": "builtin.datetimeV2.set"
+                  },
+                  {
+                    "length": 22,
+                    "modelType": "Prebuilt Entity Extractor",
+                    "modelTypeId": 2,
+                    "recognitionSources": [
+                      "model"
+                    ],
+                    "startIndex": 75,
+                    "text": "between 3am and 5:30am",
+                    "type": "builtin.datetimeV2.timerange"
+                  }
+                ],
+                "dimension": [
+                  {
+                    "length": 7,
+                    "modelType": "Prebuilt Entity Extractor",
+                    "modelTypeId": 2,
+                    "recognitionSources": [
+                      "model"
+                    ],
+                    "startIndex": 102,
+                    "text": "4 acres",
+                    "type": "builtin.dimension"
+                  },
+                  {
+                    "length": 13,
+                    "modelType": "Prebuilt Entity Extractor",
+                    "modelTypeId": 2,
+                    "recognitionSources": [
+                      "model"
+                    ],
+                    "startIndex": 114,
+                    "text": "4 pico meters",
+                    "type": "builtin.dimension"
+                  }
+                ],
+                "email": [
+                  {
+                    "length": 18,
+                    "modelType": "Prebuilt Entity Extractor",
+                    "modelTypeId": 2,
+                    "recognitionSources": [
+                      "model"
+                    ],
+                    "startIndex": 132,
+                    "text": "chrimc@hotmail.com",
+                    "type": "builtin.email"
+                  }
+                ],
+                "money": [
+                  {
+                    "length": 2,
+                    "modelType": "Prebuilt Entity Extractor",
+                    "modelTypeId": 2,
+                    "recognitionSources": [
+                      "model"
+                    ],
+                    "startIndex": 155,
+                    "text": "$4",
+                    "type": "builtin.currency"
+                  },
+                  {
+                    "length": 5,
+                    "modelType": "Prebuilt Entity Extractor",
+                    "modelTypeId": 2,
+                    "recognitionSources": [
+                      "model"
+                    ],
+                    "startIndex": 162,
+                    "text": "$4.25",
+                    "type": "builtin.currency"
+                  }
+                ],
+                "number": [
+                  {
+                    "length": 2,
+                    "modelType": "Prebuilt Entity Extractor",
+                    "modelTypeId": 2,
+                    "recognitionSources": [
+                      "model"
+                    ],
+                    "startIndex": 0,
+                    "text": "12",
+                    "type": "builtin.number"
+                  },
+                  {
+                    "length": 1,
+                    "modelType": "Prebuilt Entity Extractor",
+                    "modelTypeId": 2,
+                    "recognitionSources": [
+                      "model"
+                    ],
+                    "startIndex": 17,
+                    "text": "3",
+                    "type": "builtin.number"
+                  },
+                  {
+                    "length": 4,
+                    "modelType": "Prebuilt Entity Extractor",
+                    "modelTypeId": 2,
+                    "recognitionSources": [
+                      "model"
+                    ],
+                    "startIndex": 49,
+                    "text": "2019",
+                    "type": "builtin.number"
+                  },
+                  {
+                    "length": 1,
+                    "modelType": "Prebuilt Entity Extractor",
+                    "modelTypeId": 2,
+                    "recognitionSources": [
+                      "model"
+                    ],
+                    "startIndex": 91,
+                    "text": "5",
+                    "type": "builtin.number"
+                  },
+                  {
+                    "length": 1,
+                    "modelType": "Prebuilt Entity Extractor",
+                    "modelTypeId": 2,
+                    "recognitionSources": [
+                      "model"
+                    ],
+                    "startIndex": 102,
+                    "text": "4",
+                    "type": "builtin.number"
+                  },
+                  {
+                    "length": 1,
+                    "modelType": "Prebuilt Entity Extractor",
+                    "modelTypeId": 2,
+                    "recognitionSources": [
+                      "model"
+                    ],
+                    "startIndex": 114,
+                    "text": "4",
+                    "type": "builtin.number"
+                  },
+                  {
+                    "length": 1,
+                    "modelType": "Prebuilt Entity Extractor",
+                    "modelTypeId": 2,
+                    "recognitionSources": [
+                      "model"
+                    ],
+                    "startIndex": 156,
+                    "text": "4",
+                    "type": "builtin.number"
+                  },
+                  {
+                    "length": 4,
+                    "modelType": "Prebuilt Entity Extractor",
+                    "modelTypeId": 2,
+                    "recognitionSources": [
+                      "model"
+                    ],
+                    "startIndex": 163,
+                    "text": "4.25",
+                    "type": "builtin.number"
+                  },
+                  {
+                    "length": 2,
+                    "modelType": "Prebuilt Entity Extractor",
+                    "modelTypeId": 2,
+                    "recognitionSources": [
+                      "model"
+                    ],
+                    "startIndex": 177,
+                    "text": "32",
+                    "type": "builtin.number"
+                  },
+                  {
+                    "length": 5,
+                    "modelType": "Prebuilt Entity Extractor",
+                    "modelTypeId": 2,
+                    "recognitionSources": [
+                      "model"
+                    ],
+                    "startIndex": 184,
+                    "text": "210.4",
+                    "type": "builtin.number"
+                  },
+                  {
+                    "length": 2,
+                    "modelType": "Prebuilt Entity Extractor",
+                    "modelTypeId": 2,
+                    "recognitionSources": [
+                      "model"
+                    ],
+                    "startIndex": 204,
+                    "text": "10",
+                    "type": "builtin.number"
+                  },
+                  {
+                    "length": 4,
+                    "modelType": "Prebuilt Entity Extractor",
+                    "modelTypeId": 2,
+                    "recognitionSources": [
+                      "model"
+                    ],
+                    "startIndex": 212,
+                    "text": "10.5",
+                    "type": "builtin.number"
+                  },
+                  {
+                    "length": 3,
+                    "modelType": "Prebuilt Entity Extractor",
+                    "modelTypeId": 2,
+                    "recognitionSources": [
+                      "model"
+                    ],
+                    "startIndex": 222,
+                    "text": "425",
+                    "type": "builtin.number"
+                  },
+                  {
+                    "length": 3,
+                    "modelType": "Prebuilt Entity Extractor",
+                    "modelTypeId": 2,
+                    "recognitionSources": [
+                      "model"
+                    ],
+                    "startIndex": 226,
+                    "text": "555",
+                    "type": "builtin.number"
+                  },
+                  {
+                    "length": 4,
+                    "modelType": "Prebuilt Entity Extractor",
+                    "modelTypeId": 2,
+                    "recognitionSources": [
+                      "model"
+                    ],
+                    "startIndex": 230,
+                    "text": "1234",
+                    "type": "builtin.number"
+                  },
+                  {
+                    "length": 1,
+                    "modelType": "Prebuilt Entity Extractor",
+                    "modelTypeId": 2,
+                    "recognitionSources": [
+                      "model"
+                    ],
+                    "startIndex": 239,
+                    "text": "3",
+                    "type": "builtin.number"
+                  },
+                  {
+                    "length": 5,
+                    "modelType": "Prebuilt Entity Extractor",
+                    "modelTypeId": 2,
+                    "recognitionSources": [
+                      "model"
+                    ],
+                    "startIndex": 253,
+                    "text": "-27.5",
+                    "type": "builtin.number"
+                  },
+                  {
+                    "length": 3,
+                    "modelType": "Prebuilt Entity Extractor",
+                    "modelTypeId": 2,
+                    "recognitionSources": [
+                      "model"
+                    ],
+                    "startIndex": 282,
+                    "text": "one",
+                    "type": "builtin.number"
+                  },
+                  {
+                    "length": 3,
+                    "modelType": "Prebuilt Entity Extractor",
+                    "modelTypeId": 2,
+                    "recognitionSources": [
+                      "model"
+                    ],
+                    "startIndex": 303,
+                    "text": "one",
+                    "type": "builtin.number"
+                  }
+                ],
+                "percentage": [
+                  {
+                    "length": 3,
+                    "modelType": "Prebuilt Entity Extractor",
+                    "modelTypeId": 2,
+                    "recognitionSources": [
+                      "model"
+                    ],
+                    "startIndex": 204,
+                    "text": "10%",
+                    "type": "builtin.percentage"
+                  },
+                  {
+                    "length": 5,
+                    "modelType": "Prebuilt Entity Extractor",
+                    "modelTypeId": 2,
+                    "recognitionSources": [
+                      "model"
+                    ],
+                    "startIndex": 212,
+                    "text": "10.5%",
+                    "type": "builtin.percentage"
+                  }
+                ],
+                "phonenumber": [
+                  {
+                    "length": 12,
+                    "modelType": "Prebuilt Entity Extractor",
+                    "modelTypeId": 2,
+                    "recognitionSources": [
+                      "model"
+                    ],
+                    "score": 0.9,
+                    "startIndex": 222,
+                    "text": "425-555-1234",
+                    "type": "builtin.phonenumber"
+                  }
+                ],
+                "temperature": [
+                  {
+                    "length": 9,
+                    "modelType": "Prebuilt Entity Extractor",
+                    "modelTypeId": 2,
+                    "recognitionSources": [
+                      "model"
+                    ],
+                    "startIndex": 239,
+                    "text": "3 degrees",
+                    "type": "builtin.temperature"
+                  },
+                  {
+                    "length": 15,
+                    "modelType": "Prebuilt Entity Extractor",
+                    "modelTypeId": 2,
+                    "recognitionSources": [
+                      "model"
+                    ],
+                    "startIndex": 253,
+                    "text": "-27.5 degrees c",
+                    "type": "builtin.temperature"
+                  }
+                ]
+              },
+              "age": [
+                {
+                  "number": 12,
+                  "unit": "Year"
+                },
+                {
+                  "number": 3,
+                  "unit": "Day"
+                }
+              ],
+              "datetimeV2": [
+                {
+                  "type": "duration",
+                  "values": [
+                    {
+                      "timex": "P12Y",
+                      "value": "378432000"
+                    }
+                  ]
+                },
+                {
+                  "type": "duration",
+                  "values": [
+                    {
+                      "timex": "P3D",
+                      "value": "259200"
+                    }
+                  ]
+                },
+                {
+                  "type": "date",
+                  "values": [
+                    {
+                      "timex": "2019-07-03",
+                      "value": "2019-07-03"
+                    }
+                  ]
+                },
+                {
+                  "type": "set",
+                  "values": [
+                    {
+                      "timex": "XXXX-WXX-1",
+                      "value": "not resolved"
+                    }
+                  ]
+                },
+                {
+                  "type": "timerange",
+                  "values": [
+                    {
+                      "end": "05:30:00",
+                      "start": "03:00:00",
+                      "timex": "(T03,T05:30,PT2H30M)"
+                    }
+                  ]
+                }
+              ],
+              "dimension": [
+                {
+                  "number": 4,
+                  "unit": "Acre"
+                },
+                {
+                  "number": 4,
+                  "unit": "Picometer"
+                }
+              ],
+              "email": [
+                "chrimc@hotmail.com"
+              ],
+              "money": [
+                {
+                  "number": 4,
+                  "unit": "Dollar"
+                },
+                {
+                  "number": 4.25,
+                  "unit": "Dollar"
+                }
+              ],
+              "number": [
+                12,
+                3,
+                2019,
+                5,
+                4,
+                4,
+                4,
+                4.25,
+                32,
+                210.4,
+                10,
+                10.5,
+                425,
+                555,
+                1234,
+                3,
+                -27.5,
+                1,
+                1
+              ],
+              "percentage": [
+                10,
+                10.5
+              ],
+              "phonenumber": [
+                "425-555-1234"
+              ],
+              "temperature": [
+                {
+                  "number": 3,
+                  "unit": "Degree"
+                },
+                {
+                  "number": -27.5,
+                  "unit": "C"
+                }
+              ]
+            }
+          ],
+          "ordinalV2": [
+            {
+              "offset": 3,
+              "relativeTo": "start"
+            },
+            {
+              "offset": 1,
+              "relativeTo": "start"
+            },
+            {
+              "offset": 1,
+              "relativeTo": "current"
+            },
+            {
+              "offset": -1,
+              "relativeTo": "current"
+            }
+          ]
+        },
+        "intents": {
+          "Cancel": {
+            "score": 1.56337478E-06
+          },
+          "Delivery": {
+            "score": 0.0002846266
+          },
+          "EntityTests": {
+            "score": 0.953405857
+          },
+          "Greeting": {
+            "score": 8.20979437E-07
+          },
+          "Help": {
+            "score": 4.81870757E-06
+          },
+          "None": {
+            "score": 0.01040122
+          },
+          "Roles": {
+            "score": 0.197366714
+          },
+          "search": {
+            "score": 0.14049834
+          },
+          "SpecifyName": {
+            "score": 0.000137732946
+          },
+          "Travel": {
+            "score": 0.0100996653
+          },
+          "Weather.GetForecast": {
+            "score": 0.0143940123
+          }
+        },
+        "normalizedQuery": "12 years old and 3 days old and monday july 3rd, 2019 and every monday and between 3am and 5:30am and 4 acres and 4 pico meters and chrimc@hotmail.com and $4 and $4.25 and also 32 and 210.4 and first and 10% and 10.5% and 425-555-1234 and 3 degrees and -27.5 degrees c and the next one and the previous one",
+        "sentiment": {
+          "label": "neutral",
+          "score": 0.5
+        },
+        "topIntent": "EntityTests"
+      },
+      "query": "12 years old and 3 days old and monday july 3rd, 2019 and every monday and between 3am and 5:30am and 4 acres and 4 pico meters and chrimc@hotmail.com and $4 and $4.25 and also 32 and 210.4 and first and 10% and 10.5% and 425-555-1234 and 3 degrees and -27.5 degrees c and the next one and the previous one"
+    }
+  }
+}
