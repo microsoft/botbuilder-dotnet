@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive
@@ -20,12 +21,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         public AdaptiveDialogState Plans { get; private set; }
 
         /// <summary>
-        /// List of steps being executed
+        /// List of steps being executed.
         /// </summary>
         public List<StepState> Steps { get; set; }
         
         /// <summary>
-        /// List of changes that are queued to be applied
+        /// List of changes that are queued to be applied.
         /// </summary>
         public List<StepChangeList> Changes
         {
@@ -249,6 +250,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Specifies whether a given dialog should inherit dialog-level state. For adaptive dialogs, 
+        /// we take our base class cases plus we explicitly ask that InputDialogs inherit state as well.
+        /// InputDialogs don't inherit state out of the box because they inherit directly from Dialog and 
+        /// are declared in the Adaptive assembly, so the base class, DialogContext does not explicitly
+        /// request that they inherit state. Thus, we add it here. This enables seamless usage of
+        /// dialog level properties such as $name across Input dialogs and / or steps within an adaptive dialog.
+        /// </summary>
+        /// <param name="dialog">The dialog to be tested.</param>
+        /// <returns>Whether the passed dialog should inherit dialog-level state.</returns>
+        protected override bool ShouldInheritState(IDialog dialog)
+        {
+            return base.ShouldInheritState(dialog) || dialog is InputDialog;
         }
     }
 
