@@ -14,7 +14,7 @@ cardContent
 
 # refTemplate
 - ```
-@{lgTemplate('hello')}
+@{hello()}
 ```
 
 # hello

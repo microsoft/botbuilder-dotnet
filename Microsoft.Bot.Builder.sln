@@ -130,6 +130,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Directory.Build.props = Directory.Build.props
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Schemas", "Schemas", "{EE56F2B6-4995-4E8F-ACFF-310AF0A4DA0F}"
+	ProjectSection(SolutionItems) = preProject
+		schemas\baseComponent.schema = schemas\baseComponent.schema
+		schemas\component.schema = schemas\component.schema
+		schemas\readme.md = schemas\readme.md
+		schemas\sdk.schema = schemas\sdk.schema
+	EndProjectSection
+EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Dialogs.Form", "libraries\Microsoft.Bot.Builder.Dialogs.Form\Microsoft.Bot.Builder.Dialogs.Form.csproj", "{9E694B23-DF55-448D-B735-13713827FB7D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Builder.Dialogs.Form.Test", "tests\Microsoft.Bot.Builder.Dialogs.Form.Test\Microsoft.Bot.Builder.Dialogs.Form.Test.csproj", "{E7CB7BE4-857A-4134-976E-9F309688A6C3}"

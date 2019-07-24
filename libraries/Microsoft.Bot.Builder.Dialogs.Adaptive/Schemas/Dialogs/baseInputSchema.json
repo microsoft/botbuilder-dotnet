@@ -1,5 +1,5 @@
 {
-  "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/master/packages/DialogSchema/src/dialogSchema.schema",
+  "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-dotnet/4.Future/Schemas/component.schema",
   "type": "object",
   "allOf": [
     {
