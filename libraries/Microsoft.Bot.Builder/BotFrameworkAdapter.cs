@@ -965,9 +965,9 @@ namespace Microsoft.Bot.Builder
                 return appCredentials;
             }
 
-            var provider2 = _credentialProvider as ICredentialProvider2;
+            var serviceCredentialProvider = _credentialProvider as IServiceCredentialProvider;
 
-            appCredentials = provider2?.GetCredentials();
+            appCredentials = serviceCredentialProvider?.GetCredentials();
             if (appCredentials != null)
             {
                 return appCredentials;
