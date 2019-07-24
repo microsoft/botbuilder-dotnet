@@ -25,39 +25,39 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         public ExpressionEvaluator GetMethodX(string name)
         {
+            // user can always choose to use builtin.xxx to disambiguate with template xxx
+            var builtInPrefix = "builtin.";
+
+            if (name.StartsWith(builtInPrefix))
+            {
+                return BuiltInFunctions.Lookup(name.Substring(builtInPrefix.Length));
+            }
+
             // TODO: Should add verifiers and validators
             switch (name)
             {
-                case "lgTemplate":
-                    return new ExpressionEvaluator("lgTemplate", BuiltInFunctions.Apply(this.LgTemplate), ReturnType.String, this.ValidLgTemplate);
                 case "join":
                     return new ExpressionEvaluator("join", BuiltInFunctions.Apply(this.Join));
+            }
+
+            if (_evaluator.TemplateMap.ContainsKey(name))
+            {
+                return new ExpressionEvaluator($"{name}", BuiltInFunctions.Apply(this.TemplateEvaluator(name)), ReturnType.String, this.ValidTemplateReference);
             }
 
             return BuiltInFunctions.Lookup(name);
         }
 
-        public object LgTemplate(IReadOnlyList<object> args)
-        {
-            var templateName = (string)args[0];
-            var newScope = _evaluator.ConstructScope(templateName, args.Skip(1).ToList());
-            var result = _evaluator.EvaluateTemplate(templateName, newScope);
-            return result;
-        }
-
-        public void ValidLgTemplate(Expression expression)
-        {
-            if (expression.Children.Length == 0)
+        public Func<IReadOnlyList<object>, object> TemplateEvaluator(string templateName)
+            => (IReadOnlyList<object> args) =>
             {
-                throw new Exception("lgTemplate requires 1 or more arguments");
-            }
+                var newScope = _evaluator.ConstructScope(templateName, args.ToList());
+                return _evaluator.EvaluateTemplate(templateName, newScope);
+            };
 
-            if (!(expression.Children[0] is Constant cnst && cnst.Value is string))
-            {
-                throw new Exception($"lgTemplate expect a string as first argument, acutal {expression.Children[0]}");
-            }
-
-            var templateName = (string)(expression.Children[0] as Constant).Value;
+        public void ValidTemplateReference(Expression expression)
+        {
+            var templateName = expression.Type;
 
             if (!_evaluator.TemplateMap.ContainsKey(templateName))
             {
@@ -65,7 +65,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
 
             var expectedArgsCount = _evaluator.TemplateMap[templateName].Parameters.Count();
-            var actualArgsCount = expression.Children.Length - 1;
+            var actualArgsCount = expression.Children.Length;
 
             if (expectedArgsCount != actualArgsCount)
             {
@@ -80,16 +80,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 BuiltInFunctions.TryParseList(parameters[0], out var p0) &&
                 parameters[1] is string sep)
             {
-                result = string.Join(sep + " ", p0.OfType<object>().Select(x => x.ToString())); // "," => ", "
+                result = string.Join(sep, p0.OfType<object>().Select(x => x.ToString())); 
             }
             else if (parameters.Count == 3 &&
                 BuiltInFunctions.TryParseList(parameters[0], out var li) &&
                 parameters[1] is string sep1 &&
                 parameters[2] is string sep2)
             {
-                sep1 = sep1 + " "; // "," => ", "
-                sep2 = " " + sep2 + " "; // "and" => " and "
-
                 if (li.Count < 3)
                 {
                     result = string.Join(sep2, li.OfType<object>().Select(x => x.ToString()));

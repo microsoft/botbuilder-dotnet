@@ -52,25 +52,25 @@
     This is a multi-line list
     - one
     - two
-    - Greeting: {lgTemplate('WelcomeTemplate')}
+    - Greeting: {WelcomeTemplate()}
 ```
 - ```
     This a variation
     - three
-    - Greeting: {lgTemplate(('WelcomeTemplate')}
+    - Greeting: {WelcomeTemplate()}
 ```
 
 > You can include custom payload in multi-line resolution, use this for cards etc.
 # CardExample
 - ```
     {
-        "Title": "@{lgTemplate('WelcomeTemplate')}",
+        "Title": "@{WelcomeTemplate()}",
         "Images": [
             {
-                "url": "@{lgTemplate('ImageCollection')}"
+                "url": "@{ImageCollection()}"
             }
         ],
-        "SubTitle": "This is an exmple of a card. @{lgTemplate('GreetingTemplate')}",
+        "SubTitle": "This is an exmple of a card. @{GreetingTemplate()}",
         "Text": "This is a Hero Card example"
     }
     ```

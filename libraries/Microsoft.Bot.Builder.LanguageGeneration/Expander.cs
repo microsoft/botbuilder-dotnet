@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     public class Expander : LGFileParserBaseVisitor<List<string>>
     {
         private readonly IGetMethod getMethodX;
-        private Stack<EvaluationTarget> evaluationTargetStack = new Stack<EvaluationTarget>();
+        private readonly Stack<EvaluationTarget> evaluationTargetStack = new Stack<EvaluationTarget>();
 
         public Expander(List<LGTemplate> templates, IGetMethod getMethod)
         {
@@ -99,7 +99,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 if (idx == 0)
                 {
-                    idx = idx + 1;
+                    idx++;
                     continue;   // skip the first node, which is switch statement
                 }
 
@@ -123,7 +123,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     return Visit(switchCaseNode.normalTemplateBody());
                 }
 
-                idx = idx + 1;
+                idx++;
             }
 
             return null;
@@ -167,13 +167,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 // no args to construct, inherit from current scope
                 return CurrentTarget().Scope;
-            }
-
-            if (args.Count == 1 && parameters.Count == 0)
-            {
-                // Special case, if no parameters defined, and only one arg, don't wrap
-                // this is for directly calling an parameterized template
-                return args[0];
             }
 
             var newScope = parameters.Zip(args, (k, v) => new { k, v })
@@ -263,31 +256,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         private List<string> EvalTemplateRef(string exp)
         {
             exp = exp.TrimStart('[').TrimEnd(']').Trim();
+            exp = exp.IndexOf('(') < 0 ? exp + "()" : exp;
 
-            var argsStartPos = exp.IndexOf('(');
-
-            // Do have args
-            if (argsStartPos > 0)
-            {
-                // Evaluate all arguments using ExpressoinEngine
-                var argsEndPos = exp.LastIndexOf(')');
-                if (argsEndPos < 0 || argsEndPos < argsStartPos + 1)
-                {
-                    throw new Exception($"Not a valid template ref: {exp}");
-                }
-
-                var argExpressions = exp.Substring(argsStartPos + 1, argsEndPos - argsStartPos - 1).Split(',');
-                var args = argExpressions.Select(x => EvalByExpressionEngine(x, CurrentTarget().Scope).value).ToList();
-
-                // Construct a new Scope for this template reference
-                // Bind all arguments to parameters
-                var templateName = exp.Substring(0, argsStartPos);
-                var newScope = ConstructScope(templateName, args);
-
-                return EvaluateTemplate(templateName, newScope);
-            }
-
-            return EvaluateTemplate(exp, CurrentTarget().Scope);
+            return EvalExpression(exp);
         }
 
         private EvaluationTarget CurrentTarget() =>
@@ -364,39 +335,39 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         public ExpressionEvaluator GetMethodX(string name)
         {
+            // user can always choose to use builtin.xxx to disambiguate with template xxx
+            var builtInPrefix = "builtin.";
+
+            if (name.StartsWith(builtInPrefix))
+            {
+                return BuiltInFunctions.Lookup(name.Substring(builtInPrefix.Length));
+            }
+
             // TODO: Should add verifiers and validators
             switch (name)
             {
-                case "lgTemplate":
-                    return new ExpressionEvaluator("lgTemplate", BuiltInFunctions.Apply(this.LgTemplate), ReturnType.String, this.ValidLgTemplate);
                 case "join":
                     return new ExpressionEvaluator("join", BuiltInFunctions.Apply(this.Join));
+            }
+
+            if (_expander.TemplateMap.ContainsKey(name))
+            {
+                return new ExpressionEvaluator($"{name}", BuiltInFunctions.Apply(this.TemplateEvaluator(name)), ReturnType.String, this.ValidTemplateReference);
             }
 
             return BuiltInFunctions.Lookup(name);
         }
 
-        public object LgTemplate(IReadOnlyList<object> args)
-        {
-            var templateName = (string)args[0];
-            var newScope = _expander.ConstructScope(templateName, args.Skip(1).ToList());
-            var result = _expander.EvaluateTemplate(templateName, newScope);
-            return result;
-        }
-
-        public void ValidLgTemplate(Expression expression)
-        {
-            if (expression.Children.Length == 0)
+        public Func<IReadOnlyList<object>, object> TemplateEvaluator(string templateName) =>
+            (IReadOnlyList<object> args) =>
             {
-                throw new Exception("lgTemplate requires 1 or more arguments");
-            }
+                var newScope = _expander.ConstructScope(templateName, args.ToList());
+                return _expander.EvaluateTemplate(templateName, newScope);
+            };
 
-            if (!(expression.Children[0] is Constant cnst && cnst.Value is string))
-            {
-                throw new Exception($"lgTemplate expect a string as first argument, acutal {expression.Children[0]}");
-            }
-
-            var templateName = (string)(expression.Children[0] as Constant).Value;
+        public void ValidTemplateReference(Expression expression)
+        {
+            var templateName = expression.Type;
 
             if (!_expander.TemplateMap.ContainsKey(templateName))
             {
@@ -404,7 +375,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
 
             var expectedArgsCount = _expander.TemplateMap[templateName].Parameters.Count();
-            var actualArgsCount = expression.Children.Length - 1;
+            var actualArgsCount = expression.Children.Length;
 
             if (expectedArgsCount != actualArgsCount)
             {
@@ -420,7 +391,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 parameters[1] is string sep)
             {
                 var p = p0.OfType<object>().Select(x => BuiltInFunctions.TryParseList(x, out var p1) ? p1[0].ToString() : x.ToString());
-                result = string.Join(sep + " ", p); // "," => ", "
+                result = string.Join(sep, p);
             }
             else if (parameters.Count == 3 &&
                 BuiltInFunctions.TryParseList(parameters[0], out var li) &&
@@ -428,8 +399,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 parameters[2] is string sep2)
             {
                 var p = li.OfType<object>().Select(x => BuiltInFunctions.TryParseList(x, out var p1) ? p1[0].ToString() : x.ToString());
-                sep1 = sep1 + " "; // "," => ", "
-                sep2 = " " + sep2 + " "; // "and" => " and "
 
                 if (li.Count < 3)
                 {

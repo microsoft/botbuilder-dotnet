@@ -1,18 +1,10 @@
-﻿> lgTemplate requires 1 or more arguments
-# template1
-- {lgTemplate()}
-
-> lgTemplate expect a string as first argument
-# template2
-- {lgTemplate(1)}
-
-> no such template
+﻿> no such template
 # template3
-- {lgTemplate('NotExistTemplate')}
+- {NotExistTemplate()}
 
 > arguments mismatch
 # template4
-- {lgTemplate('template5')}
+- {template5()}
 
 # template5(param1)
  - hi
