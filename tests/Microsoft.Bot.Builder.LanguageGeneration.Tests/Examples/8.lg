@@ -9,4 +9,4 @@
     - You don't have any tasks.
 
 # ShowTasks
-- {lgTemplate("RecentTasks")}
+- {RecentTasks()}

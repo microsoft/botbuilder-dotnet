@@ -13,7 +13,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     public class Evaluator : LGFileParserBaseVisitor<string>
     {
         private readonly IGetMethod getMethodX;
-        private Stack<EvaluationTarget> evaluationTargetStack = new Stack<EvaluationTarget>();
+        private readonly Stack<EvaluationTarget> evaluationTargetStack = new Stack<EvaluationTarget>();
 
         public Evaluator(List<LGTemplate> templates, IGetMethod getMethod)
         {
@@ -91,7 +91,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 if (idx == 0)
                 {
-                    idx = idx + 1;
+                    idx++;
                     continue;   // skip the first node, which is switch statement
                 }
 
@@ -115,7 +115,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     return Visit(switchCaseNode.normalTemplateBody());
                 }
 
-                idx = idx + 1;
+                idx++;
             }
 
             return null;
@@ -159,13 +159,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 // no args to construct, inherit from current scope
                 return CurrentTarget().Scope;
-            }
-
-            if (args.Count == 1 && parameters.Count == 0)
-            {
-                // Special case, if no parameters defined, and only one arg, don't wrap
-                // this is for directly calling an parameterized template
-                return args[0];
             }
 
             var newScope = parameters.Zip(args, (k, v) => new { k, v })
@@ -248,31 +241,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         private string EvalTemplateRef(string exp)
         {
             exp = exp.TrimStart('[').TrimEnd(']').Trim();
+            exp = exp.IndexOf('(') < 0 ? exp + "()" : exp;
 
-            var argsStartPos = exp.IndexOf('(');
-
-            // Do have args
-            if (argsStartPos > 0)
-            {
-                // Evaluate all arguments using ExpressoinEngine
-                var argsEndPos = exp.LastIndexOf(')');
-                if (argsEndPos < 0 || argsEndPos < argsStartPos + 1)
-                {
-                    throw new Exception($"Not a valid template ref: {exp}");
-                }
-
-                var argExpressions = exp.Substring(argsStartPos + 1, argsEndPos - argsStartPos - 1).Split(',');
-                var args = argExpressions.Select(x => EvalByExpressionEngine(x, CurrentTarget().Scope).value).ToList();
-
-                // Construct a new Scope for this template reference
-                // Bind all arguments to parameters
-                var templateName = exp.Substring(0, argsStartPos);
-                var newScope = ConstructScope(templateName, args);
-
-                return EvaluateTemplate(templateName, newScope);
-            }
-
-            return EvaluateTemplate(exp, CurrentTarget().Scope);
+            return EvalExpression(exp);
         }
 
         private EvaluationTarget CurrentTarget() =>
