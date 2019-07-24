@@ -1,9 +1,8 @@
 {
-    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/master/packages/DialogSchema/src/dialogSchema.schema",
+    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-dotnet/4.Future/Schemas/component.schema",
     "$role": "unionType(Microsoft.IDialog)",
     "type": "object",
     "title": "Repeat Dialog",
     "description": "This is a step which repeats the current dialog with the same dialog.",
-    "properties": {
-    }
+    "properties": {}
 }
