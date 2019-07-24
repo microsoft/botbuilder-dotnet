@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
@@ -108,7 +109,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                     var text = results[0].Resolution["value"].ToString();
                     if (typeof(T) == typeof(float))
                     {
-                        if (float.TryParse(text, out var value))
+                        if (float.TryParse(text, NumberStyles.Any, new CultureInfo(culture), out var value))
                         {
                             result.Succeeded = true;
                             result.Value = (T)(object)value;
@@ -116,7 +117,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                     }
                     else if (typeof(T) == typeof(int))
                     {
-                        if (int.TryParse(text, out var value))
+                        if (int.TryParse(text, NumberStyles.Any, new CultureInfo(culture), out var value))
                         {
                             result.Succeeded = true;
                             result.Value = (T)(object)value;
@@ -124,7 +125,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                     }
                     else if (typeof(T) == typeof(long))
                     {
-                        if (long.TryParse(text, out var value))
+                        if (long.TryParse(text, NumberStyles.Any, new CultureInfo(culture), out var value))
                         {
                             result.Succeeded = true;
                             result.Value = (T)(object)value;
@@ -132,7 +133,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                     }
                     else if (typeof(T) == typeof(double))
                     {
-                        if (double.TryParse(text, out var value))
+                        if (double.TryParse(text, NumberStyles.Any, new CultureInfo(culture), out var value))
                         {
                             result.Succeeded = true;
                             result.Value = (T)(object)value;
@@ -140,15 +141,11 @@ namespace Microsoft.Bot.Builder.Dialogs
                     }
                     else if (typeof(T) == typeof(decimal))
                     {
-                        if (decimal.TryParse(text, out var value))
+                        if (decimal.TryParse(text, NumberStyles.Any, new CultureInfo(culture), out var value))
                         {
                             result.Succeeded = true;
                             result.Value = (T)(object)value;
                         }
-                    }
-                    else
-                    {
-                        throw new NotSupportedException($"NumberPrompt: type argument T of type 'typeof(T)' is not supported");
                     }
                 }
             }
