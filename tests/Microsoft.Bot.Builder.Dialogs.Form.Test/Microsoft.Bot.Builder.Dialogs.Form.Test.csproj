@@ -12,4 +12,14 @@
     <PackageReference Include="MSTest.TestFramework" Version="1.4.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Dialogs.Form\Microsoft.Bot.Builder.Dialogs.Form.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="resources\schema.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

@@ -2,6 +2,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,11 +22,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
         /// </summary>
         public ITemplate<Activity> Activity { get; set; }
 
+        /// <summary>
+        /// Slots expected to be filled by response.
+        /// </summary>
+        public IList<string> ExpectedSlots { get; set; }
+
         [JsonConstructor]
-        public SendActivity(string text = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public SendActivity(string text = null, IList<string> expectedSlots = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
             this.RegisterSourceLocation(callerPath, callerLine);
             this.Activity = new ActivityTemplate(text ?? string.Empty);
+            this.ExpectedSlots = expectedSlots;
         }
 
         public SendActivity(Activity activity, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
@@ -42,22 +50,36 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
 
             var activity = await Activity.BindToData(dc.Context, dc.State).ConfigureAwait(false);
             var response = await dc.Context.SendActivityAsync(activity, cancellationToken).ConfigureAwait(false);
+            if (ExpectedSlots != null)
+            {
+                dc.Context.TurnState.Add("expectedSlots", ExpectedSlots);
+            }
+
             return await dc.EndDialogAsync(response, cancellationToken).ConfigureAwait(false);
         }
 
-        static public string Ellipsis(string text, int length)
+        public static string Ellipsis(string text, int length)
         {
-            if (text.Length <= length) return text;
-            int pos = text.IndexOf(" ", length);
-            if (pos >= 0)
-                return text.Substring(0, pos) + "...";
-            return text;
+            var ellipsis = text;
+            if (text.Length > length)
+            {
+                int pos = text.IndexOf(" ", length);
+                if (pos >= 0)
+                {
+                    ellipsis = text.Substring(0, pos) + "...";
+                }
+            }
+
+            return ellipsis;
         }
 
         protected override string OnComputeId()
         {
             if (Activity is ActivityTemplate at)
+            {
                 return $"SendActivity({Ellipsis(at.Template.Trim(), 30)})";
+            }
+
             return $"SendActivity('{Ellipsis(Activity?.ToString().Trim(), 30)}')";
         }
     }

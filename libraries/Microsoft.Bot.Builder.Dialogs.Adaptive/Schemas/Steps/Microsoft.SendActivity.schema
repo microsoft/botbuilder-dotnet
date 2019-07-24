@@ -9,6 +9,13 @@
             "$type": "Microsoft.IActivityTemplate",
             "title": "Activity",
             "description": "Activity to send to the user"
+        },
+        "expectedSlots": {
+            "type": "array",
+            "items": {
+                "$role": "memoryPath",
+                "type": "string"
+            }
         }
     }
 }
