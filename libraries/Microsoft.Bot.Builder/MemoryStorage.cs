@@ -126,7 +126,7 @@ namespace Microsoft.Bot.Builder
 
                     if (_memory.TryGetValue(change.Key, out var oldState))
                     {
-                        if (oldState.TryGetValue("eTag", out var etag))
+                        if (oldState != null && oldState.TryGetValue("eTag", out var etag))
                         {
                             oldStateETag = etag.Value<string>();
                         }

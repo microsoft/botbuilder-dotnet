@@ -28,7 +28,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         private const string ADAPTIVE_KEY = "adaptiveDialogState";
 
         private readonly string changeKey = Guid.NewGuid().ToString();
-        
+
         private bool installedDependencies = false;
 
         public IStatePropertyAccessor<BotState> BotState { get; set; }
@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         public IStatePropertyAccessor<Dictionary<string, object>> UserState { get; set; }
 
         /// <summary>
-        /// Recognizer for processing incoming user input 
+        /// Recognizer for processing incoming user input
         /// </summary>
         public IRecognizer Recognizer { get; set; }
 
@@ -51,7 +51,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         public List<IDialog> Steps { get; set; } = new List<IDialog>();
 
         /// <summary>
-        /// Rules for handling events to dynamic modifying the executing plan 
+        /// Rules for handling events to dynamic modifying the executing plan
         /// </summary>
         public virtual List<IRule> Rules { get; set; } = new List<IRule>();
 
@@ -462,7 +462,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             if (Recognizer != null)
             {
                 var result = await Recognizer.RecognizeAsync(context, cancellationToken).ConfigureAwait(false);
-                // only allow one intent 
+                // only allow one intent
                 var topIntent = result.GetTopScoringIntent();
                 result.Intents.Clear();
                 result.Intents.Add(topIntent.intent, new IntentScore() { Score = topIntent.score });

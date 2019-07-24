@@ -66,6 +66,25 @@ namespace Microsoft.Bot.Connector
         }
 
         /// <summary>
+        /// Create a new instance of the ConnectorClient class
+        /// </summary>
+        /// <param name="baseUri">Base URI for the Connector service</param>
+        /// <param name="credentials">Credentials for the Connector service</param>
+        /// <param name="customHttpClient">The HTTP client to be used by the connector client.</param>
+        /// <param name="addJwtTokenRefresher">(DEPRECATED)</param>
+        /// <param name="handlers">Optional. The delegating handlers to add to the http client pipeline.</param>
+        public ConnectorClient(Uri baseUri, ServiceClientCredentials credentials, HttpClient customHttpClient, bool addJwtTokenRefresher = true, params DelegatingHandler[] handlers)
+            : this(baseUri, handlers)
+        {
+            this.Credentials = credentials;
+            if (customHttpClient != null)
+            {
+                this.HttpClient = customHttpClient;
+            }
+        }
+
+        /// <summary>
+        /// Create a new instances of the ConnectorClient.
         /// Initializes a new instance of the <see cref="ConnectorClient"/> class.
         /// </summary>
         /// <param name="baseUri">Base URI for the Connector service.</param>

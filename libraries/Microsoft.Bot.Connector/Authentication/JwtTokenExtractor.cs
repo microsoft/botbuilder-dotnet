@@ -226,7 +226,6 @@ namespace Microsoft.Bot.Connector.Authentication
 
             // Update the signing tokens from the last refresh
             _tokenValidationParameters.IssuerSigningKeys = config.SigningKeys;
-
             var tokenHandler = new JwtSecurityTokenHandler();
 
             try
