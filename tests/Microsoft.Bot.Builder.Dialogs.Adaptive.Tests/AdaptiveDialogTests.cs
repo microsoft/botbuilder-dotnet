@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
@@ -125,7 +125,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 },
                 new InitProperty() { Property = "user.todos", Type = "array" },
                 new EditArray(EditArray.ArrayChangeType.Push, "user.todos", "dialog.todo"),
-                new SendActivity() { Activity = new ActivityTemplate("Your todos: {join(user.todos, ',')}") },
+                new SendActivity() { Activity = new ActivityTemplate("Your todos: {join(user.todos, ', ')}") },
                 new TextInput()
                 {
                     AlwaysPrompt = true,
@@ -133,7 +133,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     Property = "dialog.todo"
                 },
                 new EditArray(EditArray.ArrayChangeType.Push, "user.todos", "dialog.todo"),
-                new SendActivity() { Activity = new ActivityTemplate("Your todos: {join(user.todos, ',')}") },
+                new SendActivity() { Activity = new ActivityTemplate("Your todos: {join(user.todos, ', ')}") },
 
                 // Remove item
                 new TextInput()
@@ -143,7 +143,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     Property = "dialog.todo"
                 },
                 new EditArray(EditArray.ArrayChangeType.Remove, "user.todos", "dialog.todo"),
-                new SendActivity() { Activity = new ActivityTemplate("Your todos: {join(user.todos, ',')}") },
+                new SendActivity() { Activity = new ActivityTemplate("Your todos: {join(user.todos, ', ')}") },
 
                 // Add item and pop item
                 new TextInput()
@@ -160,18 +160,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     Property = "dialog.todo"
                 },
                 new EditArray(EditArray.ArrayChangeType.Push, "user.todos", "dialog.todo"),
-                new SendActivity() { Activity = new ActivityTemplate("Your todos: {join(user.todos, ',')}") },
+                new SendActivity() { Activity = new ActivityTemplate("Your todos: {join(user.todos, ', ')}") },
 
                 new EditArray(EditArray.ArrayChangeType.Pop, "user.todos"),
-                new SendActivity() { Activity = new ActivityTemplate("Your todos: {join(user.todos, ',')}") },
+                new SendActivity() { Activity = new ActivityTemplate("Your todos: {join(user.todos, ', ')}") },
 
                 // Take item
                 new EditArray(EditArray.ArrayChangeType.Take, "user.todos"),
-                new SendActivity() { Activity = new ActivityTemplate("Your todos: {join(user.todos, ',')}") },
+                new SendActivity() { Activity = new ActivityTemplate("Your todos: {join(user.todos, ', ')}") },
 
                 // Clear list
                 new EditArray(EditArray.ArrayChangeType.Clear, "user.todos"),
-                new SendActivity() { Activity = new ActivityTemplate("Your todos: {join(user.todos, ',')}") },
+                new SendActivity() { Activity = new ActivityTemplate("Your todos: {join(user.todos, ', ')}") },
             };
 
             await CreateFlow(dialog)
