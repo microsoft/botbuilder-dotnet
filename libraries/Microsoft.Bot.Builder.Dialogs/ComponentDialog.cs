@@ -184,7 +184,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             return childDc;
         }
 
-        private DialogContext CreateInnerDc(ITurnContext context, DialogInstance instance, Dictionary<string, object> userState, Dictionary<string, object> conversationState)
+        private DialogContext CreateInnerDc(ITurnContext context, DialogInstance instance, IDictionary<string, object> userState, IDictionary<string, object> conversationState)
         {
             DialogState state;
 
