@@ -262,6 +262,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("getFutureTime(timestamp, 'W')"),// error parameters format
             Test("getFutureTime('yyyy', '1')"),// second param should be integer
             Test("getFutureTime('yyyy')"),// should have 2 or 3 params
+            Test("getLocalTimeZone('yyyy')"),// should be either offset or timezoneId
             Test("convertFromUTC(notValidTimestamp, timezone)"), // not valid iso timestamp
             Test("convertFromUTC(timestamp, invalidTimezone,'D')"), // not valid timezone
             Test("convertFromUTC(timestamp, timezone, 'a')"),  // not valid format 

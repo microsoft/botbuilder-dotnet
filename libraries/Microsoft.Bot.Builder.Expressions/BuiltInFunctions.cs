@@ -1587,6 +1587,27 @@ namespace Microsoft.Bot.Builder.Expressions
             return (result, error);
         }
 
+        private static (object, string) GetLocalTimeZone(string returnType)
+        {
+            object result = null;
+            string error = null;
+            if (returnType == "offset")
+            {
+                result = TimeZoneInfo.Local.GetUtcOffset(DateTime.UtcNow);
+            }
+            else if (returnType == "timezoneId")
+            {
+                TimeZoneInfo localZone = TimeZoneInfo.Local;
+                result = localZone.Id;
+            }
+            else
+            {
+                error = $"no such option:{returnType}, should be one of offset or timezoneId";
+            }
+
+            return (result, error);
+        }
+
         private static (string, string) AddToTime(string timestamp, int interval, string timeUnit, string format)
         {
             string result = null;
@@ -2746,6 +2767,11 @@ namespace Microsoft.Bot.Builder.Expressions
                     },
                     ReturnType.String,
                     expr => ValidateOrder(expr, new[] { ReturnType.String }, ReturnType.String, ReturnType.Number, ReturnType.String)),
+                new ExpressionEvaluator(
+                    ExpressionType.GetLocalTimeZone,
+                    ApplyWithError(args => GetLocalTimeZone(args[0])),
+                    ReturnType.Object,
+                    (expr) => ValidateUnary(expr)),
                 new ExpressionEvaluator(
                     ExpressionType.StartOfDay,
                     (expr, state) =>

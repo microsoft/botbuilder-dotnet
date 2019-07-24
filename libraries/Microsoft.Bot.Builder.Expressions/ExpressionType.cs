@@ -95,6 +95,7 @@ namespace Microsoft.Bot.Builder.Expressions
         public const string StartOfHour = "startOfHour";
         public const string StartOfMonth = "startOfMonth";
         public const string Ticks = "ticks";
+        public const string GetLocalTimeZone = "getLocalTimeZone";
 
         // Conversions
         public const string Float = "float";
