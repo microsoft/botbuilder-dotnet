@@ -1064,6 +1064,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             await TestBindingTwoWayAcrossAdaptiveDialogs(new Dictionary<string, string>() { { "userName", "$name" } });
         }
 
+        /// <summary>
+        /// Test class to test two way binding with strongly typed options objects.
+        /// </summary>
         class Person
         {
             public string userName { get; set; }
