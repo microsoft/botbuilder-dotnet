@@ -604,5 +604,29 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.AreEqual(true, eval1Options.Contains(evaled[0]));
             Assert.AreEqual(true, eval2Options.Contains(evaled[1]));
         }
+
+        [TestMethod]
+        public void TestEvalExpression()
+        {
+            var engine = new TemplateEngine().AddFile(GetExampleFilePath("EvalExpression.lg"));
+
+            var userName = "MS";
+            var evaled = engine.EvaluateTemplate("template1", new { userName });
+            Assert.AreEqual(evaled, "Hi MS");
+
+            evaled = engine.EvaluateTemplate("template2", new { userName });
+            Assert.AreEqual(evaled, "Hi MS");
+
+            evaled = engine.EvaluateTemplate("template3", new { userName });
+            Assert.AreEqual(evaled, "HiMS");
+
+            evaled = engine.EvaluateTemplate("template4", new { userName });
+            var eval1Options = new List<string>() { "\r\nHi MS\r\n", "\nHi MS\n" };
+            Assert.IsTrue(eval1Options.Contains(evaled));
+
+            evaled = engine.EvaluateTemplate("template5", new { userName });
+            var eval2Options = new List<string>() { "\r\nHiMS\r\n", "\nHiMS\n" };
+            Assert.IsTrue(eval2Options.Contains(evaled));
+        }
     }
 }
