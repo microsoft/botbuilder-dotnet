@@ -58,6 +58,7 @@
     <None Remove="ExceptionExamples\SwitchCaseFormatError.lg" />
     <None Remove="ExceptionExamples\SwitchCaseWarning.lg" />
     <None Remove="ExceptionExamples\TemplateParamsNotMatchArgsNum.lg" />
+    <None Remove="ExceptionExamples\TemplateAsFunction.lg" />
   </ItemGroup>
 
   <ItemGroup>

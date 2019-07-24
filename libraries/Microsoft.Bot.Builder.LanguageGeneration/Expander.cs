@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     public class Expander : LGFileParserBaseVisitor<List<string>>
     {
         private readonly IGetMethod getMethodX;
-        private Stack<EvaluationTarget> evaluationTargetStack = new Stack<EvaluationTarget>();
+        private readonly Stack<EvaluationTarget> evaluationTargetStack = new Stack<EvaluationTarget>();
 
         public Expander(List<LGTemplate> templates, IGetMethod getMethod)
         {
@@ -99,7 +99,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 if (idx == 0)
                 {
-                    idx = idx + 1;
+                    idx++;
                     continue;   // skip the first node, which is switch statement
                 }
 
@@ -123,7 +123,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     return Visit(switchCaseNode.normalTemplateBody());
                 }
 
-                idx = idx + 1;
+                idx++;
             }
 
             return null;
