@@ -124,14 +124,9 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
             {
                 var parameters = ProcessArgsList(context.argsList()).ToList();
 
-                // Current only IdAtom is supported as function name
-                if (context.primaryExpression() is ExpressionParser.IdAtomContext functionNameItem)
-                {
-                    var functionName = functionNameItem.GetText();
-                    return MakeExpression(functionName, parameters.ToArray());
-                }
-
-                throw new Exception($"This format is wrong in expression '{context.GetText()}'");
+                // Remove the check to check primaryExpression is just an IDENTIFIER to support "." in template name
+                var functionName = context.primaryExpression().GetText();
+                return MakeExpression(functionName, parameters.ToArray());
             }
 
             public override Expression VisitIdAtom([NotNull] ExpressionParser.IdAtomContext context)

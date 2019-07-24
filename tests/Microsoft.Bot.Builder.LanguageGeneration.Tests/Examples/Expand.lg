@@ -37,7 +37,7 @@
 - IF: {count(alarms) == 1}
    - You have one alarm [ShowAlarm(alarms[0])]
 - ELSEIF: {count(alarms) == 2}
-  - You have {count(alarms)} alarms, {join(foreach(alarms, alarm, lgTemplate('ShowAlarm', alarm)), ',', 'and')}
+  - You have {count(alarms)} alarms, {join(foreach(alarms, alarm, ShowAlarm(alarm)), ', ', ' and ')}
 - ELSE:
   - You don't have any alarms
 
@@ -45,14 +45,14 @@
 - IF: {count(alarms) == 1}
    - You have one alarm [ShowAlarm(alarms[0])]
 - ELSEIF: {count(alarms) == 2}
-  - You have {count(alarms)} alarms, they are {lgTemplate('ShowAlarm', alarms[1])}
+  - You have {count(alarms)} alarms, they are {ShowAlarm(alarms[1])}
 - ELSE:
   - You don't have any alarms
 
 # ShowAlarmsWithMultiLine
 -```
 You have @{count(alarms)} alarms.
-They are @{lgTemplate('ShowAlarm', alarms[1])}
+They are @{ShowAlarm(alarms[1])}
 ```
 
 # bookTransportTicket

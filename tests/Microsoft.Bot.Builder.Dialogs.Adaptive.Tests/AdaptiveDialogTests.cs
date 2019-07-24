@@ -133,7 +133,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     Property = "dialog.todo"
                 },
                 new EditArray(EditArray.ArrayChangeType.Push, "user.todos", "dialog.todo"),
-                new SendActivity() { Activity = new ActivityTemplate("Your todos: {join(user.todos, ',')}") },
+                new SendActivity() { Activity = new ActivityTemplate("Your todos: {join(user.todos, ', ')}") },
 
                 // Remove item
                 new TextInput()
@@ -143,7 +143,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     Property = "dialog.todo"
                 },
                 new EditArray(EditArray.ArrayChangeType.Remove, "user.todos", "dialog.todo"),
-                new SendActivity() { Activity = new ActivityTemplate("Your todos: {join(user.todos, ',')}") },
+                new SendActivity() { Activity = new ActivityTemplate("Your todos: {join(user.todos, ', ')}") },
 
                 // Add item and pop item
                 new TextInput()
@@ -160,18 +160,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     Property = "dialog.todo"
                 },
                 new EditArray(EditArray.ArrayChangeType.Push, "user.todos", "dialog.todo"),
-                new SendActivity() { Activity = new ActivityTemplate("Your todos: {join(user.todos, ',')}") },
+                new SendActivity() { Activity = new ActivityTemplate("Your todos: {join(user.todos, ', ')}") },
 
                 new EditArray(EditArray.ArrayChangeType.Pop, "user.todos"),
-                new SendActivity() { Activity = new ActivityTemplate("Your todos: {join(user.todos, ',')}") },
+                new SendActivity() { Activity = new ActivityTemplate("Your todos: {join(user.todos, ', ')}") },
 
                 // Take item
                 new EditArray(EditArray.ArrayChangeType.Take, "user.todos"),
-                new SendActivity() { Activity = new ActivityTemplate("Your todos: {join(user.todos, ',')}") },
+                new SendActivity() { Activity = new ActivityTemplate("Your todos: {join(user.todos, ', ')}") },
 
                 // Clear list
                 new EditArray(EditArray.ArrayChangeType.Clear, "user.todos"),
-                new SendActivity() { Activity = new ActivityTemplate("Your todos: {join(user.todos, ',')}") },
+                new SendActivity() { Activity = new ActivityTemplate("Your todos: {join(user.todos, ', ')}") },
             };
 
             await CreateFlow(dialog)
@@ -875,5 +875,45 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             .StartTestAsync();
         }
 
+        [TestMethod]
+        public async Task AdaptiveDialog_BindingReferValueInLaterStep()
+        {
+            var rootDialog = new AdaptiveDialog(nameof(AdaptiveDialog))
+            {
+                Generator = new TemplateEngineLanguageGenerator(),
+                Rules = new List<IRule>()
+                {
+                    new UnknownIntentRule()
+                    {
+                        Steps = new List<IDialog>()
+                        {
+                            new TextInput()
+                            {
+                                Property = "$name",
+                                Prompt = new ActivityTemplate("What is your name?")
+                            },
+                            new NumberInput()
+                            {
+                                Property = "$age",
+                                Prompt = new ActivityTemplate("Hello {$name}, how old are you?")
+                            },
+                            new SendActivity()
+                            {
+                                Activity = new ActivityTemplate("Hello {$name}, I have your age as {$age}")
+                            }
+                        }
+                    }
+                }
+            };
+
+            await CreateFlow(rootDialog)
+            .Send("Hi")
+                .AssertReply("What is your name?")
+            .Send("zoidberg")
+                .AssertReply("Hello zoidberg, how old are you?")
+            .Send("22")
+                .AssertReply("Hello zoidberg, I have your age as 22")
+            .StartTestAsync();
+        }
     }
 }

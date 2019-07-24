@@ -245,7 +245,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             Dictionary<string, object> state = null;
             int? stateIndex = null;
 
-            if (dialog is DialogCommand)
+            if (ShouldInheritState(dialog))
             {
                 if (Stack.Count > 0)
                 {
@@ -298,7 +298,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             // set dialog result
-            if (dialog is DialogCommand)
+            if (ShouldInheritState(dialog))
             {
                 State.SetValue(DialogContextState.STEP_OPTIONS_PROPERTY, options);
             }
@@ -540,16 +540,6 @@ namespace Microsoft.Bot.Builder.Dialogs
             return null;
         }
 
-        public class DialogEvents
-        {
-            public const string BeginDialog = "beginDialog";
-            public const string ResumeDialog = "resumeDialog";
-            public const string RepromptDialog = "repromptDialog";
-            public const string CancelDialog = "cancelDialog";
-            public const string EndDialog = "endDialog";
-            public const string ActivityReceived = "activityReceived";
-        }
-
         /// <summary>
         /// Searches for a dialog with a given ID.
         /// Emits a named event for the current dialog, or someone who started it, to handle.
@@ -557,7 +547,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="name">Name of the event to raise.</param>
         /// <param name="value">Value to send along with the event.</param>
         /// <param name="bubble">Flag to control whether the event should be bubbled to its parent if not handled locally. Defaults to a value of `true`.</param>
-        /// <param name="fromLeaf"></param>
+        /// <param name="fromLeaf">Whether the event is emitted from a leaf node.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>True if the event was handled.</returns>
         public async Task<bool> EmitEventAsync(string name, object value = null, bool bubble = true, bool fromLeaf = false, CancellationToken cancellationToken = default(CancellationToken))
@@ -605,6 +595,16 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Specifies whether a given dialog should inherit dialog-level state. 
+        /// </summary>
+        /// <param name="dialog">The dialog to be tested.</param>
+        /// <returns>Whether the passed dialog should inherit dialog-level state.</returns>
+        protected virtual bool ShouldInheritState(IDialog dialog)
+        {
+            return dialog is DialogCommand;
         }
 
         private async Task EndActiveDialogAsync(DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))
@@ -671,5 +671,14 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
+        public class DialogEvents
+        {
+            public const string BeginDialog = "beginDialog";
+            public const string ResumeDialog = "resumeDialog";
+            public const string RepromptDialog = "repromptDialog";
+            public const string CancelDialog = "cancelDialog";
+            public const string EndDialog = "endDialog";
+            public const string ActivityReceived = "activityReceived";
+        }
     }
 }
