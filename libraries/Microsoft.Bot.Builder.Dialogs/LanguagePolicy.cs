@@ -49,7 +49,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         });
 
         public LanguagePolicy()
-            : base(defaultPolicy.Value)//, StringComparer.OrdinalIgnoreCase)
+            : base(defaultPolicy.Value, StringComparer.OrdinalIgnoreCase)
         {
         }
     }
