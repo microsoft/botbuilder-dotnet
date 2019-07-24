@@ -8,7 +8,7 @@
 
 
 # TemplateC
-- {lgTemplate('TemplateA')}
+- {TemplateA()}
 
 #TemplateD
-- {lgTemplate('TemplateB', b)}
+- {TemplateB(b)}
