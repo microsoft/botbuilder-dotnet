@@ -157,7 +157,7 @@ namespace Microsoft.Bot.Builder.BotKit.Core
         /// This will ensure that the calls will not be made until all of the components have successfully been initialized.
         /// </summary>
         /// <param name="handler">A function to run when Botkit is booted and ready to run.</param>
-        public void Ready(Task<object> handler)
+        public void Ready(Action handler)
         {
         }
 
