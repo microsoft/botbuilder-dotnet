@@ -34,11 +34,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
 
             // TODO: Should add verifiers and validators
-            switch (name)
-            {
-                case "join":
-                    return new ExpressionEvaluator("join", BuiltInFunctions.Apply(this.Join));
-            }
+            //switch (name)
+            //{
+            //    case "join":
+            //        return new ExpressionEvaluator("join", BuiltInFunctions.Apply(this.Join));
+            //}
 
             if (_evaluator.TemplateMap.ContainsKey(name))
             {
