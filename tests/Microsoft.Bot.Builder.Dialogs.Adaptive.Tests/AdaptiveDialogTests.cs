@@ -373,6 +373,63 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
+        public async Task AdaptiveDialog_TextInput_Interruption()
+        {
+            var ruleDialog = new AdaptiveDialog(nameof(AdaptiveDialog))
+            {
+                Generator = new TemplateEngineLanguageGenerator(),
+                Recognizer = new RegexRecognizer()
+                {
+                    Intents = new Dictionary<string, string>() {
+                        { "None", "(?i)test" },
+                        { "Greeting", "(?i)hi" },
+                        { "Start", "(?i)start" }
+                    }
+                },
+                Rules = new List<IRule>()
+                {
+                    new IntentRule() {
+                        Intent = "Start",
+                        Steps = new List<IDialog>() {
+                            new TextInput() {
+                                Prompt = new ActivityTemplate("What is your name?"),
+                                Property = "turn.userName",
+                                AllowInterruptions = true
+                            },
+                            new SendActivity("I have {turn.userName} as your name")
+                        }
+                    },
+                    new IntentRule() {
+                        Intent = "None",
+                        Steps = new List<IDialog>() {
+                            // short circuiting Interruption so consultation is terminated. 
+                            new SendActivity("In None..."),
+                            new SetProperty()
+                            {
+                                Property = "turn.stepCount",
+                                Value = "-1"
+                            }
+                        }
+                    },
+                    new IntentRule() {
+                        Intent = "Greeting",
+                        Steps = new List<IDialog>() {
+                            new SendActivity("Hi, I'm the test bot!")
+                        }
+                    }
+                }
+            };
+
+            await CreateFlow(ruleDialog)
+               .Send("start")
+                   .AssertReply("What is your name?")
+               .Send("test")
+                   .AssertReply("In None...")
+                   .AssertReply("I have test as your name")
+               .StartTestAsync();
+        }
+
+        [TestMethod]
         public async Task AdaptiveDialog_ReplacePlan()
         {
             var ruleDialog = new AdaptiveDialog("planningTest");

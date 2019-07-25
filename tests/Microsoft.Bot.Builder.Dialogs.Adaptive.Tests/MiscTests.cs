@@ -138,6 +138,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             {
                                 Property = "user.name",
                                 Value = "@name"
+                            },
+                            new SetProperty()
+                            {
+                                Property = "turn.stepCount",
+                                Value = "-1"
                             }
                         }
                     }

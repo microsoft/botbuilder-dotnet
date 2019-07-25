@@ -62,13 +62,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                     dc.State.SetValue(property, value);
 
                     var sc = dc as SequenceContext;
-
-                    // If this step interrupted a step in the active plan
-                    if (sc != null && sc.Steps.Count > 1 && sc.Steps[1].DialogStack.Count > 0)
-                    {
-                        // Reset the next step's dialog stack so that when the plan continues it reevaluates new changed state
-                        sc.Steps[1].DialogStack.Clear();
-                    }
                 }
 
                 return await planning.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);

@@ -112,6 +112,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             dc.State.SetValue(INPUT_PROPERTY, null);
 
             var state = this.AlwaysPrompt ? InputState.Missing : await this.RecognizeInput(dc, false);
+
             if (state == InputState.Valid)
             {
                 var input = dc.State.GetValue<object>(INPUT_PROPERTY);
