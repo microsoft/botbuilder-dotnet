@@ -36,8 +36,6 @@
 		<PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="5.2.1" />
 		<PackageReference Include="Microsoft.Rest.ClientRuntime" Version="2.3.20" />
 		<PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
-		<PackageReference Include="Microsoft.Bot.Schema" Condition=" '$(PackageVersion)' == '' " Version="4.0.0-local" />
-		<PackageReference Include="Microsoft.Bot.Schema" Condition=" '$(PackageVersion)' != '' " Version="$(PackageVersion)" />
 		<PackageReference Include="SourceLink.Create.CommandLine" Version="2.8.3" />
 	</ItemGroup>
 

@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29001.49
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.757
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{4269F3C3-6B42-419B-B64A-3E6DC0F1574A}"
 EndProject
@@ -89,6 +89,10 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.AI.LuisV3", "libraries\Microsoft.Bot.Builder.AI.LuisV3\Microsoft.Bot.Builder.AI.LuisV3.csproj", "{EF46ABF9-0405-4EAA-BC1E-A2BC48DD1A69}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.AI.LuisV3.Tests", "tests\Microsoft.Bot.Builder.Ai.LUISV3.tests\Microsoft.Bot.Builder.AI.LuisV3.Tests.csproj", "{474C57B1-C9FC-4B71-A92B-B25BA27FAFA7}"
+	ProjectSection(ProjectDependencies) = postProject
+		{ADA8AB8B-2066-4193-B8F7-985669B23E00} = {ADA8AB8B-2066-4193-B8F7-985669B23E00}
+		{C1F54CDC-AD1D-45BB-8F7D-F49E411AFAF1} = {C1F54CDC-AD1D-45BB-8F7D-F49E411AFAF1}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
