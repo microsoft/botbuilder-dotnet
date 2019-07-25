@@ -143,7 +143,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
 
             var evaled = engine.EvaluateTemplate("ShowAlarmsWithForeach", new { alarms = alarms });
-            Assert.AreEqual("You have 2 alarms, 7 am at tomorrow, 8 pm at tomorrow", evaled);
+            Assert.AreEqual("You have 2 alarms, 7 am at tomorrow and 8 pm at tomorrow", evaled);
 
             //var evaled = engine.EvaluateTemplate("ShowAlarmsWithMemberForeach", new { alarms = alarms });
             //Assert.AreEqual("You have 2 alarms, 7 am at tomorrow and 8 pm at tomorrow", evaled);

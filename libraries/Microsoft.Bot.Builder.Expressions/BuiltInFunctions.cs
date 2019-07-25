@@ -2442,7 +2442,7 @@ namespace Microsoft.Bot.Builder.Expressions
                                 {
                                     if (list.Count < 3)
                                     {
-                                        result = string.Join(args[1], list.OfType<object>().Select(x => x.ToString()));
+                                        result = string.Join(args[2], list.OfType<object>().Select(x => x.ToString()));
                                     }
                                     else
                                     {
