@@ -182,26 +182,25 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         private AnalyzerResult AnalyzeExpressionDirectly(Expression exp)
         {
             var result = new AnalyzerResult();
-            if (exp.Type == "lgTemplate")
+
+            if (templateMap.ContainsKey(exp.Type))
             {
-                var templateName = (exp.Children[0] as Constant).Value.ToString();
+                // template function
+                var templateName = exp.Type;
                 result.Union(new AnalyzerResult(templateReferences: new List<string>() { templateName }));
 
-                if (exp.Children.Length == 1)
+                if (templateMap[templateName].Parameters.Count == 0)
                 {
-                    result.Union(this.AnalyzeTemplate((exp.Children[0] as Constant).Value.ToString()));
+                    result.Union(this.AnalyzeTemplate(templateName));
                 }
                 else
                 {
-                    // only get template ref names
-                    var templateRefNames = this.AnalyzeTemplate((exp.Children[0] as Constant).Value.ToString()).TemplateReferences;
-                    result.Union(new AnalyzerResult(templateReferences: templateRefNames));
-
-                    // analyzer other children
-                    exp.Children.ToList().ForEach(x => result.Union(this.AnalyzeExpressionDirectly(x)));
+                    // if template has params, just get the templateref without variables.
+                    result.Union(new AnalyzerResult(templateReferences: this.AnalyzeTemplate(templateName).TemplateReferences));
                 }
             }
-            else
+
+            if (exp.Children != null)
             {
                 exp.Children.ToList().ForEach(x => result.Union(this.AnalyzeExpressionDirectly(x)));
             }
@@ -225,47 +224,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         private AnalyzerResult AnalyzeTemplateRef(string exp)
         {
-            var result = new AnalyzerResult();
             exp = exp.TrimStart('[').TrimEnd(']').Trim();
+            exp = exp.IndexOf('(') < 0 ? exp + "()" : exp;
 
-            var argsStartPos = exp.IndexOf('(');
-
-            // Do have args
-            if (argsStartPos > 0)
-            {
-                // Analyze all arguments using ExpressoinEngine
-                var argsEndPos = exp.LastIndexOf(')');
-
-                var args = exp.Substring(argsStartPos + 1, argsEndPos - argsStartPos - 1).Split(',');
-
-                // Before we have a matural solution to analyze parameterized template, we stop digging into
-                // templates with parameters, we just analyze it's args.
-                // With this approach we may not get a very fine-grained result
-                // but the result will still be accurate
-                var templateAnalyzerResult = args.Select(arg => this.AnalyzeExpression(arg));
-                var templateName = exp.Substring(0, argsStartPos);
-
-                // add this template
-                result.Union(new AnalyzerResult(templateReferences: new List<string>() { templateName }));
-                templateAnalyzerResult.ToList().ForEach(t => result.Union(t));
-            }
-            else
-            {
-                result.Union(new AnalyzerResult(templateReferences: new List<string>() { exp }));
-
-                // We analyze tempalte only if the template has no formal parameters
-                // But we should analyzer template reference names for all situation
-                if (this.templateMap[exp].Parameters == null || this.templateMap[exp].Parameters.Count == 0)
-                {
-                    result.Union(this.AnalyzeTemplate(exp));
-                }
-                else
-                {
-                    result.Union(new AnalyzerResult(templateReferences: this.AnalyzeTemplate(exp).TemplateReferences));
-                }
-            }
-
-            return result;
+            return AnalyzeExpression(exp);
         }
 
         private AnalyzerResult AnalyzeMultiLineText(string exp)

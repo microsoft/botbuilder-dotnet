@@ -14,13 +14,13 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 {
     [TestClass]
-    public class SettingsState_Tests
+    public class SettingsStateTests
     {
         public TestContext TestContext { get; set; }
 
         public IConfiguration Configuration;
 
-        public SettingsState_Tests()
+        public SettingsStateTests()
         {
             var builder = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false);

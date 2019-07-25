@@ -7,7 +7,9 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Builder.Expressions.Parser;
 using Microsoft.Bot.Schema;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
 {
@@ -24,7 +26,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
         public object Options { get; set; }
 
         /// <summary>
-        /// The dialog to call
+        /// The dialog to call.
         /// </summary>
         public IDialog Dialog { get; set; }
 
@@ -65,10 +67,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
             return $"{this.GetType().Name}[{Dialog?.Id ?? this.dialogIdToCall}:{this.BindingPath()}]";
         }
 
-        protected IDialog resolveDialog(DialogContext dc)
+        protected IDialog ResolveDialog(DialogContext dc)
         {
             var dialog = this.Dialog;
-            if (dialog == null && !String.IsNullOrEmpty(this.dialogIdToCall))
+            if (dialog == null && !string.IsNullOrEmpty(this.dialogIdToCall))
             {
                 dialog = dc.FindDialog(this.dialogIdToCall);
             }
@@ -83,7 +85,34 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
             {
                 return new List<IDialog>() { Dialog };
             }
+
             return new List<IDialog>();
+        }
+
+        protected void BindOptions(DialogContext dc)
+        {
+            if (Options == null)
+            {
+                return;
+            }
+
+            if (Options is JObject jObj)
+            {
+                foreach (var value in jObj.Values())
+                {
+                    if (value.Type == JTokenType.String)
+                    {
+                        var (result, error) = new ExpressionEngine().Parse(value.Value<string>()).TryEvaluate(dc.State);
+
+                        if (error != null)
+                        {
+                            throw new Exception(error);
+                        }
+
+                        value.Replace(JToken.FromObject(result));
+                    }
+                }
+            }
         }
     }
 }

@@ -7,8 +7,6 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
@@ -32,8 +30,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
+            var dialog = this.ResolveDialog(dc);
+
             Options = ObjectPath.Merge(Options, options ?? new object());
-            var dialog = this.resolveDialog(dc);
+            BindOptions(dc);
+
             return await dc.BeginDialogAsync(dialog.Id, Options, cancellationToken).ConfigureAwait(false);
         }
     }
