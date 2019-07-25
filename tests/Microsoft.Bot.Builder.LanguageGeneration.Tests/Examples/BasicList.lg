@@ -1,7 +1,7 @@
 ﻿# BasicJoin
 - IF : {count(items) == 2}
-  - {join(items, ',')}
+  - {join(items, ', ')}
 - ELSEIF : {count(items) > 2}
-  - {join(items, ',', 'and')}
+  - {join(items, ', ', ' and ')}
 - ELSE :
   - {items[0]}

@@ -307,7 +307,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                 new
                 {
                     name = "template1",
-                    // TODO: input.property should really be: customer.property but analyzer needs to be 
+                    // TODO: input.property should really be: customer.property but analyzer needs to be
                     variableOptions = new string[] { "alarms", "customer", "tasks[0]", "age", "city" },
                     templateRefOptions = new string[] { "template2", "template3", "template4", "template5", "template6" }
                 },
@@ -345,6 +345,28 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             evaled = engine.EvaluateTemplate("TemplateD", new { b = "morning"});
             options = new List<string> { "Hi morning", "Hello morning" };
             Assert.AreEqual(options.Contains(evaled), true);
+        }
+
+
+        [TestMethod]
+        public void TestTemplateAsFunction()
+        {
+            var engine = new TemplateEngine().AddFile(GetExampleFilePath("TemplateAsFunction.lg"));
+            string evaled = engine.EvaluateTemplate("Test2", "");
+
+            Assert.AreEqual(evaled, "hello world");
+
+            evaled = engine.EvaluateTemplate("Test3", "");
+            Assert.AreEqual(evaled, "hello world");
+
+            evaled = engine.EvaluateTemplate("Test4", "");
+            Assert.AreEqual(evaled.Trim(), "hello world");
+
+            evaled = engine.EvaluateTemplate("dupNameWithTemplate");
+            Assert.AreEqual(evaled, "calculate length of ms by user's template");
+
+            evaled = engine.EvaluateTemplate("dupNameWithBuiltinFunc");
+            Assert.AreEqual(evaled, "2");
         }
 
         [TestMethod]

@@ -665,7 +665,7 @@ namespace Microsoft.Bot.Builder.Expressions
         {
             if (!_functions.TryGetValue(type, out var eval))
             {
-                throw new ArgumentException($"{type} does not have a built-in expression evaluator.");
+                throw new Exception($"{type} does not have an evaluator, it's not a built-in function or a customized function");
             }
             return eval;
         }

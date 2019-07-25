@@ -58,6 +58,7 @@
     <None Remove="ExceptionExamples\SwitchCaseFormatError.lg" />
     <None Remove="ExceptionExamples\SwitchCaseWarning.lg" />
     <None Remove="ExceptionExamples\TemplateParamsNotMatchArgsNum.lg" />
+    <None Remove="ExceptionExamples\TemplateAsFunction.lg" />
   </ItemGroup>
 
   <ItemGroup>
@@ -237,6 +238,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Examples\lgTemplate.lg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Examples\TemplateAsFunction.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

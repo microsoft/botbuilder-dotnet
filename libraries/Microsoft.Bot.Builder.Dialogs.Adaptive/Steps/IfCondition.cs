@@ -15,7 +15,7 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
 {
     /// <summary>
-    /// Conditional branch
+    /// Conditional branch.
     /// </summary>
     public class IfCondition : DialogCommand, IDialogDependencies
     {
@@ -50,7 +50,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
             {
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
-
 
             // Ensure planning context
             if (dc is SequenceContext planning)
