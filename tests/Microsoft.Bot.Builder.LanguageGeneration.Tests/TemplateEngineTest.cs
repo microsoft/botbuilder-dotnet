@@ -649,6 +649,9 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             evaled = engine.EvaluateTemplate("template5", new { userName });
             var eval2Options = new List<string>() { "\r\nHiMS\r\n", "\nHiMS\n" };
             Assert.IsTrue(eval2Options.Contains(evaled));
+
+            evaled = engine.EvaluateTemplate("template6", new { userName });
+            Assert.AreEqual(evaled, "goodmorning");
         }
     }
 }

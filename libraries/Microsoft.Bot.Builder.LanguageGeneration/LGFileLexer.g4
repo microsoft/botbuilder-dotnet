@@ -155,7 +155,7 @@ INVALID_ESCAPE
   ;
 
 EXPRESSION
-  : '@'? '{' (~[\r\n{}] | STRING_LITERAL)*  '}'  { ignoreWS = false; expectKeywords = false;}
+  : '@'? '{' (~[\r\n{}] | STRING_LITERAL)*?  '}'  { ignoreWS = false; expectKeywords = false;}
   ;
 
 TEMPLATE_REF
