@@ -697,7 +697,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 {
                                     Prompt = new ActivityTemplate("Hello, what is your name?"),
                                     UnrecognizedPrompt = new ActivityTemplate("How should I call you?"),
-                                    InvalidPrompt  = new ActivityTemplate("That does not soud like a name"),
+                                    InvalidPrompt = new ActivityTemplate("That does not soud like a name"),
                                     Property = "user.name",
                                     Validations = new List<string>()
                                     {

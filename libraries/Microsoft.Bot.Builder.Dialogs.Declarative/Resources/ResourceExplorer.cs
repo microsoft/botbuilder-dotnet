@@ -116,9 +116,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                 var path = Path.Combine(projectFolder, PathUtils.NormalizePath(node.Attributes["Include"].Value));
                 path = Path.GetFullPath(path);
                 path = Path.GetDirectoryName(path);
-                explorer.AddResourceProvider(new FolderResourceProvider(path, includeSubFolders: true, monitorChanges: monitorChanges));
+                if (Directory.Exists(path))
+                {
+                    explorer.AddResourceProvider(new FolderResourceProvider(path, includeSubFolders: true, monitorChanges: monitorChanges));
+                }
             }
-
             var packages = Path.GetFullPath("packages");
             var relativePackagePath = Path.Combine(@"..", "packages");
             while (!Directory.Exists(packages) && Path.GetDirectoryName(packages) != Path.GetPathRoot(packages))
@@ -136,9 +138,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             {
                 string packageName = node.Attributes["Include"]?.Value;
                 string version = node.Attributes["Version"]?.Value;
-                if (!String.IsNullOrEmpty(packageName) && !String.IsNullOrEmpty(version))
+                NuGetVersion nugetVersion;
+                if (!String.IsNullOrEmpty(packageName) && !String.IsNullOrEmpty(version) && NuGetVersion.TryParse(version, out nugetVersion))
                 {
-                    var package = new PackageIdentity(packageName, new NuGetVersion(version));
+                    var package = new PackageIdentity(packageName, nugetVersion);
                     var folder = Path.Combine(packages, PathUtils.NormalizePath(pathResolver.GetPackageDirectoryName(package)));
                     if (Directory.Exists(folder))
                     {

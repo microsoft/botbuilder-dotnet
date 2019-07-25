@@ -125,7 +125,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 },
                 new InitProperty() { Property = "user.todos", Type = "array" },
                 new EditArray(EditArray.ArrayChangeType.Push, "user.todos", "dialog.todo"),
-                new SendActivity() { Activity = new ActivityTemplate("Your todos: {join(user.todos, ',')}") },
+                new SendActivity() { Activity = new ActivityTemplate("Your todos: {join(user.todos, ', ')}") },
                 new TextInput()
                 {
                     AlwaysPrompt = true,
@@ -133,7 +133,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     Property = "dialog.todo"
                 },
                 new EditArray(EditArray.ArrayChangeType.Push, "user.todos", "dialog.todo"),
-                new SendActivity() { Activity = new ActivityTemplate("Your todos: {join(user.todos, ',')}") },
+                new SendActivity() { Activity = new ActivityTemplate("Your todos: {join(user.todos, ', ')}") },
 
                 // Remove item
                 new TextInput()
@@ -143,7 +143,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     Property = "dialog.todo"
                 },
                 new EditArray(EditArray.ArrayChangeType.Remove, "user.todos", "dialog.todo"),
-                new SendActivity() { Activity = new ActivityTemplate("Your todos: {join(user.todos, ',')}") },
+                new SendActivity() { Activity = new ActivityTemplate("Your todos: {join(user.todos, ', ')}") },
 
                 // Add item and pop item
                 new TextInput()
@@ -160,18 +160,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     Property = "dialog.todo"
                 },
                 new EditArray(EditArray.ArrayChangeType.Push, "user.todos", "dialog.todo"),
-                new SendActivity() { Activity = new ActivityTemplate("Your todos: {join(user.todos, ',')}") },
+                new SendActivity() { Activity = new ActivityTemplate("Your todos: {join(user.todos, ', ')}") },
 
                 new EditArray(EditArray.ArrayChangeType.Pop, "user.todos"),
-                new SendActivity() { Activity = new ActivityTemplate("Your todos: {join(user.todos, ',')}") },
+                new SendActivity() { Activity = new ActivityTemplate("Your todos: {join(user.todos, ', ')}") },
 
                 // Take item
                 new EditArray(EditArray.ArrayChangeType.Take, "user.todos"),
-                new SendActivity() { Activity = new ActivityTemplate("Your todos: {join(user.todos, ',')}") },
+                new SendActivity() { Activity = new ActivityTemplate("Your todos: {join(user.todos, ', ')}") },
 
                 // Clear list
                 new EditArray(EditArray.ArrayChangeType.Clear, "user.todos"),
-                new SendActivity() { Activity = new ActivityTemplate("Your todos: {join(user.todos, ',')}") },
+                new SendActivity() { Activity = new ActivityTemplate("Your todos: {join(user.todos, ', ')}") },
             };
 
             await CreateFlow(dialog)
@@ -875,5 +875,264 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             .StartTestAsync();
         }
 
+        [TestMethod]
+        public async Task AdaptiveDialog_BindingCaptureValueWithinSameAdaptive()
+        {
+            var rootDialog = new AdaptiveDialog(nameof(AdaptiveDialog))
+            {
+                Generator = new TemplateEngineLanguageGenerator(),
+                Rules = new List<IRule>()
+                {
+                    new UnknownIntentRule()
+                    {
+                        Steps = new List<IDialog>()
+                        {
+                            new NumberInput()
+                            {
+                                Property = "$number",
+                                Prompt = new ActivityTemplate("Give me a number")
+                            },
+                            new SendActivity()
+                            {
+                                Activity = new ActivityTemplate("You said {$number}")
+                            }
+                        }
+                    }
+                }
+            };
+
+            await CreateFlow(rootDialog)
+            .Send("hi")
+                .AssertReply("Give me a number")
+            .Send("32")
+                .AssertReply("You said 32")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task AdaptiveDialog_BindingReferValueInNestedStep()
+        {
+            var rootDialog = new AdaptiveDialog(nameof(AdaptiveDialog))
+            {
+                Generator = new TemplateEngineLanguageGenerator(),
+                Rules = new List<IRule>()
+                {
+                    new UnknownIntentRule()
+                    {
+                        Steps = new List<IDialog>()
+                        {
+                            new NumberInput()
+                            {
+                                Property = "$age",
+                                Prompt = new ActivityTemplate("Hello, how old are you?")
+                            },
+                            new IfCondition()
+                            {
+                                Condition = "$age > 80",
+                                Steps = new List<IDialog>()
+                                {
+                                    new SendActivity("Thanks, you are quite young!")
+                                },
+                                ElseSteps = new List<IDialog>()
+                                {
+                                    new SendActivity("Thanks, you are awesome!")
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+
+            await CreateFlow(rootDialog)
+            .Send("Hi")
+                .AssertReply("Hello, how old are you?")
+            .Send("94")
+                .AssertReply("Thanks, you are quite young!")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task AdaptiveDialog_BindingOptionsAcrossAdaptiveDialogs()
+        {
+            var rootDialog = new AdaptiveDialog(nameof(AdaptiveDialog))
+            {
+                Rules = new List<IRule>()
+                {
+                    new UnknownIntentRule()
+                    {
+                        Steps = new List<IDialog>()
+                        {
+                            new NumberInput()
+                            {
+                                Property = "$age",
+                                Prompt = new ActivityTemplate("Hello, how old are you?")
+                            },
+                            new BeginDialog("ageDialog")
+                            {
+                                Options = new
+                                {
+                                    userAge = "$age"
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+
+            var ageDialog = new AdaptiveDialog("ageDialog")
+            {
+                Rules = new List<IRule>()
+                {
+                    new UnknownIntentRule()
+                    {
+                        Steps = new List<IDialog>()
+                        {
+                            new SendActivity("Hello, you are {dialog.options.userAge} years old!"),
+                            new SendActivity("And your actual age is {$options.userAge}")
+                        }
+                    }
+                }
+            };
+
+            rootDialog.AddDialog(ageDialog);
+
+            await CreateFlow(rootDialog)
+            .Send("Hi")
+                .AssertReply("Hello, how old are you?")
+            .Send("44")
+                .AssertReply("Hello, you are 44 years old!")
+                .AssertReply("And your actual age is 44")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task AdaptiveDialog_BindingReferValueInLaterStep()
+        {
+            var rootDialog = new AdaptiveDialog(nameof(AdaptiveDialog))
+            {
+                Generator = new TemplateEngineLanguageGenerator(),
+                Rules = new List<IRule>()
+                {
+                    new UnknownIntentRule()
+                    {
+                        Steps = new List<IDialog>()
+                        {
+                            new TextInput()
+                            {
+                                Property = "$name",
+                                Prompt = new ActivityTemplate("What is your name?")
+                            },
+                            new NumberInput()
+                            {
+                                Property = "$age",
+                                Prompt = new ActivityTemplate("Hello {$name}, how old are you?")
+                            },
+                            new SendActivity()
+                            {
+                                Activity = new ActivityTemplate("Hello {$name}, I have your age as {$age}")
+                            }
+                        }
+                    }
+                }
+            };
+
+            await CreateFlow(rootDialog)
+            .Send("Hi")
+                .AssertReply("What is your name?")
+            .Send("zoidberg")
+                .AssertReply("Hello zoidberg, how old are you?")
+            .Send("22")
+                .AssertReply("Hello zoidberg, I have your age as 22")
+            .StartTestAsync();
+        }
+      
+        [TestMethod]
+        public async Task AdaptiveDialog_BindingTwoWayAcrossAdaptiveDialogs_AnonymousOptions()
+        {
+            await TestBindingTwoWayAcrossAdaptiveDialogs(new { userName = "$name" });
+        }
+
+        [TestMethod]
+        public async Task AdaptiveDialog_BindingTwoWayAcrossAdaptiveDialogs_ObjectDictionaryOptions()
+        {
+            await TestBindingTwoWayAcrossAdaptiveDialogs(new Dictionary<string, object>() { { "userName", "$name" } });
+        }
+
+        [TestMethod]
+        public async Task AdaptiveDialog_BindingTwoWayAcrossAdaptiveDialogs_StringDictionaryOptions()
+        {
+            await TestBindingTwoWayAcrossAdaptiveDialogs(new Dictionary<string, string>() { { "userName", "$name" } });
+        }
+
+        class Person
+        {
+            public string userName { get; set; }
+        }
+
+        [TestMethod]
+        public async Task AdaptiveDialog_BindingTwoWayAcrossAdaptiveDialogs_StronglyTypedOptions()
+        {
+            await TestBindingTwoWayAcrossAdaptiveDialogs(new Person() { userName = "$name" });
+        }
+
+        public async Task TestBindingTwoWayAcrossAdaptiveDialogs(object options)
+        {
+            var rootDialog = new AdaptiveDialog(nameof(AdaptiveDialog))
+            {
+                Rules = new List<IRule>()
+                {
+                    new UnknownIntentRule()
+                    {
+                        Steps = new List<IDialog>()
+                        {
+                            new TextInput()
+                            {
+                                Property = "$name",
+                                Prompt = new ActivityTemplate("Hello, what is your name?")
+                            },
+                            new BeginDialog("ageDialog")
+                            {
+                                Options = options,
+                                Property = "$age"
+                            },
+                            new SendActivity("Hello {$name}, you are {$age} years old!")
+                        }
+                    }
+                }
+            };
+
+            var ageDialog = new AdaptiveDialog("ageDialog")
+            {
+                Rules = new List<IRule>()
+                {
+                    new UnknownIntentRule()
+                    {
+                        Steps = new List<IDialog>()
+                        {
+                            new NumberInput()
+                            {
+                                Prompt = new ActivityTemplate("Hello {$options.userName}, how old are you?"),
+                                Property = "$age"
+                            },
+                            new EndDialog()
+                            {
+                                ResultProperty = "$age"
+                            }
+                        }
+                    }
+                }
+            };
+
+            rootDialog.AddDialog(ageDialog);
+
+            await CreateFlow(rootDialog)
+            .Send("Hi")
+                .AssertReply("Hello, what is your name?")
+            .Send("zoidberg")
+                .AssertReply("Hello zoidberg, how old are you?")
+            .Send("I'm 77")
+                .AssertReply("Hello zoidberg, you are 77 years old!")
+            .StartTestAsync();
+        }
     }
 }
