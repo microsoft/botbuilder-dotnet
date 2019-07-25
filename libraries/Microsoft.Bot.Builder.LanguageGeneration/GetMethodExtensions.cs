@@ -35,7 +35,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             if (_evaluator.TemplateMap.ContainsKey(name))
             {
-                return new ExpressionEvaluator($"{name}", BuiltInFunctions.Apply(this.TemplateEvaluator(name)), ReturnType.String, this.ValidTemplateReference);
+                return new ExpressionEvaluator(name, BuiltInFunctions.Apply(this.TemplateEvaluator(name)), ReturnType.String, this.ValidTemplateReference);
             }
 
             return BuiltInFunctions.Lookup(name);
