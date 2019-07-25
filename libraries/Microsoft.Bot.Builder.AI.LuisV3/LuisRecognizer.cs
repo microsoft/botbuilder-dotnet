@@ -120,8 +120,8 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// Runs an utterance through a recognizer and returns a generic recognizer result.
         /// </summary>
         /// <param name="turnContext">Turn context.</param>
-        /// <param name="predictionOptions">A <see cref="LuisV3PredictionOptions"/> instance to be used by the call.
-        /// This parameter gets merged with the default <see cref="LuisV3PredictionOptions"/> passed in the constructor.</param>
+        /// <param name="predictionOptions">A <see cref="LuisPredictionOptions"/> instance to be used by the call.
+        /// This parameter gets merged with the default <see cref="LuisPredictionOptions"/> passed in the constructor.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Analysis of utterance.</returns>
         public virtual async Task<RecognizerResult> RecognizeAsync(ITurnContext turnContext, LuisPredictionOptions predictionOptions, CancellationToken cancellationToken)
@@ -172,8 +172,8 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// Return results of the analysis (Suggested actions and intents).
         /// </summary>
         /// <param name="turnContext">Context object containing information for a single turn of conversation with a user.</param>
-        /// <param name="predictionOptions">A <see cref="LuisV3PredictionOptions"/> instance to be used by the call.
-        /// This parameter gets merged with the default <see cref="LuisV3PredictionOptions"/> passed in the constructor.</param>
+        /// <param name="predictionOptions">A <see cref="LuisPredictionOptions"/> instance to be used by the call.
+        /// This parameter gets merged with the default <see cref="LuisPredictionOptions"/> passed in the constructor.</param>
         /// <param name="telemetryProperties">Additional properties to be logged to telemetry with the LuisResult event.</param>
         /// <param name="telemetryMetrics">Additional metrics to be logged to telemetry with the LuisResult event.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
@@ -191,8 +191,8 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// </summary>
         /// <typeparam name="T">The recognition result type.</typeparam>
         /// <param name="turnContext">Context object containing information for a single turn of conversation with a user.</param>
-        /// <param name="predictionOptions">A <see cref="LuisV3PredictionOptions"/> instance to be used by the call.
-        /// This parameter gets merged with the default <see cref="LuisV3PredictionOptions"/> passed in the constructor.</param>
+        /// <param name="predictionOptions">A <see cref="LuisPredictionOptions"/> instance to be used by the call.
+        /// This parameter gets merged with the default <see cref="LuisPredictionOptions"/> passed in the constructor.</param>
         /// <param name="telemetryProperties">Additional properties to be logged to telemetry with the LuisResult event.</param>
         /// <param name="telemetryMetrics">Additional metrics to be logged to telemetry with the LuisResult event.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>

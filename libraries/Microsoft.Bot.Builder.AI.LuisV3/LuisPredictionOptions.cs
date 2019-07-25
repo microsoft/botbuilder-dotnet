@@ -39,8 +39,8 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <value>
         /// If queries should be logged in LUIS in order to help build better models through active learning.
         /// </value>
-        /// <remarks>The default is to log queries to LUIS in order to support active learning.</remarks>
-        public bool Log { get; set; } = true;
+        /// <remarks>The default is to log queries to LUIS in order to support active learning.  To default to the Luis setting set to null.</remarks>
+        public bool? Log { get; set; } = true;
 
         /// <summary>
         /// Gets or sets dynamic lists used to recognize entities for a particular query.
