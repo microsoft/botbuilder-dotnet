@@ -2440,8 +2440,15 @@ namespace Microsoft.Bot.Builder.Expressions
                                 }
                                 else if (args.Count == 3)
                                 {
-                                    var firstPart = string.Join(args[1], list.OfType<object>().TakeWhile(o => o != null && o != list.OfType<object>().LastOrDefault()));
-                                    result = firstPart + args[2] + list.OfType<object>().Last().ToString();
+                                    if (list.Count < 3)
+                                    {
+                                        result = string.Join(args[2], list.OfType<object>().Select(x => x.ToString()));
+                                    }
+                                    else
+                                    {
+                                        var firstPart = string.Join(args[1], list.OfType<object>().TakeWhile(o => o != null && o != list.OfType<object>().LastOrDefault()));
+                                        result = firstPart + args[2] + list.OfType<object>().Last().ToString();
+                                    }
                                 }
                             }
                         }
