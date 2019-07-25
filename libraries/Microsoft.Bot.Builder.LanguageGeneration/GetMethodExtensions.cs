@@ -33,8 +33,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 return BuiltInFunctions.Lookup(name.Substring(builtInPrefix.Length));
             }
 
-            // TODO: Should add verifiers and validators
-
             if (_evaluator.TemplateMap.ContainsKey(name))
             {
                 return new ExpressionEvaluator($"{name}", BuiltInFunctions.Apply(this.TemplateEvaluator(name)), ReturnType.String, this.ValidTemplateReference);
