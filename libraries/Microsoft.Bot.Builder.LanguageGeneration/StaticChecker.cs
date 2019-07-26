@@ -368,9 +368,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 {
                     switch (node.Symbol.Type)
                     {
-                        case LGFileParser.INVALID_ESCAPE:
-                            result.Add(BuildLGDiagnostic($"escape character {node.GetText()} is invalid", context: context));
-                            break;
                         case LGFileParser.TEMPLATE_REF:
                             result.AddRange(CheckTemplateRef(node.GetText(), context));
                             break;

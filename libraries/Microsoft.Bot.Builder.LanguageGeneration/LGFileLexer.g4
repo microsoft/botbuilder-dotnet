@@ -150,10 +150,6 @@ ESCAPE_CHARACTER
   : '\\{' | '\\[' | '\\\\' | '\\'[rtn\]}]  { ignoreWS = false; expectKeywords = false;}
   ;
 
-INVALID_ESCAPE
-  : '\\'~[\r\n]?
-  ;
-
 EXPRESSION
   : '@'? '{' (~[\r\n{}] | STRING_LITERAL)*?  '}'  { ignoreWS = false; expectKeywords = false;}
   ;
@@ -163,9 +159,9 @@ TEMPLATE_REF
   ;
 
 TEXT_SEPARATOR
-  : [ \t\r\n{}[\]()]  { ignoreWS = false; expectKeywords = false;}
+  : [\t\r\n{}[\]()]  { ignoreWS = false; expectKeywords = false;}
   ;
 
 TEXT
-  : ~[ \\\t\r\n{}[\]()]+?  { ignoreWS = false; expectKeywords = false;}
+  : ~[\t\r\n{}[\]()]+?  { ignoreWS = false; expectKeywords = false;}
   ;
