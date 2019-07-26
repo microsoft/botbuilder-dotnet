@@ -137,8 +137,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             }
             else
             {
-                // turnCount should increase here first to avoid it's till 0 on next turn
-                // and causing it read from dialog.value instead of the actual message
+                // turnCount should increase here, because you want when nextTurn comes in
+                // the value should already be 1, otherwise, this input will pick from "dialog.value"
+                // instead of "turn.activity.text"
                 dc.State.SetValue(TURN_COUNT_PROPERTY, 1);
                 return await this.PromptUser(dc, state);
             }
