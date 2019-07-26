@@ -214,7 +214,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                     case AllowInterruptions.NotRecognized:
                         var state = await this.RecognizeInput(dc).ConfigureAwait(false);
 
-                        // We only bubble up when recognizeInput comes back with 
+                        // RecognizedInput can come back with different InputState enum values. 
+                        // We need to have predictible behavior for users here so when NotRecognized is set
+                        //    we do not bubble up when InputState is either Valid or Invalid. 
+                        //    not consulting on Invalid is critical so the bot can continue to re-prompt the user 
+                        //    or in the ideal case, render 'InvalidPrompt' if user has specified one. 
                         // RecognizeInput => 
                         //      InputState.Invalid      -> Do not bubble up -> return true
                         //      InputState.Valid        -> Do not bubble up -> return true
