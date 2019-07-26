@@ -1724,6 +1724,61 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .AssertReply("I have 36 as your age")
             .StartTestAsync();
         }
+
+        [TestMethod]
+
+        public async Task AdaptiveDialog_AllowInterruptionNeverWithMaxCount()
+        {
+            var rootDialog = new AdaptiveDialog(nameof(AdaptiveDialog))
+            {
+                Generator = new TemplateEngineLanguageGenerator(),
+                Recognizer = new RegexRecognizer()
+                {
+                    Intents = new Dictionary<string, string>() {
+                        { "Start", "(?i)start" }
+                    }
+                },
+                Rules = new List<IRule>()
+                {
+                    new IntentRule() {
+                        Intent = "Start",
+                        Steps = new List<IDialog>() {
+                            new NumberInput() {
+                                Prompt = new ActivityTemplate("What is your age?"),
+                                Property = "user.age",
+                                AllowInterruptions = AllowInterruptions.Never,
+                                MaxTurnCount = 2,
+                                DefaultValue = "30"
+                            },
+                            new SendActivity("I have {user.age} as your age")
+                        }
+                    },
+                    new IntentRule() {
+                        Intent = "None",
+                        Steps = new List<IDialog>() {
+                            // short circuiting Interruption so consultation is terminated. 
+                            new SendActivity("In None..."),
+                            // request the active input step to re-process user input. 
+                            new SetProperty()
+                            {
+                                Property = "turn.processInput",
+                                Value = "true"
+                            }
+                        }
+                    },
+                }
+            };
+
+            await CreateFlow(rootDialog)
+            .Send("start")
+                .AssertReply("What is your age?")
+            .Send("vishwac")
+                .AssertReply("What is your age?")
+            .Send("carlos")
+                .AssertReply("I have 30 as your age")
+            .StartTestAsync();
+        }
+
         public async Task TestBindingTwoWayAcrossAdaptiveDialogs(object options)
         {
             var rootDialog = new AdaptiveDialog(nameof(AdaptiveDialog))
