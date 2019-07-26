@@ -142,7 +142,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             dc.State.SetValue(TURN_COUNT_PROPERTY, turnCount);
 
             // Perform base recognition
-            var state = await this.RecognizeInput(dc,);
+            var state = await this.RecognizeInput(dc);
 
             if (state == InputState.Valid)
             {
