@@ -63,17 +63,6 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
             Assert.True(claimsIdentity.IsAuthenticated);
         }
 
-        /*
-        [Fact]
-        public async Task Connector_TokenExtractor_RequiredEndorsementsPartiallyPresent_ShouldNotValidate()
-        {
-            var configRetriever = new TestConfigurationRetriever();
-
-            configRetriever.EndorsementTable.Add(KeyId, new HashSet<string>() { RandomEndorsement, ComplianceEndorsement, TestChannelName });
-            await Assert.ThrowsAsync<UnauthorizedAccessException>(async () => await RunTestCase(configRetriever, new string[] { ComplianceEndorsement, "notSatisfiedEndorsement" }));
-        }
-        */
-
         private async Task<ClaimsIdentity> RunTestCase(IConfigurationRetriever<IDictionary<string, HashSet<string>>> configRetriever, string[] requiredEndorsements = null)
         {
             var tokenExtractor = new JwtTokenExtractor(
