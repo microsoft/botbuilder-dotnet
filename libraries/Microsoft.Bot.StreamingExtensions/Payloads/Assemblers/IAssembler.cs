@@ -1,5 +1,8 @@
 ﻿using System;
 using System.IO;
+using System.Runtime.CompilerServices;
+
+[assembly: InternalsVisibleTo("Microsoft.Bot.StreamingExtensions.UnitTests.Mocks")]
 
 namespace Microsoft.Bot.StreamingExtensions.Payloads
 {

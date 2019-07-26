@@ -2,6 +2,9 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Runtime.CompilerServices;
+
+[assembly: InternalsVisibleTo("Microsoft.Bot.StreamingExtensions.UnitTests.Mocks")]
 
 namespace Microsoft.Bot.StreamingExtensions.Transport
 {
