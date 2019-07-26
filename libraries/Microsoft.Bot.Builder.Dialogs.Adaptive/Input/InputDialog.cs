@@ -111,7 +111,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             dc.State.SetValue(TURN_COUNT_PROPERTY, 0);
             dc.State.SetValue(INPUT_PROPERTY, null);
 
-            var state = this.AlwaysPrompt ? InputState.Missing : await this.RecognizeInput(dc, false);
+            var state = this.AlwaysPrompt ? InputState.Missing : await this.RecognizeInput(dc);
             if (state == InputState.Valid)
             {
                 var input = dc.State.GetValue<object>(INPUT_PROPERTY);
@@ -142,7 +142,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             dc.State.SetValue(TURN_COUNT_PROPERTY, turnCount);
 
             // Perform base recognition
-            var state = await this.RecognizeInput(dc, false);
+            var state = await this.RecognizeInput(dc,);
 
             if (state == InputState.Valid)
             {
@@ -170,7 +170,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             return await this.PromptUser(dc, InputState.Missing);
         }
 
-        protected abstract Task<InputState> OnRecognizeInput(DialogContext dc, bool consultation);
+        protected abstract Task<InputState> OnRecognizeInput(DialogContext dc);
 
         protected override async Task<bool> OnPreBubbleEvent(DialogContext dc, DialogEvent e, CancellationToken cancellationToken)
         {
@@ -178,8 +178,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             {
                 if (this.AllowInterruptions)
                 {
-                    var state = await this.RecognizeInput(dc, true).ConfigureAwait(false);
-                    return state == InputState.Valid;
+                    // once we allow interruptions, we don't handle in Input first
+                    return await Task.FromResult(false);
                 }
                 else
                 {
@@ -288,7 +288,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             return await this.Prompt.BindToData(dc.Context, dc.State);
         }
 
-        private async Task<InputState> RecognizeInput(DialogContext dc, bool consultation)
+        private async Task<InputState> RecognizeInput(DialogContext dc)
         {
             dynamic input = null;
 
@@ -332,7 +332,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             dc.State.SetValue(INPUT_PROPERTY, input);
             if (input != null)
             {
-                var state = await this.OnRecognizeInput(dc, consultation).ConfigureAwait(false);
+                var state = await this.OnRecognizeInput(dc).ConfigureAwait(false);
                 if (state == InputState.Valid)
                 {
                     foreach (var validation in this.Validations)
