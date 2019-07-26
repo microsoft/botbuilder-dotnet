@@ -30,7 +30,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
     public enum AllowInterruptions
     {
         /**
-         * always consult parent dialogs before take the input 
+         * always consult parent dialogs before taking the input 
          */
         Always,
 
@@ -61,7 +61,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         public string Value
         {
             get { return value?.ToString(); }
-            set {this.value = (value != null) ? new ExpressionEngine().Parse(value) : null; }
+            set { this.value = (value != null) ? new ExpressionEngine().Parse(value) : null; }
         }
 
         /// <summary>
@@ -92,7 +92,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         public string DefaultValue
         {
             get { return defaultValue?.ToString(); }
-            set { lock(this) defaultValue = (value != null) ? new ExpressionEngine().Parse(value) : null; }
+            set { lock (this) defaultValue = (value != null) ? new ExpressionEngine().Parse(value) : null; }
         }
 
         /// <summary>
@@ -114,6 +114,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         public const string TURN_COUNT_PROPERTY = "dialog.turnCount";
         public const string INPUT_PROPERTY = "turn.value";
 
+        // This property can be set by user's code to indicate that the input should re-process incoming user utterance. 
+        // Designed to be a bool property. So user's code can set this to 'true' to signal the input to re-process incoming user utterance.
+
+        public const string PROCESS_INPUT_PROPERTY = "turn.processInput";
         private const string PersistedOptions = "options";
         private const string PersistedState = "state";
 
@@ -138,8 +142,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             else
             {
                 // turnCount should increase here, because you want when nextTurn comes in
-                // the value should already be 1, otherwise, this input will pick from "dialog.value"
-                // instead of "turn.activity.text"
+                // We will set the turn count to 1 so the input will not pick from "dialog.value"
+                // and instead go with "turn.activity.text"
                 dc.State.SetValue(TURN_COUNT_PROPERTY, 1);
                 return await this.PromptUser(dc, state);
             }
@@ -209,7 +213,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
                     case AllowInterruptions.NotRecognized:
                         var state = await this.RecognizeInput(dc).ConfigureAwait(false);
-                        return state == InputState.Valid;
+
+                        // We only bubble up when recognizeInput comes back with 
+                        // RecognizeInput => 
+                        //      InputState.Invalid      -> Do not bubble up -> return true
+                        //      InputState.Valid        -> Do not bubble up -> return true
+                        //      InputState.Missing      -> bubble up        -> return false
+                        //      InputState.Unrecognized -> bubble up        -> return false
+
+                        return state == InputState.Valid || state == InputState.Invalid;
                 }
             }
 
@@ -323,7 +335,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             {
                 dc.State.SetValue(this.Property, null);
             }
-            
+
             // If AlwaysPrompt is set to false, try to get the Property value first.
             if (!string.IsNullOrEmpty(this.Property) && !this.AlwaysPrompt)
             {
@@ -338,7 +350,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             if (input == null)
             {
                 var turnCount = dc.State.GetValue<int>(TURN_COUNT_PROPERTY);
-                if (turnCount == 0)
+                var processInput = dc.State.GetValue<bool>(PROCESS_INPUT_PROPERTY, false);
+
+                // Go down this path only if the user has not requested to re-process user input via turn.processInput = true.
+                if (turnCount == 0 && !processInput)
                 {
                     input = dc.State.GetValue<object>(DialogContextState.DIALOG_VALUE, null);
                 }
@@ -353,6 +368,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                         input = dc.Context.Activity.Text;
                     }
                 }
+
+                // reset turn.processInput so subsequent steps are not impacted. 
+                dc.State.SetValue(PROCESS_INPUT_PROPERTY, false);
             }
 
             dc.State.SetValue(INPUT_PROPERTY, input);
