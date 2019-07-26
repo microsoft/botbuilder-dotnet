@@ -137,6 +137,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             }
             else
             {
+                // turnCount should increase here first to avoid it's till 0 on next turn
+                // and causing it read from dialog.value instead of the actual message
+                dc.State.SetValue(TURN_COUNT_PROPERTY, 1);
                 return await this.PromptUser(dc, state);
             }
         }
@@ -156,8 +159,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 return await this.PromptUser(dc, InputState.Missing);
             }
 
-            var turnCount = dc.State.GetValue<int>(TURN_COUNT_PROPERTY, 0) + 1;
-            dc.State.SetValue(TURN_COUNT_PROPERTY, turnCount);
+            var turnCount = dc.State.GetValue<int>(TURN_COUNT_PROPERTY, 0);
 
             // Perform base recognition
             var state = await this.RecognizeInput(dc);
@@ -169,6 +171,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             }
             else if (this.MaxTurnCount == null || turnCount < this.MaxTurnCount)
             {
+                // increase the turnCount as last step
+                dc.State.SetValue(TURN_COUNT_PROPERTY, turnCount + 1);
                 return await this.PromptUser(dc, state);
             }
             else
