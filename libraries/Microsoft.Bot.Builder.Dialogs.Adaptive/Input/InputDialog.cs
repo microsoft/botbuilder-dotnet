@@ -27,6 +27,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         Valid
     }
 
+    public enum AllowInterruptions
+    {
+        /**
+         * always consult parent dialogs before take the input 
+         */
+        Always,
+
+        /**
+         * never consult parent dialogs 
+         */
+        Never,
+
+        /**
+         * recognize the input first, only consult parent dilaogs when notRecognized
+         */
+        NotRecognized
+    }
+
     public abstract class InputDialog : Dialog
     {
         private Expression value;
@@ -34,7 +52,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
         public bool AlwaysPrompt { get; set; } = false;
 
-        public bool AllowInterruptions { get; set; } = true;
+        public AllowInterruptions AllowInterruptions { get; set; } = AllowInterruptions.NotRecognized;
 
         /// <summary>
         /// Initial value for the prompt
@@ -111,7 +129,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             dc.State.SetValue(TURN_COUNT_PROPERTY, 0);
             dc.State.SetValue(INPUT_PROPERTY, null);
 
-            var state = this.AlwaysPrompt ? InputState.Missing : await this.RecognizeInput(dc, false);
+            var state = this.AlwaysPrompt ? InputState.Missing : await this.RecognizeInput(dc);
             if (state == InputState.Valid)
             {
                 var input = dc.State.GetValue<object>(INPUT_PROPERTY);
@@ -119,6 +137,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             }
             else
             {
+                // turnCount should increase here, because you want when nextTurn comes in
+                // the value should already be 1, otherwise, this input will pick from "dialog.value"
+                // instead of "turn.activity.text"
+                dc.State.SetValue(TURN_COUNT_PROPERTY, 1);
                 return await this.PromptUser(dc, state);
             }
         }
@@ -138,11 +160,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 return await this.PromptUser(dc, InputState.Missing);
             }
 
-            var turnCount = dc.State.GetValue<int>(TURN_COUNT_PROPERTY, 0) + 1;
-            dc.State.SetValue(TURN_COUNT_PROPERTY, turnCount);
+            var turnCount = dc.State.GetValue<int>(TURN_COUNT_PROPERTY, 0);
 
             // Perform base recognition
-            var state = await this.RecognizeInput(dc, false);
+            var state = await this.RecognizeInput(dc);
 
             if (state == InputState.Valid)
             {
@@ -151,6 +172,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             }
             else if (this.MaxTurnCount == null || turnCount < this.MaxTurnCount)
             {
+                // increase the turnCount as last step
+                dc.State.SetValue(TURN_COUNT_PROPERTY, turnCount + 1);
                 return await this.PromptUser(dc, state);
             }
             else
@@ -170,20 +193,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             return await this.PromptUser(dc, InputState.Missing);
         }
 
-        protected abstract Task<InputState> OnRecognizeInput(DialogContext dc, bool consultation);
+        protected abstract Task<InputState> OnRecognizeInput(DialogContext dc);
 
         protected override async Task<bool> OnPreBubbleEvent(DialogContext dc, DialogEvent e, CancellationToken cancellationToken)
         {
             if (e.Name == DialogEvents.ActivityReceived && dc.Context.Activity.Type == ActivityTypes.Message)
             {
-                if (this.AllowInterruptions)
+                switch (this.AllowInterruptions)
                 {
-                    var state = await this.RecognizeInput(dc, true).ConfigureAwait(false);
-                    return state == InputState.Valid;
-                }
-                else
-                {
-                    return true;
+                    case AllowInterruptions.Always:
+                        return false;
+
+                    case AllowInterruptions.Never:
+                        return true;
+
+                    case AllowInterruptions.NotRecognized:
+                        var state = await this.RecognizeInput(dc).ConfigureAwait(false);
+                        return state == InputState.Valid;
                 }
             }
 
@@ -288,7 +314,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             return await this.Prompt.BindToData(dc.Context, dc.State);
         }
 
-        private async Task<InputState> RecognizeInput(DialogContext dc, bool consultation)
+        private async Task<InputState> RecognizeInput(DialogContext dc)
         {
             dynamic input = null;
 
@@ -332,7 +358,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             dc.State.SetValue(INPUT_PROPERTY, input);
             if (input != null)
             {
-                var state = await this.OnRecognizeInput(dc, consultation).ConfigureAwait(false);
+                var state = await this.OnRecognizeInput(dc).ConfigureAwait(false);
                 if (state == InputState.Valid)
                 {
                     foreach (var validation in this.Validations)

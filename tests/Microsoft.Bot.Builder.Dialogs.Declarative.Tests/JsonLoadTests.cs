@@ -103,10 +103,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
             await BuildTestFlow("TextInput.main.dialog")
             .SendConversationUpdate()
                 .AssertReply("Hello, I'm Zoidberg. What is your name?")
-            .Send("Carlos")
+            .Send("Cancel")
+                .AssertReply("Cancel")
+                .AssertReply("Hello, I'm Zoidberg. What is your name?")
+            .Send("Carlos  ") // outputFormat = trim
                 .AssertReply("Hello Carlos, nice to talk to you!")
-            .Send("hi")
-                .AssertReply("Hello Carlos, nice to talk to you!")
+                .AssertReply("Hello, I'm Zoidberg. What is your name?")
+            .Send("Cancel") // allowInterruptions = notRecognized
+                .AssertReply("Hello Cancel, nice to talk to you!")
                 .StartTestAsync();
         }
 

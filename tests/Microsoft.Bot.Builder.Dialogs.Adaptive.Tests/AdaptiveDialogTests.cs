@@ -240,7 +240,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             new TextInput()
                             {
                                 Prompt = new ActivityTemplate("Hello, what is your name?"),
-                                Property = "user.name"
+                                Property = "user.name",
+                                AllowInterruptions = AllowInterruptions.Never,
                             }
                         }
                     },
@@ -735,7 +736,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     new NumberInput()
                     {
                         Prompt = new ActivityTemplate("age?"),
-                        Property = "user.age"
+                        Property = "user.age",
+                        AllowInterruptions = AllowInterruptions.Never,
+                        MaxTurnCount = 2,
+                    },
+                    new NumberInput()
+                    {
+                        Prompt = new ActivityTemplate("age?"),
+                        Property = "user.age",
+                        AllowInterruptions = AllowInterruptions.Always,
                     },
                     new SendActivity("{user.age}"),
                 },
@@ -777,7 +786,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .AssertReply("name?")
             .Send("Carlos")
                 .AssertReply("Carlos")
-                .AssertReply("age?")
+                .AssertReply("age?") // turnCount = 1
+            .Send("root") // allowInterruptions = never
+                .AssertReply("age?") // turnCount = 2
+            .Send("side") // fail to recognize and end
+                .AssertReply("age?") // new NumberInput with allowInterruptions = always
             .Send("root")
                 .AssertReply("rootintent")
                 .AssertReply("age?")
