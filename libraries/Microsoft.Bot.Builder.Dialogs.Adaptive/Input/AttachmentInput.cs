@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             return $"AttachmentInput[{BindingPath()}]";
         }
 
-        protected override Task<InputState> OnRecognizeInput(DialogContext dc, bool consultation)
+        protected override Task<InputState> OnRecognizeInput(DialogContext dc)
         {
             var input = dc.State.GetValue<List<Attachment>>(INPUT_PROPERTY);
             var first = input.Count > 0 ? input[0] : null;
