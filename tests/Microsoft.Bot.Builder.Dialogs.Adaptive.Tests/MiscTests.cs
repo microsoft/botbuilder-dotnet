@@ -122,7 +122,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 },
                 Steps = new List<IDialog>()
                 {
-                    new TextInput() { Prompt = new ActivityTemplate("Hello, what is your name?"), OutputBinding = "user.name", AllowInterruptions = true , Value = "user.name"},
+                    new TextInput() { Prompt = new ActivityTemplate("Hello, what is your name?"), OutputBinding = "user.name", AllowInterruptions = AllowInterruptions.Always , Value = "user.name"},
                     new SendActivity("Hello {user.name}, nice to meet you!"),
                     new NumberInput() { Prompt = new ActivityTemplate("What is your age?"), OutputBinding = "user.age" },
                     new SendActivity("{user.age} is a good age to be!"),
