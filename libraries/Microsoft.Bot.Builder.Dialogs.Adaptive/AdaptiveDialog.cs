@@ -12,6 +12,7 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive.Rules;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Expressions;
+using Microsoft.Bot.Builder.Expressions.Parser;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json.Linq;
 using static Microsoft.Bot.Builder.Dialogs.Debugging.DebugSupport;
@@ -27,7 +28,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         private const string ADAPTIVE_KEY = "adaptiveDialogState";
 
         private readonly string changeKey = Guid.NewGuid().ToString();
-        
+
         private bool installedDependencies = false;
 
         public IStatePropertyAccessor<BotState> BotState { get; set; }
@@ -35,7 +36,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         public IStatePropertyAccessor<Dictionary<string, object>> UserState { get; set; }
 
         /// <summary>
-        /// Recognizer for processing incoming user input 
+        /// Recognizer for processing incoming user input
         /// </summary>
         public IRecognizer Recognizer { get; set; }
 
@@ -50,7 +51,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         public List<IDialog> Steps { get; set; } = new List<IDialog>();
 
         /// <summary>
-        /// Rules for handling events to dynamic modifying the executing plan 
+        /// Rules for handling events to dynamic modifying the executing plan
         /// </summary>
         public virtual List<IRule> Rules { get; set; } = new List<IRule>();
 
@@ -126,7 +127,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             await this.OnDialogEventAsync(dc, dialogEvent, cancellationToken).ConfigureAwait(false);
 
             // Continue step execution
-            return await this.ContinueStepsAsync(dc, cancellationToken).ConfigureAwait(false);
+            return await this.ContinueStepsAsync(dc, options, cancellationToken).ConfigureAwait(false);
         }
 
         public override async Task<DialogTurnResult> ContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default(CancellationToken))
@@ -134,7 +135,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             EnsureDependenciesInstalled();
 
             // Continue step execution
-            return await ContinueStepsAsync(dc, cancellationToken).ConfigureAwait(false);
+            return await ContinueStepsAsync(dc, null, cancellationToken).ConfigureAwait(false);
         }
 
         protected override async Task<bool> OnPreBubbleEvent(DialogContext dc, DialogEvent dialogEvent, CancellationToken cancellationToken = default(CancellationToken))
@@ -322,9 +323,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             {
                 return $"AdaptiveDialog({Path.GetFileName(range.Path)}:{range.Start.LineIndex})";
             }
+
             return $"AdaptiveDialog[{this.BindingPath()}]";
         }
-
+        
         public override DialogContext CreateChildContext(DialogContext dc)
         {
             var activeDialogState = dc.ActiveDialog.State as Dictionary<string, object>;
@@ -351,7 +353,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             return dc.Stack.Count > 0 ? $"{dc.Stack.Count}:{dc.ActiveDialog.Id}" : string.Empty;
         }
 
-        protected async Task<DialogTurnResult> ContinueStepsAsync(DialogContext dc, CancellationToken cancellationToken)
+        protected async Task<DialogTurnResult> ContinueStepsAsync(DialogContext dc, object options, CancellationToken cancellationToken)
         {
             // Apply any queued up changes
             var sequenceContext = this.ToSequenceContext(dc);
@@ -378,7 +380,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 if (result.Status == DialogTurnStatus.Empty && GetUniqueInstanceId(sequenceContext) == instanceId)
                 {
                     var nextStep = step.Steps.First();
-                    result = await step.BeginDialogAsync(nextStep.DialogId, nextStep.Options, cancellationToken).ConfigureAwait(false);
+
+                    // Compute options object for the step
+                    object effectiveOptions = ComputeEffectiveOptions(options, nextStep.Options);
+
+                    // Call begin dialog on our next step, passing the effective options we computed
+                    result = await step.BeginDialogAsync(nextStep.DialogId, effectiveOptions, cancellationToken).ConfigureAwait(false);
                 }
 
                 // Increment turns step count
@@ -455,7 +462,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             if (Recognizer != null)
             {
                 var result = await Recognizer.RecognizeAsync(context, cancellationToken).ConfigureAwait(false);
-                // only allow one intent 
+                // only allow one intent
                 var topIntent = result.GetTopScoringIntent();
                 result.Intents.Clear();
                 result.Intents.Add(topIntent.intent, new IntentScore() { Score = topIntent.score });
@@ -493,6 +500,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 }
             }
             return false;
+        }
+
+        private object ComputeEffectiveOptions(object adaptiveOptions, object stepOptions)
+        {
+            var effectiveOptions = adaptiveOptions;
+
+            if (effectiveOptions == null)
+            {
+                // If no options were passed in from the adaptive dialog, just use the step's option
+                effectiveOptions = stepOptions;
+            }
+            else if (stepOptions != null)
+            {
+                // If we were passed in options and also have non-null options for the next step,
+                // overlay the step options on top of the adaptive options 
+                ObjectPath.Assign<object>(effectiveOptions, stepOptions);
+            }
+
+            return effectiveOptions;
         }
 
         private void EnsureDependenciesInstalled()

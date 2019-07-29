@@ -1,6 +1,24 @@
 {
     "$schema": "../../app.schema",
     "$type": "Microsoft.AdaptiveDialog",
+    "recognizer": {
+        "$type": "Microsoft.RegexRecognizer",
+        "intents": {
+            "Cancel": "(?i)cancel",
+        }
+    },
+    "rules": [
+        {
+            "$type": "Microsoft.IntentRule",
+            "intent": "Cancel",
+            "steps": [
+                {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "Cancel"
+                }
+            ]
+        }
+    ],
     "steps": [
         {
             "$type": "Microsoft.IfCondition",
@@ -9,13 +27,32 @@
                 {
                     "$type": "Microsoft.TextInput",
                     "property": "user.name",
-                    "prompt": "Hello, I'm Zoidberg. What is your name?"
+                    "prompt": "Hello, I'm Zoidberg. What is your name?",
+                    "outputFormat": "trim",
+                    "allowInterruptions": "always"
                 }
             ]
         },
         {
             "$type": "Microsoft.SendActivity",
             "activity": "Hello {user.name}, nice to talk to you!"
+        },
+        {
+            "$type": "Microsoft.IfCondition",
+            "condition": "user.name2 == null",
+            "steps": [
+                {
+                    "$type": "Microsoft.TextInput",
+                    "property": "user.name2",
+                    "prompt": "Hello, I'm Zoidberg. What is your name?",
+                    "outputFormat": "trim",
+                    "allowInterruptions": "notRecognized"
+                }
+            ]
+        },
+        {
+            "$type": "Microsoft.SendActivity",
+            "activity": "Hello {user.name2}, nice to talk to you!"
         }
     ]
 }

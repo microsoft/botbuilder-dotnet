@@ -19,13 +19,13 @@ namespace Microsoft.Bot.Builder.Dialogs
     public class DialogContextVisibleState
     {
         [JsonProperty(PropertyName = "user")]
-        public Dictionary<string, object> User { get; set; }
+        public IDictionary<string, object> User { get; set; }
 
         [JsonProperty(PropertyName = "conversation")]
-        public Dictionary<string, object> Conversation { get; set; }
+        public IDictionary<string, object> Conversation { get; set; }
 
         [JsonProperty(PropertyName = "dialog")]
-        public Dictionary<string, object> Dialog { get; set; }
+        public IDictionary<string, object> Dialog { get; set; }
     }
 
     public class DialogContextState : IDictionary<string, object>
@@ -38,7 +38,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         private readonly DialogContext dialogContext;
 
-        public DialogContextState(DialogContext dc, Dictionary<string, object> settings, Dictionary<string, object> userState, Dictionary<string, object> conversationState, Dictionary<string, object> turnState)
+        public DialogContextState(DialogContext dc, IDictionary<string, object> settings, IDictionary<string, object> userState, IDictionary<string, object> conversationState, IDictionary<string, object> turnState)
         {
             this.dialogContext = dc ?? throw new ArgumentNullException(nameof(dc));
             this.Settings = settings;
@@ -66,25 +66,25 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// Gets or sets settings for the application.
         /// </summary>
         [JsonProperty(PropertyName = "settings")]
-        public Dictionary<string, object> Settings { get; set; }
+        public IDictionary<string, object> Settings { get; set; }
 
         /// <summary>
         /// Gets or sets state associated with the active user in the turn.
         /// </summary>
         [JsonProperty(PropertyName = "user")]
-        public Dictionary<string, object> User { get; set; }
+        public IDictionary<string, object> User { get; set; }
 
         /// <summary>
         /// Gets or sets state assocaited with the active conversation for the turn.
         /// </summary>
         [JsonProperty(PropertyName = "conversation")]
-        public Dictionary<string, object> Conversation { get; set; }
+        public IDictionary<string, object> Conversation { get; set; }
 
         /// <summary>
         /// Gets or sets state associated with the active dialog for the turn.
         /// </summary>
         [JsonProperty(PropertyName = "dialog")]
-        public Dictionary<string, object> Dialog
+        public IDictionary<string, object> Dialog
         {
             get
             {
@@ -157,7 +157,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// Gets or sets state associated with the current turn only (this is non-persisted).
         /// </summary>
         [JsonProperty(PropertyName = "turn")]
-        public Dictionary<string, object> Turn { get; set; }
+        public IDictionary<string, object> Turn { get; set; }
 
         public ICollection<string> Keys => new[] { "user", "conversation", "dialog", "callstack", "turn", "settings" };
 

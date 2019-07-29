@@ -14,12 +14,12 @@
 # showSingleItem(x)
 - * {x}
 
-# ShowItems(user, listName)
+# ShowItems
 - IF: {listName == "shopping"}
     - ```
     You most recent @{count(user.lists.shopping)} shopping items are
     
-    @{join(foreach(user.lists.shopping, x, lgTemplate('showSingleItem', x)), '\n')}
+    @{join(foreach(user.lists.shopping, x, showSingleItem(x)), '\n')}
 
      
 
@@ -28,14 +28,14 @@
     - ```
     You most recent @{count(user.lists.grocery)} grocery items are
 
-    @{join(foreach(user.lists.grocery, x, lgTemplate('showSingleItem', x)), '\n')}
+    @{join(foreach(user.lists.grocery, x, showSingleItem(x)), '\n')}
 
      ```
 - ELSEIF: {listName == "todo"}
     - ```
     You most recent @{count(user.lists.todo)} todo items are
 
-    @{join(foreach(user.lists.todo, x, lgTemplate('showSingleItem', x)), '\n')}
+    @{join(foreach(user.lists.todo, x, showSingleItem(x)), '\n')}
 
      ```
 

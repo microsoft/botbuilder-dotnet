@@ -18,7 +18,7 @@
 - IF: {count(user.meetings) == 1}
   - [ShowMeeting(user.meetings[0])]
 - ELSEIF: {count(user.meetings) >= 2}
-  - {join(foreach(user.meetings, x,  lgTemplate('ShowMeetingListItem', x)), '\n', '\n')}
+  - {join(foreach(user.meetings, x,  ShowMeetingListItem(x)), '\n', '\n')}
 - ELSE:
   - You should not be here.
 
