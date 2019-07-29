@@ -36,20 +36,10 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
 
         private readonly IServiceProvider _services;
 
-#if DEBUG
-        public
-#else
-        private
-#endif
-        IStreamingTransportServer _transportServer;
+        private IStreamingTransportServer _transportServer;
 
 #pragma warning disable IDE0044
-#if DEBUG
-        public
-#else
-        private
-#endif
-        string _userAgent;
+        private string _userAgent;
 #pragma warning restore IDE0044
 
         /// <summary>
