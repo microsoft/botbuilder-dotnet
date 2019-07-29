@@ -11,7 +11,9 @@ namespace Microsoft.Bot.Builder.AI.LuisV3.Tests
         {
         }
 
+#pragma warning disable SA1313 // Parameter names should begin with lower-case letter
         public void Convert(dynamic _)
+#pragma warning restore SA1313 // Parameter names should begin with lower-case letter
         {
         }
     }

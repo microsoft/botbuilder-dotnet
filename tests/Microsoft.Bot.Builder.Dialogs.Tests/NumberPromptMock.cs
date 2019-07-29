@@ -7,7 +7,7 @@ using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Dialogs.Tests
 {
-    public class NumberPromptMock: NumberPrompt<int>
+    public class NumberPromptMock : NumberPrompt<int>
     {
         public NumberPromptMock(string dialogId, PromptValidator<int> validator = null, string defaultLocale = null)
             : base(dialogId, validator, defaultLocale)
