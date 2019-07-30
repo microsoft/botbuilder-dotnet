@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Bot.StreamingExtensions.Payloads
 {
-    internal class PayloadStream : Stream
+    public class PayloadStream : Stream
     {
         private readonly PayloadStreamAssembler _assembler;
         private readonly Queue<byte[]> _bufferQueue = new Queue<byte[]>();

@@ -6,7 +6,7 @@ using System.IO;
 
 namespace Microsoft.Bot.StreamingExtensions.Payloads
 {
-    internal class ContentStream : IContentStream
+    public class ContentStream : IContentStream
     {
         private readonly PayloadStreamAssembler _assembler;
 
