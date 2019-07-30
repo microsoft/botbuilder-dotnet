@@ -179,7 +179,8 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.StreamingExtensions
         [TestMethod]
         public async Task StreamingRequestHandler_ProcessRequestAsync_PostMessages_WithBotError_InternalServerError()
         {
-            var s = new StreamingRequestHandler(onTurnError: null, bot: new MockBot(), transportServer: new MockStreamingTransportServer());
+            var bot = new MockBot() { ThrowDuringOnTurnAsync = true };
+            var s = new StreamingRequestHandler(onTurnError: null, bot: bot, transportServer: new MockStreamingTransportServer());
 
             var request = new ReceiveRequest() { Verb = "POST", Path = "/api/messages" };
 
