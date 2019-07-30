@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29123.88
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.106
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{4269F3C3-6B42-419B-B64A-3E6DC0F1574A}"
 EndProject
@@ -93,6 +93,10 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Adapters", "Adapters", "{6230B915-B238-4E57-AAC4-06B4498F540F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Adapters.Twilio", "libraries\Adapters\Microsoft.Bot.Builder.Adapters.Twilio\Microsoft.Bot.Builder.Adapters.Twilio.csproj", "{1D1AD39B-EBCF-4960-930E-84246DEF6AAE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test Applications", "Test Applications", "{2E891422-AB8F-4DC5-8144-D5049DBEF485}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Twilio.Sample", "tests\Test Applications\Microsoft.Bot.Builder.Twilio.Sample\Microsoft.Bot.Builder.Twilio.Sample.csproj", "{33A70685-95FC-4BBB-B15B-C06A6343B96F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -335,6 +339,12 @@ Global
 		{1D1AD39B-EBCF-4960-930E-84246DEF6AAE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1D1AD39B-EBCF-4960-930E-84246DEF6AAE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1D1AD39B-EBCF-4960-930E-84246DEF6AAE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{33A70685-95FC-4BBB-B15B-C06A6343B96F}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{33A70685-95FC-4BBB-B15B-C06A6343B96F}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
+		{33A70685-95FC-4BBB-B15B-C06A6343B96F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{33A70685-95FC-4BBB-B15B-C06A6343B96F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{33A70685-95FC-4BBB-B15B-C06A6343B96F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{33A70685-95FC-4BBB-B15B-C06A6343B96F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -383,6 +393,8 @@ Global
 		{474C57B1-C9FC-4B71-A92B-B25BA27FAFA7} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{6230B915-B238-4E57-AAC4-06B4498F540F} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
 		{1D1AD39B-EBCF-4960-930E-84246DEF6AAE} = {6230B915-B238-4E57-AAC4-06B4498F540F}
+		{2E891422-AB8F-4DC5-8144-D5049DBEF485} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
+		{33A70685-95FC-4BBB-B15B-C06A6343B96F} = {2E891422-AB8F-4DC5-8144-D5049DBEF485}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7173C9F3-A7F9-496E-9078-9156E35D6E16}
