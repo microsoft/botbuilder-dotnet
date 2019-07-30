@@ -9,7 +9,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
 
         public string ToState { get; set; }
 
-        public string SMSMessageSid { get; set; }
+        public string SmsMessageSid { get; set; }
 
         public string NumMedia { get; set; }
 
@@ -17,11 +17,11 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
 
         public string FromZip { get; set; }
 
-        public string SMSSid { get; set; }
+        public string SmsSid { get; set; }
 
         public string FromState { get; set; }
 
-        public string SMSStatus { get; set; }
+        public string SmsStatus { get; set; }
 
         public string FromCity { get; set; }
 

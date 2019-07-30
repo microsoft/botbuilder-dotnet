@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// Gets or sets the account SID.
         /// </summary>
         /// <value>The account SID.</value>
-        string AccountSID { get; set; }
+        string AccountSid { get; set; }
 
         /// <summary>
         /// Gets or sets the authentication token.
@@ -29,6 +29,6 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// Gets or sets the validation URL.
         /// </summary>
         /// <value>The validation URL.</value>
-        string ValidationURL { get; set; }
+        string ValidationUrl { get; set; }
     }
 }
