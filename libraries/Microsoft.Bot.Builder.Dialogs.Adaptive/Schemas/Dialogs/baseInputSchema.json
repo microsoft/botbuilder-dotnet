@@ -74,11 +74,16 @@
           "examples": [ false ]
         },
         "allowInterruptions": {
-          "type": "boolean",
+          "type": "string",
+          "enum": [
+            "always",
+            "never",
+            "notRecognized"
+          ],
           "title": "Allow Interruptions",
-          "description": "If set to true this will always consult the parent dialog whether it will be interupt or not.",
-          "default": true,
-          "examples": [ true ]
+          "description": "always will always consult parent dialogs first, never will not consult parent dialogs, notRecognized will consult parent only when it's not recognized",
+          "default": "notRecognized",
+          "examples": [ "notRecognized" ]
         }
       }
     }
