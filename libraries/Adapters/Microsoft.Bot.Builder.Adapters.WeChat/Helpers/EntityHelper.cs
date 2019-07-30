@@ -9,16 +9,25 @@ using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Response;
 
 namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Helpers
 {
+    /// <summary>
+    /// Entity related helper class.
+    /// </summary>
     public static class EntityHelper
     {
+        /// <summary>
+        /// Get the request message entity from XML.
+        /// </summary>
+        /// <typeparam name="T">Type of IRequestMessageBase.</typeparam>
+        /// <param name="doc">XML.</param>
+        /// <returns>Request Message Entity.</returns>
         public static IRequestMessageBase FillEntityWithXml<T>(XDocument doc)
             where T : IRequestMessageBase, new()
         {
             try
             {
                 var requestMessage = new T();
-                XmlSerializer serializer = new XmlSerializer(typeof(T));
-                using (TextReader reader = new StringReader(doc.ToString()))
+                var serializer = new XmlSerializer(typeof(T));
+                using (var reader = new StringReader(doc.ToString()))
                 {
                     requestMessage = (T)serializer.Deserialize(reader);
                 }
@@ -31,16 +40,22 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Helpers
             }
         }
 
-        public static string ConvertEntityToXmlString<T>(IResponseMessageBase responseMessage, TextWriter textWriter = null)
+        /// <summary>
+        /// Convert Entity to XML string.
+        /// </summary>
+        /// <typeparam name="T">Type of Entity class.</typeparam>
+        /// <param name="responseMessage">Request Message Interface.</param>
+        /// <returns>XML String.</returns>
+        public static string ConvertEntityToXmlString<T>(IResponseMessageBase responseMessage)
             where T : class
         {
             try
             {
                 var entity = responseMessage as T;
 
-                XmlSerializer serializer = new XmlSerializer(typeof(T));
+                var serializer = new XmlSerializer(typeof(T));
 
-                XmlWriterSettings settings = new XmlWriterSettings
+                var settings = new XmlWriterSettings
                 {
                     Encoding = new UnicodeEncoding(false, false),
                     Indent = true,
@@ -49,7 +64,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Helpers
                 var nameSpace = new XmlSerializerNamespaces();
                 nameSpace.Add(string.Empty, string.Empty);
 
-                using (textWriter = textWriter ?? new StringWriter())
+                using (var textWriter = new StringWriter())
                 {
                     using (var xmlWriter = XmlWriter.Create(textWriter, settings))
                     {

@@ -4,13 +4,19 @@ using System.Linq;
 
 namespace Microsoft.Bot.Builder.Adapters.WeChat
 {
+    /// <summary>
+    /// MimeType map is class help get file extention from its mime type and get mime type through it name.
+    /// </summary>
     public static class MimeTypesMap
     {
-        private static readonly string DefaultExtension = null;
-        private static readonly string DefaultMimeType = "application/octet-stream";
+        private const string DefaultExtension = null;
+        private const string DefaultMimeType = "application/octet-stream";
 
-        // http://svn.apache.org/repos/asf/httpd/httpd/trunk/docs/conf/mime.types
-        private static Lazy<Dictionary<string, string>> mimeTypeMap = new Lazy<Dictionary<string, string>>(() => new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        /// <summary>
+        /// Lazy instance of an Dictionary which store the extation/mimetype pairs.
+        /// All mime type defination: http://svn.apache.org/repos/asf/httpd/httpd/trunk/docs/conf/mime.types.
+        /// </summary>
+        private static readonly Lazy<Dictionary<string, string>> MimeTypeMap = new Lazy<Dictionary<string, string>>(() => new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
         {
             ["ez"] = "application/andrew-inset",
             ["aw"] = "application/applixware",
@@ -998,9 +1004,14 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
             ["ice"] = "x-conference/x-cooltalk",
         });
 
-        public static string GetExtension(string mime)
+        /// <summary>
+        /// Get file extension by its mime type.
+        /// </summary>
+        /// <param name="mimeType">File mime type string.</param>
+        /// <returns>File extension.</returns>
+        public static string GetExtension(string mimeType)
         {
-            var ext = mimeTypeMap.Value.FirstOrDefault(x => x.Value == mime).Key;
+            var ext = MimeTypeMap.Value.FirstOrDefault(x => x.Value == mimeType).Key;
             if (ext != null)
             {
                 return ext;
@@ -1009,6 +1020,11 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
             return DefaultExtension;
         }
 
+        /// <summary>
+        /// Get mime type through the file name.
+        /// </summary>
+        /// <param name="fileName">The file name.</param>
+        /// <returns>file mimetype.</returns>
         public static string GetMimeType(string fileName)
         {
             var ext = fileName;
@@ -1018,17 +1034,12 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 ext = fileName.Substring(ind + 1).ToLower();
             }
 
-            if (mimeTypeMap.Value.TryGetValue(ext, out var result))
+            if (MimeTypeMap.Value.TryGetValue(ext, out var result))
             {
                 return result;
             }
 
             return DefaultMimeType;
-        }
-
-        public static void AddOrUpdate(string mime, string extension)
-        {
-            mimeTypeMap.Value[extension] = mime;
         }
     }
 }

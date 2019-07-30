@@ -59,6 +59,12 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Response
         [XmlElement(ElementName = "CreateTime")]
         public long CreateTime { get; set; }
 
+        /// <summary>
+        /// Gets or sets message type.
+        /// </summary>
+        /// /// <value>
+        /// Response message type.
+        /// </value>
         [XmlIgnore]
         public virtual string MsgType { get; set; }
     }

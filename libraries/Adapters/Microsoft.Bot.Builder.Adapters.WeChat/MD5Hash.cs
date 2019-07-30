@@ -18,17 +18,19 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         public string Hash(byte[] inputBytes)
         {
             // step 1, calculate MD5 hash from input
-            var md5 = MD5.Create();
-            var hash = md5.ComputeHash(inputBytes);
-
-            // step 2, convert byte array to hex string
-            var sb = new StringBuilder();
-            for (var i = 0; i < hash.Length; i++)
+            using (var md5 = MD5.Create())
             {
-                sb.Append(hash[i].ToString("X2"));
-            }
+                var hash = md5.ComputeHash(inputBytes);
 
-            return sb.ToString();
+                // step 2, convert byte array to hex string
+                var sb = new StringBuilder();
+                for (var i = 0; i < hash.Length; i++)
+                {
+                    sb.Append(hash[i].ToString("X2"));
+                }
+
+                return sb.ToString();
+            }
         }
 
         /// <summary>
@@ -39,18 +41,20 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         public string Hash(string content)
         {
             // step 1, calculate MD5 hash from input
-            var md5 = MD5.Create();
-            var inputBytes = Encoding.UTF8.GetBytes(content);
-            var hash = md5.ComputeHash(inputBytes);
-
-            // step 2, convert byte array to hex string
-            var sb = new StringBuilder();
-            for (var i = 0; i < hash.Length; i++)
+            using (var md5 = MD5.Create())
             {
-                sb.Append(hash[i].ToString("X2"));
-            }
+                var inputBytes = Encoding.UTF8.GetBytes(content);
+                var hash = md5.ComputeHash(inputBytes);
 
-            return sb.ToString();
+                // step 2, convert byte array to hex string
+                var sb = new StringBuilder();
+                for (var i = 0; i < hash.Length; i++)
+                {
+                    sb.Append(hash[i].ToString("X2"));
+                }
+
+                return sb.ToString();
+            }
         }
     }
 }

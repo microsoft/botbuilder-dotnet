@@ -8,39 +8,43 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema;
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema.JsonResult;
+using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Response;
 using Microsoft.Bot.Schema;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Adapters.WeChat
 {
+    /// <summary>
+    /// A WeChat client is used to commnicate with WeChat API.
+    /// </summary>
     public class WeChatClient
     {
         private static readonly string APIHost = "https://api.weixin.qq.com";
         private static readonly HttpClient HttpClient = new HttpClient();
 
-        private readonly string appId;
-        private readonly string appSecret;
-        private readonly WeChatLogger logger;
-        private readonly bool uploadTemporaryMedia;
-        private readonly WeChatAttachmentStorage attachmentStorage;
-        private readonly AccessTokenStorage tokenStorage;
-        private readonly IAttachmentHash attachmentHash;
+        private readonly string _appId;
+        private readonly string _appSecret;
+        private readonly ILogger _logger;
+        private readonly WeChatAttachmentStorage _attachmentStorage;
+        private readonly AccessTokenStorage _tokenStorage;
+        private readonly IAttachmentHash _attachmentHash;
 
         public WeChatClient(
-            IConfiguration configuration,
-            WeChatLogger logger = null,
+            string appId,
+            string appSecret,
+            ILogger logger = null,
             WeChatAttachmentStorage attachmentStorage = null,
             AccessTokenStorage tokenStorage = null,
             IAttachmentHash attachmentHash = null)
         {
-            this.appId = configuration.GetSection("WeChatSetting").GetSection("AppId")?.Value;
-            this.appSecret = configuration.GetSection("WeChatSetting").GetSection("AppSecret")?.Value;
-            this.uploadTemporaryMedia = configuration.GetSection("WeChatSetting")?.GetValue<bool>("UploadTemporaryMedia") ?? true;
-            this.logger = logger ?? WeChatLogger.Instance;
-            this.attachmentStorage = attachmentStorage ?? WeChatAttachmentStorage.Instance;
-            this.tokenStorage = tokenStorage ?? AccessTokenStorage.Instance;
-            this.attachmentHash = attachmentHash ?? MD5Hash.Instance;
+            _appId = appId;
+            _appSecret = appSecret;
+            _logger = logger ?? NullLogger.Instance;
+            _attachmentStorage = attachmentStorage ?? WeChatAttachmentStorage.Instance;
+            _tokenStorage = tokenStorage ?? AccessTokenStorage.Instance;
+            _attachmentHash = attachmentHash ?? MD5Hash.Instance;
         }
 
         /// <summary>
@@ -50,10 +54,9 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// <returns>Url of the specific media.</returns>
         public async Task<string> GetMediaUrlAsync(string mediaId)
         {
-            var accessToken = await this.GetAccessTokenAsync().ConfigureAwait(false);
-            var mediaUrl = $"http://file.api.weixin.qq.com/cgi-bin/media/get?access_token={accessToken}&media_id={mediaId}";
+            var accessToken = await GetAccessTokenAsync().ConfigureAwait(false);
+            var mediaUrl = $"{APIHost}/cgi-bin/media/get?access_token={accessToken}&media_id={mediaId}";
 
-            // TODO: move the links out of the mapper to config file.
             return mediaUrl;
         }
 
@@ -65,48 +68,55 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// <returns>Standard result of calling WeChat message API.</returns>
         public async Task<WeChatJsonResult> SendMessageToUser(object data, string type = null)
         {
-            this.logger.TrackTrace("Send new message to user.");
-            var accessToken = await this.GetAccessTokenAsync().ConfigureAwait(false);
-            var url = this.GetMessageApiEndPoint(accessToken);
-            var bytes = await this.SendHttpRequestAsync(HttpMethod.Post, url, data).ConfigureAwait(false);
-            var sendResult = this.ConvertBytesToType<WeChatJsonResult>(bytes);
+            _logger.LogInformation("Send new message to user.");
+            var accessToken = await GetAccessTokenAsync().ConfigureAwait(false);
+            var url = GetMessageApiEndPoint(accessToken);
+            var bytes = await SendHttpRequestAsync(HttpMethod.Post, url, data).ConfigureAwait(false);
+            var sendResult = ConvertBytesToType<WeChatJsonResult>(bytes);
             if (sendResult.ErrorCode != 0)
             {
-                this.logger.TrackException("Send Message To User Failed", new Exception($"{sendResult.ToString()}"));
+                _logger.LogError(new Exception($"{sendResult.ToString()}"), "Send Message To User Failed");
             }
 
             return sendResult;
         }
 
+        /// <summary>
+        /// Send http request wrapper for WeChat adapter.
+        /// Can be override by developer.
+        /// </summary>
+        /// <param name="method">Http request method.</param>
+        /// <param name="url">The url need to be requested.</param>
+        /// <param name="data">The request payload.</param>
+        /// <param name="token">Request auth token.</param>
+        /// <returns>Response content as byte array.</returns>
         public virtual async Task<byte[]> SendHttpRequestAsync(HttpMethod method, string url, object data = null, string token = null)
         {
-            this.logger.TrackTrace($"Send {method.Method} request to {url}", Severity.Information);
-            var result = await HttpRequestAsync(token, method, url, data).ConfigureAwait(false);
+            _logger.LogInformation($"Send {method.Method} request to {url}", Severity.Information);
+            var result = await MakeHttpRequestAsync(token, method, url, data).ConfigureAwait(false);
             return result;
         }
 
-        public T ConvertBytesToType<T>(byte[] byteArray)
-        {
-            var result = Encoding.UTF8.GetString(byteArray);
-            return JsonConvert.DeserializeObject<T>(result);
-        }
-
+        /// <summary>
+        /// Get access token used to call WeChat API.
+        /// </summary>
+        /// <returns>Access token string.</returns>
         public virtual async Task<string> GetAccessTokenAsync()
         {
-            var token = await this.tokenStorage.GetAsync(this.appId).ConfigureAwait(false);
+            var token = await _tokenStorage.GetAsync(_appId).ConfigureAwait(false);
             if (token == null)
             {
-                token = new WeChatAccessToken(this.appId, this.appSecret);
+                token = new WeChatAccessToken(_appId, _appSecret);
             }
 
             if (token.ExpireTime.ToUnixTimeSeconds() <= DateTimeOffset.UtcNow.ToUnixTimeSeconds())
             {
-                var url = this.GetAccessTokenEndPoint(this.appId, this.appSecret);
-                var bytes = await this.SendHttpRequestAsync(HttpMethod.Get, url).ConfigureAwait(false);
-                var tokenResult = this.ConvertBytesToType<AccessTokenResult>(bytes);
+                var url = GetAccessTokenEndPoint(_appId, _appSecret);
+                var bytes = await SendHttpRequestAsync(HttpMethod.Get, url).ConfigureAwait(false);
+                var tokenResult = ConvertBytesToType<AccessTokenResult>(bytes);
                 token.ExpireTime = DateTimeOffset.UtcNow.AddSeconds(tokenResult.ExpireIn);
                 token.Token = tokenResult.Token;
-                await this.tokenStorage.SaveAsync(this.appId, token);
+                await _tokenStorage.SaveAsync(_appId, token);
             }
 
             return token.Token;
@@ -117,24 +127,24 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// </summary>
         /// <param name="type">Media type.</param>
         /// <param name="attachmentData">attachment data to be uploaded.</param>
-        /// <param name="timeOut">Request timeout (milliseconds).</param>
+        /// <param name="timeout">Request timeout (milliseconds).</param>
         /// <returns>Result of upload Temporary media.</returns>
-        public virtual async Task<UploadTemporaryMediaResult> UploadTemporaryMediaAsync(string type, AttachmentData attachmentData, int timeOut = 10000)
+        public virtual async Task<UploadTemporaryMediaResult> UploadTemporaryMediaAsync(string type, AttachmentData attachmentData, int timeout = 10000)
         {
-            var mediaHash = this.attachmentHash.Hash(attachmentData.OriginalBase64);
-            var uploadResult = (await this.attachmentStorage.GetAsync(mediaHash).ConfigureAwait(false)) as UploadTemporaryMediaResult;
+            var mediaHash = _attachmentHash.Hash(attachmentData.OriginalBase64);
+            var uploadResult = (await _attachmentStorage.GetAsync(mediaHash).ConfigureAwait(false)) as UploadTemporaryMediaResult;
             if (uploadResult == null)
             {
-                var accessToken = await this.GetAccessTokenAsync().ConfigureAwait(false);
-                var url = this.GetUploadMediaEndPoint(accessToken, type, true);
-                uploadResult = await this.UploadMediaAsync<UploadTemporaryMediaResult>(attachmentData, url, type, mediaHash, this.uploadTemporaryMedia).ConfigureAwait(false);
+                var accessToken = await GetAccessTokenAsync().ConfigureAwait(false);
+                var url = GetUploadMediaEndPoint(accessToken, type, true);
+                uploadResult = await UploadMediaAsync<UploadTemporaryMediaResult>(attachmentData, url, type, mediaHash, true).ConfigureAwait(false);
                 if (uploadResult.ErrorCode == 0)
                 {
-                    await this.attachmentStorage.SaveAsync(mediaHash, uploadResult).ConfigureAwait(false);
+                    await _attachmentStorage.SaveAsync(mediaHash, uploadResult).ConfigureAwait(false);
                 }
                 else
                 {
-                    this.logger.TrackException($"Upload Temporary Media Failed, Type: {type.ToString()}", new Exception($"{uploadResult.ToString()}"));
+                    _logger.LogError(new Exception($"{uploadResult.ToString()}"), $"Upload Temporary Media Failed, Type: {type.ToString()}");
                 }
             }
 
@@ -146,102 +156,57 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// </summary>
         /// <param name="type">Upload media file type.</param>
         /// <param name="attachmentData">Attachment data to be uploaded.</param>
-        /// <param name="timeOut">Request timeout (milliseconds).</param>
+        /// <param name="timeout">Request timeout (milliseconds).</param>
         /// <returns>Result of upload persistent media.</returns>
-        public virtual async Task<UploadPersistentMediaResult> UploadPersistentMediaAsync(string type, AttachmentData attachmentData, int timeOut = 10000)
+        public virtual async Task<UploadPersistentMediaResult> UploadPersistentMediaAsync(string type, AttachmentData attachmentData, int timeout = 10000)
         {
-            var mediaHash = this.attachmentHash.Hash(attachmentData.OriginalBase64);
-            var uploadResult = (await this.attachmentStorage.GetAsync(mediaHash).ConfigureAwait(false)) as UploadPersistentMediaResult;
+            var mediaHash = _attachmentHash.Hash(attachmentData.OriginalBase64);
+            var uploadResult = (await _attachmentStorage.GetAsync(mediaHash).ConfigureAwait(false)) as UploadPersistentMediaResult;
             if (uploadResult == null)
             {
-                var accessToken = await this.GetAccessTokenAsync().ConfigureAwait(false);
-                var url = this.GetUploadMediaEndPoint(accessToken, type, false);
-                uploadResult = await this.UploadMediaAsync<UploadPersistentMediaResult>(attachmentData, url, type, mediaHash, this.uploadTemporaryMedia).ConfigureAwait(false);
+                var accessToken = await GetAccessTokenAsync().ConfigureAwait(false);
+                var url = GetUploadMediaEndPoint(accessToken, type, false);
+                uploadResult = await UploadMediaAsync<UploadPersistentMediaResult>(attachmentData, url, type, mediaHash, false).ConfigureAwait(false);
                 if (uploadResult.ErrorCode == 0)
                 {
-                    await this.attachmentStorage.SaveAsync(mediaHash, uploadResult).ConfigureAwait(false);
+                    await _attachmentStorage.SaveAsync(mediaHash, uploadResult).ConfigureAwait(false);
                 }
                 else
                 {
-                    this.logger.TrackException($"Upload Persistent Media Failed, Type: {type.ToString()}", new Exception($"{uploadResult.ToString()}"));
+                    _logger.LogError(new Exception($"{uploadResult.ToString()}"), $"Upload Persistent Media Failed, Type: {type.ToString()}");
                 }
             }
 
             return uploadResult;
         }
 
-        public virtual async Task<T> UploadMediaAsync<T>(AttachmentData attachmentData, string url, string type, string md5Hash, bool isTemporaryMedia)
-        {
-            try
-            {
-                var ext = MapperUtils.GetMediaExtension(attachmentData.Name, attachmentData.Type, type);
-
-                // Border break
-                var boundary = "---------------" + DateTime.UtcNow.Ticks.ToString("x");
-                var content = new MultipartFormDataContent(boundary);
-                content.Headers.Remove("Content-Type");
-                content.Headers.TryAddWithoutValidation("Content-Type", "multipart/form-data; boundary=" + boundary);
-                var contentByte = new ByteArrayContent(attachmentData.OriginalBase64);
-                contentByte.Headers.Remove("Content-Disposition");
-
-                contentByte.Headers.TryAddWithoutValidation("Content-Disposition", $"form-data; name=\"media\";filename=\"{md5Hash + ext}\"" + string.Empty);
-                contentByte.Headers.Remove("Content-Type");
-                contentByte.Headers.TryAddWithoutValidation("Content-Type", attachmentData.Type);
-                content.Add(contentByte);
-
-                // Additional form is required when upload a forever video.
-                if (isTemporaryMedia == false && type == UploadMediaType.Video)
-                {
-                    var additionalForm = string.Format("{{\"title\":\"{0}\", \"introduction\":\"{1}\"}}", "title", "introduction");
-
-                    // Important! name must be "description"
-                    content.Add(new StringContent(additionalForm), "\"" + "description" + "\"");
-                }
-
-                logger.TrackTrace($"Upload {type.ToString()} to WeChat", Severity.Information);
-                var response = await HttpClient.PostAsync(url, content).ConfigureAwait(false);
-                if (response.StatusCode != HttpStatusCode.OK)
-                {
-                    throw new Exception(await response.Content.ReadAsStringAsync());
-                }
-
-                var responseString = await response.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<T>(responseString);
-            }
-            catch (Exception ex)
-            {
-                this.logger.TrackException($"Failed To Upload Media, Type: {type.ToString()}", ex);
-                throw new Exception(ex.Message + ex.InnerException.Message);
-            }
-        }
-
         /// <summary>
         /// Upload temporary graphic media.
         /// </summary>
-        /// <param name="timeOut">Request timeout (milliseconds).</param>
+        /// <param name="timeout">Request timeout (milliseconds).</param>
         /// <param name="newsList">Graphic material list.</param>
         /// <returns>Result of upload a persistent news.</returns>
-        public virtual async Task<UploadPersistentMediaResult> UploadPersistentNewsAsync(int timeOut = 10000, params News[] newsList)
+        public virtual async Task<UploadPersistentMediaResult> UploadPersistentNewsAsync(int timeout = 10000, params News[] newsList)
         {
-            var mediaHash = this.attachmentHash.Hash(JsonConvert.SerializeObject(newsList));
-            var uploadResult = (await this.attachmentStorage.GetAsync(mediaHash).ConfigureAwait(false)) as UploadPersistentMediaResult;
+            var mediaHash = _attachmentHash.Hash(JsonConvert.SerializeObject(newsList));
+            var uploadResult = (await _attachmentStorage.GetAsync(mediaHash).ConfigureAwait(false)) as UploadPersistentMediaResult;
             if (uploadResult == null)
             {
-                var accessToken = await this.GetAccessTokenAsync().ConfigureAwait(false);
-                var url = this.GetUploadNewsEndPoint(accessToken, false);
+                var accessToken = await GetAccessTokenAsync().ConfigureAwait(false);
+                var url = GetUploadNewsEndPoint(accessToken, false);
                 var data = new
                 {
                     articles = newsList,
                 };
-                var bytes = await this.SendHttpRequestAsync(HttpMethod.Post, url, data).ConfigureAwait(false);
-                uploadResult = this.ConvertBytesToType<UploadPersistentMediaResult>(bytes);
+                var bytes = await SendHttpRequestAsync(HttpMethod.Post, url, data).ConfigureAwait(false);
+                uploadResult = ConvertBytesToType<UploadPersistentMediaResult>(bytes);
                 if (uploadResult.ErrorCode == 0)
                 {
-                    await this.attachmentStorage.SaveAsync(mediaHash, uploadResult).ConfigureAwait(false);
+                    await _attachmentStorage.SaveAsync(mediaHash, uploadResult).ConfigureAwait(false);
                 }
                 else
                 {
-                    this.logger.TrackException("Upload Persistent News Failed", new Exception($"{uploadResult.ToString()}"));
+                    _logger.LogError(new Exception($"{uploadResult.ToString()}"), "Upload Persistent News Failed");
                 }
             }
 
@@ -251,30 +216,30 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// <summary>
         /// Upload temporary graphic media.
         /// </summary>
-        /// <param name="timeOut">Request timeout (milliseconds).</param>
+        /// <param name="timeout">Request timeout (milliseconds).</param>
         /// <param name="newsList">Graphic material list.</param>
         /// <returns>Result of upload a temporary news.</returns>
-        public virtual async Task<UploadTemporaryMediaResult> UploadTemporaryNewsAsync(int timeOut = 10000, params News[] newsList)
+        public virtual async Task<UploadTemporaryMediaResult> UploadTemporaryNewsAsync(int timeout = 10000, params News[] newsList)
         {
-            var mediaHash = this.attachmentHash.Hash(JsonConvert.SerializeObject(newsList));
-            var uploadResult = await this.attachmentStorage.GetAsync(mediaHash).ConfigureAwait(false) as UploadTemporaryMediaResult;
+            var mediaHash = _attachmentHash.Hash(JsonConvert.SerializeObject(newsList));
+            var uploadResult = await _attachmentStorage.GetAsync(mediaHash).ConfigureAwait(false) as UploadTemporaryMediaResult;
             if (uploadResult == null || uploadResult.ExpiredTime <= DateTimeOffset.UtcNow.ToUnixTimeSeconds())
             {
-                var accessToken = await this.GetAccessTokenAsync().ConfigureAwait(false);
-                var url = this.GetUploadNewsEndPoint(accessToken, true);
+                var accessToken = await GetAccessTokenAsync().ConfigureAwait(false);
+                var url = GetUploadNewsEndPoint(accessToken, true);
                 var data = new
                 {
                     articles = newsList,
                 };
-                var bytes = await this.SendHttpRequestAsync(HttpMethod.Post, url, data).ConfigureAwait(false);
-                uploadResult = this.ConvertBytesToType<UploadTemporaryMediaResult>(bytes);
+                var bytes = await SendHttpRequestAsync(HttpMethod.Post, url, data).ConfigureAwait(false);
+                uploadResult = ConvertBytesToType<UploadTemporaryMediaResult>(bytes);
                 if (uploadResult.ErrorCode == 0)
                 {
-                    await this.attachmentStorage.SaveAsync(mediaHash, uploadResult).ConfigureAwait(false);
+                    await _attachmentStorage.SaveAsync(mediaHash, uploadResult).ConfigureAwait(false);
                 }
                 else
                 {
-                    this.logger.TrackException("Upload Temporary News Failed", new Exception($"{uploadResult.ToString()}"));
+                    _logger.LogError(new Exception($"{uploadResult.ToString()}"), "Upload Temporary News Failed");
                 }
             }
 
@@ -282,20 +247,20 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         }
 
         /// <summary>
-        /// Get customer service agent input status.
+        /// Send customer service agent input status.
         /// </summary>
         /// <param name="openId">WeChat user's open id.</param>
         /// <param name="typingStatus">Agent typing status, can be Tying/CancelTyping.</param>
-        /// <param name="timeOut">Request timeout (milliseconds).</param>
+        /// <param name="timeout">Request timeout (milliseconds).</param>
         /// <returns>Standard result of calling WeChat message API.</returns>
-        public async Task<WeChatJsonResult> SendTypingStatusAsync(string openId, string typingStatus, int timeOut = 10000)
+        public async Task<WeChatJsonResult> SendTypingStatusAsync(string openId, string typingStatus, int timeout = 10000)
         {
             object data = new
             {
                 touser = openId,
                 command = typingStatus,
             };
-            return await this.SendMessageToUser(data);
+            return await SendMessageToUser(data);
         }
 
         /// <summary>
@@ -303,10 +268,10 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// </summary>
         /// <param name="openId">User's open id from WeChat.</param>
         /// <param name="mediaId">Image media id.</param>
-        /// <param name="timeOut">Send message operation time out.</param>
+        /// <param name="timeout">Send message operation timeout.</param>
         /// <param name="customerServiceAccount">Customer service account open id.</param>
         /// <returns>Standard result of calling WeChat message API.</returns>
-        public async Task<WeChatJsonResult> SendImageAsync(string openId, string mediaId, int timeOut = 10000, string customerServiceAccount = "")
+        public async Task<WeChatJsonResult> SendImageAsync(string openId, string mediaId, int timeout = 10000, string customerServiceAccount = "")
         {
             object data;
             if (string.IsNullOrWhiteSpace(customerServiceAccount))
@@ -314,7 +279,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 data = new
                 {
                     touser = openId,
-                    msgtype = "image",
+                    msgtype = ResponseMessageType.Image,
                     image = new
                     {
                         media_id = mediaId,
@@ -326,7 +291,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 data = new
                 {
                     touser = openId,
-                    msgtype = "image",
+                    msgtype = ResponseMessageType.Image,
                     image = new
                     {
                         media_id = mediaId,
@@ -338,7 +303,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 };
             }
 
-            return await this.SendMessageToUser(data);
+            return await SendMessageToUser(data);
         }
 
         /// <summary>
@@ -347,10 +312,10 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// </summary>
         /// <param name="openId">User's open id from WeChat.</param>
         /// <param name="mediaId">Image media id.</param>
-        /// <param name="timeOut">Send message operation time out.</param>
+        /// <param name="timeout">Send message operation timeout.</param>
         /// <param name="customerServiceAccount">Customer service account open id.</param>
         /// <returns>Standard result of calling WeChat message API.</returns>
-        public async Task<WeChatJsonResult> SendMpNewsAsync(string openId, string mediaId, int timeOut = 10000, string customerServiceAccount = "")
+        public async Task<WeChatJsonResult> SendMpNewsAsync(string openId, string mediaId, int timeout = 10000, string customerServiceAccount = "")
         {
             object data;
             if (string.IsNullOrWhiteSpace(customerServiceAccount))
@@ -358,7 +323,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 data = new
                 {
                     touser = openId,
-                    msgtype = "mpnews",
+                    msgtype = ResponseMessageType.MpNews,
                     mpnews = new
                     {
                         media_id = mediaId,
@@ -370,7 +335,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 data = new
                 {
                     touser = openId,
-                    msgtype = "mpnews",
+                    msgtype = ResponseMessageType.MpNews,
                     mpnews = new
                     {
                         media_id = mediaId,
@@ -382,7 +347,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 };
             }
 
-            return await this.SendMessageToUser(data);
+            return await SendMessageToUser(data);
         }
 
         /// <summary>
@@ -394,10 +359,10 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// <param name="musicUrl">Music url send to user.</param>
         /// <param name="highQualityMusicUrl">High-quality music link, wifi environment priority use this link to play music.</param>
         /// <param name="thumbMediaId">Media id for thumbnail image.</param>
-        /// <param name="timeOut">Send message operation time out.</param>
+        /// <param name="timeout">Send message operation timeout.</param>
         /// <param name="customerServiceAccount">Customer service account open id.</param>
         /// <returns>Standard result of calling WeChat message API.</returns>
-        public async Task<WeChatJsonResult> SendMusicAsync(string openId, string title, string description, string musicUrl, string highQualityMusicUrl, string thumbMediaId, int timeOut = 10000, string customerServiceAccount = "")
+        public async Task<WeChatJsonResult> SendMusicAsync(string openId, string title, string description, string musicUrl, string highQualityMusicUrl, string thumbMediaId, int timeout = 10000, string customerServiceAccount = "")
         {
             object data;
             if (string.IsNullOrWhiteSpace(customerServiceAccount))
@@ -405,7 +370,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 data = new
                 {
                     touser = openId,
-                    msgtype = "music",
+                    msgtype = ResponseMessageType.Music,
                     music = new
                     {
                         title = title,
@@ -421,7 +386,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 data = new
                 {
                     touser = openId,
-                    msgtype = "music",
+                    msgtype = ResponseMessageType.Music,
                     music = new
                     {
                         title = title,
@@ -437,7 +402,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 };
             }
 
-            return await this.SendMessageToUser(data);
+            return await SendMessageToUser(data);
         }
 
         /// <summary>
@@ -445,10 +410,10 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// </summary>
         /// <param name="openId">User's open id from WeChat.</param>
         /// <param name="articles">Article list will be sent to user.</param>
-        /// <param name="timeOut">Send message operation time out.</param>
+        /// <param name="timeout">Send message operation timeout.</param>
         /// <param name="customerServiceAccount">Customer service account open id.</param>
         /// <returns>Standard result of calling WeChat message API.</returns>
-        public async Task<WeChatJsonResult> SendNewsAsync(string openId, List<Article> articles, int timeOut = 10000, string customerServiceAccount = "")
+        public async Task<WeChatJsonResult> SendNewsAsync(string openId, List<Article> articles, int timeout = 10000, string customerServiceAccount = "")
         {
             object data = null;
             if (string.IsNullOrWhiteSpace(customerServiceAccount))
@@ -456,7 +421,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 data = new
                 {
                     touser = openId,
-                    msgtype = "news",
+                    msgtype = ResponseMessageType.News,
                     news = new
                     {
                         articles = articles.Select(article => new
@@ -474,7 +439,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 data = new
                 {
                     touser = openId,
-                    msgtype = "news",
+                    msgtype = ResponseMessageType.News,
                     news = new
                     {
                         articles = articles.Select(article => new
@@ -492,7 +457,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 };
             }
 
-            return await this.SendMessageToUser(data);
+            return await SendMessageToUser(data);
         }
 
         /// <summary>
@@ -500,10 +465,10 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// </summary>
         /// <param name="openId">User's open id from WeChat.</param>
         /// <param name="content">Text message content.</param>
-        /// <param name="timeOut">Send message operation time out.</param>
+        /// <param name="timeout">Send message operation timeout.</param>
         /// <param name="customerServiceAccount">Customer service account open id.</param>
         /// <returns>Standard result of calling WeChat message API.</returns>
-        public async Task<WeChatJsonResult> SendTextAsync(string openId, string content, int timeOut = 10000, string customerServiceAccount = "")
+        public async Task<WeChatJsonResult> SendTextAsync(string openId, string content, int timeout = 10000, string customerServiceAccount = "")
         {
             object data;
             if (string.IsNullOrWhiteSpace(customerServiceAccount))
@@ -511,7 +476,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 data = new
                 {
                     touser = openId,
-                    msgtype = "text",
+                    msgtype = ResponseMessageType.Text,
                     text = new
                     {
                         content = content,
@@ -523,7 +488,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 data = new
                 {
                     touser = openId,
-                    msgtype = "text",
+                    msgtype = ResponseMessageType.Text,
                     text = new
                     {
                         content = content,
@@ -535,7 +500,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 };
             }
 
-            return await this.SendMessageToUser(data);
+            return await SendMessageToUser(data);
         }
 
         /// <summary>
@@ -545,11 +510,11 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// <param name="mediaId">Media id of the video.</param>
         /// <param name="title">The title of the video.</param>
         /// <param name="description">Video description.</param>
-        /// <param name="timeOut">Send message operation time out.</param>
+        /// <param name="timeout">Send message operation timeout.</param>
         /// <param name="customerServiceAccount">Customer service account open id.</param>
         /// <param name="thumbMeidaId">Thumbnail image media id.</param>
         /// <returns>Standard result of calling WeChat message API.</returns>
-        public async Task<WeChatJsonResult> SendVideoAsync(string openId, string mediaId, string title, string description, int timeOut = 10000, string customerServiceAccount = "", string thumbMeidaId = "")
+        public async Task<WeChatJsonResult> SendVideoAsync(string openId, string mediaId, string title, string description, int timeout = 10000, string customerServiceAccount = "", string thumbMeidaId = "")
         {
             object data;
             if (string.IsNullOrWhiteSpace(customerServiceAccount))
@@ -557,7 +522,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 data = new
                 {
                     touser = openId,
-                    msgtype = "video",
+                    msgtype = ResponseMessageType.Video,
                     video = new
                     {
                         media_id = mediaId,
@@ -572,7 +537,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 data = new
                 {
                     touser = openId,
-                    msgtype = "video",
+                    msgtype = ResponseMessageType.Video,
                     video = new
                     {
                         media_id = mediaId,
@@ -587,7 +552,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 };
             }
 
-            return await this.SendMessageToUser(data);
+            return await SendMessageToUser(data);
         }
 
         /// <summary>
@@ -595,10 +560,10 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// </summary>
         /// <param name="openId">User's open id from WeChat.</param>
         /// <param name="mediaId">Media id of the voice.</param>
-        /// <param name="timeOut">Send message operation time out.</param>
+        /// <param name="timeout">Send message operation timeout.</param>
         /// <param name="customerServiceAccount">Customer service account open id.</param>
         /// <returns>Standard result of calling WeChat message API.</returns>
-        public async Task<WeChatJsonResult> SendVoiceAsync(string openId, string mediaId, int timeOut = 10000, string customerServiceAccount = "")
+        public async Task<WeChatJsonResult> SendVoiceAsync(string openId, string mediaId, int timeout = 10000, string customerServiceAccount = "")
         {
             object data;
             if (string.IsNullOrWhiteSpace(customerServiceAccount))
@@ -606,7 +571,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 data = new
                 {
                     touser = openId,
-                    msgtype = "voice",
+                    msgtype = ResponseMessageType.Voice,
                     voice = new
                     {
                         media_id = mediaId,
@@ -618,7 +583,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 data = new
                 {
                     touser = openId,
-                    msgtype = "voice",
+                    msgtype = ResponseMessageType.Voice,
                     voice = new
                     {
                         media_id = mediaId,
@@ -630,7 +595,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 };
             }
 
-            return await this.SendMessageToUser(data);
+            return await SendMessageToUser(data);
         }
 
         /// <summary>
@@ -641,7 +606,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// <param name="url">Request URL.</param>
         /// <param name="data">Request data.</param>
         /// <returns>Http response content as byte array.</returns>
-        private static async Task<byte[]> HttpRequestAsync(string token, HttpMethod method, string url, object data = null)
+        private static async Task<byte[]> MakeHttpRequestAsync(string token, HttpMethod method, string url, object data = null)
         {
             try
             {
@@ -658,31 +623,14 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                         requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
                     }
 
-                    try
+                    using (var response = await HttpClient.SendAsync(requestMessage).ConfigureAwait(false))
                     {
-                        using (var response = await HttpClient.SendAsync(requestMessage).ConfigureAwait(false))
+                        if (!response.IsSuccessStatusCode)
                         {
-                            try
-                            {
-                                return await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
-                            }
-                            catch (Exception e) when (!response.IsSuccessStatusCode)
-                            {
-                                // swallow if we can't read content of failed request
-                                Console.WriteLine($"Call {url} failed", e);
-                            }
-
-                            if (!response.IsSuccessStatusCode)
-                            {
-                                throw new HttpRequestException(response.ToString());
-                            }
-
-                            return default(byte[]);
+                            throw new HttpRequestException(response.ToString());
                         }
-                    }
-                    catch (Exception e)
-                    {
-                        throw e;
+
+                        return await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
                     }
                 }
             }
@@ -693,27 +641,27 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
             }
         }
 
-        private string GetMessageApiEndPoint(string accessToken)
+        private static string GetMessageApiEndPoint(string accessToken)
         {
             return $"{APIHost}/cgi-bin/message/custom/send?access_token={accessToken}";
         }
 
-        private string GetAccessTokenEndPoint(string appId, string appSecret)
+        private static string GetAccessTokenEndPoint(string appId, string appSecret)
         {
             return $"{APIHost}/cgi-bin/token?grant_type=client_credential&appid={appId}&secret={appSecret}";
         }
 
-        private string GetUploadMediaEndPoint(string accessToken, string type, bool isTemporaryMedia)
+        private static string GetUploadMediaEndPoint(string accessToken, string type, bool isTemporaryMedia)
         {
             if (isTemporaryMedia)
             {
-                return $"{APIHost}/cgi-bin/media/upload?access_token={accessToken}&type={type.ToString()}";
+                return $"{APIHost}/cgi-bin/media/upload?access_token={accessToken}&type={type}";
             }
 
-            return $"{APIHost}/cgi-bin/material/add_material?access_token={accessToken}&type={type.ToString()}";
+            return $"{APIHost}/cgi-bin/material/add_material?access_token={accessToken}&type={type}";
         }
 
-        private string GetUploadNewsEndPoint(string accessToken, bool isTemporaryNews)
+        private static string GetUploadNewsEndPoint(string accessToken, bool isTemporaryNews)
         {
             if (isTemporaryNews)
             {
@@ -721,6 +669,67 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
             }
 
             return $"{APIHost}/cgi-bin/material/add_news?access_token={accessToken}";
+        }
+
+        /// <summary>
+        /// Convert result byte array from http call to a specific type.
+        /// </summary>
+        /// <typeparam name="T">The type need to be converted to.</typeparam>
+        /// <param name="byteArray">The byte array need to be converted.</param>
+        /// <returns>The result instance.</returns>
+        private T ConvertBytesToType<T>(byte[] byteArray)
+        {
+            var result = Encoding.UTF8.GetString(byteArray);
+            return JsonConvert.DeserializeObject<T>(result);
+        }
+
+        /// <summary>
+        /// Upload media data to WeChat.
+        /// </summary>
+        /// <typeparam name="T">The upload result type.</typeparam>
+        /// <param name="attachmentData">The attachment data need to be uploaded.</param>
+        /// <param name="url">The endpoint when upload the data.</param>
+        /// <param name="type">The upload media type.</param>
+        /// <param name="mediaHash">The media content hash result.</param>
+        /// <param name="isTemporaryMedia">If upload media as a temporary media.</param>
+        /// <returns>Uploaded result from WeChat.</returns>
+        private async Task<T> UploadMediaAsync<T>(AttachmentData attachmentData, string url, string type, string mediaHash, bool isTemporaryMedia)
+        {
+            try
+            {
+                var ext = MapperUtils.GetMediaExtension(attachmentData.Name, attachmentData.Type, type);
+
+                // Border break
+                var boundary = "---------------" + DateTime.UtcNow.Ticks.ToString("x");
+                var content = new MultipartFormDataContent(boundary);
+                content.Headers.Remove("Content-Type");
+                content.Headers.TryAddWithoutValidation("Content-Type", "multipart/form-data; boundary=" + boundary);
+                var contentByte = new ByteArrayContent(attachmentData.OriginalBase64);
+                contentByte.Headers.Remove("Content-Disposition");
+
+                contentByte.Headers.TryAddWithoutValidation("Content-Disposition", $"form-data; name=\"media\";filename=\"{mediaHash + ext}\"" + string.Empty);
+                contentByte.Headers.Remove("Content-Type");
+                contentByte.Headers.TryAddWithoutValidation("Content-Type", attachmentData.Type);
+                content.Add(contentByte);
+
+                // Additional form is required when upload a forever video.
+                if (isTemporaryMedia == false && type == UploadMediaType.Video)
+                {
+                    var additionalForm = string.Format("{{\"title\":\"{0}\", \"introduction\":\"{1}\"}}", "title", "introduction");
+
+                    // Important! name must be "description"
+                    content.Add(new StringContent(additionalForm), "\"" + "description" + "\"");
+                }
+
+                _logger.LogInformation($"Upload {type.ToString()} to WeChat", Severity.Information);
+                var response = await SendHttpRequestAsync(HttpMethod.Post, url, content).ConfigureAwait(false);
+                return ConvertBytesToType<T>(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Failed To Upload Media, Type: {type.ToString()}");
+                throw new Exception(ex.Message + ex.InnerException.Message);
+            }
         }
     }
 }

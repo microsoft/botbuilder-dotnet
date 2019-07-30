@@ -21,18 +21,6 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Test
             return adaptiveCardAttachment;
         }
 
-        public static OAuthCard GetOAuthCard()
-        {
-            var oauthCard = new OAuthCard
-            {
-                Text = "BotFramework OAuth Card",
-                ConnectionName = "connection",
-                Buttons = new List<CardAction> { new CardAction(ActionTypes.Signin, "Sign-in", value: "https://login.microsoftonline.com/") },
-            };
-
-            return oauthCard;
-        }
-
         public static HeroCard GetHeroCard()
         {
             var heroCard = new HeroCard

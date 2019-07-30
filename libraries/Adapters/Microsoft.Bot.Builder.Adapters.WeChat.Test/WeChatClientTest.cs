@@ -1,15 +1,15 @@
 ﻿using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema;
 using Microsoft.Bot.Builder.Adapters.WeChat.Test.TestUtilities;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Adapters.WeChat.Test
 {
-    [TestClass]
     public class WeChatClientTest
     {
-        private readonly WeChatClient testClient = MockDataUtility.MockWeChatClient();
+        private readonly WeChatClient testClient = MockDataUtility.GetMockWeChatClient();
         private readonly string openId = "testuser";
         private readonly string content = "test";
         private readonly string mediaId = string.Empty;
@@ -29,90 +29,115 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Test
             },
         };
 
+        [Fact]
+        public async Task GetAccessTokenTest()
+        {
+            var mockClient = new WeChatClient("wx77f941c869071d99", "secret");
+            await mockClient.SendHttpRequestAsync(HttpMethod.Get, "https://dev.botframework.com");
+            var tokenResult = await mockClient.GetAccessTokenAsync();
+            Assert.Equal("testToken", tokenResult);
+        }
+
+        [Fact]
+        public async Task UploadMediaTest()
+        {
+            var mockClient = new MockWeChatClient("wx77f941c869071d99", "secret");
+            var mockAttachemntData = MockDataUtility.GetMockAttachmentData();
+            var result1 = await mockClient.UploadTemporaryMediaAsync("image", mockAttachemntData, 10000);
+            var result2 = await mockClient.UploadTemporaryNewsAsync();
+            var result3 = await mockClient.UploadPersistentMediaAsync("image", mockAttachemntData, 10000);
+            var result4 = await mockClient.UploadPersistentNewsAsync();
+
+            // Assert.Equal("testToken", result1.MediaId);
+            // Assert.Equal("bmwipabotwx", result2.MediaId);
+            // Assert.Equal("testToken", result3.MediaId);
+            // Assert.Equal("bmwipabotwx", result4.MediaId);
+        }
+
         /// <summary>
         /// Text.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [TestMethod]
+        [Fact]
         public async Task SendTextAsyncTest()
         {
             var result = await testClient.SendTextAsync(openId, content).ConfigureAwait(false);
-            Assert.AreEqual(0, result.ErrorCode);
+            Assert.Equal(0, result.ErrorCode);
             result = await testClient.SendTextAsync(openId, content, customerServiceAccount: "test").ConfigureAwait(false);
-            Assert.AreEqual(0, result.ErrorCode);
+            Assert.Equal(0, result.ErrorCode);
         }
 
         /// <summary>
         /// Image.
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void SendImageAsyncTest()
         {
             var result = testClient.SendImageAsync(openId, mediaId).Result;
-            Assert.AreEqual(0, result.ErrorCode);
+            Assert.Equal(0, result.ErrorCode);
             result = testClient.SendImageAsync(openId, mediaId, customerServiceAccount: "test").Result;
-            Assert.AreEqual(0, result.ErrorCode);
+            Assert.Equal(0, result.ErrorCode);
         }
 
         /// <summary>
         /// Music.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [TestMethod]
+        [Fact]
         public async Task SendMusicAsyncTest()
         {
             var result = await testClient.SendMusicAsync(openId, title, description, musicUrl, highQualityMusicUrl, thumbMediaId);
-            Assert.AreEqual(0, result.ErrorCode);
+            Assert.Equal(0, result.ErrorCode);
             result = await testClient.SendMusicAsync(openId, title, description, musicUrl, highQualityMusicUrl, thumbMediaId, customerServiceAccount: "test");
-            Assert.AreEqual(0, result.ErrorCode);
+            Assert.Equal(0, result.ErrorCode);
         }
 
         /// <summary>
         /// Video.
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void SendVideoAsyncTest()
         {
             var result = testClient.SendVideoAsync(openId, mediaId, title, description).Result;
-            Assert.AreEqual(0, result.ErrorCode);
+            Assert.Equal(0, result.ErrorCode);
             result = testClient.SendVideoAsync(openId, mediaId, title, description, customerServiceAccount: "test").Result;
-            Assert.AreEqual(0, result.ErrorCode);
+            Assert.Equal(0, result.ErrorCode);
         }
 
         /// <summary>
         /// Voice.
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void SendVoiceAsyncTest()
         {
             var result = testClient.SendVoiceAsync(openId, mediaId).Result;
-            Assert.AreEqual(0, result.ErrorCode);
+            Assert.Equal(0, result.ErrorCode);
             result = testClient.SendVoiceAsync(openId, mediaId, customerServiceAccount: "test").Result;
-            Assert.AreEqual(0, result.ErrorCode);
+            Assert.Equal(0, result.ErrorCode);
         }
 
         /// <summary>
         /// News.
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void SendNewsAsyncTest()
         {
             var result = testClient.SendNewsAsync(openId, articles).Result;
-            Assert.AreEqual(0, result.ErrorCode);
+            Assert.Equal(0, result.ErrorCode);
             result = testClient.SendNewsAsync(openId, articles, customerServiceAccount: "test").Result;
-            Assert.AreEqual(0, result.ErrorCode);
+            Assert.Equal(0, result.ErrorCode);
         }
 
         /// <summary>
         /// MPNews.
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void SendMPNewsAsyncTest()
         {
             var result = testClient.SendMpNewsAsync(openId, mediaId).Result;
-            Assert.AreEqual(0, result.ErrorCode);
+            Assert.Equal(0, result.ErrorCode);
             result = testClient.SendMpNewsAsync(openId, mediaId, customerServiceAccount: "test").Result;
-            Assert.AreEqual(0, result.ErrorCode);
+            Assert.Equal(0, result.ErrorCode);
         }
     }
 }

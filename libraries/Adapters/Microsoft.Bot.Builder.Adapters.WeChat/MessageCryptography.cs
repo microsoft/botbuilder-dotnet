@@ -8,23 +8,30 @@ using Microsoft.Bot.Builder.Adapters.WeChat.Schema;
 
 namespace Microsoft.Bot.Builder.Adapters.WeChat
 {
+    /// <summary>
+    /// A cryptography class to decrypt the message content from WeChat.
+    /// </summary>
     public class MessageCryptography
     {
-        private readonly string token;
-        private readonly string encodingAESKey;
-        private readonly string appId;
-        private readonly string msgSignature;
-        private readonly string timestamp;
-        private readonly string nonce;
+        private readonly string _token;
+        private readonly string _encodingAesKey;
+        private readonly string _appId;
+        private readonly string _msgSignature;
+        private readonly string _timestamp;
+        private readonly string _nonce;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MessageCryptography"/> class.
+        /// </summary>
+        /// <param name="secretInfo">The secret info provide by WeChat.</param>
         public MessageCryptography(SecretInfo secretInfo)
         {
-            this.token = secretInfo.Token;
-            this.appId = secretInfo.AppId;
-            this.encodingAESKey = secretInfo.EncodingAESKey;
-            this.msgSignature = secretInfo.Msg_Signature;
-            this.timestamp = secretInfo.Timestamp;
-            this.nonce = secretInfo.Nonce;
+            _token = secretInfo.Token;
+            _appId = secretInfo.AppId;
+            _encodingAesKey = secretInfo.EncodingAESKey;
+            _msgSignature = secretInfo.Msg_Signature;
+            _timestamp = secretInfo.Timestamp;
+            _nonce = secretInfo.Nonce;
         }
 
         /// <summary>
@@ -34,7 +41,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// <returns>Decrypted message string.</returns>
         public string DecryptMessage(string postData)
         {
-            if (this.encodingAESKey.Length != 43)
+            if (_encodingAesKey.Length != 43)
             {
                 throw new ArgumentException("Invalid EncodingAESKey");
             }
@@ -52,34 +59,34 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 root = doc.FirstChild;
                 encryptMessage = root["Encrypt"].InnerText;
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                throw new ArgumentException("Failed to parse xml document.");
+                throw e;
             }
 
-            if (!VerificationHelper.VerifySignature(this.msgSignature, this.token, this.timestamp, this.nonce, encryptMessage))
+            if (!VerificationHelper.VerifySignature(_msgSignature, _token, _timestamp, _nonce, encryptMessage))
             {
-                throw new ArgumentException("Signature validation failed.");
+                throw new UnauthorizedAccessException("Signature validation failed.");
             }
 
-            return this.AESDecrypt(encryptMessage, this.encodingAESKey, this.appId);
+            return AesDecrypt(encryptMessage, _encodingAesKey, _appId);
         }
 
         /// <summary>
         /// Decrypt the message.
         /// </summary>
         /// <param name="encryptString">Encrypted string.</param>
-        /// <param name="encodingAESKey">Encoding AES key for descrypt message.</param>
+        /// <param name="encodingAesKey">Encoding AES key for descrypt message.</param>
         /// <param name="appId">The WeChat app id.</param>
         /// <returns>Decrypted string.</returns>
-        public string AESDecrypt(string encryptString, string encodingAESKey, string appId)
+        public string AesDecrypt(string encryptString, string encodingAesKey, string appId)
         {
             try
             {
-                var key = Convert.FromBase64String(encodingAESKey + "=");
+                var key = Convert.FromBase64String(encodingAesKey + "=");
                 var iv = new byte[16];
                 Array.Copy(key, iv, 16);
-                var btmpMsg = this.AESDecrypt(encryptString, iv, key);
+                var btmpMsg = AesDecrypt(encryptString, iv, key);
 
                 var len = BitConverter.ToInt32(btmpMsg, 16);
                 len = IPAddress.NetworkToHostOrder(len);
@@ -91,45 +98,23 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 var oriMsg = Encoding.UTF8.GetString(messageBytes);
                 if (appId != Encoding.UTF8.GetString(appIdBytes))
                 {
-                    throw new ArgumentException("Failed to validate appId.");
+                    throw new ArgumentException("Failed to validate appId.", nameof(appId));
                 }
 
                 return oriMsg;
             }
-            catch (FormatException)
+            catch (FormatException e)
             {
-                throw new ArgumentException("Failed to decode base64 string.");
+                throw new FormatException("Failed to decode base64 string.", e);
             }
         }
 
-        private byte[] AESDecrypt(string input, byte[] iv, byte[] key)
-        {
-            var aes = Aes.Create();
-
-            // Origial size is 256
-            aes.KeySize = 128;
-            aes.BlockSize = 128;
-            aes.Mode = CipherMode.CBC;
-            aes.Padding = PaddingMode.None;
-            aes.Key = key;
-            aes.IV = iv;
-            var decrypt = aes.CreateDecryptor(aes.Key, aes.IV);
-            byte[] buffArray = null;
-            using (var ms = new MemoryStream())
-            {
-                using (var cs = new CryptoStream(ms, decrypt, CryptoStreamMode.Write))
-                {
-                    var xmlBytes = Convert.FromBase64String(input);
-                    cs.Write(xmlBytes, 0, xmlBytes.Length);
-                }
-
-                buffArray = this.Decode(ms.ToArray());
-            }
-
-            return buffArray;
-        }
-
-        private byte[] Decode(byte[] decrypted)
+        /// <summary>
+        /// Decode the decrypted byte array.
+        /// </summary>
+        /// <param name="decrypted">Decrypted byte array.</param>
+        /// <returns>Decoded byte array.</returns>
+        private static byte[] Decode(byte[] decrypted)
         {
             var pad = decrypted[decrypted.Length - 1];
             if (pad < 1 || pad > 32)
@@ -140,6 +125,44 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
             var result = new byte[decrypted.Length - pad];
             Array.Copy(decrypted, 0, result, 0, decrypted.Length - pad);
             return result;
+        }
+
+        /// <summary>
+        /// Decrypt the AES encrypted input string.
+        /// </summary>
+        /// <param name="input">Encrypted string.</param>
+        /// <param name="iv">Gets or sets the initialization vector for the symmetric algorithm.
+        //
+        // Returns:
+        //     The initialization vector.</param>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        private byte[] AesDecrypt(string input, byte[] iv, byte[] key)
+        {
+            using (var aes = Aes.Create())
+            {
+                // Origial size is 256
+                aes.KeySize = 128;
+                aes.BlockSize = 128;
+                aes.Mode = CipherMode.CBC;
+                aes.Padding = PaddingMode.None;
+                aes.Key = key;
+                aes.IV = iv;
+                var decrypt = aes.CreateDecryptor(aes.Key, aes.IV);
+                byte[] buffArray = null;
+                using (var ms = new MemoryStream())
+                {
+                    using (var cs = new CryptoStream(ms, decrypt, CryptoStreamMode.Write))
+                    {
+                        var xmlBytes = Convert.FromBase64String(input);
+                        cs.Write(xmlBytes, 0, xmlBytes.Length);
+                    }
+
+                    buffArray = Decode(ms.ToArray());
+                }
+
+                return buffArray;
+            }
         }
     }
 }

@@ -1,13 +1,12 @@
 ﻿using System;
 using Microsoft.Bot.Builder.Adapters.WeChat.Test.TestUtilities;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Adapters.WeChat.Test
 {
-    [TestClass]
     public class MessageCryptographyTest
     {
-        [TestMethod]
+        [Fact]
         public void DecryptMsgTest()
         {
             var postData = MockDataUtility.XmlEncrypt;
@@ -15,25 +14,23 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Test
 
             // Need to remove "/r" created by editor
             var decryptString = MockDataUtility.XmlDecrypt.Replace("\r", string.Empty);
-            Assert.AreEqual(decryptString, result);
+            Assert.Equal(decryptString, result);
         }
 
-        [TestMethod]
+        [Fact]
         public void EncodingAESKeyTest()
         {
             var postData = MockDataUtility.XmlEncrypt;
-            Assert.ThrowsException<ArgumentException>(
-                () => MockDataUtility.TestAESKey.DecryptMessage(postData),
-                "Invalid EncodingAESKey");
+            var result = Assert.Throws<ArgumentException>(() => MockDataUtility.TestAESKey.DecryptMessage(postData));
+            Assert.Equal("Invalid EncodingAESKey", result.Message);
         }
 
-        [TestMethod]
+        [Fact]
         public void VerifySignatureTest()
         {
             var postData = MockDataUtility.XmlEncrypt;
-            Assert.ThrowsException<ArgumentException>(
-                () => MockDataUtility.TestSignature.DecryptMessage(postData),
-                "Signature validation failed.");
+            var result = Assert.Throws<UnauthorizedAccessException>(() => MockDataUtility.TestSignature.DecryptMessage(postData));
+            Assert.Equal("Signature validation failed.", result.Message);
         }
     }
 }

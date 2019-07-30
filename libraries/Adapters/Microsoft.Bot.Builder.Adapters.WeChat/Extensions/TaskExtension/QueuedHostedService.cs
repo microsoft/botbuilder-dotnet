@@ -1,17 +1,19 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Microsoft.Bot.Builder.Adapters.WeChat.TaskExtensions
 {
     public class QueuedHostedService : AdapterBackgroundService
     {
-        private readonly WeChatLogger logger;
+        private readonly ILogger _logger;
 
-        public QueuedHostedService(IBackgroundTaskQueue queue = null, WeChatLogger logger = null)
+        public QueuedHostedService(IBackgroundTaskQueue queue = null, ILogger logger = null)
         {
-            this.TaskQueue = queue ?? BackgroundTaskQueue.Instance;
-            this.logger = logger ?? WeChatLogger.Instance;
+            TaskQueue = queue ?? BackgroundTaskQueue.Instance;
+            _logger = logger ?? NullLogger.Instance;
         }
 
         public IBackgroundTaskQueue TaskQueue { get; set; }
@@ -20,7 +22,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.TaskExtensions
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                var workItem = await this.TaskQueue.DequeueAsync(stoppingToken).ConfigureAwait(false);
+                var workItem = await TaskQueue.DequeueAsync(stoppingToken).ConfigureAwait(false);
 
                 try
                 {
@@ -30,7 +32,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.TaskExtensions
                 {
                     // execution failed. added exception handling later
                     // only log the exception for now
-                    this.logger.TrackException("Execute Background Queued Task Failed", e);
+                    _logger.LogError(e, "Execute Background Queued Task Failed");
                 }
             }
         }

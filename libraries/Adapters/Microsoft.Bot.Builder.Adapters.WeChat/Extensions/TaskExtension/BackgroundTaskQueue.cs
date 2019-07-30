@@ -9,7 +9,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.TaskExtensions
     {
         public static readonly BackgroundTaskQueue Instance = new BackgroundTaskQueue();
 
-        private ConcurrentQueue<Func<CancellationToken, Task>> _workItems = new ConcurrentQueue<Func<CancellationToken, Task>>();
+        private readonly ConcurrentQueue<Func<CancellationToken, Task>> _workItems = new ConcurrentQueue<Func<CancellationToken, Task>>();
         private SemaphoreSlim _signal = new SemaphoreSlim(0);
 
         public void QueueBackgroundWorkItem(Func<CancellationToken, Task> workItem)
@@ -19,15 +19,15 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.TaskExtensions
                 throw new ArgumentNullException(nameof(workItem));
             }
 
-            this._workItems.Enqueue(workItem);
-            this._signal.Release();
+            _workItems.Enqueue(workItem);
+            _signal.Release();
         }
 
         public async Task<Func<CancellationToken, Task>> DequeueAsync(CancellationToken token)
         {
-            await this._signal.WaitAsync(token).ConfigureAwait(false);
+            await _signal.WaitAsync(token).ConfigureAwait(false);
 
-            this._workItems.TryDequeue(out var workItem);
+            _workItems.TryDequeue(out var workItem);
 
             return workItem;
         }

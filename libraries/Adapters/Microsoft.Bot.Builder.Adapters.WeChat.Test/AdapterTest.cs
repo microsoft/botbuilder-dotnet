@@ -3,17 +3,16 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Builder.Adapters.WeChat.TaskExtensions;
 using Microsoft.Bot.Builder.Adapters.WeChat.Test.TestUtilities;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Newtonsoft.Json;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Adapters.WeChat.Test
 {
-    [TestClass]
     public class AdapterTest
     {
-        private WeChatHttpAdapter testAdapter;
-        private WeChatHttpAdapter testAdapterUseTempMedia;
+        private readonly WeChatHttpAdapter testAdapter;
+        private readonly WeChatHttpAdapter testAdapterUseTempMedia;
 
         public AdapterTest()
         {
@@ -21,7 +20,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Test
             testAdapterUseTempMedia = new WeChatHttpAdapter(MockDataUtility.MockConfiguration(false), backgroundService: new QueuedHostedService());
         }
 
-        [TestMethod]
+        [Fact]
         public async Task WeChatHttpAdapterTest()
         {
             var request = CreateMockRequest(MockDataUtility.XmlEncrypt).Object;
@@ -47,16 +46,15 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Test
 
             var mockRequest = new Mock<HttpRequest>();
             mockRequest.Setup(x => x.Body).Returns(ms);
-            var mockHeaders = new HeaderDictionary();
-            mockHeaders.Add("Content-Type", "text/xml");
+            var mockHeaders = new HeaderDictionary
+            {
+                { "Content-Type", "text/xml" },
+            };
             mockRequest.Setup(x => x.Headers).Returns(mockHeaders);
 
             return mockRequest;
         }
 
-        private static Mock<HttpResponse> CreateMockResponse()
-        {
-            return new Mock<HttpResponse>();
-        }
+        private static Mock<HttpResponse> CreateMockResponse() => new Mock<HttpResponse>();
     }
 }

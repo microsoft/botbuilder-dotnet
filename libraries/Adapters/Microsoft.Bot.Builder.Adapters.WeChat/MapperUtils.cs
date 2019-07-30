@@ -4,34 +4,41 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
 {
     public static class MapperUtils
     {
-        public static string AddLine(this string body, string newtext)
+        public const string WordBreak = "  ";
+
+        public static string AddLine(this string body, string newText)
         {
-            if (string.IsNullOrEmpty(newtext))
+            if (string.IsNullOrEmpty(newText))
             {
                 return body;
             }
 
             if (string.IsNullOrEmpty(body))
             {
-                return newtext;
+                return newText;
             }
 
-            return $"{body}\n\n{newtext}";
+            return body + Constants.NewLine + newText;
         }
 
-        public static string AddText(this string body, string newtext, string wordbreak = "  ")
+        public static string AddText(this string body, string newText, string wordBreak = null)
         {
-            if (string.IsNullOrEmpty(newtext))
+            if (string.IsNullOrEmpty(newText))
             {
                 return body;
             }
 
             if (string.IsNullOrEmpty(body))
             {
-                return newtext;
+                return newText;
             }
 
-            return $"{body}{wordbreak}{newtext}";
+            if (string.IsNullOrEmpty(wordBreak))
+            {
+                wordBreak = WordBreak;
+            }
+
+            return $"{body}{wordBreak}{newText}";
         }
 
         public static string GetMediaExtension(string link, string mimeType, string type)
@@ -57,30 +64,5 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
 
             return $".{ext}";
         }
-
-        /// <summary>
-        /// Render an Adaptive Card to AttachmentData in memory
-        /// </summary>
-
-        // public static async Task<AttachmentData> RenderAdaptiveCardToAttachmentDataAsync(
-        //    AdaptiveCard card,
-        //    AdaptiveHostConfig hostConfig,
-        //    string stylePath,
-        //    int width = 400)
-        // {
-        //    var renderer = new AdaptiveCardRenderer(hostConfig)
-        //    {
-        //        ResourcesPath = stylePath
-        //    };
-
-        // var renderedCard = await renderer.RenderCardToImageAsync(card, createStaThread: true, width: width).ConfigureAwait(false);
-        //    var imageStream = renderedCard.ImageStream;
-
-        // return new AttachmentData()
-        //    {
-        //        Type = "image/png",
-        //        OriginalBase64 = ((MemoryStream)imageStream).ToArray()
-        //    };
-        // }
     }
 }

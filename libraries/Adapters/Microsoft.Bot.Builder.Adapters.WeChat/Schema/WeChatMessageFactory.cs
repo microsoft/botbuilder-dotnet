@@ -5,12 +5,13 @@ using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Request;
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Request.Event;
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Request.Event.Common;
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Response;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema
 {
-    public class MessageFactory
+    public class WeChatMessageFactory
     {
-        public static IRequestMessageBase GetRequestEntity(XDocument doc)
+        public static IRequestMessageBase GetRequestEntity(XDocument doc, ILogger logger)
         {
             IRequestMessageBase requestMessage = null;
             RequestMessageType msgType;
@@ -146,7 +147,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema
             }
             catch (ArgumentException ex)
             {
-                Console.WriteLine(string.Format("RequestMessage Error！MsgType may not exist！，XML：{0}", doc.ToString()), ex);
+                logger.LogError(ex, string.Format("RequestMessage Error, MsgType may not exist, XML：{0}", doc.ToString()));
             }
 
             return requestMessage;

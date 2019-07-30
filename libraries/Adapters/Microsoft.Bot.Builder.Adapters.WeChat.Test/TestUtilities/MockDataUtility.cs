@@ -10,6 +10,8 @@ using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Request;
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Response;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Newtonsoft.Json;
 
@@ -304,6 +306,8 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Test.TestUtilities
 
         public const string PassiveXmlNews = "<xml>\r\n  <ToUserName><![CDATA[toUser]]></ToUserName>\r\n  <FromUserName><![CDATA[fromUser]]></FromUserName>\r\n  <CreateTime>12345678</CreateTime>\r\n  <MsgType><![CDATA[news]]></MsgType>\r\n  <ArticleCount>2</ArticleCount>\r\n  <item>\r\n    <Title><![CDATA[title1]]></Title>\r\n    <Description><![CDATA[description1]]></Description>\r\n    <Url><![CDATA[url1]]></Url>\r\n    <PicUrl><![CDATA[picurl1]]></PicUrl>\r\n  </item>\r\n  <item>\r\n    <Title><![CDATA[title2]]></Title>\r\n    <Description><![CDATA[description2]]></Description>\r\n    <Url><![CDATA[url2]]></Url>\r\n    <PicUrl><![CDATA[picurl2]]></PicUrl>\r\n  </item>\r\n</xml>";
 
+        public const string ImageDataUrl = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKwAAACeCAYAAACvg+F+AAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAAAJcEhZcwAAFiUAABYlAUlSJPAAAAAhdEVYdENyZWF0aW9uIFRpbWUAMjAxOTowMzoxMyAxOTo0Mjo0OBCBEeIAAAG8SURBVHhe7dJBDQAgEMCwA/+egQcmlrSfGdg6z0DE/oUEw5JiWFIMS4phSTEsKYYlxbCkGJYUw5JiWFIMS4phSTEsKYYlxbCkGJYUw5JiWFIMS4phSTEsKYYlxbCkGJYUw5JiWFIMS4phSTEsKYYlxbCkGJYUw5JiWFIMS4phSTEsKYYlxbCkGJYUw5JiWFIMS4phSTEsKYYlxbCkGJYUw5JiWFIMS4phSTEsKYYlxbCkGJYUw5JiWFIMS4phSTEsKYYlxbCkGJYUw5JiWFIMS4phSTEsKYYlxbCkGJYUw5JiWFIMS4phSTEsKYYlxbCkGJYUw5JiWFIMS4phSTEsKYYlxbCkGJYUw5JiWFIMS4phSTEsKYYlxbCkGJYUw5JiWFIMS4phSTEsKYYlxbCkGJYUw5JiWFIMS4phSTEsKYYlxbCkGJYUw5JiWFIMS4phSTEsKYYlxbCkGJYUw5JiWFIMS4phSTEsKYYlxbCkGJYUw5JiWFIMS4phSTEsKYYlxbCkGJYUw5JiWFIMS4phSTEsKYYlxbCkGJYUw5JiWFIMS4phSTEsKYYlxbCkGJYUw5JiWFIMS4phCZm52U4FOCAVGHQAAAAASUVORK5CYII=";
+
         public static readonly SecretInfo SecretInfo = new SecretInfo()
         {
             Token = "bmwipabotwx",
@@ -433,67 +437,35 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Test.TestUtilities
             Articles = new List<Article>() { Article1, Article2 },
         };
 
-        // public const string xmlEvent_Enter_Agent = @"<xml>
-        //                                            <ToUserName><![CDATA[toUser]]></ToUserName>
-        //                                            <FromUserName><![CDATA[FromUser]]></FromUserName>
-        //                                            <CreateTime>1408091189</CreateTime>
-        //                                            <MsgType><![CDATA[event]]></MsgType>
-        //                                            <Event><![CDATA[enter_agent]]></Event>
-        //                                            <EventKey><![CDATA[]]></EventKey>
-        //                                            <AgentID>1</AgentID>
-        //                                       </xml>";
-
-        // public const string xml_Suite_Ticket = @"<xml>
-        //                              <SuiteId><![CDATA[wxfc918a2d200c9a4c]]></SuiteId>
-        //                              <InfoType> <![CDATA[suite_ticket]]></InfoType>
-        //                              <TimeStamp>1403610513</TimeStamp>
-        //                              <SuiteTicket><![CDATA[asdfasfdasdfasdf]]></SuiteTicket>
-        //                             </xml>";
-
-        // public const string xml_Change_Auth = @"<xml>
-        //                              <SuiteId><![CDATA[wxfc918a2d200c9a4c]]></SuiteId>
-        //                              <InfoType><![CDATA[change_auth]]></InfoType>
-        //                              <TimeStamp>1403610513</TimeStamp>
-        //                              <AuthCorpId><![CDATA[wxf8b4f85f3a794e77]]></AuthCorpId>
-        //                             </xml>   ";
-
-        // public const string xml_Cancel_Auth = @"<xml>
-        //                              <SuiteId><![CDATA[wxfc918a2d200c9a4c]]></SuiteId>
-        //                              <InfoType><![CDATA[cancel_auth]]></InfoType>
-        //                              <TimeStamp>1403610513</TimeStamp>
-        //                              <AuthCorpId><![CDATA[wxf8b4f85f3a794e77]]></AuthCorpId>
-        //                             </xml>   ";
-
-        // public const string xml_Batch_Job_Result = @"<xml>
-        //                            <ToUserName><![CDATA[wx28dbb14e37208abe]]></ToUserName>
-        //                            <FromUserName><![CDATA[FromUser]]></FromUserName>
-        //                            <CreateTime>1425284517</CreateTime>
-        //                            <MsgType><![CDATA[event]]></MsgType>
-        //                            <Event><![CDATA[batch_job_result]]></Event>
-        //                            <BatchJob><JobId><![CDATA[S0MrnndvRG5fadSlLwiBqiDDbM143UqTmKP3152FZk4]]></JobId>
-        //                            <JobType><![CDATA[sync_user]]></JobType>
-        //                            <ErrCode>0</ErrCode>
-        //                            <ErrMsg><![CDATA[ok]]></ErrMsg>
-        //                            </BatchJob>
-        //                            </xml>";
         public static SecretInfo GetMockSecretInfo() => SecretInfo;
+
+        public static ILogger GetMockLogger() => NullLogger.Instance;
+
+        public static AttachmentData GetMockAttachmentData() => new AttachmentData()
+        {
+            Name = "testimage",
+            Type = "image/png",
+            OriginalBase64 = Encoding.UTF8.GetBytes(ImageDataUrl),
+            ThumbnailBase64 = Encoding.UTF8.GetBytes(ImageDataUrl),
+        };
 
         public static List<IRequestMessageBase> GetMockRequestMessageList()
         {
+            var logger = GetMockLogger();
             var requestList = new List<IRequestMessageBase>
             {
-                Schema.MessageFactory.GetRequestEntity(XDocument.Parse(XmlText)),
-                Schema.MessageFactory.GetRequestEntity(XDocument.Parse(XmlImage)),
-                Schema.MessageFactory.GetRequestEntity(XDocument.Parse(XmlVoice)),
-                Schema.MessageFactory.GetRequestEntity(XDocument.Parse(XmlVideo)),
-                Schema.MessageFactory.GetRequestEntity(XDocument.Parse(XmlShortVideo)),
-                Schema.MessageFactory.GetRequestEntity(XDocument.Parse(XmlLocation)),
-                Schema.MessageFactory.GetRequestEntity(XDocument.Parse(XmlLink)),
-                Schema.MessageFactory.GetRequestEntity(XDocument.Parse(XmlEventClick)),
-                Schema.MessageFactory.GetRequestEntity(XDocument.Parse(XmlEventLocation)),
-                Schema.MessageFactory.GetRequestEntity(XDocument.Parse(XmlEventView)),
-                Schema.MessageFactory.GetRequestEntity(XDocument.Parse(XmlEventSubscribe)),
-                Schema.MessageFactory.GetRequestEntity(XDocument.Parse(XmlEventScan)),
+                WeChatMessageFactory.GetRequestEntity(XDocument.Parse(XmlText), logger),
+                WeChatMessageFactory.GetRequestEntity(XDocument.Parse(XmlImage), logger),
+                WeChatMessageFactory.GetRequestEntity(XDocument.Parse(XmlVoice), logger),
+                WeChatMessageFactory.GetRequestEntity(XDocument.Parse(XmlVideo), logger),
+                WeChatMessageFactory.GetRequestEntity(XDocument.Parse(XmlShortVideo), logger),
+                WeChatMessageFactory.GetRequestEntity(XDocument.Parse(XmlLocation), logger),
+                WeChatMessageFactory.GetRequestEntity(XDocument.Parse(XmlLink), logger),
+                WeChatMessageFactory.GetRequestEntity(XDocument.Parse(XmlEventClick), logger),
+                WeChatMessageFactory.GetRequestEntity(XDocument.Parse(XmlEventLocation), logger),
+                WeChatMessageFactory.GetRequestEntity(XDocument.Parse(XmlEventView), logger),
+                WeChatMessageFactory.GetRequestEntity(XDocument.Parse(XmlEventSubscribe), logger),
+                WeChatMessageFactory.GetRequestEntity(XDocument.Parse(XmlEventScan), logger),
             };
             return requestList;
         }
@@ -550,6 +522,12 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Test.TestUtilities
             mockActivity.Attachments.Add(Cards.CreateAdaptiveCardAttachment());
 
             activityList.Add(mockActivity);
+
+            var mockActivity_Markdown = GetMockMessageActivity();
+            mockActivity_Markdown.TextFormat = TextFormatTypes.Markdown;
+            mockActivity_Markdown.Text = "*text*";
+            activityList.Add(mockActivity_Markdown);
+
             return activityList;
         }
 
@@ -696,9 +674,9 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Test.TestUtilities
             return mockConfiguration.Object;
         }
 
-        public static WeChatClient MockWeChatClient()
+        public static WeChatClient GetMockWeChatClient()
         {
-            var wechatClient = new Mock<WeChatClient>(MockConfiguration(), null, null, null, null);
+            var wechatClient = new Mock<WeChatClient>("wx77f941c869071d99", "secret", null, null, null, null);
             var result = JsonConvert.SerializeObject(WeChatJsonResult);
             var byteResult = Encoding.UTF8.GetBytes(result);
             wechatClient.Setup(c => c.GetAccessTokenAsync()).Returns(Task.FromResult("mockToken"));

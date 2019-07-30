@@ -4,23 +4,23 @@ using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Request;
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Request.Event;
 using Microsoft.Bot.Builder.Adapters.WeChat.Test.TestUtilities;
 using Microsoft.Bot.Schema;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Microsoft.Bot.Builder.Adapters.WeChat.Test
 {
-    [TestClass]
     public class MessageMapperTest
     {
-        private WeChatMessageMapper wechatMessageMapper;
+        private readonly WeChatMessageMapper wechatMessageMapper;
+        private readonly WeChatMessageMapper wechatMessageMapper2;
 
         public MessageMapperTest()
         {
-            var wechatClient = MockDataUtility.MockWeChatClient();
-            var configuration = MockDataUtility.MockConfiguration();
-            this.wechatMessageMapper = new WeChatMessageMapper(configuration, wechatClient);
+            var wechatClient = MockDataUtility.GetMockWeChatClient();
+            this.wechatMessageMapper = new WeChatMessageMapper(wechatClient, true);
+            this.wechatMessageMapper2 = new WeChatMessageMapper(wechatClient, false);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ToConnectorMessageTest_TestRequest()
         {
             var mockRequestList = MockDataUtility.GetMockRequestMessageList();
@@ -31,7 +31,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Test
             }
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ToWeChatMessagesTest_MessageActivity()
         {
             var activityList = MockDataUtility.GetMockMessageActivityList();
@@ -39,11 +39,13 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Test
             foreach (var messageActivity in activityList)
             {
                 var wechatResponses = await wechatMessageMapper.ToWeChatMessages(messageActivity, secretInfo);
-                Assert.IsTrue(wechatResponses.Count > 0);
+                var wechatResponses2 = await wechatMessageMapper2.ToWeChatMessages(messageActivity, secretInfo);
+                Assert.True(wechatResponses.Count > 0);
+                Assert.True(wechatResponses2.Count > 0);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ToWeChatMessagesTest_MessageActivityWithAttachment()
         {
             var messageActivity = MockDataUtility.GetMockMessageActivity();
@@ -55,10 +57,12 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Test
 
             var secretInfo = MockDataUtility.GetMockSecretInfo();
             var wechatResponses = await wechatMessageMapper.ToWeChatMessages(messageActivity, secretInfo);
-            Assert.IsTrue(wechatResponses.Count > 0);
+            var wechatResponses2 = await wechatMessageMapper2.ToWeChatMessages(messageActivity, secretInfo);
+            Assert.True(wechatResponses2.Count > 0);
+            Assert.True(wechatResponses.Count > 0);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ToWeChatMessagesTest_EventActivity()
         {
             var activityList = MockDataUtility.GetMockEventActivityList();
@@ -67,44 +71,44 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Test
             {
                 var wechatResponses = await wechatMessageMapper.ToWeChatMessages(activity, secretInfo);
 
-                // Assert.IsTrue(wechatResponses.Count > 0);
+                // Assert.True(wechatResponses.Count > 0);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void MapperUtilsTest()
         {
             var testString = "test";
-            Assert.AreEqual(testString + "\n\n" + testString, testString.AddLine(testString));
-            Assert.AreEqual(testString + "  " + testString, testString.AddText(testString));
-            Assert.AreEqual(".png", MapperUtils.GetMediaExtension("http://test.jpg", "image/png", UploadMediaType.Image));
-            Assert.AreEqual(".jpg", MapperUtils.GetMediaExtension("http://test.jpg", "image", UploadMediaType.Image));
-            Assert.AreEqual(".mp3", MapperUtils.GetMediaExtension("http://test.mp3", "audio", UploadMediaType.Voice));
-            Assert.AreEqual(".amr", MapperUtils.GetMediaExtension("http://test.mp3", "audio/amr", UploadMediaType.Voice));
-            Assert.AreEqual(".mp4", MapperUtils.GetMediaExtension("http://test.mp4", "video", UploadMediaType.Video));
-            Assert.AreEqual(".ogv", MapperUtils.GetMediaExtension("http://test.jpg", "video/ogg", UploadMediaType.Video));
-            Assert.AreEqual(".png", MapperUtils.GetMediaExtension("http://test.jpg", "image/png", UploadMediaType.Thumb));
-            Assert.AreEqual(".jpg", MapperUtils.GetMediaExtension("http://test", "image", UploadMediaType.Thumb));
+            Assert.Equal(testString + "\r\n" + testString, testString.AddLine(testString));
+            Assert.Equal(testString + "  " + testString, testString.AddText(testString));
+            Assert.Equal(".png", MapperUtils.GetMediaExtension("http://test.jpg", "image/png", UploadMediaType.Image));
+            Assert.Equal(".jpg", MapperUtils.GetMediaExtension("http://test.jpg", "image", UploadMediaType.Image));
+            Assert.Equal(".mp3", MapperUtils.GetMediaExtension("http://test.mp3", "audio", UploadMediaType.Voice));
+            Assert.Equal(".amr", MapperUtils.GetMediaExtension("http://test.mp3", "audio/amr", UploadMediaType.Voice));
+            Assert.Equal(".mp4", MapperUtils.GetMediaExtension("http://test.mp4", "video", UploadMediaType.Video));
+            Assert.Equal(".ogv", MapperUtils.GetMediaExtension("http://test.jpg", "video/ogg", UploadMediaType.Video));
+            Assert.Equal(".png", MapperUtils.GetMediaExtension("http://test.jpg", "image/png", UploadMediaType.Thumb));
+            Assert.Equal(".jpg", MapperUtils.GetMediaExtension("http://test", "image", UploadMediaType.Thumb));
         }
 
         private void AssertGeneralParameters(IRequestMessageBase requestMessage, IActivity activity)
         {
-            Assert.AreEqual(requestMessage.ToUserName, activity.Recipient.Id);
-            Assert.AreEqual("Bot", activity.Recipient.Name);
-            Assert.AreEqual(requestMessage.FromUserName, activity.From.Id);
-            Assert.AreEqual("User", activity.From.Name);
+            Assert.Equal(requestMessage.ToUserName, activity.Recipient.Id);
+            Assert.Equal("Bot", activity.Recipient.Name);
+            Assert.Equal(requestMessage.FromUserName, activity.From.Id);
+            Assert.Equal("User", activity.From.Name);
             var test = requestMessage as RequestMessage;
             if (requestMessage is RequestMessage message)
             {
-                Assert.AreEqual(message.MsgId.ToString(), activity.Id);
+                Assert.Equal(message.MsgId.ToString(), activity.Id);
             }
             else
             {
-                Assert.IsTrue(requestMessage is IRequestMessageEventBase);
+                Assert.True(requestMessage is IRequestMessageEventBase);
             }
 
-            Assert.AreEqual(Constants.ChannelId, activity.ChannelId);
-            Assert.AreEqual(requestMessage.FromUserName, activity.Conversation.Id);
+            Assert.Equal(Constants.ChannelId, activity.ChannelId);
+            Assert.Equal(requestMessage.FromUserName, activity.Conversation.Id);
         }
     }
 }

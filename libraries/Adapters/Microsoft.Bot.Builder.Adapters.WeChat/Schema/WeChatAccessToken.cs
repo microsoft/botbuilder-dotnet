@@ -6,9 +6,9 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema
     {
         public WeChatAccessToken(string appId, string secret)
         {
-            this.AppId = appId;
-            this.Secret = secret;
-            this.ExpireTime = DateTimeOffset.MinValue;
+            AppId = appId;
+            Secret = secret;
+            ExpireTime = DateTimeOffset.MinValue;
         }
 
         public string AppId { get; set; }

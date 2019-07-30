@@ -96,12 +96,20 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
             }
         }
 
-        private static string GenarateSignature(string token, string timeStamp, string nonce, string encryptedMessage)
+        /// <summary>
+        /// Generate signature use the encrypted message.
+        /// </summary>
+        /// <param name="token">Token in app settings.</param>
+        /// <param name="timestamp">WeChat message timestamp in query params.</param>
+        /// <param name="nonce">WeChat message nonce in query params.</param>
+        /// <param name="encryptedMessage">The encrypted message content from WeChat request.</param>
+        /// <returns>Genarateed signature.</returns>
+        private static string GenarateSignature(string token, string timestamp, string nonce, string encryptedMessage)
         {
             var arrayList = new ArrayList
             {
                 token,
-                timeStamp,
+                timestamp,
                 nonce,
                 encryptedMessage,
             };
@@ -112,24 +120,20 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 raw += arrayList[i];
             }
 
-            SHA1 sha;
-            ASCIIEncoding enc;
-            var hash = string.Empty;
             try
             {
-                sha = SHA1.Create();
-                enc = new ASCIIEncoding();
-                var dataToHash = enc.GetBytes(raw);
-                var dataHashed = sha.ComputeHash(dataToHash);
-                hash = BitConverter.ToString(dataHashed).Replace("-", string.Empty);
-                hash = hash.ToLower();
+                using (var sha = SHA1.Create())
+                {
+                    var enc = new ASCIIEncoding();
+                    var dataToHash = enc.GetBytes(raw);
+                    var dataHashed = sha.ComputeHash(dataToHash);
+                    return BitConverter.ToString(dataHashed).Replace("-", string.Empty).ToLower();
+                }
             }
             catch
             {
                 throw new Exception("Compare signature failed.");
             }
-
-            return hash;
         }
     }
 }
