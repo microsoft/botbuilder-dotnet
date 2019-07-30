@@ -10,7 +10,7 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
     {
         private readonly PayloadStreamAssembler _assembler;
 
-        internal ContentStream(Guid id, PayloadStreamAssembler assembler)
+        public ContentStream(Guid id, PayloadStreamAssembler assembler)
         {
             Id = id;
             _assembler = assembler ?? throw new ArgumentNullException();
