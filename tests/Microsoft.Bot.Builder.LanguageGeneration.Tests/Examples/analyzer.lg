@@ -17,14 +17,14 @@
 - [template2] {age} [template4] [template6(age)]
 
 # template2
-- {join(foreach(alarms, x, lgTemplate('template3', customer)), ',', 'and')} {tasks[0]}
+- {join(foreach(alarms, x, template3(customer)), ',', 'and')} {tasks[0]}
 
 # template3(input)
 - {input.property}
 
 # template4
 - ```
-@{city} @{lgTemplate('template5')}
+@{city} @{template5()}
 ```
 
 # template5

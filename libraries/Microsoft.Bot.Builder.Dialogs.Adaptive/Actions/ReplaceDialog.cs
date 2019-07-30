@@ -31,9 +31,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             {
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
+            
+            var dialog = this.ResolveDialog(dc);
 
             Options = ObjectPath.Merge(Options, options ?? new object());
-            var dialog = this.resolveDialog(dc);
+            BindOptions(dc);
+
             return await dc.ReplaceDialogAsync(dialog.Id, Options, cancellationToken).ConfigureAwait(false);
         }
     }

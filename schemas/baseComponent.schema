@@ -1,0 +1,68 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/Microsoft/botbuilder-dotnet/{branch}/Schemas/component.schema",
+    "title": "JSON Schema definition for dialog schemas.",
+    "description": "In order to create a component for Bot Framework .dialog files you need to create a schema file describing your configuration that meets this definition.  This extends http://json-schema.org/draft-07/schema#.",
+    "definitions": {
+        "role": {
+            "title": "$role",
+            "description": "Defines the role played in the dialog schema [lg|expression|memoryPath|uniontype()].",
+            "type": "string",
+            "pattern": "^((lg)|(expression)|(memoryPath)|(unionType)|(unionType\\([a-zA-Z][a-zA-Z0-9.]*\\)))$"
+        },
+        "id": {
+            "title": "$id",
+            "description": "Inline id for reuse of an inline definition",
+            "type": "string",
+            "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+        },
+        "copy": {
+            "title": "$copy",
+            "description": "Copy the definition by id from a .dialog file.",
+            "type": "string",
+            "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+        },
+        "type": {
+            "title": "$type",
+            "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+            "type": "string",
+            "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
+        },
+        "designer": {
+            "title": "$designer",
+            "type": "object",
+            "description": "Extra information for the Bot Framework Designer."
+        },
+        "expression": {
+            "type": "string",
+            "description": "String must contain an expression."
+        },
+        "lg": {
+            "type": "string",
+            "description": "String is used for language generation."
+        },
+        "memoryPath": {
+            "type": "string",
+            "description": "String must contain a memory path.",
+            "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
+        }
+    },
+    "properties": {
+        "$role": {
+            "oneOf": [
+                {
+                    "$ref": "#/definitions/role"
+                },
+                {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/role"
+                    }
+                }
+            ]
+        },
+        "$type": {
+            "$ref": "#/definitions/type"
+        }
+    }
+}

@@ -31,15 +31,6 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         }
 
         // These tests require Azure Storage Emulator v5.7
-        [AssemblyInitialize]
-        public static void AssemblyInitialize(TestContext a)
-        {
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-            }
-        }
-
-        // These tests require Azure Storage Emulator v5.7
         [TestInitialize]
         public async Task TestInit()
         {

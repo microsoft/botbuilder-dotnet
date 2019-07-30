@@ -1,5 +1,5 @@
 {
-    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/master/packages/DialogSchema/src/dialogSchema.schema",
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
     "$id": "app.schema",
     "type": "object",
     "title": "Component types",
@@ -538,12 +538,17 @@
                     ]
                 },
                 "allowInterruptions": {
-                    "type": "boolean",
+                    "type": "string",
+                    "enum": [
+                        "always",
+                        "never",
+                        "notRecognized"
+                    ],
                     "title": "Allow Interruptions",
-                    "description": "If set to true this will always consult the parent dialog whether it will be interupt or not.",
-                    "default": true,
+                    "description": "always will always consult parent dialogs first, never will not consult parent dialogs, notRecognized will consult parent only when it's not recognized",
+                    "default": "notRecognized",
                     "examples": [
-                        true
+                        "notRecognized"
                     ]
                 },
                 "outputFormat": {
@@ -681,6 +686,17 @@
                     "title": "$designer",
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
+                },
+                "eventName": {
+                    "title": "Event Name",
+                    "description": "The name of event to emit",
+                    "type": "string"
+                },
+                "eventValue": {
+                    "type": "object",
+                    "title": "Event Value",
+                    "description": "Optional value to emit along with the event",
+                    "additionalProperties": true
                 }
             },
             "additionalProperties": false,
@@ -862,12 +878,17 @@
                     ]
                 },
                 "allowInterruptions": {
-                    "type": "boolean",
+                    "type": "string",
+                    "enum": [
+                        "always",
+                        "never",
+                        "notRecognized"
+                    ],
                     "title": "Allow Interruptions",
-                    "description": "If set to true this will always consult the parent dialog whether it will be interupt or not.",
-                    "default": true,
+                    "description": "always will always consult parent dialogs first, never will not consult parent dialogs, notRecognized will consult parent only when it's not recognized",
+                    "default": "notRecognized",
                     "examples": [
-                        true
+                        "notRecognized"
                     ]
                 },
                 "outputFormat": {
@@ -1228,12 +1249,17 @@
                     ]
                 },
                 "allowInterruptions": {
-                    "type": "boolean",
+                    "type": "string",
+                    "enum": [
+                        "always",
+                        "never",
+                        "notRecognized"
+                    ],
                     "title": "Allow Interruptions",
-                    "description": "If set to true this will always consult the parent dialog whether it will be interupt or not.",
-                    "default": true,
+                    "description": "always will always consult parent dialogs first, never will not consult parent dialogs, notRecognized will consult parent only when it's not recognized",
+                    "default": "notRecognized",
                     "examples": [
-                        true
+                        "notRecognized"
                     ]
                 },
                 "defaultLocale": {
@@ -1465,12 +1491,17 @@
                     ]
                 },
                 "allowInterruptions": {
-                    "type": "boolean",
+                    "type": "string",
+                    "enum": [
+                        "always",
+                        "never",
+                        "notRecognized"
+                    ],
                     "title": "Allow Interruptions",
-                    "description": "If set to true this will always consult the parent dialog whether it will be interupt or not.",
-                    "default": true,
+                    "description": "always will always consult parent dialogs first, never will not consult parent dialogs, notRecognized will consult parent only when it's not recognized",
+                    "default": "notRecognized",
                     "examples": [
-                        true
+                        "notRecognized"
                     ]
                 },
                 "defaultLocale": {
@@ -1814,8 +1845,10 @@
                         {
                             "enum": [
                                 "beginDialog",
-                                "consultDialog",
+                                "resumeDialog",
+                                "repromptDialog",
                                 "cancelDialog",
+                                "endDialog",
                                 "activityReceived",
                                 "recognizedIntent",
                                 "unknownIntent",
@@ -2276,17 +2309,17 @@
                     "title": "Http headers",
                     "description": "Http headers to include with the HTTP request (supports data binding)"
                 },
-                "responseTypes": {
+                "responseType": {
                     "type": "string",
-                    "title": "Response Types",
+                    "title": "Response Type",
                     "description": "Describes how to parse the response from the http request. If Activity or Activities, then the they will be sent to the user.",
                     "enum": [
-                        "none",
-                        "json",
-                        "activity",
-                        "activities"
+                        "None",
+                        "Json",
+                        "Activity",
+                        "Activities"
                     ],
-                    "default": "json"
+                    "default": "Json"
                 }
             },
             "additionalProperties": false,
@@ -2306,7 +2339,7 @@
                     "title": "Type",
                     "required": [
                         "url",
-                        "entity",
+                        "method",
                         "$type"
                     ]
                 }
@@ -3263,12 +3296,17 @@
                     ]
                 },
                 "allowInterruptions": {
-                    "type": "boolean",
+                    "type": "string",
+                    "enum": [
+                        "always",
+                        "never",
+                        "notRecognized"
+                    ],
                     "title": "Allow Interruptions",
-                    "description": "If set to true this will always consult the parent dialog whether it will be interupt or not.",
-                    "default": true,
+                    "description": "always will always consult parent dialogs first, never will not consult parent dialogs, notRecognized will consult parent only when it's not recognized",
+                    "default": "notRecognized",
                     "examples": [
-                        true
+                        "notRecognized"
                     ]
                 },
                 "outputFormat": {
@@ -5166,12 +5204,18 @@
                     ]
                 },
                 "allowInterruptions": {
-                    "type": "boolean",
+                    "type": "string",
+                    "enum": [
+                        "always",
+                        "never",
+                        "notRecognized"
+                    ],
                     "title": "Allow Interruptions",
-                    "description": "If set to true this will always consult the parent dialog whether it will be interupt or not.",
-                    "default": true,
+                    "description": "always will always consult parent dialogs first, never will not consult parent dialogs, notRecognized will consult parent only when it's not recognized",
+                    "default": "notRecognized",
                     "examples": [
-                        true
+                        "notRecognized",
+                        "always"
                     ]
                 },
                 "outputFormat": {

@@ -26,7 +26,7 @@
 - IF: {count(alarms) == 1}
    - You have one alarm [ShowAlarm(alarms[0])]
 - ELSEIF: {count(alarms) == 2}
-  - You have {count(alarms)} alarms, {join(alarms, ',', 'and')}
+  - You have {count(alarms)} alarms, {join(alarms, ', ', ' and ')}
 - ELSE:
   - You don't have any alarms
 
@@ -34,7 +34,7 @@
 - IF: {count(alarms) == 1}
    - You have one alarm [ShowAlarm(alarms[0])]
 - ELSEIF: {count(alarms) == 2}
-  - You have {count(alarms)} alarms, {join(foreach(alarms, x, lgTemplate('ShowAlarm', x)), ',', 'and')}
+  - You have {count(alarms)} alarms, {join(foreach(alarms, x, ShowAlarm(x)), ', ', ' and ')}
 - ELSE:
   - You don't have any alarms
 
@@ -42,6 +42,6 @@
 - IF: {count(alarms) == 1}
    - You have one alarm [ShowAlarm(alarms[0])]
 - ELSEIF: {count(alarms) == 2}
-  - You have {count(alarms)} alarms, {join(foreach(alarms, x, lgTemplate('ShowAlarm', x)), ',', 'and')}
+  - You have {count(alarms)} alarms, {join(foreach(alarms, x, ShowAlarm(x)), ', ', ' and ')}
 - ELSE:
   - You don't have any alarms

@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name= "reason">The reason the waterfall step is being executed.</param>
         /// <param name= "result">Results returned by a dialog called in the previous waterfall step.</param>
         internal WaterfallStepContext(WaterfallDialog parentWaterfall, DialogContext dc, object options, IDictionary<string, object> values, int index, DialogReason reason, object result = null)
-            : base(dc.Dialogs, dc.Context, new DialogState(dc.Stack), conversationState: dc.State.Conversation, userState: dc.State.User, settings: dc.State.Settings)
+            : base(dc.Dialogs, turnContext: dc.Context, state: new DialogState(dc.Stack), conversationState: dc.State.Conversation, userState: dc.State.User, settings: dc.State.Settings)
         {
             _parentWaterfall = parentWaterfall;
             _nextCalled = false;

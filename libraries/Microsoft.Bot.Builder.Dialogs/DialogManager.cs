@@ -137,9 +137,9 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             return new StoredBotState()
             {
-                UserState = data.ContainsKey(keys.UserState) ? data[keys.UserState] as Dictionary<string, object> : new Dictionary<string, object>(),
-                ConversationState = data.ContainsKey(keys.ConversationState) ? data[keys.ConversationState] as Dictionary<string, object> : new Dictionary<string, object>(),
-                DialogStack = data.ContainsKey(keys.DialogState) ? data[keys.DialogState] as List<DialogInstance> : new List<DialogInstance>(),
+                UserState = data.ContainsKey(keys.UserState) ? data[keys.UserState] as IDictionary<string, object> : new Dictionary<string, object>(),
+                ConversationState = data.ContainsKey(keys.ConversationState) ? data[keys.ConversationState] as IDictionary<string, object> : new Dictionary<string, object>(),
+                DialogStack = data.ContainsKey(keys.DialogState) ? data[keys.DialogState] as IList<DialogInstance> : new List<DialogInstance>(),
             };
         }
 

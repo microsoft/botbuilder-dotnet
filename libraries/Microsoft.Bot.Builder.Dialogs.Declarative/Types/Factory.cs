@@ -43,7 +43,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
                     types.Add(name, type);
                 }
             }
-            lock(names)
+
+            lock (names)
             {
                 if (!names.ContainsKey(type))
                 {
@@ -51,7 +52,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
                 }
             }
 
-            lock(builders)
+            lock (builders)
             {
                 if (!builders.ContainsKey(type))
                 {
@@ -170,7 +171,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
             Register("Microsoft.TextInput", typeof(TextInput));
             Register("Microsoft.ChoiceInput", typeof(ChoiceInput));
             Register("Microsoft.DateTimeInput", typeof(DateTimeInput));
-            Register("Microsoft.OAuthPrompt", typeof(OAuthPrompt), new OAuthPromptLoader());
+            Register("Microsoft.OAuthInput", typeof(OAuthPrompt), new OAuthPromptLoader());
 
             // Recognizers
             Register("Microsoft.LuisRecognizer", typeof(LuisRecognizer), new LuisRecognizerLoader(TypeFactory.Configuration));
