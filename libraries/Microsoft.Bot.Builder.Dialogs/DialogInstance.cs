@@ -6,15 +6,15 @@ using System.Collections.Generic;
 namespace Microsoft.Bot.Builder.Dialogs
 {
     /// <summary>
-    /// Tracking information for a dialog on the stack.
+    /// Contains state information associated with a <see cref="Dialog"/> on a dialog stack.
     /// </summary>
     public class DialogInstance
     {
         /// <summary>
-        /// Gets or sets the ID of the dialog this instance is for.
+        /// Gets or sets the ID of the dialog.
         /// </summary>
         /// <value>
-        /// ID of the dialog this instance is for.
+        /// The ID of the dialog.
         /// </value>
         public string Id { get; set; }
 
