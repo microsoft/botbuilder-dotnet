@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Dialogs.Tests
 {
-    public class NumberPromptMock: NumberPrompt<int>
+    public class NumberPromptMock : NumberPrompt<int>
     {
         public NumberPromptMock(string dialogId, PromptValidator<int> validator = null, string defaultLocale = null)
             : base(dialogId, validator, defaultLocale)

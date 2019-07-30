@@ -11,7 +11,7 @@ namespace Microsoft.Bot.Builder.AI.LuisV3.Tests
         {
         }
 
-        public void Convert(dynamic _)
+        public void Convert(dynamic @dynamic)
         {
         }
     }
