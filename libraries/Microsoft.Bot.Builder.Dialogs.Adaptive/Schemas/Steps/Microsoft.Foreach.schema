@@ -1,5 +1,5 @@
 {
-    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/master/packages/DialogSchema/src/dialogSchema.schema",
+    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-dotnet/4.Future/Schemas/component.schema",
     "$role": "unionType(Microsoft.IDialog)",
     "title": "Foreach Step",
     "description": "Step which executes steps per item in a collection.",
@@ -31,7 +31,7 @@
             "$role": "memoryPath",
             "title": "Value Property",
             "description": "The memory path which refers to the value of the item",
-            "default":  "dialog.value"
+            "default": "dialog.value"
         }
     },
     "required": [

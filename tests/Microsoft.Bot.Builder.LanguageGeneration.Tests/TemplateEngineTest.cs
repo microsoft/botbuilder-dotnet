@@ -200,7 +200,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [TestMethod]
         public void TestBasicInlineTemplate()
         {
-            var emptyEngine = new TemplateEngine().AddText(content: String.Empty, id: "test", importResolver: null);
+            var emptyEngine = new TemplateEngine();
             Assert.AreEqual(emptyEngine.Evaluate("Hi"), "Hi");
             Assert.AreEqual(emptyEngine.Evaluate("Hi", null), "Hi");
             Assert.AreEqual(emptyEngine.Evaluate("Hi {name}", new { name = "DL" }), "Hi DL");
@@ -208,7 +208,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.AreEqual(emptyEngine.Evaluate("Hi \n Hello", null), "Hi \n Hello");
             Assert.AreEqual(emptyEngine.Evaluate("Hi \r\n Hello", null), "Hi \r\n Hello");
             Assert.AreEqual(emptyEngine.Evaluate("Hi \r\n @{name}", new { name = "DL" }), "Hi \r\n DL");
-            Assert.AreEqual(new TemplateEngine().Evaluate("Hi", null), "Hi");
         }
 
         [TestMethod]
@@ -308,7 +307,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                 new
                 {
                     name = "template1",
-                    // TODO: input.property should really be: customer.property but analyzer needs to be 
+                    // TODO: input.property should really be: customer.property but analyzer needs to be
                     variableOptions = new string[] { "alarms", "customer", "tasks[0]", "age", "city" },
                     templateRefOptions = new string[] { "template2", "template3", "template4", "template5", "template6" }
                 },
@@ -346,6 +345,28 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             evaled = engine.EvaluateTemplate("TemplateD", new { b = "morning"});
             options = new List<string> { "Hi morning", "Hello morning" };
             Assert.AreEqual(options.Contains(evaled), true);
+        }
+
+
+        [TestMethod]
+        public void TestTemplateAsFunction()
+        {
+            var engine = new TemplateEngine().AddFile(GetExampleFilePath("TemplateAsFunction.lg"));
+            string evaled = engine.EvaluateTemplate("Test2", "");
+
+            Assert.AreEqual(evaled, "hello world");
+
+            evaled = engine.EvaluateTemplate("Test3", "");
+            Assert.AreEqual(evaled, "hello world");
+
+            evaled = engine.EvaluateTemplate("Test4", "");
+            Assert.AreEqual(evaled.Trim(), "hello world");
+
+            evaled = engine.EvaluateTemplate("dupNameWithTemplate");
+            Assert.AreEqual(evaled, "calculate length of ms by user's template");
+
+            evaled = engine.EvaluateTemplate("dupNameWithBuiltinFunc");
+            Assert.AreEqual(evaled, "2");
         }
 
         [TestMethod]
@@ -434,27 +455,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             evaled = engine.EvaluateTemplate("basicTemplate2", null);
             Assert.IsTrue("Hi 2" == evaled || "Hello 2" == evaled);
 
-            // Assert 6.lg of absolute path is imported from text.
-            var importedFilePath = GetExampleFilePath("6.lg");
-            engine = new TemplateEngine().AddText(content: "# basicTemplate\r\n- Hi\r\n- Hello\r\n[import](" + importedFilePath + ")", id: "test", importResolver: null);
-
-            Assert.AreEqual(8, engine.Templates.Count());
-
-            evaled = engine.EvaluateTemplate("basicTemplate", null);
-            Assert.IsTrue("Hi" == evaled || "Hello" == evaled);
-
-            evaled = engine.EvaluateTemplate("welcome", null);
-            Assert.IsTrue("Hi DongLei :)" == evaled ||
-                "Hey DongLei :)" == evaled ||
-                "Hello DongLei :)" == evaled);
-
-            evaled = engine.EvaluateTemplate("welcome", new { userName = "DL" });
-            Assert.IsTrue("Hi DL :)" == evaled ||
-                "Hey DL :)" == evaled ||
-                "Hello DL :)" == evaled);
-
             // Assert 6.lg of relative path is imported from text.
-            engine = new TemplateEngine().AddText(content: "# basicTemplate\r\n- Hi\r\n- Hello\r\n[import](./Examples/6.lg)", id: "test", importResolver: null);
+            engine = new TemplateEngine().AddText(content: "# basicTemplate\r\n- Hi\r\n- Hello\r\n[import](./6.lg)", id: GetExampleFilePath("xx.lg"));
 
             Assert.AreEqual(8, engine.Templates.Count());
 
@@ -623,6 +625,30 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var eval2Options = new List<string>() { "\r\nYou have 2 alarms.\r\nThey are 8 pm of tomorrow\r\n", "\nYou have 2 alarms.\nThey are 8 pm of tomorrow\n" };
             Assert.AreEqual(true, eval1Options.Contains(evaled[0]));
             Assert.AreEqual(true, eval2Options.Contains(evaled[1]));
+        }
+
+        [TestMethod]
+        public void TestEvalExpression()
+        {
+            var engine = new TemplateEngine().AddFile(GetExampleFilePath("EvalExpression.lg"));
+
+            var userName = "MS";
+            var evaled = engine.EvaluateTemplate("template1", new { userName });
+            Assert.AreEqual(evaled, "Hi MS");
+
+            evaled = engine.EvaluateTemplate("template2", new { userName });
+            Assert.AreEqual(evaled, "Hi MS");
+
+            evaled = engine.EvaluateTemplate("template3", new { userName });
+            Assert.AreEqual(evaled, "HiMS");
+
+            evaled = engine.EvaluateTemplate("template4", new { userName });
+            var eval1Options = new List<string>() { "\r\nHi MS\r\n", "\nHi MS\n" };
+            Assert.IsTrue(eval1Options.Contains(evaled));
+
+            evaled = engine.EvaluateTemplate("template5", new { userName });
+            var eval2Options = new List<string>() { "\r\nHiMS\r\n", "\nHiMS\n" };
+            Assert.IsTrue(eval2Options.Contains(evaled));
         }
     }
 }

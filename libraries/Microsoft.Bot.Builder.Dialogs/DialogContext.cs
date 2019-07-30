@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="dialogs">Parent dialog set.</param>
         /// <param name="turnContext">Context for the current turn of conversation with the user.</param>
         /// <param name="state">Current dialog state.</param>
-        public DialogContext(DialogSet dialogs, DialogContext parentDialogContext, DialogState state, Dictionary<string, object> conversationState = null, Dictionary<string, object> userState = null, Dictionary<string, object> settings = null)
+        public DialogContext(DialogSet dialogs, DialogContext parentDialogContext, DialogState state, IDictionary<string, object> conversationState = null, IDictionary<string, object> userState = null, IDictionary<string, object> settings = null)
         {
             Dialogs = dialogs;
             Parent = parentDialogContext ?? throw new ArgumentNullException(nameof(parentDialogContext));
@@ -44,7 +44,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             State.SetValue(DialogContextState.TURN_ACTIVITY, Context.Activity);
         }
 
-        public DialogContext(DialogSet dialogs, ITurnContext turnContext, DialogState state, Dictionary<string, object> conversationState = null, Dictionary<string, object> userState = null, Dictionary<string, object> settings = null)
+        public DialogContext(DialogSet dialogs, ITurnContext turnContext, DialogState state, IDictionary<string, object> conversationState = null, IDictionary<string, object> userState = null, IDictionary<string, object> settings = null)
         {
             Parent = null;
             Dialogs = dialogs ?? throw new ArgumentNullException(nameof(dialogs));
@@ -81,13 +81,10 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </value>
         public ITurnContext Context { get; private set; }
 
-        /// <summary>
-        /// Stack of active dialogs and their dialog state.
-        /// </summary>
         /// <value>
         /// The current dialog stack.
         /// </value>
-        public List<DialogInstance> Stack { get; private set; }
+        public IList<DialogInstance> Stack { get; private set; }
 
         /// <summary>
         /// Current active scoped state with (user|conversation|dialog|settings scopes).
@@ -146,7 +143,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// Returns a list of all `Dialog.tags` that are currently on the dialog stack. 
+        /// Returns a list of all `Dialog.tags` that are currently on the dialog stack.
         /// Any duplicate tags are removed from the returned list and the order of the tag reflects the
         /// order of the dialogs on the stack.
         /// The returned list will also include any tags applied as "globalTags". These tags are
@@ -245,7 +242,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             Dictionary<string, object> state = null;
             int? stateIndex = null;
 
-            if (dialog is DialogCommand)
+            if (ShouldInheritState(dialog))
             {
                 if (Stack.Count > 0)
                 {
@@ -284,7 +281,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             Stack.Insert(0, instance);
             activeTags = null;
 
-            // take the bindings (dialog.xxx => dialog.yyy) 
+            // take the bindings (dialog.xxx => dialog.yyy)
             foreach (var property in bindings)
             {
                 // make sure the key is a dialog property this is only used for dialog bindings
@@ -298,7 +295,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             // set dialog result
-            if (dialog is DialogCommand)
+            if (ShouldInheritState(dialog))
             {
                 State.SetValue(DialogContextState.STEP_OPTIONS_PROPERTY, options);
             }
@@ -517,7 +514,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// Find the dialog id for the given context. 
+        /// Find the dialog id for the given context.
         /// </summary>
         /// <param name="dialogId">dialog id to find</param>
         /// <returns>dialog with that id</returns>
@@ -540,16 +537,6 @@ namespace Microsoft.Bot.Builder.Dialogs
             return null;
         }
 
-        public class DialogEvents
-        {
-            public const string BeginDialog = "beginDialog";
-            public const string ResumeDialog = "resumeDialog";
-            public const string RepromptDialog = "repromptDialog";
-            public const string CancelDialog = "cancelDialog";
-            public const string EndDialog = "endDialog";
-            public const string ActivityReceived = "activityReceived";
-        }
-
         /// <summary>
         /// Searches for a dialog with a given ID.
         /// Emits a named event for the current dialog, or someone who started it, to handle.
@@ -557,7 +544,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="name">Name of the event to raise.</param>
         /// <param name="value">Value to send along with the event.</param>
         /// <param name="bubble">Flag to control whether the event should be bubbled to its parent if not handled locally. Defaults to a value of `true`.</param>
-        /// <param name="fromLeaf"></param>
+        /// <param name="fromLeaf">Whether the event is emitted from a leaf node.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>True if the event was handled.</returns>
         public async Task<bool> EmitEventAsync(string name, object value = null, bool bubble = true, bool fromLeaf = false, CancellationToken cancellationToken = default(CancellationToken))
@@ -607,6 +594,16 @@ namespace Microsoft.Bot.Builder.Dialogs
             return false;
         }
 
+        /// <summary>
+        /// Specifies whether a given dialog should inherit dialog-level state. 
+        /// </summary>
+        /// <param name="dialog">The dialog to be tested.</param>
+        /// <returns>Whether the passed dialog should inherit dialog-level state.</returns>
+        protected virtual bool ShouldInheritState(IDialog dialog)
+        {
+            return dialog is DialogCommand;
+        }
+
         private async Task EndActiveDialogAsync(DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (result is CancellationToken)
@@ -637,7 +634,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
-        private Dictionary<string, object> GetActiveDialogState(DialogContext dialogContext, Dictionary<string, object> state = null, int? stackIdx = null)
+        private IDictionary<string, object> GetActiveDialogState(DialogContext dialogContext, IDictionary<string, object> state = null, int? stackIdx = null)
         {
             if (state == null && !stackIdx.HasValue)
             {
@@ -671,5 +668,14 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
+        public class DialogEvents
+        {
+            public const string BeginDialog = "beginDialog";
+            public const string ResumeDialog = "resumeDialog";
+            public const string RepromptDialog = "repromptDialog";
+            public const string CancelDialog = "cancelDialog";
+            public const string EndDialog = "endDialog";
+            public const string ActivityReceived = "activityReceived";
+        }
     }
 }

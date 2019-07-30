@@ -11,7 +11,7 @@ using Newtonsoft.Json.Linq;
 namespace Microsoft.Bot.Builder.TemplateManager
 {
     /// <summary>
-    /// Middleware for logging incoming and outgoing activitites to an <see cref="ITranscriptStore"/>.
+    /// Middleware for registering ITemplateRender
     /// </summary>
     public class TemplateManagerMiddleware : IMiddleware
     {

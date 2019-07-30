@@ -1,5 +1,5 @@
 {
-    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/master/packages/DialogSchema/src/dialogSchema.schema",
+    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-dotnet/4.Future/Schemas/component.schema",
     "$role": "unionType(Microsoft.IDialog)",
     "title": "TextInput Dialog",
     "description": "This represents a dialog which gathers a text from the user",
@@ -21,6 +21,18 @@
                     "title": "Output Format",
                     "description": "The TextInput output format.",
                     "default": "none"
+                },
+                "allowInterruptions": {
+                    "type": "string",
+                    "enum": [
+                      "always",
+                      "never",
+                      "notRecognized"
+                    ],
+                    "title": "Allow Interruptions",
+                    "description": "always will always consult parent dialogs first, never will not consult parent dialogs, notRecognized will consult parent only when it's not recognized",
+                    "default": "always",
+                    "examples": [ "always" ]
                 }
             }
         }
