@@ -43,8 +43,6 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
             TwilioClient.Init(this.options.AccountSID, this.options.AuthToken);
         }
 
-        public TwilioBotWorker BotkitWorker { get; private set; }
-
         /// <summary>
         /// Standard BotBuilder adapter method to send a message from the bot to the messaging API.
         /// </summary>

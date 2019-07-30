@@ -41,5 +41,4 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
 
         public string ApiVersion { get; set; }
     }
-
 }

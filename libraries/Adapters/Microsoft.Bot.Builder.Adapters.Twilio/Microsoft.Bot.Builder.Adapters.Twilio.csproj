@@ -27,7 +27,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\integration\Microsoft.Bot.Builder.Integration.AspNet.Core\Microsoft.Bot.Builder.Integration.AspNet.Core.csproj" />
     <ProjectReference Include="..\..\Microsoft.Bot.Builder\Microsoft.Bot.Builder.csproj" />
-    <ProjectReference Include="..\Microsoft.Bot.Builder.BotKit\Microsoft.Bot.Builder.BotKit.csproj" />
   </ItemGroup>
 
 </Project>
