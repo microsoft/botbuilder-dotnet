@@ -72,7 +72,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
                 }
                 else
                 {
-                    // log error: unknown message type
+                    // TODO: log error: unknown message type
                 }
             }
 
