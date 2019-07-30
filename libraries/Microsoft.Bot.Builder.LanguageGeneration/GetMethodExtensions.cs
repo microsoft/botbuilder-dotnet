@@ -67,7 +67,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var expectedArgsCount = _evaluator.TemplateMap[templateName].Parameters.Count();
             var actualArgsCount = expression.Children.Length;
 
-            if (actualArgsCount > 0 && actualArgsCount != expectedArgsCount)
+            if (expectedArgsCount != actualArgsCount)
             {
                 throw new Exception($"arguments mismatch for template {templateName}, expect {expectedArgsCount} actual {actualArgsCount}");
             }

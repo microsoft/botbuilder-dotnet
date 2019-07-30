@@ -5,10 +5,7 @@
 - [Welcome] {name}
 
 # Hello3
-- [Welcome()] {name}
-
-# Hello4
-- {Welcome()} {name}
+- {Welcome(time)} {name}
 
 # Welcome(time)
 - IF: {time == 'morning'}
