@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Bot.StreamingExtensions.Transport
 { 
-    internal interface ITransportSender : ITransport
+    public interface ITransportSender : ITransport
     {
         Task<int> SendAsync(byte[] buffer, int offset, int count);
     }
