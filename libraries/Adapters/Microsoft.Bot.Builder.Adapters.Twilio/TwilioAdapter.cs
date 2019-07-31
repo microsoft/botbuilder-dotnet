@@ -51,9 +51,8 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         public override async Task<ResourceResponse[]> SendActivitiesAsync(ITurnContext turnContext, Activity[] activities, CancellationToken cancellationToken)
         {
             var responses = new List<ResourceResponse>();
-            for (var i = 0; i < activities.Length; i++)
+            foreach (var activity in activities)
             {
-                var activity = activities[i];
                 if (activity.Type == ActivityTypes.Message)
                 {
                     var messageOptions = ActivityToTwilio(activity);
@@ -87,7 +86,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         public async Task ProcessAsync(HttpRequest request, HttpResponse response, IBot bot, CancellationToken cancellationToken = default)
         {
             response.StatusCode = 200;
-            await response.WriteAsync(string.Empty);
+            await response.WriteAsync(string.Empty, cancellationToken);
 
             var twilioSignature = request.Headers["x-twilio-signature"];
 
@@ -145,7 +144,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
                     response.StatusCode = 200;
                     response.ContentType = "text/plain";
                     var text = (context.TurnState["httpBody"] != null) ? context.TurnState["httpBody"].ToString() : string.Empty;
-                    await response.WriteAsync(text);
+                    await response.WriteAsync(text, cancellationToken);
                 }
             }
         }
