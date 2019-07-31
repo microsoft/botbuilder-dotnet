@@ -57,7 +57,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         public string FromZip { get; set; }
 
         /// <summary>
-        /// Gets or sets the sms Sid.
+        /// Gets or sets the sms security identifier.
         /// </summary>
         /// <value>The security identifier of the sms (see https://www.twilio.com/docs/glossary/what-is-a-sid).</value>
         public string SmsSid { get; set; }
@@ -105,7 +105,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         public string NumSegments { get; set; }
 
         /// <summary>
-        /// Gets or sets the Sid of the message.
+        /// Gets or sets the security identifier of the message.
         /// </summary>
         /// <value>The security identifier of the message (see https://www.twilio.com/docs/glossary/what-is-a-sid).</value>
         public string MessageSid { get; set; }
