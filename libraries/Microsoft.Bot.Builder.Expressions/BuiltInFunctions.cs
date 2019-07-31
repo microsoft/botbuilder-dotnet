@@ -479,9 +479,15 @@ namespace Microsoft.Bot.Builder.Expressions
                 return (value, error);
             };
 
-        private static (object value, string error) Callstack(Expression expression, object state)
+
+        /// <summary>
+        /// walk dialog callstack looking for property
+        /// </summary>
+        /// <param name="expression"></param>
+        /// <param name="state"></param>
+        /// <returns></returns>
+        private static (object value, string error) CallstackScope(Expression expression, object state)
         {
-            // get collection
             // get collection
             var (result, error) = AccessProperty(state, "callstack");
             if (result != null)
@@ -3166,7 +3172,7 @@ namespace Microsoft.Bot.Builder.Expressions
                     ValidateIsMatch),
 
                 // Shorthand functions
-                new ExpressionEvaluator(ExpressionType.Callstack, Callstack, ReturnType.Object, ValidateUnary),
+                new ExpressionEvaluator(ExpressionType.CallstackScope, CallstackScope, ReturnType.Object, ValidateUnary),
                 new ExpressionEvaluator(
                     ExpressionType.SimpleEntity,
                     Apply(args =>
