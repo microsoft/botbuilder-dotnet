@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 using Twilio;
-using Twilio.Exceptions;
 using Twilio.Rest.Api.V2010.Account;
 using Twilio.Security;
 
@@ -18,8 +17,6 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
 {
     public class TwilioAdapter : BotAdapter
     {
-        public const string Name = "Twilio SMS Adapter";
-
         private readonly ITwilioAdapterOptions _options;
 
         public TwilioAdapter(ITwilioAdapterOptions options)
