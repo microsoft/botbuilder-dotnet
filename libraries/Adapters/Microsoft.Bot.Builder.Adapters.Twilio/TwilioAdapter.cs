@@ -23,17 +23,17 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         {
             _options = options;
 
-            if (options.TwilioNumber.Equals(string.Empty))
+            if (string.IsNullOrWhiteSpace(options.TwilioNumber))
             {
                 throw new Exception("TwilioNumber is a required part of the configuration.");
             }
 
-            if (options.AccountSid.Equals(string.Empty))
+            if (string.IsNullOrWhiteSpace(options.AccountSid))
             {
                 throw new Exception("AccountSid is a required part of the configuration.");
             }
 
-            if (options.AuthToken.Equals(string.Empty))
+            if (string.IsNullOrWhiteSpace(options.AuthToken))
             {
                 throw new Exception("AuthToken is a required part of the configuration.");
             }
@@ -103,7 +103,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
 
             var body = QueryStringToDictionary(formattedPayload);
 
-            if (!twilioSignature.Equals(string.Empty) && requestValidator.Validate(validationUrl, body, twilioSignature))
+            if (!string.IsNullOrWhiteSpace(twilioSignature) && requestValidator.Validate(validationUrl, body, twilioSignature))
             {
                 var jsonBody = JsonConvert.SerializeObject(body);
 
