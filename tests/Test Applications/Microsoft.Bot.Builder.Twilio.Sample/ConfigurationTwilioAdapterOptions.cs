@@ -10,7 +10,7 @@ namespace Microsoft.Bot.Builder.Twilio.Sample
     public class ConfigurationTwilioAdapterOptions : SimpleTwilioAdapterOptions
     {
         public ConfigurationTwilioAdapterOptions(IConfiguration configuration)
-             : base(configuration["TwilioNumber"], configuration["AccountSID"], configuration["AuthToken"], configuration["ValidationURL"])
+             : base(configuration["TwilioNumber"], configuration["AccountSid"], configuration["AuthToken"], configuration["ValidationUrl"])
         {
         }
     }
