@@ -19,6 +19,11 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
     {
         private readonly ITwilioAdapterOptions _options;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TwilioAdapter"/> class.
+        /// A Twilio adapter will allow the Bot to connect to Twilio's SMS service.
+        /// </summary>
+        /// <param name="options">A set of params with the required values for authentication.</param>
         public TwilioAdapter(ITwilioAdapterOptions options)
         {
             _options = options;
