@@ -25,16 +25,25 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <summary>
         /// Generate the activity 
         /// </summary>
-        /// <param name="locale">locale to generate</param>
+        /// <param name="turnContext">turn context</param>
         /// <param name="template">(optional) inline template definition.</param>
-        /// <param name="id">id of the template to generate text.</param>
         /// <param name="data">data to bind the template to.</param>
         /// <returns>message activity</returns>
         public async Task<IMessageActivity> Generate(ITurnContext turnContext, string template, object data)
         {
             var languageGenerator = turnContext.TurnState.Get<ILanguageGenerator>();
-            var result = await languageGenerator.Generate(turnContext, template, data).ConfigureAwait(false);
-            return await CreateActivityFromText(turnContext, result, data).ConfigureAwait(false);
+            if (languageGenerator != null)
+            {
+                // data bind template 
+                template = await languageGenerator.Generate(turnContext, template, data).ConfigureAwait(false);
+            }
+            else
+            {
+                Trace.TraceWarning($"There is no ILanguageGenerator registered in the ITurnContext so no data binding was performed for template: {template}");
+            }
+
+            // render activity from template
+            return await CreateActivityFromText(turnContext, template, data).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -233,15 +242,25 @@ namespace Microsoft.Bot.Builder.Dialogs
             // Throws if the fallback does not exist.
             if (contentType.ToLower().IndexOf("json") > 0 || isCard)
             {
+                string jsonContents = File.ReadAllText(resolvedFileLocation);
                 var languageGenerator = turnContext.TurnState.Get<ILanguageGenerator>();
-                var template = $"```\n{File.ReadAllText(resolvedFileLocation)}\n```";
-                var result = await languageGenerator.Generate(turnContext, template, data).ConfigureAwait(false);
-                if (result != null)
+                if (languageGenerator != null)
                 {
-                    return JsonConvert.DeserializeObject(result);
+                    var template = $"```\n{jsonContents}\n```";
+                    
+                    // databind json 
+                    var result = await languageGenerator.Generate(turnContext, template, data).ConfigureAwait(false);
+                    if (result != null)
+                    {
+                        return JsonConvert.DeserializeObject(result);
+                    }
+                }
+                else
+                {
+                    Trace.TraceWarning($"There is no ILanguageGenerator registered in the ITurnContext so no data binding was performed for json file: {fileLocation}");
                 }
 
-                throw new Exception("No template found!");
+                return JsonConvert.DeserializeObject(jsonContents);
             }
             else
             {
