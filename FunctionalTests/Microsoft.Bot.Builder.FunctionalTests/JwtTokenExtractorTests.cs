@@ -6,12 +6,17 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.FunctionalTests.Configuration;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.IdentityModel.Protocols;
-using Xunit;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.Bot.Connector.Tests.Authentication
+namespace Microsoft.Bot.Builder.FunctionalTests
 {
+    [TestClass]
+    #if !FUNCTIONALTESTS
+    [Ignore("These integration tests run only when FUNCTIONALTESTS is defined")]
+    #endif
     public class JwtTokenExtractorTests
     {
         private const string KeyId = "CtfQC8Le-8NsC7oC2zQkZpcrfOc";
@@ -34,33 +39,34 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
             emptyClient = new HttpClient();
         }
 
-        [Fact]
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
         public async Task Connector_TokenExtractor_NullRequiredEndorsements_ShouldFail()
         {
             var configRetriever = new TestConfigurationRetriever();
 
             configRetriever.EndorsementTable.Add(KeyId, new HashSet<string>() { RandomEndorsement, ComplianceEndorsement, TestChannelName });
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await RunTestCase(configRetriever));
+            await RunTestCase(configRetriever);
         }
 
-        [Fact]
+        [TestMethod]
         public async Task Connector_TokenExtractor_EmptyRequireEndorsements_ShouldValidate()
         {
             var configRetriever = new TestConfigurationRetriever();
 
             configRetriever.EndorsementTable.Add(KeyId, new HashSet<string>() { RandomEndorsement, ComplianceEndorsement, TestChannelName });
             var claimsIdentity = await RunTestCase(configRetriever, new string[] { });
-            Assert.True(claimsIdentity.IsAuthenticated);
+            Assert.IsTrue(claimsIdentity.IsAuthenticated);
         }
 
-        [Fact]
+        [TestMethod]
         public async Task Connector_TokenExtractor_RequiredEndorsementsPresent_ShouldValidate()
         {
             var configRetriever = new TestConfigurationRetriever();
 
             configRetriever.EndorsementTable.Add(KeyId, new HashSet<string>() { RandomEndorsement, ComplianceEndorsement, TestChannelName });
             var claimsIdentity = await RunTestCase(configRetriever, new string[] { ComplianceEndorsement });
-            Assert.True(claimsIdentity.IsAuthenticated);
+            Assert.IsTrue(claimsIdentity.IsAuthenticated);
         }
 
         private async Task<ClaimsIdentity> RunTestCase(IConfigurationRetriever<IDictionary<string, HashSet<string>>> configRetriever, string[] requiredEndorsements = null)
@@ -72,7 +78,7 @@ namespace Microsoft.Bot.Connector.Tests.Authentication
                 AuthenticationConstants.AllowedSigningAlgorithms,
                 new ConfigurationManager<IDictionary<string, HashSet<string>>>("http://test", configRetriever));
 
-            string header = $"Bearer {await new MicrosoftAppCredentials("2cd87869-38a0-4182-9251-d056e8f0ac24", "2.30Vs3VQLKt974F").GetTokenAsync()}";
+            string header = $"Bearer {await new MicrosoftAppCredentials(EnvironmentConfig.TestAppId(), EnvironmentConfig.TestAppPassword()).GetTokenAsync()}";
 
             return await tokenExtractor.GetIdentityAsync(header, "testChannel", requiredEndorsements);
         }
