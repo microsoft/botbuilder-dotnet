@@ -30,6 +30,8 @@ namespace Microsoft.Bot.Builder.Dialogs
 
     public class DialogContextState : IDictionary<string, object>
     {
+        private const string prefixCallBack = "callstackScope('";
+
         private static JsonSerializerSettings expressionCaseSettings = new JsonSerializerSettings
         {
             ContractResolver = new DefaultContractResolver { NamingStrategy = new CamelCaseNamingStrategy() },
@@ -212,6 +214,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             return json.SelectTokens(pathExpression);
         }
 
+        // TODO drop this function after we move RemoveProperty to use expressions
         public string ResolvePathShortcut(string path)
         {
             path = path.Trim();
@@ -224,25 +227,9 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             switch (path[0])
             {
-                case '#':
-                    // #BookFlight == turn.recognized.intents.BookFlight
-                    return $"turn.recognized.intents.{name}";
-
-                case '@':
-                    // @city == turn.recognized.entities.city
-                    return $"turn.recognized.entities.{name}";
-
                 case '$':
                     // $title == dialog.title
                     return $"dialog.{name}";
-
-                case '%':
-                    // %xxx == dialog.instance.xxx
-                    return $"dialog.instance.{name}";
-
-                case '^':
-                    // ^xxx == dialog.options.xxx
-                    return $"dialog.options.{name}";
 
                 default:
                     return path;
@@ -321,7 +308,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         public void SetValue(string pathExpression, object value)
         {
-            ObjectPath.SetValue(this, new ExpressionEngine().Parse(pathExpression), value);
+            SetValue(new ExpressionEngine().Parse(pathExpression), value);
         }
 
         public void SetValue(Expression pathExpression, object value)
@@ -329,6 +316,13 @@ namespace Microsoft.Bot.Builder.Dialogs
             if (value is Task)
             {
                 throw new Exception($"{pathExpression} = You can't pass an unresolved Task to SetValue");
+            }
+
+            var e = pathExpression.ToString();
+            if (e.StartsWith(prefixCallBack))
+            {
+                // turn $foo which comes in as callbackStack('foo') => dialog.foo
+                pathExpression = new ExpressionEngine().Parse($"dialog.{e.Substring(prefixCallBack.Length, e.Length - prefixCallBack.Length - 2)}");
             }
 
             ObjectPath.SetValue(this, pathExpression, value);
