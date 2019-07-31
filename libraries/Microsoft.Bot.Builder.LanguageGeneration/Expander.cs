@@ -139,7 +139,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     case LGFileParser.DASH:
                         break;
                     case LGFileParser.ESCAPE_CHARACTER:
-                        result = StringListConcat(result, new List<string>() { EvalEscapeCharacter(node.GetText()) });
+                        result = StringListConcat(result, new List<string>() { Regex.Unescape(node.GetText()) });
                         break;
                     case LGFileParser.EXPRESSION:
                         result = StringListConcat(result, EvalExpression(node.GetText()));
@@ -184,24 +184,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
 
             return false;
-        }
-
-        private string EvalEscapeCharacter(string exp)
-        {
-            var validCharactersDict = new Dictionary<string, string>
-            {
-                // Top four items :C# later render engine will treat them as escape characters, so the format is unchanged
-                { @"\r", "\r" },
-                { @"\n", "\n" },
-                { @"\t", "\t" },
-                { @"\\", "\\" },
-                { @"\[", "[" },
-                { @"\]", "]" },
-                { @"\{", "{" },
-                { @"\}", "}" },
-            };
-
-            return validCharactersDict[exp];
         }
 
         private bool EvalExpressionInCondition(string exp)
