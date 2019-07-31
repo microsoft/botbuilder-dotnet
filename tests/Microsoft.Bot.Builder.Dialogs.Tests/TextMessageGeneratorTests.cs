@@ -154,7 +154,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
     images=https://memegenerator.net/img/instances/500x/73055378/cheese-gromit.jpg 
     buttons=Option 1| Option 2| Option 3]";
             var gen = new TextMessageActivityGenerator();
-            var activity = await gen.CreateActivityFromText(null, text);
+            var activity = await gen.CreateActivityFromText(text, turnContext: null, languageGenerator: null);
 
             Assert.AreEqual(ActivityTypes.Message, activity.Type);
             Assert.IsTrue(string.IsNullOrEmpty(activity.Text));
