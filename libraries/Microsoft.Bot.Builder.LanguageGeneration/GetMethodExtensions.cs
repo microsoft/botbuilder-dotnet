@@ -33,16 +33,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 return BuiltInFunctions.Lookup(name.Substring(builtInPrefix.Length));
             }
 
-            // TODO: Should add verifiers and validators
-            switch (name)
-            {
-                case "join":
-                    return new ExpressionEvaluator("join", BuiltInFunctions.Apply(this.Join));
-            }
-
             if (_evaluator.TemplateMap.ContainsKey(name))
             {
-                return new ExpressionEvaluator($"{name}", BuiltInFunctions.Apply(this.TemplateEvaluator(name)), ReturnType.String, this.ValidTemplateReference);
+                return new ExpressionEvaluator(name, BuiltInFunctions.Apply(this.TemplateEvaluator(name)), ReturnType.String, this.ValidTemplateReference);
             }
 
             return BuiltInFunctions.Lookup(name);
@@ -71,34 +64,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 throw new Exception($"arguments mismatch for template {templateName}, expect {expectedArgsCount} actual {actualArgsCount}");
             }
-        }
-
-        public object Join(IReadOnlyList<object> parameters)
-        {
-            object result = null;
-            if (parameters.Count == 2 &&
-                BuiltInFunctions.TryParseList(parameters[0], out var p0) &&
-                parameters[1] is string sep)
-            {
-                result = string.Join(sep, p0.OfType<object>().Select(x => x.ToString())); 
-            }
-            else if (parameters.Count == 3 &&
-                BuiltInFunctions.TryParseList(parameters[0], out var li) &&
-                parameters[1] is string sep1 &&
-                parameters[2] is string sep2)
-            {
-                if (li.Count < 3)
-                {
-                    result = string.Join(sep2, li.OfType<object>().Select(x => x.ToString()));
-                }
-                else
-                {
-                    var firstPart = string.Join(sep1, li.OfType<object>().TakeWhile(o => o != null && o != li.OfType<object>().LastOrDefault()));
-                    result = firstPart + sep2 + li.OfType<object>().Last().ToString();
-                }
-            }
-
-            return result;
         }
     }
 }

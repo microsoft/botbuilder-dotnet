@@ -2434,13 +2434,28 @@ namespace Microsoft.Bot.Builder.Expressions
                             }
                             else
                             {
-                                result = string.Join(args[1], list.OfType<object>().Select(x => x.ToString()));
+                                if (args.Count == 2)
+                                {
+                                    result = string.Join(args[1], list.OfType<object>().Select(x => x.ToString()));
+                                }
+                                else
+                                {
+                                    if (list.Count < 3)
+                                    {
+                                        result = string.Join(args[2], list.OfType<object>().Select(x => x.ToString()));
+                                    }
+                                    else
+                                    {
+                                        var firstPart = string.Join(args[1], list.OfType<object>().TakeWhile(o => o != null && o != list.OfType<object>().LastOrDefault()));
+                                        result = firstPart + args[2] + list.OfType<object>().Last().ToString();
+                                    }
+                                }
                             }
                         }
                         return (result, error);
                     },
                     ReturnType.String,
-                    expr => ValidateOrder(expr, null, ReturnType.Object, ReturnType.String)),
+                    expr => ValidateOrder(expr, new[] { ReturnType.String }, ReturnType.Object, ReturnType.String)),
                 new ExpressionEvaluator(
                     ExpressionType.NewGuid,
                     BuiltInFunctions.Apply(args => Guid.NewGuid().ToString()),
