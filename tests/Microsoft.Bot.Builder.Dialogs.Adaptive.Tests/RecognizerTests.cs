@@ -10,6 +10,7 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive.Steps;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
+using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -29,6 +30,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .Send("cheerio") // should not recognize as this is in the en-gb recognizer
                     .AssertReply("default rule")
                 .Send("bye") 
+                    .AssertReply("goodbye intent")
+                .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task Test_EnUsFallback_ActivityLocaleCasing()
+        {
+            await CreateFlow("en-us")
+                .Send(new Activity() { Type = ActivityTypes.Message, Text = "howdy", Locale = "en-US" })
+                    .AssertReply("greeting intent")
+                .Send("cheerio") // should not recognize as this is in the en-gb recognizer
+                    .AssertReply("default rule")
+                .Send("bye")
                     .AssertReply("goodbye intent")
                 .StartTestAsync();
         }

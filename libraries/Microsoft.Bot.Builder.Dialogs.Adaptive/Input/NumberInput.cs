@@ -32,7 +32,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             return $"NumberInput[{BindingPath()}]";
         }
 
-        protected override Task<InputState> OnRecognizeInput(DialogContext dc, bool consultation)
+        protected override Task<InputState> OnRecognizeInput(DialogContext dc)
         {
             var input = dc.State.GetValue<object>(INPUT_PROPERTY);
 

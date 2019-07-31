@@ -6,6 +6,7 @@ using Microsoft.Bot.Builder.LanguageGeneration;
 using System.Linq;
 using System.IO;
 using Microsoft.Bot.Builder.Expressions;
+using System.Diagnostics;
 
 namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 {
@@ -273,20 +274,20 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                 name = "Dong Lei"
             };
             Assert.AreEqual(engine.EvaluateTemplate("Hello", scope), "Good morning Dong Lei");
-
+            Assert.AreEqual(engine.EvaluateTemplate("Hello2", scope), "Good morning Dong Lei");
+            Assert.AreEqual(engine.EvaluateTemplate("Hello3", scope), "Good morning Dong Lei");
         }
-
-
-
 
         [TestMethod]
         public void TestEscapeCharacter()
         {
             var engine = new TemplateEngine().AddFile(GetExampleFilePath("EscapeCharacter.lg"));
-            var evaled1 = engine.EvaluateTemplate("wPhrase", null);
-            Assert.AreEqual(evaled1, "Hi \r\n\t[]{}\\");
-        }
+            var evaled = engine.EvaluateTemplate("wPhrase", null);
+            Assert.AreEqual(evaled, "Hi \r\n\t[]{}\\");
 
+            evaled = engine.EvaluateTemplate("otherEscape", null);
+            Assert.AreEqual(evaled, @"Hi \y \");
+        }
 
         [TestMethod]
         public void TestAnalyzer()
@@ -346,7 +347,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             options = new List<string> { "Hi morning", "Hello morning" };
             Assert.AreEqual(options.Contains(evaled), true);
         }
-
 
         [TestMethod]
         public void TestTemplateAsFunction()
@@ -649,6 +649,9 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             evaled = engine.EvaluateTemplate("template5", new { userName });
             var eval2Options = new List<string>() { "\r\nHiMS\r\n", "\nHiMS\n" };
             Assert.IsTrue(eval2Options.Contains(evaled));
+
+            evaled = engine.EvaluateTemplate("template6", new { userName });
+            Assert.AreEqual(evaled, "goodmorning");
         }
     }
 }
