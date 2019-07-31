@@ -614,7 +614,7 @@
                         "notRecognized"
                     ],
                     "title": "Allow Interruptions",
-                    "description": "always will always consult parent dialogs first, never will not consult parent dialogs, notRecognized will consult parent only when it's not recognized",
+                    "description": "Always will always consult parent dialogs first, never will not consult parent dialogs, notRecognized will consult parent only when it's not recognized",
                     "default": "notRecognized",
                     "examples": [
                         "notRecognized"
@@ -954,7 +954,7 @@
                         "notRecognized"
                     ],
                     "title": "Allow Interruptions",
-                    "description": "always will always consult parent dialogs first, never will not consult parent dialogs, notRecognized will consult parent only when it's not recognized",
+                    "description": "Always will always consult parent dialogs first, never will not consult parent dialogs, notRecognized will consult parent only when it's not recognized",
                     "default": "notRecognized",
                     "examples": [
                         "notRecognized"
@@ -1325,7 +1325,7 @@
                         "notRecognized"
                     ],
                     "title": "Allow Interruptions",
-                    "description": "always will always consult parent dialogs first, never will not consult parent dialogs, notRecognized will consult parent only when it's not recognized",
+                    "description": "Always will always consult parent dialogs first, never will not consult parent dialogs, notRecognized will consult parent only when it's not recognized",
                     "default": "notRecognized",
                     "examples": [
                         "notRecognized"
@@ -1637,7 +1637,7 @@
                         "notRecognized"
                     ],
                     "title": "Allow Interruptions",
-                    "description": "always will always consult parent dialogs first, never will not consult parent dialogs, notRecognized will consult parent only when it's not recognized",
+                    "description": "Always will always consult parent dialogs first, never will not consult parent dialogs, notRecognized will consult parent only when it's not recognized",
                     "default": "notRecognized",
                     "examples": [
                         "notRecognized"
@@ -4161,7 +4161,7 @@
                         "notRecognized"
                     ],
                     "title": "Allow Interruptions",
-                    "description": "always will always consult parent dialogs first, never will not consult parent dialogs, notRecognized will consult parent only when it's not recognized",
+                    "description": "Always will always consult parent dialogs first, never will not consult parent dialogs, notRecognized will consult parent only when it's not recognized",
                     "default": "notRecognized",
                     "examples": [
                         "notRecognized"
@@ -4884,6 +4884,7 @@
                     "default": "none"
                 },
                 "allowInterruptions": {
+                    "default": "always",
                     "type": "string",
                     "enum": [
                         "always",
@@ -4891,10 +4892,8 @@
                         "notRecognized"
                     ],
                     "title": "Allow Interruptions",
-                    "description": "always will always consult parent dialogs first, never will not consult parent dialogs, notRecognized will consult parent only when it's not recognized",
-                    "default": "always",
+                    "description": "Always will always consult parent dialogs first, never will not consult parent dialogs, notRecognized will consult parent only when it's not recognized",
                     "examples": [
-                        "always",
                         "notRecognized"
                     ]
                 },
