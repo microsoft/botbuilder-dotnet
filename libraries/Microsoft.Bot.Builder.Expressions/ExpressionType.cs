@@ -147,6 +147,6 @@ namespace Microsoft.Bot.Builder.Expressions
 
         // short hand functions
         public const string SimpleEntity = "simpleEntity";
-        public const string Callstack = "callstack";
+        public const string CallstackScope = "callstackScope";
     }
 }
