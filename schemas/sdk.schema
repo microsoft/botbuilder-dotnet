@@ -1,5 +1,5 @@
 {
-    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-dotnet/4.Future/Schemas/component.schema",
+    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/master/packages/DialogSchema/src/dialogSchema.schema",
     "$id": "sdk.schema",
     "type": "object",
     "title": "Component types",
@@ -609,14 +609,16 @@
                 "allowInterruptions": {
                     "type": "string",
                     "enum": [
-                      "always",
-                      "never",
-                      "notRecognized"
+                        "always",
+                        "never",
+                        "notRecognized"
                     ],
                     "title": "Allow Interruptions",
                     "description": "always will always consult parent dialogs first, never will not consult parent dialogs, notRecognized will consult parent only when it's not recognized",
                     "default": "notRecognized",
-                    "examples": [ "notRecognized" ]
+                    "examples": [
+                        "notRecognized"
+                    ]
                 },
                 "outputFormat": {
                     "type": "string",
@@ -947,14 +949,16 @@
                 "allowInterruptions": {
                     "type": "string",
                     "enum": [
-                      "always",
-                      "never",
-                      "notRecognized"
+                        "always",
+                        "never",
+                        "notRecognized"
                     ],
                     "title": "Allow Interruptions",
                     "description": "always will always consult parent dialogs first, never will not consult parent dialogs, notRecognized will consult parent only when it's not recognized",
                     "default": "notRecognized",
-                    "examples": [ "notRecognized" ]
+                    "examples": [
+                        "notRecognized"
+                    ]
                 },
                 "outputFormat": {
                     "type": "string",
@@ -1316,14 +1320,16 @@
                 "allowInterruptions": {
                     "type": "string",
                     "enum": [
-                      "always",
-                      "never",
-                      "notRecognized"
+                        "always",
+                        "never",
+                        "notRecognized"
                     ],
                     "title": "Allow Interruptions",
                     "description": "always will always consult parent dialogs first, never will not consult parent dialogs, notRecognized will consult parent only when it's not recognized",
                     "default": "notRecognized",
-                    "examples": [ "notRecognized" ]
+                    "examples": [
+                        "notRecognized"
+                    ]
                 },
                 "defaultLocale": {
                     "type": "string",
@@ -1626,14 +1632,16 @@
                 "allowInterruptions": {
                     "type": "string",
                     "enum": [
-                      "always",
-                      "never",
-                      "notRecognized"
+                        "always",
+                        "never",
+                        "notRecognized"
                     ],
                     "title": "Allow Interruptions",
                     "description": "always will always consult parent dialogs first, never will not consult parent dialogs, notRecognized will consult parent only when it's not recognized",
                     "default": "notRecognized",
-                    "examples": [ "notRecognized" ]
+                    "examples": [
+                        "notRecognized"
+                    ]
                 },
                 "defaultLocale": {
                     "type": "string",
@@ -4148,14 +4156,16 @@
                 "allowInterruptions": {
                     "type": "string",
                     "enum": [
-                      "always",
-                      "never",
-                      "notRecognized"
+                        "always",
+                        "never",
+                        "notRecognized"
                     ],
                     "title": "Allow Interruptions",
                     "description": "always will always consult parent dialogs first, never will not consult parent dialogs, notRecognized will consult parent only when it's not recognized",
                     "default": "notRecognized",
-                    "examples": [ "notRecognized" ]
+                    "examples": [
+                        "notRecognized"
+                    ]
                 },
                 "outputFormat": {
                     "type": "string",
@@ -4861,6 +4871,33 @@
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
                 },
+                "outputFormat": {
+                    "type": "string",
+                    "enum": [
+                        "none",
+                        "trim",
+                        "lowercase",
+                        "uppercase"
+                    ],
+                    "title": "Output Format",
+                    "description": "The TextInput output format.",
+                    "default": "none"
+                },
+                "allowInterruptions": {
+                    "type": "string",
+                    "enum": [
+                        "always",
+                        "never",
+                        "notRecognized"
+                    ],
+                    "title": "Allow Interruptions",
+                    "description": "always will always consult parent dialogs first, never will not consult parent dialogs, notRecognized will consult parent only when it's not recognized",
+                    "default": "always",
+                    "examples": [
+                        "always",
+                        "notRecognized"
+                    ]
+                },
                 "property": {
                     "$role": "memoryPath",
                     "title": "Property",
@@ -4959,30 +4996,6 @@
                     "examples": [
                         false
                     ]
-                },
-                "allowInterruptions": {
-                    "type": "string",
-                    "enum": [
-                      "always",
-                      "never",
-                      "notRecognized"
-                    ],
-                    "title": "Allow Interruptions",
-                    "description": "always will always consult parent dialogs first, never will not consult parent dialogs, notRecognized will consult parent only when it's not recognized",
-                    "default": "always",
-                    "examples": [ "always" ]
-                },
-                "outputFormat": {
-                    "type": "string",
-                    "enum": [
-                        "none",
-                        "trim",
-                        "lowercase",
-                        "uppercase"
-                    ],
-                    "title": "Output Format",
-                    "description": "The TextInput output format.",
-                    "default": "none"
                 }
             },
             "additionalProperties": false,

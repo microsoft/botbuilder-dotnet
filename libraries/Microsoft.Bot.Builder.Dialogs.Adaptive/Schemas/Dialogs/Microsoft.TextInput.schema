@@ -6,9 +6,6 @@
     "type": "object",
     "allOf": [
         {
-            "$ref": "./baseInputSchema.json"
-        },
-        {
             "properties": {
                 "outputFormat": {
                     "type": "string",
@@ -35,6 +32,9 @@
                     "examples": [ "always" ]
                 }
             }
+        },
+        {
+            "$ref": "./baseInputSchema.json"
         }
     ]
 }
