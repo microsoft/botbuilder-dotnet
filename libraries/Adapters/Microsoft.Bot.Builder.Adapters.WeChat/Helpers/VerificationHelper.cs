@@ -15,35 +15,28 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// <param name="timestamp">WeChat message timestamp in query params.</param>
         /// <param name="nonce">WeChat message nonce in query params.</param>
         /// <param name="token">validation token from WeChat.</param>
-        /// <returns>Check result.</returns>
-        public static bool Check(string signature, string timestamp, string nonce, string token = null)
+        public static void Check(string signature, string timestamp, string nonce, string token = null)
         {
             // token can be null when user did not set its value.
             if (string.IsNullOrEmpty(signature))
             {
-                Console.WriteLine("Request validation failed - null Signature");
-                return false;
+                throw new ArgumentException("Request validation failed - null Signature", nameof(signature));
             }
 
             if (string.IsNullOrEmpty(timestamp))
             {
-                Console.WriteLine("Request validation failed - null Timestamp");
-                return false;
+                throw new ArgumentException("Request validation failed - null Timestamp", nameof(timestamp));
             }
 
             if (string.IsNullOrEmpty(nonce))
             {
-                Console.WriteLine("Request validation failed - null Nonce");
-                return false;
+                throw new ArgumentException("Request validation failed - null Nonce", nameof(nonce));
             }
 
             if (!VerifySignature(signature, token, timestamp, nonce))
             {
-                Console.WriteLine("Request validation failed - Signature validation faild.");
-                return false;
+                throw new UnauthorizedAccessException("Request validation failed - Signature validation faild.");
             }
-
-            return true;
         }
 
         /// <summary>

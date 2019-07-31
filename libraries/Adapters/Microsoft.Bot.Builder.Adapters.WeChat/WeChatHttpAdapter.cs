@@ -193,12 +193,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 throw new ArgumentNullException(nameof(secretInfo));
             }
 
-            if (!VerificationHelper.Check(secretInfo.Signature, secretInfo.Timestamp, secretInfo.Nonce, _token))
-            {
-                var ex = new UnauthorizedAccessException("Message check failed.");
-                _logger.LogError(ex, "Message check failed.");
-                throw ex;
-            }
+            VerificationHelper.Check(secretInfo.Signature, secretInfo.Timestamp, secretInfo.Nonce, _token);
 
             secretInfo.Token = _token;
             secretInfo.EncodingAESKey = _encodingAESKey;

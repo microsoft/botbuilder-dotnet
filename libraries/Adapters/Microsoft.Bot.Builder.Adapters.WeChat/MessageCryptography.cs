@@ -26,9 +26,9 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// <param name="secretInfo">The secret info provide by WeChat.</param>
         public MessageCryptography(SecretInfo secretInfo)
         {
-            if (_encodingAesKey.Length != 43)
+            if (string.IsNullOrEmpty(secretInfo.EncodingAESKey) || secretInfo.EncodingAESKey.Length != 43)
             {
-                throw new ArgumentException("Invalid EncodingAESKey", nameof(_encodingAesKey));
+                throw new ArgumentException("Invalid EncodingAESKey", nameof(secretInfo));
             }
 
             _token = secretInfo.Token;
@@ -71,7 +71,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// <param name="encodingAesKey">Encoding AES key for descrypt message.</param>
         /// <param name="appId">The WeChat app id.</param>
         /// <returns>Decrypted string.</returns>
-        public string AesDecrypt(string encryptString, string encodingAesKey, string appId)
+        private static string AesDecrypt(string encryptString, string encodingAesKey, string appId)
         {
             try
             {
@@ -123,37 +123,41 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// Decrypt the AES encrypted input string.
         /// </summary>
         /// <param name="input">Encrypted string.</param>
-        /// <param name="iv">Gets or sets the initialization vector for the symmetric algorithm.
-        //
-        // Returns:
-        //     The initialization vector.</param>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        private byte[] AesDecrypt(string input, byte[] iv, byte[] key)
+        /// <param name="iv">Gets or sets the initialization vector for the symmetric algorithm.</param>
+        /// <param name="key">Encoding Aes Key.</param>
+        /// <returns>Decrypted byte array.</returns>
+        private static byte[] AesDecrypt(string input, byte[] iv, byte[] key)
         {
             using (var aes = Aes.Create())
             {
-                // Origial size is 256
-                aes.KeySize = 128;
-                aes.BlockSize = 128;
-                aes.Mode = CipherMode.CBC;
-                aes.Padding = PaddingMode.None;
-                aes.Key = key;
-                aes.IV = iv;
-                var decrypt = aes.CreateDecryptor(aes.Key, aes.IV);
-                byte[] buffArray = null;
-                using (var ms = new MemoryStream())
+                if (aes != null)
                 {
-                    using (var cs = new CryptoStream(ms, decrypt, CryptoStreamMode.Write))
+                    // Original size is 256
+                    aes.KeySize = 128;
+                    aes.BlockSize = 128;
+                    aes.Mode = CipherMode.CBC;
+                    aes.Padding = PaddingMode.None;
+                    aes.Key = key;
+                    aes.IV = iv;
+                    var decrypt = aes.CreateDecryptor(aes.Key, aes.IV);
+                    byte[] buffArray;
+                    using (var ms = new MemoryStream())
                     {
-                        var xmlBytes = Convert.FromBase64String(input);
-                        cs.Write(xmlBytes, 0, xmlBytes.Length);
+                        using (var cs = new CryptoStream(ms, decrypt, CryptoStreamMode.Write))
+                        {
+                            var xmlBytes = Convert.FromBase64String(input);
+                            cs.Write(xmlBytes, 0, xmlBytes.Length);
+                        }
+
+                        buffArray = Decode(ms.ToArray());
                     }
 
-                    buffArray = Decode(ms.ToArray());
+                    return buffArray;
                 }
-
-                return buffArray;
+                else
+                {
+                    throw new CryptographicException("Aes created failed.");
+                }
             }
         }
     }

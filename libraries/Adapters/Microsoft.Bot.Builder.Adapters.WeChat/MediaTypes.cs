@@ -3,7 +3,7 @@
     /// <summary>
     /// Media type acceptable by WeChat.
     /// </summary>
-    public class MediaTypes
+    public static class MediaTypes
     {
         /// <summary>
         /// General image type.

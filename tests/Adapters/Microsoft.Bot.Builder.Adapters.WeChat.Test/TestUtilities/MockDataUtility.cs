@@ -348,7 +348,6 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Test.TestUtilities
         };
 
         public static readonly MessageCryptography TestDecryptMsg = new MessageCryptography(SecretInfo);
-        public static readonly MessageCryptography TestAESKey = new MessageCryptography(SecretInfoAESKeyError);
         public static readonly MessageCryptography TestSignature = new MessageCryptography(SecretInfoMsgSignatureError);
 
         public static readonly TextResponse TextResponse = new TextResponse()

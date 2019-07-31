@@ -6,7 +6,7 @@ using System.Linq;
 namespace Microsoft.Bot.Builder.Adapters.WeChat
 {
     /// <summary>
-    /// MimeType map is class help get file extention from its mime type and get mime type through it name.
+    /// MimeType map is class help get file extension from its mime type and get mime type through it name.
     /// </summary>
     public static class MimeTypesMap
     {
@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
 
         /// <summary>
         /// Lazy instance of an Dictionary which store the extation/mimetype pairs.
-        /// All mime type defination: http://svn.apache.org/repos/asf/httpd/httpd/trunk/docs/conf/mime.types.
+        /// All mime type definition: http://svn.apache.org/repos/asf/httpd/httpd/trunk/docs/conf/mime.types.
         /// </summary>
         private static readonly Lazy<Dictionary<string, string>> MimeTypeMap = new Lazy<Dictionary<string, string>>(() => new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
         {

@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
     /// </summary>
     public class WeChatClient
     {
-        private static readonly string APIHost = "https://api.weixin.qq.com";
+        private static readonly string ApiHost = "https://api.weixin.qq.com";
         private static readonly HttpClient HttpClient = new HttpClient();
 
         private readonly string _appId;
@@ -55,7 +55,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         public async Task<string> GetMediaUrlAsync(string mediaId)
         {
             var accessToken = await GetAccessTokenAsync().ConfigureAwait(false);
-            var mediaUrl = $"{APIHost}/cgi-bin/media/get?access_token={accessToken}&media_id={mediaId}";
+            var mediaUrl = $"{ApiHost}/cgi-bin/media/get?access_token={accessToken}&media_id={mediaId}";
 
             return mediaUrl;
         }
@@ -651,32 +651,32 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
 
         private static string GetMessageApiEndPoint(string accessToken)
         {
-            return $"{APIHost}/cgi-bin/message/custom/send?access_token={accessToken}";
+            return $"{ApiHost}/cgi-bin/message/custom/send?access_token={accessToken}";
         }
 
         private static string GetAccessTokenEndPoint(string appId, string appSecret)
         {
-            return $"{APIHost}/cgi-bin/token?grant_type=client_credential&appid={appId}&secret={appSecret}";
+            return $"{ApiHost}/cgi-bin/token?grant_type=client_credential&appid={appId}&secret={appSecret}";
         }
 
         private static string GetUploadMediaEndPoint(string accessToken, string type, bool isTemporaryMedia)
         {
             if (isTemporaryMedia)
             {
-                return $"{APIHost}/cgi-bin/media/upload?access_token={accessToken}&type={type}";
+                return $"{ApiHost}/cgi-bin/media/upload?access_token={accessToken}&type={type}";
             }
 
-            return $"{APIHost}/cgi-bin/material/add_material?access_token={accessToken}&type={type}";
+            return $"{ApiHost}/cgi-bin/material/add_material?access_token={accessToken}&type={type}";
         }
 
         private static string GetUploadNewsEndPoint(string accessToken, bool isTemporaryNews)
         {
             if (isTemporaryNews)
             {
-                return $"{APIHost}/cgi-bin/media/uploadnews?access_token={accessToken}";
+                return $"{ApiHost}/cgi-bin/media/uploadnews?access_token={accessToken}";
             }
 
-            return $"{APIHost}/cgi-bin/material/add_news?access_token={accessToken}";
+            return $"{ApiHost}/cgi-bin/material/add_news?access_token={accessToken}";
         }
 
         /// <summary>
@@ -723,7 +723,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 // Additional form is required when upload a forever video.
                 if (isTemporaryMedia == false && type == UploadMediaType.Video)
                 {
-                    var additionalForm = string.Format("{{\"title\":\"{0}\", \"introduction\":\"{1}\"}}", attachmentData.Name, "introduction");
+                    var additionalForm = string.Format("{{\"title\":\"{0}\", \"introduction\":\"introduction\"}}", attachmentData.Name);
 
                     // Important! name must be "description"
                     content.Add(new StringContent(additionalForm), "\"" + "description" + "\"");
