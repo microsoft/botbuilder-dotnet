@@ -134,9 +134,9 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Test
         [Fact]
         public void SendMPNewsAsyncTest()
         {
-            var result = testClient.SendMpNewsAsync(openId, mediaId).Result;
+            var result = testClient.SendMPNewsAsync(openId, mediaId).Result;
             Assert.Equal(0, result.ErrorCode);
-            result = testClient.SendMpNewsAsync(openId, mediaId, customerServiceAccount: "test").Result;
+            result = testClient.SendMPNewsAsync(openId, mediaId, customerServiceAccount: "test").Result;
             Assert.Equal(0, result.ErrorCode);
         }
     }

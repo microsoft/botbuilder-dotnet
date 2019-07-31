@@ -37,9 +37,9 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Response
         public const string Video = "video";
 
         /// <summary>
-        /// MpNews message.
+        /// MPNews message.
         /// </summary>
-        public const string MpNews = "mpnews";
+        public const string MPNews = "mpnews";
 
         /// <summary>
         /// MultipleNews message.

@@ -75,7 +75,9 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
             var sendResult = ConvertBytesToType<WeChatJsonResult>(bytes);
             if (sendResult.ErrorCode != 0)
             {
-                _logger.LogError(new Exception($"{sendResult.ToString()}"), "Send Message To User Failed");
+                var exception = new Exception($"{sendResult.ToString()}");
+                _logger.LogError(exception, "Send Message To User Failed");
+                throw exception;
             }
 
             return sendResult;
@@ -144,7 +146,9 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 }
                 else
                 {
-                    _logger.LogError(new Exception($"{uploadResult.ToString()}"), $"Upload Temporary Media Failed, Type: {type.ToString()}");
+                    var exception = new Exception($"{uploadResult.ToString()}");
+                    _logger.LogError(exception, $"Upload Temporary Media Failed, Type: {type.ToString()}");
+                    throw exception;
                 }
             }
 
@@ -206,7 +210,9 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 }
                 else
                 {
-                    _logger.LogError(new Exception($"{uploadResult.ToString()}"), "Upload Persistent News Failed");
+                    var exception = new Exception($"{uploadResult.ToString()}");
+                    _logger.LogError(exception, "Upload Persistent News Failed");
+                    throw exception;
                 }
             }
 
@@ -239,7 +245,9 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 }
                 else
                 {
-                    _logger.LogError(new Exception($"{uploadResult.ToString()}"), "Upload Temporary News Failed");
+                    var exception = new Exception($"{uploadResult.ToString()}");
+                    _logger.LogError(exception, "Upload Temporary News Failed");
+                    throw exception;
                 }
             }
 
@@ -315,7 +323,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// <param name="timeout">Send message operation timeout.</param>
         /// <param name="customerServiceAccount">Customer service account open id.</param>
         /// <returns>Standard result of calling WeChat message API.</returns>
-        public async Task<WeChatJsonResult> SendMpNewsAsync(string openId, string mediaId, int timeout = 10000, string customerServiceAccount = "")
+        public async Task<WeChatJsonResult> SendMPNewsAsync(string openId, string mediaId, int timeout = 10000, string customerServiceAccount = "")
         {
             object data;
             if (string.IsNullOrWhiteSpace(customerServiceAccount))
@@ -323,7 +331,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 data = new
                 {
                     touser = openId,
-                    msgtype = ResponseMessageType.MpNews,
+                    msgtype = ResponseMessageType.MPNews,
                     mpnews = new
                     {
                         media_id = mediaId,
@@ -335,7 +343,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 data = new
                 {
                     touser = openId,
-                    msgtype = ResponseMessageType.MpNews,
+                    msgtype = ResponseMessageType.MPNews,
                     mpnews = new
                     {
                         media_id = mediaId,
@@ -715,7 +723,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 // Additional form is required when upload a forever video.
                 if (isTemporaryMedia == false && type == UploadMediaType.Video)
                 {
-                    var additionalForm = string.Format("{{\"title\":\"{0}\", \"introduction\":\"{1}\"}}", "title", "introduction");
+                    var additionalForm = string.Format("{{\"title\":\"{0}\", \"introduction\":\"{1}\"}}", attachmentData.Name, "introduction");
 
                     // Important! name must be "description"
                     content.Add(new StringContent(additionalForm), "\"" + "description" + "\"");
@@ -728,7 +736,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Failed To Upload Media, Type: {type.ToString()}");
-                throw new Exception(ex.Message + ex.InnerException.Message);
+                throw ex;
             }
         }
     }

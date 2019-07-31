@@ -1,13 +1,13 @@
 ﻿namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Response
 {
-    public class MpNewsResponse : ResponseMessage
+    public class MPNewsResponse : ResponseMessage
     {
-        public MpNewsResponse(string mediaId)
+        public MPNewsResponse(string mediaId)
         {
             MediaId = mediaId;
         }
 
-        public override string MsgType => ResponseMessageType.MpNews;
+        public override string MsgType => ResponseMessageType.MPNews;
 
         public string MediaId { get; set; }
     }

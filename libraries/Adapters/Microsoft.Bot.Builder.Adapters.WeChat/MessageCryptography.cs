@@ -26,6 +26,11 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// <param name="secretInfo">The secret info provide by WeChat.</param>
         public MessageCryptography(SecretInfo secretInfo)
         {
+            if (_encodingAesKey.Length != 43)
+            {
+                throw new ArgumentException("Invalid EncodingAESKey", nameof(_encodingAesKey));
+            }
+
             _token = secretInfo.Token;
             _appId = secretInfo.AppId;
             _encodingAesKey = secretInfo.EncodingAESKey;
@@ -41,28 +46,15 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// <returns>Decrypted message string.</returns>
         public string DecryptMessage(string postData)
         {
-            if (_encodingAesKey.Length != 43)
-            {
-                throw new ArgumentException("Invalid EncodingAESKey");
-            }
-
             // This should fix the XXE loophole
             var doc = new XmlDocument
             {
                 XmlResolver = null,
             };
-            XmlNode root;
-            string encryptMessage;
-            try
-            {
-                doc.LoadXml(postData);
-                root = doc.FirstChild;
-                encryptMessage = root["Encrypt"].InnerText;
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
+
+            doc.LoadXml(postData);
+            var root = doc.FirstChild ?? throw new ArgumentException("Invalid post data", nameof(postData));
+            var encryptMessage = root["Encrypt"].InnerText;
 
             if (!VerificationHelper.VerifySignature(_msgSignature, _token, _timestamp, _nonce, encryptMessage))
             {

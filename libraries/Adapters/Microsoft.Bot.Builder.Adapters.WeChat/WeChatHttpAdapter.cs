@@ -375,9 +375,9 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                             await _wechatClient.SendMusicAsync(openId, music.Title, music.Description, music.MusicUrl, music.HQMusicUrl, music.ThumbMediaId);
                             break;
 
-                        case ResponseMessageType.MpNews:
-                            var mpnewsResponse = response as MpNewsResponse;
-                            await _wechatClient.SendMpNewsAsync(openId, mpnewsResponse.MediaId);
+                        case ResponseMessageType.MPNews:
+                            var mpnewsResponse = response as MPNewsResponse;
+                            await _wechatClient.SendMPNewsAsync(openId, mpnewsResponse.MediaId);
                             break;
 
                         case ResponseMessageType.Video:

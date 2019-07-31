@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace Microsoft.Bot.Builder.Adapters.WeChat
@@ -1031,7 +1032,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
             var ind = ext.LastIndexOf('.');
             if (ind != -1 && ext.Length > ind + 1)
             {
-                ext = fileName.Substring(ind + 1).ToLower();
+                ext = fileName.Substring(ind + 1).ToLower(CultureInfo.InvariantCulture);
             }
 
             if (MimeTypeMap.Value.TryGetValue(ext, out var result))
