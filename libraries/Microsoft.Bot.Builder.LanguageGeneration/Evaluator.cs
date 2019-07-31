@@ -131,7 +131,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     case LGFileParser.DASH:
                         break;
                     case LGFileParser.ESCAPE_CHARACTER:
-                        builder.Append(EvalEscapeCharacter(node.GetText()));
+                        builder.Append(Regex.Unescape(node.GetText()));
                         break;
                     case LGFileParser.EXPRESSION:
                         builder.Append(EvalExpression(node.GetText()));
@@ -176,24 +176,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
 
             return false;
-        }
-
-        private string EvalEscapeCharacter(string exp)
-        {
-            var validCharactersDict = new Dictionary<string, string>
-            {
-                // Top four items :C# later render engine will treat them as escape characters, so the format is unchanged
-                { @"\r", "\r" },
-                { @"\n", "\n" },
-                { @"\t", "\t" },
-                { @"\\", "\\" },
-                { @"\[", "[" },
-                { @"\]", "]" },
-                { @"\{", "{" },
-                { @"\}", "}" },
-            };
-
-            return validCharactersDict[exp];
         }
 
         private bool EvalExpressionInCondition(string exp)
