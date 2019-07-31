@@ -1,11 +1,16 @@
-﻿# template
-- [templateRef('p1','p2')]
-
-# templateRef(arg)
+﻿# templateRef(arg1, arg2)
 - hi 
 
+# template
+- [templateRef('p1','p2','p3')]
 
 # template2
 - ```
-   @{templateRef()}
+   @{templateRef('p1')}
  ```
+
+# template3
+- {templateRef()}
+
+# template4
+- [templateRef()]
