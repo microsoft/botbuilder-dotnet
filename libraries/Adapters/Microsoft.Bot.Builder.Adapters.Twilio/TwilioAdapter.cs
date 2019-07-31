@@ -109,6 +109,12 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
 
                 TwilioEvent twilioEvent = JsonConvert.DeserializeObject<TwilioEvent>(jsonBody);
 
+                if (Convert.ToInt32(twilioEvent.NumMedia) > 0)
+                {
+                    // specify a different event type
+                    twilioEvent.EventType = "picture_message";
+                }
+
                 var activity = new Activity()
                 {
                     Id = twilioEvent.MessageSid,
@@ -126,17 +132,10 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
                     {
                         Id = twilioEvent.To,
                     },
-                    Text = (twilioEvent as dynamic).Body,
+                    Text = twilioEvent.Body,
                     ChannelData = twilioEvent,
                     Type = ActivityTypes.Message,
                 };
-
-                // Detect attachments
-                if (Convert.ToInt32(twilioEvent.NumMedia) > 0)
-                {
-                    // specify a different event type for Botkit
-                    (activity.ChannelData as dynamic).botkitEventType = "picture_message";
-                }
 
                 // create a conversation reference
                 using (var context = new TurnContext(this, activity))
@@ -186,9 +185,9 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         {
             var mediaUrls = new List<Uri>();
 
-            if ((activity.ChannelData as dynamic)?.mediaURL != null)
+            if ((activity.ChannelData as TwilioEvent)?.MediaUrl != null)
             {
-                mediaUrls.Add(new Uri((activity.ChannelData as dynamic).mediaURL));
+                mediaUrls.Add(new Uri(((TwilioEvent)activity.ChannelData).MediaUrl));
             }
 
             var messageOptions = new CreateMessageOptions(activity.Conversation.Id)

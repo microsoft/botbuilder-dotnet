@@ -13,6 +13,8 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
 
         public string NumMedia { get; set; }
 
+        public string MediaUrl { get; set; }
+
         public string ToCity { get; set; }
 
         public string FromZip { get; set; }
@@ -40,5 +42,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         public string From { get; set; }
 
         public string ApiVersion { get; set; }
+
+        public string EventType { get; set; }
     }
 }
