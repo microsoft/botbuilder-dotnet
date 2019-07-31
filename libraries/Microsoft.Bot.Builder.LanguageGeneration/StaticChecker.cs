@@ -368,9 +368,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 {
                     switch (node.Symbol.Type)
                     {
-                        case LGFileParser.INVALID_ESCAPE:
-                            result.Add(BuildLGDiagnostic($"escape character {node.GetText()} is invalid", context: context));
-                            break;
                         case LGFileParser.TEMPLATE_REF:
                             result.AddRange(CheckTemplateRef(node.GetText(), context));
                             break;
@@ -396,7 +393,18 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 var result = new List<Diagnostic>();
 
                 exp = exp.TrimStart('[').TrimEnd(']').Trim();
-                var expression = exp.IndexOf('(') < 0 ? exp + "()" : exp;
+                var expression = exp;
+                if (exp.IndexOf('(') < 0)
+                {
+                    if (this.templateMap.ContainsKey(exp))
+                    {
+                        expression = exp + "(" + string.Join(",", this.templateMap[exp].Parameters) + ")";
+                    }
+                    else
+                    {
+                        expression = exp + "()";
+                    }
+                }
 
                 try
                 {
@@ -443,6 +451,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 var result = new List<Diagnostic>();
                 exp = exp.TrimStart('@').TrimStart('{').TrimEnd('}');
+
                 try
                 {
                     new ExpressionEngine(new GetMethodExtensions(new Evaluator(this.Templates, null)).GetMethodX).Parse(exp);

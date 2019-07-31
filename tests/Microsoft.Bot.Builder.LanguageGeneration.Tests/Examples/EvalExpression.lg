@@ -16,3 +16,6 @@ Hi @{userName}
 - ```
 Hi@{userName}
 ```
+
+# template6
+- @{'good'}@{'morning'}
