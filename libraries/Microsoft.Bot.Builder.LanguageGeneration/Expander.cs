@@ -256,7 +256,17 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         private List<string> EvalTemplateRef(string exp)
         {
             exp = exp.TrimStart('[').TrimEnd(']').Trim();
-            exp = exp.IndexOf('(') < 0 ? exp + "()" : exp;
+            if (exp.IndexOf('(') < 0)
+            {
+                if (TemplateMap.ContainsKey(exp))
+                {
+                    exp = exp + "(" + string.Join(",", TemplateMap[exp].Parameters) + ")";
+                }
+                else
+                {
+                    exp = exp + "()";
+                }
+            }
 
             return EvalExpression(exp);
         }
