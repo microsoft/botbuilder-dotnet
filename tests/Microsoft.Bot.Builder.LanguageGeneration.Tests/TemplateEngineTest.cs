@@ -274,11 +274,9 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                 name = "Dong Lei"
             };
             Assert.AreEqual(engine.EvaluateTemplate("Hello", scope), "Good morning Dong Lei");
-
+            Assert.AreEqual(engine.EvaluateTemplate("Hello2", scope), "Good morning Dong Lei");
+            Assert.AreEqual(engine.EvaluateTemplate("Hello3", scope), "Good morning Dong Lei");
         }
-
-
-
 
         [TestMethod]
         public void TestEscapeCharacter()
@@ -290,7 +288,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             evaled = engine.EvaluateTemplate("otherEscape", null);
             Assert.AreEqual(evaled, @"Hi \y \");
         }
-
 
         [TestMethod]
         public void TestAnalyzer()
@@ -350,7 +347,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             options = new List<string> { "Hi morning", "Hello morning" };
             Assert.AreEqual(options.Contains(evaled), true);
         }
-
 
         [TestMethod]
         public void TestTemplateAsFunction()

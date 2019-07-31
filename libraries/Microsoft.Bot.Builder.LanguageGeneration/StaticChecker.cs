@@ -393,7 +393,18 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 var result = new List<Diagnostic>();
 
                 exp = exp.TrimStart('[').TrimEnd(']').Trim();
-                var expression = exp.IndexOf('(') < 0 ? exp + "()" : exp;
+                var expression = exp;
+                if (exp.IndexOf('(') < 0)
+                {
+                    if (this.templateMap.ContainsKey(exp))
+                    {
+                        expression = exp + "(" + string.Join(",", this.templateMap[exp].Parameters) + ")";
+                    }
+                    else
+                    {
+                        expression = exp + "()";
+                    }
+                }
 
                 try
                 {
@@ -440,6 +451,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 var result = new List<Diagnostic>();
                 exp = exp.TrimStart('@').TrimStart('{').TrimEnd('}');
+
                 try
                 {
                     new ExpressionEngine(new GetMethodExtensions(new Evaluator(this.Templates, null)).GetMethodX).Parse(exp);
