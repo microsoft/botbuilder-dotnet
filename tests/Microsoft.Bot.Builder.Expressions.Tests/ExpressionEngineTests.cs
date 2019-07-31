@@ -125,6 +125,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             { "dialog",
                 new
                 {
+                    x=3,
                     instance = new
                     {
                         xxx = "instance",
@@ -144,9 +145,27 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             },
             { "callstack", new object[]
                 {
-                    new {x = 3 },
-                    new {x = 2, y = 2 },
-                    new {x = 1, y = 1, z = 1 },
+                    new
+                    {
+                        x = 3,
+                        instance = new
+                        {
+                            xxx = "instance",
+                            yyy = new
+                            {
+                                instanceY = "instanceY"
+                            }
+                        },
+                        options = new
+                        {
+                            xxx = "options",
+                            yyy = new[] { "optionY1", "optionY2" }
+                        },
+                        title = "Dialog Title",
+                        subTitle = "Dialog Sub Title"
+                    },
+                    new { x = 2, y = 2 },
+                    new { x = 1, y = 1, z = 1 }
                 }
             }
         };
@@ -491,6 +510,8 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("first(nestedItems).x", 1, new HashSet<string> { "nestedItems"}),
             Test("join(items,',')", "zero,one,two"),
             Test("join(createArray('a', 'b', 'c'), '.')", "a.b.c"),
+            Test("join(createArray('a', 'b', 'c'), ',', ' and ')", "a,b and c"),
+            Test("join(createArray('a', 'b'), ',', ' and ')", "a and b"),
             Test("join(foreach(items, item, item), ',')", "zero,one,two"),
             Test("join(foreach(nestedItems, i, i.x + first(nestedItems).x), ',')", "2,3,4", new HashSet<string>{ "nestedItems"}),
             Test("join(foreach(items, item, concat(item, string(count(items)))), ',')", "zero3,one3,two3", new HashSet<string>{ "items"}),
@@ -539,16 +560,22 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("#BookFlight == 'BookFlight'", true, new HashSet<string> {"turn.recognized.intents.BookFlight"}),
             Test("#BookHotel[1].Where", "Kirkland", new HashSet<string> {"turn.recognized.intents.BookHotel[1].Where"}),
             Test("exists(#BookFlight)", true, new HashSet<string> {"turn.recognized.intents.BookFlight"}),
-            Test("$title", "Dialog Title", new HashSet<string> {"dialog.title"}),
-            Test("$subTitle", "Dialog Sub Title", new HashSet<string> {"dialog.subTitle"}),
+            Test("dialog.title", "Dialog Title"),
+            Test("dialog.subTitle", "Dialog Sub Title"),
             Test("~xxx", "instance", new HashSet<string> {"dialog.instance.xxx"}),
             Test("~['yyy'].instanceY", "instanceY", new HashSet<string> {"dialog.instance.yyy.instanceY"}),
             Test("%xxx", "options", new HashSet<string> {"dialog.options.xxx"}),
             Test("%['xxx']", "options", new HashSet<string> {"dialog.options.xxx"}),
             Test("%yyy[1]", "optionY2", new HashSet<string> {"dialog.options.yyy[1]"}),
-            Test("^x", 3),
-            Test("^y", 2),
-            Test("^z", 1),
+            Test("dialog.x", 3),
+            Test("dialog.y", null),
+            Test("dialog.z", null),
+            Test("$x", 3),
+            Test("$y", 2),
+            Test("$z", 1),
+            // Test("^x", 3),
+            // Test("^y", 2),
+            // Test("^z", 1),
             Test("count(@@CompositeList1) == 1 && count(@@CompositeList1[0]) == 1", true),
             #endregion
 
@@ -654,7 +681,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
                 if (actual is int)
                 {
                     Assert.IsTrue(expected is int);
-                    Assert.AreEqual(actual, expected);
+                    Assert.AreEqual(expected, actual);
                 }
                 else
                 {

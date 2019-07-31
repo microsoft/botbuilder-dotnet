@@ -117,6 +117,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             // test targeted in each language
             Assert.AreEqual("english-us", await lg.Generate(GetTurnContext("en-us", lg), "[test]", null));
+            Assert.AreEqual("english-us", await lg.Generate(GetTurnContext("en-us", lg), "[test2]", new { country = "us" }));
             Assert.AreEqual("english-gb", await lg.Generate(GetTurnContext("en-gb", lg), "[test]", null));
             Assert.AreEqual("english", await lg.Generate(GetTurnContext("en", lg), "[test]", null));
             Assert.AreEqual("default", await lg.Generate(GetTurnContext("", lg), "[test]", null));
