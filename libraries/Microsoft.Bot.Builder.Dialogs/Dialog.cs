@@ -133,6 +133,15 @@ namespace Microsoft.Bot.Builder.Dialogs
             return Task.CompletedTask;
         }
 
+        /// <summary>
+        /// Called when the dialog is ending.
+        /// </summary>
+        /// <param name="turnContext">The context object for this turn.</param>
+        /// <param name="instance">State information associated with the instance of this dialog on the dialog stack.</param>
+        /// <param name="reason">Reason why the dialog ended.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public virtual Task EndDialogAsync(ITurnContext turnContext, DialogInstance instance, DialogReason reason, CancellationToken cancellationToken = default(CancellationToken))
         {
             // No-op by default

@@ -190,8 +190,9 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// Ends a dialog by popping it off the stack and returns an optional result to the dialog's logical parent,
-        /// which is the next dialog on the stack, or the bot's turn handler if this was the last dialog on the stack.
+        /// Ends a dialog by popping it off the stack and returns an optional result to the dialog's
+        /// logical parent, which is the next dialog on the stack, or the bot's turn handler if this
+        /// was the last dialog on the stack.
         /// </summary>
         /// <param name="result">Optional, result to pass to the parent context.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
@@ -250,6 +251,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// method to return a result to the parent dialog. If the parent dialog does not implement
         /// `ResumeDialogAsync`, then the parent will end, too, and the result is passed to the next
         /// parent context.</remarks>
+        /// <seealso cref="EndDialogAsync(object, CancellationToken)"/>
         public async Task<DialogTurnResult> CancelAllDialogsAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
             if (Stack.Any())
@@ -311,7 +313,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <summary>
         /// Calls the currently active dialog's
         /// <see cref="Dialog.RepromptDialogAsync(ITurnContext, DialogInstance, CancellationToken)"/>
-        /// method. Used with dialogs that implement a reprompt behavior.
+        /// method. Used with dialogs that implement a re-prompt behavior.
         /// </summary>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
