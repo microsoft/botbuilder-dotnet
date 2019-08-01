@@ -170,7 +170,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
             Register("Microsoft.TextInput", typeof(TextInput));
             Register("Microsoft.ChoiceInput", typeof(ChoiceInput));
             Register("Microsoft.DateTimeInput", typeof(DateTimeInput));
-            Register("Microsoft.OAuthInput", typeof(OAuthPrompt), new OAuthPromptLoader());
+            Register("Microsoft.OAuthInput", typeof(OAuthInput));
 
             // Recognizers
             Register("Microsoft.LuisRecognizer", typeof(LuisRecognizer), new LuisRecognizerLoader(TypeFactory.Configuration));
