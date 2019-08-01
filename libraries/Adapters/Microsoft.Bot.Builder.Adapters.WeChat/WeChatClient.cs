@@ -17,11 +17,11 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Adapters.WeChat
 {
     /// <summary>
-    /// A WeChat client is used to commnicate with WeChat API.
+    /// A WeChat client is used to communicate with WeChat API.
     /// </summary>
     public class WeChatClient
     {
-        private static readonly string ApiHost = "https://api.weixin.qq.com";
+        private const string ApiHost = "https://api.weixin.qq.com";
         private static readonly HttpClient HttpClient = new HttpClient();
 
         private readonly string _appId;
@@ -75,7 +75,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
             var sendResult = ConvertBytesToType<WeChatJsonResult>(bytes);
             if (sendResult.ErrorCode != 0)
             {
-                var exception = new Exception($"{sendResult.ToString()}");
+                var exception = new Exception($"{sendResult}");
                 _logger.LogError(exception, "Send Message To User Failed");
                 throw exception;
             }
@@ -146,8 +146,8 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 }
                 else
                 {
-                    var exception = new Exception($"{uploadResult.ToString()}");
-                    _logger.LogError(exception, $"Upload Temporary Media Failed, Type: {type.ToString()}");
+                    var exception = new Exception($"{uploadResult}");
+                    _logger.LogError(exception, $"Upload Temporary Media Failed, Type: {type}");
                     throw exception;
                 }
             }
@@ -177,7 +177,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 }
                 else
                 {
-                    _logger.LogError(new Exception($"{uploadResult.ToString()}"), $"Upload Persistent Media Failed, Type: {type.ToString()}");
+                    _logger.LogError(new Exception($"{uploadResult}"), $"Upload Persistent Media Failed, Type: {type}");
                 }
             }
 
@@ -210,7 +210,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 }
                 else
                 {
-                    var exception = new Exception($"{uploadResult.ToString()}");
+                    var exception = new Exception($"{uploadResult}");
                     _logger.LogError(exception, "Upload Persistent News Failed");
                     throw exception;
                 }
@@ -245,7 +245,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 }
                 else
                 {
-                    var exception = new Exception($"{uploadResult.ToString()}");
+                    var exception = new Exception($"{uploadResult}");
                     _logger.LogError(exception, "Upload Temporary News Failed");
                     throw exception;
                 }
@@ -268,7 +268,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 touser = openId,
                 command = typingStatus,
             };
-            return await SendMessageToUser(data);
+            return await SendMessageToUser(data).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -311,7 +311,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 };
             }
 
-            return await SendMessageToUser(data);
+            return await SendMessageToUser(data).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -355,7 +355,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 };
             }
 
-            return await SendMessageToUser(data);
+            return await SendMessageToUser(data).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -410,7 +410,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 };
             }
 
-            return await SendMessageToUser(data);
+            return await SendMessageToUser(data).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -465,7 +465,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 };
             }
 
-            return await SendMessageToUser(data);
+            return await SendMessageToUser(data).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -508,7 +508,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 };
             }
 
-            return await SendMessageToUser(data);
+            return await SendMessageToUser(data).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -560,7 +560,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 };
             }
 
-            return await SendMessageToUser(data);
+            return await SendMessageToUser(data).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -603,7 +603,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 };
             }
 
-            return await SendMessageToUser(data);
+            return await SendMessageToUser(data).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -729,14 +729,14 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                     content.Add(new StringContent(additionalForm), "\"" + "description" + "\"");
                 }
 
-                _logger.LogInformation($"Upload {type.ToString()} to WeChat", Severity.Information);
+                _logger.LogInformation($"Upload {type} to WeChat", Severity.Information);
                 var response = await SendHttpRequestAsync(HttpMethod.Post, url, content).ConfigureAwait(false);
                 return ConvertBytesToType<T>(response);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Failed To Upload Media, Type: {type.ToString()}");
-                throw ex;
+                _logger.LogError(ex, $"Failed To Upload Media, Type: {type}");
+                throw;
             }
         }
     }

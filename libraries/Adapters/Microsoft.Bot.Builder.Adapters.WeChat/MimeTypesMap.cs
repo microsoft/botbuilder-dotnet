@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         private const string DefaultMimeType = "application/octet-stream";
 
         /// <summary>
-        /// Lazy instance of an Dictionary which store the extation/mimetype pairs.
+        /// Lazy instance of an Dictionary which store the extension/mimetype pairs.
         /// All mime type definition: http://svn.apache.org/repos/asf/httpd/httpd/trunk/docs/conf/mime.types.
         /// </summary>
         private static readonly Lazy<Dictionary<string, string>> MimeTypeMap = new Lazy<Dictionary<string, string>>(() => new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)

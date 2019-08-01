@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <PackageReference Include="AdaptiveCards.Rendering.Html" Version="1.1.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.1.0" />
     <PackageReference Include="Microsoft.MarkedNet" Version="1.0.13" />
   </ItemGroup>
 

@@ -90,9 +90,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Adapt
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Adapters", "Adapters", "{289994A1-16AE-4E0D-B1F2-73309D26BE45}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Adapters.WeChat.Test", "tests\Adapters\Microsoft.Bot.Builder.Adapters.WeChat.Test\Microsoft.Bot.Builder.Adapters.WeChat.Test.csproj", "{B3FFF1F6-317C-4CAC-A2AE-E99439C2D362}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Adapters.WeChat.Tests", "tests\Adapters\Microsoft.Bot.Builder.Adapters.WeChat.Test\Microsoft.Bot.Builder.Adapters.WeChat.Tests.csproj", "{B3FFF1F6-317C-4CAC-A2AE-E99439C2D362}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Builder.Adapters.WeChat.TestBot", "tests\Adapters\Microsoft.Bot.Builder.Adapters.WeChat.TestBot\Microsoft.Bot.Builder.Adapters.WeChat.TestBot.csproj", "{63C4D62E-C433-482A-9FC3-CC3F6D5B0188}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Adapters.WeChat.TestBot", "tests\Adapters\Microsoft.Bot.Builder.Adapters.WeChat.TestBot\Microsoft.Bot.Builder.Adapters.WeChat.TestBot.csproj", "{63C4D62E-C433-482A-9FC3-CC3F6D5B0188}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

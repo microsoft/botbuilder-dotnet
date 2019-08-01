@@ -3,7 +3,7 @@ using System.IO;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Adapters.WeChat.Test
+namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests
 {
     public static class Cards
     {

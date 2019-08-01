@@ -2,11 +2,11 @@
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Request;
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Request.Event;
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Request.Event.Common;
-using Microsoft.Bot.Builder.Adapters.WeChat.Test.TestUtilities;
+using Microsoft.Bot.Builder.Adapters.WeChat.Tests.TestUtilities;
 using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
 
-namespace Microsoft.Bot.Builder.Adapters.WeChat.Test
+namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests
 {
     public class MessageFactoryTest
     {

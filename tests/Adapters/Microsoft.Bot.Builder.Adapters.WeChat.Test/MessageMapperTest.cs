@@ -2,11 +2,11 @@
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema;
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Request;
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Request.Event;
-using Microsoft.Bot.Builder.Adapters.WeChat.Test.TestUtilities;
+using Microsoft.Bot.Builder.Adapters.WeChat.Tests.TestUtilities;
 using Microsoft.Bot.Schema;
 using Xunit;
 
-namespace Microsoft.Bot.Builder.Adapters.WeChat.Test
+namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests
 {
     public class MessageMapperTest
     {

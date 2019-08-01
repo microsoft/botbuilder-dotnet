@@ -2,10 +2,10 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema;
-using Microsoft.Bot.Builder.Adapters.WeChat.Test.TestUtilities;
+using Microsoft.Bot.Builder.Adapters.WeChat.Tests.TestUtilities;
 using Xunit;
 
-namespace Microsoft.Bot.Builder.Adapters.WeChat.Test
+namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests
 {
     public class WeChatClientTest
     {
@@ -32,7 +32,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Test
         [Fact]
         public async Task GetAccessTokenTest()
         {
-            var mockClient = new WeChatClient("wx77f941c869071d99", "secret");
+            var mockClient = new MockWeChatClient("wx77f941c869071d99", "secret");
             await mockClient.SendHttpRequestAsync(HttpMethod.Get, "https://dev.botframework.com");
             var tokenResult = await mockClient.GetAccessTokenAsync();
             Assert.Equal("testToken", tokenResult);

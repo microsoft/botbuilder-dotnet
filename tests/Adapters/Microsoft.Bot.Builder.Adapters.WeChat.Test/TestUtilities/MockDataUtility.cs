@@ -15,7 +15,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Adapters.WeChat.Test.TestUtilities
+namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests.TestUtilities
 {
     public class MockDataUtility
     {
@@ -311,34 +311,34 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Test.TestUtilities
         public static readonly SecretInfo SecretInfo = new SecretInfo()
         {
             Token = "bmwipabotwx",
-            EncodingAESKey = "P7PIjIGpA7axbjbffRoWYq7G0BsIaEpqdawIir4KqCt",
+            EncodingAesKey = "P7PIjIGpA7axbjbffRoWYq7G0BsIaEpqdawIir4KqCt",
             AppId = "wx77f941c869071d99",
-            Signature = "4e17212123b3ce5a6b11643dc658af83fdb54c7d",
+            WebhookSignature = "4e17212123b3ce5a6b11643dc658af83fdb54c7d",
             Timestamp = "1562066088",
             Nonce = "236161902",
-            Msg_Signature = "f3187a0efd9709c8f6550190147f43c279e9bc43",
+            MessageSignature = "f3187a0efd9709c8f6550190147f43c279e9bc43",
         };
 
         public static readonly SecretInfo SecretInfoAESKeyError = new SecretInfo()
         {
             Token = "bmwipabotwx",
-            EncodingAESKey = "bmwipabotwx",
+            EncodingAesKey = "bmwipabotwx",
             AppId = "wx77f941c869071d99",
-            Signature = "4e17212123b3ce5a6b11643dc658af83fdb54c7",
+            WebhookSignature = "4e17212123b3ce5a6b11643dc658af83fdb54c7",
             Timestamp = "1562066088",
             Nonce = "236161902",
-            Msg_Signature = "4e17212123b3ce5a6b11643dc658af83fdb54c7",
+            MessageSignature = "4e17212123b3ce5a6b11643dc658af83fdb54c7",
         };
 
         public static readonly SecretInfo SecretInfoMsgSignatureError = new SecretInfo()
         {
             Token = "bmwipabotwx",
-            EncodingAESKey = "P7PIjIGpA7axbjbffRoWYq7G0BsIaEpqdawIir4KqCt",
+            EncodingAesKey = "P7PIjIGpA7axbjbffRoWYq7G0BsIaEpqdawIir4KqCt",
             AppId = "wx77f941c869071d99",
-            Signature = "4e17212123b3ce5a6b11643dc658af83fdb54c7d",
+            WebhookSignature = "4e17212123b3ce5a6b11643dc658af83fdb54c7d",
             Timestamp = "1562066088",
             Nonce = "236161902",
-            Msg_Signature = "4e17212123b3ce5a6b11643dc658af83fdb54c7d",
+            MessageSignature = "4e17212123b3ce5a6b11643dc658af83fdb54c7d",
         };
 
         public static readonly WeChatJsonResult WeChatJsonResult = new WeChatJsonResult()

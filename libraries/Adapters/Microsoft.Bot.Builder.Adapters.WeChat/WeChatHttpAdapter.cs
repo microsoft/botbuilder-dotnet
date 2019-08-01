@@ -59,7 +59,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
             {
                 OnTurnError = async (context, exception) =>
                 {
-                    await context.SendActivityAsync(Constants.DefaultErrorMessage);
+                    await context.SendActivityAsync(Constants.DefaultErrorMessage).ConfigureAwait(false);
                 };
             }
 
@@ -80,7 +80,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// <returns>Response message entity.</returns>
         public async Task<object> ProcessWeChatRequest(IRequestMessageBase wechatRequest, BotCallbackHandler callback, SecretInfo secretInfo, bool passiveResponse, CancellationToken cancellationToken)
         {
-            var activity = await _wechatMessageMapper.ToConnectorMessage(wechatRequest);
+            var activity = await _wechatMessageMapper.ToConnectorMessage(wechatRequest).ConfigureAwait(false);
             BotAssert.ActivityNotNull(activity);
             using (var context = new TurnContext(this, activity as Activity))
             {
@@ -93,7 +93,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                     try
                     {
                         var activities = responses.ContainsKey(key) ? responses[key] : new List<Activity>();
-                        var response = await ProcessBotResponse(activities, secretInfo, wechatRequest.FromUserName, passiveResponse);
+                        var response = await ProcessBotResponse(activities, secretInfo, wechatRequest.FromUserName, passiveResponse).ConfigureAwait(false);
                         return response;
                     }
                     catch (Exception e)
@@ -106,7 +106,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 catch (Exception ex)
                 {
                     // exception handing when bot throw an exception.
-                    await OnTurnError(context, ex);
+                    await OnTurnError(context, ex).ConfigureAwait(false);
                     return null;
                 }
             }
@@ -193,10 +193,10 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 throw new ArgumentNullException(nameof(secretInfo));
             }
 
-            VerificationHelper.Check(secretInfo.Signature, secretInfo.Timestamp, secretInfo.Nonce, _token);
+            VerificationHelper.Check(secretInfo.WebhookSignature, secretInfo.Timestamp, secretInfo.Nonce, _token);
 
             secretInfo.Token = _token;
-            secretInfo.EncodingAESKey = _encodingAESKey;
+            secretInfo.EncodingAesKey = _encodingAESKey;
             secretInfo.AppId = _appId;
             var postDataDocument = XmlHelper.Convert(httpRequest.Body);
             var wechatRequest = GetRequestMessage(postDataDocument, secretInfo);
@@ -351,40 +351,40 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                     {
                         case ResponseMessageType.Text:
                             var textResponse = response as TextResponse;
-                            await _wechatClient.SendTextAsync(openId, textResponse.Content);
+                            await _wechatClient.SendTextAsync(openId, textResponse.Content).ConfigureAwait(false);
                             break;
 
                         case ResponseMessageType.Image:
                             var imageResposne = response as ImageResponse;
-                            await _wechatClient.SendImageAsync(openId, imageResposne.Image.MediaId);
+                            await _wechatClient.SendImageAsync(openId, imageResposne.Image.MediaId).ConfigureAwait(false);
                             break;
 
                         case ResponseMessageType.News:
                             var newsResponse = response as NewsResponse;
-                            await _wechatClient.SendNewsAsync(openId, newsResponse.Articles);
+                            await _wechatClient.SendNewsAsync(openId, newsResponse.Articles).ConfigureAwait(false);
                             break;
 
                         case ResponseMessageType.Music:
                             var musicResponse = response as MusicResponse;
                             var music = musicResponse.Music;
-                            await _wechatClient.SendMusicAsync(openId, music.Title, music.Description, music.MusicUrl, music.HQMusicUrl, music.ThumbMediaId);
+                            await _wechatClient.SendMusicAsync(openId, music.Title, music.Description, music.MusicUrl, music.HQMusicUrl, music.ThumbMediaId).ConfigureAwait(false);
                             break;
 
                         case ResponseMessageType.MPNews:
                             var mpnewsResponse = response as MPNewsResponse;
-                            await _wechatClient.SendMPNewsAsync(openId, mpnewsResponse.MediaId);
+                            await _wechatClient.SendMPNewsAsync(openId, mpnewsResponse.MediaId).ConfigureAwait(false);
                             break;
 
                         case ResponseMessageType.Video:
                             var videoResposne = response as VideoResponse;
                             var video = videoResposne.Video;
-                            await _wechatClient.SendVideoAsync(openId, video.MediaId, video.Title, video.Description);
+                            await _wechatClient.SendVideoAsync(openId, video.MediaId, video.Title, video.Description).ConfigureAwait(false);
                             break;
 
                         case ResponseMessageType.Voice:
                             var voiceResponse = response as VoiceResponse;
                             var voice = voiceResponse.Voice;
-                            await _wechatClient.SendVoiceAsync(openId, voice.MediaId);
+                            await _wechatClient.SendVoiceAsync(openId, voice.MediaId).ConfigureAwait(false);
                             break;
                         case ResponseMessageType.LocationMessage:
                             var locationResponse = response as ResponseMessage;

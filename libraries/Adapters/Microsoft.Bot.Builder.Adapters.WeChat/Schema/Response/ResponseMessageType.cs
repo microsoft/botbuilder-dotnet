@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Response
+﻿namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Response
 {
     public class ResponseMessageType
     {

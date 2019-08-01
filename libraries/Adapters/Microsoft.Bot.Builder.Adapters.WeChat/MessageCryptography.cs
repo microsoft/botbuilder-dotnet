@@ -26,15 +26,15 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// <param name="secretInfo">The secret info provide by WeChat.</param>
         public MessageCryptography(SecretInfo secretInfo)
         {
-            if (string.IsNullOrEmpty(secretInfo.EncodingAESKey) || secretInfo.EncodingAESKey.Length != 43)
+            if (string.IsNullOrEmpty(secretInfo.EncodingAesKey) || secretInfo.EncodingAesKey.Length != 43)
             {
                 throw new ArgumentException("Invalid EncodingAESKey", nameof(secretInfo));
             }
 
             _token = secretInfo.Token;
             _appId = secretInfo.AppId;
-            _encodingAesKey = secretInfo.EncodingAESKey;
-            _msgSignature = secretInfo.Msg_Signature;
+            _encodingAesKey = secretInfo.EncodingAesKey;
+            _msgSignature = secretInfo.MessageSignature;
             _timestamp = secretInfo.Timestamp;
             _nonce = secretInfo.Nonce;
         }
@@ -109,6 +109,9 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         private static byte[] Decode(byte[] decrypted)
         {
             var pad = decrypted[decrypted.Length - 1];
+
+            // This convert is comming from WeChat offical demo code.
+            // https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1434696670
             if (pad < 1 || pad > 32)
             {
                 pad = 0;
@@ -130,33 +133,29 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         {
             using (var aes = Aes.Create())
             {
-                if (aes != null)
+                if (aes == null)
                 {
-                    // Original size is 256
-                    aes.KeySize = 128;
-                    aes.BlockSize = 128;
-                    aes.Mode = CipherMode.CBC;
-                    aes.Padding = PaddingMode.None;
-                    aes.Key = key;
-                    aes.IV = iv;
-                    var decrypt = aes.CreateDecryptor(aes.Key, aes.IV);
-                    byte[] buffArray;
-                    using (var ms = new MemoryStream())
-                    {
-                        using (var cs = new CryptoStream(ms, decrypt, CryptoStreamMode.Write))
-                        {
-                            var xmlBytes = Convert.FromBase64String(input);
-                            cs.Write(xmlBytes, 0, xmlBytes.Length);
-                        }
+                    throw new CryptographicException("Failed to create AES instance.");
+                }
 
-                        buffArray = Decode(ms.ToArray());
+                // Original size is 256
+                aes.KeySize = 128;
+                aes.BlockSize = 128;
+                aes.Mode = CipherMode.CBC;
+                aes.Padding = PaddingMode.None;
+                aes.Key = key;
+                aes.IV = iv;
+                using (var ms = new MemoryStream())
+                {
+                    var decrypt = aes.CreateDecryptor(aes.Key, aes.IV);
+                    using (var cs = new CryptoStream(ms, decrypt, CryptoStreamMode.Write))
+                    {
+                        var xmlBytes = Convert.FromBase64String(input);
+                        cs.Write(xmlBytes, 0, xmlBytes.Length);
                     }
 
+                    var buffArray = Decode(ms.ToArray());
                     return buffArray;
-                }
-                else
-                {
-                    throw new CryptographicException("Aes created failed.");
                 }
             }
         }

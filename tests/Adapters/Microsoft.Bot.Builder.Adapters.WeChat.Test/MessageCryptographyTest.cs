@@ -1,8 +1,8 @@
 ﻿using System;
-using Microsoft.Bot.Builder.Adapters.WeChat.Test.TestUtilities;
+using Microsoft.Bot.Builder.Adapters.WeChat.Tests.TestUtilities;
 using Xunit;
 
-namespace Microsoft.Bot.Builder.Adapters.WeChat.Test
+namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests
 {
     public class MessageCryptographyTest
     {

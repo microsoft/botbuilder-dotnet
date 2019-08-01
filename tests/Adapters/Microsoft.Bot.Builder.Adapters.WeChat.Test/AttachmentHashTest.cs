@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using Xunit;
 
-namespace Microsoft.Bot.Builder.Adapters.WeChat.Test
+namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests
 {
     public class AttachmentHashTest
     {

@@ -2,12 +2,12 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Builder.Adapters.WeChat.TaskExtensions;
-using Microsoft.Bot.Builder.Adapters.WeChat.Test.TestUtilities;
+using Microsoft.Bot.Builder.Adapters.WeChat.Tests.TestUtilities;
 using Moq;
 using Newtonsoft.Json;
 using Xunit;
 
-namespace Microsoft.Bot.Builder.Adapters.WeChat.Test
+namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests
 {
     public class AdapterTest
     {

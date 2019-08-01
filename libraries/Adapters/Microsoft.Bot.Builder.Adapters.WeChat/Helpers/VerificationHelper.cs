@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections;
-using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -35,7 +33,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
 
             if (!VerifySignature(signature, token, timestamp, nonce))
             {
-                throw new UnauthorizedAccessException("Request validation failed - Signature validation faild.");
+                throw new UnauthorizedAccessException("Request validation failed - Signature validation failed.");
             }
         }
 
@@ -54,38 +52,14 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
             {
                 if (postBody == null)
                 {
-                    return signature == GenarateSignature(token, timestamp, nonce);
+                    return signature == GenerateSignature(token, timestamp, nonce);
                 }
 
-                return signature == GenarateSignature(token, timestamp, nonce, postBody);
+                return signature == GenerateSignature(token, timestamp, nonce, postBody);
             }
             catch
             {
                 return false;
-            }
-        }
-
-        /// <summary>
-        /// Genarate signature with no message body.
-        /// </summary>
-        /// <param name="token">Token in app settings.</param>
-        /// <param name="timestamp">WeChat message timestamp in query params.</param>
-        /// <param name="nonce">WeChat message nonce in query params.</param>
-        /// <returns>Genarateed signature.</returns>
-        private static string GenarateSignature(string token, string timestamp, string nonce)
-        {
-            var arr = new[] { token, timestamp, nonce }.OrderBy(z => z).ToArray();
-            var arrString = string.Join(string.Empty, arr);
-            using (var sha1 = SHA1.Create())
-            {
-                var hash = sha1.ComputeHash(Encoding.UTF8.GetBytes(arrString));
-                var signtureBuilder = new StringBuilder();
-                foreach (var bytes in hash)
-                {
-                    signtureBuilder.AppendFormat("{0:x2}", bytes);
-                }
-
-                return signtureBuilder.ToString();
             }
         }
 
@@ -96,37 +70,54 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// <param name="timestamp">WeChat message timestamp in query params.</param>
         /// <param name="nonce">WeChat message nonce in query params.</param>
         /// <param name="encryptedMessage">The encrypted message content from WeChat request.</param>
-        /// <returns>Genarateed signature.</returns>
-        private static string GenarateSignature(string token, string timestamp, string nonce, string encryptedMessage)
+        /// <returns>Generated signature.</returns>
+        private static string GenerateSignature(string token, string timestamp, string nonce, string encryptedMessage = null)
         {
-            var arrayList = new ArrayList
+            var arr = string.IsNullOrEmpty(encryptedMessage) ? new[] { token, timestamp, nonce } : new[] { token, timestamp, nonce, encryptedMessage };
+            Array.Sort(arr, Compare);
+            var raw = string.Join(string.Empty, arr);
+            using (var sha1 = SHA1.Create())
             {
-                token,
-                timestamp,
-                nonce,
-                encryptedMessage,
-            };
-            arrayList.Sort(new DictionarySort());
-            var raw = string.Empty;
-            for (var i = 0; i < arrayList.Count; ++i)
-            {
-                raw += arrayList[i];
-            }
-
-            try
-            {
-                using (var sha = SHA1.Create())
+                var dataToHash = Encoding.ASCII.GetBytes(raw);
+                var dataHashed = sha1.ComputeHash(dataToHash);
+                var signtureBuilder = new StringBuilder();
+                foreach (var bytes in dataHashed)
                 {
-                    var enc = new ASCIIEncoding();
-                    var dataToHash = enc.GetBytes(raw);
-                    var dataHashed = sha.ComputeHash(dataToHash);
-                    return BitConverter.ToString(dataHashed).Replace("-", string.Empty).ToLower();
+                    signtureBuilder.AppendFormat("{0:x2}", bytes);
+                }
+
+                return signtureBuilder.ToString();
+            }
+        }
+
+        /// <summary>
+        /// Compare method used to sort the secret info used to generate signature.
+        /// </summary>
+        /// <param name="left">Left string to be compared.</param>
+        /// <param name="right">Right string to be compared.</param>
+        /// <returns>Int value indicate compare result.</returns>
+        private static int Compare(string left, string right)
+        {
+            var leftLength = left.Length;
+            var rightLength = right.Length;
+            var index = 0;
+            while (index < leftLength && index < rightLength)
+            {
+                if (left[index] < right[index])
+                {
+                    return -1;
+                }
+                else if (left[index] > right[index])
+                {
+                    return 1;
+                }
+                else
+                {
+                    index++;
                 }
             }
-            catch
-            {
-                throw new Exception("Compare signature failed.");
-            }
+
+            return leftLength - rightLength;
         }
     }
 }
