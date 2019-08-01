@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -26,12 +27,10 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// <param name="options">A set of params with the required values for authentication.</param>
         public TwilioAdapter(ITwilioAdapterOptions options)
         {
-            if (_options is null)
+            if (options == null)
             {
-                throw new ArgumentNullException(nameof(_options));
+                throw new ArgumentNullException(nameof(options));
             }
-
-            _options = options;
 
             if (string.IsNullOrWhiteSpace(options.TwilioNumber))
             {
@@ -47,6 +46,8 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
             {
                 throw new Exception("AuthToken is a required part of the configuration.");
             }
+
+            _options = options;
 
             TwilioClient.Init(_options.AccountSid, _options.AuthToken);
         }
@@ -78,7 +79,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
                 }
                 else
                 {
-                    // TODO: log error: unknown message type
+                    throw new Exception("Unknown message type");
                 }
             }
 
@@ -104,57 +105,52 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
 
             var requestValidator = new RequestValidator(_options.AuthToken);
 
-            var bodyStream = new StreamReader(request.Body);
-
-            dynamic payload = bodyStream.ReadToEnd();
-
-            var formattedPayload = payload.Replace("+", "%20");
-
-            var body = QueryStringToDictionary(formattedPayload);
-
-            if (!string.IsNullOrWhiteSpace(twilioSignature) && requestValidator.Validate(validationUrl, body, twilioSignature))
+            using (var bodyStream = new StreamReader(request.Body))
             {
-                var jsonBody = JsonConvert.SerializeObject(body);
+                dynamic payload = bodyStream.ReadToEnd();
 
-                TwilioEvent twilioEvent = JsonConvert.DeserializeObject<TwilioEvent>(jsonBody);
+                var formattedPayload = payload.Replace("+", "%20");
 
-                if (Convert.ToInt32(twilioEvent.NumMedia) > 0)
+                var body = QueryStringToDictionary(formattedPayload);
+
+                if (!string.IsNullOrWhiteSpace(twilioSignature) &&
+                    requestValidator.Validate(validationUrl, body, twilioSignature))
                 {
-                    // specify a different event type
-                    twilioEvent.EventType = "picture_message";
-                }
+                    var jsonBody = JsonConvert.SerializeObject(body);
 
-                var activity = new Activity()
-                {
-                    Id = twilioEvent.MessageSid,
-                    Timestamp = new DateTime(),
-                    ChannelId = "twilio-sms",
-                    Conversation = new ConversationAccount()
-                    {
-                        Id = twilioEvent.From,
-                    },
-                    From = new ChannelAccount()
-                    {
-                        Id = twilioEvent.From,
-                    },
-                    Recipient = new ChannelAccount()
-                    {
-                        Id = twilioEvent.To,
-                    },
-                    Text = twilioEvent.Body,
-                    ChannelData = twilioEvent,
-                    Type = ActivityTypes.Message,
-                };
+                    TwilioEvent twilioEvent = JsonConvert.DeserializeObject<TwilioEvent>(jsonBody);
 
-                // create a conversation reference
-                using (var context = new TurnContext(this, activity))
-                {
-                    await RunPipelineAsync(context, bot.OnTurnAsync, cancellationToken).ConfigureAwait(false);
+                    if (Convert.ToInt32(twilioEvent.NumMedia, CultureInfo.InvariantCulture) > 0)
+                    {
+                        // specify a different event type
+                        twilioEvent.EventType = "picture_message";
+                    }
 
-                    response.StatusCode = 200;
-                    response.ContentType = "text/plain";
-                    var text = (context.TurnState["httpBody"] != null) ? context.TurnState["httpBody"].ToString() : string.Empty;
-                    await response.WriteAsync(text, cancellationToken).ConfigureAwait(false);
+                    var activity = new Activity()
+                    {
+                        Id = twilioEvent.MessageSid,
+                        Timestamp = new DateTime(),
+                        ChannelId = "twilio-sms",
+                        Conversation = new ConversationAccount() { Id = twilioEvent.From, },
+                        From = new ChannelAccount() { Id = twilioEvent.From, },
+                        Recipient = new ChannelAccount() { Id = twilioEvent.To, },
+                        Text = twilioEvent.Body,
+                        ChannelData = twilioEvent,
+                        Type = ActivityTypes.Message,
+                    };
+
+                    // create a conversation reference
+                    using (var context = new TurnContext(this, activity))
+                    {
+                        await RunPipelineAsync(context, bot.OnTurnAsync, cancellationToken).ConfigureAwait(false);
+
+                        response.StatusCode = 200;
+                        response.ContentType = "text/plain";
+                        var text = (context.TurnState["httpBody"] != null)
+                            ? context.TurnState["httpBody"].ToString()
+                            : string.Empty;
+                        await response.WriteAsync(text, cancellationToken).ConfigureAwait(false);
+                    }
                 }
             }
         }
@@ -186,6 +182,23 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         }
 
         /// <summary>
+        /// Standard BotBuilder adapter method for continuing an existing conversation based on a conversation reference.
+        /// </summary>
+        /// <param name="reference">A conversation reference to be applied to future messages.</param>
+        /// <param name="logic">A bot logic function that will perform continuing action in the form 'async(context) => { ... }'.</param>
+        /// <param name="cancellationToken">A cancellation token for the task.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        public async Task ContinueConversationAsync(ConversationReference reference, BotCallbackHandler logic, CancellationToken cancellationToken)
+        {
+            var request = reference.GetContinuationActivity().ApplyConversationReference(reference, true);
+
+            using (var context = new TurnContext(this, request))
+            {
+                await RunPipelineAsync(context, logic, cancellationToken).ConfigureAwait(false);
+            }
+        }
+
+        /// <summary>
         /// Formats a BotBuilder activity into an outgoing Twilio SMS message.
         /// </summary>
         /// <param name="activity">A BotBuilder Activity object.</param>
@@ -208,23 +221,6 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
             };
 
             return messageOptions;
-        }
-
-        /// <summary>
-        /// Standard BotBuilder adapter method for continuing an existing conversation based on a conversation reference.
-        /// </summary>
-        /// <param name="reference">A conversation reference to be applied to future messages.</param>
-        /// <param name="logic">A bot logic function that will perform continuing action in the form 'async(context) => { ... }'.</param>
-        /// <param name="cancellationToken">A cancellation token for the task.</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        private async Task ContinueConversationAsync(ConversationReference reference, BotCallbackHandler logic, CancellationToken cancellationToken)
-        {
-            var request = reference.GetContinuationActivity().ApplyConversationReference(reference, true);
-
-            using (var context = new TurnContext(this, request))
-            {
-                await RunPipelineAsync(context, logic, cancellationToken).ConfigureAwait(false);
-            }
         }
 
         /// <summary>
