@@ -44,9 +44,9 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests
             var mockClient = new MockWeChatClient("wx77f941c869071d99", "secret");
             var mockAttachemntData = MockDataUtility.GetMockAttachmentData();
             var result1 = await mockClient.UploadTemporaryMediaAsync("image", mockAttachemntData, 10000);
-            var result2 = await mockClient.UploadTemporaryNewsAsync();
+            var result2 = await mockClient.UploadTemporaryNewsAsync(new News[] { new News { Title = "test" } });
             var result3 = await mockClient.UploadPersistentMediaAsync("image", mockAttachemntData, 10000);
-            var result4 = await mockClient.UploadPersistentNewsAsync();
+            var result4 = await mockClient.UploadPersistentNewsAsync(new News[] { new News { Title = "test" } });
 
             // Assert.Equal("testToken", result1.MediaId);
             // Assert.Equal("bmwipabotwx", result2.MediaId);

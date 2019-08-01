@@ -6,14 +6,6 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
     public class MD5Hash : IAttachmentHash
     {
         /// <summary>
-        /// Gets instance for MD5Hash.
-        /// </summary>
-        /// <value>
-        /// Instance for MD5Hash.
-        /// </value>
-        public static MD5Hash Instance { get; } = new MD5Hash();
-
-        /// <summary>
         /// Calculate MD5 hash, used to ignore same file when upload media.
         /// </summary>
         /// <param name="inputBytes">Bytes content need to be hashed.</param>

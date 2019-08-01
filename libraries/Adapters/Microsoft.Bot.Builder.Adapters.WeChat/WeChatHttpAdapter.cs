@@ -24,6 +24,16 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
     /// </summary>
     public class WeChatHttpAdapter : BotAdapter, IWeChatHttpAdapter
     {
+        /// <summary>
+        /// Key to get all response from bot in a single turn.
+        /// </summary>
+        private const string TurnResponseKey = "turnResponse";
+
+        /// <summary>
+        /// Default error message when bot adapter failed.
+        /// </summary>
+        private const string DefaultErrorMessage = "Sorry, something went wrong.";
+
         private readonly IWeChatMessageMapper _wechatMessageMapper;
         private readonly WeChatClient _wechatClient;
         private readonly ILogger _logger;
@@ -59,7 +69,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
             {
                 OnTurnError = async (context, exception) =>
                 {
-                    await context.SendActivityAsync(Constants.DefaultErrorMessage).ConfigureAwait(false);
+                    await context.SendActivityAsync(DefaultErrorMessage).ConfigureAwait(false);
                 };
             }
 
@@ -87,7 +97,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 try
                 {
                     var responses = new Dictionary<string, List<Activity>>();
-                    context.TurnState.Add(Constants.TurnResponseKey, responses);
+                    context.TurnState.Add(TurnResponseKey, responses);
                     await RunPipelineAsync(context, callback, cancellationToken).ConfigureAwait(false);
                     var key = $"{activity.Conversation.Id}:{activity.Id}";
                     try
@@ -137,7 +147,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                     case ActivityTypes.EndOfConversation:
                         var conversation = activity.Conversation ?? new ConversationAccount();
                         var key = $"{conversation.Id}:{activity.ReplyToId}";
-                        var responses = turnContext.TurnState.Get<Dictionary<string, List<Activity>>>(Constants.TurnResponseKey);
+                        var responses = turnContext.TurnState.Get<Dictionary<string, List<Activity>>>(TurnResponseKey);
                         if (responses.ContainsKey(key))
                         {
                             responses[key].Add(activity);
@@ -240,7 +250,8 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Process wechat request failed.");
+                _logger.LogError(ex, "Process WeChat request failed.");
+                throw;
             }
         }
 
@@ -331,7 +342,8 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Send channelData to wechat failed");
+                _logger.LogError(e, "Send channel data to WeChat failed.");
+                throw;
             }
         }
 
@@ -387,22 +399,18 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                             await _wechatClient.SendVoiceAsync(openId, voice.MediaId).ConfigureAwait(false);
                             break;
                         case ResponseMessageType.LocationMessage:
-                            var locationResponse = response as ResponseMessage;
-
-                            // Currently not supported by wechat api.
-                            // TODO: find another way to send location message. perhaps using map service.
-                            break;
                         case ResponseMessageType.SuccessResponse:
                         case ResponseMessageType.Unknown:
                         case ResponseMessageType.NoResponse:
                         default:
-                            _logger.LogInformation("Get an unsupported messaged.");
+                            _logger.LogInformation($"Unsupported message type: {response.MsgType}");
                             break;
                     }
                 }
                 catch (Exception e)
                 {
-                    _logger.LogError(e, $"Send response to wechat failed");
+                    _logger.LogError(e, $"Send response to WeChat failed.");
+                    throw;
                 }
             }
         }

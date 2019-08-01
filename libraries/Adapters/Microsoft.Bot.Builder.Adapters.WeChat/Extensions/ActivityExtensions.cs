@@ -34,7 +34,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Extensions
             activity.From = new ChannelAccount(wechatRequest.FromUserName, "User", "user");
 
             // Message is handled by adapter itself, may not need serviceurl.
-            activity.ServiceUrl = Constants.ServiceUrl;
+            activity.ServiceUrl = string.Empty;
 
             // Set user ID as conversation id. wechat request don't have conversation id.
             // TODO: consider how to handle conversation end request if needed. For now Wechat don't have this type.

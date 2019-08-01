@@ -88,7 +88,9 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests
             Assert.Equal(".mp4", MapperUtils.GetMediaExtension("http://test.mp4", "video", UploadMediaType.Video));
             Assert.Equal(".ogv", MapperUtils.GetMediaExtension("http://test.jpg", "video/ogg", UploadMediaType.Video));
             Assert.Equal(".png", MapperUtils.GetMediaExtension("http://test.jpg", "image/png", UploadMediaType.Thumb));
-            Assert.Equal(".jpg", MapperUtils.GetMediaExtension("http://test", "image", UploadMediaType.Thumb));
+            Assert.Equal(".jpg", MapperUtils.GetMediaExtension("http://test", "bin", UploadMediaType.Thumb));
+            Assert.Equal(".mp4", MapperUtils.GetMediaExtension("http://test", "bin", UploadMediaType.Video));
+            Assert.Equal(".mp3", MapperUtils.GetMediaExtension("http://test", "bin", UploadMediaType.Voice));
         }
 
         private void AssertGeneralParameters(IRequestMessageBase requestMessage, IActivity activity)
@@ -107,7 +109,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests
                 Assert.True(requestMessage is IRequestMessageEventBase);
             }
 
-            Assert.Equal(Constants.ChannelId, activity.ChannelId);
+            Assert.Equal("wechat", activity.ChannelId);
             Assert.Equal(requestMessage.FromUserName, activity.Conversation.Id);
         }
     }

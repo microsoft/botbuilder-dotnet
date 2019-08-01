@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema;
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema.JsonResult;
@@ -44,7 +45,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
             _logger = logger ?? NullLogger.Instance;
             _attachmentStorage = attachmentStorage ?? WeChatAttachmentStorage.Instance;
             _tokenStorage = tokenStorage ?? AccessTokenStorage.Instance;
-            _attachmentHash = attachmentHash ?? MD5Hash.Instance;
+            _attachmentHash = attachmentHash ?? new MD5Hash();
         }
 
         /// <summary>
@@ -64,14 +65,15 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// Send message to user through customer service message api.
         /// </summary>
         /// <param name="data">Message data.</param>
-        /// <param name="type">Message type.</param>
+        /// <param name="timeout">Send message to user timeout.</param>
         /// <returns>Standard result of calling WeChat message API.</returns>
-        public async Task<WeChatJsonResult> SendMessageToUser(object data, string type = null)
+        public async Task<WeChatJsonResult> SendMessageToUser(object data, int timeout = 10000)
         {
             _logger.LogInformation("Send new message to user.");
             var accessToken = await GetAccessTokenAsync().ConfigureAwait(false);
             var url = GetMessageApiEndPoint(accessToken);
-            var bytes = await SendHttpRequestAsync(HttpMethod.Post, url, data).ConfigureAwait(false);
+
+            var bytes = await SendHttpRequestAsync(HttpMethod.Post, url, data, null, timeout).ConfigureAwait(false);
             var sendResult = ConvertBytesToType<WeChatJsonResult>(bytes);
             if (sendResult.ErrorCode != 0)
             {
@@ -91,12 +93,16 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// <param name="url">The url need to be requested.</param>
         /// <param name="data">The request payload.</param>
         /// <param name="token">Request auth token.</param>
+        /// <param name="timeout">Send http request timeout.</param>
         /// <returns>Response content as byte array.</returns>
-        public virtual async Task<byte[]> SendHttpRequestAsync(HttpMethod method, string url, object data = null, string token = null)
+        public virtual async Task<byte[]> SendHttpRequestAsync(HttpMethod method, string url, object data = null, string token = null, int timeout = 10000)
         {
             _logger.LogInformation($"Send {method.Method} request to {url}", Severity.Information);
-            var result = await MakeHttpRequestAsync(token, method, url, data).ConfigureAwait(false);
-            return result;
+            using (var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromMilliseconds(timeout)))
+            {
+                var result = await MakeHttpRequestAsync(token, method, url, data, cancellationTokenSource.Token).ConfigureAwait(false);
+                return result;
+            }
         }
 
         /// <summary>
@@ -129,9 +135,9 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// </summary>
         /// <param name="type">Media type.</param>
         /// <param name="attachmentData">attachment data to be uploaded.</param>
-        /// <param name="timeout">Request timeout (milliseconds).</param>
+        /// <param name="timeout">Upload temporary media timeout.</param>
         /// <returns>Result of upload Temporary media.</returns>
-        public virtual async Task<UploadTemporaryMediaResult> UploadTemporaryMediaAsync(string type, AttachmentData attachmentData, int timeout = 10000)
+        public virtual async Task<UploadTemporaryMediaResult> UploadTemporaryMediaAsync(string type, AttachmentData attachmentData, int timeout = 30000)
         {
             var mediaHash = _attachmentHash.Hash(attachmentData.OriginalBase64);
             var uploadResult = (await _attachmentStorage.GetAsync(mediaHash).ConfigureAwait(false)) as UploadTemporaryMediaResult;
@@ -139,7 +145,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
             {
                 var accessToken = await GetAccessTokenAsync().ConfigureAwait(false);
                 var url = GetUploadMediaEndPoint(accessToken, type, true);
-                uploadResult = await UploadMediaAsync<UploadTemporaryMediaResult>(attachmentData, url, type, mediaHash, true).ConfigureAwait(false);
+                uploadResult = await UploadMediaAsync<UploadTemporaryMediaResult>(attachmentData, url, type, mediaHash, true, timeout).ConfigureAwait(false);
                 if (uploadResult.ErrorCode == 0)
                 {
                     await _attachmentStorage.SaveAsync(mediaHash, uploadResult).ConfigureAwait(false);
@@ -160,9 +166,9 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// </summary>
         /// <param name="type">Upload media file type.</param>
         /// <param name="attachmentData">Attachment data to be uploaded.</param>
-        /// <param name="timeout">Request timeout (milliseconds).</param>
+        /// <param name="timeout">Upload persistent media timeout.</param>
         /// <returns>Result of upload persistent media.</returns>
-        public virtual async Task<UploadPersistentMediaResult> UploadPersistentMediaAsync(string type, AttachmentData attachmentData, int timeout = 10000)
+        public virtual async Task<UploadPersistentMediaResult> UploadPersistentMediaAsync(string type, AttachmentData attachmentData, int timeout = 30000)
         {
             var mediaHash = _attachmentHash.Hash(attachmentData.OriginalBase64);
             var uploadResult = (await _attachmentStorage.GetAsync(mediaHash).ConfigureAwait(false)) as UploadPersistentMediaResult;
@@ -170,14 +176,16 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
             {
                 var accessToken = await GetAccessTokenAsync().ConfigureAwait(false);
                 var url = GetUploadMediaEndPoint(accessToken, type, false);
-                uploadResult = await UploadMediaAsync<UploadPersistentMediaResult>(attachmentData, url, type, mediaHash, false).ConfigureAwait(false);
-                if (uploadResult.ErrorCode == 0)
                 {
-                    await _attachmentStorage.SaveAsync(mediaHash, uploadResult).ConfigureAwait(false);
-                }
-                else
-                {
-                    _logger.LogError(new Exception($"{uploadResult}"), $"Upload Persistent Media Failed, Type: {type}");
+                    uploadResult = await UploadMediaAsync<UploadPersistentMediaResult>(attachmentData, url, type, mediaHash, false, timeout).ConfigureAwait(false);
+                    if (uploadResult.ErrorCode == 0)
+                    {
+                        await _attachmentStorage.SaveAsync(mediaHash, uploadResult).ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        _logger.LogError(new Exception($"{uploadResult}"), $"Upload Persistent Media Failed, Type: {type}");
+                    }
                 }
             }
 
@@ -187,10 +195,10 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// <summary>
         /// Upload temporary graphic media.
         /// </summary>
-        /// <param name="timeout">Request timeout (milliseconds).</param>
         /// <param name="newsList">Graphic material list.</param>
+        /// <param name="timeout">Upload persistent news timeout.</param>
         /// <returns>Result of upload a persistent news.</returns>
-        public virtual async Task<UploadPersistentMediaResult> UploadPersistentNewsAsync(int timeout = 10000, params News[] newsList)
+        public virtual async Task<UploadPersistentMediaResult> UploadPersistentNewsAsync(News[] newsList, int timeout = 30000)
         {
             var mediaHash = _attachmentHash.Hash(JsonConvert.SerializeObject(newsList));
             var uploadResult = (await _attachmentStorage.GetAsync(mediaHash).ConfigureAwait(false)) as UploadPersistentMediaResult;
@@ -202,7 +210,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 {
                     articles = newsList,
                 };
-                var bytes = await SendHttpRequestAsync(HttpMethod.Post, url, data).ConfigureAwait(false);
+                var bytes = await SendHttpRequestAsync(HttpMethod.Post, url, data, null, timeout).ConfigureAwait(false);
                 uploadResult = ConvertBytesToType<UploadPersistentMediaResult>(bytes);
                 if (uploadResult.ErrorCode == 0)
                 {
@@ -222,10 +230,10 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// <summary>
         /// Upload temporary graphic media.
         /// </summary>
-        /// <param name="timeout">Request timeout (milliseconds).</param>
         /// <param name="newsList">Graphic material list.</param>
+        /// <param name="timeout">Upload temporary news timeout.</param>
         /// <returns>Result of upload a temporary news.</returns>
-        public virtual async Task<UploadTemporaryMediaResult> UploadTemporaryNewsAsync(int timeout = 10000, params News[] newsList)
+        public virtual async Task<UploadTemporaryMediaResult> UploadTemporaryNewsAsync(News[] newsList, int timeout = 30000)
         {
             var mediaHash = _attachmentHash.Hash(JsonConvert.SerializeObject(newsList));
             var uploadResult = await _attachmentStorage.GetAsync(mediaHash).ConfigureAwait(false) as UploadTemporaryMediaResult;
@@ -237,7 +245,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 {
                     articles = newsList,
                 };
-                var bytes = await SendHttpRequestAsync(HttpMethod.Post, url, data).ConfigureAwait(false);
+                var bytes = await SendHttpRequestAsync(HttpMethod.Post, url, data, null, timeout).ConfigureAwait(false);
                 uploadResult = ConvertBytesToType<UploadTemporaryMediaResult>(bytes);
                 if (uploadResult.ErrorCode == 0)
                 {
@@ -252,23 +260,6 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
             }
 
             return uploadResult;
-        }
-
-        /// <summary>
-        /// Send customer service agent input status.
-        /// </summary>
-        /// <param name="openId">WeChat user's open id.</param>
-        /// <param name="typingStatus">Agent typing status, can be Tying/CancelTyping.</param>
-        /// <param name="timeout">Request timeout (milliseconds).</param>
-        /// <returns>Standard result of calling WeChat message API.</returns>
-        public async Task<WeChatJsonResult> SendTypingStatusAsync(string openId, string typingStatus, int timeout = 10000)
-        {
-            object data = new
-            {
-                touser = openId,
-                command = typingStatus,
-            };
-            return await SendMessageToUser(data).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -311,7 +302,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 };
             }
 
-            return await SendMessageToUser(data).ConfigureAwait(false);
+            return await SendMessageToUser(data, timeout).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -355,7 +346,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 };
             }
 
-            return await SendMessageToUser(data).ConfigureAwait(false);
+            return await SendMessageToUser(data, timeout).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -410,7 +401,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 };
             }
 
-            return await SendMessageToUser(data).ConfigureAwait(false);
+            return await SendMessageToUser(data, timeout).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -465,7 +456,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 };
             }
 
-            return await SendMessageToUser(data).ConfigureAwait(false);
+            return await SendMessageToUser(data, timeout).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -508,7 +499,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 };
             }
 
-            return await SendMessageToUser(data).ConfigureAwait(false);
+            return await SendMessageToUser(data, timeout).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -560,7 +551,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 };
             }
 
-            return await SendMessageToUser(data).ConfigureAwait(false);
+            return await SendMessageToUser(data, timeout).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -603,7 +594,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 };
             }
 
-            return await SendMessageToUser(data).ConfigureAwait(false);
+            return await SendMessageToUser(data, timeout).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -613,8 +604,9 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// <param name="method">Http method.</param>
         /// <param name="url">Request URL.</param>
         /// <param name="data">Request data.</param>
+        /// <param name="cancellationToken">Cancellation token to cancell the request.</param>
         /// <returns>Http response content as byte array.</returns>
-        private static async Task<byte[]> MakeHttpRequestAsync(string token, HttpMethod method, string url, object data = null)
+        private static async Task<byte[]> MakeHttpRequestAsync(string token, HttpMethod method, string url, object data = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             try
             {
@@ -631,7 +623,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                         requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
                     }
 
-                    using (var response = await HttpClient.SendAsync(requestMessage).ConfigureAwait(false))
+                    using (var response = await HttpClient.SendAsync(requestMessage, cancellationToken).ConfigureAwait(false))
                     {
                         if (!response.IsSuccessStatusCode)
                         {
@@ -679,6 +671,11 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
             return $"{ApiHost}/cgi-bin/material/add_news?access_token={accessToken}";
         }
 
+        private static string GetAcquireMediaUrlEndPoint(string accessToken)
+        {
+            return $"{ApiHost}/cgi-bin/media/uploadimg?access_token={accessToken}";
+        }
+
         /// <summary>
         /// Convert result byte array from http call to a specific type.
         /// </summary>
@@ -700,8 +697,9 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// <param name="type">The upload media type.</param>
         /// <param name="mediaHash">The media content hash result.</param>
         /// <param name="isTemporaryMedia">If upload media as a temporary media.</param>
+        /// <param name="timeout">Upload media timeout.</param>
         /// <returns>Uploaded result from WeChat.</returns>
-        private async Task<T> UploadMediaAsync<T>(AttachmentData attachmentData, string url, string type, string mediaHash, bool isTemporaryMedia)
+        private async Task<T> UploadMediaAsync<T>(AttachmentData attachmentData, string url, string type, string mediaHash, bool isTemporaryMedia, int timeout = 30000)
         {
             try
             {
@@ -730,7 +728,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 }
 
                 _logger.LogInformation($"Upload {type} to WeChat", Severity.Information);
-                var response = await SendHttpRequestAsync(HttpMethod.Post, url, content).ConfigureAwait(false);
+                var response = await SendHttpRequestAsync(HttpMethod.Post, url, content, null, timeout).ConfigureAwait(false);
                 return ConvertBytesToType<T>(response);
             }
             catch (Exception ex)

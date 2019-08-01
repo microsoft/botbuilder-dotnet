@@ -10,8 +10,8 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
     /// </summary>
     public static class MimeTypesMap
     {
-        private const string DefaultExtension = null;
         private const string DefaultMimeType = "application/octet-stream";
+        public const string DefaultExtension = "bin";
 
         /// <summary>
         /// Lazy instance of an Dictionary which store the extension/mimetype pairs.
@@ -747,10 +747,10 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
             ["rmi"] = "audio/midi",
             ["m4a"] = "audio/mp4",
             ["mp4a"] = "audio/mp4",
+            ["mp3"] = "audio/mpeg",
             ["mpga"] = "audio/mpeg",
             ["mp2"] = "audio/mpeg",
             ["mp2a"] = "audio/mpeg",
-            ["mp3"] = "audio/mpeg",
             ["m2a"] = "audio/mpeg",
             ["m3a"] = "audio/mpeg",
             ["oga"] = "audio/ogg",
@@ -803,8 +803,8 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
             ["g3"] = "image/g3fax",
             ["gif"] = "image/gif",
             ["ief"] = "image/ief",
-            ["jpeg"] = "image/jpeg",
             ["jpg"] = "image/jpeg",
+            ["jpeg"] = "image/jpeg",
             ["jpe"] = "image/jpeg",
             ["ktx"] = "image/ktx",
             ["png"] = "image/png",

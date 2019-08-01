@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests
         {
         }
 
-        public override Task<byte[]> SendHttpRequestAsync(HttpMethod method, string url, object data = null, string token = null)
+        public override Task<byte[]> SendHttpRequestAsync(HttpMethod method, string url, object data = null, string token = null, int timeout = 10000)
         {
             if (url.Contains("token"))
             {

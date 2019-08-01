@@ -55,6 +55,11 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests
             return mockRequest;
         }
 
-        private static Mock<HttpResponse> CreateMockResponse() => new Mock<HttpResponse>();
+        private static Mock<HttpResponse> CreateMockResponse()
+        {
+            var mockResponse = new Mock<HttpResponse>();
+            mockResponse.Setup(x => x.Body).Returns(new MemoryStream());
+            return mockResponse;
+        }
     }
 }

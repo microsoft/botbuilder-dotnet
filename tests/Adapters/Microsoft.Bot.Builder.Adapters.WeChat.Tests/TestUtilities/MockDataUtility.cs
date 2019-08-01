@@ -473,7 +473,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests.TestUtilities
         {
             var mockActivity = Activity.CreateMessageActivity();
             mockActivity.Id = "id";
-            mockActivity.ChannelId = Constants.ChannelId;
+            mockActivity.ChannelId = "wechat";
             mockActivity.From = new ChannelAccount("FromId", "Bot", "bot");
             mockActivity.Recipient = new ChannelAccount("RecipientId", "User", "user");
             mockActivity.Conversation = new ConversationAccount(false, id: "FromId");
@@ -488,7 +488,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests.TestUtilities
         public static IEventActivity GetMockEventActivity()
         {
             var mockActivity = Activity.CreateEventActivity();
-            mockActivity.ChannelId = Constants.ChannelId;
+            mockActivity.ChannelId = "wechat";
             mockActivity.From = new ChannelAccount("FromId", "Bot", "bot");
             mockActivity.Recipient = new ChannelAccount("RecipientId", "User", "user");
 
@@ -679,12 +679,12 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests.TestUtilities
             var result = JsonConvert.SerializeObject(WeChatJsonResult);
             var byteResult = Encoding.UTF8.GetBytes(result);
             wechatClient.Setup(c => c.GetAccessTokenAsync()).Returns(Task.FromResult("mockToken"));
-            wechatClient.Setup(c => c.SendHttpRequestAsync(It.IsAny<HttpMethod>(), It.IsAny<string>(), It.IsAny<object>(), It.IsAny<string>())).Returns(Task.FromResult(byteResult));
+            wechatClient.Setup(c => c.SendHttpRequestAsync(It.IsAny<HttpMethod>(), It.IsAny<string>(), It.IsAny<object>(), It.IsAny<string>(), It.IsAny<int>())).Returns(Task.FromResult(byteResult));
 
             wechatClient.Setup(c => c.UploadTemporaryMediaAsync(It.IsAny<string>(), It.IsAny<AttachmentData>(), It.IsAny<int>())).Returns(MockTempMediaResult(UploadMediaType.Image));
-            wechatClient.Setup(c => c.UploadTemporaryNewsAsync(It.IsAny<int>(), It.IsAny<News[]>())).Returns(MockTempMediaResult(UploadMediaType.News));
+            wechatClient.Setup(c => c.UploadTemporaryNewsAsync(It.IsAny<News[]>(), It.IsAny<int>())).Returns(MockTempMediaResult(UploadMediaType.News));
             wechatClient.Setup(c => c.UploadPersistentMediaAsync(It.IsAny<string>(), It.IsAny<AttachmentData>(), It.IsAny<int>())).Returns(MockForeverMediaResult());
-            wechatClient.Setup(c => c.UploadPersistentNewsAsync(It.IsAny<int>(), It.IsAny<News[]>())).Returns(MockForeverMediaResult());
+            wechatClient.Setup(c => c.UploadPersistentNewsAsync(It.IsAny<News[]>(), It.IsAny<int>())).Returns(MockForeverMediaResult());
 
             return wechatClient.Object;
         }
