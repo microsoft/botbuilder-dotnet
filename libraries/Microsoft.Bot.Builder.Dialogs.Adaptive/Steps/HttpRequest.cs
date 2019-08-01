@@ -194,53 +194,54 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
 
             HttpResponseMessage response = null;
 
-            if (this.Method == HttpMethod.POST)
+            switch (this.Method)
             {
-                if (instanceBody == null)
-                {
-                    response = await client.PostAsync(instanceUrl, null);
-                }
-                else
-                {
-                    response = await client.PostAsync(instanceUrl, new StringContent(instanceBody.ToString(), Encoding.UTF8, "application/json"));
-                }
-            }
+                case HttpMethod.POST:
+                    if (instanceBody == null)
+                    {
+                        response = await client.PostAsync(instanceUrl, null);
+                    }
+                    else
+                    {
+                        response = await client.PostAsync(instanceUrl, new StringContent(instanceBody.ToString(), Encoding.UTF8, "application/json"));
+                    }
 
-            if (this.Method == HttpMethod.PATCH)
-            {
-                if (instanceBody == null)
-                {
-                    var request = new HttpRequestMessage(new System.Net.Http.HttpMethod("PATCH"), instanceUrl);
-                    response = await client.SendAsync(request);
-                }
-                else
-                {
-                    var request = new HttpRequestMessage(new System.Net.Http.HttpMethod("PATCH"), instanceUrl);
-                    request.Content = new StringContent(instanceBody.ToString(), Encoding.UTF8, "application/json");
-                    response = await client.SendAsync(request);
-                }
-            }
+                    break;
 
-            if (this.Method == HttpMethod.PUT)
-            {
-                if (instanceBody == null)
-                {
-                    response = await client.PutAsync(instanceUrl, null);
-                }
-                else
-                {
-                    response = await client.PutAsync(instanceUrl, new StringContent(instanceBody.ToString(), Encoding.UTF8, "application/json"));
-                }
-            }
+                case HttpMethod.PATCH:
+                    if (instanceBody == null)
+                    {
+                        var request = new HttpRequestMessage(new System.Net.Http.HttpMethod("PATCH"), instanceUrl);
+                        response = await client.SendAsync(request);
+                    }
+                    else
+                    {
+                        var request = new HttpRequestMessage(new System.Net.Http.HttpMethod("PATCH"), instanceUrl);
+                        request.Content = new StringContent(instanceBody.ToString(), Encoding.UTF8, "application/json");
+                        response = await client.SendAsync(request);
+                    }
 
-            if (this.Method == HttpMethod.DELETE)
-            {
-                response = await client.DeleteAsync(instanceUrl);
-            }
+                    break;
 
-            if (this.Method == HttpMethod.GET)
-            {
-                response = await client.GetAsync(instanceUrl);
+                case HttpMethod.PUT:
+                    if (instanceBody == null)
+                    {
+                        response = await client.PutAsync(instanceUrl, null);
+                    }
+                    else
+                    {
+                        response = await client.PutAsync(instanceUrl, new StringContent(instanceBody.ToString(), Encoding.UTF8, "application/json"));
+                    }
+
+                    break;
+
+                case HttpMethod.DELETE:
+                    response = await client.DeleteAsync(instanceUrl);
+                    break;
+
+                case HttpMethod.GET:
+                    response = await client.GetAsync(instanceUrl);
+                    break;
             }
 
             object result = (object)await response.Content.ReadAsStringAsync();
