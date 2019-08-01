@@ -1,0 +1,72 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "type": "object",
+    "properties": {
+        "size": {
+            "type": "string",
+            "enum": [
+                "small",
+                "large"
+            ]
+        },
+        "bread": {
+            "type": "string",
+            "enum": [
+                "multigrain",
+                "rye",
+                "white",
+                "none"
+            ]
+        },
+        "cheese": {
+            "type": "string",
+            "enum": [
+                "american",
+                "cheddar",
+                "feta",
+                "gouda",
+                "pepper jack",
+                "provolone",
+                "swiss",
+                "none"
+            ]
+        },
+        "meat": {
+            "type": "string",
+            "enum": [
+                "bacon",
+                "chicken",
+                "ham",
+                "pulled pork",
+                "roast beef",
+                "salami",
+                "turkey",
+                "none"
+            ]
+        },
+        "toppings": {
+            "type": "array",
+            "items": {
+                "type": "string",
+                "enum": [
+                    "avocado",
+                    "banana peppers",
+                    "green peppers",
+                    "green onions",
+                    "ketchup",
+                    "lettuce",
+                    "olive oil",
+                    "mayo",
+                    "mushrooms",
+                    "mustard",
+                    "olives",
+                    "radish",
+                    "red peppers",
+                    "tomatoes",
+                    "pickles",
+                    "white onions"
+                ]
+            }
+        }
+    }
+}
