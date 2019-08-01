@@ -26,6 +26,11 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// <param name="options">A set of params with the required values for authentication.</param>
         public TwilioAdapter(ITwilioAdapterOptions options)
         {
+            if (_options is null)
+            {
+                throw new ArgumentNullException(nameof(_options));
+            }
+
             _options = options;
 
             if (string.IsNullOrWhiteSpace(options.TwilioNumber))
@@ -62,7 +67,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
                 {
                     var messageOptions = ActivityToTwilio(activity);
 
-                    var res = await MessageResource.CreateAsync(messageOptions);
+                    var res = await MessageResource.CreateAsync(messageOptions).ConfigureAwait(false);
 
                     var response = new ResourceResponse()
                     {
@@ -91,7 +96,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         public async Task ProcessAsync(HttpRequest request, HttpResponse response, IBot bot, CancellationToken cancellationToken = default)
         {
             response.StatusCode = 200;
-            await response.WriteAsync(string.Empty, cancellationToken);
+            await response.WriteAsync(string.Empty, cancellationToken).ConfigureAwait(false);
 
             var twilioSignature = request.Headers["x-twilio-signature"];
 
@@ -144,12 +149,12 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
                 // create a conversation reference
                 using (var context = new TurnContext(this, activity))
                 {
-                    await RunPipelineAsync(context, bot.OnTurnAsync, default);
+                    await RunPipelineAsync(context, bot.OnTurnAsync, cancellationToken).ConfigureAwait(false);
 
                     response.StatusCode = 200;
                     response.ContentType = "text/plain";
                     var text = (context.TurnState["httpBody"] != null) ? context.TurnState["httpBody"].ToString() : string.Empty;
-                    await response.WriteAsync(text, cancellationToken);
+                    await response.WriteAsync(text, cancellationToken).ConfigureAwait(false);
                 }
             }
         }
@@ -161,10 +166,10 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// <param name="activity">The updated activity in the form '{id: `id of activity to update`, ...}'.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A resource response with the Id of the updated activity.</returns>
-        public override async Task<ResourceResponse> UpdateActivityAsync(ITurnContext turnContext, Activity activity, CancellationToken cancellationToken)
+        public override Task<ResourceResponse> UpdateActivityAsync(ITurnContext turnContext, Activity activity, CancellationToken cancellationToken)
         {
             // Twilio adapter does not support updateActivity.
-            return await Task.FromException<ResourceResponse>(new NotSupportedException("Twilio SMS does not support updating activities."));
+            return Task.FromException<ResourceResponse>(new NotSupportedException("Twilio SMS does not support updating activities."));
         }
 
         /// <summary>
@@ -174,10 +179,10 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// <param name="reference">An object in the form "{activityId: `id of message to delete`, conversation: { id: `id of channel`}}".</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public override async Task DeleteActivityAsync(ITurnContext turnContext, ConversationReference reference, CancellationToken cancellationToken)
+        public override Task DeleteActivityAsync(ITurnContext turnContext, ConversationReference reference, CancellationToken cancellationToken)
         {
             // Twilio adapter does not support deleteActivity.
-            await Task.FromException<ResourceResponse>(new NotSupportedException("Twilio SMS does not support deleting activities."));
+            return Task.FromException<ResourceResponse>(new NotSupportedException("Twilio SMS does not support deleting activities."));
         }
 
         /// <summary>
@@ -210,14 +215,15 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// </summary>
         /// <param name="reference">A conversation reference to be applied to future messages.</param>
         /// <param name="logic">A bot logic function that will perform continuing action in the form 'async(context) => { ... }'.</param>
+        /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        private async Task ContinueConversationAsync(ConversationReference reference, BotCallbackHandler logic)
+        private async Task ContinueConversationAsync(ConversationReference reference, BotCallbackHandler logic, CancellationToken cancellationToken)
         {
             var request = reference.GetContinuationActivity().ApplyConversationReference(reference, true);
 
             using (var context = new TurnContext(this, request))
             {
-                await RunPipelineAsync(context, logic, default);
+                await RunPipelineAsync(context, logic, cancellationToken).ConfigureAwait(false);
             }
         }
 
