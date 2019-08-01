@@ -337,10 +337,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     new SendActivity("{dialog.name}"),
                     new AdaptiveDialog("d1")
                     {
-                        InputBindings = new Dictionary<string, string>() { { "$address.name", "dialog.name" } },
+                        InputBindings = new Dictionary<string, string>() { { "dialog.name", "$name" } },
                         Steps = new List<IDialog>()
                         {
-                            new SendActivity("nested dialogCommand {$address.name}")
+                            new SendActivity("nested d1 {$name}"),
+                            new SetProperty() { Property = "dialog.name", Value = "'testDialogd1'" },
+                            new SendActivity("nested d1 {$name}"),
                         }
                     },
                     new BeginDialog()
@@ -348,10 +350,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         // bind dialog.name -> adaptive dialog
                         Dialog = new AdaptiveDialog("d2")
                         {
-                            InputBindings = new Dictionary<string, string>() { { "$address.name", "dialog.name" } },
+                            InputBindings = new Dictionary<string, string>() { { "dialog.name", "$name" } },
                             Steps = new List<IDialog>()
                             {
-                                new SendActivity("nested begindialog {$address.name}")
+                                new SendActivity("nested d2 {$name}"),
+                                new SetProperty() { Property = "dialog.name", Value = "'testDialogd2'" },
+                                new SendActivity("nested d2 {$name}"),
                             }
                         }
                     },
@@ -361,8 +365,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             await CreateFlow(testDialog)
                     .SendConversationUpdate()
                         .AssertReply("testDialog")
-                        .AssertReply("nested dialogCommand testDialog")
-                        .AssertReply("nested begindialog testDialog")
+                        .AssertReply("nested d1 testDialog")
+                        .AssertReply("nested d1 testDialogd1")
+                        .AssertReply("nested d2 testDialog")
+                        .AssertReply("nested d2 testDialogd2")
                     .StartTestAsync();
         }
 
@@ -449,8 +455,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 AutoEndDialog = false,
                 Steps = new List<IDialog>()
                 {
-                    new SetProperty() { Property = "$xxx", Value = "'xxx'" },
+                    new SetProperty() { Property = "dialog.xyz", Value = "'xyz'" },
                     new SetProperty() { Property = "$aaa", Value = "'d1'" },
+                    new SendActivity("{dialog.xyz}"),
+                    new SendActivity("{$xyz}"),
                     new SendActivity("{$aaa}"),
                     new BeginDialog()
                     {
@@ -458,9 +466,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         {
                             Steps = new List<IDialog>()
                             {
-                                new SetProperty() { Property = "$yyy", Value = "'yyy'" },
-                                new SendActivity("{$aaa == null}"),
-                                new SendActivity("{^aaa}"),
+                                new SetProperty() { Property = "$bbb", Value = "'bbb'" },
+                                new SendActivity("{$aaa}"),
+                                new SendActivity("{$xyz}"),
+                                new SendActivity("{$bbb}"),
                                 new BeginDialog()
                                 {
                                     Dialog = new AdaptiveDialog("d3")
@@ -470,12 +479,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                             new SetProperty() { Property = "$zzz", Value = "'zzz'" },
                                             new SetProperty() { Property = "$aaa", Value = "'d3'" },
                                             new SendActivity("{$aaa}"),
-                                            new SendActivity("{^aaa}"),
                                             new SendActivity("{$zzz}"),
-                                            new SendActivity("{$yyy==null}"),
-                                            new SendActivity("{$xxx==null}"),
-                                            new SendActivity("{^yyy}"),
-                                            new SendActivity("{^xxx}"),
+                                            new SendActivity("{$bbb}"),
+                                            new SendActivity("{$xyz}"),
                                         }
                                     }
                                 },
@@ -488,18 +494,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             await CreateFlow(testDialog)
                     .SendConversationUpdate()
                         // d1
+                        .AssertReply("xyz")
+                        .AssertReply("xyz")
                         .AssertReply("d1")
                         // d2
-                        .AssertReply("True")
                         .AssertReply("d1")
+                        .AssertReply("xyz")
+                        .AssertReply("bbb")
                         // d3
                         .AssertReply("d3")
-                        .AssertReply("d3")
                         .AssertReply("zzz")
-                        .AssertReply("True")
-                        .AssertReply("True")
-                        .AssertReply("yyy")
-                        .AssertReply("xxx")
+                        .AssertReply("bbb")
+                        .AssertReply("xyz")
                     .StartTestAsync();
         }
 

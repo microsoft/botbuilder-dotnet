@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.StreamingExtensions.Payloads
 {
-    internal class PayloadStreamAssembler : IAssembler
+    public class PayloadStreamAssembler : IAssembler
     {
         private object _syncLock = new object();
         private readonly IStreamManager _streamManager;

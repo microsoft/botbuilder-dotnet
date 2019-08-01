@@ -6,7 +6,7 @@ using Microsoft.Bot.StreamingExtensions.PayloadTransport;
 
 namespace Microsoft.Bot.StreamingExtensions.Payloads
 {
-    internal class ResponseMessageStreamDisassembler : PayloadDisassembler
+    public class ResponseMessageStreamDisassembler : PayloadDisassembler
     {
         public ResponseMessageStreamDisassembler(IPayloadSender sender, ResponseMessageStream contentStream)
             : base(sender, contentStream.Id)

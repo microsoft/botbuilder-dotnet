@@ -6,9 +6,6 @@
     "type": "object",
     "allOf": [
         {
-            "$ref": "./baseInputSchema.json"
-        },
-        {
             "properties": {
                 "outputFormat": {
                     "type": "string",
@@ -23,18 +20,12 @@
                     "default": "none"
                 },
                 "allowInterruptions": {
-                    "type": "string",
-                    "enum": [
-                      "always",
-                      "never",
-                      "notRecognized"
-                    ],
-                    "title": "Allow Interruptions",
-                    "description": "always will always consult parent dialogs first, never will not consult parent dialogs, notRecognized will consult parent only when it's not recognized",
-                    "default": "always",
-                    "examples": [ "always" ]
+                   "default":  "always"
                 }
             }
+        },
+        {
+            "$ref": "./baseInputSchema.json"
         }
     ]
 }

@@ -39,7 +39,6 @@
     <None Remove="ExceptionExamples\DuplicatedTemplatesInImportFiles.lg" />
     <None Remove="ExceptionExamples\EmptyLGFile.lg" />
     <None Remove="ExceptionExamples\EmptyTemplate.lg" />
-    <None Remove="ExceptionExamples\ErrorEscapeCharacter.lg" />
     <None Remove="ExceptionExamples\ErrorExpression.lg" />
     <None Remove="ExceptionExamples\ErrorSeperateChar.lg" />
     <None Remove="ExceptionExamples\ErrorSeperateChar2.lg" />
@@ -153,9 +152,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="ExceptionExamples\EmptyTemplate.lg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="ExceptionExamples\ErrorEscapeCharacter.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="ExceptionExamples\ErrorExpression.lg">
