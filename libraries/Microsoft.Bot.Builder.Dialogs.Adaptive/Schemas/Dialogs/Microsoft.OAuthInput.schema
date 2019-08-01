@@ -26,7 +26,7 @@
                     "description": "Title shown in the OAuth signin card."
                 },
                 "timeout": {
-                    "type": "integer",                  
+                    "type": "integer",
                     "title": "Timeout",
                     "description": "Time out setting for the OAuth signin card.",
                     "default": "900000"

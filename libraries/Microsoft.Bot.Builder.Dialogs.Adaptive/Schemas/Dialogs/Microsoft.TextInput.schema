@@ -20,7 +20,7 @@
                     "default": "none"
                 },
                 "allowInterruptions": {
-                   "default":  "always"
+                    "default": "always"
                 }
             }
         },
