@@ -46,7 +46,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// Default is 900,000 (15 minutes).
         /// </summary>
         /// <value>The number of milliseconds the prompt waits for the user to authenticate.</value>
-        public double Timeout { get; set; } = 900000;
+        public int Timeout { get; set; } = 900000;
 
         /// <summary>
         /// The property from memory to pass to the calling dialog and to set the return value to.
@@ -106,7 +106,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             }
 
             // Initialize state
-            var timeout = Timeout;
             var state = dc.ActiveDialog.State;
             state[PersistedOptions] = opt;
             state[PersistedState] = new Dictionary<string, object>
@@ -114,7 +113,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 { AttemptCountKey, 0 },
             };
 
-            state[PersistedExpires] = DateTime.Now.AddMilliseconds(timeout);
+            state[PersistedExpires] = DateTime.Now.AddMilliseconds(Timeout);
 
             // Attempt to get the users token
             if (!(dc.Context.Adapter is IUserTokenProvider adapter))
