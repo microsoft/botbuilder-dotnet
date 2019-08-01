@@ -1,0 +1,37 @@
+{
+    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-dotnet/4.Future/Schemas/component.schema",
+    "$role": "unionType(Microsoft.IDialog)",
+    "title": "OAuthInput Dialog",
+    "description": "This represents a dialog which gathers an OAuth token from user",
+    "type": "object",
+    "allOf": [
+        {
+            "$ref": "./baseSchema.json"
+        },
+        {
+            "properties": {
+                "connectionName": {
+                    "type": "string",
+                    "title": "Connection Name",
+                    "description": "The connection name configured in Azure Web App Bot OAuth settings."
+                },
+                "text": {
+                    "type": "string",
+                    "title": "Text",
+                    "description": "Text shown in the OAuth signin card."
+                },
+                "title": {
+                    "type": "string",
+                    "title": "Title",
+                    "description": "Title shown in the OAuth signin card."
+                },
+                "timeout": {
+                    "type": "integer",                  
+                    "title": "Timeout",
+                    "description": "Time out setting for the OAuth signin card.",
+                    "default": "900000"
+                }
+            }
+        }
+    ]
+}

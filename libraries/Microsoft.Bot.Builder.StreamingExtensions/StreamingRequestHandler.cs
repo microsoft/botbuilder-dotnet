@@ -16,14 +16,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
-#if SIGNASSEMBLY
-[assembly: System.Runtime.CompilerServices.InternalsVisibleTo(
-    "Microsoft.Bot.StreamingExtensions.Tests, PublicKey=0024000004800000940000000602000000240000525341310004000001000100b5fc90e7027f67871e773a8fde8938c81dd402ba65b9201d60593e96c492651e889cc13f1415ebb53fac1131ae0bd333c5ee6021672d9718ea31a8aebd0da0072f25d87dba6fc90ffd598ed4da35e44c398c454307e8e33b8426143daec9f596836f97c8f74750e5975c64e2189f45def46b2a2b1247adc3652bf5c308055da9")]
-#else
-[assembly: System.Runtime.CompilerServices.InternalsVisibleTo(
-    "Microsoft.Bot.StreamingExtensions.Tests")]
-#endif
-
 namespace Microsoft.Bot.Builder.StreamingExtensions
 {
 #pragma warning disable SA1202
@@ -44,11 +36,9 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
 
         private readonly IServiceProvider _services;
 
-        internal IStreamingTransportServer _transportServer;
+        private IStreamingTransportServer _transportServer;
 
-#pragma warning disable IDE0044
-        internal string _userAgent;
-#pragma warning restore IDE0044
+        public string UserAgent { get; private set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="StreamingRequestHandler"/> class.
@@ -60,12 +50,14 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
         /// <param name="onTurnError">Optional function to perform on turn errors.</param>
         /// <param name="bot">The <see cref="IBot"/> to be used for all requests to this handler.</param>
         /// <param name="middlewareSet">An optional set of middleware to register with the bot.</param>
-        public StreamingRequestHandler(Func<ITurnContext, Exception, Task> onTurnError, IBot bot, IList<IMiddleware> middlewareSet = null)
+        /// <param name="transportServer">An optional streaming transport server.</param>
+        public StreamingRequestHandler(Func<ITurnContext, Exception, Task> onTurnError, IBot bot, IList<IMiddleware> middlewareSet = null, IStreamingTransportServer transportServer = null)
         {
             _onTurnError = onTurnError;
             _bot = bot ?? throw new ArgumentNullException(nameof(bot));
             _middlewareSet = middlewareSet ?? new List<IMiddleware>();
-            _userAgent = GetUserAgent();
+            UserAgent = GetUserAgent();
+            _transportServer = transportServer;
         }
 
         /// <summary>
@@ -82,7 +74,7 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
             _onTurnError = onTurnError;
             _services = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
             _middlewareSet = middlewareSet ?? new List<IMiddleware>();
-            _userAgent = GetUserAgent();
+            UserAgent = GetUserAgent();
         }
 
         /// <summary>
@@ -135,7 +127,7 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
                          string.Equals(request.Path, "/api/version", StringComparison.InvariantCultureIgnoreCase))
             {
                 response.StatusCode = (int)HttpStatusCode.OK;
-                response.SetBody(new VersionInfo() { UserAgent = _userAgent });
+                response.SetBody(new VersionInfo() { UserAgent = UserAgent });
 
                 return response;
             }
