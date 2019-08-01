@@ -107,7 +107,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
 
             using (var bodyStream = new StreamReader(request.Body))
             {
-                dynamic payload = bodyStream.ReadToEnd();
+                var payload = bodyStream.ReadToEnd();
 
                 var formattedPayload = payload.Replace("+", "%20");
 
@@ -118,9 +118,9 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
                 {
                     var jsonBody = JsonConvert.SerializeObject(body);
 
-                    TwilioEvent twilioEvent = JsonConvert.DeserializeObject<TwilioEvent>(jsonBody);
+                    var twilioEvent = JsonConvert.DeserializeObject<TwilioEvent>(jsonBody);
 
-                    if (Convert.ToInt32(twilioEvent.NumMedia, CultureInfo.InvariantCulture) > 0)
+                    if (int.TryParse(twilioEvent.NumMedia, out var numMediaResult) && numMediaResult > 0)
                     {
                         // specify a different event type
                         twilioEvent.EventType = "picture_message";
