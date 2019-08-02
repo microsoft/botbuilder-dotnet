@@ -75,6 +75,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             {
                 return base.TelemetryClient;
             }
+
             set
             {
                 var client = value ?? new NullBotTelemetryClient();
@@ -197,6 +198,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                             var recognizedIntentEvent = new DialogEvent() { Name = AdaptiveEvents.RecognizedIntent, Value = recognized, Bubble = false };
                             handled = await this.ProcessEventAsync(sequenceContext, dialogEvent: recognizedIntentEvent, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
                         }
+
                         break;
                 }
             }
@@ -268,7 +270,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
         public void AddEvent(IOnEvent evt)
         {
-            evt.Actions.ForEach(s => _dialogs.Add(s));
+            evt.Actions.ForEach(action => _dialogs.Add(action));
             this.Events.Add(evt);
         }
 
@@ -280,7 +282,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
         }
 
-        public void AddDialog(IEnumerable<IDialog> dialogs)
+        public void AddDialogs(IEnumerable<IDialog> dialogs)
         {
             foreach (var dialog in dialogs)
             {
@@ -297,7 +299,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
             return $"AdaptiveDialog[{this.BindingPath()}]";
         }
-        
+
         public override DialogContext CreateChildContext(DialogContext dc)
         {
             var activeDialogState = dc.ActiveDialog.State as Dictionary<string, object>;
@@ -311,7 +313,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
             if (state.Actions != null && state.Actions.Any())
             {
-                var ctx = new SequenceContext(this._dialogs, dc, state.Actions.First(), state.Actions, changeKey);
+                var ctx = new SequenceContext(this._dialogs, dc, state.Actions.First(), state.Actions, changeKey, this._dialogs);
                 ctx.Parent = dc;
                 return ctx;
             }
@@ -377,7 +379,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 }
 
                 // End current step
-                await this.EndCurrentStepAsync(sequenceContext, cancellationToken).ConfigureAwait(false);
+                await this.EndCurrentActionAsync(sequenceContext, cancellationToken).ConfigureAwait(false);
 
                 // Execute next step
                 // We call continueDialog() on the root dialog to ensure any changes queued up
@@ -396,7 +398,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
         }
 
-        protected async Task<bool> EndCurrentStepAsync(SequenceContext sequenceContext, CancellationToken cancellationToken = default(CancellationToken))
+        protected async Task<bool> EndCurrentActionAsync(SequenceContext sequenceContext, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (sequenceContext.Actions.Any())
             {
@@ -505,9 +507,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 {
                     installedDependencies = true;
 
-                    foreach (var evt in this.Events)
+                    foreach (var @event in this.Events)
                     {
-                        AddDialog(evt.Actions.ToArray());
+                        AddDialogs(@event.Actions);
                     }
 
                     // Wire up selector
@@ -545,7 +547,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 state.Actions = new List<ActionState>();
             }
 
-            var sequenceContext = new SequenceContext(dc.Dialogs, dc, new DialogState() { DialogStack = dc.Stack }, state.Actions, changeKey);
+            var sequenceContext = new SequenceContext(dc.Dialogs, dc, new DialogState() { DialogStack = dc.Stack }, state.Actions, changeKey, this._dialogs);
             sequenceContext.Parent = dc.Parent;
             return sequenceContext;
         }

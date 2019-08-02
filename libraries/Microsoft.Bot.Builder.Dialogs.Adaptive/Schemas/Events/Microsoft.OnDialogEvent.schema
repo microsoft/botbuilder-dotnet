@@ -1,12 +1,12 @@
-﻿{
+{
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
     "$ref": "./Microsoft.OnEvent.schema#",
-    "title": "OnDialogEvent",
+    "title": "Event Event",
     "description": "Defines a rule for an event which is triggered by some source",
     "type": "object",
     "allOf": [
         {
-            "$ref": "./Microsoft.OnEvent.schema#"
+            "$ref": "./Microsoft.OnEvent.schema"
         },
         {
             "properties": {

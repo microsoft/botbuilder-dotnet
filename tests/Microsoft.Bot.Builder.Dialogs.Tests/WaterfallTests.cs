@@ -155,7 +155,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void WaterfallWithActionsNull()
+        public void WaterfallWithStepsNull()
         {
             var waterfall = new WaterfallDialog("test");
             waterfall.AddStep(null);

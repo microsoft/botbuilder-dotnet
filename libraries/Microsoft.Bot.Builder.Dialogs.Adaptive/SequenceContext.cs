@@ -18,6 +18,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
     {
         private readonly string changeKey;
 
+        private DialogSet actionDialogs;
+
         public AdaptiveDialogState Plans { get; private set; }
 
         /// <summary>
@@ -34,11 +36,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             private set { this.Context.TurnState[changeKey] = value; }
         }
 
-        public SequenceContext(DialogSet dialogs, DialogContext dc, DialogState state, List<ActionState> actions, string changeKey)
+        public SequenceContext(DialogSet dialogs, DialogContext dc, DialogState state, List<ActionState> actions, string changeKey, DialogSet actionDialogs)
             : base(dialogs, dc.Context, state, conversationState: dc.State.Conversation, userState: dc.State.User, settings: dc.State.Settings)
         {
             this.Actions = actions;
             this.changeKey = changeKey;
+            this.actionDialogs = actionDialogs;
         }
 
         /// <summary>
@@ -205,7 +208,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                         for (int i = 0; i < this.Actions.Count; i++)
                         {
                             // Does the current step have one of the tags we are looking for?
-                            if (StepHasTags(this.Actions[i], change.Tags))
+                            if (ActionHasTags(this.Actions[i], change.Tags))
                             {
                                 // Insert actions before the current step
                                 // We have actions before and after the insertion point, and we want to insert the change
@@ -239,10 +242,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
         }
 
-        private bool StepHasTags(ActionState step, List<string> tags)
+        private bool ActionHasTags(ActionState step, List<string> tags)
         {
-            var dialog = this.FindDialog(step.DialogId);
-
+            var dialog = actionDialogs.Find(step.DialogId);
             if (dialog != null && dialog.Tags != null)
             {
                 // True if the dialog contains any of the tags passed as parameters

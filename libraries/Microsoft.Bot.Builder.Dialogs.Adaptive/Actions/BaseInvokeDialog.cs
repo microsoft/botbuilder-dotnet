@@ -14,8 +14,7 @@ using Newtonsoft.Json.Linq;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
     /// <summary>
-    /// Step which calls another dialog
-    /// </summary>
+    /// Action which calls another dialog.
     public abstract class BaseInvokeDialog : DialogAction
     {
         protected string dialogIdToCall;
@@ -39,6 +38,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             {
                 return InputBindings.TryGetValue(DialogContextState.DIALOG_VALUE, out string value) ? value : null;
             }
+
             set
             {
                 InputBindings[DialogContextState.DIALOG_VALUE] = value;
@@ -62,6 +62,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             }
         }
 
+        public override List<IDialog> ListDependencies()
+        {
+            if (Dialog != null)
+            {
+                return new List<IDialog>() { Dialog };
+            }
+
+            return new List<IDialog>();
+        }
+
         protected override string OnComputeId()
         {
             return $"{this.GetType().Name}[{Dialog?.Id ?? this.dialogIdToCall}:{this.BindingPath()}]";
@@ -78,17 +88,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             var dialogId = dialog?.Id ?? throw new Exception($"{this.GetType().Name} requires a dialog to be called.");
             return dialog;
         }
-
-        public override List<IDialog> ListDependencies()
-        {
-            if (Dialog != null)
-            {
-                return new List<IDialog>() { Dialog };
-            }
-
-            return new List<IDialog>();
-        }
-
+        
         protected void BindOptions(DialogContext dc)
         {
             if (Options == null)

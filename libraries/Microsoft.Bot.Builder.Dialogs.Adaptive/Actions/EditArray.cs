@@ -17,7 +17,7 @@ using Newtonsoft.Json.Linq;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
     /// <summary>
-    /// Lets you modify an array in memory
+    /// Lets you modify an array in memory.
     /// </summary>
     public class EditArray : DialogAction
     {
@@ -66,14 +66,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         }
 
         /// <summary>
-        /// type of change being applied
+        /// Gets or sets type of change being applied
         /// </summary>
         [JsonConverter(typeof(StringEnumConverter))]
         [JsonProperty("changeType")]
         public ArrayChangeType ChangeType { get; set; }
 
         /// <summary>
-        /// Memory expression of the array to manipulate
+        /// Gets or sets memory expression of the array to manipulate.
         /// </summary>Edit
         [JsonProperty("arrayProperty")]
         public string ArrayProperty
@@ -83,7 +83,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         }
 
         /// <summary>
-        /// The result of the action
+        /// Gets or sets the result of the action
         /// </summary>
         [JsonProperty("resultProperty")]
         public string ResultProperty 
@@ -93,7 +93,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         }
 
         /// <summary>
-        /// The expression of the item to put onto the array
+        /// Gets or sets the expression of the item to put onto the array.
         /// </summary>
         [JsonProperty("value")]
         public string Value
@@ -102,10 +102,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             set { this.value = (value != null) ? new ExpressionEngine().Parse(value) : null; }
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EditArray"/> class.
+        /// </summary>
+        /// <param name="changeType">change type.</param>
+        /// <param name="arrayProperty">array property (optional)</param>
+        /// <param name="value">value to insert</param>
+        /// <param name="resultProperty">output property to put Pop/Take into</param>
         public EditArray(ArrayChangeType changeType, string arrayProperty = null, string value = null, string resultProperty = null)
             : base()
         {
-
             this.ChangeType = changeType;
 
             if (!string.IsNullOrEmpty(arrayProperty))
@@ -158,12 +164,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                     {
                         array.Add(itemResult);
                     }
+
                     break;
                 case ArrayChangeType.Take:
                     if (array.Count == 0)
                     {
                         break;
                     }
+
                     item = array[0];
                     array.RemoveAt(0);
                     result = item;
@@ -184,6 +192,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                             }
                         }
                     }
+
                     break;
                 case ArrayChangeType.Clear:
                     result = array.Count > 0;
@@ -192,10 +201,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             }
 
             dc.State.SetValue(this.arrayProperty, array);
+
             if (ResultProperty != null)
             {
                 dc.State.SetValue(resultProperty, result);
             }
+
             return await dc.EndDialogAsync(result);
         }
 
@@ -203,7 +214,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         {
             if (Value == null)
             {
-                throw new Exception($"EditArray: \"{ ChangeType }\" operation couldn't be performed for array \"{ArrayProperty}\" because a value wasn't specified.");
+                throw new Exception($"EditArray: \"{ChangeType}\" operation couldn't be performed for array \"{ArrayProperty}\" because a value wasn't specified.");
             }
         }
 

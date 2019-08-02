@@ -5,20 +5,23 @@ using Microsoft.Bot.Builder.Dialogs;
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
     /// <summary>
-    /// Language generator for TemplateEngine
+    /// ILanguageGenerator implementation which uses TemplateEngine. 
     /// </summary>
     public class TemplateEngineLanguageGenerator : ILanguageGenerator
     {
         private const string DEFAULTLABEL = "Unknown";
         private TemplateEngine engine;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TemplateEngineLanguageGenerator"/> class.
+        /// </summary>
         public TemplateEngineLanguageGenerator()
         {
             this.engine = new TemplateEngine();
         }
 
         /// <summary>
-        /// Construct with raw LG text 
+        /// Initializes a new instance of the <see cref="TemplateEngineLanguageGenerator"/> class.
         /// </summary>
         /// <param name="lgText">lg template text</param>
         /// <param name="importResolver">template resource loader (id) => templateText</param>
@@ -30,7 +33,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         }
 
         /// <summary>
-        /// Construct using prebuilt TemplateEngine
+        /// Initializes a new instance of the <see cref="TemplateEngineLanguageGenerator"/> class.
         /// </summary>
         /// <param name="engine">template engine</param>
         /// <param name="name">optional label for the source of the templates (used for labeling source of template errors)</param>
@@ -40,10 +43,17 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         }
 
         /// <summary>
-        /// id of the source of this template (used for labeling errors)
+        /// Gets or sets id of the source of this template (used for labeling errors).
         /// </summary>
         public string Id { get; set; } = String.Empty;
 
+        /// <summary>
+        /// Method to generate text from given template and data.
+        /// </summary>
+        /// <param name="turnContext">context</param>
+        /// <param name="template">template to evaluate</param>
+        /// <param name="data">data to bind to</param>
+        /// <returns>generated text</returns>
         public async Task<string> Generate(ITurnContext turnContext, string template, object data)
         {
             try
@@ -56,6 +66,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 {
                     throw new Exception($"{Id}:{err.Message}");
                 }
+
                 throw;
             }
         }

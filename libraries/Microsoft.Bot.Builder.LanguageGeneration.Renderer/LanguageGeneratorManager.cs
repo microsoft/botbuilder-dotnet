@@ -13,17 +13,29 @@ using Microsoft.Bot.Builder.LanguageGeneration;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
+    /// <summary>
+    /// Class which manages cache of all LG resources from a ResourceExplorer. 
+    /// This class automatically updates the cache when resource change events occure.
+    /// </summary>
     public class LanguageGeneratorManager
     {
         private ResourceExplorer resourceExplorer;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LanguageGeneratorManager"/> class.
+        /// </summary>
+        /// <param name="resourceExplorer">resourceExplorer to manage LG files from</param>
         public LanguageGeneratorManager(ResourceExplorer resourceExplorer)
         {
             this.resourceExplorer = resourceExplorer;
+            
+            // load all LG resources
             foreach (var resource in this.resourceExplorer.GetResources("lg"))
             {
                 LanguageGenerators[resource.Id] = GetTemplateEngineLanguageGenerator(resource);
             }
+
+            // listen for resource changes
             this.resourceExplorer.Changed += ResourceExplorer_Changed;
         }
 
@@ -45,7 +57,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// Generators
         /// </summary>
         public ConcurrentDictionary<string, ILanguageGenerator> LanguageGenerators { get; set; } = new ConcurrentDictionary<string, ILanguageGenerator>(StringComparer.OrdinalIgnoreCase);
-
 
         public static ImportResolverDelegate ResourceResolver(ResourceExplorer resourceExplorer) =>
             (string source, string id) =>

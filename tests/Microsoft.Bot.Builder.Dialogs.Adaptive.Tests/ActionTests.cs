@@ -45,9 +45,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             });
         }
 
-
         [TestMethod]
-        public async Task Step_WaitForInput()
+        public async Task Action_WaitForInput()
         {
             var testDialog = new AdaptiveDialog("planningTest");
 
@@ -70,7 +69,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
 #if needsmoq
         [TestMethod]
-        public async Task Step_HttpRequest()
+        public async Task Action_HttpRequest()
         {
             var testDialog = new AdaptiveDialog("planningTest");
 
@@ -105,7 +104,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 #endif
         [TestMethod]
-        public async Task Step_TraceActivity()
+        public async Task Action_TraceActivity()
         {
             var dialog = new AdaptiveDialog("traceActivity");
 
@@ -152,7 +151,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
-        public async Task Step_IfCondition()
+        public async Task Action_IfCondition()
         {
             var testDialog = new AdaptiveDialog("planningTest");
             testDialog.AddEvents(new List<IOnEvent>()
@@ -189,7 +188,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
-        public async Task Step_Switch()
+        public async Task Action_Switch()
         {
             var testDialog = new AdaptiveDialog("planningTest")
             {
@@ -227,7 +226,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
-        public async Task Step_Switch_Default()
+        public async Task Action_Switch_Default()
         {
             var testDialog = new AdaptiveDialog("planningTest")
             {
@@ -265,7 +264,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
-        public async Task Step_Switch_Number()
+        public async Task Action_Switch_Number()
         {
             var testDialog = new AdaptiveDialog("planningTest")
             {
@@ -304,7 +303,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
-        public async Task Step_Switch_Bool()
+        public async Task Action_Switch_Bool()
         {
             var testDialog = new AdaptiveDialog("planningTest")
             {
@@ -342,7 +341,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
-        public async Task Step_TextInput()
+        public async Task Action_TextInput()
         {
             var testDialog = new AdaptiveDialog("planningTest");
 
@@ -382,7 +381,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
-        public async Task Step_NumberInputWithDefaultValue()
+        public async Task Action_NumberInputWithDefaultValue()
         {
             var testDialog = new AdaptiveDialog("planningTest");
 
@@ -412,7 +411,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
-        public async Task Step_ConfirmInput()
+        public async Task Action_ConfirmInput()
         {
             var testDialog = new AdaptiveDialog("planningTest")
             {
@@ -465,7 +464,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
-        public async Task Step_ChoiceInput()
+        public async Task Action_ChoiceInput()
         {
             var testDialog = new AdaptiveDialog("planningTest")
             {
@@ -525,7 +524,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
-        public async Task Step_ChoiceInput_WithLocale()
+        public async Task Action_ChoiceInput_WithLocale()
         {
             var testDialog = new AdaptiveDialog("planningTest")
             {
@@ -594,7 +593,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
-        public async Task Step_ChoiceStringInMemory()
+        public async Task Action_ChoiceStringInMemory()
         {
             var testDialog = new AdaptiveDialog("planningTest")
             {
@@ -659,7 +658,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
-        public async Task Step_ChoicesInMemory()
+        public async Task Action_ChoicesInMemory()
         {
             var testDialog = new AdaptiveDialog("planningTest")
             {
@@ -723,7 +722,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
-        public async Task Step_NumberInput()
+        public async Task Action_NumberInput()
         {
             var testDialog = new AdaptiveDialog("planningTest")
             {
@@ -763,7 +762,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
-        public async Task Step_DatetimeInput()
+        public async Task Action_DatetimeInput()
         {
             var testDialog = new AdaptiveDialog("planningTest")
             {
@@ -794,7 +793,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
-        public async Task Step_TextInputWithInvalidPrompt()
+        public async Task Action_TextInputWithInvalidPrompt()
         {
             var testDialog = new AdaptiveDialog("planningTest");
 
@@ -835,7 +834,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
-        public async Task Step_EditStepReplaceSequence()
+        public async Task Action_EditActionReplaceSequence()
         {
             var testDialog = new AdaptiveDialog("planningTest")
             {
@@ -854,7 +853,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     Actions = new List<IDialog>()
                     {
                         new TextInput() {
-                            Prompt = new ActivityTemplate("Say replace to replace these steps"),
+                            Prompt = new ActivityTemplate("Say replace to replace these actions"),
                             Property = "turn.tempInput"
                         },
                         new SendActivity("You should not see this step if you said replace"),
@@ -864,11 +863,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 new OnIntent() {
                     Intent = "Replace",
                     Actions = new List<IDialog>() {
-                        new SendActivity("I'm going to replace the original steps via EditSteps"),
+                        new SendActivity("I'm going to replace the original actions via EditActions"),
                         new EditActions() {
                             ChangeType = ActionChangeType.ReplaceSequence,
                             Actions = new List<IDialog>() {
-                                new SendActivity("New steps..."),
+                                new SendActivity("New actions..."),
                                 new TextInput() {
                                     Prompt = new ActivityTemplate("What's your name?"),
                                     Property = "turn.tempInput"
@@ -881,16 +880,69 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             await CreateFlow(testDialog)
             .Send("hi")
-                .AssertReply("Say replace to replace these steps")
+                .AssertReply("Say replace to replace these actions")
             .Send("replace")
-                .AssertReply("I'm going to replace the original steps via EditSteps")
-                .AssertReply("New steps...")
+                .AssertReply("I'm going to replace the original actions via EditActions")
+                .AssertReply("New actions...")
                 .AssertReply("What's your name?")
             .StartTestAsync();
         }
 
         [TestMethod]
-        public async Task Step_DoActions()
+        public async Task Action_EditActionsWithTags()
+        {
+            var testDialog = new AdaptiveDialog("planningTest")
+            {
+                Recognizer = new RegexRecognizer()
+                {
+                    Intents = new Dictionary<string, string>() {
+                        { "Insert", "(?i)insert" },
+                        { "Execute", "(?i)execute" }
+                    }
+                }
+            };
+
+            testDialog.AddEvents(new List<IOnEvent>()
+            {
+                new OnBeginDialog()
+                {
+                    Actions = new List<IDialog>()
+                    {
+                        new EndTurn(),
+                        new SendActivity("One") { Tags = { "a" } },
+                        new SendActivity("Three") { Tags = { "c" } },
+                    }
+
+                },
+                new OnIntent()
+                {
+                    Intent = "Insert",
+                    Actions = new List<IDialog>()
+                    {
+                        new SendActivity("Inserted"),
+                        new EditActions()
+                        {
+                            ChangeType = ActionChangeType.InsertActionsBeforeTags,
+                            Tags = { "c" },
+                            Actions = new List<IDialog>() { new SendActivity("Two") }
+                        }
+                    }
+                }
+            });
+
+            await CreateFlow(testDialog)
+            .SendConversationUpdate()
+            .Send("insert")
+                .AssertReply("Inserted")
+            .Send("Execute")
+                .AssertReply("One")
+                .AssertReply("Two")
+                .AssertReply("Three")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task Action_DoActions()
         {
             var testDialog = new AdaptiveDialog("planningTest");
 
@@ -939,7 +991,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
 
         [TestMethod]
-        public async Task Step_BeginDialog()
+        public async Task Action_BeginDialog()
         {
             var tellJokeDialog = new AdaptiveDialog("TellJokeDialog");
             tellJokeDialog.AddEvents(new List<IOnEvent>()
@@ -1023,7 +1075,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
-        public async Task Step_ReplaceDialog()
+        public async Task Action_ReplaceDialog()
         {
             var tellJokeDialog = new AdaptiveDialog("TellJokeDialog");
             tellJokeDialog.AddEvents(new List<IOnEvent>()
@@ -1089,7 +1141,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     }),
             });
 
-            testDialog.AddDialog(new List<IDialog>()
+            testDialog.AddDialogs(new List<IDialog>()
             {
                 tellJokeDialog,
                 askNameDialog
@@ -1109,7 +1161,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
-        public async Task Step_EndDialog()
+        public async Task Action_EndDialog()
         {
             var testDialog = new AdaptiveDialog("planningTest");
 
@@ -1152,7 +1204,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
-        public async Task Step_RepeatDialog()
+        public async Task Action_RepeatDialog()
         {
             var testDialog = new AdaptiveDialog("testDialog")
             {
@@ -1183,7 +1235,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
-        public async Task Step_EmitEvent()
+        public async Task Action_EmitEvent()
         {
             var convoState = new ConversationState(new MemoryStorage());
             var userState = new UserState(new MemoryStorage());
@@ -1258,7 +1310,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
-        public async Task Step_Foreach()
+        public async Task Action_Foreach()
         {
             var convoState = new ConversationState(new MemoryStorage());
             var userState = new UserState(new MemoryStorage());
@@ -1320,7 +1372,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
-        public async Task Step_ForeachPage()
+        public async Task Action_ForeachPage()
         {
             var convoState = new ConversationState(new MemoryStorage());
             var userState = new UserState(new MemoryStorage());

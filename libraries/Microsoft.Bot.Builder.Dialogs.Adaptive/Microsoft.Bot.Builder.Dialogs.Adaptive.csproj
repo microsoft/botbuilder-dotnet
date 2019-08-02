@@ -45,11 +45,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Schemas\Dialogs\baseSchema.json" />
+    <None Remove="Schemas\baseBindingsSchema.json" />
+    <None Remove="Schemas\baseDialogSchema.json" />
+    <None Remove="Schemas\Dialogs\baseInputSchema.json" />
     <None Remove="Schemas\Dialogs\Microsoft.AdaptiveDialog.schema" />
+    <None Remove="Schemas\Dialogs\Microsoft.AttachmentInput.schema" />
     <None Remove="Schemas\Dialogs\Microsoft.ChoiceInput.schema" />
     <None Remove="Schemas\Dialogs\Microsoft.ConfirmInput.schema" />
+    <None Remove="Schemas\Dialogs\Microsoft.DateTimeInput.schema" />
     <None Remove="Schemas\Dialogs\Microsoft.NumberInput.schema" />
+    <None Remove="Schemas\Dialogs\Microsoft.OAuthInput.schema" />
     <None Remove="Schemas\Dialogs\Microsoft.TextInput.schema" />
     <None Remove="Schemas\Events\Microsoft.ActivityEvent.schema" />
     <None Remove="Schemas\Events\Microsoft.OnActivity.schema" />
@@ -112,11 +117,16 @@
   </ItemGroup>
   
   <ItemGroup>
-    <Content Include="Schemas\Dialogs\baseSchema.json" />
+    <Content Include="Schemas\baseBindingsSchema.json" />
+    <Content Include="Schemas\baseDialogSchema.json" />
+    <Content Include="Schemas\Dialogs\baseInputSchema.json" />
     <Content Include="Schemas\Dialogs\Microsoft.AdaptiveDialog.schema" />
+    <Content Include="Schemas\Dialogs\Microsoft.AttachmentInput.schema" />
     <Content Include="Schemas\Dialogs\Microsoft.ChoiceInput.schema" />
     <Content Include="Schemas\Dialogs\Microsoft.ConfirmInput.schema" />
+    <Content Include="Schemas\Dialogs\Microsoft.DateTimeInput.schema" />
     <Content Include="Schemas\Dialogs\Microsoft.NumberInput.schema" />
+    <Content Include="Schemas\Dialogs\Microsoft.OAuthInput.schema" />
     <Content Include="Schemas\Dialogs\Microsoft.TextInput.schema" />
     <Content Include="Schemas\Events\Microsoft.OnBeginDialog.schema" />
     <Content Include="Schemas\Events\Microsoft.OnActivity.schema" />
@@ -168,5 +178,7 @@
     <ProjectReference Include="..\Microsoft.Bot.Builder.Dialogs\Microsoft.Bot.Builder.Dialogs.csproj" />
     <ProjectReference Include="..\Microsoft.Bot.Builder.Expressions.Parser\Microsoft.Bot.Builder.Expressions.Parser.csproj" />
   </ItemGroup>
+
+  <ProjectExtensions><VisualStudio><UserProperties schemas_4actions_4microsoft_1begindialog_1schema__JsonSchema="" /></VisualStudio></ProjectExtensions>
 
 </Project>

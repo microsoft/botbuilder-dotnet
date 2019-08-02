@@ -7,15 +7,15 @@
             "actions": [
                 {
                     "$type": "Microsoft.SendActivity",
-                    "activity": "Step 1"
+                    "activity": "Action 1"
                 },
                 {
                     "$type": "Microsoft.SendActivity",
-                    "activity": "Step 2"
+                    "activity": "Action 2"
                 },
                 {
                     "$type": "Microsoft.SendActivity",
-                    "activity": "Step 3"
+                    "activity": "Action 3"
                 }
             ]
         }

@@ -19,11 +19,11 @@ namespace Microsoft.BotBuilderSamples
             AddDialog(new DateResolverDialog());
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
-                DestinationStepAsync,
-                OriginStepAsync,
-                TravelDateStepAsync,
-                ConfirmStepAsync,
-                FinalStepAsync,
+                DestinationActionAsync,
+                OriginActionAsync,
+                TravelDateActionAsync,
+                ConfirmActionAsync,
+                FinalActionAsync,
             }));
 
             // The initial child Dialog to run.
@@ -36,7 +36,7 @@ namespace Microsoft.BotBuilderSamples
             return !timexPropery.Types.Contains(Constants.TimexTypes.Definite);
         }
 
-        private async Task<DialogTurnResult> DestinationStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        private async Task<DialogTurnResult> DestinationActionAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var bookingDetails = (BookingDetails)stepContext.Options;
 
@@ -50,7 +50,7 @@ namespace Microsoft.BotBuilderSamples
             }
         }
 
-        private async Task<DialogTurnResult> OriginStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        private async Task<DialogTurnResult> OriginActionAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var bookingDetails = (BookingDetails)stepContext.Options;
 
@@ -66,7 +66,7 @@ namespace Microsoft.BotBuilderSamples
             }
         }
 
-        private async Task<DialogTurnResult> TravelDateStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        private async Task<DialogTurnResult> TravelDateActionAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var bookingDetails = (BookingDetails)stepContext.Options;
 
@@ -82,7 +82,7 @@ namespace Microsoft.BotBuilderSamples
             }
         }
 
-        private async Task<DialogTurnResult> ConfirmStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        private async Task<DialogTurnResult> ConfirmActionAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var bookingDetails = (BookingDetails)stepContext.Options;
 
@@ -93,7 +93,7 @@ namespace Microsoft.BotBuilderSamples
             return await stepContext.PromptAsync(nameof(ConfirmPrompt), new PromptOptions { Prompt = MessageFactory.Text(msg) }, cancellationToken);
         }
 
-        private async Task<DialogTurnResult> FinalStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        private async Task<DialogTurnResult> FinalActionAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             if ((bool)stepContext.Result == true)
             {

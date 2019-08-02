@@ -1,6 +1,12 @@
 ﻿# Hello
 - [Welcome(time)] {name}
 
+# Hello2
+- [Welcome] {name}
+
+# Hello3
+- {Welcome(time)} {name}
+
 # Welcome(time)
 - IF: {time == 'morning'}
  - Good morning

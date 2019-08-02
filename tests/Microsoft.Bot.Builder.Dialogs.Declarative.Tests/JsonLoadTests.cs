@@ -47,9 +47,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         {
             await BuildTestFlow(@"Actions.main.dialog")
                 .SendConversationUpdate()
-                .AssertReply("Step 1")
-                .AssertReply("Step 2")
-                .AssertReply("Step 3")
+                .AssertReply("Action 1")
+                .AssertReply("Action 2")
+                .AssertReply("Action 3")
             .StartTestAsync();
         }
 

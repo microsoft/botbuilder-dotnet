@@ -587,7 +587,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 }
             };
 
-            innerDialog.AddDialog(new[] {
+            innerDialog.AddDialogs(new[] {
                 new AdaptiveDialog("Greeting")
                 {
                     Events = new List<IOnEvent>()
@@ -679,7 +679,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     },
                 }
             };
-            outerDialog.AddDialog(new List<IDialog>() { innerDialog });
+            outerDialog.AddDialogs(new List<IDialog>() { innerDialog });
 
 
             await CreateFlow(outerDialog)
@@ -966,7 +966,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
-        public async Task AdaptiveDialog_BindingReferValueInNestedStep()
+        public async Task AdaptiveDialog_BindingReferValueInNestedAction()
         {
             var rootDialog = new AdaptiveDialog(nameof(AdaptiveDialog))
             {
@@ -1062,7 +1062,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
-        public async Task AdaptiveDialog_BindingReferValueInLaterStep()
+        public async Task AdaptiveDialog_BindingReferValueInLaterAction()
         {
             var rootDialog = new AdaptiveDialog(nameof(AdaptiveDialog))
             {
@@ -1120,6 +1120,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             await TestBindingTwoWayAcrossAdaptiveDialogs(new Dictionary<string, string>() { { "userName", "$name" } });
         }
 
+        /// <summary>
+        /// Test class to test two way binding with strongly typed options objects.
+        /// </summary>
         class Person
         {
             public string userName { get; set; }

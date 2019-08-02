@@ -14,7 +14,7 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
     /// <summary>
-    /// Step which calls another dialog, when it is done it will go to the callers parent dialog
+    /// Action which calls another dialog, when it is done it will go to the callers parent dialog
     /// </summary>
     public class ReplaceDialog : BaseInvokeDialog
     {

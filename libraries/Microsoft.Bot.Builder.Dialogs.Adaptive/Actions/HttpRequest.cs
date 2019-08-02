@@ -17,7 +17,7 @@ using Newtonsoft.Json.Linq;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
     /// <summary>
-    /// Step for HttpRequests
+    /// Action for HttpRequests
     /// </summary>
     public class HttpRequest : DialogAction
     {

@@ -11,13 +11,13 @@ using Microsoft.Bot.Builder.Dialogs;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
-    using CodeStepHandler = Func<DialogContext, object, Task<DialogTurnResult>>;
+    using CodeActionHandler = Func<DialogContext, object, Task<DialogTurnResult>>;
 
-    public class CodeStep : DialogAction
+    public class CodeAction : DialogAction
     {
-        private readonly CodeStepHandler codeHandler;
+        private readonly CodeActionHandler codeHandler;
 
-        public CodeStep(CodeStepHandler codeHandler, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0) : base()
+        public CodeAction(CodeActionHandler codeHandler, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0) : base()
         {
             this.RegisterSourceLocation(callerPath, callerLine);
             this.codeHandler = codeHandler ?? throw new ArgumentNullException(nameof(codeHandler));
@@ -35,7 +35,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
         protected override string OnComputeId()
         {
-            return $"CodeStep({codeHandler.ToString()})";
+            return $"CodeAction({codeHandler.ToString()})";
         }
     }
 }
