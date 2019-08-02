@@ -10,10 +10,10 @@
         },
         {
             "properties": {
-                "dialog": {
-                    "$type": "Microsoft.IDialog",
-                    "title": "Dialog",
-                    "description": "This is the dialog to call."
+                "dialogId": {
+                    "$role": "expression",
+                    "title": "Dialog Id",
+                    "description": "The Id the dialog to call."
                 },
                 "options": {
                     "type": "object",
@@ -25,7 +25,7 @@
                     }
                 },
                 "property": {
-                    "$role": "memoryPath",
+                    "$role": "expression",
                     "title": "Property",
                     "description": "The property to bind to the dialog and store the result in",
                     "examples": [

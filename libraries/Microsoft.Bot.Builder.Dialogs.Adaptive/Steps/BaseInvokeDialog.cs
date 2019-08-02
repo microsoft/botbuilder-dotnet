@@ -19,17 +19,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
     /// </summary>
     public abstract class BaseInvokeDialog : DialogCommand
     {
-        protected string dialogIdToCall;
-
         /// <summary>
-        /// gets or sets configurable options for the dialog. Key=>Expression pairs.
+        /// Gets or sets configurable options for the dialog. 
         /// </summary>
         public object Options { get; set; } = new JObject();
 
         /// <summary>
-        /// The dialog to call.
+        /// Gets or sets the dialog ID to call.
         /// </summary>
-        public IDialog Dialog { get; set; }
+        public string DialogId { get; set; }
 
         /// <summary>
         /// The property from memory to pass to the calling dialog and to set the return value to.
@@ -48,10 +46,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
             }
         }
 
-        public BaseInvokeDialog(string dialogIdToCall = null, string property = null, IDictionary<string,string> bindingOptions = null)
+        public BaseInvokeDialog(string dialogIdToCall = null, string property = null, IDictionary<string, string> bindingOptions = null)
             : base()
         {
-            this.dialogIdToCall = dialogIdToCall;
+            this.DialogId = dialogIdToCall;
 
             if (bindingOptions != null)
             {
@@ -66,29 +64,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
 
         public override List<IDialog> ListDependencies()
         {
-            if (Dialog != null)
-            {
-                return new List<IDialog>() { Dialog };
-            }
-
             return new List<IDialog>();
         }
 
         protected override string OnComputeId()
         {
-            return $"{this.GetType().Name}[{Dialog?.Id ?? this.dialogIdToCall}:{this.BindingPath()}]";
+            return $"{this.GetType().Name}[{DialogId}:{this.BindingPath()}]";
         }
 
         protected IDialog ResolveDialog(DialogContext dc)
         {
-            var dialog = this.Dialog;
-            if (dialog == null && !string.IsNullOrEmpty(this.dialogIdToCall))
+            var (result, error) = new ExpressionEngine().Parse(this.DialogId).TryEvaluate(dc.State);
+            if (error != null)
             {
-                dialog = dc.FindDialog(this.dialogIdToCall);
+                throw new Exception(error);
             }
 
-            var dialogId = dialog?.Id ?? throw new Exception($"{this.GetType().Name} requires a dialog to be called.");
-            return dialog;
+            var dialogId = (string)result ?? this.DialogId ?? throw new Exception($"{this.GetType().Name} requires a dialog to be called.");
+            return dc.FindDialog(dialogId);
         }
 
         protected object BindOptions(DialogContext dc, object options)
@@ -106,7 +99,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                 {
                     throw new Exception(error);
                 }
-                
+
                 // and store in options as the result
                 boundOptions[binding.Key] = JToken.FromObject(result);
             }

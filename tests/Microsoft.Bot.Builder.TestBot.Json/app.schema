@@ -726,10 +726,10 @@
                     }
                 },
                 "dialog": {
-                    "$type": "Microsoft.IDialog",
+                    "$role": "expression",
                     "title": "Dialog",
                     "description": "This is the dialog to call.",
-                    "$ref": "#/definitions/Microsoft.IDialog"
+                    "type": "string"
                 },
                 "options": {
                     "type": "object",
@@ -741,14 +741,13 @@
                     }
                 },
                 "property": {
-                    "$role": "memoryPath",
+                    "$role": "expression",
                     "title": "Property",
                     "description": "The property to bind to the dialog and store the result in",
                     "examples": [
                         "user.name"
                     ],
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
+                    "type": "string"
                 }
             },
             "additionalProperties": false,
@@ -1854,11 +1853,10 @@
                     }
                 },
                 "property": {
-                    "$role": "memoryPath",
+                    "$role": "expression",
                     "title": "Property",
                     "description": "The Memory property path to delete",
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
+                    "type": "string"
                 }
             },
             "additionalProperties": false,
@@ -1946,18 +1944,16 @@
                     ]
                 },
                 "arrayProperty": {
-                    "$role": "memoryPath",
+                    "$role": "expression",
                     "title": "Array Property",
                     "description": "Memory expression of the array to manipulate.",
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
+                    "type": "string"
                 },
                 "resultProperty": {
-                    "$role": "memoryPath",
+                    "$role": "expression",
                     "title": "Result Property",
                     "description": "Memory expression of the result of this action.",
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
+                    "type": "string"
                 },
                 "value": {
                     "$role": "expression",
@@ -2247,13 +2243,12 @@
                     }
                 },
                 "property": {
-                    "$role": "memoryPath",
+                    "$role": "expression",
                     "description": "Specifies a path to memory should be returned as the result to the calling dialog.",
                     "examples": [
                         "dialog.name"
                     ],
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
+                    "type": "string"
                 }
             },
             "additionalProperties": false,
@@ -2700,20 +2695,18 @@
                     }
                 },
                 "indexProperty": {
-                    "$role": "memoryPath",
+                    "$role": "expression",
                     "title": "Index Property",
                     "description": "The memory path which refers to the index of the item",
                     "default": "dialog.index",
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
+                    "type": "string"
                 },
                 "valueProperty": {
-                    "$role": "memoryPath",
+                    "$role": "expression",
                     "title": "Value Property",
                     "description": "The memory path which refers to the value of the item",
                     "default": "dialog.value",
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
+                    "type": "string"
                 }
             },
             "additionalProperties": false,
@@ -2814,12 +2807,11 @@
                     "default": 10
                 },
                 "valueProperty": {
-                    "$role": "memoryPath",
+                    "$role": "expression",
                     "title": "Value Property",
                     "description": "The memory path which refers to the value of the item",
                     "default": "dialog.value",
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
+                    "type": "string"
                 }
             },
             "additionalProperties": false,
@@ -2993,14 +2985,13 @@
                     "additionalProperties": true
                 },
                 "property": {
-                    "$role": "memoryPath",
+                    "$role": "expression",
                     "title": "Property",
                     "description": "The property to store the result of the HTTP call in (as object or string)",
                     "examples": [
                         "dialog.contosodata"
                     ],
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
+                    "type": "string"
                 },
                 "headers": {
                     "type": "object",
@@ -3558,14 +3549,13 @@
                     }
                 },
                 "property": {
-                    "$role": "memoryPath",
+                    "$role": "expression",
                     "title": "Property",
                     "description": "The property to set the value of",
                     "examples": [
                         "user.age"
                     ],
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
+                    "type": "string"
                 },
                 "type": {
                     "type": "string",
@@ -5055,10 +5045,10 @@
                     }
                 },
                 "dialog": {
-                    "$type": "Microsoft.IDialog",
+                    "$role": "expression",
                     "title": "Dialog",
                     "description": "This is the dialog to switch to.",
-                    "$ref": "#/definitions/Microsoft.IDialog"
+                    "type": "string"
                 },
                 "options": {
                     "type": "object",
@@ -5070,13 +5060,12 @@
                     }
                 },
                 "property": {
-                    "$role": "memoryPath",
+                    "$role": "expression",
                     "description": "The property to bind to the dialog and store the result in",
                     "examples": [
                         "user.name"
                     ],
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
+                    "type": "string"
                 }
             },
             "additionalProperties": false,
@@ -5299,14 +5288,13 @@
                     }
                 },
                 "property": {
-                    "$role": "memoryPath",
+                    "$role": "expression",
                     "title": "Property",
                     "description": "The property to set the value of",
                     "examples": [
                         "user.age"
                     ],
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
+                    "type": "string"
                 },
                 "value": {
                     "$role": "expression",
@@ -5697,11 +5685,10 @@
                     "description": "Value type of the trace activity"
                 },
                 "value": {
-                    "$role": "memoryPath",
+                    "$role": "expression",
                     "title": "Value",
                     "description": "Property path to memory object to send as the value of the trace activity",
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
+                    "type": "string"
                 }
             },
             "additionalProperties": false,

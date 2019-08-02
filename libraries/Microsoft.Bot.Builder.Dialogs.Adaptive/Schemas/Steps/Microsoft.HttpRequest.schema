@@ -42,7 +42,7 @@
                     "additionalProperties": true
                 },
                 "property": {
-                    "$role": "memoryPath",
+                    "$role": "expression",
                     "title": "Property",
                     "description": "The property to store the result of the HTTP call in (as object or string)",
                     "examples": [
