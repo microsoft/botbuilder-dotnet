@@ -201,6 +201,11 @@
             "$ref": "#/definitions/Microsoft.NumberInput"
         },
         {
+            "title": "Microsoft.OAuthInput",
+            "description": "This represents a dialog which gathers an OAuth token from user",
+            "$ref": "#/definitions/Microsoft.OAuthInput"
+        },
+        {
             "title": "Microsoft.QnAMakerDialog",
             "description": "This represents a dialog which is driven by a call to QnAMaker.ai knowledge base",
             "$ref": "#/definitions/Microsoft.QnAMakerDialog"
@@ -388,15 +393,25 @@
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
                 },
-                "property": {
-                    "$role": "memoryPath",
-                    "title": "Property",
-                    "description": "This is that will be passed in as InputProperty and also set as the OutputProperty",
-                    "examples": [
-                        "value.birthday"
-                    ],
+                "id": {
                     "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
+                    "title": "Id",
+                    "description": "(Optional) id for the dialog",
+                    "examples": [
+                        "Dialog2"
+                    ]
+                },
+                "tags": {
+                    "type": "array",
+                    "title": "Tags",
+                    "description": "Tags are optional strings that you can use to organize components",
+                    "examples": [
+                        "input",
+                        "confirmation"
+                    ],
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "inputBindings": {
                     "type": "object",
@@ -517,36 +532,25 @@
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
                 },
-                "property": {
-                    "$role": "memoryPath",
-                    "title": "Property",
-                    "description": "This is that will be passed in as InputProperty and also set as the OutputProperty",
-                    "examples": [
-                        "value.birthday"
-                    ],
+                "id": {
                     "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
-                },
-                "inputBindings": {
-                    "type": "object",
-                    "title": "Input Bindings",
-                    "description": "This defines properties which be passed as arguments to this dialog",
+                    "title": "Id",
+                    "description": "(Optional) id for the dialog",
                     "examples": [
-                        "value.birthday"
+                        "Dialog2"
+                    ]
+                },
+                "tags": {
+                    "type": "array",
+                    "title": "Tags",
+                    "description": "Tags are optional strings that you can use to organize components",
+                    "examples": [
+                        "input",
+                        "confirmation"
                     ],
-                    "additionalProperties": {
+                    "items": {
                         "type": "string"
                     }
-                },
-                "outputBinding": {
-                    "$role": "memoryPath",
-                    "title": "Output Property binding",
-                    "description": "This is the property which the EndDialog(result) will be set to when EndDialog() is called",
-                    "examples": [
-                        "value.birthday"
-                    ],
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
                 },
                 "prompt": {
                     "$type": "Microsoft.IActivityTemplate",
@@ -600,12 +604,12 @@
                     "description": "The expression that you evaluated for input.",
                     "type": "string"
                 },
-                "valueProperty": {
+                "property": {
                     "$role": "memoryPath",
-                    "title": "Value Property",
-                    "description": "It is where you want to the putput of the input written to",
+                    "title": "Property",
+                    "description": "Property that this input dialog is bound to",
                     "examples": [
-                        "user.name"
+                        "$birthday"
                     ],
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
@@ -626,12 +630,17 @@
                     ]
                 },
                 "allowInterruptions": {
-                    "type": "boolean",
+                    "type": "string",
+                    "enum": [
+                        "always",
+                        "never",
+                        "notRecognized"
+                    ],
                     "title": "Allow Interruptions",
-                    "description": "If set to true this will always consult the parent dialog whether it will be interupt or not.",
-                    "default": true,
+                    "description": "Always will always consult parent dialogs first, never will not consult parent dialogs, notRecognized will consult parent only when it's not recognized",
+                    "default": "notRecognized",
                     "examples": [
-                        true
+                        "notRecognized"
                     ]
                 },
                 "outputFormat": {
@@ -695,6 +704,26 @@
                     "title": "$designer",
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
+                },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "(Optional) id for the dialog",
+                    "examples": [
+                        "Dialog2"
+                    ]
+                },
+                "tags": {
+                    "type": "array",
+                    "title": "Tags",
+                    "description": "Tags are optional strings that you can use to organize components",
+                    "examples": [
+                        "input",
+                        "confirmation"
+                    ],
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "dialog": {
                     "$type": "Microsoft.IDialog",
@@ -769,6 +798,37 @@
                     "title": "$designer",
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
+                },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "(Optional) id for the dialog",
+                    "examples": [
+                        "Dialog2"
+                    ]
+                },
+                "tags": {
+                    "type": "array",
+                    "title": "Tags",
+                    "description": "Tags are optional strings that you can use to organize components",
+                    "examples": [
+                        "input",
+                        "confirmation"
+                    ],
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "eventName": {
+                    "title": "Event Name",
+                    "description": "The name of event to emit",
+                    "type": "string"
+                },
+                "eventValue": {
+                    "type": "object",
+                    "title": "Event Value",
+                    "description": "Optional value to emit along with the event",
+                    "additionalProperties": true
                 }
             },
             "additionalProperties": false,
@@ -850,36 +910,25 @@
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
                 },
-                "property": {
-                    "$role": "memoryPath",
-                    "title": "Property",
-                    "description": "This is that will be passed in as InputProperty and also set as the OutputProperty",
-                    "examples": [
-                        "value.birthday"
-                    ],
+                "id": {
                     "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
-                },
-                "inputBindings": {
-                    "type": "object",
-                    "title": "Input Bindings",
-                    "description": "This defines properties which be passed as arguments to this dialog",
+                    "title": "Id",
+                    "description": "(Optional) id for the dialog",
                     "examples": [
-                        "value.birthday"
+                        "Dialog2"
+                    ]
+                },
+                "tags": {
+                    "type": "array",
+                    "title": "Tags",
+                    "description": "Tags are optional strings that you can use to organize components",
+                    "examples": [
+                        "input",
+                        "confirmation"
                     ],
-                    "additionalProperties": {
+                    "items": {
                         "type": "string"
                     }
-                },
-                "outputBinding": {
-                    "$role": "memoryPath",
-                    "title": "Output Property binding",
-                    "description": "This is the property which the EndDialog(result) will be set to when EndDialog() is called",
-                    "examples": [
-                        "value.birthday"
-                    ],
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
                 },
                 "prompt": {
                     "$type": "Microsoft.IActivityTemplate",
@@ -933,12 +982,12 @@
                     "description": "The expression that you evaluated for input.",
                     "type": "string"
                 },
-                "valueProperty": {
+                "property": {
                     "$role": "memoryPath",
-                    "title": "Value Property",
-                    "description": "It is where you want to the putput of the input written to",
+                    "title": "Property",
+                    "description": "Property that this input dialog is bound to",
                     "examples": [
-                        "user.name"
+                        "$birthday"
                     ],
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
@@ -959,12 +1008,17 @@
                     ]
                 },
                 "allowInterruptions": {
-                    "type": "boolean",
+                    "type": "string",
+                    "enum": [
+                        "always",
+                        "never",
+                        "notRecognized"
+                    ],
                     "title": "Allow Interruptions",
-                    "description": "If set to true this will always consult the parent dialog whether it will be interupt or not.",
-                    "default": true,
+                    "description": "Always will always consult parent dialogs first, never will not consult parent dialogs, notRecognized will consult parent only when it's not recognized",
+                    "default": "notRecognized",
                     "examples": [
-                        true
+                        "notRecognized"
                     ]
                 },
                 "outputFormat": {
@@ -1225,36 +1279,25 @@
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
                 },
-                "property": {
-                    "$role": "memoryPath",
-                    "title": "Property",
-                    "description": "This is that will be passed in as InputProperty and also set as the OutputProperty",
-                    "examples": [
-                        "value.birthday"
-                    ],
+                "id": {
                     "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
-                },
-                "inputBindings": {
-                    "type": "object",
-                    "title": "Input Bindings",
-                    "description": "This defines properties which be passed as arguments to this dialog",
+                    "title": "Id",
+                    "description": "(Optional) id for the dialog",
                     "examples": [
-                        "value.birthday"
+                        "Dialog2"
+                    ]
+                },
+                "tags": {
+                    "type": "array",
+                    "title": "Tags",
+                    "description": "Tags are optional strings that you can use to organize components",
+                    "examples": [
+                        "input",
+                        "confirmation"
                     ],
-                    "additionalProperties": {
+                    "items": {
                         "type": "string"
                     }
-                },
-                "outputBinding": {
-                    "$role": "memoryPath",
-                    "title": "Output Property binding",
-                    "description": "This is the property which the EndDialog(result) will be set to when EndDialog() is called",
-                    "examples": [
-                        "value.birthday"
-                    ],
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
                 },
                 "prompt": {
                     "$type": "Microsoft.IActivityTemplate",
@@ -1308,12 +1351,12 @@
                     "description": "The expression that you evaluated for input.",
                     "type": "string"
                 },
-                "valueProperty": {
+                "property": {
                     "$role": "memoryPath",
-                    "title": "Value Property",
-                    "description": "It is where you want to the putput of the input written to",
+                    "title": "Property",
+                    "description": "Property that this input dialog is bound to",
                     "examples": [
-                        "user.name"
+                        "$birthday"
                     ],
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
@@ -1334,12 +1377,17 @@
                     ]
                 },
                 "allowInterruptions": {
-                    "type": "boolean",
+                    "type": "string",
+                    "enum": [
+                        "always",
+                        "never",
+                        "notRecognized"
+                    ],
                     "title": "Allow Interruptions",
-                    "description": "If set to true this will always consult the parent dialog whether it will be interupt or not.",
-                    "default": true,
+                    "description": "Always will always consult parent dialogs first, never will not consult parent dialogs, notRecognized will consult parent only when it's not recognized",
+                    "default": "notRecognized",
                     "examples": [
-                        true
+                        "notRecognized"
                     ]
                 },
                 "defaultLocale": {
@@ -1541,36 +1589,25 @@
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
                 },
-                "property": {
-                    "$role": "memoryPath",
-                    "title": "Property",
-                    "description": "This is that will be passed in as InputProperty and also set as the OutputProperty",
-                    "examples": [
-                        "value.birthday"
-                    ],
+                "id": {
                     "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
-                },
-                "inputBindings": {
-                    "type": "object",
-                    "title": "Input Bindings",
-                    "description": "This defines properties which be passed as arguments to this dialog",
+                    "title": "Id",
+                    "description": "(Optional) id for the dialog",
                     "examples": [
-                        "value.birthday"
+                        "Dialog2"
+                    ]
+                },
+                "tags": {
+                    "type": "array",
+                    "title": "Tags",
+                    "description": "Tags are optional strings that you can use to organize components",
+                    "examples": [
+                        "input",
+                        "confirmation"
                     ],
-                    "additionalProperties": {
+                    "items": {
                         "type": "string"
                     }
-                },
-                "outputBinding": {
-                    "$role": "memoryPath",
-                    "title": "Output Property binding",
-                    "description": "This is the property which the EndDialog(result) will be set to when EndDialog() is called",
-                    "examples": [
-                        "value.birthday"
-                    ],
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
                 },
                 "prompt": {
                     "$type": "Microsoft.IActivityTemplate",
@@ -1624,12 +1661,12 @@
                     "description": "The expression that you evaluated for input.",
                     "type": "string"
                 },
-                "valueProperty": {
+                "property": {
                     "$role": "memoryPath",
-                    "title": "Value Property",
-                    "description": "It is where you want to the putput of the input written to",
+                    "title": "Property",
+                    "description": "Property that this input dialog is bound to",
                     "examples": [
-                        "user.name"
+                        "$birthday"
                     ],
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
@@ -1650,12 +1687,17 @@
                     ]
                 },
                 "allowInterruptions": {
-                    "type": "boolean",
+                    "type": "string",
+                    "enum": [
+                        "always",
+                        "never",
+                        "notRecognized"
+                    ],
                     "title": "Allow Interruptions",
-                    "description": "If set to true this will always consult the parent dialog whether it will be interupt or not.",
-                    "default": true,
+                    "description": "Always will always consult parent dialogs first, never will not consult parent dialogs, notRecognized will consult parent only when it's not recognized",
+                    "default": "notRecognized",
                     "examples": [
-                        true
+                        "notRecognized"
                     ]
                 },
                 "defaultLocale": {
@@ -1715,6 +1757,26 @@
                     "title": "$designer",
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
+                },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "(Optional) id for the dialog",
+                    "examples": [
+                        "Dialog2"
+                    ]
+                },
+                "tags": {
+                    "type": "array",
+                    "title": "Tags",
+                    "description": "Tags are optional strings that you can use to organize components",
+                    "examples": [
+                        "input",
+                        "confirmation"
+                    ],
+                    "items": {
+                        "type": "string"
+                    }
                 }
             },
             "additionalProperties": false,
@@ -1767,6 +1829,26 @@
                     "title": "$designer",
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
+                },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "(Optional) id for the dialog",
+                    "examples": [
+                        "Dialog2"
+                    ]
+                },
+                "tags": {
+                    "type": "array",
+                    "title": "Tags",
+                    "description": "Tags are optional strings that you can use to organize components",
+                    "examples": [
+                        "input",
+                        "confirmation"
+                    ],
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "property": {
                     "$role": "memoryPath",
@@ -1827,6 +1909,26 @@
                     "title": "$designer",
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
+                },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "(Optional) id for the dialog",
+                    "examples": [
+                        "Dialog2"
+                    ]
+                },
+                "tags": {
+                    "type": "array",
+                    "title": "Tags",
+                    "description": "Tags are optional strings that you can use to organize components",
+                    "examples": [
+                        "input",
+                        "confirmation"
+                    ],
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "changeType": {
                     "type": "string",
@@ -1917,7 +2019,27 @@
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
                 },
-                "ChangeType": {
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "(Optional) id for the dialog",
+                    "examples": [
+                        "Dialog2"
+                    ]
+                },
+                "tags": {
+                    "type": "array",
+                    "title": "Tags",
+                    "description": "Tags are optional strings that you can use to organize components",
+                    "examples": [
+                        "input",
+                        "confirmation"
+                    ],
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "changeType": {
                     "type": "string",
                     "title": "Change Type",
                     "description": "The change type to apply to current dialog",
@@ -1929,7 +2051,7 @@
                         "ReplaceSequence"
                     ]
                 },
-                "Steps": {
+                "steps": {
                     "type": "array",
                     "title": "Steps",
                     "description": "Steps to execute",
@@ -1955,8 +2077,8 @@
                 {
                     "title": "Type",
                     "required": [
-                        "ChangeType",
-                        "Steps",
+                        "changeType",
+                        "steps",
                         "$type"
                     ]
                 }
@@ -1992,6 +2114,26 @@
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
                 },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "(Optional) id for the dialog",
+                    "examples": [
+                        "Dialog2"
+                    ]
+                },
+                "tags": {
+                    "type": "array",
+                    "title": "Tags",
+                    "description": "Tags are optional strings that you can use to organize components",
+                    "examples": [
+                        "input",
+                        "confirmation"
+                    ],
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "eventName": {
                     "title": "Event Name",
                     "description": "The name of event to emit",
@@ -1999,8 +2141,10 @@
                         {
                             "enum": [
                                 "beginDialog",
-                                "consultDialog",
+                                "resumeDialog",
+                                "repromptDialog",
                                 "cancelDialog",
+                                "endDialog",
                                 "activityReceived",
                                 "recognizedIntent",
                                 "unknownIntent",
@@ -2078,6 +2222,26 @@
                     "title": "$designer",
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
+                },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "(Optional) id for the dialog",
+                    "examples": [
+                        "Dialog2"
+                    ]
+                },
+                "tags": {
+                    "type": "array",
+                    "title": "Tags",
+                    "description": "Tags are optional strings that you can use to organize components",
+                    "examples": [
+                        "input",
+                        "confirmation"
+                    ],
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "property": {
                     "$role": "memoryPath",
@@ -2209,6 +2373,26 @@
                     "title": "$designer",
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
+                },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "(Optional) id for the dialog",
+                    "examples": [
+                        "Dialog2"
+                    ]
+                },
+                "tags": {
+                    "type": "array",
+                    "title": "Tags",
+                    "description": "Tags are optional strings that you can use to organize components",
+                    "examples": [
+                        "input",
+                        "confirmation"
+                    ],
+                    "items": {
+                        "type": "string"
+                    }
                 }
             },
             "additionalProperties": false,
@@ -2474,7 +2658,27 @@
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
                 },
-                "ListProperty": {
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "(Optional) id for the dialog",
+                    "examples": [
+                        "Dialog2"
+                    ]
+                },
+                "tags": {
+                    "type": "array",
+                    "title": "Tags",
+                    "description": "Tags are optional strings that you can use to organize components",
+                    "examples": [
+                        "input",
+                        "confirmation"
+                    ],
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "listProperty": {
                     "$role": "expression",
                     "title": "ListProperty",
                     "description": "Expression to evaluate.",
@@ -2483,7 +2687,7 @@
                     ],
                     "type": "string"
                 },
-                "Steps": {
+                "steps": {
                     "type": "array",
                     "title": "Steps",
                     "description": "Steps to execute",
@@ -2492,7 +2696,7 @@
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
                 },
-                "IndexProperty": {
+                "indexProperty": {
                     "$role": "memoryPath",
                     "title": "Index Property",
                     "description": "The memory path which refers to the index of the item",
@@ -2500,7 +2704,7 @@
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
                 },
-                "ValueProperty": {
+                "valueProperty": {
                     "$role": "memoryPath",
                     "title": "Value Property",
                     "description": "The memory path which refers to the value of the item",
@@ -2525,8 +2729,8 @@
                 {
                     "title": "Type",
                     "required": [
-                        "ListProperty",
-                        "Steps",
+                        "listProperty",
+                        "steps",
                         "$type"
                     ]
                 }
@@ -2562,7 +2766,27 @@
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
                 },
-                "ListProperty": {
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "(Optional) id for the dialog",
+                    "examples": [
+                        "Dialog2"
+                    ]
+                },
+                "tags": {
+                    "type": "array",
+                    "title": "Tags",
+                    "description": "Tags are optional strings that you can use to organize components",
+                    "examples": [
+                        "input",
+                        "confirmation"
+                    ],
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "listProperty": {
                     "$role": "expression",
                     "title": "ListProperty",
                     "description": "Expression to evaluate.",
@@ -2571,7 +2795,7 @@
                     ],
                     "type": "string"
                 },
-                "Steps": {
+                "steps": {
                     "type": "array",
                     "title": "Steps",
                     "description": "Steps to execute",
@@ -2580,13 +2804,13 @@
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
                 },
-                "PageSize": {
+                "pageSize": {
                     "type": "integer",
                     "title": "Page Size",
                     "description": "The page size",
                     "default": 10
                 },
-                "ValueProperty": {
+                "valueProperty": {
                     "$role": "memoryPath",
                     "title": "Value Property",
                     "description": "The memory path which refers to the value of the item",
@@ -2611,8 +2835,8 @@
                 {
                     "title": "Type",
                     "required": [
-                        "ListProperty",
-                        "Steps",
+                        "listProperty",
+                        "steps",
                         "$type"
                     ]
                 }
@@ -2718,6 +2942,26 @@
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
                 },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "(Optional) id for the dialog",
+                    "examples": [
+                        "Dialog2"
+                    ]
+                },
+                "tags": {
+                    "type": "array",
+                    "title": "Tags",
+                    "description": "Tags are optional strings that you can use to organize components",
+                    "examples": [
+                        "input",
+                        "confirmation"
+                    ],
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "method": {
                     "type": "string",
                     "title": "Method",
@@ -2761,17 +3005,17 @@
                     "title": "Http headers",
                     "description": "Http headers to include with the HTTP request (supports data binding)"
                 },
-                "responseTypes": {
+                "responseType": {
                     "type": "string",
-                    "title": "Response Types",
+                    "title": "Response Type",
                     "description": "Describes how to parse the response from the http request. If Activity or Activities, then the they will be sent to the user.",
                     "enum": [
-                        "none",
-                        "json",
-                        "activity",
-                        "activities"
+                        "None",
+                        "Json",
+                        "Activity",
+                        "Activities"
                     ],
-                    "default": "json"
+                    "default": "Json"
                 }
             },
             "additionalProperties": false,
@@ -2791,7 +3035,7 @@
                     "title": "Type",
                     "required": [
                         "url",
-                        "entity",
+                        "method",
                         "$type"
                     ]
                 }
@@ -2919,6 +3163,11 @@
                     "title": "Microsoft.NumberInput",
                     "description": "This represents a dialog which gathers a decimal number in a specified range",
                     "$ref": "#/definitions/Microsoft.NumberInput"
+                },
+                {
+                    "title": "Microsoft.OAuthInput",
+                    "description": "This represents a dialog which gathers an OAuth token from user",
+                    "$ref": "#/definitions/Microsoft.OAuthInput"
                 },
                 {
                     "title": "Microsoft.QnAMakerDialog",
@@ -3184,6 +3433,26 @@
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
                 },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "(Optional) id for the dialog",
+                    "examples": [
+                        "Dialog2"
+                    ]
+                },
+                "tags": {
+                    "type": "array",
+                    "title": "Tags",
+                    "description": "Tags are optional strings that you can use to organize components",
+                    "examples": [
+                        "input",
+                        "confirmation"
+                    ],
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "condition": {
                     "$role": "expression",
                     "title": "Condition",
@@ -3264,6 +3533,26 @@
                     "title": "$designer",
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
+                },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "(Optional) id for the dialog",
+                    "examples": [
+                        "Dialog2"
+                    ]
+                },
+                "tags": {
+                    "type": "array",
+                    "title": "Tags",
+                    "description": "Tags are optional strings that you can use to organize components",
+                    "examples": [
+                        "input",
+                        "confirmation"
+                    ],
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "property": {
                     "$role": "memoryPath",
@@ -3543,6 +3832,26 @@
                     "title": "$designer",
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
+                },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "(Optional) id for the dialog",
+                    "examples": [
+                        "Dialog2"
+                    ]
+                },
+                "tags": {
+                    "type": "array",
+                    "title": "Tags",
+                    "description": "Tags are optional strings that you can use to organize components",
+                    "examples": [
+                        "input",
+                        "confirmation"
+                    ],
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "text": {
                     "type": "string",
@@ -4077,36 +4386,25 @@
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
                 },
-                "property": {
-                    "$role": "memoryPath",
-                    "title": "Property",
-                    "description": "This is that will be passed in as InputProperty and also set as the OutputProperty",
-                    "examples": [
-                        "value.birthday"
-                    ],
+                "id": {
                     "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
-                },
-                "inputBindings": {
-                    "type": "object",
-                    "title": "Input Bindings",
-                    "description": "This defines properties which be passed as arguments to this dialog",
+                    "title": "Id",
+                    "description": "(Optional) id for the dialog",
                     "examples": [
-                        "value.birthday"
+                        "Dialog2"
+                    ]
+                },
+                "tags": {
+                    "type": "array",
+                    "title": "Tags",
+                    "description": "Tags are optional strings that you can use to organize components",
+                    "examples": [
+                        "input",
+                        "confirmation"
                     ],
-                    "additionalProperties": {
+                    "items": {
                         "type": "string"
                     }
-                },
-                "outputBinding": {
-                    "$role": "memoryPath",
-                    "title": "Output Property binding",
-                    "description": "This is the property which the EndDialog(result) will be set to when EndDialog() is called",
-                    "examples": [
-                        "value.birthday"
-                    ],
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
                 },
                 "prompt": {
                     "$type": "Microsoft.IActivityTemplate",
@@ -4160,12 +4458,12 @@
                     "description": "The expression that you evaluated for input.",
                     "type": "string"
                 },
-                "valueProperty": {
+                "property": {
                     "$role": "memoryPath",
-                    "title": "Value Property",
-                    "description": "It is where you want to the putput of the input written to",
+                    "title": "Property",
+                    "description": "Property that this input dialog is bound to",
                     "examples": [
-                        "user.name"
+                        "$birthday"
                     ],
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
@@ -4186,12 +4484,17 @@
                     ]
                 },
                 "allowInterruptions": {
-                    "type": "boolean",
+                    "type": "string",
+                    "enum": [
+                        "always",
+                        "never",
+                        "notRecognized"
+                    ],
                     "title": "Allow Interruptions",
-                    "description": "If set to true this will always consult the parent dialog whether it will be interupt or not.",
-                    "default": true,
+                    "description": "Always will always consult parent dialogs first, never will not consult parent dialogs, notRecognized will consult parent only when it's not recognized",
+                    "default": "notRecognized",
                     "examples": [
-                        true
+                        "notRecognized"
                     ]
                 },
                 "outputFormat": {
@@ -4209,6 +4512,190 @@
                     "title": "Default Locale",
                     "description": "The prompts default locale that should be recognized.",
                     "default": "en-us"
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$type"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.OAuthInput": {
+            "$role": "unionType(Microsoft.IDialog)",
+            "title": "OAuthInput Dialog",
+            "description": "This represents a dialog which gathers an OAuth token from user",
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.OAuthInput"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "(Optional) id for the dialog",
+                    "examples": [
+                        "Dialog2"
+                    ]
+                },
+                "tags": {
+                    "type": "array",
+                    "title": "Tags",
+                    "description": "Tags are optional strings that you can use to organize components",
+                    "examples": [
+                        "input",
+                        "confirmation"
+                    ],
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "prompt": {
+                    "$type": "Microsoft.IActivityTemplate",
+                    "title": "Initial Prompt",
+                    "description": "The message to send to as prompt for this input.",
+                    "examples": [
+                        "What is your birth date?"
+                    ],
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                },
+                "unrecognizedPrompt": {
+                    "$type": "Microsoft.IActivityTemplate",
+                    "title": "Unrecognized Prompt",
+                    "description": "The message to send if the last input is not recognized.",
+                    "examples": [
+                        "Let's try again. What is your birth date?"
+                    ],
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                },
+                "invalidPrompt": {
+                    "$type": "Microsoft.IActivityTemplate",
+                    "title": "Invalid Prompt",
+                    "description": "The message to send to when then input was not valid for the input type.",
+                    "examples": [
+                        "No date was recognized"
+                    ],
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                },
+                "maxTurnCount": {
+                    "type": "integer",
+                    "title": "Max Turn Count",
+                    "description": "The max retry count for this prompt.",
+                    "default": 2147483647,
+                    "examples": [
+                        3
+                    ]
+                },
+                "validations": {
+                    "type": "array",
+                    "title": "Validation Expressions",
+                    "description": "Expressions to validate an input.",
+                    "items": {
+                        "$role": "expression",
+                        "type": "string",
+                        "description": "String must contain an expression."
+                    }
+                },
+                "value": {
+                    "$role": "expression",
+                    "title": "Value",
+                    "description": "The expression that you evaluated for input.",
+                    "type": "string"
+                },
+                "property": {
+                    "$role": "memoryPath",
+                    "title": "Property",
+                    "description": "Property that this input dialog is bound to",
+                    "examples": [
+                        "$birthday"
+                    ],
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
+                },
+                "defaultValue": {
+                    "$role": "expression",
+                    "title": "Default Value",
+                    "description": "Value to return if the value expression can't be evaluated.",
+                    "type": "string"
+                },
+                "alwaysPrompt": {
+                    "type": "boolean",
+                    "title": "Always Prompt",
+                    "description": "If set to true this will always prompt the user regardless if you already have the value or not.",
+                    "default": false,
+                    "examples": [
+                        false
+                    ]
+                },
+                "allowInterruptions": {
+                    "type": "string",
+                    "enum": [
+                        "always",
+                        "never",
+                        "notRecognized"
+                    ],
+                    "title": "Allow Interruptions",
+                    "description": "Always will always consult parent dialogs first, never will not consult parent dialogs, notRecognized will consult parent only when it's not recognized",
+                    "default": "notRecognized",
+                    "examples": [
+                        "notRecognized"
+                    ]
+                },
+                "connectionName": {
+                    "type": "string",
+                    "title": "Connection Name",
+                    "description": "The connection name configured in Azure Web App Bot OAuth settings."
+                },
+                "text": {
+                    "type": "string",
+                    "title": "Text",
+                    "description": "Text shown in the OAuth signin card."
+                },
+                "title": {
+                    "type": "string",
+                    "title": "Title",
+                    "description": "Title shown in the OAuth signin card."
+                },
+                "timeout": {
+                    "type": "integer",
+                    "title": "Timeout",
+                    "description": "Time out setting for the OAuth signin card.",
+                    "default": "900000"
                 }
             },
             "additionalProperties": false,
@@ -4471,6 +4958,26 @@
                     "title": "$designer",
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
+                },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "(Optional) id for the dialog",
+                    "examples": [
+                        "Dialog2"
+                    ]
+                },
+                "tags": {
+                    "type": "array",
+                    "title": "Tags",
+                    "description": "Tags are optional strings that you can use to organize components",
+                    "examples": [
+                        "input",
+                        "confirmation"
+                    ],
+                    "items": {
+                        "type": "string"
+                    }
                 }
             },
             "additionalProperties": false,
@@ -4523,6 +5030,26 @@
                     "title": "$designer",
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
+                },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "(Optional) id for the dialog",
+                    "examples": [
+                        "Dialog2"
+                    ]
+                },
+                "tags": {
+                    "type": "array",
+                    "title": "Tags",
+                    "description": "Tags are optional strings that you can use to organize components",
+                    "examples": [
+                        "input",
+                        "confirmation"
+                    ],
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "dialog": {
                     "$type": "Microsoft.IDialog",
@@ -4667,6 +5194,26 @@
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
                 },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "(Optional) id for the dialog",
+                    "examples": [
+                        "Dialog2"
+                    ]
+                },
+                "tags": {
+                    "type": "array",
+                    "title": "Tags",
+                    "description": "Tags are optional strings that you can use to organize components",
+                    "examples": [
+                        "input",
+                        "confirmation"
+                    ],
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "activity": {
                     "$type": "Microsoft.IActivityTemplate",
                     "title": "Activity",
@@ -4724,6 +5271,26 @@
                     "title": "$designer",
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
+                },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "(Optional) id for the dialog",
+                    "examples": [
+                        "Dialog2"
+                    ]
+                },
+                "tags": {
+                    "type": "array",
+                    "title": "Tags",
+                    "description": "Tags are optional strings that you can use to organize components",
+                    "examples": [
+                        "input",
+                        "confirmation"
+                    ],
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "property": {
                     "$role": "memoryPath",
@@ -4797,6 +5364,26 @@
                     "title": "$designer",
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
+                },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "(Optional) id for the dialog",
+                    "examples": [
+                        "Dialog2"
+                    ]
+                },
+                "tags": {
+                    "type": "array",
+                    "title": "Tags",
+                    "description": "Tags are optional strings that you can use to organize components",
+                    "examples": [
+                        "input",
+                        "confirmation"
+                    ],
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "condition": {
                     "$role": "expression",
@@ -4898,36 +5485,25 @@
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
                 },
-                "property": {
-                    "$role": "memoryPath",
-                    "title": "Property",
-                    "description": "This is that will be passed in as InputProperty and also set as the OutputProperty",
-                    "examples": [
-                        "value.birthday"
-                    ],
+                "id": {
                     "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
-                },
-                "inputBindings": {
-                    "type": "object",
-                    "title": "Input Bindings",
-                    "description": "This defines properties which be passed as arguments to this dialog",
+                    "title": "Id",
+                    "description": "(Optional) id for the dialog",
                     "examples": [
-                        "value.birthday"
+                        "Dialog2"
+                    ]
+                },
+                "tags": {
+                    "type": "array",
+                    "title": "Tags",
+                    "description": "Tags are optional strings that you can use to organize components",
+                    "examples": [
+                        "input",
+                        "confirmation"
                     ],
-                    "additionalProperties": {
+                    "items": {
                         "type": "string"
                     }
-                },
-                "outputBinding": {
-                    "$role": "memoryPath",
-                    "title": "Output Property binding",
-                    "description": "This is the property which the EndDialog(result) will be set to when EndDialog() is called",
-                    "examples": [
-                        "value.birthday"
-                    ],
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
                 },
                 "prompt": {
                     "$type": "Microsoft.IActivityTemplate",
@@ -4981,12 +5557,12 @@
                     "description": "The expression that you evaluated for input.",
                     "type": "string"
                 },
-                "valueProperty": {
+                "property": {
                     "$role": "memoryPath",
-                    "title": "Value Property",
-                    "description": "It is where you want to the putput of the input written to",
+                    "title": "Property",
+                    "description": "Property that this input dialog is bound to",
                     "examples": [
-                        "user.name"
+                        "$birthday"
                     ],
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
@@ -5007,12 +5583,17 @@
                     ]
                 },
                 "allowInterruptions": {
-                    "type": "boolean",
+                    "type": "string",
+                    "enum": [
+                        "always",
+                        "never",
+                        "notRecognized"
+                    ],
                     "title": "Allow Interruptions",
-                    "description": "If set to true this will always consult the parent dialog whether it will be interupt or not.",
-                    "default": true,
+                    "description": "Always will always consult parent dialogs first, never will not consult parent dialogs, notRecognized will consult parent only when it's not recognized",
+                    "default": "notRecognized",
                     "examples": [
-                        true
+                        "notRecognized"
                     ]
                 },
                 "outputFormat": {
@@ -5078,6 +5659,26 @@
                     "title": "$designer",
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
+                },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "(Optional) id for the dialog",
+                    "examples": [
+                        "Dialog2"
+                    ]
+                },
+                "tags": {
+                    "type": "array",
+                    "title": "Tags",
+                    "description": "Tags are optional strings that you can use to organize components",
+                    "examples": [
+                        "input",
+                        "confirmation"
+                    ],
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "name": {
                     "type": "string",

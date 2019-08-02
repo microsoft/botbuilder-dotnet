@@ -568,7 +568,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 }
             };
 
-            innerDialog.AddDialog(new[] {
+            innerDialog.AddDialogs(new[] {
                 new AdaptiveDialog("Greeting")
                 {
                     Steps = new List<IDialog>()
@@ -643,7 +643,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     },
                 }
             };
-            outerDialog.AddDialog(new List<IDialog>() { innerDialog });
+            outerDialog.AddDialogs(new List<IDialog>() { innerDialog });
 
 
             await CreateFlow(outerDialog)

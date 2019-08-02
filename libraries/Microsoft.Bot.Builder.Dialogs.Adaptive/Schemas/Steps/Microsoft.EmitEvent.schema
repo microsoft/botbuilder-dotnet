@@ -1,48 +1,55 @@
 {
-    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-dotnet/4.Future/Schemas/component.schema",
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
     "$role": "unionType(Microsoft.IDialog)",
     "title": "Emit Event Step",
     "description": "This is a step which allows you to emit an event",
     "type": "object",
-    "properties": {
-        "eventName": {
-            "title": "Event Name",
-            "description": "The name of event to emit",
-            "anyOf": [
-                {
-                    "enum": [
-                        "beginDialog",
-                        "resumeDialog",
-                        "repromptDialog",
-                        "cancelDialog",
-                        "endDialog",
-                        "activityReceived",
-                        "recognizedIntent",
-                        "unknownIntent",
-                        "stepsStarted",
-                        "stepsSaved",
-                        "stepsEnded",
-                        "stepsResumed"
-                    ]
-                },
-                {
-                    "type": "string"
-                }
-            ]
-        },
-        "eventValue": {
-            "type": "object",
-            "title": "Event Value",
-            "description": "Optional value to emit along with the event",
-            "additionalProperties": true
-        },
-        "bubbleEvent": {
-            "type": "boolean",
-            "title": "Bubble Event",
-            "description": "If true this event should propagate to parent dialogs"
-        }
-    },
     "required": [
         "eventName"
+    ],
+    "allOf": [
+        {
+            "$ref": "./baseStepSchema.json"
+        },
+        {
+            "properties": {
+                "eventName": {
+                    "title": "Event Name",
+                    "description": "The name of event to emit",
+                    "anyOf": [
+                        {
+                            "enum": [
+                                "beginDialog",
+                                "resumeDialog",
+                                "repromptDialog",
+                                "cancelDialog",
+                                "endDialog",
+                                "activityReceived",
+                                "recognizedIntent",
+                                "unknownIntent",
+                                "stepsStarted",
+                                "stepsSaved",
+                                "stepsEnded",
+                                "stepsResumed"
+                            ]
+                        },
+                        {
+                            "type": "string"
+                        }
+                    ]
+                },
+                "eventValue": {
+                    "type": "object",
+                    "title": "Event Value",
+                    "description": "Optional value to emit along with the event",
+                    "additionalProperties": true
+                },
+                "bubbleEvent": {
+                    "type": "boolean",
+                    "title": "Bubble Event",
+                    "description": "If true this event should propagate to parent dialogs"
+                }
+            }
+        }
     ]
 }

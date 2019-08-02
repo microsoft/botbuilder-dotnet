@@ -1,41 +1,48 @@
 {
-    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-dotnet/4.Future/Schemas/component.schema",
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
     "$role": "unionType(Microsoft.IDialog)",
     "title": "Foreach Step",
     "description": "Step which executes steps per item in a collection.",
     "type": "object",
-    "properties": {
-        "listProperty": {
-            "$role": "expression",
-            "title": "ListProperty",
-            "description": "Expression to evaluate.",
-            "examples": [
-                "user.todoList"
-            ]
+    "allOf": [
+        {
+            "$ref": "./baseStepSchema.json"
         },
-        "steps": {
-            "type": "array",
-            "items": {
-                "$type": "Microsoft.IDialog"
+        {
+            "properties": {
+                "listProperty": {
+                    "$role": "expression",
+                    "title": "ListProperty",
+                    "description": "Expression to evaluate.",
+                    "examples": [
+                        "user.todoList"
+                    ]
+                },
+                "steps": {
+                    "type": "array",
+                    "items": {
+                        "$type": "Microsoft.IDialog"
+                    },
+                    "title": "Steps",
+                    "description": "Steps to execute"
+                },
+                "indexProperty": {
+                    "$role": "memoryPath",
+                    "title": "Index Property",
+                    "description": "The memory path which refers to the index of the item",
+                    "default": "dialog.index"
+                },
+                "valueProperty": {
+                    "$role": "memoryPath",
+                    "title": "Value Property",
+                    "description": "The memory path which refers to the value of the item",
+                    "default": "dialog.value"
+                }
             },
-            "title": "Steps",
-            "description": "Steps to execute"
-        },
-        "indexProperty": {
-            "$role": "memoryPath",
-            "title": "Index Property",
-            "description": "The memory path which refers to the index of the item",
-            "default": "dialog.index"
-        },
-        "valueProperty": {
-            "$role": "memoryPath",
-            "title": "Value Property",
-            "description": "The memory path which refers to the value of the item",
-            "default": "dialog.value"
+            "required": [
+                "listProperty",
+                "steps"
+            ]
         }
-    },
-    "required": [
-        "listProperty",
-        "steps"
     ]
 }

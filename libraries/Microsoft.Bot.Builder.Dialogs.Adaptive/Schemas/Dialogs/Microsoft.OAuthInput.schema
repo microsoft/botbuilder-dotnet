@@ -1,12 +1,12 @@
 {
-    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-dotnet/4.Future/Schemas/component.schema",
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
     "$role": "unionType(Microsoft.IDialog)",
     "title": "OAuthInput Dialog",
     "description": "This represents a dialog which gathers an OAuth token from user",
     "type": "object",
     "allOf": [
         {
-            "$ref": "./baseSchema.json"
+            "$ref": "./baseInputSchema.json"
         },
         {
             "properties": {

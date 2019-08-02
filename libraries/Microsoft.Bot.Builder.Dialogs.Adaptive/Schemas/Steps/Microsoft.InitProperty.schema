@@ -1,30 +1,37 @@
 {
-    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-dotnet/4.Future/Schemas/component.schema",
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
     "$role": "unionType(Microsoft.IDialog)",
     "title": "Init Property Step",
     "description": "This step allows you to innitial a property to either an object or array",
     "type": "object",
-    "properties": {
-        "property": {
-            "$role": "memoryPath",
-            "title": "Property",
-            "description": "The property to set the value of",
-            "examples": [
-                "user.age"
-            ]
-        },
-        "type": {
-            "type": "string",
-            "title": "type",
-            "description": "type of value to set the property to, object or array.",
-            "enum": [
-                "object",
-                "array"
-            ]
-        }
-    },
     "required": [
         "property",
         "type"
+    ],
+    "allOf": [
+        {
+            "$ref": "./baseStepSchema.json"
+        },
+        {
+            "properties": {
+                "property": {
+                    "$role": "memoryPath",
+                    "title": "Property",
+                    "description": "The property to set the value of",
+                    "examples": [
+                        "user.age"
+                    ]
+                },
+                "type": {
+                    "type": "string",
+                    "title": "type",
+                    "description": "type of value to set the property to, object or array.",
+                    "enum": [
+                        "object",
+                        "array"
+                    ]
+                }
+            }
+        }
     ]
 }
