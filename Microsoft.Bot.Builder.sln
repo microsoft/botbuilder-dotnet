@@ -137,6 +137,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Schemas", "Schemas", "{EE56
 		schemas\readme.md = schemas\readme.md
 		schemas\sdk.schema = schemas\sdk.schema
 		schemas\update.cmd = schemas\update.cmd
+		schemas\updateBranch.cmd = schemas\updateBranch.cmd
 	EndProjectSection
 EndProject
 Global
