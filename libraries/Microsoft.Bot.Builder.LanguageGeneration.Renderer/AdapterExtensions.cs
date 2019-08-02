@@ -34,6 +34,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 defaultLg = "main.lg";
             }
+
             // if there is no main.lg, then provide default engine (for inline expression evaluation only)
             if (resourceExplorer.GetResource(defaultLg) == null)
             {
@@ -58,7 +59,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             TypeFactory.Register("DefaultLanguageGenerator", typeof(ResourceMultiLanguageGenerator), new CustomLGLoader());
             botAdapter.Use(new RegisterClassMiddleware<LanguageGeneratorManager>(new LanguageGeneratorManager(resourceExplorer ?? throw new ArgumentNullException(nameof(resourceExplorer)))));
-            botAdapter.Use(new LanguageGeneratorMiddleware(languageGenerator ?? throw new ArgumentNullException(nameof(languageGenerator))));
+            botAdapter.Use(new RegisterClassMiddleware<ILanguageGenerator>(languageGenerator ?? throw new ArgumentNullException(nameof(languageGenerator))));
             botAdapter.UseMessageActivityGeneration(messageGenerator);
             return botAdapter;
         }

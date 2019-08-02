@@ -80,6 +80,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             {
                 return base.TelemetryClient;
             }
+
             set
             {
                 var client = value ?? new NullBotTelemetryClient();
@@ -226,6 +227,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                             var e = new DialogEvent() { Name = AdaptiveEvents.RecognizedIntent, Value = recognized, Bubble = false };
                             handled = await this.ProcessEventAsync(sequenceContext, dialogEvent: e, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
                         }
+
                         break;
                 }
             }
@@ -297,7 +299,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
         public void AddRule(IRule rule)
         {
-            rule.Steps.ForEach(s => _dialogs.Add(s));
+            this.AddDialogs(rule.Steps);
             this.Rules.Add(rule);
         }
 
@@ -309,7 +311,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
         }
 
-        public void AddDialog(IEnumerable<IDialog> dialogs)
+        public void AddDialogs(IEnumerable<IDialog> dialogs)
         {
             foreach (var dialog in dialogs)
             {
@@ -326,7 +328,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
             return $"AdaptiveDialog[{this.BindingPath()}]";
         }
-        
+
         public override DialogContext CreateChildContext(DialogContext dc)
         {
             var activeDialogState = dc.ActiveDialog.State as Dictionary<string, object>;
@@ -340,7 +342,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
             if (state.Steps != null && state.Steps.Any())
             {
-                var ctx = new SequenceContext(this._dialogs, dc, state.Steps.First(), state.Steps, changeKey);
+                var ctx = new SequenceContext(this._dialogs, dc, state.Steps.First(), state.Steps, changeKey, this._dialogs);
                 ctx.Parent = dc;
                 return ctx;
             }
@@ -529,11 +531,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 {
                     installedDependencies = true;
 
-                    AddDialog(this.Steps.ToArray());
+                    AddDialogs(this.Steps.ToArray());
 
                     foreach (var rule in this.Rules)
                     {
-                        AddDialog(rule.Steps.ToArray());
+                        AddDialogs(rule.Steps);
                     }
 
                     // Wire up selector
@@ -571,7 +573,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 state.Steps = new List<StepState>();
             }
 
-            var sequenceContext = new SequenceContext(dc.Dialogs, dc, new DialogState() { DialogStack = dc.Stack }, state.Steps, changeKey);
+            var sequenceContext = new SequenceContext(dc.Dialogs, dc, new DialogState() { DialogStack = dc.Stack }, state.Steps, changeKey, this._dialogs);
             sequenceContext.Parent = dc.Parent;
             return sequenceContext;
         }

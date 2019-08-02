@@ -89,6 +89,5 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition.Tests
             activity.Locale = locale;
             return (Activity)activity;
         }
-
     }
 }

@@ -1,20 +1,28 @@
 {
-    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-dotnet/4.Future/Schemas/component.schema",
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
     "$role": "unionType(Microsoft.IDialog)",
     "title": "Cancel All Dialogs",
     "description": "Command to cancel all of the current dialogs by emitting an event which must be caught to prevent cancelation from propagating.",
     "type": "object",
-    "properties": {
-        "eventName": {
-            "title": "Event Name",
-            "description": "The name of event to emit",
-            "type": "string"
+    "allOf": [
+        {
+            "$ref": "./baseStepSchema.json"
         },
-        "eventValue": {
-            "type": "object",
-            "title": "Event Value",
-            "description": "Optional value to emit along with the event",
-            "additionalProperties": true
+        {
+
+            "properties": {
+                "eventName": {
+                    "title": "Event Name",
+                    "description": "The name of event to emit",
+                    "type": "string"
+                },
+                "eventValue": {
+                    "type": "object",
+                    "title": "Event Value",
+                    "description": "Optional value to emit along with the event",
+                    "additionalProperties": true
+                }
+            }
         }
-    }
+    ]
 }

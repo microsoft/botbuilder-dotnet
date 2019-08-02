@@ -6,17 +6,29 @@ using Microsoft.Bot.Builder.Dialogs;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
+    /// <summary>
+    /// Base class which applies language policy to virtual method of TryGetGenerator.
+    /// </summary>
     public abstract class MultiLanguageGeneratorBase : ILanguageGenerator
     {
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MultiLanguageGeneratorBase"/> class.
+        /// </summary>
         public MultiLanguageGeneratorBase()
         {
         }
 
+        /// <summary>
+        /// abstract method to lookup a ILanguageGeneartor by locale.
+        /// </summary>
+        /// <param name="context">context</param>
+        /// <param name="locale">locale</param>
+        /// <param name="generator">generator to return</param>
+        /// <returns>true if found</returns>
         public abstract bool TryGetGenerator(ITurnContext context, string locale, out ILanguageGenerator generator);
 
         /// <summary>
-        /// This allows you to specify per language the fallback policies you want
+        /// Language Policy which defines per language fallback policies.
         /// </summary>
         public ILanguagePolicy LanguagePolicy { get; set; } = new LanguagePolicy();
 
@@ -25,10 +37,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             // see if we have any locales that match
             var targetLocale = turnContext.Activity.Locale?.ToLower() ?? string.Empty;
 
-            var locales = new string[] { String.Empty };
+            var locales = new string[] { string.Empty };
             if (!this.LanguagePolicy.TryGetValue(targetLocale, out locales))
             {
-                if (!this.LanguagePolicy.TryGetValue(String.Empty, out locales))
+                if (!this.LanguagePolicy.TryGetValue(string.Empty, out locales))
                 {
                     throw new Exception($"No supported language found for {targetLocale}");
                 }
@@ -48,8 +60,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 throw new Exception($"No generator found for language {targetLocale}");
             }
 
-
-            List<string> errors = new List<string>();
+            var errors = new List<string>();
             foreach (var generator in generators)
             {
                 try
@@ -62,7 +73,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 }
             }
 
-            throw new Exception(String.Join(",\n", errors.Distinct()));
+            throw new Exception(string.Join(",\n", errors.Distinct()));
         }
     }
 }

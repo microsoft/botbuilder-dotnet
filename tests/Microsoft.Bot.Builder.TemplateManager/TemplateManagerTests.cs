@@ -269,57 +269,5 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
                     .AssertReply("(Activity)default: joe")
                 .StartTestAsync();
         }
-
-        [TestMethod]
-        public async Task TemplateManagerMiddleware_LanguageGeneration()
-        {
-
-            TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
-                                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()))
-                                .Use(new TemplateManagerMiddleware()
-                                {
-                                    Renderers =
-                                    {
-                                        new LanguageGenerationRenderer("en-us.lg")
-                                    }
-                                });
-
-
-            await new TestFlow(adapter, async (context, cancellationToken) =>
-            {
-                var templateId = context.Activity.AsMessageActivity().Text.Trim();
-                var templateActivity = TemplateManager.CreateTemplateActivity(templateId, new { name = "joe" });
-                await context.SendActivityAsync(templateActivity);
-            })
-                .Send("welcome")
-                    .AssertReplyOneOf(new string[] { "Hello", "Hi", "Hi :)", "Hello :)" })
-                .StartTestAsync();
-        }
-
-        [TestMethod]
-        public async Task TemplateManagerMiddleware_LanguageGenerationWithParameters()
-        {
-
-            TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
-                                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()))
-                                .Use(new TemplateManagerMiddleware()
-                                {
-                                    Renderers =
-                                    {
-                                        new LanguageGenerationRenderer("en-us.lg")
-                                    }
-                                });
-
-
-            await new TestFlow(adapter, async (context, cancellationToken) =>
-            {
-                var templateId = context.Activity.AsMessageActivity().Text.Trim();
-                var templateActivity = TemplateManager.CreateTemplateActivity(templateId, new { userName = "joe" });
-                await context.SendActivityAsync(templateActivity);
-            })
-                .Send("welcome-user")
-                    .AssertReplyOneOf(new string[] { "Hello joe :)", "Hi joe :)", "Hello joe", "Hi joe" })
-                .StartTestAsync();
-        }
     }
 }

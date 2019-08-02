@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Bot.StreamingExtensions.Payloads
 {
-    internal class RequestManager : IRequestManager
+    public class RequestManager : IRequestManager
     {
         private readonly ConcurrentDictionary<Guid, TaskCompletionSource<ReceiveResponse>> _responseTasks;
 

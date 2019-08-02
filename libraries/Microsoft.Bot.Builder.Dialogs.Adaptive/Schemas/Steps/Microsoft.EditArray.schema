@@ -1,43 +1,50 @@
 {
-    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-dotnet/4.Future/Schemas/component.schema",
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
     "$role": "unionType(Microsoft.IDialog)",
     "title": "Edit Array Step",
     "description": "This is a step which allows you to modify an array in memory",
     "type": "object",
-    "properties": {
-        "changeType": {
-            "type": "string",
-            "title": "Change Type",
-            "description": "The array operation to perform",
-            "enum": [
-                "Push",
-                "Pop",
-                "Take",
-                "Remove",
-                "Clear"
-            ]
-        },
-        "arrayProperty": {
-            "$role": "memoryPath",
-            "title": "Array Property",
-            "description": "Memory expression of the array to manipulate."
-        },
-        "resultProperty": {
-            "$role": "memoryPath",
-            "title": "Result Property",
-            "description": "Memory expression of the result of this action."
-        },
-        "value": {
-            "$role": "expression",
-            "title": "Value of the Item",
-            "description": "Expression to evaluate.",
-            "examples": [
-                "dialog.todo"
-            ]
-        }
-    },
     "required": [
         "changeType",
         "arrayProperty"
+    ],    
+    "allOf": [
+        {
+            "$ref": "./baseStepSchema.json"
+        },
+        {
+            "properties": {
+                "changeType": {
+                    "type": "string",
+                    "title": "Change Type",
+                    "description": "The array operation to perform",
+                    "enum": [
+                        "Push",
+                        "Pop",
+                        "Take",
+                        "Remove",
+                        "Clear"
+                    ]
+                },
+                "arrayProperty": {
+                    "$role": "memoryPath",
+                    "title": "Array Property",
+                    "description": "Memory expression of the array to manipulate."
+                },
+                "resultProperty": {
+                    "$role": "memoryPath",
+                    "title": "Result Property",
+                    "description": "Memory expression of the result of this action."
+                },
+                "value": {
+                    "$role": "expression",
+                    "title": "Value of the Item",
+                    "description": "Expression to evaluate.",
+                    "examples": [
+                        "dialog.todo"
+                    ]
+                }
+            }
+        }
     ]
 }
