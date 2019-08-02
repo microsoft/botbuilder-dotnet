@@ -14,7 +14,7 @@
         {
             "properties": {
                 "property": {
-                    "$role": "memoryPath",
+                    "$role": "expression",
                     "title": "Property",
                     "description": "The Memory property path to delete"
                 }

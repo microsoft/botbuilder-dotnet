@@ -1047,14 +1047,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     Actions = new List<IDialog>()
                     {
                         new SendActivity("I'm a joke bot. To get started say 'tell me a joke'"),
-                        new BeginDialog() { Dialog = askNameDialog }
+                        new BeginDialog(askNameDialog.Id)
                     }
                 },
 
                 new OnIntent("JokeIntent",
                     actions: new List<IDialog>()
                     {
-                        new BeginDialog() { Dialog = tellJokeDialog }
+                        new BeginDialog(tellJokeDialog.Id)
                     }),
                 new OnUnknownIntent(
                     actions: new List<IDialog>()
@@ -1062,6 +1062,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         new SendActivity("I'm a joke bot. To get started say 'tell me a joke'")
                     }),
             });
+            testDialog.AddDialog(askNameDialog);
+            testDialog.AddDialog(tellJokeDialog);
 
             await CreateFlow(testDialog)
             .SendConversationUpdate()
@@ -1190,10 +1192,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 new OnUnknownIntent(
                     new List<IDialog>()
                     {
-                        new BeginDialog() { Dialog = tellJokeDialog },
+                        new BeginDialog(tellJokeDialog.Id),
                         new SendActivity("You went out from ask name dialog.")
                     })
             });
+
+            testDialog.AddDialog(tellJokeDialog);
 
             await CreateFlow(testDialog)
             .Send("hi")
@@ -1240,29 +1244,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var userState = new UserState(new MemoryStorage());
 
-            var rootDialog = new AdaptiveDialog("root")
+            var outer = new AdaptiveDialog("outer")
             {
-                Events = new List<IOnEvent>()
+                AutoEndDialog = false,
+                Recognizer = new RegexRecognizer()
                 {
-                    new OnBeginDialog()
-                    {
-
-                        Actions = new List<IDialog>()
-                        {
-                            new BeginDialog()
-                            {
-                                Dialog = new AdaptiveDialog("outer")
-                                {
-                                    AutoEndDialog = false,
-                                    Recognizer = new RegexRecognizer()
-                                    {
-                                        Intents = new Dictionary<string, string>()
+                    Intents = new Dictionary<string, string>()
                                         {
                                             { "EmitIntent" , "emit" },
                                             { "CowboyIntent" , "moo" }
                                         }
-                                    },
-                                    Events = new List<IOnEvent>()
+                },
+                Events = new List<IOnEvent>()
                                     {
                                         new OnIntent(intent: "CowboyIntent")
                                         {
@@ -1283,8 +1276,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                             }
                                         }
                                     }
-                                }
-                            }
+            };
+
+            var rootDialog = new AdaptiveDialog("root")
+            {
+                Events = new List<IOnEvent>()
+                {
+                    new OnBeginDialog()
+                    {
+
+                        Actions = new List<IDialog>()
+                        {
+                            new BeginDialog(outer.Id)
                         }
                     },
 
@@ -1298,6 +1301,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     }
                 }
             };
+            rootDialog.AddDialog(outer);
 
             await CreateFlow(rootDialog)
             .Send("moo")

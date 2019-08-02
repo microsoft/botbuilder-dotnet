@@ -115,28 +115,17 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 {
                     Top = 1
                 });
-
-            var rootDialog = new AdaptiveDialog("root")
+            var outerDialog = new AdaptiveDialog("outer")
             {
-                Events = new List<IOnEvent>()
+                AutoEndDialog = false,
+                Recognizer = new RegexRecognizer()
                 {
-                    new OnBeginDialog()
-                    {
-                        Actions = new List<IDialog>()
-                        {
-                            new BeginDialog()
-                            {
-                                Dialog = new AdaptiveDialog("outer")
-                                {
-                                    AutoEndDialog = false,
-                                    Recognizer = new RegexRecognizer()
-                                    {
-                                        Intents = new Dictionary<string, string>()
+                    Intents = new Dictionary<string, string>()
                                         {
                                             { "CowboyIntent" , "moo" }
                                         }
-                                    },
-                                    Events = new List<IOnEvent>()
+                },
+                Events = new List<IOnEvent>()
                                     {
                                         new OnIntent(intent: "CowboyIntent")
                                         {
@@ -164,8 +153,17 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                                             }
                                         }
                                     }
-                                }
-                            }
+            };
+
+            var rootDialog = new AdaptiveDialog("root")
+            {
+                Events = new List<IOnEvent>()
+                {
+                    new OnBeginDialog()
+                    {
+                        Actions = new List<IDialog>()
+                        {
+                            new BeginDialog(outerDialog.Id)
                         }
                     },
                     new Dialogs.Adaptive.Events.OnDialogEvent()
@@ -179,6 +177,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                     }
                 }
             };
+            rootDialog.AddDialog(outerDialog);
             return rootDialog;
         }
 

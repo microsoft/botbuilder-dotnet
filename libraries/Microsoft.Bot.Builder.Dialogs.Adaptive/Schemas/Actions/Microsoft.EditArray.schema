@@ -27,12 +27,12 @@
                     ]
                 },
                 "arrayProperty": {
-                    "$role": "memoryPath",
+                    "$role": "expression",
                     "title": "Array Property",
                     "description": "Memory expression of the array to manipulate."
                 },
                 "resultProperty": {
-                    "$role": "memoryPath",
+                    "$role": "expression",
                     "title": "Result Property",
                     "description": "Memory expression of the result of this action."
                 },

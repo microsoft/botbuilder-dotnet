@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     public class ReplaceDialog : BaseInvokeDialog
     {
         [JsonConstructor]
-        public ReplaceDialog(string dialogIdToCall = null, string property = null, object options = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public ReplaceDialog(string dialogIdToCall = null, string property = null, IDictionary<string,string> options = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base(dialogIdToCall, property, options)
         {
             this.RegisterSourceLocation(callerPath, callerLine);
@@ -31,13 +31,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             {
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
-            
+
             var dialog = this.ResolveDialog(dc);
 
-            Options = ObjectPath.Merge(Options, options ?? new object());
-            BindOptions(dc);
+            // use bindingOptions to bind to the bound options
+            var boundOptions = BindOptions(dc, options);
 
-            return await dc.ReplaceDialogAsync(dialog.Id, Options, cancellationToken).ConfigureAwait(false);
+            // replace dialog with bound options passed in as the options
+            return await dc.ReplaceDialogAsync(dialog.Id, options: boundOptions, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
     }
 }

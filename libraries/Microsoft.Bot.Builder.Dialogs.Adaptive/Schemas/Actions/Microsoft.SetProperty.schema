@@ -16,7 +16,7 @@
 
             "properties": {
                 "property": {
-                    "$role": "memoryPath",
+                    "$role": "expression",
                     "title": "Property",
                     "description": "The property to set the value of",
                     "examples": [

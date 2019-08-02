@@ -11,7 +11,7 @@
         {
             "properties": {
                 "property": {
-                    "$role": "memoryPath",
+                    "$role": "expression",
                     "description": "Specifies a path to memory should be returned as the result to the calling dialog.",
                     "examples": [
                         "dialog.name"

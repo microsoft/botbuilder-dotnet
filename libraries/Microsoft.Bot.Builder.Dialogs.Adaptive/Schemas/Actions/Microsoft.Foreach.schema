@@ -27,13 +27,13 @@
                     "description": "Actions to execute"
                 },
                 "indexProperty": {
-                    "$role": "memoryPath",
+                    "$role": "expression",
                     "title": "Index Property",
                     "description": "The memory path which refers to the index of the item",
                     "default": "dialog.index"
                 },
                 "valueProperty": {
-                    "$role": "memoryPath",
+                    "$role": "expression",
                     "title": "Value Property",
                     "description": "The memory path which refers to the value of the item",
                     "default": "dialog.value"

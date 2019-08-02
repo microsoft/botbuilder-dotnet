@@ -1025,7 +1025,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             },
                             new BeginDialog("ageDialog")
                             {
-                                Options = new
+                                Options = new 
                                 {
                                     userAge = "$age"
                                 }

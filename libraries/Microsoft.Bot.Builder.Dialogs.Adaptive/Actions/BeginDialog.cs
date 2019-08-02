@@ -2,12 +2,14 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
@@ -17,7 +19,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     public class BeginDialog : BaseInvokeDialog
     {
         [JsonConstructor]
-        public BeginDialog(string dialogIdToCall = null, string property = null, object options = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public BeginDialog(string dialogIdToCall = null, string property = null, IDictionary<string, string> options = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base(dialogIdToCall, property, options)
         {
             this.RegisterSourceLocation(callerPath, callerLine);
@@ -32,10 +34,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             var dialog = this.ResolveDialog(dc);
 
-            Options = ObjectPath.Merge(Options, options ?? new object());
-            BindOptions(dc);
+            // use bindingOptions to bind to the bound options
+            var boundOptions = BindOptions(dc, options);
 
-            return await dc.BeginDialogAsync(dialog.Id, Options, cancellationToken).ConfigureAwait(false);
+            // start dialog with bound options passed in as the options
+            return await dc.BeginDialogAsync(dialog.Id, options: boundOptions, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
     }
 }
