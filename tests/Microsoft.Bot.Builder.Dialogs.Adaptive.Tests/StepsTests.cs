@@ -972,6 +972,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
 
             var testDialog = new AdaptiveDialog("planningTest");
+            testDialog.AddDialog(askNameDialog);
+            testDialog.AddDialog(tellJokeDialog);
             testDialog.AutoEndDialog = false;
 
             testDialog.Recognizer = new RegexRecognizer() { Intents = new Dictionary<string, string>() { { "JokeIntent", "joke" } } };
@@ -979,7 +981,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             testDialog.Steps = new List<IDialog>()
                     {
                         new SendActivity("I'm a joke bot. To get started say 'tell me a joke'"),
-                        new BeginDialog() { Dialog = askNameDialog }
+                        new BeginDialog() { DialogId = askNameDialog.Id }
                     };
 
             testDialog.AddRules(new List<IRule>()
@@ -987,7 +989,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 new IntentRule("JokeIntent",
                     steps: new List<IDialog>()
                     {
-                        new BeginDialog() { Dialog = tellJokeDialog }
+                        new BeginDialog() { DialogId = tellJokeDialog.Id }
                     }),
                 new UnknownIntentRule(
                     steps: new List<IDialog>()
@@ -1112,10 +1114,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 new UnknownIntentRule(
                     new List<IDialog>()
                     {
-                        new BeginDialog() { Dialog = tellJokeDialog },
+                        new BeginDialog(tellJokeDialog.Id),
                         new SendActivity("You went out from ask name dialog.")
                     })
             });
+            testDialog.AddDialog(tellJokeDialog);
 
             await CreateFlow(testDialog)
             .Send("hi")
@@ -1155,46 +1158,45 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var userState = new UserState(new MemoryStorage());
 
+            var outerDialog = new AdaptiveDialog("outer")
+            {
+                AutoEndDialog = false,
+                Recognizer = new RegexRecognizer()
+                {
+                    Intents = new Dictionary<string, string>()
+                    {
+                        { "EmitIntent", "emit" },
+                        { "CowboyIntent", "moo" }
+                    }
+                },
+                Rules = new List<IRule>()
+                {
+                    new IntentRule(intent: "CowboyIntent")
+                    {
+                        Steps = new List<IDialog>()
+                        {
+                            new SendActivity("Yippee ki-yay!")
+                        }
+                    },
+                    new IntentRule(intent: "EmitIntent")
+                    {
+                        Steps = new List<IDialog>()
+                        {
+                            new EmitEvent()
+                            {
+                                EventName = "CustomEvent",
+                                BubbleEvent = true,
+                            }
+                        }
+                    }
+                }
+            };
+
             var rootDialog = new AdaptiveDialog("root")
             {
                 Steps = new List<IDialog>()
                 {
-                    new BeginDialog()
-                    {
-                        Dialog = new AdaptiveDialog("outer")
-                        {
-                            AutoEndDialog = false,
-                            Recognizer = new RegexRecognizer()
-                            {
-                                Intents = new Dictionary<string, string>()
-                                {
-                                    { "EmitIntent", "emit" },
-                                    { "CowboyIntent", "moo" }
-                                }
-                            },
-                            Rules = new List<IRule>()
-                            {
-                                new IntentRule(intent: "CowboyIntent")
-                                {
-                                    Steps = new List<IDialog>()
-                                    {
-                                        new SendActivity("Yippee ki-yay!")
-                                    }
-                                },
-                                new IntentRule(intent: "EmitIntent")
-                                {
-                                    Steps = new List<IDialog>()
-                                    {
-                                        new EmitEvent()
-                                        {
-                                            EventName = "CustomEvent",
-                                            BubbleEvent = true,
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    new BeginDialog(outerDialog.Id)
                 },
                 Rules = new List<IRule>()
                 {
@@ -1208,6 +1210,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     }
                 }
             };
+
+            rootDialog.AddDialog(outerDialog);
 
             await CreateFlow(rootDialog)
             .Send("moo")

@@ -116,52 +116,51 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                     Top = 1
                 });
 
+            var outer = new AdaptiveDialog("outer")
+            {
+                AutoEndDialog = false,
+                Recognizer = new RegexRecognizer()
+                {
+                    Intents = new Dictionary<string, string>()
+                                {
+                                    { "CowboyIntent" , "moo" }
+                                }
+                },
+                Rules = new List<IRule>()
+                {
+                    new IntentRule(intent: "CowboyIntent")
+                    {
+                        Steps = new List<IDialog>()
+                        {
+                            new SendActivity("Yippee ki-yay!")
+                        }
+                    },
+                    new UnknownIntentRule()
+                    {
+                        Steps = new List<IDialog>()
+                        {
+                            new QnAMakerDialog(qnamaker:qna )
+                            {
+                                OutputBinding = "turn.LastResult"
+                            },
+                            new IfCondition()
+                            {
+                                    Condition = "turn.LastResult == false",
+                                    Steps =   new List<IDialog>()
+                                    {
+                                        new SendActivity("I didn't understand that.")
+                                    }
+                            }
+                        }
+                    }
+                }
+            };
+
             var rootDialog = new AdaptiveDialog("root")
             {
                 Steps = new List<IDialog>()
                 {
-                    new BeginDialog()
-                    {
-                        Dialog = new AdaptiveDialog("outer")
-                        {
-                            AutoEndDialog = false,
-                            Recognizer = new RegexRecognizer()
-                            {
-                                Intents = new Dictionary<string, string>()
-                                {
-                                    { "CowboyIntent" , "moo" }
-                                }
-                            },
-                            Rules = new List<IRule>()
-                            {
-                                new IntentRule(intent: "CowboyIntent")
-                                {
-                                    Steps = new List<IDialog>()
-                                    {
-                                        new SendActivity("Yippee ki-yay!")
-                                    }
-                                },
-                                new UnknownIntentRule()
-                                {
-                                    Steps = new List<IDialog>()
-                                    {
-                                        new QnAMakerDialog(qnamaker:qna )
-                                        {
-                                            OutputBinding = "turn.LastResult"
-                                        },
-                                        new IfCondition()
-                                        {
-                                             Condition = "turn.LastResult == false",
-                                             Steps =   new List<IDialog>()
-                                             {
-                                                 new SendActivity("I didn't understand that.")
-                                             }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    new BeginDialog(outer.Id)
                 },
                 Rules = new List<IRule>()
                 {
@@ -176,6 +175,8 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                     }
                 }
             };
+            rootDialog.AddDialog(outer);
+
             return rootDialog;
         }
 
