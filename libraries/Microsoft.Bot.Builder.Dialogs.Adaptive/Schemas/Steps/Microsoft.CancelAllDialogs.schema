@@ -9,7 +9,6 @@
             "$ref": "./baseStepSchema.json"
         },
         {
-
             "properties": {
                 "eventName": {
                     "title": "Event Name",
