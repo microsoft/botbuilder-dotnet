@@ -17,9 +17,12 @@
                 },
                 "options": {
                     "type": "object",
-                    "additionalProperties": true,
-                    "title": "Options",
-                    "description": "Options to pass to the dialog."
+                    "title": "Options binding",
+                    "description": "Bindings to configure the options object to pass to the dialog.",
+                    "additionalProperties": {
+                        "type": "string",
+                        "title": "Options"
+                    }
                 },
                 "property": {
                     "$role": "memoryPath",

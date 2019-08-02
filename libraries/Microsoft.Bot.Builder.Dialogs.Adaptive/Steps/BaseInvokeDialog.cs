@@ -2,6 +2,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
@@ -21,9 +22,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
         protected string dialogIdToCall;
 
         /// <summary>
-        /// configurable options for the dialog
+        /// gets or sets configurable options for the dialog. Key=>Expression pairs.
         /// </summary>
-        public object Options { get; set; }
+        public object Options { get; set; } = new JObject();
 
         /// <summary>
         /// The dialog to call.
@@ -39,6 +40,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
             {
                 return InputBindings.TryGetValue(DialogContextState.DIALOG_VALUE, out string value) ? value : null;
             }
+
             set
             {
                 InputBindings[DialogContextState.DIALOG_VALUE] = value;
@@ -46,14 +48,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
             }
         }
 
-        public BaseInvokeDialog(string dialogIdToCall = null, string property = null, object options = null) 
+        public BaseInvokeDialog(string dialogIdToCall = null, string property = null, IDictionary<string,string> bindingOptions = null)
             : base()
         {
             this.dialogIdToCall = dialogIdToCall;
 
-            if (options != null)
+            if (bindingOptions != null)
             {
-                this.Options = options;
+                this.Options = bindingOptions;
             }
 
             if (!string.IsNullOrEmpty(property))
@@ -88,31 +90,28 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
             var dialogId = dialog?.Id ?? throw new Exception($"{this.GetType().Name} requires a dialog to be called.");
             return dialog;
         }
-        
-        protected void BindOptions(DialogContext dc)
+
+        protected object BindOptions(DialogContext dc, object options)
         {
-            if (Options == null)
-            {
-                return;
-            }
+            // binding options are static definition of options with overlay of passed in options);
+            var bindingOptions = (JObject)ObjectPath.Merge(Options, options ?? new JObject());
+            var boundOptions = new JObject();
 
-            if (Options is JObject jObj)
+            foreach (var binding in bindingOptions)
             {
-                foreach (var value in jObj.Values())
+                // evalute the value
+                var (result, error) = new ExpressionEngine().Parse(binding.Value.ToString()).TryEvaluate(dc.State);
+
+                if (error != null)
                 {
-                    if (value.Type == JTokenType.String)
-                    {
-                        var (result, error) = new ExpressionEngine().Parse(value.Value<string>()).TryEvaluate(dc.State);
-
-                        if (error != null)
-                        {
-                            throw new Exception(error);
-                        }
-
-                        value.Replace(JToken.FromObject(result));
-                    }
+                    throw new Exception(error);
                 }
+                
+                // and store in options as the result
+                boundOptions[binding.Key] = JToken.FromObject(result);
             }
+
+            return boundOptions;
         }
     }
 }

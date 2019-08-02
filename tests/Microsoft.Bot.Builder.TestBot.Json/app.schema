@@ -733,9 +733,12 @@
                 },
                 "options": {
                     "type": "object",
-                    "title": "Options",
-                    "description": "Options to pass to the dialog.",
-                    "additionalProperties": true
+                    "title": "Options binding",
+                    "description": "Bindings to configure the options object to pass to the dialog.",
+                    "additionalProperties": {
+                        "type": "string",
+                        "title": "Options"
+                    }
                 },
                 "property": {
                     "$role": "memoryPath",
@@ -5059,9 +5062,12 @@
                 },
                 "options": {
                     "type": "object",
-                    "title": "Options",
-                    "description": "Options to pass to the dialog.",
-                    "additionalProperties": true
+                    "title": "Options binding",
+                    "description": "Bindings to configure the options object to pass to the dialog.",
+                    "additionalProperties": {
+                        "type": "string",
+                        "title": "Options"
+                    }
                 },
                 "property": {
                     "$role": "memoryPath",
