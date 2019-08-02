@@ -78,10 +78,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         /// <remarks>If the task is successful, the result indicates whether the dialog is still
         /// active after the turn has been processed by the dialog. The result may also contain a
-        /// return value from the child dialog.
-        ///
-        /// Generally, the child dialog was started with a call to
-        /// <see cref="BeginDialogAsync(DialogContext, object, CancellationToken)"/>.
+        /// return value.
         ///
         /// If this method is *not* overridden, the dialog automatically ends when the user replies.
         /// </remarks>
@@ -97,12 +94,13 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         /// <param name="dc">The dialog context for the current turn of the conversation.</param>
         /// <param name="reason">Reason why the dialog resumed.</param>
-        /// <param name="result">(Optional) value returned from the dialog that was called. The type of the value returned is dependent on the dialog that was called.</param>
+        /// <param name="result">Optional, value returned from the dialog that was called. The type
+        /// of the value returned is dependent on the child dialog.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        /// <remarks>If the task is successful, the result indicates whether the dialog is still
-        /// active after the turn has been processed by the dialog.
+        /// <remarks>If the task is successful, the result indicates whether this dialog is still
+        /// active after this dialog turn has been processed.
         ///
         /// Generally, the child dialog was started with a call to
         /// <see cref="BeginDialogAsync(DialogContext, object, CancellationToken)"/>. However, if the
