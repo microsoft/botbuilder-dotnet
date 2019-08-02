@@ -11,10 +11,10 @@ namespace Microsoft.Bot.Builder.Twilio.Sample
     {
         public SimpleTwilioAdapterOptions(string twilioNumber, string accountSid, string authToken, string validationUrl)
         {
-            this.TwilioNumber = twilioNumber;
-            this.AccountSid = accountSid;
-            this.AuthToken = authToken;
-            this.ValidationUrl = validationUrl;
+            TwilioNumber = twilioNumber;
+            AccountSid = accountSid;
+            AuthToken = authToken;
+            ValidationUrl = validationUrl;
         }
 
         public string TwilioNumber { get; set; }

@@ -16,8 +16,6 @@ namespace Microsoft.Bot.Builder.Twilio.Sample
 {
     public class Startup
     {
-        private readonly TwilioAdapter adapter;
-
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -33,10 +31,10 @@ namespace Microsoft.Bot.Builder.Twilio.Sample
             // Create the credential provider to be used with the Bot Framework Adapter.
             services.AddSingleton<ICredentialProvider, ConfigurationCredentialProvider>();
 
-            // Create the options for the WebexAdapter
+            // Create the options for the Twilio Adapter
             services.AddSingleton<ITwilioAdapterOptions, ConfigurationTwilioAdapterOptions>();
 
-            // Create the Bot Framework Adapter.
+            // Create the Twilio Adapter.
             services.AddSingleton<TwilioAdapter>();
 
             // Create the bot as a transient. In this case the ASP Controller is expecting an IBot.

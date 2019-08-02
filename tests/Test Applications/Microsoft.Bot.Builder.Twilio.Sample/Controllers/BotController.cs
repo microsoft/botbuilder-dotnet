@@ -16,13 +16,13 @@ namespace Microsoft.Bot.Builder.Twilio.Sample.Controllers
     [ApiController]
     public class BotController : ControllerBase
     {
-        private readonly TwilioAdapter adapter;
-        private readonly IBot bot;
+        private readonly TwilioAdapter _adapter;
+        private readonly IBot _bot;
 
         public BotController(TwilioAdapter adapter, IBot bot)
         {
-            this.adapter = adapter;
-            this.bot = bot;
+            _adapter = adapter;
+            _bot = bot;
         }
 
         [HttpPost]
@@ -30,7 +30,7 @@ namespace Microsoft.Bot.Builder.Twilio.Sample.Controllers
         {
             // Delegate the processing of the HTTP POST to the adapter.
             // The adapter will invoke the bot.
-            await adapter.ProcessAsync(Request, Response, bot);
+            await _adapter.ProcessAsync(Request, Response, _bot);
         }
     }
 }
