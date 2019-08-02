@@ -12,6 +12,10 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// </summary>
     public abstract class Dialog
     {
+        /// <summary>
+        /// A <see cref="DialogTurnResult"/> that indicates that the current dialog is still
+        /// active and waiting for input from the user next turn.
+        /// </summary>
         public static readonly DialogTurnResult EndOfTurn = new DialogTurnResult(DialogTurnStatus.Waiting);
         private IBotTelemetryClient _telemetryClient;
 
