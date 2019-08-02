@@ -1,12 +1,15 @@
 {
-    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-dotnet/4.Future/Schemas/component.schema",
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
     "$role": "unionType(Microsoft.IDialog)",
     "title": "Adaptive Dialog",
     "description": "Configures a data driven dialog via a collection of steps/dialogs.",
     "type": "object",
     "allOf": [
         {
-            "$ref": "./baseSchema.json"
+            "$ref": "../baseDialogSchema.json"
+        },
+        {
+            "$ref": "../baseBindingsSchema.json"
         },
         {
             "properties": {

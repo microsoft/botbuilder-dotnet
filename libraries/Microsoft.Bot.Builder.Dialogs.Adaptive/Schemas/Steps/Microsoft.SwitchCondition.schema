@@ -1,55 +1,63 @@
 {
-    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-dotnet/4.Future/Schemas/component.schema",
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
     "$role": "unionType(Microsoft.IDialog)",
     "title": "Switch Step",
     "description": "Step which conditionally decides which step to execute next.",
     "type": "object",
-    "properties": {
-        "condition": {
-            "$role": "expression",
-            "title": "Condition",
-            "description": "Expression to evaluate to switch on.",
-            "examples": [
-                "user.age > 3"
-            ]
-        },
-        "cases": {
-            "type": "array",
-            "title": "Cases",
-            "desc": "Cases to evaluate against condition",
-            "items": {
-                "type": "object",
-                "properties": {
-                    "value": {
-                        "$role": "expression",
-                        "title": "Value",
-                        "description": "Value which must match the condition property"
-                    },
-                    "steps": {
-                        "type": "array",
-                        "items": {
-                            "$type": "Microsoft.IDialog"
-                        },
-                        "title": "Steps",
-                        "description": "Steps to execute if case is equal to condition"
-                    }
-                },
-                "required": [
-                    "value",
-                    "case"
-                ]
-            }
-        },
-        "default": {
-            "type": "array",
-            "items": {
-                "$type": "Microsoft.IDialog"
-            },
-            "title": "Default",
-            "description": "Step to execute if no case is equal to condition"
-        }
-    },
     "required": [
         "condition"
+    ],
+    "allOf": [
+        {
+            "$ref": "./baseStepSchema.json"
+        },
+        {
+
+            "properties": {
+                "condition": {
+                    "$role": "expression",
+                    "title": "Condition",
+                    "description": "Expression to evaluate to switch on.",
+                    "examples": [
+                        "user.age > 3"
+                    ]
+                },
+                "cases": {
+                    "type": "array",
+                    "title": "Cases",
+                    "desc": "Cases to evaluate against condition",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "value": {
+                                "$role": "expression",
+                                "title": "Value",
+                                "description": "Value which must match the condition property"
+                            },
+                            "steps": {
+                                "type": "array",
+                                "items": {
+                                    "$type": "Microsoft.IDialog"
+                                },
+                                "title": "Steps",
+                                "description": "Steps to execute if case is equal to condition"
+                            }
+                        },
+                        "required": [
+                            "value",
+                            "case"
+                        ]
+                    }
+                },
+                "default": {
+                    "type": "array",
+                    "items": {
+                        "$type": "Microsoft.IDialog"
+                    },
+                    "title": "Default",
+                    "description": "Step to execute if no case is equal to condition"
+                }
+            }
+        }
     ]
 }

@@ -51,7 +51,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             });
         }
 
-
         [TestMethod]
         public async Task Step_WaitForInput()
         {
@@ -838,6 +837,55 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
+        public async Task Step_EditStepsWithTags()
+        {
+            var testDialog = new AdaptiveDialog("planningTest")
+            {
+                Recognizer = new RegexRecognizer()
+                {
+                    Intents = new Dictionary<string, string>() {
+                        { "Insert", "(?i)insert" },
+                        { "Execute", "(?i)execute" }
+                    }
+                },
+                Steps = new List<IDialog>()
+                {
+                    new EndTurn(),
+                    new SendActivity("One") { Tags = { "a" } },
+                    new SendActivity("Three") { Tags = { "c" } },
+                }
+            };
+
+            testDialog.AddRules(new List<IRule>()
+            {
+                new IntentRule()
+                {
+                    Intent = "Insert",
+                    Steps = new List<IDialog>()
+                    {
+                        new SendActivity("Inserted"),
+                        new EditSteps()
+                        {
+                            ChangeType = StepChangeTypes.InsertStepsBeforeTags,
+                            Tags = { "c" },
+                            Steps = new List<IDialog>() { new SendActivity("Two") }
+                        }
+                    }
+                }
+            });
+
+            await CreateFlow(testDialog)
+            .SendConversationUpdate()
+            .Send("insert")
+                .AssertReply("Inserted")
+            .Send("Execute")
+                .AssertReply("One")
+                .AssertReply("Two")
+                .AssertReply("Three")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
         public async Task Step_DoSteps()
         {
             var testDialog = new AdaptiveDialog("planningTest");
@@ -1015,7 +1063,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     }),
             });
 
-            testDialog.AddDialog(new List<IDialog>()
+            testDialog.AddDialogs(new List<IDialog>()
             {
                 tellJokeDialog,
                 askNameDialog

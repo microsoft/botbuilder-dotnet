@@ -6,17 +6,29 @@ using Microsoft.Bot.Builder.Dialogs;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
+    /// <summary>
+    /// Base class which applies language policy to virtual method of TryGetGenerator.
+    /// </summary>
     public abstract class MultiLanguageGeneratorBase : ILanguageGenerator
     {
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MultiLanguageGeneratorBase"/> class.
+        /// </summary>
         public MultiLanguageGeneratorBase()
         {
         }
 
+        /// <summary>
+        /// abstract method to lookup a ILanguageGeneartor by locale.
+        /// </summary>
+        /// <param name="context">context</param>
+        /// <param name="locale">locale</param>
+        /// <param name="generator">generator to return</param>
+        /// <returns>true if found</returns>
         public abstract bool TryGetGenerator(ITurnContext context, string locale, out ILanguageGenerator generator);
 
         /// <summary>
-        /// This allows you to specify per language the fallback policies you want.
+        /// Language Policy which defines per language fallback policies.
         /// </summary>
         public ILanguagePolicy LanguagePolicy { get; set; } = new LanguagePolicy();
 

@@ -1,17 +1,24 @@
 {
-    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-dotnet/4.Future/Schemas/component.schema",
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
     "$role": "unionType(Microsoft.IDialog)",
     "title": "Delete Property",
     "description": "This is a step which allows you to remove a property from memory",
     "type": "object",
-    "properties": {
-        "property": {
-            "$role": "memoryPath",
-            "title": "Property",
-            "description": "The Memory property path to delete"
-        }
-    },
     "required": [
         "property"
+    ],
+    "allOf": [
+        {
+            "$ref": "./baseStepSchema.json"
+        },
+        {
+            "properties": {
+                "property": {
+                    "$role": "memoryPath",
+                    "title": "Property",
+                    "description": "The Memory property path to delete"
+                }
+            }
+        }
     ]
 }
