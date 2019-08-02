@@ -1,10 +1,13 @@
 {
-    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
     "$role": "unionType(Microsoft.IDialog)",
     "title": "TextInput Dialog",
     "description": "This represents a dialog which gathers a text from the user",
     "type": "object",
     "allOf": [
+        {
+            "$ref": "./baseInputSchema.json"
+        },
         {
             "properties": {
                 "outputFormat": {
@@ -23,9 +26,6 @@
                     "default": "always"
                 }
             }
-        },
-        {
-            "$ref": "./baseInputSchema.json"
         }
     ]
 }

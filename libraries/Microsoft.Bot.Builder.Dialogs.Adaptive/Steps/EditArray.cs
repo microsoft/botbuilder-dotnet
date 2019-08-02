@@ -66,14 +66,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
         }
 
         /// <summary>
-        /// type of change being applied
+        /// Gets or sets type of change being applied
         /// </summary>
         [JsonConverter(typeof(StringEnumConverter))]
         [JsonProperty("changeType")]
         public ArrayChangeType ChangeType { get; set; }
 
         /// <summary>
-        /// Memory expression of the array to manipulate.
+        /// Gets or sets memory expression of the array to manipulate.
         /// </summary>Edit
         [JsonProperty("arrayProperty")]
         public string ArrayProperty
@@ -83,7 +83,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
         }
 
         /// <summary>
-        /// The result of the action
+        /// Gets or sets the result of the action
         /// </summary>
         [JsonProperty("resultProperty")]
         public string ResultProperty 
@@ -93,7 +93,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
         }
 
         /// <summary>
-        /// The expression of the item to put onto the array
+        /// Gets or sets the expression of the item to put onto the array.
         /// </summary>
         [JsonProperty("value")]
         public string Value
@@ -102,6 +102,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
             set { this.value = (value != null) ? new ExpressionEngine().Parse(value) : null; }
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EditArray"/> class.
+        /// </summary>
+        /// <param name="changeType">change type.</param>
+        /// <param name="arrayProperty">array property (optional)</param>
+        /// <param name="value">value to insert</param>
+        /// <param name="resultProperty">output property to put Pop/Take into</param>
         public EditArray(ArrayChangeType changeType, string arrayProperty = null, string value = null, string resultProperty = null)
             : base()
         {

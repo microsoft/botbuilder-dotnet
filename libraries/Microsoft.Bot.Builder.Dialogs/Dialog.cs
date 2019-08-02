@@ -56,7 +56,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         public List<string> Tags { get; private set; } = new List<string>();
 
         /// <summary>
-        /// Gets or sets jSONPath expression for the memory slots to bind the dialogs options to on a call to `beginDialog()`.
+        /// Gets or sets expression for the memory slots to bind the dialogs options to on a call to `beginDialog()`.
         /// </summary>
         public Dictionary<string, string> InputBindings { get; set; } = new Dictionary<string, string>();
 

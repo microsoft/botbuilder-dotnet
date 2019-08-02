@@ -18,6 +18,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
     {
         private readonly string changeKey;
 
+        private DialogSet stepDialogs;
+
         public AdaptiveDialogState Plans { get; private set; }
 
         /// <summary>
@@ -34,11 +36,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             private set { this.Context.TurnState[changeKey] = value; }
         }
 
-        public SequenceContext(DialogSet dialogs, DialogContext dc, DialogState state, List<StepState> steps, string changeKey)
+        public SequenceContext(DialogSet dialogs, DialogContext dc, DialogState state, List<StepState> steps, string changeKey, DialogSet stepDialogs)
             : base(dialogs, dc.Context, state, conversationState: dc.State.Conversation, userState: dc.State.User, settings: dc.State.Settings)
         {
             this.Steps = steps;
             this.changeKey = changeKey;
+            this.stepDialogs = stepDialogs;
         }
 
         /// <summary>
@@ -241,8 +244,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
         private bool StepHasTags(StepState step, List<string> tags)
         {
-            var dialog = this.FindDialog(step.DialogId);
-
+            var dialog = stepDialogs.Find(step.DialogId);
             if (dialog != null && dialog.Tags != null)
             {
                 // True if the dialog contains any of the tags passed as parameters

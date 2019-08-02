@@ -1,9 +1,9 @@
 {
-  "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-dotnet/4.Future/Schemas/component.schema",
+  "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
   "type": "object",
   "allOf": [
     {
-      "$ref": "./baseSchema.json"
+      "$ref": "../baseDialogSchema.json"
     },
     {
       "properties": {
@@ -55,10 +55,10 @@
         },
         "property": {
           "$role": "memoryPath",
-          "title": "Value Property",
-          "description": "It is where you want to the putput of the input written to",
+          "title": "Property",
+          "description": "Property that this input dialog is bound to",
           "examples": [
-            "user.name"
+            "$birthday"
           ]
         },
         "defaultValue": {
