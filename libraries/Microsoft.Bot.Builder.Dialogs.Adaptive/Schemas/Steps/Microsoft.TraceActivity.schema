@@ -9,7 +9,6 @@
             "$ref": "./baseStepSchema.json"
         },
         {
-
             "properties": {
                 "name": {
                     "type": "string",

@@ -13,7 +13,6 @@
             "$ref": "./baseStepSchema.json"
         },
         {
-
             "properties": {
                 "property": {
                     "$role": "expression",

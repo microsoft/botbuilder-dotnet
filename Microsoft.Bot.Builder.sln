@@ -136,6 +136,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Schemas", "Schemas", "{EE56
 		schemas\component.schema = schemas\component.schema
 		schemas\readme.md = schemas\readme.md
 		schemas\sdk.schema = schemas\sdk.schema
+		schemas\update.cmd = schemas\update.cmd
+		schemas\updateBranch.cmd = schemas\updateBranch.cmd
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.TestBot.Json", "tests\Microsoft.Bot.Builder.TestBot.Json\Microsoft.Bot.Builder.TestBot.Json.csproj", "{B9B74F3F-5DE4-41B9-8B42-4298EB3C6A6B}"
