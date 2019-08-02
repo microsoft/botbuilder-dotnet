@@ -96,9 +96,6 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task ProcessAsync(HttpRequest request, HttpResponse response, IBot bot, CancellationToken cancellationToken = default)
         {
-            response.StatusCode = 200;
-            await response.WriteAsync(string.Empty, cancellationToken).ConfigureAwait(false);
-
             var twilioSignature = request.Headers["x-twilio-signature"];
 
             var validationUrl = _options.ValidationUrl ?? (request.Headers["x-forwarded-proto"][0] ?? request.Protocol + "://" + request.Host + request.Path);
@@ -131,9 +128,18 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
                         Id = twilioEvent.MessageSid,
                         Timestamp = new DateTime(),
                         ChannelId = "twilio-sms",
-                        Conversation = new ConversationAccount() { Id = twilioEvent.From, },
-                        From = new ChannelAccount() { Id = twilioEvent.From, },
-                        Recipient = new ChannelAccount() { Id = twilioEvent.To, },
+                        Conversation = new ConversationAccount()
+                        {
+                            Id = twilioEvent.From,
+                        },
+                        From = new ChannelAccount()
+                        {
+                            Id = twilioEvent.From,
+                        },
+                        Recipient = new ChannelAccount()
+                        {
+                            Id = twilioEvent.To,
+                        },
                         Text = twilioEvent.Body,
                         ChannelData = twilioEvent,
                         Type = ActivityTypes.Message,
@@ -142,13 +148,16 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
                     // create a conversation reference
                     using (var context = new TurnContext(this, activity))
                     {
+                        context.TurnState.Add("httpStatus", "200");
+
                         await RunPipelineAsync(context, bot.OnTurnAsync, cancellationToken).ConfigureAwait(false);
 
-                        response.StatusCode = 200;
+                        response.StatusCode = Convert.ToInt32(context.TurnState.Get<string>("httpStatus"));
+
                         response.ContentType = "text/plain";
-                        var text = (context.TurnState["httpBody"] != null)
-                            ? context.TurnState["httpBody"].ToString()
-                            : string.Empty;
+
+                        var text = (context.TurnState.Get<object>("httpBody") != null) ? context.TurnState.Get<object>("httpBody").ToString() : string.Empty;
+
                         await response.WriteAsync(text, cancellationToken).ConfigureAwait(false);
                     }
                 }
