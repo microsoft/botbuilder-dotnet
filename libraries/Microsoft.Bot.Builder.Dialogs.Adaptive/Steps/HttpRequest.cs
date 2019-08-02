@@ -50,7 +50,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
         {
             GET,
             POST,
-            PATCH
+            PATCH,
+            PUT,
+            DELETE
         }
 
         [JsonConstructor]
@@ -90,6 +92,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
             {
                 return OutputBinding;
             }
+
             set
             {
                 InputBindings[DialogContextState.DIALOG_VALUE] = value;
@@ -116,6 +119,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                     {
                         await ReplaceJTokenRecursively(dc, child);
                     }
+
                     break;
 
                 case JTokenType.Array:
@@ -123,6 +127,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                     {
                         await ReplaceJTokenRecursively(dc, child);
                     }
+
                     break;
 
                 case JTokenType.Property:
@@ -132,8 +137,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                 default:
                     if (token.Type == JTokenType.String)
                     {
-                        token.Replace(await new TextTemplate(token.ToString()).BindToData(dc.Context, dc.State));
+                        var temp = await new TextTemplate(token.ToString()).BindToData(dc.Context, dc.State);
+                        if ((temp.StartsWith("{") && temp.EndsWith("}")) || (temp.StartsWith("[") && temp.EndsWith("]")))
+                        {
+                            // try parse with json                        
+                            var jtoken = JToken.Parse(temp);
+                            token.Replace(jtoken);
+                        }
+                        else
+                        {
+                            token.Replace(temp);
+                        }
                     }
+
                     break;
             }
         }
@@ -165,7 +181,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                 await ReplaceJTokenRecursively(dc, instanceBody);
             }
 
-            // Set header
+            // Set headers
             if (instanceHeaders != null)
             {
                 foreach (var unit in instanceHeaders)
@@ -176,24 +192,56 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                 }
             }
 
-
             HttpResponseMessage response = null;
 
-            if (instanceBody != null && this.Method == HttpMethod.POST)
+            switch (this.Method)
             {
-                response = await client.PostAsync(instanceUrl, new StringContent(instanceBody.ToString(), Encoding.UTF8, "application/json"));
-            }
+                case HttpMethod.POST:
+                    if (instanceBody == null)
+                    {
+                        response = await client.PostAsync(instanceUrl, null);
+                    }
+                    else
+                    {
+                        response = await client.PostAsync(instanceUrl, new StringContent(instanceBody.ToString(), Encoding.UTF8, "application/json"));
+                    }
 
-            if (instanceBody != null && this.Method == HttpMethod.PATCH)
-            {
-                var request = new HttpRequestMessage(new System.Net.Http.HttpMethod("PATCH"), instanceUrl);
-                request.Content = new StringContent(instanceBody.ToString(), Encoding.UTF8, "application/json");
-                response = await client.SendAsync(request);
-            }
+                    break;
 
-            if (this.Method == HttpMethod.GET)
-            {
-                response = await client.GetAsync(instanceUrl);
+                case HttpMethod.PATCH:
+                    if (instanceBody == null)
+                    {
+                        var request = new HttpRequestMessage(new System.Net.Http.HttpMethod("PATCH"), instanceUrl);
+                        response = await client.SendAsync(request);
+                    }
+                    else
+                    {
+                        var request = new HttpRequestMessage(new System.Net.Http.HttpMethod("PATCH"), instanceUrl);
+                        request.Content = new StringContent(instanceBody.ToString(), Encoding.UTF8, "application/json");
+                        response = await client.SendAsync(request);
+                    }
+
+                    break;
+
+                case HttpMethod.PUT:
+                    if (instanceBody == null)
+                    {
+                        response = await client.PutAsync(instanceUrl, null);
+                    }
+                    else
+                    {
+                        response = await client.PutAsync(instanceUrl, new StringContent(instanceBody.ToString(), Encoding.UTF8, "application/json"));
+                    }
+
+                    break;
+
+                case HttpMethod.DELETE:
+                    response = await client.DeleteAsync(instanceUrl);
+                    break;
+
+                case HttpMethod.GET:
+                    response = await client.GetAsync(instanceUrl);
+                    break;
             }
 
             object result = (object)await response.Content.ReadAsStringAsync();
@@ -220,12 +268,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                     {
                         result = result.ToString();
                     }
+
                     return await dc.EndDialogAsync(result, cancellationToken: cancellationToken);
 
                 case ResponseTypes.None:
                 default:
                     return await dc.EndDialogAsync(cancellationToken: cancellationToken);
-
             }
         }
     }
