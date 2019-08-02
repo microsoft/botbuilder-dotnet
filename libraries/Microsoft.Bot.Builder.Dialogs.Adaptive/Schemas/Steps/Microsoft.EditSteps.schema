@@ -1,33 +1,40 @@
 {
-    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-dotnet/4.Future/Schemas/component.schema",
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
     "$role": "unionType(Microsoft.IDialog)",
     "title": "EditSteps Step",
     "description": "Edit current dialog with changeType and Steps",
     "type": "object",
-    "properties": {
-        "changeType": {
-            "type": "string",
-            "title": "Change Type",
-            "description": "The change type to apply to current dialog",
-            "enum": [
-                "InsertSteps",
-                "InsertStepsBeforeTags",
-                "AppendSteps",
-                "EndSequence",
-                "ReplaceSequence"
-            ]
-        },
-        "steps": {
-            "type": "array",
-            "items": {
-                "$type": "Microsoft.IDialog"
-            },
-            "title": "Steps",
-            "description": "Steps to execute"
-        }
-    },
     "required": [
         "changeType",
         "steps"
+    ],
+    "allOf": [
+        {
+            "$ref": "./baseStepSchema.json"
+        },
+        {
+            "properties": {
+                "changeType": {
+                    "type": "string",
+                    "title": "Change Type",
+                    "description": "The change type to apply to current dialog",
+                    "enum": [
+                        "InsertSteps",
+                        "InsertStepsBeforeTags",
+                        "AppendSteps",
+                        "EndSequence",
+                        "ReplaceSequence"
+                    ]
+                },
+                "steps": {
+                    "type": "array",
+                    "items": {
+                        "$type": "Microsoft.IDialog"
+                    },
+                    "title": "Steps",
+                    "description": "Steps to execute"
+                }
+            }
+        }
     ]
 }

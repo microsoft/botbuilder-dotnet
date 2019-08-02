@@ -10,23 +10,27 @@ namespace Microsoft.Bot.Builder.Dialogs
     public interface IDialog
     {
         /// <summary>
-        /// Unique id for the dialog
+        /// Gets or sets unique id for the dialog.
         /// </summary>
         string Id { get; set; }
 
         /// <summary>
-        /// Set of tags assigned to the dialog.
+        /// Gets tags assigned to the dialog.
         /// </summary>
         List<string> Tags { get; }
 
         /// <summary>
-        /// JSONPath expression for the memory slots to bind the dialogs options to on a call to `beginDialog()`.
+        /// Gets dictionary of memory bindings which are evaluated in a call to `beginDialog()`.
         /// </summary>
+        /// <remarks>Key = property expression to set in this dialog's memory context, Value = property expression of value you want to get from caller's memory context.</remarks>
+        /// <example>{ "key": "value" } maps to set newDialogState.key = callerDialogState.value.</example>
         Dictionary<string, string> InputBindings { get; }
 
         /// <summary>
-        /// JSONPath expression for the memory slot to bind the dialogs result to when `endDialog()` is called.
+        /// Gets expression in the callers memory to store the result returned via `endDialog()` is called.
         /// </summary>
+        /// <remarks>This the property which the result of EndDialog() for this dialog will be mapped to in the caller's dialog state</remarks>
+        /// <example>$foo will be set to EndDialog(result)</example>
         string OutputBinding { get; }
 
         /// <summary>
@@ -42,7 +46,6 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken));
-
 
         /// <summary>
         /// Method called when an instance of the dialog is the "current" dialog and the

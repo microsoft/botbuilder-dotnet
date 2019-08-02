@@ -1,37 +1,44 @@
 {
-    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-dotnet/4.Future/Schemas/component.schema",
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
     "$role": "unionType(Microsoft.IDialog)",
     "title": "If Condition Step",
     "description": "Step which conditionally decides which step to execute next.",
     "type": "object",
-    "properties": {
-        "condition": {
-            "$role": "expression",
-            "title": "Condition",
-            "description": "Expression to evaluate.",
-            "examples": [
-                "user.age > 3"
-            ]
-        },
-        "steps": {
-            "type": "array",
-            "items": {
-                "$type": "Microsoft.IDialog"
-            },
-            "title": "Steps",
-            "description": "Step to execute if condition is true."
-        },
-        "elseSteps": {
-            "type": "array",
-            "items": {
-                "$type": "Microsoft.IDialog"
-            },
-            "title": "Else Steps",
-            "description": "Step to execute if condition is false."
-        }
-    },
     "required": [
         "condition",
         "steps"
+    ],
+    "allOf": [
+        {
+            "$ref": "./baseStepSchema.json"
+        },
+        {
+            "properties": {
+                "condition": {
+                    "$role": "expression",
+                    "title": "Condition",
+                    "description": "Expression to evaluate.",
+                    "examples": [
+                        "user.age > 3"
+                    ]
+                },
+                "steps": {
+                    "type": "array",
+                    "items": {
+                        "$type": "Microsoft.IDialog"
+                    },
+                    "title": "Steps",
+                    "description": "Step to execute if condition is true."
+                },
+                "elseSteps": {
+                    "type": "array",
+                    "items": {
+                        "$type": "Microsoft.IDialog"
+                    },
+                    "title": "Else Steps",
+                    "description": "Step to execute if condition is false."
+                }
+            }
+        }
     ]
 }

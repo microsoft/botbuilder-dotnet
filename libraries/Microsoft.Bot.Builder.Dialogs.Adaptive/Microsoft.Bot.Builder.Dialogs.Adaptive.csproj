@@ -53,11 +53,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Schemas\Dialogs\baseSchema.json" />
+    <None Remove="Schemas\baseBindingsSchema.json" />
+    <None Remove="Schemas\baseDialogSchema.json" />
+    <None Remove="Schemas\Dialogs\baseInputSchema.json" />
     <None Remove="Schemas\Dialogs\Microsoft.AdaptiveDialog.schema" />
+    <None Remove="Schemas\Dialogs\Microsoft.AttachmentInput.schema" />
     <None Remove="Schemas\Dialogs\Microsoft.ChoiceInput.schema" />
     <None Remove="Schemas\Dialogs\Microsoft.ConfirmInput.schema" />
+    <None Remove="Schemas\Dialogs\Microsoft.DateTimeInput.schema" />
     <None Remove="Schemas\Dialogs\Microsoft.NumberInput.schema" />
+    <None Remove="Schemas\Dialogs\Microsoft.OAuthInput.schema" />
     <None Remove="Schemas\Dialogs\Microsoft.TextInput.schema" />
     <None Remove="Schemas\Microsoft.IRuleSelector.schema" />
     <None Remove="Schemas\Recognizers\Microsoft.MultiLanguageRecognizer.schema" />
@@ -82,13 +87,18 @@
     <None Remove="Schemas\Selectors\Microsoft.MostSpecificSelector.schema" />
     <None Remove="Schemas\Selectors\Microsoft.RandomSelector.schema" />
     <None Remove="Schemas\Selectors\Microsoft.TrueSelector.schema" />
+    <None Remove="Schemas\Steps\baseStepSchema.json" />
     <None Remove="Schemas\Steps\Microsoft.BeginDialog.schema" />
     <None Remove="Schemas\Steps\Microsoft.CancelAllDialogs.schema" />
+    <None Remove="Schemas\Steps\Microsoft.DebugBreak.schema" />
     <None Remove="Schemas\Steps\Microsoft.DeleteProperty.schema" />
     <None Remove="Schemas\Steps\Microsoft.EditArray.schema" />
+    <None Remove="Schemas\Steps\Microsoft.EditSteps.schema" />
     <None Remove="Schemas\Steps\Microsoft.EmitEvent.schema" />
     <None Remove="Schemas\Steps\Microsoft.EndDialog.schema" />
     <None Remove="Schemas\Steps\Microsoft.EndTurn.schema" />
+    <None Remove="Schemas\Steps\Microsoft.Foreach.schema" />
+    <None Remove="Schemas\Steps\Microsoft.ForeachPage.schema" />
     <None Remove="Schemas\Steps\Microsoft.HttpRequest.schema" />
     <None Remove="Schemas\Steps\Microsoft.IfCondition.schema" />
     <None Remove="Schemas\Steps\Microsoft.IfProperty.schema" />
@@ -103,11 +113,16 @@
   </ItemGroup>
   
   <ItemGroup>
-    <Content Include="Schemas\Dialogs\baseSchema.json" />
+    <Content Include="Schemas\baseBindingsSchema.json" />
+    <Content Include="Schemas\baseDialogSchema.json" />
+    <Content Include="Schemas\Dialogs\baseInputSchema.json" />
     <Content Include="Schemas\Dialogs\Microsoft.AdaptiveDialog.schema" />
+    <Content Include="Schemas\Dialogs\Microsoft.AttachmentInput.schema" />
     <Content Include="Schemas\Dialogs\Microsoft.ChoiceInput.schema" />
     <Content Include="Schemas\Dialogs\Microsoft.ConfirmInput.schema" />
+    <Content Include="Schemas\Dialogs\Microsoft.DateTimeInput.schema" />
     <Content Include="Schemas\Dialogs\Microsoft.NumberInput.schema" />
+    <Content Include="Schemas\Dialogs\Microsoft.OAuthInput.schema" />
     <Content Include="Schemas\Dialogs\Microsoft.TextInput.schema" />
     <Content Include="Schemas\Microsoft.IRule.schema" />
     <Content Include="Schemas\Microsoft.IRuleSelector.schema" />
@@ -130,6 +145,11 @@
     <Content Include="Schemas\Rules\Microsoft.UnknownIntentRule.schema" />
     <Content Include="Schemas\Selectors\Microsoft.ConditionalSelector.schema" />
     <Content Include="Schemas\Selectors\Microsoft.TrueSelector.schema" />
+    <Content Include="Schemas\Steps\baseStepSchema.json" />
+    <Content Include="Schemas\Steps\Microsoft.DebugBreak.schema" />
+    <Content Include="Schemas\Steps\Microsoft.EditSteps.schema" />
+    <Content Include="Schemas\Steps\Microsoft.Foreach.schema" />
+    <Content Include="Schemas\Steps\Microsoft.ForeachPage.schema" />
     <Content Include="Schemas\Steps\Microsoft.RepeatDialog.schema" />
     <Content Include="Schemas\Steps\Microsoft.DeleteProperty.schema" />
     <Content Include="Schemas\Steps\Microsoft.IfCondition.schema" />

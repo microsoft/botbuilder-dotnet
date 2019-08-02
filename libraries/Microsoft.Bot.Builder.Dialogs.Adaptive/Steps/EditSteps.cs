@@ -9,14 +9,26 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
 {
+    /// <summary>
+    /// Class which allows you to edit the current steps 
+    /// </summary>
     public class EditSteps : DialogCommand, IDialogDependencies
     {
+        /// <summary>
+        /// Gets or sets the steps to be applied to the active steps.
+        /// </summary>
         [JsonProperty("steps")]
         public List<IDialog> Steps { get; set; } = new List<IDialog>();
 
+        /// <summary>
+        /// Gets or sets the type of change to appy to the active steps.
+        /// </summary>
         [JsonProperty("changeType")]
         public StepChangeTypes ChangeType { get; set; }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EditSteps"/> class.
+        /// </summary>
         [JsonConstructor]
         public EditSteps([CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
             : base()
