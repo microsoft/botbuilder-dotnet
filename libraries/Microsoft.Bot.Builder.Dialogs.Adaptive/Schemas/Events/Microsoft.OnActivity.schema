@@ -11,7 +11,7 @@
         },
         {
             "properties": {
-                "type": {   
+                "type": {
                     "type": "string",
                     "title": "Type",
                     "description": "Activity type"
