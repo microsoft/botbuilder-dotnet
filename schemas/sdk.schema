@@ -516,14 +516,13 @@
                     "type": "string"
                 },
                 "property": {
-                    "$role": "memoryPath",
+                    "$role": "expression",
                     "title": "Property",
                     "description": "Property that this input dialog is bound to",
                     "examples": [
                         "$birthday"
                     ],
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
+                    "type": "string"
                 },
                 "defaultValue": {
                     "$role": "expression",
@@ -896,14 +895,13 @@
                     "type": "string"
                 },
                 "property": {
-                    "$role": "memoryPath",
+                    "$role": "expression",
                     "title": "Property",
                     "description": "Property that this input dialog is bound to",
                     "examples": [
                         "$birthday"
                     ],
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
+                    "type": "string"
                 },
                 "defaultValue": {
                     "$role": "expression",
@@ -1265,14 +1263,13 @@
                     "type": "string"
                 },
                 "property": {
-                    "$role": "memoryPath",
+                    "$role": "expression",
                     "title": "Property",
                     "description": "Property that this input dialog is bound to",
                     "examples": [
                         "$birthday"
                     ],
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
+                    "type": "string"
                 },
                 "defaultValue": {
                     "$role": "expression",
@@ -1505,14 +1502,13 @@
                     "type": "string"
                 },
                 "property": {
-                    "$role": "memoryPath",
+                    "$role": "expression",
                     "title": "Property",
                     "description": "Property that this input dialog is bound to",
                     "examples": [
                         "$birthday"
                     ],
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
+                    "type": "string"
                 },
                 "defaultValue": {
                     "$role": "expression",
@@ -3554,14 +3550,13 @@
                     "type": "string"
                 },
                 "property": {
-                    "$role": "memoryPath",
+                    "$role": "expression",
                     "title": "Property",
                     "description": "Property that this input dialog is bound to",
                     "examples": [
                         "$birthday"
                     ],
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
+                    "type": "string"
                 },
                 "defaultValue": {
                     "$role": "expression",
@@ -3733,14 +3728,13 @@
                     "type": "string"
                 },
                 "property": {
-                    "$role": "memoryPath",
+                    "$role": "expression",
                     "title": "Property",
                     "description": "Property that this input dialog is bound to",
                     "examples": [
                         "$birthday"
                     ],
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
+                    "type": "string"
                 },
                 "defaultValue": {
                     "$role": "expression",
@@ -5745,14 +5739,13 @@
                     "type": "string"
                 },
                 "property": {
-                    "$role": "memoryPath",
+                    "$role": "expression",
                     "title": "Property",
                     "description": "Property that this input dialog is bound to",
                     "examples": [
                         "$birthday"
                     ],
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
+                    "type": "string"
                 },
                 "defaultValue": {
                     "$role": "expression",

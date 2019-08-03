@@ -54,7 +54,7 @@
           "description": "The expression that you evaluated for input."
         },
         "property": {
-          "$role": "memoryPath",
+          "$role": "expression",
           "title": "Property",
           "description": "Property that this input dialog is bound to",
           "examples": [
