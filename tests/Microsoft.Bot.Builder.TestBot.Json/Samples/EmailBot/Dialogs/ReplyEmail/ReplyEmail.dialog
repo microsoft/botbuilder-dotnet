@@ -1,12 +1,12 @@
 {
   "$schema": "../../app.schema",
   "$type": "Microsoft.AdaptiveDialog",
-  "steps": [
+  "actions": [
     "ClearReplyData",
     {
       "$type": "Microsoft.IfCondition",
       "condition": "user.focusedEmail==null",
-      "steps": [
+      "actions": [
         "ChooseEmail"
       ]
     },
@@ -31,14 +31,14 @@
     {
       "$type": "Microsoft.IfCondition",
       "condition": "dialog.confirmed",
-      "steps": [
+      "actions": [
         "ReplyEmails",
         {
           "$type": "Microsoft.SendActivity",
           "activity": "Your email has been sent succsessfully"
         }
       ],
-      "elseSteps": [
+      "elseActions": [
         {
           "$type": "Microsoft.SendActivity",
           "activity": "OK, let's do it next time."

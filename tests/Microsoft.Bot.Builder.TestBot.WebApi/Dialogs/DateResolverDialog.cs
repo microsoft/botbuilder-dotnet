@@ -18,15 +18,15 @@ namespace Microsoft.BotBuilderSamples
             AddDialog(new DateTimePrompt(nameof(DateTimePrompt), DateTimePromptValidator));
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
-                InitialStepAsync,
-                FinalStepAsync,
+                InitialActionAsync,
+                FinalActionAsync,
             }));
 
             // The initial child Dialog to run.
             InitialDialogId = nameof(WaterfallDialog);
         }
 
-        private async Task<DialogTurnResult> InitialStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        private async Task<DialogTurnResult> InitialActionAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var timex = (string)stepContext.Options;
 
@@ -65,7 +65,7 @@ namespace Microsoft.BotBuilderSamples
             }
         }
 
-        private async Task<DialogTurnResult> FinalStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        private async Task<DialogTurnResult> FinalActionAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var timex = ((List<DateTimeResolution>)stepContext.Result)[0].Timex;
             return await stepContext.EndDialogAsync(timex);

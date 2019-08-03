@@ -11,8 +11,8 @@ using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Rules;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Steps;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Events;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
@@ -53,7 +53,6 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             var rootDialog = new AdaptiveDialog()
             {
                 AutoEndDialog = false,
-                Steps = new List<IDialog>()
             };
             var choiceInput = new ChoiceInput()
             {
@@ -77,10 +76,16 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                 handleChoice.Cases.Add(new Case($"{name}", new List<IDialog>() { dialog }));
             }
             choiceInput.Style = ListStyle.Auto;
-            rootDialog.Steps.Add(choiceInput);
-            rootDialog.Steps.Add(new SendActivity("# Running {conversation.dialogChoice}.main.dialog"));
-            rootDialog.Steps.Add(handleChoice);
-            rootDialog.Steps.Add(new RepeatDialog());
+            rootDialog.Events.Add(new OnBeginDialog()
+            {
+                Actions = new List<IDialog>()
+                {
+                    choiceInput,
+                    new SendActivity("# Running {conversation.dialogChoice}.main.dialog"),
+                    handleChoice,
+                    new RepeatDialog()
+                }
+            });
 
             this.dialogManager = new DialogManager(rootDialog);
 

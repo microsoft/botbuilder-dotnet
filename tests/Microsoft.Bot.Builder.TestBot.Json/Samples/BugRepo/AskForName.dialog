@@ -5,17 +5,22 @@
         "$name": "dialog.name"
     },
     "defaultResultProperty": "$name",
-    "steps": [
+    "events": [
         {
-            "$type": "Microsoft.TextInput",
-            "property": "dialog.name",
-            "prompt": "what is your name?",
-            "unrecognizedPrompt": "prompt again",
-            "invalidPrompt": "that's wrong"
-        },
-        {
-            "$type": "Microsoft.SendActivity",
-            "activity": "ASKFORNAME ddd Hello {$name}, nice to meet you!"
+            "$type": "Microsoft.OnBeginDialog",
+            "actions": [
+                {
+                    "$type": "Microsoft.TextInput",
+                    "property": "dialog.name",
+                    "prompt": "what is your name?",
+                    "unrecognizedPrompt": "prompt again",
+                    "invalidPrompt": "that's wrong"
+                },
+                {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "ASKFORNAME ddd Hello {$name}, nice to meet you!"
+                }
+            ]
         }
     ]
 }

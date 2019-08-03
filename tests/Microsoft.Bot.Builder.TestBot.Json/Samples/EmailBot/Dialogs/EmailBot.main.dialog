@@ -15,10 +15,10 @@
       "CancelIntent": "(?i)cancel|never mind"
     }
   },
-  "rules": [
+  "events": [
     {
-      "$type": "Microsoft.UnknownIntentRule",
-      "steps": [
+      "$type": "Microsoft.OnUnknownIntent",
+      "actions": [
         {
           "$type": "Microsoft.SendActivity",
           "activity": "Hi! I'm a Email bot. Say \"show email\" to get started."
@@ -26,9 +26,9 @@
       ]
     },
     {
-      "$type": "Microsoft.IntentRule",
+      "$type": "Microsoft.OnIntent",
       "intent": "CancelIntent",
-      "steps": [
+      "actions": [
         {
           "$type": "Microsoft.SendActivity",
           "activity": "ok, see you next time."
@@ -39,57 +39,57 @@
       ]
     },
     {
-      "$type": "Microsoft.IntentRule",
+      "$type": "Microsoft.OnIntent",
       "intent": "ShowEmailIntent",
-      "steps": [
+      "actions": [
         "ClearUserData",
         "ShowEmail"
       ]
     },
     {
-      "$type": "Microsoft.IntentRule",
+      "$type": "Microsoft.OnIntent",
       "intent": "ShowNextPageIntent",
-      "steps": [
+      "actions": [
         "NextPage",
         "ShowEmail"
       ]
     },
     {
-      "$type": "Microsoft.IntentRule",
+      "$type": "Microsoft.OnIntent",
       "intent": "SendEmailIntent",
-      "steps": [
+      "actions": [
         "ClearUserData",
         "SendEmail"
       ]
     },
     {
-      "$type": "Microsoft.IntentRule",
+      "$type": "Microsoft.OnIntent",
       "intent": "FindContactIntent",
-      "steps": [
+      "actions": [
         "ClearUserData",
         "FindContact"
       ]
     },
     {
-      "$type": "Microsoft.IntentRule",
+      "$type": "Microsoft.OnIntent",
       "intent": "ForwardEmailIntent",
-      "steps": [
+      "actions": [
         "ClearUserData",
         "ForwardEmail"
       ]
     },
     {
-      "$type": "Microsoft.IntentRule",
+      "$type": "Microsoft.OnIntent",
       "intent": "ReplyEmailIntent",
-      "steps": [
+      "actions": [
         "ClearUserData",
         "ReplyEmail"
       ]
     },
     {
-      "$type": "Microsoft.IntentRule",
+      "$type": "Microsoft.OnIntent",
       "intent": "HelpIntent",
-      "steps": [
+      "actions": [
         {
           "$type": "Microsoft.SendActivity",
           "activity": "I am an email bot, Please try show email to get started."

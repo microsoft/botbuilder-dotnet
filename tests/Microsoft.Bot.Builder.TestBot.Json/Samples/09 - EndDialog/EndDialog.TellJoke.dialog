@@ -7,24 +7,27 @@
             "CancelIntent": "(?i)cancel|never mind"
         }
     },
-    "steps": [
+    "events": [
         {
-            "$type": "Microsoft.SendActivity",
-            "activity": "Why did the chicken cross the road?"
+            "$type": "Microsoft.OnBeginDialog",
+            "actions": [
+                {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "Why did the chicken cross the road?"
+                },
+                {
+                    "$type": "Microsoft.EndTurn"
+                },
+                {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "To get to the other side"
+                }
+            ]
         },
         {
-            "$type": "Microsoft.EndTurn"
-        },
-        {
-            "$type": "Microsoft.SendActivity",
-            "activity": "To get to the other side"
-        }
-    ],
-    "rules": [
-        {
-            "$type": "Microsoft.IntentRule",
+            "$type": "Microsoft.OnIntent",
             "intent": "CancelIntent",
-            "steps": [
+            "actions": [
                 {
                     "$type": "Microsoft.CancelAllDialogs"
                 }

@@ -1,12 +1,12 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
-    "$role": "unionType(Microsoft.IRuleSelector)",
-    "title": "Most Specific Rule Selector",
-    "description": "Select most specific true rules with optional additional selector",
+    "$role": "unionType(Microsoft.IEventSelector)",
+    "title": "Most Specific Event Selector",
+    "description": "Select most specific true events with optional additional selector",
     "type": "object",
     "properties": {
         "selector": {
-            "$type": "Microsoft.IRuleSelector"
+            "$type": "Microsoft.IEventSelector"
         }
     }
 }

@@ -39,14 +39,6 @@
     <NeutralLanguage />
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Documentation|AnyCPU'">
-    <DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Builder.Dialogs.Rules.xml</DocumentationFile>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Builder.Dialogs.Rules.xml</DocumentationFile>
-  </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DebugType>full</DebugType>
     <DebugSymbols>true</DebugSymbols>
@@ -64,52 +56,64 @@
     <None Remove="Schemas\Dialogs\Microsoft.NumberInput.schema" />
     <None Remove="Schemas\Dialogs\Microsoft.OAuthInput.schema" />
     <None Remove="Schemas\Dialogs\Microsoft.TextInput.schema" />
-    <None Remove="Schemas\Microsoft.IRuleSelector.schema" />
+    <None Remove="Schemas\Events\Microsoft.ActivityEvent.schema" />
+    <None Remove="Schemas\Events\Microsoft.OnActivity.schema" />
+    <None Remove="Schemas\Events\Microsoft.OnBeginDialog.schema" />
+    <None Remove="Schemas\Events\Microsoft.OnConversationUpdateActivity.schema" />
+    <None Remove="Schemas\Events\Microsoft.OnDialogEvent.schema" />
+    <None Remove="Schemas\Events\Microsoft.OnEndOfConversationActivity.schema" />
+    <None Remove="Schemas\Events\Microsoft.OnEvent.schema" />
+    <None Remove="Schemas\Events\Microsoft.OnEventActivity.schema" />
+    <None Remove="Schemas\Events\Microsoft.OnHandoffActivity.schema" />
+    <None Remove="Schemas\Events\Microsoft.OnIntent.schema" />
+    <None Remove="Schemas\Events\Microsoft.OnInvokeActivity.schema" />
+    <None Remove="Schemas\Events\Microsoft.OnMessageActivity.schema" />
+    <None Remove="Schemas\Events\Microsoft.OnMessageDeleteActivity.schema" />
+    <None Remove="Schemas\Events\Microsoft.OnMessageReactionActivity.schema" />
+    <None Remove="Schemas\Events\Microsoft.OnMessageUpdateActivity.schema" />
+    <None Remove="Schemas\Events\Microsoft.OnTypingActivity.schema" />
+    <None Remove="Schemas\Events\Microsoft.OnUnknownIntent.schema" />
+    <None Remove="Schemas\Microsoft.IEventSelector.schema" />
     <None Remove="Schemas\Recognizers\Microsoft.MultiLanguageRecognizer.schema" />
     <None Remove="Schemas\Recognizers\Microsoft.RegexRecognizer.schema" />
-    <None Remove="Schemas\Rules\Microsoft.ActivityRule.schema" />
-    <None Remove="Schemas\Rules\Microsoft.ConversationUpdateActivityRule.schema" />
-    <None Remove="Schemas\Rules\Microsoft.EndOfConversationActivityRule.schema" />
-    <None Remove="Schemas\Rules\Microsoft.EventActivityRule.schema" />
-    <None Remove="Schemas\Rules\Microsoft.EventRule.schema" />
-    <None Remove="Schemas\Rules\Microsoft.HandoffActivityRule.schema" />
-    <None Remove="Schemas\Rules\Microsoft.IntentRule.schema" />
-    <None Remove="Schemas\Rules\Microsoft.InvokeActivityRule.schema" />
-    <None Remove="Schemas\Rules\Microsoft.MessageActivityRule.schema" />
-    <None Remove="Schemas\Rules\Microsoft.MessageDeleteActivityRule.schema" />
-    <None Remove="Schemas\Rules\Microsoft.MessageReactionActivityRule.schema" />
-    <None Remove="Schemas\Rules\Microsoft.MessageUpdateActivityRule.schema" />
-    <None Remove="Schemas\Rules\Microsoft.Rule.schema" />
-    <None Remove="Schemas\Rules\Microsoft.TypingActivityRule.schema" />
-    <None Remove="Schemas\Rules\Microsoft.UnknownIntentRule.schema" />
+    <None Remove="Schemas\Events\Microsoft.BeginDialogEvent.schema" />
+    <None Remove="Schemas\Events\Microsoft.ConversationUpdateActivityEvent.schema" />
+    <None Remove="Schemas\Events\Microsoft.EndOfConversationActivityEvent.schema" />
+    <None Remove="Schemas\Events\Microsoft.EventActivityEvent.schema" />
+    <None Remove="Schemas\Events\Microsoft.EventBase.schema" />
+    <None Remove="Schemas\Events\Microsoft.HandoffActivityEvent.schema" />
+    <None Remove="Schemas\Events\Microsoft.IntentEvent.schema" />
+    <None Remove="Schemas\Events\Microsoft.InvokeActivityEvent.schema" />
+    <None Remove="Schemas\Events\Microsoft.MessageActivityEvent.schema" />
+    <None Remove="Schemas\Events\Microsoft.MessageDeleteActivityEvent.schema" />
+    <None Remove="Schemas\Events\Microsoft.MessageReactionActivityEvent.schema" />
+    <None Remove="Schemas\Events\Microsoft.MessageUpdateActivityEvent.schema" />
+    <None Remove="Schemas\Events\Microsoft.Event.schema" />
+    <None Remove="Schemas\Events\Microsoft.TypingActivityEvent.schema" />
+    <None Remove="Schemas\Events\Microsoft.UnknownIntentEvent.schema" />
     <None Remove="Schemas\Selectors\Microsoft.ConditionalSelector.schema" />
     <None Remove="Schemas\Selectors\Microsoft.FirstSelector.schema" />
     <None Remove="Schemas\Selectors\Microsoft.MostSpecificSelector.schema" />
     <None Remove="Schemas\Selectors\Microsoft.RandomSelector.schema" />
     <None Remove="Schemas\Selectors\Microsoft.TrueSelector.schema" />
-    <None Remove="Schemas\Steps\baseStepSchema.json" />
-    <None Remove="Schemas\Steps\Microsoft.BeginDialog.schema" />
-    <None Remove="Schemas\Steps\Microsoft.CancelAllDialogs.schema" />
-    <None Remove="Schemas\Steps\Microsoft.DebugBreak.schema" />
-    <None Remove="Schemas\Steps\Microsoft.DeleteProperty.schema" />
-    <None Remove="Schemas\Steps\Microsoft.EditArray.schema" />
-    <None Remove="Schemas\Steps\Microsoft.EditSteps.schema" />
-    <None Remove="Schemas\Steps\Microsoft.EmitEvent.schema" />
-    <None Remove="Schemas\Steps\Microsoft.EndDialog.schema" />
-    <None Remove="Schemas\Steps\Microsoft.EndTurn.schema" />
-    <None Remove="Schemas\Steps\Microsoft.Foreach.schema" />
-    <None Remove="Schemas\Steps\Microsoft.ForeachPage.schema" />
-    <None Remove="Schemas\Steps\Microsoft.HttpRequest.schema" />
-    <None Remove="Schemas\Steps\Microsoft.IfCondition.schema" />
-    <None Remove="Schemas\Steps\Microsoft.IfProperty.schema" />
-    <None Remove="Schemas\Steps\Microsoft.InitProperty.schema" />
-    <None Remove="Schemas\Steps\Microsoft.LogStep.schema" />
-    <None Remove="Schemas\Steps\Microsoft.RepeatDialog.schema" />
-    <None Remove="Schemas\Steps\Microsoft.ReplaceDialog.schema" />
-    <None Remove="Schemas\Steps\Microsoft.SendActivity.schema" />
-    <None Remove="Schemas\Steps\Microsoft.SetProperty.schema" />
-    <None Remove="Schemas\Steps\Microsoft.SwitchCondition.schema" />
-    <None Remove="Schemas\Steps\Microsoft.TraceActivity.schema" />
+    <None Remove="Schemas\Actions\Microsoft.BeginDialog.schema" />
+    <None Remove="Schemas\Actions\Microsoft.CancelAllDialogs.schema" />
+    <None Remove="Schemas\Actions\Microsoft.DeleteProperty.schema" />
+    <None Remove="Schemas\Actions\Microsoft.EditArray.schema" />
+    <None Remove="Schemas\Actions\Microsoft.EmitEvent.schema" />
+    <None Remove="Schemas\Actions\Microsoft.EndDialog.schema" />
+    <None Remove="Schemas\Actions\Microsoft.EndTurn.schema" />
+    <None Remove="Schemas\Actions\Microsoft.HttpRequest.schema" />
+    <None Remove="Schemas\Actions\Microsoft.IfCondition.schema" />
+    <None Remove="Schemas\Actions\Microsoft.IfProperty.schema" />
+    <None Remove="Schemas\Actions\Microsoft.InitProperty.schema" />
+    <None Remove="Schemas\Actions\Microsoft.LogAction.schema" />
+    <None Remove="Schemas\Actions\Microsoft.RepeatDialog.schema" />
+    <None Remove="Schemas\Actions\Microsoft.ReplaceDialog.schema" />
+    <None Remove="Schemas\Actions\Microsoft.SendActivity.schema" />
+    <None Remove="Schemas\Actions\Microsoft.SetProperty.schema" />
+    <None Remove="Schemas\Actions\Microsoft.SwitchCondition.schema" />
+    <None Remove="Schemas\Actions\Microsoft.TraceActivity.schema" />
   </ItemGroup>
   
   <ItemGroup>
@@ -124,53 +128,49 @@
     <Content Include="Schemas\Dialogs\Microsoft.NumberInput.schema" />
     <Content Include="Schemas\Dialogs\Microsoft.OAuthInput.schema" />
     <Content Include="Schemas\Dialogs\Microsoft.TextInput.schema" />
-    <Content Include="Schemas\Microsoft.IRule.schema" />
-    <Content Include="Schemas\Microsoft.IRuleSelector.schema" />
+    <Content Include="Schemas\Events\Microsoft.OnBeginDialog.schema" />
+    <Content Include="Schemas\Events\Microsoft.OnActivity.schema" />
+    <Content Include="Schemas\Events\Microsoft.OnConversationUpdateActivity.schema" />
+    <Content Include="Schemas\Events\Microsoft.OnDialogEvent.schema" />
+    <Content Include="Schemas\Events\Microsoft.OnEndOfConversationActivity.schema" />
+    <Content Include="Schemas\Events\Microsoft.OnEvent.schema" />
+    <Content Include="Schemas\Events\Microsoft.OnEventActivity.schema" />
+    <Content Include="Schemas\Events\Microsoft.OnHandoffActivity.schema" />
+    <Content Include="Schemas\Events\Microsoft.OnIntent.schema" />
+    <Content Include="Schemas\Events\Microsoft.OnInvokeActivity.schema" />
+    <Content Include="Schemas\Events\Microsoft.OnMessageActivity.schema" />
+    <Content Include="Schemas\Events\Microsoft.OnMessageDeleteActivity.schema" />
+    <Content Include="Schemas\Events\Microsoft.OnMessageReactionActivity.schema" />
+    <Content Include="Schemas\Events\Microsoft.OnMessageUpdateActivity.schema" />
+    <Content Include="Schemas\Events\Microsoft.OnTypingActivity.schema" />
+    <Content Include="Schemas\Events\Microsoft.OnUnknownIntent.schema" />
+    <Content Include="Schemas\Microsoft.IOnEvent.schema" />
+    <Content Include="Schemas\Microsoft.IEventSelector.schema" />
     <Content Include="Schemas\Recognizers\Microsoft.MultiLanguageRecognizer.schema" />
     <Content Include="Schemas\Recognizers\Microsoft.RegexRecognizer.schema" />
-    <Content Include="Schemas\Rules\Microsoft.ActivityRule.schema" />
-    <Content Include="Schemas\Rules\Microsoft.ConversationUpdateActivityRule.schema" />
-    <Content Include="Schemas\Rules\Microsoft.EndOfConversationActivityRule.schema" />
-    <Content Include="Schemas\Rules\Microsoft.EventActivityRule.schema" />
-    <Content Include="Schemas\Rules\Microsoft.HandoffActivityRule.schema" />
-    <Content Include="Schemas\Rules\Microsoft.InvokeActivityRule.schema" />
-    <Content Include="Schemas\Rules\Microsoft.MessageActivityRule.schema" />
-    <Content Include="Schemas\Rules\Microsoft.MessageDeleteActivityRule.schema" />
-    <Content Include="Schemas\Rules\Microsoft.MessageReactionActivityRule.schema" />
-    <Content Include="Schemas\Rules\Microsoft.MessageUpdateActivityRule.schema" />
-    <Content Include="Schemas\Rules\Microsoft.Rule.schema" />
-    <Content Include="Schemas\Rules\Microsoft.EventRule.schema" />
-    <Content Include="Schemas\Rules\Microsoft.IntentRule.schema" />
-    <Content Include="Schemas\Rules\Microsoft.TypingActivityRule.schema" />
-    <Content Include="Schemas\Rules\Microsoft.UnknownIntentRule.schema" />
     <Content Include="Schemas\Selectors\Microsoft.ConditionalSelector.schema" />
     <Content Include="Schemas\Selectors\Microsoft.TrueSelector.schema" />
-    <Content Include="Schemas\Steps\baseStepSchema.json" />
-    <Content Include="Schemas\Steps\Microsoft.DebugBreak.schema" />
-    <Content Include="Schemas\Steps\Microsoft.EditSteps.schema" />
-    <Content Include="Schemas\Steps\Microsoft.Foreach.schema" />
-    <Content Include="Schemas\Steps\Microsoft.ForeachPage.schema" />
-    <Content Include="Schemas\Steps\Microsoft.RepeatDialog.schema" />
-    <Content Include="Schemas\Steps\Microsoft.DeleteProperty.schema" />
-    <Content Include="Schemas\Steps\Microsoft.IfCondition.schema" />
-    <Content Include="Schemas\Steps\Microsoft.LogStep.schema" />
-    <Content Include="Schemas\Steps\Microsoft.TraceActivity.schema" />
+    <Content Include="Schemas\Actions\Microsoft.RepeatDialog.schema" />
+    <Content Include="Schemas\Actions\Microsoft.DeleteProperty.schema" />
+    <Content Include="Schemas\Actions\Microsoft.IfCondition.schema" />
+    <Content Include="Schemas\Actions\Microsoft.LogAction.schema" />
+    <Content Include="Schemas\Actions\Microsoft.TraceActivity.schema" />
     <Content Include="Schemas\Selectors\Microsoft.FirstSelector.schema" />
     <Content Include="Schemas\Selectors\Microsoft.MostSpecificSelector.schema" />
     <Content Include="Schemas\Selectors\Microsoft.RandomSelector.schema" />
-    <Content Include="Schemas\Steps\Microsoft.TraceActivity.schema" />
-    <Content Include="Schemas\Steps\Microsoft.InitProperty.schema" />
-    <Content Include="Schemas\Steps\Microsoft.SetProperty.schema" />
-    <Content Include="Schemas\Steps\Microsoft.EmitEvent.schema" />
-    <Content Include="Schemas\Steps\Microsoft.SwitchCondition.schema" />
-    <Content Include="Schemas\Steps\Microsoft.HttpRequest.schema" />
-    <Content Include="Schemas\Steps\Microsoft.EditArray.schema" />
-    <Content Include="Schemas\Steps\Microsoft.BeginDialog.schema" />
-    <Content Include="Schemas\Steps\Microsoft.CancelAllDialogs.schema" />
-    <Content Include="Schemas\Steps\Microsoft.EndDialog.schema" />
-    <Content Include="Schemas\Steps\Microsoft.ReplaceDialog.schema" />
-    <Content Include="Schemas\Steps\Microsoft.SendActivity.schema" />
-    <Content Include="Schemas\Steps\Microsoft.EndTurn.schema" />
+    <Content Include="Schemas\Actions\Microsoft.TraceActivity.schema" />
+    <Content Include="Schemas\Actions\Microsoft.InitProperty.schema" />
+    <Content Include="Schemas\Actions\Microsoft.SetProperty.schema" />
+    <Content Include="Schemas\Actions\Microsoft.EmitEvent.schema" />
+    <Content Include="Schemas\Actions\Microsoft.SwitchCondition.schema" />
+    <Content Include="Schemas\Actions\Microsoft.HttpRequest.schema" />
+    <Content Include="Schemas\Actions\Microsoft.EditArray.schema" />
+    <Content Include="Schemas\Actions\Microsoft.BeginDialog.schema" />
+    <Content Include="Schemas\Actions\Microsoft.CancelAllDialogs.schema" />
+    <Content Include="Schemas\Actions\Microsoft.EndDialog.schema" />
+    <Content Include="Schemas\Actions\Microsoft.ReplaceDialog.schema" />
+    <Content Include="Schemas\Actions\Microsoft.SendActivity.schema" />
+    <Content Include="Schemas\Actions\Microsoft.EndTurn.schema" />
   </ItemGroup>
 
   <ItemGroup>
@@ -178,5 +178,7 @@
     <ProjectReference Include="..\Microsoft.Bot.Builder.Dialogs\Microsoft.Bot.Builder.Dialogs.csproj" />
     <ProjectReference Include="..\Microsoft.Bot.Builder.Expressions.Parser\Microsoft.Bot.Builder.Expressions.Parser.csproj" />
   </ItemGroup>
+
+  <ProjectExtensions><VisualStudio><UserProperties schemas_4actions_4microsoft_1begindialog_1schema__JsonSchema="" /></VisualStudio></ProjectExtensions>
 
 </Project>

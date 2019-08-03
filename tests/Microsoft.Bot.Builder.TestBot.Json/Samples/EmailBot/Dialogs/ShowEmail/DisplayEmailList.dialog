@@ -1,7 +1,7 @@
 ﻿{
     "$schema": "../../app.schema",
     "$type": "Microsoft.AdaptiveDialog",
-    "steps": [
+    "actions": [
         "GetDisplayEmails",
         {
             "$type": "Microsoft.SendActivity",
@@ -10,7 +10,7 @@
         {
             "$type": "Microsoft.IfCondition",
             "condition": "count(user.emails)>0",
-            "steps": [
+            "actions": [
                 // Bug: Choice input cannot accept expression as value
                 {
                     "$type": "Microsoft.SendActivity",
@@ -28,7 +28,7 @@
                     "cases": [
                         {
                             "case": "1",
-                            "steps": [
+                            "actions": [
                                 {
                                     "$type": "Microsoft.SetProperty",
                                     "property": "user.focusedEmail",
@@ -39,7 +39,7 @@
                         {
 
                             "case": "2",
-                            "steps": [
+                            "actions": [
                                 {
                                     "$type": "Microsoft.SetProperty",
                                     "property": "user.focusedEmail",
@@ -50,7 +50,7 @@
                         {
 
                             "case": "3",
-                            "steps": [
+                            "actions": [
                                 {
                                     "$type": "Microsoft.SetProperty",
                                     "property": "user.focusedEmail",

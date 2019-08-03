@@ -18,8 +18,8 @@ namespace Microsoft.BotBuilderSamples
             AddDialog(new DateTimePrompt(nameof(DateTimePrompt), DateTimePromptValidator));
             var steps = new WaterfallStep[]
             {
-                InitialStepAsync,
-                FinalStepAsync,
+                InitialActionAsync,
+                FinalActionAsync,
             };
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), steps));
 
@@ -45,7 +45,7 @@ namespace Microsoft.BotBuilderSamples
             return Task.FromResult(false);
         }
 
-        private async Task<DialogTurnResult> InitialStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        private async Task<DialogTurnResult> InitialActionAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var timex = (string)stepContext.Options;
 
@@ -80,7 +80,7 @@ namespace Microsoft.BotBuilderSamples
             return await stepContext.NextAsync(new List<DateTimeResolution> { new DateTimeResolution { Timex = timex } }, cancellationToken);
         }
 
-        private async Task<DialogTurnResult> FinalStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        private async Task<DialogTurnResult> FinalActionAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var timex = ((List<DateTimeResolution>)stepContext.Result)[0].Timex;
             return await stepContext.EndDialogAsync(timex, cancellationToken);

@@ -11,9 +11,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
     /// <summary>
     /// Select a random true rule implementation of IRuleSelector.
     /// </summary>
-    public class RandomSelector : IRuleSelector
+    public class RandomSelector : IEventSelector
     {
-        private List<IRule> _rules;
+        private List<IOnEvent> _rules;
         private bool _evaluate;
         private Random _rand;
         private int _seed = -1;
@@ -33,7 +33,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
             }
         }
 
-        public void Initialize(IEnumerable<IRule> rules, bool evaluate)
+        public void Initialize(IEnumerable<IOnEvent> rules, bool evaluate)
         {
             _rules = rules.ToList();
             _evaluate = evaluate;

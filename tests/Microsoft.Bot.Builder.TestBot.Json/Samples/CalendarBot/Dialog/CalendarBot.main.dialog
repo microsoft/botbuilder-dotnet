@@ -16,10 +16,10 @@
             "CancelIntent": "(?i)cancel"
         }
     },
-    "rules": [
+    "events": [
         {
-            "$type": "Microsoft.UnknownIntentRule",
-            "steps": [
+            "$type": "Microsoft.OnUnknownIntent",
+            "actions": [
                 {
                     "$type": "Microsoft.SendActivity",
                     "activity": "Hi! I'm a Calendar bot. Say \"show meeting\" to get started."
@@ -27,9 +27,9 @@
             ]
         },
         {
-            "$type": "Microsoft.IntentRule",
+            "$type": "Microsoft.OnIntent",
             "intent": "ShowMeetingIntent",
-            "steps": [
+            "actions": [
                 // should be initialize
                 "CalendarClearUserData",
                 "ShowMeeting",
@@ -37,9 +37,9 @@
             ]
         },
         {
-            "$type": "Microsoft.IntentRule",
+            "$type": "Microsoft.OnIntent",
             "intent": "CreateMeetingIntent",
-            "steps": [
+            "actions": [
                 // should be initialize
                 "CalendarClearUserData",
                 "CreateMeeting",
@@ -47,9 +47,9 @@
             ]
         },
         {
-            "$type": "Microsoft.IntentRule",
+            "$type": "Microsoft.OnIntent",
             "intent": "UpdateMeetingIntent",
-            "steps": [
+            "actions": [
                 // should be initialize
                 "CalendarClearUserData",
                 "UpdateMeeting",
@@ -57,9 +57,9 @@
             ]
         },
         {
-            "$type": "Microsoft.IntentRule",
+            "$type": "Microsoft.OnIntent",
             "intent": "AcceptMeetingIntent",
-            "steps": [
+            "actions": [
                 // should be initialize
                 "CalendarClearUserData",
                 "AcceptMeeting",
@@ -67,9 +67,9 @@
             ]
         },
         {
-            "$type": "Microsoft.IntentRule",
+            "$type": "Microsoft.OnIntent",
             "intent": "DeclineMeetingIntent",
-            "steps": [
+            "actions": [
                 // should be initialize
                 "CalendarClearUserData",
                 "DeclineMeeting",
@@ -77,9 +77,9 @@
             ]
         },
         {
-            "$type": "Microsoft.IntentRule",
+            "$type": "Microsoft.OnIntent",
             "intent": "HelpIntent",
-            "steps": [
+            "actions": [
                 {
                     "$type": "Microsoft.SendActivity",
                     "activity": "This is help"
@@ -87,18 +87,18 @@
             ]
         },
         {
-            "$type": "Microsoft.IntentRule",
+            "$type": "Microsoft.OnIntent",
             "intent": "CancelIntent",
-            "steps": [
+            "actions": [
                 {
                     "$type": "Microsoft.EndDialog"
                 }
             ]
         },
         {
-            "$type": "Microsoft.IntentRule",
+            "$type": "Microsoft.OnIntent",
             "intent": "ShowNextPageIntent",
-            "steps": [
+            "actions": [
                 "CalendarNextPage",
                 "ShowMeeting"
             ]

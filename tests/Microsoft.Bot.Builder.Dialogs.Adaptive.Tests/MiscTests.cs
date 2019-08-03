@@ -4,10 +4,10 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Events;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Rules;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Steps;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
@@ -49,20 +49,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             var testDialog = new AdaptiveDialog(nameof(AdaptiveDialog))
             {
-                Steps = new List<IDialog>()
+                Events = new List<IOnEvent>()
                 {
-                    new TextInput()
+                    new OnBeginDialog()
                     {
-                        Property = "user.name",
-                        Prompt = new ActivityTemplate("name?")
+                        Actions = new List<IDialog>()
+                        {
+                            new TextInput()
+                            {
+                                Property = "user.name",
+                                Prompt = new ActivityTemplate("name?")
+                            },
+                            new SendActivity("Hello, {user.name}")
+                        },
                     },
-                    new SendActivity("Hello, {user.name}")
-                },
-                Rules = new List<IRule>()
-                {
-                    new IntentRule("CancelIntent")
+                    new OnIntent("CancelIntent")
                     {
-                        Steps = new List<IDialog>()
+                        Actions = new List<IDialog>()
                         {
                             new ConfirmInput()
                             {
@@ -72,12 +75,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             new IfCondition()
                             {
                                 Condition = "conversation.addTodo.cancelConfirmation == true",
-                                Steps = new List<IDialog>()
+                                Actions = new List<IDialog>()
                                 {
                                     new SendActivity("canceling"),
                                     new EndDialog()
                                 },
-                                ElseSteps = new List<IDialog>()
+                                ElseActions = new List<IDialog>()
                                 {
                                     new SendActivity("notcanceling")
                                 }
@@ -120,19 +123,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         {  "SetName", @"my name is (?<name>.*)" }
                     }
                 },
-                Steps = new List<IDialog>()
+                Events = new List<IOnEvent>()
                 {
-                    new TextInput() { Prompt = new ActivityTemplate("Hello, what is your name?"), OutputBinding = "user.name", AllowInterruptions = AllowInterruptions.Always , Value = "user.name"},
-                    new SendActivity("Hello {user.name}, nice to meet you!"),
-                    new NumberInput() { Prompt = new ActivityTemplate("What is your age?"), OutputBinding = "user.age" },
-                    new SendActivity("{user.age} is a good age to be!"),
-                    new SendActivity("your name is {user.name}!"),
-                },
-                Rules = new List<IRule>()
-                {
-                    new IntentRule("SetName", new List<string>() { "name" })
+                    new OnBeginDialog()
                     {
-                        Steps = new List<IDialog>()
+                        Actions = new List<IDialog>()
+                        {
+                            new TextInput() { Prompt = new ActivityTemplate("Hello, what is your name?"), OutputBinding = "user.name", AllowInterruptions = AllowInterruptions.Always, Value = "user.name"},
+                            new SendActivity("Hello {user.name}, nice to meet you!"),
+                            new NumberInput() { Prompt = new ActivityTemplate("What is your age?"), OutputBinding = "user.age" },
+                            new SendActivity("{user.age} is a good age to be!"),
+                            new SendActivity("your name is {user.name}!"),
+                        },
+                    },
+                    new OnIntent("SetName", new List<string>() { "name" })
+                    {
+                        Actions = new List<IDialog>()
                         {
                             new SetProperty()
                             {

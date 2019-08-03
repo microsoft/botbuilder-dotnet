@@ -18,40 +18,40 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
     {
         private readonly string changeKey;
 
-        private DialogSet stepDialogs;
+        private DialogSet actionDialogs;
 
         public AdaptiveDialogState Plans { get; private set; }
 
         /// <summary>
-        /// List of steps being executed.
+        /// List of actions being executed
         /// </summary>
-        public List<StepState> Steps { get; set; }
+        public List<ActionState> Actions { get; set; }
         
         /// <summary>
         /// List of changes that are queued to be applied.
         /// </summary>
-        public List<StepChangeList> Changes
+        public List<ActionChangeList> Changes
         {
-            get { return this.Context.TurnState.Get<List<StepChangeList>>(changeKey); }
+            get { return this.Context.TurnState.Get<List<ActionChangeList>>(changeKey); }
             private set { this.Context.TurnState[changeKey] = value; }
         }
 
-        public SequenceContext(DialogSet dialogs, DialogContext dc, DialogState state, List<StepState> steps, string changeKey, DialogSet stepDialogs)
+        public SequenceContext(DialogSet dialogs, DialogContext dc, DialogState state, List<ActionState> actions, string changeKey, DialogSet actionDialogs)
             : base(dialogs, dc.Context, state, conversationState: dc.State.Conversation, userState: dc.State.User, settings: dc.State.Settings)
         {
-            this.Steps = steps;
+            this.Actions = actions;
             this.changeKey = changeKey;
-            this.stepDialogs = stepDialogs;
+            this.actionDialogs = actionDialogs;
         }
 
         /// <summary>
         /// Queues up a set of changes that will be applied when ApplyChanges is called.
         /// </summary>
         /// <param name="changes">Plan changes to queue up</param>
-        public void QueueChanges(StepChangeList changes)
+        public void QueueChanges(ActionChangeList changes)
         {
             // Pull change lists from turn context
-            var queue = this.Changes ?? new List<StepChangeList>();
+            var queue = this.Changes ?? new List<ActionChangeList>();
             queue.Add(changes);
 
             // Save back changes to turn context
@@ -70,7 +70,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         public async Task<bool> ApplyChangesAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
             // Retrieve queued changes from turn context
-            var changes = this.Changes ?? new List<StepChangeList>();
+            var changes = this.Changes ?? new List<ActionChangeList>();
 
             if (changes.Any())
             {
@@ -91,22 +91,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
                     switch (change.ChangeType)
                     {
-                        case StepChangeTypes.InsertSteps:
-                        case StepChangeTypes.InsertStepsBeforeTags:
-                        case StepChangeTypes.AppendSteps:
+                        case ActionChangeType.InsertActions:
+                        case ActionChangeType.InsertActionsBeforeTags:
+                        case ActionChangeType.AppendActions:
                             await UpdateSequenceAsync(change, cancellationToken).ConfigureAwait(false);
                             break;
-                        case StepChangeTypes.EndSequence:
-                            if (this.Steps.Any())
+                        case ActionChangeType.EndSequence:
+                            if (this.Actions.Any())
                             {
-                                this.Steps.Clear();
+                                this.Actions.Clear();
                             }
                             await EmitEventAsync(name: AdaptiveEvents.SequenceEnded, value: null, bubble: false).ConfigureAwait(false);
                             break;
-                        case StepChangeTypes.ReplaceSequence:
-                            if (this.Steps.Any())
+                        case ActionChangeType.ReplaceSequence:
+                            if (this.Actions.Any())
                             {
-                                this.Steps.Clear();
+                                this.Actions.Clear();
                             }
                             await UpdateSequenceAsync(change, cancellationToken).ConfigureAwait(false);
                             break;
@@ -121,63 +121,63 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             return false;
         }
 
-        public SequenceContext InsertSteps(List<StepState> steps)
+        public SequenceContext InsertActions(List<ActionState> actions)
         {
             this.QueueChanges(
-                new StepChangeList()
+                new ActionChangeList()
                 {
-                    ChangeType = StepChangeTypes.InsertSteps,
-                    Steps = steps
+                    ChangeType = ActionChangeType.InsertActions,
+                    Actions = actions
                 });
             return this;
         }
 
-        public SequenceContext InsertStepsBeforeTags(List<string> tags, List<StepState> steps)
+        public SequenceContext InsertActionsBeforeTags(List<string> tags, List<ActionState> actions)
         {
             this.QueueChanges(
-                new StepChangeList()
+                new ActionChangeList()
                 {
-                    ChangeType = StepChangeTypes.InsertStepsBeforeTags,
-                    Steps = steps,
+                    ChangeType = ActionChangeType.InsertActionsBeforeTags,
+                    Actions = actions,
                     Tags = tags
                 });
             return this;
         }
 
-        public SequenceContext AppendSteps(List<StepState> steps)
+        public SequenceContext AppendActions(List<ActionState> actions)
         {
             this.QueueChanges(
-                new StepChangeList()
+                new ActionChangeList()
                 {
-                    ChangeType = StepChangeTypes.AppendSteps,
-                    Steps = steps
+                    ChangeType = ActionChangeType.AppendActions,
+                    Actions = actions
                 });
             return this;
         }
 
-        public SequenceContext EndSequence(List<StepState> steps)
+        public SequenceContext EndSequence(List<ActionState> actions)
         {
             this.QueueChanges(
-                new StepChangeList()
+                new ActionChangeList()
                 {
-                    ChangeType = StepChangeTypes.EndSequence,
-                    Steps = steps
+                    ChangeType = ActionChangeType.EndSequence,
+                    Actions = actions
                 });
             return this;
         }
 
-        public SequenceContext ReplaceSequence(List<StepState> steps)
+        public SequenceContext ReplaceSequence(List<ActionState> actions)
         {
             this.QueueChanges(
-                new StepChangeList()
+                new ActionChangeList()
                 {
-                    ChangeType = StepChangeTypes.ReplaceSequence,
-                    Steps = steps
+                    ChangeType = ActionChangeType.ReplaceSequence,
+                    Actions = actions
                 });
             return this;
         }
 
-        private async Task UpdateSequenceAsync(StepChangeList change, CancellationToken cancellationToken = default(CancellationToken))
+        private async Task UpdateSequenceAsync(ActionChangeList change, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (change == null)
             {
@@ -185,35 +185,35 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
 
             // Initialize sequence if needed
-            var newSequence = !this.Steps.Any();
+            var newSequence = !this.Actions.Any();
 
             // Update sequence
             switch (change.ChangeType)
             {
-                case StepChangeTypes.InsertSteps:
-                    // Insert at the beginning, being careful to not change the reference to this.Steps instance,
+                case ActionChangeType.InsertActions:
+                    // Insert at the beginning, being careful to not change the reference to this.Actions instance,
                     // since it is tied to the state.
-                    var newSteps = new List<StepState>(change.Steps);
-                    newSteps.AddRange(this.Steps);
-                    this.Steps.Clear();
-                    this.Steps.AddRange(newSteps);
+                    var newActions = new List<ActionState>(change.Actions);
+                    newActions.AddRange(this.Actions);
+                    this.Actions.Clear();
+                    this.Actions.AddRange(newActions);
                     break;
 
-                case StepChangeTypes.InsertStepsBeforeTags:
+                case ActionChangeType.InsertActionsBeforeTags:
                     var inserted = false;
 
                     if (change.Tags != null && change.Tags.Any())
                     {
-                        // Walk list of steps to find point at which to insert new steps based off tags
-                        for (int i = 0; i < this.Steps.Count; i++)
+                        // Walk list of actions to find point at which to insert new actions based off tags
+                        for (int i = 0; i < this.Actions.Count; i++)
                         {
                             // Does the current step have one of the tags we are looking for?
-                            if (StepHasTags(this.Steps[i], change.Tags))
+                            if (ActionHasTags(this.Actions[i], change.Tags))
                             {
-                                // Insert steps before the current step
-                                // We have steps before and after the insertion point, and we want to insert the change
-                                // steps in the middle
-                                this.Steps.InsertRange(i, change.Steps);
+                                // Insert actions before the current step
+                                // We have actions before and after the insertion point, and we want to insert the change
+                                // actions in the middle
+                                this.Actions.InsertRange(i, change.Actions);
                                 inserted = true;
                                 break;
                             }
@@ -221,17 +221,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     }
 
                     // If we didn't find any of the tags we were looking for, then just
-                    // append the steps to the end of the current sequence
+                    // append the actions to the end of the current sequence
                     if (!inserted)
                     {
-                        this.Steps.AddRange(change.Steps);
+                        this.Actions.AddRange(change.Actions);
                     }
 
                     break;
 
-                case StepChangeTypes.AppendSteps:
-                case StepChangeTypes.ReplaceSequence:
-                    this.Steps.AddRange(change.Steps);
+                case ActionChangeType.AppendActions:
+                case ActionChangeType.ReplaceSequence:
+                    this.Actions.AddRange(change.Actions);
                     break;
             }
 
@@ -242,9 +242,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
         }
 
-        private bool StepHasTags(StepState step, List<string> tags)
+        private bool ActionHasTags(ActionState step, List<string> tags)
         {
-            var dialog = stepDialogs.Find(step.DialogId);
+            var dialog = actionDialogs.Find(step.DialogId);
             if (dialog != null && dialog.Tags != null)
             {
                 // True if the dialog contains any of the tags passed as parameters
@@ -274,8 +274,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
     {
         public const string RecognizedIntent = "recognizedIntent";
         public const string UnknownIntent = "unknownIntent";
-        public const string SequenceStarted = "stepsStarted";
-        public const string SequenceEnded = "stepsEnded";
+        public const string SequenceStarted = "actionsStarted";
+        public const string SequenceEnded = "actionsEnded";
     }
 
     public class AdaptiveDialogState
@@ -287,21 +287,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         [JsonProperty(PropertyName = "options")]
         public dynamic Options { get; set; }
 
-        [JsonProperty(PropertyName = "steps")]
-        public List<StepState> Steps { get; set; } = new List<StepState>();
+        [JsonProperty(PropertyName = "actions")]
+        public List<ActionState> Actions { get; set; } = new List<ActionState>();
 
         [JsonProperty(PropertyName = "result")]
         public object Result { get; set; }
     }
 
     [DebuggerDisplay("{DialogId}")]
-    public class StepState : DialogState
+    public class ActionState : DialogState
     {
-        public StepState()
+        public ActionState()
         {
         }
 
-        public StepState(string dialogId = null, object options = null)
+        public ActionState(string dialogId = null, object options = null)
         {
             DialogId = dialogId;
             Options = options;
@@ -314,23 +314,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         public object Options { get; set; }
     }
 
-    public enum StepChangeTypes
+    public enum ActionChangeType
     {
-        InsertSteps,
-        InsertStepsBeforeTags,
-        AppendSteps,
+        InsertActions,
+        InsertActionsBeforeTags,
+        AppendActions,
         EndSequence,
         ReplaceSequence,
     }
 
     [DebuggerDisplay("{ChangeType}:{Desire}")]
-    public class StepChangeList
+    public class ActionChangeList
     {
         [JsonProperty(PropertyName = "changeType")]
-        public StepChangeTypes ChangeType { get; set; } = StepChangeTypes.InsertSteps;
+        public ActionChangeType ChangeType { get; set; } = ActionChangeType.InsertActions;
 
-        [JsonProperty(PropertyName = "steps")]
-        public List<StepState> Steps { get; set; } = new List<StepState>();
+        [JsonProperty(PropertyName = "actions")]
+        public List<ActionState> Actions { get; set; } = new List<ActionState>();
 
         [JsonProperty(PropertyName = "tags")]
         public List<string> Tags { get; set; } = new List<string>();

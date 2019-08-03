@@ -2,14 +2,19 @@
     "$schema": "../../app.schema",
     "$type": "Microsoft.AdaptiveDialog",
     "generator": "ExternalLanguage.main.lg",
-    "steps": [
+    "events": [
         {
-            "$type": "Microsoft.SendActivity",
-            "activity": "I see great things in your future..."
-        },
-        {
-            "$type": "Microsoft.SendActivity",
-            "activity": "Potentially a successful demo"
+            "$type": "Microsoft.OnBeginDialog",
+            "actions": [
+                {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "I see great things in your future..."
+                },
+                {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "Potentially a successful demo"
+                }
+            ]
         }
     ]
 }
