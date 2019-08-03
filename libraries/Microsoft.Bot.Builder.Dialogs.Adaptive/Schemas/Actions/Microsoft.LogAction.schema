@@ -12,7 +12,6 @@
             "$ref": "./baseActionSchema.json"
         },
         {
-
             "properties": {
                 "text": {
                     "type": "string",

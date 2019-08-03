@@ -7,7 +7,7 @@
     "required": [
         "changeType",
         "arrayProperty"
-    ],    
+    ],
     "allOf": [
         {
             "$ref": "./baseActionSchema.json"

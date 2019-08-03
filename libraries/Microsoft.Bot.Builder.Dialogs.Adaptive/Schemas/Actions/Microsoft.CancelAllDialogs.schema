@@ -9,7 +9,6 @@
             "$ref": "./baseActionSchema.json"
         },
         {
-
             "properties": {
                 "eventName": {
                     "title": "Event Name",

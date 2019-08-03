@@ -13,7 +13,6 @@
             "$ref": "./baseActionSchema.json"
         },
         {
-
             "properties": {
                 "property": {
                     "$role": "expression",
