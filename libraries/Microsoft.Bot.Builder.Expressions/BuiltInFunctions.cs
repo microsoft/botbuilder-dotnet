@@ -1996,7 +1996,7 @@ namespace Microsoft.Bot.Builder.Expressions
                     {
                         result = ResolveValue(products.ElementAt(0)); ;
                     }
-                    else if (products.Count() >= 1)
+                    else if (products.Count() > 1)
                     {
                         var nodeList = new List<object>();
                         foreach (JToken item in products)
