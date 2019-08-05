@@ -5,6 +5,8 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema;
+using Microsoft.Bot.Builder.Adapters.WeChat.Schema.JsonResults;
+using Microsoft.Bot.Builder.Adapters.WeChat.Storage;
 using Microsoft.Bot.Builder.Adapters.WeChat.Tests.TestUtilities;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;

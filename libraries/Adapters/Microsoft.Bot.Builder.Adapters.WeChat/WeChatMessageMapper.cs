@@ -130,8 +130,8 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                     var geo = new GeoCoordinates
                     {
                         Name = locationRequest.Label,
-                        Latitude = locationRequest.Location_X,
-                        Longitude = locationRequest.Location_Y,
+                        Latitude = locationRequest.Latitude,
+                        Longitude = locationRequest.Longtitude,
                     };
                     messageActivity.Entities.Add(geo);
                 }
@@ -151,9 +151,8 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// Convert response message from Bot format to Wechat format.
         /// </summary>
         /// <param name="activity">message activity received from bot.</param>
-        /// <param name="secretInfo">SecretInfo contains token, AES key, etc.</param>
         /// <returns>WeChat message list.</returns>
-        public async Task<IList<IResponseMessageBase>> ToWeChatMessages(IActivity activity, SecretInfo secretInfo)
+        public async Task<IList<IResponseMessageBase>> ToWeChatMessages(IActivity activity)
         {
             try
             {
@@ -183,22 +182,22 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                             attachment.ContentType == "application/vnd.microsoft.card.adaptive")
                         {
                             var adaptiveCard = attachment.ContentAs<AdaptiveCard>();
-                            responseMessageList.AddRange(await ProcessAdaptiveCardAsync(messageActivity, adaptiveCard, attachment.Name, secretInfo).ConfigureAwait(false));
+                            responseMessageList.AddRange(await ProcessAdaptiveCardAsync(messageActivity, adaptiveCard, attachment.Name).ConfigureAwait(false));
                         }
                         else if (attachment.ContentType == AudioCard.ContentType)
                         {
                             var audioCard = attachment.ContentAs<AudioCard>();
-                            responseMessageList.AddRange(await ProcessAudioCardAsync(messageActivity, audioCard, secretInfo).ConfigureAwait(false));
+                            responseMessageList.AddRange(await ProcessAudioCardAsync(messageActivity, audioCard).ConfigureAwait(false));
                         }
                         else if (attachment.ContentType == AnimationCard.ContentType)
                         {
                             var animationCard = attachment.ContentAs<AnimationCard>();
-                            responseMessageList.AddRange(await ProcessAnimationCardAsync(messageActivity, animationCard, secretInfo).ConfigureAwait(false));
+                            responseMessageList.AddRange(await ProcessAnimationCardAsync(messageActivity, animationCard).ConfigureAwait(false));
                         }
                         else if (attachment.ContentType == HeroCard.ContentType)
                         {
                             var heroCard = attachment.ContentAs<HeroCard>();
-                            responseMessageList.AddRange(await ProcessHeroCardAsync(messageActivity, heroCard, secretInfo).ConfigureAwait(false));
+                            responseMessageList.AddRange(await ProcessHeroCardAsync(messageActivity, heroCard).ConfigureAwait(false));
                         }
                         else if (attachment.ContentType == ThumbnailCard.ContentType)
                         {
@@ -208,7 +207,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                         else if (attachment.ContentType == ReceiptCard.ContentType)
                         {
                             var receiptCard = attachment.ContentAs<ReceiptCard>();
-                            responseMessageList.AddRange(ProcessReceiptCardAsync(messageActivity, receiptCard));
+                            responseMessageList.AddRange(ProcessReceiptCard(messageActivity, receiptCard));
                         }
                         else if (attachment.ContentType == SigninCard.ContentType)
                         {
@@ -223,14 +222,14 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                         else if (attachment.ContentType == VideoCard.ContentType)
                         {
                             var videoCard = attachment.ContentAs<VideoCard>();
-                            responseMessageList.AddRange(await ProcessVideoCardAsync(messageActivity, videoCard, secretInfo).ConfigureAwait(false));
+                            responseMessageList.AddRange(await ProcessVideoCardAsync(messageActivity, videoCard).ConfigureAwait(false));
                         }
                         else if (attachment != null &&
                                     (!string.IsNullOrEmpty(attachment.ContentUrl) ||
                                      attachment.Content != null ||
                                      !string.IsNullOrEmpty(attachment.ThumbnailUrl)))
                         {
-                            responseMessageList.AddRange(await ProcessAttachmentAsync(messageActivity, attachment, secretInfo).ConfigureAwait(false));
+                            responseMessageList.AddRange(await ProcessAttachmentAsync(messageActivity, attachment).ConfigureAwait(false));
                         }
                         else
                         {
@@ -248,7 +247,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
             catch (Exception e)
             {
                 _logger.LogError(e, "Parse to wechat message failed");
-                throw e;
+                throw;
             }
         }
 
@@ -332,9 +331,8 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// </summary>
         /// <param name="activity">Message activity received from bot.</param>
         /// <param name="heroCard">Hero card instance.</param>
-        /// <param name="secretInfo">SecretInfo contains token, AES key, etc.</param>
         /// <returns>A new instance of News create by hero card.</returns>
-        public async Task<News> CreateNewsFromHeroCard(IMessageActivity activity, HeroCard heroCard, SecretInfo secretInfo)
+        public async Task<News> CreateNewsFromHeroCard(IMessageActivity activity, HeroCard heroCard)
         {
             // Add text
             var news = new News
@@ -359,7 +357,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 };
 
                 // MP news image is required and can not be a temporary media.
-                var mediaMessage = await AttachmentToWeChatMessageAsync(activity, surrogate, secretInfo).ConfigureAwait(false);
+                var mediaMessage = await AttachmentToWeChatMessageAsync(activity, surrogate).ConfigureAwait(false);
                 news.ThumbMediaId = (mediaMessage.FirstOrDefault() as ImageResponse).Image.MediaId;
                 news.ThumbUrl = image.Url;
             }
@@ -367,7 +365,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
             return news;
         }
 
-        public async Task<News> CreateNewsFromAdaptiveCard(IMessageActivity activity, AdaptiveCard card, string title, SecretInfo secretInfo)
+        public async Task<News> CreateNewsFromAdaptiveCard(IMessageActivity activity, AdaptiveCard card, string title)
         {
             try
             {
@@ -526,9 +524,8 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// </summary>
         /// <param name="activity">message activity from bot.</param>
         /// <param name="attachment">Current attachment.</param>
-        /// <param name="secretInfo">secretInfo from wechat.</param>
         /// <returns>List of response message to WeChat.</returns>
-        private async Task<IList<IResponseMessageBase>> AttachmentToWeChatMessageAsync(IMessageActivity activity, Attachment attachment, SecretInfo secretInfo)
+        private async Task<IList<IResponseMessageBase>> AttachmentToWeChatMessageAsync(IMessageActivity activity, Attachment attachment)
         {
             var responseList = new List<IResponseMessageBase>();
             attachment.Properties.TryGetValue("MediaId", StringComparison.InvariantCultureIgnoreCase, out var mediaId);
@@ -702,15 +699,14 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// </summary>
         /// <param name="activity">Message activity from bot.</param>
         /// <param name="adaptiveCard">Adaptive card instance need to be converted.</param>
-        /// <param name="secretInfo">SecretInfo from WeChat settings.</param>
         /// <returns>WeChat response message.</returns>
-        private async Task<IList<IResponseMessageBase>> ProcessAdaptiveCardAsync(IMessageActivity activity, AdaptiveCard adaptiveCard, string title, SecretInfo secretInfo)
+        private async Task<IList<IResponseMessageBase>> ProcessAdaptiveCardAsync(IMessageActivity activity, AdaptiveCard adaptiveCard, string title)
         {
             var messages = new List<IResponseMessageBase>();
 
             try
             {
-                var news = await CreateNewsFromAdaptiveCard(activity, adaptiveCard, title, secretInfo).ConfigureAwait(false);
+                var news = await CreateNewsFromAdaptiveCard(activity, adaptiveCard, title).ConfigureAwait(false);
                 var uploadResult = await _wechatClient.UploadPersistentNewsAsync(new News[] { news }).ConfigureAwait(false);
                 var mpnews = new MPNewsResponse(uploadResult.MediaId);
                 messages.Add(mpnews);
@@ -729,12 +725,11 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// </summary>
         /// <param name="activity">Message activity from bot.</param>
         /// <param name="heroCard">Hero card instance need to be converted.</param>
-        /// <param name="secretInfo">SecretInfo from WeChat settings.</param>
         /// <returns>WeChat response message.</returns>
-        private async Task<IList<IResponseMessageBase>> ProcessHeroCardAsync(IMessageActivity activity, HeroCard heroCard, SecretInfo secretInfo)
+        private async Task<IList<IResponseMessageBase>> ProcessHeroCardAsync(IMessageActivity activity, HeroCard heroCard)
         {
             var messages = new List<IResponseMessageBase>();
-            var news = await CreateNewsFromHeroCard(activity, heroCard, secretInfo).ConfigureAwait(false);
+            var news = await CreateNewsFromHeroCard(activity, heroCard).ConfigureAwait(false);
             var uploadResult = await _wechatClient.UploadTemporaryNewsAsync(new News[] { news }).ConfigureAwait(false);
             var mpnews = new MPNewsResponse(uploadResult.MediaId);
             messages.Add(mpnews);
@@ -785,7 +780,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
             return messages;
         }
 
-        private async Task<IList<IResponseMessageBase>> ProcessVideoCardAsync(IMessageActivity activity, VideoCard videoCard, SecretInfo secretInfo)
+        private async Task<IList<IResponseMessageBase>> ProcessVideoCardAsync(IMessageActivity activity, VideoCard videoCard)
         {
             var messages = new List<IResponseMessageBase>();
 
@@ -803,7 +798,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                     Name = videoCard.Title,
                     ContentUrl = videoCard.Media[0].Url,
                 };
-                var reponseList = await AttachmentToWeChatMessageAsync(activity, surrogate, secretInfo).ConfigureAwait(false);
+                var reponseList = await AttachmentToWeChatMessageAsync(activity, surrogate).ConfigureAwait(false);
                 if (reponseList.FirstOrDefault() is VideoResponse videoResponse)
                 {
                     video = new Video(videoResponse.Video.MediaId, videoCard.Title, body);
@@ -834,7 +829,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// Thumbnail image size limitation is not clear.
         /// </summary>
         /// <returns>List of response message to WeChat.</returns>
-        private async Task<IList<IResponseMessageBase>> ProcessAudioCardAsync(IMessageActivity activity, AudioCard audioCard, SecretInfo secretInfo)
+        private async Task<IList<IResponseMessageBase>> ProcessAudioCardAsync(IMessageActivity activity, AudioCard audioCard)
         {
             var messages = new List<IResponseMessageBase>();
 
@@ -857,7 +852,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                     ContentType = MediaTypes.Image,
                     Name = audioCard.Image.Alt,
                 };
-                var reponseList = await AttachmentToWeChatMessageAsync(activity, surrogate, secretInfo).ConfigureAwait(false);
+                var reponseList = await AttachmentToWeChatMessageAsync(activity, surrogate).ConfigureAwait(false);
                 if (reponseList.FirstOrDefault() is ImageResponse imageResponse)
                 {
                     music.ThumbMediaId = imageResponse.Image.MediaId;
@@ -884,7 +879,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
             return messages;
         }
 
-        private async Task<IList<IResponseMessageBase>> ProcessAnimationCardAsync(IMessageActivity activity, AnimationCard mediacard, SecretInfo secretInfo)
+        private async Task<IList<IResponseMessageBase>> ProcessAnimationCardAsync(IMessageActivity activity, AnimationCard mediacard)
         {
             var messages = new List<IResponseMessageBase>();
 
@@ -909,7 +904,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                     Name = mediacard.Image.Alt,
                 };
 
-                messages.AddRange(await AttachmentToWeChatMessageAsync(activity, surrogate, secretInfo).ConfigureAwait(false));
+                messages.AddRange(await AttachmentToWeChatMessageAsync(activity, surrogate).ConfigureAwait(false));
             }
 
             // Add mediaUrls
@@ -922,7 +917,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                     ContentType = MediaTypes.Gif,
                 };
 
-                messages.AddRange(await AttachmentToWeChatMessageAsync(activity, surrogate, secretInfo).ConfigureAwait(false));
+                messages.AddRange(await AttachmentToWeChatMessageAsync(activity, surrogate).ConfigureAwait(false));
             }
 
             messages.AddRange(GetChunkedMessages(activity, body));
@@ -934,7 +929,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// Downgrade ReceiptCard into text replies for low-fi channels.
         /// </summary>
         /// <returns>List of response message to WeChat.</returns>
-        private IList<IResponseMessageBase> ProcessReceiptCardAsync(
+        private IList<IResponseMessageBase> ProcessReceiptCard(
             IMessageActivity activity,
             ReceiptCard receiptCard)
         {
@@ -1023,11 +1018,11 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// <summary>
         /// Convert attachments to WeChat response message.
         /// </summary>
-        private async Task<List<IResponseMessageBase>> ProcessAttachmentAsync(IMessageActivity activity, Attachment attachment, SecretInfo secretInfo)
+        private async Task<List<IResponseMessageBase>> ProcessAttachmentAsync(IMessageActivity activity, Attachment attachment)
         {
             var messages = new List<IResponseMessageBase>();
 
-            messages.AddRange(await AttachmentToWeChatMessageAsync(activity, attachment, secretInfo).ConfigureAwait(false));
+            messages.AddRange(await AttachmentToWeChatMessageAsync(activity, attachment).ConfigureAwait(false));
 
             if (messages.Any())
             {

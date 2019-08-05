@@ -13,7 +13,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.TestBot
 {
     public class MainDialog : ComponentDialog
     {
-        protected readonly ILogger _logger;
+        private readonly ILogger _logger;
 
         public MainDialog(ILogger<MainDialog> logger)
             : base(nameof(MainDialog))

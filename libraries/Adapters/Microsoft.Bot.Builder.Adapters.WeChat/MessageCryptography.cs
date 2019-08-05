@@ -58,7 +58,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
 
             doc.LoadXml(postData);
             var root = doc.FirstChild ?? throw new ArgumentException("Invalid post data.", nameof(postData));
-            var encryptMessage = root["Encrypt"]?.InnerText ?? root["encrypt"]?.InnerText ?? throw new ArgumentException("Invalid post data, no encrypted field.", nameof(postData)); ;
+            var encryptMessage = root["Encrypt"]?.InnerText ?? root["encrypt"]?.InnerText ?? throw new ArgumentException("Invalid post data, no encrypted field.", nameof(postData));
 
             if (!VerificationHelper.VerifySignature(_msgSignature, _token, _timestamp, _nonce, encryptMessage))
             {

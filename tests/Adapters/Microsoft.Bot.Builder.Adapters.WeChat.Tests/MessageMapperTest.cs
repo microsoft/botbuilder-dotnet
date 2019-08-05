@@ -41,8 +41,8 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests
             var secretInfo = MockDataUtility.GetMockSecretInfo();
             foreach (var messageActivity in activityList)
             {
-                var wechatResponses = await wechatMessageMapper.ToWeChatMessages(messageActivity, secretInfo);
-                var wechatResponses2 = await wechatMessageMapper2.ToWeChatMessages(messageActivity, secretInfo);
+                var wechatResponses = await wechatMessageMapper.ToWeChatMessages(messageActivity);
+                var wechatResponses2 = await wechatMessageMapper2.ToWeChatMessages(messageActivity);
                 Assert.True(wechatResponses.Count > 0);
                 Assert.True(wechatResponses2.Count > 0);
             }
@@ -58,9 +58,8 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests
                 messageActivity.Attachments.Add(att);
             }
 
-            var secretInfo = MockDataUtility.GetMockSecretInfo();
-            var wechatResponses = await wechatMessageMapper.ToWeChatMessages(messageActivity, secretInfo);
-            var wechatResponses2 = await wechatMessageMapper2.ToWeChatMessages(messageActivity, secretInfo);
+            var wechatResponses = await wechatMessageMapper.ToWeChatMessages(messageActivity);
+            var wechatResponses2 = await wechatMessageMapper2.ToWeChatMessages(messageActivity);
             Assert.True(wechatResponses2.Count > 0);
             Assert.True(wechatResponses.Count > 0);
         }
@@ -69,10 +68,9 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests
         public async Task ToWeChatMessagesTest_EventActivity()
         {
             var activityList = MockDataUtility.GetMockEventActivityList();
-            var secretInfo = MockDataUtility.GetMockSecretInfo();
             foreach (var activity in activityList)
             {
-                var wechatResponses = await wechatMessageMapper.ToWeChatMessages(activity, secretInfo);
+                var wechatResponses = await wechatMessageMapper.ToWeChatMessages(activity);
 
                 // Assert.True(wechatResponses.Count > 0);
             }

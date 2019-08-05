@@ -4,7 +4,7 @@
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Bot.Builder.Adapters.WeChat.TaskExtensions;
+using Microsoft.Bot.Builder.Adapters.WeChat.Extensions;
 using Microsoft.Bot.Builder.Adapters.WeChat.Tests.TestUtilities;
 using Moq;
 using Newtonsoft.Json;

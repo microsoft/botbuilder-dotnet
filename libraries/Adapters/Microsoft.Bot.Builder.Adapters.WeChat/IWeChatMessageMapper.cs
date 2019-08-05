@@ -14,6 +14,6 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
     {
         Task<IActivity> ToConnectorMessage(IRequestMessageBase request);
 
-        Task<IList<IResponseMessageBase>> ToWeChatMessages(IActivity activity, SecretInfo secretInfo);
+        Task<IList<IResponseMessageBase>> ToWeChatMessages(IActivity activity);
     }
 }

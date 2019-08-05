@@ -3,6 +3,7 @@
 
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Bot.Builder.Adapters.WeChat.Helpers;
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Extensions.Configuration;
@@ -18,14 +19,14 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.TestBot
     {
         private readonly IBotFrameworkHttpAdapter _adapter;
         private readonly IBot _bot;
-        private readonly IWeChatHttpAdapter _weChatHttpAdapter;
+        private readonly IWeChatHttpAdapter _wechatHttpAdapter;
         private readonly string _token;
 
-        public BotController(IBotFrameworkHttpAdapter adapter, IBot bot, IWeChatHttpAdapter weChatAdapter, IConfiguration configuration)
+        public BotController(IBotFrameworkHttpAdapter adapter, IBot bot, IWeChatHttpAdapter wechatAdapter, IConfiguration configuration)
         {
             _adapter = adapter;
             _bot = bot;
-            _weChatHttpAdapter = weChatAdapter;
+            _wechatHttpAdapter = wechatAdapter;
             _token = configuration.GetSection("WeChatSetting").GetSection("Token").Value;
         }
 
@@ -42,7 +43,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.TestBot
         {
             // Delegate the processing of the HTTP POST to the adapter.
             // The adapter will invoke the bot.
-            await _weChatHttpAdapter.ProcessAsync(Request, Response, _bot, postModel, false);
+            await _wechatHttpAdapter.ProcessAsync(Request, Response, _bot, postModel, false);
         }
 
         // GET: api/messages
@@ -51,12 +52,12 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.TestBot
         {
             try
             {
-                VerificationHelper.Check(postModel.Signature, postModel.Timestamp, postModel.Nonce, _token);
+                VerificationHelper.Check(postModel.WebhookSignature, postModel.Timestamp, postModel.Nonce, _token);
                 return Content(echostr);
             }
             catch
             {
-                return Content("failed:" + postModel.Signature);
+                return Content("failed:" + postModel.WebhookSignature);
             }
         }
     }

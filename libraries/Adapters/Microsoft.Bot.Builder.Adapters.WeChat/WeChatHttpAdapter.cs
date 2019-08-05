@@ -88,11 +88,10 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// </summary>
         /// <param name="wechatRequest">Request message entity from wechat.</param>
         /// <param name="callback"> Bot callback handler.</param>
-        /// <param name="secretInfo">Secret info for verify the request.</param>
         /// <param name="passiveResponse">Marked the message whether it needs passive reply or not. </param>
         /// <param name="cancellationToken">Cancellation Token of this Task.</param>
         /// <returns>Response message entity.</returns>
-        public async Task<object> ProcessWeChatRequest(IRequestMessageBase wechatRequest, BotCallbackHandler callback, SecretInfo secretInfo, bool passiveResponse, CancellationToken cancellationToken)
+        public async Task<object> ProcessWeChatRequest(IRequestMessageBase wechatRequest, BotCallbackHandler callback, bool passiveResponse, CancellationToken cancellationToken)
         {
             var activity = await _wechatMessageMapper.ToConnectorMessage(wechatRequest).ConfigureAwait(false);
             BotAssert.ActivityNotNull(activity);
@@ -107,7 +106,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                     try
                     {
                         var activities = responses.ContainsKey(key) ? responses[key] : new List<Activity>();
-                        var response = await ProcessBotResponse(activities, secretInfo, wechatRequest.FromUserName, passiveResponse).ConfigureAwait(false);
+                        var response = await ProcessBotResponse(activities, wechatRequest.FromUserName, passiveResponse).ConfigureAwait(false);
                         return response;
                     }
                     catch (Exception e)
@@ -231,7 +230,6 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                         await ProcessWeChatRequest(
                                         wechatRequest,
                                         bot.OnTurnAsync,
-                                        secretInfo,
                                         passiveResponse,
                                         ct).ConfigureAwait(false);
                     });
@@ -241,7 +239,6 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                     var wechatResponse = await ProcessWeChatRequest(
                                 wechatRequest,
                                 bot.OnTurnAsync,
-                                secretInfo,
                                 passiveResponse,
                                 cancellationToken).ConfigureAwait(false);
                     httpResponse.StatusCode = (int)HttpStatusCode.OK;
@@ -291,11 +288,10 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// Get the respone from bot for the wechat request.
         /// </summary>
         /// <param name="activities">List of bot activities.</param>
-        /// <param name="secretInfo">Secret info for verify the request.</param>
         /// <param name="openId">User's open id from WeChat.</param>
         /// <param name="passiveResponse">If using passvice response mode, if set to true, user can only get one reply.</param>
         /// <returns>Bot response message.</returns>
-        private async Task<object> ProcessBotResponse(List<Activity> activities, SecretInfo secretInfo, string openId, bool passiveResponse = false)
+        private async Task<object> ProcessBotResponse(List<Activity> activities, string openId, bool passiveResponse = false)
         {
             object response = null;
             foreach (var activity in activities)
@@ -315,7 +311,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                     }
                     else
                     {
-                        var resposneList = await _wechatMessageMapper.ToWeChatMessages(activity, secretInfo).ConfigureAwait(false);
+                        var resposneList = await _wechatMessageMapper.ToWeChatMessages(activity).ConfigureAwait(false);
 
                         // Passive Response can only response one message per turn, retrun the last acitvity as the response.
                         if (passiveResponse)
