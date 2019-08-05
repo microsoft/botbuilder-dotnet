@@ -1,6 +1,9 @@
 ﻿// Copyright(c) Microsoft Corporation.All rights reserved.
 // Licensed under the MIT License.
 
+using System;
+using System.Collections.Generic;
+
 namespace Microsoft.Bot.Builder.Adapters.Twilio
 {
     /// <summary>
@@ -42,7 +45,13 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// Gets or sets the URL when there's media such as images, associated with the message.
         /// </summary>
         /// <value>URL of any media if present.</value>
-        public string MediaUrl { get; set; }
+        public List<Uri> MediaUrls { get; set; }
+
+        /// <summary>
+        /// Gets or sets the content type of the attached media.
+        /// </summary>
+        /// <value>The content type of the attached media.</value>
+        public List<string> MediaContentTypes { get; set; }
 
         /// <summary>
         /// Gets or sets the receiver's city.

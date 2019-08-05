@@ -203,9 +203,9 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         {
             var mediaUrls = new List<Uri>();
 
-            if ((activity.ChannelData as TwilioEvent)?.MediaUrl != null)
+            if ((activity.ChannelData as TwilioEvent)?.MediaUrls != null)
             {
-                mediaUrls.Add(new Uri(((TwilioEvent)activity.ChannelData).MediaUrl));
+                mediaUrls = ((TwilioEvent)activity.ChannelData).MediaUrls;
             }
 
             var messageOptions = new CreateMessageOptions(activity.Conversation.Id)
@@ -269,7 +269,27 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
                 Text = twilioEvent.Body,
                 ChannelData = twilioEvent,
                 Type = ActivityTypes.Message,
+                Attachments = GetMessageAttachments(twilioEvent),
             };
+        }
+
+        private List<Attachment> GetMessageAttachments(TwilioEvent message)
+        {
+            var attachments = new List<Attachment>();
+            if (int.TryParse(message.NumMedia, out var numMediaResult) && numMediaResult > 0)
+            {
+                for (var i = 0; i < numMediaResult; i++)
+                {
+                    var attachment = new Attachment()
+                    {
+                        ContentType = message.MediaContentTypes[i],
+                        ContentUrl = message.MediaUrls[i].AbsolutePath,
+                    };
+                    attachments.Add(attachment);
+                }
+            }
+
+            return attachments;
         }
     }
 }
