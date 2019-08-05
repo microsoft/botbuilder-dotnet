@@ -1,7 +1,7 @@
 {
   "luis_schema_version": "3.2.0",
   "versionId": "GeoPeople",
-  "name": "Contoso App",
+  "name": "Contoso App V3",
   "desc": "Default Intents for Azure Bot Service V2",
   "culture": "en-us",
   "tokenizerVersion": "1.0.0",
@@ -44,8 +44,8 @@
     {
       "name": "Name",
       "roles": [
-        "likee",
-        "liker"
+        "liker",
+        "likee"
       ]
     },
     {
@@ -89,7 +89,6 @@
         "email",
         "money",
         "number",
-        "ordinal",
         "percentage",
         "phonenumber",
         "temperature"
@@ -162,8 +161,8 @@
       "name": "Part",
       "regexPattern": "kb[0-9]+",
       "roles": [
-        "buy",
-        "sell"
+        "sell",
+        "buy"
       ]
     }
   ],
@@ -171,43 +170,43 @@
     {
       "name": "age",
       "roles": [
-        "begin",
-        "end"
+        "end",
+        "begin"
       ]
     },
     {
       "name": "datetimeV2",
       "roles": [
-        "arrive",
-        "leave"
+        "leave",
+        "arrive"
       ]
     },
     {
       "name": "dimension",
       "roles": [
-        "width",
-        "length"
+        "length",
+        "width"
       ]
     },
     {
       "name": "email",
       "roles": [
-        "receiver",
-        "sender"
+        "sender",
+        "receiver"
       ]
     },
     {
       "name": "geographyV2",
       "roles": [
-        "startloc",
-        "endloc"
+        "endloc",
+        "startloc"
       ]
     },
     {
       "name": "money",
       "roles": [
-        "min",
-        "max"
+        "max",
+        "min"
       ]
     },
     {
@@ -215,23 +214,17 @@
       "roles": []
     },
     {
-      "name": "ordinal",
-      "roles": [
-        "start"
-      ]
-    },
-    {
       "name": "ordinalV2",
       "roles": [
-        "startpos",
-        "endpos"
+        "endpos",
+        "startpos"
       ]
     },
     {
       "name": "percentage",
       "roles": [
-        "minimum",
-        "maximum"
+        "maximum",
+        "minimum"
       ]
     },
     {
@@ -244,15 +237,15 @@
     {
       "name": "phonenumber",
       "roles": [
-        "newPhone",
-        "old"
+        "old",
+        "newPhone"
       ]
     },
     {
       "name": "temperature",
       "roles": [
-        "b",
-        "a"
+        "a",
+        "b"
       ]
     },
     {
@@ -1100,10 +1093,16 @@
           "endPos": 19
         },
         {
-          "entity": "ordinalV2",
-          "role": "endpos",
-          "startPos": 24,
-          "endPos": 27
+          "entity": "geographyV2",
+          "role": "startloc",
+          "startPos": 34,
+          "endPos": 39
+        },
+        {
+          "entity": "geographyV2",
+          "role": "endloc",
+          "startPos": 44,
+          "endPos": 50
         },
         {
           "entity": "personName",
@@ -2055,14 +2054,7 @@
     {
       "text": "start with the first one",
       "intent": "Roles",
-      "entities": [
-        {
-          "entity": "ordinal",
-          "role": "start",
-          "startPos": 15,
-          "endPos": 19
-        }
-      ]
+      "entities": []
     },
     {
       "text": "stop",

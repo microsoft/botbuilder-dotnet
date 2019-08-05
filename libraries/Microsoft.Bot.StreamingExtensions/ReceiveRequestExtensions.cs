@@ -30,6 +30,18 @@ namespace Microsoft.Bot.StreamingExtensions
             try
             {
                 var contentStream = request.Streams.FirstOrDefault();
+
+                /* If the response had no body we have to return a compatible
+                 * but empty object to avoid throwing exceptions upstream anytime
+                 * an empty response is received.
+                 */
+                if (contentStream == null)
+                {
+#pragma warning disable IDE0034
+                    return default(T);
+#pragma warning restore IDE0034
+                }
+
                 using (var reader = new StreamReader(contentStream.Stream, Encoding.UTF8))
                 {
                     using (var jsonReader = new JsonTextReader(reader))
@@ -57,6 +69,12 @@ namespace Microsoft.Bot.StreamingExtensions
             try
             {
                 var contentStream = request.Streams.FirstOrDefault();
+
+                if (contentStream == null)
+                {
+                    return string.Empty;
+                }
+
                 using (var reader = new StreamReader(contentStream.Stream, Encoding.UTF8))
                 {
                     return reader.ReadToEnd();

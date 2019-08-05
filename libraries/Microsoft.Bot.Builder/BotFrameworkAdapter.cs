@@ -10,6 +10,7 @@ using System.Net.Http;
 using System.Security.Claims;
 using System.Security.Principal;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Integration;
