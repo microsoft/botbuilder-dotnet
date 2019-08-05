@@ -91,8 +91,8 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// <summary>
         /// Accept an incoming webhook httpRequest and convert it into a TurnContext which can be processed by the bot's logic.
         /// </summary>
-        /// <param name="httpRequest">A httpRequest object from Restify or Express.</param>
-        /// <param name="httpResponse">A httpResponse object from Restify or Express.</param>
+        /// <param name="httpRequest">A httpRequest object.</param>
+        /// <param name="httpResponse">A httpResponse object.</param>
         /// <param name="bot">A bot with logic function in the form `async(context) => { ... }`.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
@@ -246,7 +246,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// <summary>
         /// Processes a HTTP request into an Activity.
         /// </summary>
-        /// <param name="httpRequest">A httpRequest object from Restify or Express.</param>
+        /// <param name="httpRequest">A httpRequest object.</param>
         /// <returns>The Activity obtained from the httpRequest object.</returns>
         private Activity ReadRequest(HttpRequest httpRequest)
         {
