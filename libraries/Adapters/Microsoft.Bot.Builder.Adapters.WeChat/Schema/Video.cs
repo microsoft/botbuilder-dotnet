@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema
         public string MediaId { get; set; }
 
         [XmlElement(ElementName = "MediaId")]
-        public System.Xml.XmlCDataSection MediaIdCDATA
+        public System.Xml.XmlCDataSection MediaIdCData
         {
             get
             {
@@ -40,7 +40,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema
         public string Title { get; set; }
 
         [XmlElement(ElementName = "Title")]
-        public System.Xml.XmlCDataSection TitleCDATA
+        public System.Xml.XmlCDataSection TitleCData
         {
             get
             {
@@ -57,7 +57,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema
         public string Description { get; set; }
 
         [XmlElement(ElementName = "Description")]
-        public System.Xml.XmlCDataSection DescriptionCDATA
+        public System.Xml.XmlCDataSection DescriptionCData
         {
             get
             {

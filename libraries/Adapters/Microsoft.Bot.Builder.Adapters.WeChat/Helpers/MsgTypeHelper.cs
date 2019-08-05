@@ -2,10 +2,11 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Globalization;
 using System.Xml.Linq;
-using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Request;
+using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Requests;
 
-namespace Microsoft.Bot.Builder.Adapters.WeChat
+namespace Microsoft.Bot.Builder.Adapters.WeChat.Helpers
 {
     /// <summary>
     /// Message type helper.
@@ -21,7 +22,8 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         {
             if (requestMessageDocument == null || requestMessageDocument.Root == null || requestMessageDocument.Root.Element("MsgType") == null)
             {
-                return "Unknow";
+                // Enum ToString(IFormatProvider provider) is obsolete.
+                return RequestMessageType.Unknown.ToString();
             }
 
             return requestMessageDocument.Root.Element("MsgType").Value;

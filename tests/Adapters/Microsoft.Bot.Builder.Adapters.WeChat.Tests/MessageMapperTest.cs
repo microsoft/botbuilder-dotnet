@@ -3,8 +3,8 @@
 
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema;
-using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Request;
-using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Request.Event;
+using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Requests;
+using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Requests.Events;
 using Microsoft.Bot.Builder.Adapters.WeChat.Tests.TestUtilities;
 using Microsoft.Bot.Schema;
 using Xunit;

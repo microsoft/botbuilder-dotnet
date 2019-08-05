@@ -10,14 +10,14 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
     public interface IAttachmentHash
     {
         /// <summary>
-        /// Calcultes hash from byte array.
+        /// Calculate the hash of the byte array.
         /// </summary>
         /// <param name="bytes">The byte array need to be hashed.</param>
         /// <returns>The hash string.</returns>
         string Hash(byte[] bytes);
 
         /// <summary>
-        /// Calcultes hash from string.
+        /// Calculate the hash of the string content.
         /// </summary>
         /// <param name="content">The string content need to be hashed.</param>
         /// <returns>The hash string.</returns>

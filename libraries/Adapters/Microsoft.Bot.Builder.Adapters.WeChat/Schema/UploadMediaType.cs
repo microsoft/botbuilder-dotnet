@@ -3,7 +3,7 @@
 
 namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema
 {
-    public class UploadMediaType
+    public static class UploadMediaType
     {
         /// <summary>
         /// Image: 2M, support PNG/JEPG/JPG/GIF.

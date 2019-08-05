@@ -7,8 +7,8 @@ using System.Text;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Serialization;
-using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Request;
-using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Response;
+using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Requests;
+using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Responses;
 
 namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Helpers
 {

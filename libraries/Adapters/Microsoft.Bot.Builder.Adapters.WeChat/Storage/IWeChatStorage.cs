@@ -4,7 +4,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Microsoft.Bot.Builder.Adapters.WeChat
+namespace Microsoft.Bot.Builder.Adapters.WeChat.Storage
 {
     public interface IWeChatStorage<T>
     {

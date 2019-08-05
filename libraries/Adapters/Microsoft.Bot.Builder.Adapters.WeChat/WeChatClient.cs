@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -11,8 +12,9 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema;
-using Microsoft.Bot.Builder.Adapters.WeChat.Schema.JsonResult;
-using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Response;
+using Microsoft.Bot.Builder.Adapters.WeChat.Schema.JsonResults;
+using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Responses;
+using Microsoft.Bot.Builder.Adapters.WeChat.Storage;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -127,7 +129,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 var tokenResult = ConvertBytesToType<AccessTokenResult>(bytes);
                 token.ExpireTime = DateTimeOffset.UtcNow.AddSeconds(tokenResult.ExpireIn);
                 token.Token = tokenResult.Token;
-                await _tokenStorage.SaveAsync(_appId, token);
+                await _tokenStorage.SaveAsync(_appId, token).ConfigureAwait(false);
             }
 
             return token.Token;
@@ -709,7 +711,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 var ext = MapperUtils.GetMediaExtension(attachmentData.Name, attachmentData.Type, type);
 
                 // Border break
-                var boundary = "---------------" + DateTime.UtcNow.Ticks.ToString("x");
+                var boundary = "---------------" + DateTime.UtcNow.Ticks.ToString("x", CultureInfo.InvariantCulture);
                 var content = new MultipartFormDataContent(boundary);
                 content.Headers.Remove("Content-Type");
                 content.Headers.TryAddWithoutValidation("Content-Type", "multipart/form-data; boundary=" + boundary);
@@ -724,7 +726,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 // Additional form is required when upload a forever video.
                 if (isTemporaryMedia == false && type == UploadMediaType.Video)
                 {
-                    var additionalForm = string.Format("{{\"title\":\"{0}\", \"introduction\":\"introduction\"}}", attachmentData.Name);
+                    var additionalForm = string.Format("{{\"title\":\"{0}\", \"introduction\":\"introduction\"}}", attachmentData.Name, CultureInfo.InvariantCulture);
 
                     // Important! name must be "description"
                     content.Add(new StringContent(additionalForm), "\"" + "description" + "\"");

@@ -2,11 +2,12 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Globalization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using BotSchema = Microsoft.Bot.Schema;
 
-namespace Microsoft.Bot.Builder.Adapters.WeChat
+namespace Microsoft.Bot.Builder.Adapters.WeChat.Extensions
 {
     /// <summary>
     /// Attachment Extensions to easily convert attachment type to card, etc.
@@ -21,7 +22,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
             }
             else if (typeof(T).IsValueType)
             {
-                return (T)Convert.ChangeType(attachment.Content, typeof(T));
+                return (T)Convert.ChangeType(attachment.Content, typeof(T), CultureInfo.InvariantCulture);
             }
             else if (attachment.Content is T)
             {

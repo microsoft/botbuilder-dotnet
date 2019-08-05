@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
-using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Response;
+using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Responses;
 using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Adapters.WeChat.Extensions

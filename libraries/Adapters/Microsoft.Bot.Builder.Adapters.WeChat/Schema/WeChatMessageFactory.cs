@@ -2,18 +2,26 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Globalization;
 using System.Xml.Linq;
+using Microsoft.Bot.Builder.Adapters.WeChat.Helpers;
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Helpers;
-using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Request;
-using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Request.Event;
-using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Request.Event.Common;
-using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Response;
+using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Requests;
+using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Requests.Events;
+using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Requests.Events.Common;
+using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Responses;
 using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema
 {
-    public class WeChatMessageFactory
+    public static class WeChatMessageFactory
     {
+        /// <summary>
+        /// Parse XDcoument to WeChat request message.
+        /// </summary>
+        /// <param name="doc">The XDocument object need to be parsed.</param>
+        /// <param name="logger">The logger for WeChat adapter.</param>
+        /// <returns>WeChat request message.</returns>
         public static IRequestMessageBase GetRequestEntity(XDocument doc, ILogger logger)
         {
             IRequestMessageBase requestMessage = null;
@@ -150,7 +158,8 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema
             }
             catch (ArgumentException ex)
             {
-                logger.LogError(ex, string.Format("RequestMessage Error, MsgType may not exist, XML：{0}", doc.ToString()));
+                logger.LogError(ex, string.Format("RequestMessage Error, MsgType may not exist, XML：{0}", doc, CultureInfo.InvariantCulture));
+                throw;
             }
 
             return requestMessage;
@@ -159,40 +168,35 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema
         public static string ConvertResponseToXml(object entity)
         {
             var responseXmlString = string.Empty;
-            try
+
+            // Just let it throw when convert entity failed.
+            if (entity is IResponseMessageBase responseMessage)
             {
-                if (entity is IResponseMessageBase responseMessage)
+                switch (responseMessage.MsgType)
                 {
-                    switch (responseMessage.MsgType)
-                    {
-                        case ResponseMessageType.Text:
-                            responseXmlString = EntityHelper.ConvertEntityToXmlString<TextResponse>(responseMessage);
-                            break;
-                        case ResponseMessageType.Image:
-                            responseXmlString = EntityHelper.ConvertEntityToXmlString<ImageResponse>(responseMessage);
-                            break;
-                        case ResponseMessageType.Voice:
-                            responseXmlString = EntityHelper.ConvertEntityToXmlString<VoiceResponse>(responseMessage);
-                            break;
-                        case ResponseMessageType.Video:
-                            responseXmlString = EntityHelper.ConvertEntityToXmlString<VideoResponse>(responseMessage);
-                            break;
-                        case ResponseMessageType.Music:
-                            responseXmlString = EntityHelper.ConvertEntityToXmlString<MusicResponse>(responseMessage);
-                            break;
-                        case ResponseMessageType.News:
-                            responseXmlString = EntityHelper.ConvertEntityToXmlString<NewsResponse>(responseMessage);
-                            break;
-                    }
-                }
-                else
-                {
-                    responseXmlString = entity.ToString();
+                    case ResponseMessageType.Text:
+                        responseXmlString = EntityHelper.ConvertEntityToXmlString<TextResponse>(responseMessage);
+                        break;
+                    case ResponseMessageType.Image:
+                        responseXmlString = EntityHelper.ConvertEntityToXmlString<ImageResponse>(responseMessage);
+                        break;
+                    case ResponseMessageType.Voice:
+                        responseXmlString = EntityHelper.ConvertEntityToXmlString<VoiceResponse>(responseMessage);
+                        break;
+                    case ResponseMessageType.Video:
+                        responseXmlString = EntityHelper.ConvertEntityToXmlString<VideoResponse>(responseMessage);
+                        break;
+                    case ResponseMessageType.Music:
+                        responseXmlString = EntityHelper.ConvertEntityToXmlString<MusicResponse>(responseMessage);
+                        break;
+                    case ResponseMessageType.News:
+                        responseXmlString = EntityHelper.ConvertEntityToXmlString<NewsResponse>(responseMessage);
+                        break;
                 }
             }
-            catch (ArgumentException ex)
+            else
             {
-                throw new Exception(ex.Message + ex.InnerException.Message);
+                responseXmlString = entity.ToString();
             }
 
             return responseXmlString;

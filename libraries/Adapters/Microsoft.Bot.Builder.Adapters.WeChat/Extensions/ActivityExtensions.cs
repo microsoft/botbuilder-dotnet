@@ -3,7 +3,7 @@
 
 using System;
 using System.Globalization;
-using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Request;
+using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Requests;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
 

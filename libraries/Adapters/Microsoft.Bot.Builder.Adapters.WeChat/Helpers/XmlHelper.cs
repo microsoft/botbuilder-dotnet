@@ -5,7 +5,7 @@ using System.IO;
 using System.Xml;
 using System.Xml.Linq;
 
-namespace Microsoft.Bot.Builder.Adapters.WeChat
+namespace Microsoft.Bot.Builder.Adapters.WeChat.Helpers
 {
     public static class XmlHelper
     {

@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema
         public string Title { get; set; }
 
         [XmlElement(ElementName = "Title")]
-        public System.Xml.XmlCDataSection TitleCDATA
+        public System.Xml.XmlCDataSection TitleCData
         {
             get
             {
@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema
         public string Description { get; set; }
 
         [XmlElement(ElementName = "Description")]
-        public System.Xml.XmlCDataSection DescriptionCDATA
+        public System.Xml.XmlCDataSection DescriptionCData
         {
             get
             {
@@ -46,7 +46,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema
         public string Url { get; set; }
 
         [XmlElement(ElementName = "Url")]
-        public System.Xml.XmlCDataSection UrlCDATA
+        public System.Xml.XmlCDataSection UrlCData
         {
             get
             {
@@ -69,7 +69,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema
         public string PicUrl { get; set; }
 
         [XmlElement(ElementName = "PicUrl")]
-        public System.Xml.XmlCDataSection PicUrlCDATA
+        public System.Xml.XmlCDataSection PicUrlCData
         {
             get
             {

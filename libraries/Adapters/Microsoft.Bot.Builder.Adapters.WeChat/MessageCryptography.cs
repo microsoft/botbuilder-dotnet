@@ -7,6 +7,7 @@ using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 using System.Xml;
+using Microsoft.Bot.Builder.Adapters.WeChat.Helpers;
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema;
 
 namespace Microsoft.Bot.Builder.Adapters.WeChat
@@ -56,8 +57,8 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
             };
 
             doc.LoadXml(postData);
-            var root = doc.FirstChild ?? throw new ArgumentException("Invalid post data", nameof(postData));
-            var encryptMessage = root["Encrypt"].InnerText;
+            var root = doc.FirstChild ?? throw new ArgumentException("Invalid post data.", nameof(postData));
+            var encryptMessage = root["Encrypt"]?.InnerText ?? root["encrypt"]?.InnerText ?? throw new ArgumentException("Invalid post data, no encrypted field.", nameof(postData)); ;
 
             if (!VerificationHelper.VerifySignature(_msgSignature, _token, _timestamp, _nonce, encryptMessage))
             {
@@ -71,7 +72,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// Decrypt the message.
         /// </summary>
         /// <param name="encryptString">Encrypted string.</param>
-        /// <param name="encodingAesKey">Encoding AES key for descrypt message.</param>
+        /// <param name="encodingAesKey">Encoding AES key for decrypt message.</param>
         /// <param name="appId">The WeChat app id.</param>
         /// <returns>Decrypted string.</returns>
         private static string AesDecrypt(string encryptString, string encodingAesKey, string appId)

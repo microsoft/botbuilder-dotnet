@@ -2,10 +2,11 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Globalization;
 using System.Linq;
 using Microsoft.Bot.Schema;
 
-namespace Microsoft.Bot.Builder.Adapters.WeChat
+namespace Microsoft.Bot.Builder.Adapters.WeChat.Helpers
 {
     /// <summary>
     /// Helper methods for storing attachments in the channel.
@@ -29,8 +30,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// <returns>Ture or False.</returns>
         public static bool IsUrl(object content)
         {
-            Uri uriResult;
-            return Uri.TryCreate(content as string, UriKind.Absolute, out uriResult)
+            return Uri.TryCreate(content as string, UriKind.Absolute, out var uriResult)
                 && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
         }
 
@@ -44,7 +44,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
             }
 
             // string off header
-            var start = base64Encoded.IndexOf("base64,");
+            var start = base64Encoded.IndexOf("base64,", StringComparison.InvariantCulture);
             if (start >= 0)
             {
                 base64Encoded = base64Encoded.Substring(start + 7).Trim();
@@ -71,7 +71,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
             // ContentUrl may contain base64 encoded string of form: "data:[<MIME-type>][;charset=<encoding>][;base64],<data>"
             if (dataUrl?.TrimStart().StartsWith("data:", StringComparison.OrdinalIgnoreCase) == true)
             {
-                var start = dataUrl.IndexOf("data:") + 5;
+                var start = dataUrl.IndexOf("data:", StringComparison.InvariantCulture) + 5;
                 var end = dataUrl.IndexOfAny(";,".ToArray(), start);
                 if (end > start)
                 {

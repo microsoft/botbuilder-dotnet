@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema
         public string Title { get; set; }
 
         [XmlElement(ElementName = "Title")]
-        public System.Xml.XmlCDataSection TitleCDATA
+        public System.Xml.XmlCDataSection TitleCData
         {
             get
             {
@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema
         public string Description { get; set; }
 
         [XmlElement(ElementName = "Description")]
-        public System.Xml.XmlCDataSection DescriptionCDATA
+        public System.Xml.XmlCDataSection DescriptionCData
         {
             get
             {
@@ -46,7 +46,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema
         public string MusicUrl { get; set; }
 
         [XmlElement(ElementName = "MusicUrl")]
-        public System.Xml.XmlCDataSection MusicUrlCDATA
+        public System.Xml.XmlCDataSection MusicUrlCData
         {
             get
             {
@@ -63,7 +63,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema
         public string HQMusicUrl { get; set; }
 
         [XmlElement(ElementName = "HQMusicUrl")]
-        public System.Xml.XmlCDataSection HQMusicUrlCDATA
+        public System.Xml.XmlCDataSection HQMusicUrlCData
         {
             get
             {
@@ -80,7 +80,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema
         public string ThumbMediaId { get; set; }
 
         [XmlElement(ElementName = "ThumbMediaId")]
-        public System.Xml.XmlCDataSection ThumbMediaIdCDATA
+        public System.Xml.XmlCDataSection ThumbMediaIdCData
         {
             get
             {

@@ -4,9 +4,9 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Adapters.WeChat.Schema.JsonResult;
+using Microsoft.Bot.Builder.Adapters.WeChat.Schema.JsonResults;
 
-namespace Microsoft.Bot.Builder.Adapters.WeChat
+namespace Microsoft.Bot.Builder.Adapters.WeChat.Storage
 {
     public class WeChatAttachmentStorage : IWeChatStorage<WeChatJsonResult>
     {
@@ -30,13 +30,13 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
             {
                 { key, value },
             };
-            await _storage.WriteAsync(dict, cancellationToken);
+            await _storage.WriteAsync(dict, cancellationToken).ConfigureAwait(false);
         }
 
         public async Task<WeChatJsonResult> GetAsync(string key, CancellationToken cancellationToken = default(CancellationToken))
         {
             var keys = new string[] { key };
-            var result = await _storage.ReadAsync<WeChatJsonResult>(keys, cancellationToken);
+            var result = await _storage.ReadAsync<WeChatJsonResult>(keys, cancellationToken).ConfigureAwait(false);
             result.TryGetValue(key, out var wechatResult);
             return wechatResult;
         }
@@ -44,7 +44,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         public async Task DeleteAsync(string key, CancellationToken cancellationToken = default(CancellationToken))
         {
             var keys = new string[] { key };
-            await _storage.DeleteAsync(keys, cancellationToken);
+            await _storage.DeleteAsync(keys, cancellationToken).ConfigureAwait(false);
         }
     }
 }

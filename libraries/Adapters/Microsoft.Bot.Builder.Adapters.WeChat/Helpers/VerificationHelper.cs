@@ -2,12 +2,13 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Microsoft.Bot.Builder.Adapters.WeChat
+namespace Microsoft.Bot.Builder.Adapters.WeChat.Helpers
 {
-    public class VerificationHelper
+    public static class VerificationHelper
     {
         /// <summary>
         /// Check the uncrypt message's signature.
@@ -79,6 +80,9 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
             var arr = string.IsNullOrEmpty(encryptedMessage) ? new[] { token, timestamp, nonce } : new[] { token, timestamp, nonce, encryptedMessage };
             Array.Sort(arr, Compare);
             var raw = string.Join(string.Empty, arr);
+
+            // WeChat use SHA1 to generate signature.
+            // https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421135319
             using (var sha1 = SHA1.Create())
             {
                 var dataToHash = Encoding.ASCII.GetBytes(raw);
@@ -86,7 +90,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 var signtureBuilder = new StringBuilder();
                 foreach (var bytes in dataHashed)
                 {
-                    signtureBuilder.AppendFormat("{0:x2}", bytes);
+                    signtureBuilder.AppendFormat(CultureInfo.InvariantCulture, "{0:x2}", bytes);
                 }
 
                 return signtureBuilder.ToString();

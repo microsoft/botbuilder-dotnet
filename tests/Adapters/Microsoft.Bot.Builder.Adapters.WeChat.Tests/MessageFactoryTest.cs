@@ -2,9 +2,9 @@
 // Licensed under the MIT License.
 
 using System.Xml.Linq;
-using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Request;
-using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Request.Event;
-using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Request.Event.Common;
+using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Requests;
+using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Requests.Events;
+using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Requests.Events.Common;
 using Microsoft.Bot.Builder.Adapters.WeChat.Tests.TestUtilities;
 using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
@@ -84,8 +84,8 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests
                 Assert.Equal(RequestMessageType.Location, result.MsgType);
                 MessageBaseTest(result as RequestMessage);
                 var locationRequest = result as LocationRequest;
-                Assert.Equal(23.134521, locationRequest.Location_X);
-                Assert.Equal(113.358803, locationRequest.Location_Y);
+                Assert.Equal(23.134521, locationRequest.Latitude);
+                Assert.Equal(113.358803, locationRequest.Longtitude);
                 Assert.Equal(20, locationRequest.Scale);
                 Assert.Equal("LocationInfo", locationRequest.Label);
             }
@@ -237,11 +237,11 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests
                 var selectLocationEvent = result as SelectLocationEvent;
                 Assert.Equal(EventType.SelectLocation, selectLocationEvent.Event);
                 Assert.Equal("6", selectLocationEvent.EventKey);
-                Assert.Equal("23", selectLocationEvent.SendLocationInfo.Location_X);
-                Assert.Equal("113", selectLocationEvent.SendLocationInfo.Location_Y);
+                Assert.Equal("23", selectLocationEvent.SendLocationInfo.Latitude);
+                Assert.Equal("113", selectLocationEvent.SendLocationInfo.Longtitude);
                 Assert.Equal("15", selectLocationEvent.SendLocationInfo.Scale);
                 Assert.Equal("No.328 Xinghu Street", selectLocationEvent.SendLocationInfo.Label);
-                Assert.Equal("test", selectLocationEvent.SendLocationInfo.Poiname);
+                Assert.Equal("test", selectLocationEvent.SendLocationInfo.PoiName);
             }
 
             {

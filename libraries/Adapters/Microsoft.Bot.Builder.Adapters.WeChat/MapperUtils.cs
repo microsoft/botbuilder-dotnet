@@ -60,6 +60,13 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
             return text + WordBreak + newText;
         }
 
+        /// <summary>
+        /// Get media's extension.
+        /// </summary>
+        /// <param name="link">The original link of the media.</param>
+        /// <param name="mimeType">The media's mimeType.</param>
+        /// <param name="type">The media's fallback type.</param>
+        /// <returns>Media file extension.</returns>
         public static string GetMediaExtension(string link, string mimeType, string type)
         {
             var ext = MimeTypesMap.GetExtension(mimeType);
@@ -90,7 +97,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         }
 
         /// <summary>
-        /// Get Marded instance to help parse markdown text.
+        /// Get Marked instance to help parse markdown text.
         /// </summary>
         /// <returns>Marked instance.</returns>
         public static Marked GetMarked()
