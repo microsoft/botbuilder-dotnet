@@ -278,7 +278,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     new OnIntent(intent: "NameIntent",
                         actions:new List<IDialog>()
                         {
-                            new SendActivity("{turn.recognized.entities.name}"),
+                            new SendActivity("{turn.recognized.entities.name[0]}"),
                         }),
                 }
             };
