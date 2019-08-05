@@ -88,6 +88,16 @@ namespace Microsoft.Bot.Builder.Dialogs
             return this;
         }
 
+        /// <summary>
+        /// Creates a <see cref="DialogContext"/> which can be used to work with the dialogs in the
+        /// <see cref="DialogSet"/>.
+        /// </summary>
+        /// <param name="turnContext">Context for the current turn of conversation with the user.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        /// <remarks>If the task is successful, the result contains the created <see cref="DialogContext"/>.
+        /// </remarks>
         public async Task<DialogContext> CreateContextAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
         {
             BotAssert.ContextNotNull(turnContext);
