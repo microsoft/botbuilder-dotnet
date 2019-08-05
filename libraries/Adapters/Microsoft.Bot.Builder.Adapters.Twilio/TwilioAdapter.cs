@@ -5,12 +5,14 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 using Twilio;
+using Twilio.Exceptions;
 using Twilio.Rest.Api.V2010.Account;
 using Twilio.Security;
 
@@ -87,80 +89,43 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         }
 
         /// <summary>
-        /// Accept an incoming webhook request and convert it into a TurnContext which can be processed by the bot's logic.
+        /// Accept an incoming webhook httpRequest and convert it into a TurnContext which can be processed by the bot's logic.
         /// </summary>
-        /// <param name="request">A request object from Restify or Express.</param>
-        /// <param name="response">A response object from Restify or Express.</param>
+        /// <param name="httpRequest">A httpRequest object from Restify or Express.</param>
+        /// <param name="httpResponse">A httpResponse object from Restify or Express.</param>
         /// <param name="bot">A bot with logic function in the form `async(context) => { ... }`.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public async Task ProcessAsync(HttpRequest request, HttpResponse response, IBot bot, CancellationToken cancellationToken = default)
+        public async Task ProcessAsync(HttpRequest httpRequest, HttpResponse httpResponse, IBot bot, CancellationToken cancellationToken = default)
         {
-            var twilioSignature = request.Headers["x-twilio-signature"];
-
-            var validationUrl = _options.ValidationUrl ?? (request.Headers["x-forwarded-proto"][0] ?? request.Protocol + "://" + request.Host + request.Path);
-
-            var requestValidator = new RequestValidator(_options.AuthToken);
-
-            using (var bodyStream = new StreamReader(request.Body))
+            if (httpRequest == null)
             {
-                var payload = bodyStream.ReadToEnd();
+                throw new ArgumentNullException(nameof(httpRequest));
+            }
 
-                var formattedPayload = payload.Replace("+", "%20");
+            if (httpResponse == null)
+            {
+                throw new ArgumentNullException(nameof(httpResponse));
+            }
 
-                var body = QueryStringToDictionary(formattedPayload);
+            if (bot == null)
+            {
+                throw new ArgumentNullException(nameof(bot));
+            }
 
-                if (!string.IsNullOrWhiteSpace(twilioSignature) &&
-                    requestValidator.Validate(validationUrl, body, twilioSignature))
-                {
-                    var jsonBody = JsonConvert.SerializeObject(body);
+            var activity = ReadRequest(httpRequest);
 
-                    var twilioEvent = JsonConvert.DeserializeObject<TwilioEvent>(jsonBody);
+            // create a conversation reference
+            using (var context = new TurnContext(this, activity))
+            {
+                context.TurnState.Add("httpStatus", HttpStatusCode.OK.ToString("D"));
+                await RunPipelineAsync(context, bot.OnTurnAsync, cancellationToken).ConfigureAwait(false);
 
-                    if (int.TryParse(twilioEvent.NumMedia, out var numMediaResult) && numMediaResult > 0)
-                    {
-                        // specify a different event type
-                        twilioEvent.EventType = "picture_message";
-                    }
+                httpResponse.StatusCode = Convert.ToInt32(context.TurnState.Get<string>("httpStatus"));
+                httpResponse.ContentType = "text/plain";
+                var text = context.TurnState.Get<object>("httpBody") != null ? context.TurnState.Get<object>("httpBody").ToString() : string.Empty;
 
-                    var activity = new Activity()
-                    {
-                        Id = twilioEvent.MessageSid,
-                        Timestamp = new DateTime(),
-                        ChannelId = "twilio-sms",
-                        Conversation = new ConversationAccount()
-                        {
-                            Id = twilioEvent.From,
-                        },
-                        From = new ChannelAccount()
-                        {
-                            Id = twilioEvent.From,
-                        },
-                        Recipient = new ChannelAccount()
-                        {
-                            Id = twilioEvent.To,
-                        },
-                        Text = twilioEvent.Body,
-                        ChannelData = twilioEvent,
-                        Type = ActivityTypes.Message,
-                    };
-
-                    // create a conversation reference
-                    using (var context = new TurnContext(this, activity))
-                    {
-                        context.TurnState.Add("httpStatus", "200");
-
-                        await RunPipelineAsync(context, bot.OnTurnAsync, cancellationToken).ConfigureAwait(false);
-
-                        response.StatusCode = Convert.ToInt32(context.TurnState.Get<string>("httpStatus"));
-
-                        response.ContentType = "text/plain";
-
-                        var text = (context.TurnState.Get<object>("httpBody") != null) ? context.TurnState.Get<object>("httpBody").ToString() : string.Empty;
-
-                        await response.WriteAsync(text, cancellationToken).ConfigureAwait(false);
-                    }
-                }
+                await httpResponse.WriteAsync(text, cancellationToken).ConfigureAwait(false);
             }
         }
 
@@ -208,6 +173,28 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         }
 
         /// <summary>
+        /// Converts a query string to a dictionary with key-value pairs.
+        /// </summary>
+        /// <param name="query">The query string to convert.</param>
+        /// <returns>A dictionary with the query values.</returns>
+        private static Dictionary<string, string> QueryStringToDictionary(string query)
+        {
+            var pairs = query.Replace("+", "%20").Split('&');
+            var values = new Dictionary<string, string>();
+
+            foreach (var p in pairs)
+            {
+                var pair = p.Split('=');
+                var key = pair[0];
+                var value = Uri.UnescapeDataString(pair[1]);
+
+                values.Add(key, value);
+            }
+
+            return values;
+        }
+
+        /// <summary>
         /// Formats a BotBuilder activity into an outgoing Twilio SMS message.
         /// </summary>
         /// <param name="activity">A BotBuilder Activity object.</param>
@@ -233,25 +220,56 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         }
 
         /// <summary>
-        /// Converts a query string to a dictionary with key-value pairs.
+        /// Processes a HTTP request into an Activity
         /// </summary>
-        /// <param name="query">The query string to convert.</param>
-        /// <returns>A dictionary with the query values.</returns>
-        private Dictionary<string, string> QueryStringToDictionary(string query)
+        /// <param name="httpRequest">A httpRequest object from Restify or Express.</param>
+        /// <returns>The Activity obtained from the httpRequest object.</returns>
+        private Activity ReadRequest(HttpRequest httpRequest)
         {
-            var pairs = query.Split('&');
-            var values = new Dictionary<string, string>();
+            var twilioSignature = httpRequest.Headers["x-twilio-signature"];
+            var validationUrl = _options.ValidationUrl ?? (httpRequest.Headers["x-forwarded-proto"][0] ?? httpRequest.Protocol + "://" + httpRequest.Host + httpRequest.Path);
+            var requestValidator = new RequestValidator(_options.AuthToken);
+            Dictionary<string, string> body;
 
-            foreach (var p in pairs)
+            using (var bodyStream = new StreamReader(httpRequest.Body))
             {
-                var pair = p.Split('=');
-                var key = pair[0];
-                var value = Uri.UnescapeDataString(pair[1]);
-
-                values.Add(key, value);
+                body = QueryStringToDictionary(bodyStream.ReadToEnd());
             }
 
-            return values;
+            if (!requestValidator.Validate(validationUrl, body, twilioSignature))
+            {
+                throw new AuthenticationException("Request does not match provided signature");
+            }
+
+            var twilioEvent = JsonConvert.DeserializeObject<TwilioEvent>(JsonConvert.SerializeObject(body));
+
+            if (int.TryParse(twilioEvent.NumMedia, out var numMediaResult) && numMediaResult > 0)
+            {
+                // specify a different event type
+                twilioEvent.EventType = "picture_message";
+            }
+
+            return new Activity()
+            {
+                Id = twilioEvent.MessageSid,
+                Timestamp = new DateTime(),
+                ChannelId = "twilio-sms",
+                Conversation = new ConversationAccount()
+                {
+                    Id = twilioEvent.From,
+                },
+                From = new ChannelAccount()
+                {
+                    Id = twilioEvent.From,
+                },
+                Recipient = new ChannelAccount()
+                {
+                    Id = twilioEvent.To,
+                },
+                Text = twilioEvent.Body,
+                ChannelData = twilioEvent,
+                Type = ActivityTypes.Message,
+            };
         }
     }
 }
