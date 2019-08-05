@@ -1,0 +1,48 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
+    "$role": "unionType(Microsoft.IDialog)",
+    "title": "Foreach Action",
+    "description": "Action which executes actions per item in a collection.",
+    "type": "object",
+    "allOf": [
+        {
+            "$ref": "./baseActionSchema.json"
+        },
+        {
+            "properties": {
+                "listProperty": {
+                    "$role": "expression",
+                    "title": "ListProperty",
+                    "description": "Expression to evaluate.",
+                    "examples": [
+                        "user.todoList"
+                    ]
+                },
+                "actions": {
+                    "type": "array",
+                    "items": {
+                        "$type": "Microsoft.IDialog"
+                    },
+                    "title": "Actions",
+                    "description": "Actions to execute"
+                },
+                "indexProperty": {
+                    "$role": "expression",
+                    "title": "Index Property",
+                    "description": "The memory path which refers to the index of the item",
+                    "default": "dialog.index"
+                },
+                "valueProperty": {
+                    "$role": "expression",
+                    "title": "Value Property",
+                    "description": "The memory path which refers to the value of the item",
+                    "default": "dialog.value"
+                }
+            },
+            "required": [
+                "listProperty",
+                "actions"
+            ]
+        }
+    ]
+}

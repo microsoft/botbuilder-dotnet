@@ -1,0 +1,40 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
+    "$role": "unionType(Microsoft.IDialog)",
+    "title": "EditActions Action",
+    "description": "Edit current dialog with changeType and Actions",
+    "type": "object",
+    "required": [
+        "changeType",
+        "actions"
+    ],
+    "allOf": [
+        {
+            "$ref": "./baseActionSchema.json"
+        },
+        {
+            "properties": {
+                "changeType": {
+                    "type": "string",
+                    "title": "Change Type",
+                    "description": "The change type to apply to current dialog",
+                    "enum": [
+                        "InsertActions",
+                        "InsertActionsBeforeTags",
+                        "AppendActions",
+                        "EndSequence",
+                        "ReplaceSequence"
+                    ]
+                },
+                "actions": {
+                    "type": "array",
+                    "items": {
+                        "$type": "Microsoft.IDialog"
+                    },
+                    "title": "Actions",
+                    "description": "Actions to execute"
+                }
+            }
+        }
+    ]
+}

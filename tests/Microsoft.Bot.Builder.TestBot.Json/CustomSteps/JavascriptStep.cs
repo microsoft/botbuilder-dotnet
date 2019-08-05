@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.TestBot.Json
 {
-    public class JavascriptStep : DialogCommand
+    public class JavascriptAction : DialogAction
     {
         private ScriptEngine scriptEngine;
         private string script;
@@ -26,7 +26,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
         ///              return dialog.lastResult;
         ///          return null;
         /// Example file script.js:
-        /// function doStep(user, conversation, dialog, turn) {
+        /// function doAction(user, conversation, dialog, turn) {
         ///    if (user.age)
         ///        return user.age* 7;
         ///    return 0;
@@ -35,7 +35,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
         public string Script { get { return script; } set { LoadScript(value); } }
 
         [JsonConstructor]
-        public JavascriptStep([CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
+        public JavascriptAction([CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
             : base()
         {
             this.scriptEngine = new ScriptEngine();
@@ -56,7 +56,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
 
             // payload.property = (this.Property != null) ? dc.GetValue<object>(this.Property) : null;
             string payloadJson = JsonConvert.SerializeObject(payload);
-            var responseJson = scriptEngine.CallGlobalFunction<string>("callStep", payloadJson);
+            var responseJson = scriptEngine.CallGlobalFunction<string>("callAction", payloadJson);
 
             if (!String.IsNullOrEmpty(responseJson))
             {
@@ -72,7 +72,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
 
         protected override string OnComputeId()
         {
-            return $"{nameof(JavascriptStep)}({this.script.GetHashCode()})";
+            return $"{nameof(JavascriptAction)}({this.script.GetHashCode()})";
         }
 
         private void LoadScript(string value)
@@ -89,11 +89,11 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             // define the function
             StringBuilder sb = new StringBuilder();
             sb.AppendLine(script);
-            sb.AppendLine(@"function callStep(payloadJson) { 
+            sb.AppendLine(@"function callAction(payloadJson) { 
 	                var payload = JSON.parse(payloadJson);
 
                     // run script
-	                payload.result = doStep(payload.state.user, 
+	                payload.result = doAction(payload.state.user, 
                         payload.state.conversation, 
                         payload.state.dialog, 
                         payload.state.turn);

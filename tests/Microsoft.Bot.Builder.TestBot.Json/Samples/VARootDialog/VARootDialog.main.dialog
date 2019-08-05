@@ -12,32 +12,32 @@
         "CancelIntent":"(?i)cancel"
       }
     },
-  "rules": [
+  "events": [
     {
-      "$type": "Microsoft.IntentRule",
+      "$type": "Microsoft.OnIntent",
       "intent": "ToDoIntent",
-      "steps": [
+      "actions": [
         "ToDoBot.main"
       ]
     },
     {
-      "$type": "Microsoft.IntentRule",
+      "$type": "Microsoft.OnIntent",
       "intent": "EmailIntent",
-      "steps": [
+      "actions": [
         "EmailBot.main"
       ]
     },
     {
-      "$type": "Microsoft.IntentRule",
+      "$type": "Microsoft.OnIntent",
       "intent": "CalendarIntent",
-      "steps": [
+      "actions": [
         "CalendarBot.main"
       ]
     },
     {
-      "$type": "Microsoft.IntentRule",
+      "$type": "Microsoft.OnIntent",
       "intent": "HelpIntent",
-      "steps": [
+      "actions": [
         {
           "$type": "Microsoft.SendActivity",
           "activity": "[help]"
@@ -45,17 +45,17 @@
       ]
     },
     {
-      "$type": "Microsoft.IntentRule",
+      "$type": "Microsoft.OnIntent",
       "intent": "CancelIntent",
-      "steps": [
+      "actions": [
         {
           "$type": "Microsoft.EndDialog"
         }
       ]
     },
     {
-      "$type": "Microsoft.UnknownIntentRule",
-      "steps": [
+      "$type": "Microsoft.OnUnknownIntent",
+      "actions": [
         {
           "$type": "Microsoft.SendActivity",
           "activity": "Hi, I am VA bot, you can try show/send email, add/delete todos."

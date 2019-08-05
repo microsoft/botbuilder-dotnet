@@ -1,11 +1,16 @@
 {
   "$schema": "../../app.schema",
   "$type": "Microsoft.AdaptiveDialog",
-  "steps": [
+  "events": [
     {
-      "$type": "Microsoft.SetProperty",
-      "value": "user.showIndex + 1",
-      "property": "user.showIndex"
+      "$type": "Microsoft.OnBeginDialog",
+      "actions": [
+        {
+          "$type": "Microsoft.SetProperty",
+          "value": "user.showIndex + 1",
+          "property": "user.showIndex"
+        }
+      ]
     }
   ]
 }

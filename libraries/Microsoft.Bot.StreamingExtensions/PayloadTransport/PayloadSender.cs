@@ -15,7 +15,7 @@ namespace Microsoft.Bot.StreamingExtensions.PayloadTransport
     /// On Send: queues up sends and sends them along the transport.
     /// On Receive: receives a packet header and some bytes and dispatches it to the subscriber.
     /// </summary>
-    internal class PayloadSender : IPayloadSender
+    public class PayloadSender : IPayloadSender
     {
         private readonly SendQueue<SendPacket> _sendQueue;
         private readonly EventWaitHandle _connectedEvent = new EventWaitHandle(false, EventResetMode.ManualReset);

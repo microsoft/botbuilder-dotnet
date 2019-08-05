@@ -47,7 +47,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             return $"ConfirmInput[{BindingPath()}]";
         }
 
-        protected override Task<InputState> OnRecognizeInput(DialogContext dc, bool consultation)
+        protected override Task<InputState> OnRecognizeInput(DialogContext dc)
         {
             var input = dc.State.GetValue<object>(INPUT_PROPERTY);
             if (dc.Context.Activity.Type == ActivityTypes.Message)

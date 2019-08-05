@@ -29,9 +29,9 @@ namespace Microsoft.BotBuilderSamples
             AddDialog(new BookingDialog());
             var steps = new WaterfallStep[]
             {
-                IntroStepAsync,
-                ActStepAsync,
-                FinalStepAsync,
+                IntroActionAsync,
+                ActActionAsync,
+                FinalActionAsync,
             };
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), steps));
 
@@ -39,7 +39,7 @@ namespace Microsoft.BotBuilderSamples
             InitialDialogId = nameof(WaterfallDialog);
         }
 
-        private async Task<DialogTurnResult> IntroStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        private async Task<DialogTurnResult> IntroActionAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(_configuration["LuisAppId"]) || string.IsNullOrEmpty(_configuration["LuisAPIKey"]) || string.IsNullOrEmpty(_configuration["LuisAPIHostName"]))
             {
@@ -54,7 +54,7 @@ namespace Microsoft.BotBuilderSamples
             }
         }
 
-        private async Task<DialogTurnResult> ActStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        private async Task<DialogTurnResult> ActActionAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             // Call LUIS and gather any potential booking details. (Note the TurnContext has the response to the prompt.)
             var bookingDetails = stepContext.Result != null
@@ -70,7 +70,7 @@ namespace Microsoft.BotBuilderSamples
             return await stepContext.BeginDialogAsync(nameof(BookingDialog), bookingDetails, cancellationToken);
         }
 
-        private async Task<DialogTurnResult> FinalStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        private async Task<DialogTurnResult> FinalActionAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             // If the child dialog ("BookingDialog") was cancelled or the user failed to confirm, the Result here will be null.
             if (stepContext.Result != null)

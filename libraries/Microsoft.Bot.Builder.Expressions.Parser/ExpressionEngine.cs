@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
             { "#", $"turn.recognized.intents" },
             { "@", $"turn.recognized.entities" },
             { "@@", $"turn.recognized.entities" },
-            { "$", $"dialog" },
+            { "$", $"" },
             { "^", $"" },
             { "%", $"dialog.options" },
             { "~", $"dialog.instance" },
@@ -99,16 +99,16 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
                 {
                     var shorthandMark = shorthandAtom.GetText();
 
+                    var property = Expression.ConstantExpression(context.IDENTIFIER().GetText());
+
+                    if (shorthandMark == "$")
+                    {
+                        return MakeExpression(ExpressionType.CallstackScope, property);
+                    }
+
                     if (!ShorthandPrefixMap.ContainsKey(shorthandMark))
                     {
                         throw new Exception($"{shorthandMark} is not a shorthand");
-                    }
-
-                    var property = Expression.ConstantExpression(context.IDENTIFIER().GetText());
-
-                    if (shorthandMark == "^")
-                    {
-                        return MakeExpression(ExpressionType.Callstack, property);
                     }
 
                     var accessorExpression = this.Transform(AntlrParse(ShorthandPrefixMap[shorthandMark]));
@@ -162,14 +162,14 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
                 {
                     var shorthandMark = shorthandAtom.GetText();
 
+                    if (shorthandMark == "$")
+                    {
+                        return MakeExpression(ExpressionType.CallstackScope, property);
+                    }
+
                     if (!ShorthandPrefixMap.ContainsKey(shorthandMark))
                     {
                         throw new Exception($"{shorthandMark} is not a shorthand");
-                    }
-
-                    if (shorthandMark == "^")
-                    {
-                        return MakeExpression(ExpressionType.Callstack, property);
                     }
 
                     instance = this.Transform(AntlrParse(ShorthandPrefixMap[shorthandMark]));

@@ -1,6 +1,6 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "https://raw.githubusercontent.com/Microsoft/botbuilder-dotnet/4.Future/Schemas/component.schema",
+    "$id": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
     "title": "JSON Schema definition for dialog schemas.",
     "definitions": {
         "schemaArray": {
@@ -45,7 +45,7 @@
         },
         "role": {
             "title": "$role",
-            "description": "Defines the role played in the dialog schema [lg|expression|memoryPath|uniontype()].",
+            "description": "Defines the role played in the dialog schema [lg|expression|expression|uniontype()].",
             "type": "string",
             "pattern": "^((lg)|(expression)|(memoryPath)|(unionType)|(unionType\\([a-zA-Z][a-zA-Z0-9.]*\\)))$"
         },

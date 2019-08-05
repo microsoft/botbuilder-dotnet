@@ -1,37 +1,42 @@
 {
-  "$schema": "../../app.schema",
+  "$schema": "../../../../app.schema",
   "$type": "Microsoft.AdaptiveDialog",
-  "steps": [
+  "events": [
     {
-      "$type": "Microsoft.IfCondition",
-      "condition": "dialog.token == null",
-      "steps": [
+      "$type": "Microsoft.OnBeginDialog",
+      "actions": [
         {
-          "$type": "Microsoft.OAuthPrompt",
-          "ConnectionName": "msgraph",
-          "Title": "Log in",
-          "Text": "Please log in to your Microsoft account",
-          "Property": "dialog.token"
+          "$type": "Microsoft.IfCondition",
+          "condition": "dialog.token == null",
+          "actions": [
+            {
+              "$type": "Microsoft.OAuthPrompt",
+              "connectionName": "msgraph",
+              "title": "Log in",
+              "text": "Please log in to your Microsoft account",
+              "property": "dialog.token"
+            }
+          ]
+        },
+        {
+          "$type": "Microsoft.HttpRequest",
+          "url": "https://graph.microsoft.com/v1.0/me/contacts?$filter=startswith(displayName,'{user.email}')",
+          "method": "GET",
+          "headers": {
+            "Authorization": "Bearer {dialog.token.Token}"
+          },
+          "property": "dialog.getResponse"
+        },
+        {
+          "$type": "Microsoft.SendActivity",
+          "activity": "The contact you find is {dialog.getResponse.value[0].displayName}, email address is {dialog.getResponse.value[0].emailAddresses[0].address}."
+        },
+        {
+          "$type": "Microsoft.SetProperty",
+          "value": "dialog.getResponse.value[0].emailAddresses[0].address",
+          "property": "user.email"
         }
       ]
-    },
-    {
-      "$type": "Microsoft.HttpRequest",
-      "url": "https://graph.microsoft.com/v1.0/me/contacts?$filter=startswith(displayName,'{user.email}')",
-      "method": "GET",
-      "header": {
-        "Authorization": "Bearer {dialog.token.Token}"
-      },
-      "Property": "dialog.getResponse"
-    },
-    {
-      "$type": "Microsoft.SendActivity",
-      "activity": "The contact you find is {dialog.getResponse.value[0].displayName}, email address is {dialog.getResponse.value[0].emailAddresses[0].address}."
-    },
-    {
-      "$type": "Microsoft.SetProperty",
-      "value": "dialog.getResponse.value[0].emailAddresses[0].address",
-      "property": "user.email"
     }
   ]
 }

@@ -1,0 +1,23 @@
+{
+    "$schema": "../../app.schema",
+    "$type": "Microsoft.AdaptiveDialog",
+    "events": [
+        {
+            "$type": "Microsoft.OnBeginDialog",
+            "actions": [
+                {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "Action 1"
+                },
+                {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "Action 2"
+                },
+                {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "Action 3"
+                }
+            ]
+        }
+    ]
+}

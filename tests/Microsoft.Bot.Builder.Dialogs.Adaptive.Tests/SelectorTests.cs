@@ -2,9 +2,9 @@
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Rules;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Events;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Steps;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
     {
         public TestContext TestContext { get; set; }
 
-        private TestFlow CreateFlow(IRuleSelector selector)
+        private TestFlow CreateFlow(IEventSelector selector)
         {
             TypeFactory.Configuration = new ConfigurationBuilder().Build();
             var storage = new MemoryStorage();
@@ -45,16 +45,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     { "trigger", "trigger" }
                 }
             };
-            dialog.AddRules(new List<IRule>()
+            dialog.AddEvents(new List<IOnEvent>()
             {
-                new IntentRule("a", steps: new List<IDialog> { new SetProperty { Property = "user.a", Value = "1" } }),
-                new IntentRule("b", steps: new List<IDialog> { new SetProperty { Property = "user.b", Value = "1" } }),
-                new IntentRule("trigger", constraint: "user.a == 1", steps: new List<IDialog> { new SendActivity("ruleA1") }),
-                new IntentRule("trigger", constraint: "user.a == 1", steps: new List<IDialog> { new SendActivity("ruleA2") }),
-                new IntentRule("trigger", constraint: "user.b == 1 || user.c == 1", steps: new List<IDialog> { new SendActivity("ruleBorC") }),
-                new IntentRule("trigger", constraint: "user.a == 1 && user.b == 1", steps: new List<IDialog> { new SendActivity("ruleAandB") }),
-                new IntentRule("trigger", constraint: "user.a == 1 && user.c == 1", steps: new List<IDialog> { new SendActivity("ruleAandC") }),
-                new IntentRule("trigger", constraint: "", steps: new List<IDialog> { new SendActivity("default")})
+                new OnIntent("a", actions: new List<IDialog> { new SetProperty { Property = "user.a", Value = "1" } }),
+                new OnIntent("b", actions: new List<IDialog> { new SetProperty { Property = "user.b", Value = "1" } }),
+                new OnIntent("trigger", constraint: "user.a == 1", actions: new List<IDialog> { new SendActivity("ruleA1") }),
+                new OnIntent("trigger", constraint: "user.a == 1", actions: new List<IDialog> { new SendActivity("ruleA2") }),
+                new OnIntent("trigger", constraint: "user.b == 1 || user.c == 1", actions: new List<IDialog> { new SendActivity("ruleBorC") }),
+                new OnIntent("trigger", constraint: "user.a == 1 && user.b == 1", actions: new List<IDialog> { new SendActivity("ruleAandB") }),
+                new OnIntent("trigger", constraint: "user.a == 1 && user.c == 1", actions: new List<IDialog> { new SendActivity("ruleAandC") }),
+                new OnIntent("trigger", constraint: "", actions: new List<IDialog> { new SendActivity("default")})
             });
             dialog.AutoEndDialog = false;
 
