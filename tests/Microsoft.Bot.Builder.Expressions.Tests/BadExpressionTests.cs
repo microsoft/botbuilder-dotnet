@@ -359,9 +359,12 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("removeProperty(json('{\"key1\":\"value1\",\"key2\":\"value2\"}'), 1))"),// second param should be string
             Test("removeProperty(json('{\"key1\":\"value1\",\"key2\":\"value2\"}'), '1', '2'))"),// should have 2 parameters
             Test("coalesce()"), // should have at least 1 parameter
-            Test("xPath(invalidXml, ''sum(/produce/item/count)')"), //not valid xml
+            Test("xPath(invalidXml, ''sum(/produce/item/count)')"), // not a valid xml
             Test("xPath(xmlStr)"), // should have two params
             Test("xPath(xmlStr, 'getTotal')"), // invalid xpath query
+            Test("jPath(hello,'Manufacturers[0].Products[0].Price')"), // not a valid json
+            Test("jPath(hello,'Manufacturers[0]/Products[0]/Price')"), // not a valid path
+            Test("jPath(jsonStr,'$..Products[?(@.Price >= 100)].Name')"), // no matched node
            # endregion
 
             #region  Short Hand Expression
