@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.TestBot.Bots
     {
         protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
-            await turnContext.SendActivityAsync(MessageFactory.Text($"Echo: {turnContext.Activity.Text}"), cancellationToken);
+            await turnContext.SendActivityAsync(MessageFactory.Text($"Echo: {turnContext.Activity.Text}"), cancellationToken).ConfigureAwait(false);
         }
 
         protected override async Task OnMembersAddedAsync(IList<ChannelAccount> membersAdded, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.TestBot.Bots
             {
                 if (member.Id != turnContext.Activity.Recipient.Id)
                 {
-                    await turnContext.SendActivityAsync(MessageFactory.Text($"Hello and welcome!"), cancellationToken);
+                    await turnContext.SendActivityAsync(MessageFactory.Text($"Hello and welcome!"), cancellationToken).ConfigureAwait(false);
                 }
             }
         }

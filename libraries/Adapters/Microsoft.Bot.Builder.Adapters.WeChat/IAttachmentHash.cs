@@ -14,13 +14,13 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// </summary>
         /// <param name="bytes">The byte array need to be hashed.</param>
         /// <returns>The hash string.</returns>
-        string Hash(byte[] bytes);
+        string ComputeHash(byte[] bytes);
 
         /// <summary>
         /// Calculate the hash of the string content.
         /// </summary>
         /// <param name="content">The string content need to be hashed.</param>
         /// <returns>The hash string.</returns>
-        string Hash(string content);
+        string ComputeHash(string content);
     }
 }

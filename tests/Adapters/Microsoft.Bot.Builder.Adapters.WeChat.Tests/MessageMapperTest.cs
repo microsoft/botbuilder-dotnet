@@ -38,7 +38,6 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests
         public async Task ToWeChatMessagesTest_MessageActivity()
         {
             var activityList = MockDataUtility.GetMockMessageActivityList();
-            var secretInfo = MockDataUtility.GetMockSecretInfo();
             foreach (var messageActivity in activityList)
             {
                 var wechatResponses = await wechatMessageMapper.ToWeChatMessages(messageActivity);
@@ -71,27 +70,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests
             foreach (var activity in activityList)
             {
                 var wechatResponses = await wechatMessageMapper.ToWeChatMessages(activity);
-
-                // Assert.True(wechatResponses.Count > 0);
             }
-        }
-
-        [Fact]
-        public void MapperUtilsTest()
-        {
-            var testString = "test";
-            Assert.Equal(testString + "\r\n" + testString, testString.AddLine(testString));
-            Assert.Equal(testString + "  " + testString, testString.AddText(testString));
-            Assert.Equal(".png", MapperUtils.GetMediaExtension("http://test.jpg", "image/png", UploadMediaType.Image));
-            Assert.Equal(".jpg", MapperUtils.GetMediaExtension("http://test.jpg", "image", UploadMediaType.Image));
-            Assert.Equal(".mp3", MapperUtils.GetMediaExtension("http://test.mp3", "audio", UploadMediaType.Voice));
-            Assert.Equal(".amr", MapperUtils.GetMediaExtension("http://test.mp3", "audio/amr", UploadMediaType.Voice));
-            Assert.Equal(".mp4", MapperUtils.GetMediaExtension("http://test.mp4", "video", UploadMediaType.Video));
-            Assert.Equal(".ogv", MapperUtils.GetMediaExtension("http://test.jpg", "video/ogg", UploadMediaType.Video));
-            Assert.Equal(".png", MapperUtils.GetMediaExtension("http://test.jpg", "image/png", UploadMediaType.Thumb));
-            Assert.Equal(".jpg", MapperUtils.GetMediaExtension("http://test", "bin", UploadMediaType.Thumb));
-            Assert.Equal(".mp4", MapperUtils.GetMediaExtension("http://test", "bin", UploadMediaType.Video));
-            Assert.Equal(".mp3", MapperUtils.GetMediaExtension("http://test", "bin", UploadMediaType.Voice));
         }
 
         private void AssertGeneralParameters(IRequestMessageBase requestMessage, IActivity activity)
@@ -100,7 +79,6 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests
             Assert.Equal("Bot", activity.Recipient.Name);
             Assert.Equal(requestMessage.FromUserName, activity.From.Id);
             Assert.Equal("User", activity.From.Name);
-            var test = requestMessage as RequestMessage;
             if (requestMessage is RequestMessage message)
             {
                 Assert.Equal(message.MsgId.ToString(), activity.Id);

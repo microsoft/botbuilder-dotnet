@@ -51,7 +51,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
             _logger = logger ?? NullLogger.Instance;
             _attachmentStorage = attachmentStorage ?? WeChatAttachmentStorage.Instance;
             _tokenStorage = tokenStorage ?? AccessTokenStorage.Instance;
-            _attachmentHash = attachmentHash ?? new MD5Hash();
+            _attachmentHash = attachmentHash ?? new AttachmentHash();
         }
 
         /// <summary>
@@ -84,7 +84,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
             if (sendResult.ErrorCode != 0)
             {
                 var exception = new Exception($"{sendResult}");
-                _logger.LogError(exception, "Send Message To User Failed");
+                _logger.LogError(exception, "Send Message To User Failed.");
                 throw exception;
             }
 
@@ -145,7 +145,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// <returns>Result of upload Temporary media.</returns>
         public virtual async Task<UploadTemporaryMediaResult> UploadTemporaryMediaAsync(string type, AttachmentData attachmentData, int timeout = 30000)
         {
-            var mediaHash = _attachmentHash.Hash(attachmentData.OriginalBase64);
+            var mediaHash = _attachmentHash.ComputeHash(attachmentData.OriginalBase64);
             var uploadResult = (await _attachmentStorage.GetAsync(mediaHash).ConfigureAwait(false)) as UploadTemporaryMediaResult;
             if (uploadResult == null)
             {
@@ -176,7 +176,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// <returns>Result of upload persistent media.</returns>
         public virtual async Task<UploadPersistentMediaResult> UploadPersistentMediaAsync(string type, AttachmentData attachmentData, int timeout = 30000)
         {
-            var mediaHash = _attachmentHash.Hash(attachmentData.OriginalBase64);
+            var mediaHash = _attachmentHash.ComputeHash(attachmentData.OriginalBase64);
             var uploadResult = (await _attachmentStorage.GetAsync(mediaHash).ConfigureAwait(false)) as UploadPersistentMediaResult;
             if (uploadResult == null)
             {
@@ -206,7 +206,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// <returns>Result of upload a persistent news.</returns>
         public virtual async Task<UploadPersistentMediaResult> UploadPersistentNewsAsync(News[] newsList, int timeout = 30000)
         {
-            var mediaHash = _attachmentHash.Hash(JsonConvert.SerializeObject(newsList));
+            var mediaHash = _attachmentHash.ComputeHash(JsonConvert.SerializeObject(newsList));
             var uploadResult = (await _attachmentStorage.GetAsync(mediaHash).ConfigureAwait(false)) as UploadPersistentMediaResult;
             if (uploadResult == null)
             {
@@ -241,7 +241,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// <returns>Result of upload a temporary news.</returns>
         public virtual async Task<UploadTemporaryMediaResult> UploadTemporaryNewsAsync(News[] newsList, int timeout = 30000)
         {
-            var mediaHash = _attachmentHash.Hash(JsonConvert.SerializeObject(newsList));
+            var mediaHash = _attachmentHash.ComputeHash(JsonConvert.SerializeObject(newsList));
             var uploadResult = await _attachmentStorage.GetAsync(mediaHash).ConfigureAwait(false) as UploadTemporaryMediaResult;
             if (uploadResult == null || uploadResult.ExpiredTime <= DateTimeOffset.UtcNow.ToUnixTimeSeconds())
             {
@@ -717,7 +717,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                     mutipartDataContent.Headers.TryAddWithoutValidation("Content-Type", "multipart/form-data; boundary=" + boundary);
                     var contentByte = new ByteArrayContent(attachmentData.OriginalBase64);
                     contentByte.Headers.Remove("Content-Disposition");
-                    var ext = MapperUtils.GetMediaExtension(attachmentData.Name, attachmentData.Type, type);
+                    var ext = GetMediaExtension(attachmentData.Name, attachmentData.Type, type);
                     contentByte.Headers.TryAddWithoutValidation("Content-Disposition", $"form-data; name=\"media\";filename=\"{mediaHash + ext}\"" + string.Empty);
                     contentByte.Headers.Remove("Content-Type");
                     contentByte.Headers.TryAddWithoutValidation("Content-Type", attachmentData.Type);
@@ -749,6 +749,42 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                     throw;
                 }
             }
+        }
+
+        /// <summary>
+        /// Get media's extension.
+        /// </summary>
+        /// <param name="link">The original link of the media.</param>
+        /// <param name="mimeType">The media's mimeType.</param>
+        /// <param name="type">The media's fallback type.</param>
+        /// <returns>Media file extension.</returns>
+        private string GetMediaExtension(string link, string mimeType, string type)
+        {
+            var ext = MimeTypesMap.GetExtension(mimeType);
+            if (ext == MimeTypesMap.DefaultExtension)
+            {
+                mimeType = MimeTypesMap.GetMimeType(link);
+                ext = MimeTypesMap.GetExtension(mimeType);
+            }
+
+            if (ext == MimeTypesMap.DefaultExtension)
+            {
+                switch (type)
+                {
+                    case UploadMediaType.Image:
+                    case UploadMediaType.Thumb:
+                        ext = "jpg";
+                        break;
+                    case UploadMediaType.Video:
+                        ext = "mp4";
+                        break;
+                    case UploadMediaType.Voice:
+                        ext = "mp3";
+                        break;
+                }
+            }
+
+            return $".{ext}";
         }
     }
 }

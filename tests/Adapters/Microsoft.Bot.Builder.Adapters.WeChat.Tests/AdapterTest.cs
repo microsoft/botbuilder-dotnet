@@ -38,6 +38,8 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests
         private static Mock<HttpRequest> CreateMockRequest(object body)
         {
             var ms = new MemoryStream();
+
+            // Do not dispose writer.
             var sw = new StreamWriter(ms);
 
             var json = body as string ?? JsonConvert.SerializeObject(body);

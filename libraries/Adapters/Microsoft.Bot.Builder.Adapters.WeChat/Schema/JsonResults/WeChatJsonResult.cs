@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System.Globalization;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.JsonResults
@@ -25,6 +26,6 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.JsonResults
         [JsonProperty("errmsg")]
         public virtual string ErrorMessage { get; set; }
 
-        public override string ToString() => string.Format("WeChatJsonResult: {{ErrorCode:'{0}',ErrorMessage:'{1}'}}", ErrorCode, ErrorMessage);
+        public override string ToString() => string.Format("WeChatJsonResult: {{ErrorCode:'{0}', ErrorMessage:'{1}'}}", ErrorCode, ErrorMessage, CultureInfo.InvariantCulture);
     }
 }

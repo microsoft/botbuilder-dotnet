@@ -17,6 +17,7 @@ using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Responses;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.MarkedNet;
 
 namespace Microsoft.Bot.Builder.Adapters.WeChat
 {
@@ -43,6 +44,16 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// Default value for WeChat news message.
         /// </summary>
         private const string DefaultContentUrl = "https://dev.botframework.com";
+
+        /// <summary>
+        /// Default word break when join two word.
+        /// </summary>
+        private const string WordBreak = "  ";
+
+        /// <summary>
+        /// New line string.
+        /// </summary>
+        private const string NewLine = "\r\n";
 
         private readonly WeChatClient _wechatClient;
         private readonly ILogger _logger;
@@ -267,7 +278,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 var action = actions[i];
                 if (i > 0)
                 {
-                    text += MapperUtils.NewLine;
+                    text += NewLine;
                 }
 
                 // If a specific way of converting actions to string was specified, use it
@@ -637,7 +648,15 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
 
             if (activity.TextFormat == TextFormatTypes.Markdown)
             {
-                var marked = MapperUtils.GetMarked();
+                var marked = new Marked
+                {
+                    Options =
+                    {
+                        Sanitize = false,
+                        Mangle = false,
+                    },
+                };
+                marked.Options.Renderer = new TextMarkdownRenderer(marked.Options);
 
                 // Marked package will return additional new line in the end.
                 text = marked.Parse(text).Trim();
@@ -682,7 +701,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
 
                 if (chunkCount > 1)
                 {
-                    chunk += $"{MapperUtils.NewLine}({++chunkNum} of {chunkCount})";
+                    chunk += $"{NewLine}({++chunkNum} of {chunkCount})";
                 }
 
                 // Create chunked message and add to list of messages
@@ -756,7 +775,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
 
             // Add text
             var body = thumbnailCard.Subtitle;
-            body = body.AddLine(thumbnailCard.Text);
+            body = AddLine(body, thumbnailCard.Text);
             var article = new Article
             {
                 Title = thumbnailCard.Title,
@@ -785,7 +804,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
             var messages = new List<IResponseMessageBase>();
 
             var body = videoCard.Subtitle;
-            body = body.AddLine(videoCard.Text);
+            body = AddLine(body, videoCard.Text);
             Video video = null;
 
             // upload thumbnail image.
@@ -834,7 +853,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
             var messages = new List<IResponseMessageBase>();
 
             var body = audioCard.Subtitle;
-            body = body.AddLine(audioCard.Text);
+            body = AddLine(body, audioCard.Text);
             var music = new Music
             {
                 Title = audioCard.Title,
@@ -872,7 +891,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
             if (audioCard.Buttons != null && audioCard.Buttons.Count > 0)
             {
                 var buttonString = string.Empty;
-                buttonString = ButtonsToText(audioCard.Buttons.ToArray());
+                buttonString = ButtonsToText(audioCard.Buttons);
                 messages.AddRange(GetChunkedMessages(activity, buttonString));
             }
 
@@ -885,13 +904,13 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
 
             // Generate body
             var body = mediacard.Title;
-            body = body.AddLine(mediacard.Subtitle);
-            body = body.AddLine(mediacard.Text);
+            body = AddLine(body, mediacard.Subtitle);
+            body = AddLine(body, mediacard.Text);
 
             // Add buttons
             if (mediacard.Buttons != null && mediacard.Buttons.Count > 0)
             {
-                body = body.AddLine(ButtonsToText(mediacard.Buttons.ToArray()));
+                body = AddLine(body, ButtonsToText(mediacard.Buttons));
             }
 
             // Add image
@@ -939,7 +958,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
             var body = receiptCard.Title;
             foreach (var fact in receiptCard.Facts ?? new Fact[] { })
             {
-                body = body.AddLine($"{fact.Key}:  {fact.Value}");
+                body = AddLine(body, $"{fact.Key}:  {fact.Value}");
             }
 
             messages.AddRange(GetChunkedMessages(activity, body));
@@ -950,12 +969,17 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
             {
                 if (item.Image != null)
                 {
-                    body = item.Title.AddText(item.Price).AddLine(item.Subtitle).AddLine(item.Text);
+                    body = AddText(item.Title, item.Price);
+                    body = AddLine(body, item.Subtitle);
+                    body = AddLine(body, item.Text);
                     messages.AddRange(GetChunkedMessages(activity, body));
                 }
                 else
                 {
-                    textbody = textbody.AddLine(item.Title).AddText(item.Price).AddLine(item.Subtitle).AddLine(item.Text);
+                    textbody = AddLine(textbody, item.Title);
+                    textbody = AddText(textbody, item.Price);
+                    textbody = AddLine(textbody, item.Subtitle);
+                    textbody = AddLine(textbody, item.Text);
                 }
             }
 
@@ -964,12 +988,12 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
 
             // Add totals
             body = $"Tax:  {receiptCard.Tax}";
-            body = body.AddLine($"Total:  {receiptCard.Total}");
+            body = AddLine(body, $"Total:  {receiptCard.Total}");
 
             // Add buttons
             if (receiptCard.Buttons != null && receiptCard.Buttons.Count > 0)
             {
-                body = body.AddLine(ButtonsToText(receiptCard.Buttons));
+                body = AddLine(body, ButtonsToText(receiptCard.Buttons));
             }
 
             messages.AddRange(GetChunkedMessages(activity, body));
@@ -1030,6 +1054,48 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
             }
 
             return messages;
+        }
+
+        /// <summary>
+        /// Add new line and append new text.
+        /// </summary>
+        /// <param name="text">The origin text.</param>
+        /// <param name="newText">Text need to be attached.</param>
+        /// <returns>Combined new text string.</returns>
+        private string AddLine(string text, string newText)
+        {
+            if (string.IsNullOrEmpty(newText))
+            {
+                return text;
+            }
+
+            if (string.IsNullOrEmpty(text))
+            {
+                return newText;
+            }
+
+            return text + NewLine + newText;
+        }
+
+        /// <summary>
+        /// Add text break and append the new text.
+        /// </summary>
+        /// <param name="text">The origin text.</param>
+        /// <param name="newText">Text need to be attached.</param>
+        /// <returns>Combined new text string.</returns>
+        private string AddText(string text, string newText)
+        {
+            if (string.IsNullOrEmpty(newText))
+            {
+                return text;
+            }
+
+            if (string.IsNullOrEmpty(text))
+            {
+                return newText;
+            }
+
+            return text + WordBreak + newText;
         }
     }
 }
