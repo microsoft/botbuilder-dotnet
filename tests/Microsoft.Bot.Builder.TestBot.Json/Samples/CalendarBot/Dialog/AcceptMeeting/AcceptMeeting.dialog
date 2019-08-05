@@ -1,79 +1,83 @@
 {
   "$schema": "../../../../app.schema",
   "$type": "Microsoft.AdaptiveDialog",
-  "steps": [
+  "events": [
     {
-      "$type": "Microsoft.IfCondition",
-      "condition": "user.focusedMeeting == null",
-      "steps": [
-        "GetDisplayMeetings",
-        {
-          "$type": "Microsoft.SendActivity",
-          "activity": "[ShowMeetingList(user)]"
-        },
-        {
-          "$type": "Microsoft.TextInput",
-          "prompt": "OK, please choose a meeting to accept, you can choose meeting by 1, 2, 3...",
-          "property": "dialog.choice"
-        },
+      "$type": "Microsoft.OnBeginDialog",
+      "actions": [
         {
           "$type": "Microsoft.IfCondition",
-          "condition": "dialog.choice == '1'",
-          "steps": [
+          "condition": "user.focusedMeeting == null",
+          "actions": [
+            "GetDisplayMeetings",
             {
-              "$type": "Microsoft.SetProperty",
-              "property": "user.focusedMeeting",
-              "value": "user.meetings[0]"
+              "$type": "Microsoft.SendActivity",
+              "activity": "[ShowMeetingList(user)]"
+            },
+            {
+              "$type": "Microsoft.TextInput",
+              "prompt": "OK, please choose a meeting to accept, you can choose meeting by 1, 2, 3...",
+              "property": "dialog.choice"
+            },
+            {
+              "$type": "Microsoft.IfCondition",
+              "condition": "dialog.choice == '1'",
+              "actions": [
+                {
+                  "$type": "Microsoft.SetProperty",
+                  "property": "user.focusedMeeting",
+                  "value": "user.meetings[0]"
+                }
+              ]
+            },
+            {
+              "$type": "Microsoft.IfCondition",
+              "condition": "dialog.choice == '2'",
+              "actions": [
+                {
+                  "$type": "Microsoft.SetProperty",
+                  "property": "user.focusedMeeting",
+                  "value": "user.meetings[1]"
+                }
+              ]
+            },
+            {
+              "$type": "Microsoft.IfCondition",
+              "condition": "dialog.choice == '3'",
+              "actions": [
+                {
+                  "$type": "Microsoft.SetProperty",
+                  "property": "user.focusedMeeting",
+                  "value": "user.meetings[2]"
+                }
+              ]
             }
           ]
         },
         {
-          "$type": "Microsoft.IfCondition",
-          "condition": "dialog.choice == '2'",
-          "steps": [
-            {
-              "$type": "Microsoft.SetProperty",
-              "property": "user.focusedMeeting",
-              "value": "user.meetings[1]"
-            }
-          ]
+          "$type": "Microsoft.ConfirmInput",
+          "property": "dialog.confirmed",
+          "prompt": "Are you sure to accept this meeting?",
+          "retryPrompt": "Please try again.",
+          "invalidPrompt": "Please input yes/no.",
+          "alwaysPrompt": true
         },
         {
           "$type": "Microsoft.IfCondition",
-          "condition": "dialog.choice == '3'",
-          "steps": [
+          "condition": "dialog.confirmed",
+          "actions": [
+            "AcceptMeetingService",
             {
-              "$type": "Microsoft.SetProperty",
-              "property": "user.focusedMeeting",
-              "value": "user.meetings[2]"
+              "$type": "Microsoft.SendActivity",
+              "activity": "The meeting has been accepted."
+            }
+          ],
+          "elseActions": [
+            {
+              "$type": "Microsoft.SendActivity",
+              "activity": "OK, let's do it next time."
             }
           ]
-        }
-      ]
-    },
-
-    {
-      "$type": "Microsoft.ConfirmInput",
-      "property": "dialog.confirmed",
-      "prompt": "Are you sure to accept this meeting?",
-      "retryPrompt": "Please try again.",
-      "invalidPrompt": "Please input yes/no.",
-      "alwaysPrompt": true
-    },
-    {
-      "$type": "Microsoft.IfCondition",
-      "condition": "dialog.confirmed",
-      "steps": [
-        "AcceptMeetingService",
-        {
-          "$type": "Microsoft.SendActivity",
-          "activity": "The meeting has been accepted."
-        }
-      ],
-      "elseSteps": [
-        {
-          "$type": "Microsoft.SendActivity",
-          "activity": "OK, let's do it next time."
         }
       ]
     }

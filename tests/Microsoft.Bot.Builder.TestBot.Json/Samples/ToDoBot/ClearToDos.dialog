@@ -2,26 +2,32 @@
     "$schema": "../../app.schema",
     "$type": "Microsoft.AdaptiveDialog",
     "generator": "todo.lg",
-    "steps": [
+    "events": [
         {
-            "$type": "Microsoft.EditArray",
-            "changeType": "Clear",
-            "arrayProperty": "user.todos",
-            "resultProperty": "dialog.cleared"
-        },
-        {
-            "$type": "Microsoft.IfCondition",
-            "condition": "dialog.cleared",
-            "steps": [
+            "$type": "Microsoft.OnBeginDialog",
+
+            "actions": [
                 {
-                    "$type": "Microsoft.SendActivity",
-                    "activity": "Successfully cleared items in the Todo List."
-                }
-            ],
-            "elseSteps": [
+                    "$type": "Microsoft.EditArray",
+                    "changeType": "Clear",
+                    "arrayProperty": "user.todos",
+                    "resultProperty": "dialog.cleared"
+                },
                 {
-                    "$type": "Microsoft.SendActivity",
-                    "activity": "You don't have any item in the Todo List."
+                    "$type": "Microsoft.IfCondition",
+                    "condition": "dialog.cleared",
+                    "actions": [
+                        {
+                            "$type": "Microsoft.SendActivity",
+                            "activity": "Successfully cleared items in the Todo List."
+                        }
+                    ],
+                    "elseActions": [
+                        {
+                            "$type": "Microsoft.SendActivity",
+                            "activity": "You don't have any item in the Todo List."
+                        }
+                    ]
                 }
             ]
         }

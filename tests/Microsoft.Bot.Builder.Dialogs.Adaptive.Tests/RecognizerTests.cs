@@ -4,12 +4,13 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Events;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Rules;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Steps;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
+using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -29,6 +30,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .Send("cheerio") // should not recognize as this is in the en-gb recognizer
                     .AssertReply("default rule")
                 .Send("bye") 
+                    .AssertReply("goodbye intent")
+                .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task Test_EnUsFallback_ActivityLocaleCasing()
+        {
+            await CreateFlow("en-us")
+                .Send(new Activity() { Type = ActivityTypes.Message, Text = "howdy", Locale = "en-US" })
+                    .AssertReply("greeting intent")
+                .Send("cheerio") // should not recognize as this is in the en-gb recognizer
+                    .AssertReply("default rule")
+                .Send("bye")
                     .AssertReply("goodbye intent")
                 .StartTestAsync();
         }
@@ -91,19 +105,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             var dialog = new AdaptiveDialog();
             dialog.Recognizer = GetMultiLingualRecognizer();
-            dialog.AddRules(new List<IRule>()
+            dialog.AddEvents(new List<IOnEvent>()
             {
-                new IntentRule("Greeting", steps:
+                new OnIntent("Greeting", actions:
                     new List<IDialog>()
                     {
                         new SendActivity("greeting intent"),
                     }),
-                new IntentRule("Goodbye", steps:
+                new OnIntent("Goodbye", actions:
                     new List<IDialog>()
                     {
                         new SendActivity("goodbye intent"),
                     }),
-                new UnknownIntentRule(steps:
+                new OnUnknownIntent(actions:
                     new List<IDialog>()
                     {
                         new SendActivity("default rule"),

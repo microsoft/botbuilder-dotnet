@@ -25,6 +25,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         public TextInput([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
             this.RegisterSourceLocation(callerPath, callerLine);
+            this.AllowInterruptions = AllowInterruptions.Always;
         }
 
         protected override string OnComputeId()
@@ -32,13 +33,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             return $"TextInput[{BindingPath()}]";
         }
 
-        protected override Task<InputState> OnRecognizeInput(DialogContext dc, bool consultation)
+        protected override Task<InputState> OnRecognizeInput(DialogContext dc)
         {
-            if (consultation)
-            {
-                return Task.FromResult(InputState.Unrecognized);
-            }
-
             var input = dc.State.GetValue<string>(INPUT_PROPERTY);
 
             switch (this.OutputFormat)

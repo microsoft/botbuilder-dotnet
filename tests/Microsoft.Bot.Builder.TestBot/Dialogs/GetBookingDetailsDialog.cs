@@ -18,10 +18,10 @@ namespace Microsoft.BotBuilderSamples
             AddDialog(new DateResolverDialog());
             var steps = new WaterfallStep[]
             {
-                DestinationStepAsync,
-                OriginStepAsync,
-                TravelDateStepAsync,
-                FinalStepAsync,
+                DestinationActionAsync,
+                OriginActionAsync,
+                TravelDateActionAsync,
+                FinalActionAsync,
             };
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), steps));
 
@@ -35,7 +35,7 @@ namespace Microsoft.BotBuilderSamples
             return !timexProperty.Types.Contains(Constants.TimexTypes.Definite);
         }
 
-        private async Task<DialogTurnResult> DestinationStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        private async Task<DialogTurnResult> DestinationActionAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var bookingDetails = (BookingDetails)stepContext.Options ?? new BookingDetails();
 
@@ -47,7 +47,7 @@ namespace Microsoft.BotBuilderSamples
             return await stepContext.NextAsync(bookingDetails.Destination, cancellationToken);
         }
 
-        private async Task<DialogTurnResult> OriginStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        private async Task<DialogTurnResult> OriginActionAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var bookingDetails = (BookingDetails)stepContext.Options;
             bookingDetails.Destination = (string)stepContext.Result;
@@ -60,7 +60,7 @@ namespace Microsoft.BotBuilderSamples
             return await stepContext.NextAsync(bookingDetails.Origin, cancellationToken);
         }
 
-        private async Task<DialogTurnResult> TravelDateStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        private async Task<DialogTurnResult> TravelDateActionAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var bookingDetails = (BookingDetails)stepContext.Options;
             bookingDetails.Origin = (string)stepContext.Result;
@@ -74,7 +74,7 @@ namespace Microsoft.BotBuilderSamples
             return await stepContext.NextAsync(bookingDetails.TravelDate, cancellationToken);
         }
 
-        private async Task<DialogTurnResult> FinalStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        private async Task<DialogTurnResult> FinalActionAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var bookingDetails = (BookingDetails)stepContext.Options;
             bookingDetails.TravelDate = (string)stepContext.Result;

@@ -94,11 +94,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             {
                 var steps = new WaterfallStep[]
                 {
-                    StepOneAsync,
-                    StepTwoAsync,
-                    ReplaceStepAsync,
-                    StepThreeAsync,
-                    LastStepAsync,
+                    ActionOneAsync,
+                    ActionTwoAsync,
+                    ReplaceActionAsync,
+                    ActionThreeAsync,
+                    LastActionAsync,
                 };
 
                 AddDialog(new TextPrompt(nameof(TextPrompt)));
@@ -108,17 +108,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 InitialDialogId = nameof(WaterfallWithEndDialog);
             }
 
-            private static async Task<DialogTurnResult> StepOneAsync(WaterfallStepContext context, CancellationToken cancellationToken)
+            private static async Task<DialogTurnResult> ActionOneAsync(WaterfallStepContext context, CancellationToken cancellationToken)
             {
                 return await context.PromptAsync(nameof(TextPrompt), new PromptOptions { Prompt = MessageFactory.Text("prompt one") });
             }
 
-            private static async Task<DialogTurnResult> StepTwoAsync(WaterfallStepContext context, CancellationToken cancellationToken)
+            private static async Task<DialogTurnResult> ActionTwoAsync(WaterfallStepContext context, CancellationToken cancellationToken)
             {
                 return await context.PromptAsync(nameof(TextPrompt), new PromptOptions { Prompt = MessageFactory.Text("prompt two") });
             }
 
-            private static async Task<DialogTurnResult> ReplaceStepAsync(WaterfallStepContext context, CancellationToken cancellationToken)
+            private static async Task<DialogTurnResult> ReplaceActionAsync(WaterfallStepContext context, CancellationToken cancellationToken)
             {
                 if (context.Result as string == "replace")
                 {
@@ -130,12 +130,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 }
             }
 
-            private static async Task<DialogTurnResult> StepThreeAsync(WaterfallStepContext context, CancellationToken cancellationToken)
+            private static async Task<DialogTurnResult> ActionThreeAsync(WaterfallStepContext context, CancellationToken cancellationToken)
             {
                 return await context.PromptAsync(nameof(TextPrompt), new PromptOptions { Prompt = MessageFactory.Text("prompt three") });
             }
 
-            private static async Task<DialogTurnResult> LastStepAsync(WaterfallStepContext context, CancellationToken cancellationToken)
+            private static async Task<DialogTurnResult> LastActionAsync(WaterfallStepContext context, CancellationToken cancellationToken)
             {
                 return await context.EndDialogAsync();
             }
@@ -162,9 +162,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             {
                 var steps = new WaterfallStep[]
                 {
-                    StepFourAsync,
-                    StepFiveAsync,
-                    LastStepAsync,
+                    ActionFourAsync,
+                    ActionFiveAsync,
+                    LastActionAsync,
                 };
 
                 AddDialog(new TextPrompt(nameof(TextPrompt)));
@@ -173,17 +173,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 InitialDialogId = nameof(WaterfallDialog);
             }
 
-            private static async Task<DialogTurnResult> StepFourAsync(WaterfallStepContext context, CancellationToken cancellationToken)
+            private static async Task<DialogTurnResult> ActionFourAsync(WaterfallStepContext context, CancellationToken cancellationToken)
             {
                 return await context.PromptAsync(nameof(TextPrompt), new PromptOptions { Prompt = MessageFactory.Text("prompt four") });
             }
 
-            private static async Task<DialogTurnResult> StepFiveAsync(WaterfallStepContext context, CancellationToken cancellationToken)
+            private static async Task<DialogTurnResult> ActionFiveAsync(WaterfallStepContext context, CancellationToken cancellationToken)
             {
                 return await context.PromptAsync(nameof(TextPrompt), new PromptOptions { Prompt = MessageFactory.Text("prompt five") });
             }
 
-            private static async Task<DialogTurnResult> LastStepAsync(WaterfallStepContext context, CancellationToken cancellationToken)
+            private static async Task<DialogTurnResult> LastActionAsync(WaterfallStepContext context, CancellationToken cancellationToken)
             {
                 return await context.EndDialogAsync();
             }

@@ -1,0 +1,48 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
+    "$role": "unionType(Microsoft.IDialog)",
+    "title": "Foreach Page Action",
+    "description": "Action which execute actions per item page in a collection.",
+    "type": "object",
+    "allOf": [
+        {
+            "$ref": "./baseActionSchema.json"
+        },
+        {
+            "properties": {
+                "listProperty": {
+                    "$role": "expression",
+                    "title": "ListProperty",
+                    "description": "Expression to evaluate.",
+                    "examples": [
+                        "user.todoList"
+                    ]
+                },
+                "actions": {
+                    "type": "array",
+                    "items": {
+                        "$type": "Microsoft.IDialog"
+                    },
+                    "title": "Actions",
+                    "description": "Actions to execute"
+                },
+                "pageSize": {
+                    "type": "integer",
+                    "title": "Page Size",
+                    "description": "The page size",
+                    "default": 10
+                },
+                "valueProperty": {
+                    "$role": "expression",
+                    "title": "Value Property",
+                    "description": "The memory path which refers to the value of the item",
+                    "default": "dialog.value"
+                }
+            },
+            "required": [
+                "listProperty",
+                "actions"
+            ]
+        }
+    ]
+}

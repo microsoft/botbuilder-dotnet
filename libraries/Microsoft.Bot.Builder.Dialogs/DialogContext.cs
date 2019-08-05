@@ -601,7 +601,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <returns>Whether the passed dialog should inherit dialog-level state.</returns>
         protected virtual bool ShouldInheritState(IDialog dialog)
         {
-            return dialog is DialogCommand;
+            return dialog is DialogAction;
         }
 
         private async Task EndActiveDialogAsync(DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))

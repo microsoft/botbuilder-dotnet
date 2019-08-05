@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Steps;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Events;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
@@ -117,6 +118,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             // test targeted in each language
             Assert.AreEqual("english-us", await lg.Generate(GetTurnContext("en-us", lg), "[test]", null));
+            Assert.AreEqual("english-us", await lg.Generate(GetTurnContext("en-us", lg), "[test2]", new { country = "us" }));
             Assert.AreEqual("english-gb", await lg.Generate(GetTurnContext("en-gb", lg), "[test]", null));
             Assert.AreEqual("english", await lg.Generate(GetTurnContext("en", lg), "[test]", null));
             Assert.AreEqual("default", await lg.Generate(GetTurnContext("", lg), "[test]", null));
@@ -151,9 +153,15 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var dialog = new AdaptiveDialog()
             {
                 Generator = new ResourceMultiLanguageGenerator("subDialog.lg"),
-                Steps = new List<IDialog>()
+                Events = new List<IOnEvent>()
                 {
-                    new SendActivity("[test]")
+                    new OnBeginDialog()
+                    {
+                        Actions = new List<IDialog>()
+                        {
+                            new SendActivity("[test]")
+                        }
+                    }
                 }
             };
             DialogManager dm = new DialogManager(dialog);

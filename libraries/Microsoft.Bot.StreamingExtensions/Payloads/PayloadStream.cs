@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Bot.StreamingExtensions.Payloads
 {
-    internal class PayloadStream : Stream
+    public class PayloadStream : Stream
     {
         private readonly PayloadStreamAssembler _assembler;
         private readonly Queue<byte[]> _bufferQueue = new Queue<byte[]>();
@@ -24,7 +24,7 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
 
         private bool _end = false;
 
-        internal PayloadStream(PayloadStreamAssembler assembler)
+        public PayloadStream(PayloadStreamAssembler assembler)
         {
             _assembler = assembler;
         }
@@ -158,7 +158,7 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
             return availableCount;
         }
 
-        internal void GiveBuffer(byte[] buffer, int count)
+        public void GiveBuffer(byte[] buffer, int count)
         {
             lock (syncLock)
             {
@@ -169,7 +169,7 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
             dataAvailable.Release();
         }
 
-        internal void DoneProducing() => GiveBuffer(Array.Empty<byte>(), 0);
+        public void DoneProducing() => GiveBuffer(Array.Empty<byte>(), 0);
 
         protected override void Dispose(bool disposing)
         {

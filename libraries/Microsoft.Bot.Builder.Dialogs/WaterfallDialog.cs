@@ -22,23 +22,23 @@ namespace Microsoft.Bot.Builder.Dialogs
         private const string PersistedValues = "values";
         private const string PersistedInstanceId = "instanceId";
 
-        private readonly List<WaterfallStep> _steps;
+        private readonly List<WaterfallStep> _actions;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WaterfallDialog"/> class.
         /// </summary>
         /// <param name="dialogId">The dialog ID.</param>
-        /// <param name="steps">Optional steps to be defined by the caller.</param>
-        public WaterfallDialog(string dialogId, IEnumerable<WaterfallStep> steps = null)
+        /// <param name="actions">Optional actions to be defined by the caller.</param>
+        public WaterfallDialog(string dialogId, IEnumerable<WaterfallStep> actions = null)
             : base(dialogId)
         {
-            if (steps != null)
+            if (actions != null)
             {
-                _steps = new List<WaterfallStep>(steps);
+                _actions = new List<WaterfallStep>(actions);
             }
             else
             {
-                _steps = new List<WaterfallStep>();
+                _actions = new List<WaterfallStep>();
             }
         }
 
@@ -49,7 +49,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <returns>Waterfall dialog for fluent calls to `AddStep()`.</returns>
         public WaterfallDialog AddStep(WaterfallStep step)
         {
-            _steps.Add(step ?? throw new ArgumentNullException(nameof(step)));
+            _actions.Add(step ?? throw new ArgumentNullException(nameof(step)));
             return this;
         }
 
@@ -173,7 +173,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 { "InstanceId", instanceId },
             };
             TelemetryClient.TrackEvent("WaterfallStep", properties);
-            return await _steps[stepContext.Index](stepContext, cancellationToken).ConfigureAwait(false);
+            return await _actions[stepContext.Index](stepContext, cancellationToken).ConfigureAwait(false);
         }
 
         protected override string OnComputeId()
@@ -188,7 +188,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 throw new ArgumentNullException(nameof(dc));
             }
 
-            if (index < _steps.Count)
+            if (index < _actions.Count)
             {
                 // Update persisted step index
                 var state = dc.DialogState;
@@ -213,12 +213,12 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             // Log Waterfall Step event. Each event has a distinct name to hook up
             // to the Application Insights funnel.
-            var stepName = _steps[index].Method.Name;
+            var stepName = _actions[index].Method.Name;
 
             // Default stepname for lambdas
             if (string.IsNullOrWhiteSpace(stepName) || stepName.Contains("<"))
             {
-                stepName = $"Step{index + 1}of{_steps.Count}";
+                stepName = $"Step{index + 1}of{_actions.Count}";
             }
 
             return stepName;

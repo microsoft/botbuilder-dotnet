@@ -12,9 +12,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
     /// <summary>
     /// Select between two rule selectors based on a condition.
     /// </summary>
-    public class ConditionalSelector : IRuleSelector
+    public class ConditionalSelector : IEventSelector
     {
-        private IReadOnlyList<IRule> _rules;
+        private IReadOnlyList<IOnEvent> _rules;
         private bool _evaluate;
         private Expression condition;
 
@@ -30,14 +30,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
         /// <summary>
         /// Selector if <see cref="Condition"/> is true.
         /// </summary>
-        public IRuleSelector IfTrue { get; set; }
+        public IEventSelector IfTrue { get; set; }
 
         /// <summary>
         /// Selector if <see cref="Condition"/> is false.
         /// </summary>
-        public IRuleSelector IfFalse { get; set; }
+        public IEventSelector IfFalse { get; set; }
 
-        public void Initialize(IEnumerable<IRule> rules, bool evaluate = true)
+        public void Initialize(IEnumerable<IOnEvent> rules, bool evaluate = true)
         {
             _rules = rules.ToList();
             _evaluate = evaluate;
@@ -47,7 +47,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
         {
             var (value, error) = condition.TryEvaluate(context.State);
             var eval = error == null && (bool)value;
-            IRuleSelector selector;
+            IEventSelector selector;
             if (eval)
             {
                 selector = IfTrue;

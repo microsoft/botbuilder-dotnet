@@ -1,0 +1,73 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
+    "$role": "unionType(Microsoft.IDialog)",
+    "type": "object",
+    "title": "Http Request",
+    "description": "This is a action which replaces the current dialog with the target dialog",
+    "required": [
+        "url",
+        "method"
+    ],
+    "allOf": [
+        {
+            "$ref": "./baseActionSchema.json"
+        },
+        {
+            "properties": {
+                "method": {
+                    "type": "string",
+                    "title": "Method",
+                    "description": "The HTTP method to use",
+                    "enum": [
+                        "GET",
+                        "POST"
+                    ],
+                    "examples": [
+                        "GET",
+                        "POST"
+                    ]
+                },
+                "url": {
+                    "type": "string",
+                    "title": "Url",
+                    "description": "The url to call (supports data binding)",
+                    "examples": [
+                        "https://contoso.com"
+                    ]
+                },
+                "body": {
+                    "type": "object",
+                    "title": "Body",
+                    "description": "The body to send in the HTTP call  (supports data binding)",
+                    "additionalProperties": true
+                },
+                "property": {
+                    "$role": "expression",
+                    "title": "Property",
+                    "description": "The property to store the result of the HTTP call in (as object or string)",
+                    "examples": [
+                        "dialog.contosodata"
+                    ]
+                },
+                "headers": {
+                    "type": "object",
+                    "additionProperties": true,
+                    "title": "Http headers",
+                    "description": "Http headers to include with the HTTP request (supports data binding)"
+                },
+                "responseType": {
+                    "type": "string",
+                    "title": "Response Type",
+                    "description": "Describes how to parse the response from the http request. If Activity or Activities, then the they will be sent to the user.",
+                    "enum": [
+                        "None",
+                        "Json",
+                        "Activity",
+                        "Activities"
+                    ],
+                    "default": "Json"
+                }
+            }
+        }
+    ]
+}

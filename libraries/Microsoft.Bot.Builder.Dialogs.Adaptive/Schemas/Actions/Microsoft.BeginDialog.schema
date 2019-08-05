@@ -1,0 +1,38 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
+    "$role": "unionType(Microsoft.IDialog)",
+    "title": "Begin Dialog",
+    "description": "Action which begins another dialog (and when that dialog is done, it will return the caller).",
+    "type": "object",
+    "allOf": [
+        {
+            "$ref": "./baseActionSchema.json"
+        },
+        {
+            "properties": {
+                "dialogId": {
+                    "$role": "expression",
+                    "title": "Dialog Id",
+                    "description": "The Id the dialog to call."
+                },
+                "options": {
+                    "type": "object",
+                    "title": "Options binding",
+                    "description": "Bindings to configure the options object to pass to the dialog.",
+                    "additionalProperties": {
+                        "type": "string",
+                        "title": "Options"
+                    }
+                },
+                "property": {
+                    "$role": "expression",
+                    "title": "Property",
+                    "description": "The property to bind to the dialog and store the result in",
+                    "examples": [
+                        "user.name"
+                    ]
+                }
+            }
+        }
+    ]
+}

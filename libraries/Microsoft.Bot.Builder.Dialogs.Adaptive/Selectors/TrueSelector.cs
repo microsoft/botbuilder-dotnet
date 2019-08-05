@@ -11,12 +11,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
     /// <summary>
     /// Select all rules which evaluate to true.
     /// </summary>
-    public class TrueSelector : IRuleSelector
+    public class TrueSelector : IEventSelector
     {
-        private List<IRule> _rules;
+        private List<IOnEvent> _rules;
         private bool _evaluate;
 
-        public void Initialize(IEnumerable<IRule> rules, bool evaluate = true)
+        public void Initialize(IEnumerable<IOnEvent> rules, bool evaluate = true)
         {
             _rules = rules.ToList();
             _evaluate = evaluate;

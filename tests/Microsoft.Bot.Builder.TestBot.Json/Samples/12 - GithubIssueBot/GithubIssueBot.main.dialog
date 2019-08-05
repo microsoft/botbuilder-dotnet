@@ -2,23 +2,28 @@
     "$schema": "../../app.schema",
     "$type": "Microsoft.AdaptiveDialog",
     "generator": "GithubIssueBot.main.lg",
-    "steps": [
+    "events": [
         {
-            "$type": "Microsoft.SendActivity",
-            "activity": "Getting issues..."
-        },
-        {
-            "$type": "Microsoft.HttpRequest",
-            "url": "https://api.github.com/repos/Microsoft/botbuilder-dotnet/issues",
-            "method": "GET",
-            "header": {
-                "User-Agent": "TestBot"
-            },
-            "property": "dialog.getResponse"
-        },
-        {
-            "$type": "Microsoft.SendActivity",
-            "activity": "[Show]"
+            "$type": "Microsoft.OnBeginDialog",
+            "actions": [
+                {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "Getting issues..."
+                },
+                {
+                    "$type": "Microsoft.HttpRequest",
+                    "url": "https://api.github.com/repos/Microsoft/botbuilder-dotnet/issues",
+                    "method": "GET",
+                    "headers": {
+                        "User-Agent": "TestBot"
+                    },
+                    "property": "dialog.getResponse"
+                },
+                {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "[Show]"
+                }
+            ]
         }
     ]
 }

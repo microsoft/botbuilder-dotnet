@@ -1,12 +1,12 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "https://raw.githubusercontent.com/Microsoft/botbuilder-dotnet/{branch}/Schemas/component.schema",
+    "$id": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/{branch}/schemas/component.schema",
     "title": "JSON Schema definition for dialog schemas.",
     "description": "In order to create a component for Bot Framework .dialog files you need to create a schema file describing your configuration that meets this definition.  This extends http://json-schema.org/draft-07/schema#.",
     "definitions": {
         "role": {
             "title": "$role",
-            "description": "Defines the role played in the dialog schema [lg|expression|memoryPath|uniontype()].",
+            "description": "Defines the role played in the dialog schema [lg|expression|expression|uniontype()].",
             "type": "string",
             "pattern": "^((lg)|(expression)|(memoryPath)|(unionType)|(unionType\\([a-zA-Z][a-zA-Z0-9.]*\\)))$"
         },

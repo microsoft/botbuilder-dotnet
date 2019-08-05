@@ -9,18 +9,18 @@ using Microsoft.Bot.Builder.Expressions.Parser;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
 {
     /// <summary>
-    /// Select the most specific true rule implementation of <see cref="IRuleSelector"/>.
+    /// Select the most specific true rule implementation of <see cref="IEventSelector"/>.
     /// </summary>
-    public class MostSpecificSelector : IRuleSelector
+    public class MostSpecificSelector : IEventSelector
     {
         private readonly TriggerTree _tree = new TriggerTree();
 
         /// <summary>
         /// Optional rule selector to use when more than one most specific rule is true.
         /// </summary>
-        public IRuleSelector Selector { get; set; }
+        public IEventSelector Selector { get; set; }
 
-        public void Initialize(IEnumerable<IRule> rules, bool evaluate)
+        public void Initialize(IEnumerable<IOnEvent> rules, bool evaluate)
         {
             var i = 0;
             var parser = new ExpressionEngine(TriggerTree.LookupFunction);
@@ -43,7 +43,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
                 {
                     foreach (var trigger in node.AllTriggers)
                     {
-                        var (pos, rule) = (ValueTuple<int, IRule>)trigger.Action;
+                        var (pos, rule) = (ValueTuple<int, IOnEvent>)trigger.Action;
                         matches.Add(pos);
                     }
                 }
@@ -51,12 +51,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
             }
             else
             {
-                var matches = new List<ValueTuple<int, IRule>>();
+                var matches = new List<ValueTuple<int, IOnEvent>>();
                 foreach (var node in nodes)
                 {
                     foreach (var trigger in node.AllTriggers)
                     {
-                        matches.Add((ValueTuple<int, IRule>)trigger.Action);
+                        matches.Add((ValueTuple<int, IOnEvent>)trigger.Action);
                     }
                 }
                 // Sort rules by original order and then pass to child selector

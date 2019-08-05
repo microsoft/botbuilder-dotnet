@@ -20,18 +20,18 @@ namespace Microsoft.BotBuilderSamples
             _userProfileAccessor = userState.CreateProperty<UserProfile>("UserProfile");
 
             // This array defines how the Waterfall will execute.
-            var waterfallSteps = new WaterfallStep[]
+            var waterfallActions = new WaterfallStep[]
             {
-                TransportStepAsync,
-                NameStepAsync,
-                NameConfirmStepAsync,
-                AgeStepAsync,
-                ConfirmStepAsync,
-                SummaryStepAsync,
+                TransportActionAsync,
+                NameActionAsync,
+                NameConfirmActionAsync,
+                AgeActionAsync,
+                ConfirmActionAsync,
+                SummaryActionAsync,
             };
 
             // Add named dialogs to the DialogSet. These names are saved in the dialog state.
-            AddDialog(new WaterfallDialog(nameof(WaterfallDialog), waterfallSteps));
+            AddDialog(new WaterfallDialog(nameof(WaterfallDialog), waterfallActions));
             AddDialog(new TextPrompt(nameof(TextPrompt)));
             AddDialog(new NumberPrompt<int>(nameof(NumberPrompt<int>), AgePromptValidatorAsync));
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
@@ -41,7 +41,7 @@ namespace Microsoft.BotBuilderSamples
             InitialDialogId = nameof(WaterfallDialog);
         }
 
-        private static async Task<DialogTurnResult> TransportStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        private static async Task<DialogTurnResult> TransportActionAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             // WaterfallStep always finishes with the end of the Waterfall or with another dialog; here it is a Prompt Dialog.
             // Running a prompt here means the next WaterfallStep will be run when the users response is received.
@@ -54,7 +54,7 @@ namespace Microsoft.BotBuilderSamples
                 }, cancellationToken);
         }
 
-        private static async Task<DialogTurnResult> NameStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        private static async Task<DialogTurnResult> NameActionAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             stepContext.Values["transport"] = ((FoundChoice)stepContext.Result).Value;
 
@@ -67,7 +67,7 @@ namespace Microsoft.BotBuilderSamples
             return Task.FromResult(promptContext.Recognized.Value >= 0 && promptContext.Recognized.Value < 150);
         }
 
-        private async Task<DialogTurnResult> NameConfirmStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        private async Task<DialogTurnResult> NameConfirmActionAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             stepContext.Values["name"] = (string)stepContext.Result;
 
@@ -78,7 +78,7 @@ namespace Microsoft.BotBuilderSamples
             return await stepContext.PromptAsync(nameof(ConfirmPrompt), new PromptOptions { Prompt = MessageFactory.Text("Would you like to give your age?") }, cancellationToken);
         }
 
-        private async Task<DialogTurnResult> AgeStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        private async Task<DialogTurnResult> AgeActionAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             if ((bool)stepContext.Result)
             {
@@ -99,7 +99,7 @@ namespace Microsoft.BotBuilderSamples
             }
         }
 
-        private async Task<DialogTurnResult> ConfirmStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        private async Task<DialogTurnResult> ConfirmActionAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             stepContext.Values["age"] = (int)stepContext.Result;
 
@@ -114,7 +114,7 @@ namespace Microsoft.BotBuilderSamples
             return await stepContext.PromptAsync(nameof(ConfirmPrompt), new PromptOptions { Prompt = MessageFactory.Text("Is this ok?") }, cancellationToken);
         }
 
-        private async Task<DialogTurnResult> SummaryStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        private async Task<DialogTurnResult> SummaryActionAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             if ((bool)stepContext.Result)
             {

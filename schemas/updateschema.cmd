@@ -1,0 +1,1 @@
+dialogschema ../libraries/**/*.schema -u -b 4.Future -o sdk.schema

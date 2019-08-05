@@ -13,39 +13,42 @@
             "CancelIntent": "(?i)cancel"
         }
     },
-    "steps": [
+    "events": [
         {
-            "$type": "Microsoft.SendActivity",
-            "activity": "[welcome]"
-        },
-        "ExternalLanguage.Greeting"
-    ],
-    "rules": [
-        {
-            "$type": "Microsoft.IntentRule",
-            "intent": "JokeIntent",
-            "steps": [
-                "ExternalLanguage.TellJoke"
-            ]
-        },
-        {
-            "$type": "Microsoft.IntentRule",
-            "intent": "FortuneTellerIntent",
-            "steps": [
-                "ExternalLanguage.FortuneTeller"
-            ]
-        },
-        {
-            "$type": "Microsoft.IntentRule",
-            "intent": "GreetingIntent",
-            "steps": [
+            "$type": "Microsoft.OnBeginDialog",
+            "actions": [
+                {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "[welcome]"
+                },
                 "ExternalLanguage.Greeting"
             ]
         },
         {
-            "$type": "Microsoft.IntentRule",
+            "$type": "Microsoft.OnIntent",
+            "intent": "JokeIntent",
+            "actions": [
+                "ExternalLanguage.TellJoke"
+            ]
+        },
+        {
+            "$type": "Microsoft.OnIntent",
+            "intent": "FortuneTellerIntent",
+            "actions": [
+                "ExternalLanguage.FortuneTeller"
+            ]
+        },
+        {
+            "$type": "Microsoft.OnIntent",
+            "intent": "GreetingIntent",
+            "actions": [
+                "ExternalLanguage.Greeting"
+            ]
+        },
+        {
+            "$type": "Microsoft.OnIntent",
             "intent": "HelpIntent",
-            "steps": [
+            "actions": [
                 {
                     "$type": "Microsoft.SendActivity",
                     "activity": "[help]"
@@ -53,9 +56,9 @@
             ]
         },
         {
-            "$type": "Microsoft.IntentRule",
+            "$type": "Microsoft.OnIntent",
             "intent": "CancelIntent",
-            "steps": [
+            "actions": [
                 {
                     "$type": "Microsoft.SendActivity",
                     "activity": "OK, see ya"
@@ -66,8 +69,8 @@
             ]
         },
         {
-            "$type": "Microsoft.UnknownIntentRule",
-            "steps": [
+            "$type": "Microsoft.OnUnknownIntent",
+            "actions": [
                 {
                     "$type": "Microsoft.SendActivity",
                     "activity": "[help]"
