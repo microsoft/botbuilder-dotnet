@@ -378,7 +378,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                     {
                         foreach (var media in adaptiveMedia.Sources)
                         {
-                            var mediaUrl = await UploadNewsImage(media, adaptiveMedia.AltText ?? adaptiveMedia.Id);
+                            var mediaUrl = await UploadNewsImage(media, adaptiveMedia.AltText ?? adaptiveMedia.Id).ConfigureAwait(false);
                             media.Url = mediaUrl;
                         }
                     }
@@ -479,12 +479,12 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
             // document said mp news should not use temp media_id, but is working actually.
             if (_uploadTemporaryMedia)
             {
-                var uploadResult = await _wechatClient.UploadTemporaryMediaAsync(type, attachmentData);
+                var uploadResult = await _wechatClient.UploadTemporaryMediaAsync(type, attachmentData).ConfigureAwait(false);
                 mediaId = uploadResult.MediaId;
             }
             else
             {
-                var uploadResult = await _wechatClient.UploadPersistentMediaAsync(type, attachmentData);
+                var uploadResult = await _wechatClient.UploadPersistentMediaAsync(type, attachmentData).ConfigureAwait(false);
                 mediaId = uploadResult.MediaId;
             }
 

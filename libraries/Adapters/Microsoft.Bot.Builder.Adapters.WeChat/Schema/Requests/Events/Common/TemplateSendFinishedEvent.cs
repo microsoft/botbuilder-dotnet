@@ -8,10 +8,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Requests.Events.Common
     [XmlRoot("xml")]
     public class TemplateSendFinishedEvent : RequestEvent
     {
-        public override string Event
-        {
-            get { return EventType.TemplateSendFinished; }
-        }
+        public override string Event => EventType.TemplateSendFinished;
 
         [XmlElement(ElementName = "Status")]
         public string Status { get; set; }

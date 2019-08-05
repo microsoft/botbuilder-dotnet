@@ -63,6 +63,9 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Extensions
         {
             // Signal cancellation to the executing method
             _stoppingCts.Cancel();
+
+            // Call Dispose when we're done with the CancellationTokenSource.
+            _stoppingCts.Dispose();
         }
 
         /// <summary>

@@ -8,6 +8,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Net.Mime;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -706,40 +707,47 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// <returns>Uploaded result from WeChat.</returns>
         private async Task<T> UploadMediaAsync<T>(AttachmentData attachmentData, string url, string type, string mediaHash, bool isTemporaryMedia, int timeout = 30000)
         {
-            try
+            // Border break
+            var boundary = "---------------" + DateTime.UtcNow.Ticks.ToString("x", CultureInfo.InvariantCulture);
+            using (var mutipartDataContent = new MultipartFormDataContent(boundary))
             {
-                var ext = MapperUtils.GetMediaExtension(attachmentData.Name, attachmentData.Type, type);
-
-                // Border break
-                var boundary = "---------------" + DateTime.UtcNow.Ticks.ToString("x", CultureInfo.InvariantCulture);
-                var content = new MultipartFormDataContent(boundary);
-                content.Headers.Remove("Content-Type");
-                content.Headers.TryAddWithoutValidation("Content-Type", "multipart/form-data; boundary=" + boundary);
-                var contentByte = new ByteArrayContent(attachmentData.OriginalBase64);
-                contentByte.Headers.Remove("Content-Disposition");
-
-                contentByte.Headers.TryAddWithoutValidation("Content-Disposition", $"form-data; name=\"media\";filename=\"{mediaHash + ext}\"" + string.Empty);
-                contentByte.Headers.Remove("Content-Type");
-                contentByte.Headers.TryAddWithoutValidation("Content-Type", attachmentData.Type);
-                content.Add(contentByte);
-
-                // Additional form is required when upload a forever video.
-                if (isTemporaryMedia == false && type == UploadMediaType.Video)
+                try
                 {
-                    var additionalForm = string.Format("{{\"title\":\"{0}\", \"introduction\":\"introduction\"}}", attachmentData.Name, CultureInfo.InvariantCulture);
+                    mutipartDataContent.Headers.Remove("Content-Type");
+                    mutipartDataContent.Headers.TryAddWithoutValidation("Content-Type", "multipart/form-data; boundary=" + boundary);
+                    var contentByte = new ByteArrayContent(attachmentData.OriginalBase64);
+                    contentByte.Headers.Remove("Content-Disposition");
+                    var ext = MapperUtils.GetMediaExtension(attachmentData.Name, attachmentData.Type, type);
+                    contentByte.Headers.TryAddWithoutValidation("Content-Disposition", $"form-data; name=\"media\";filename=\"{mediaHash + ext}\"" + string.Empty);
+                    contentByte.Headers.Remove("Content-Type");
+                    contentByte.Headers.TryAddWithoutValidation("Content-Type", attachmentData.Type);
+                    mutipartDataContent.Add(contentByte);
 
-                    // Important! name must be "description"
-                    content.Add(new StringContent(additionalForm), "\"" + "description" + "\"");
+                    // Additional form is required when upload a forever video.
+                    if (isTemporaryMedia == false && type == UploadMediaType.Video)
+                    {
+                        var additionalForm = string.Format("{{\"title\":\"{0}\", \"introduction\":\"introduction\"}}", attachmentData.Name, CultureInfo.InvariantCulture);
+
+                        // Important! name must be "description"
+                        mutipartDataContent.Add(new StringContent(additionalForm), "\"" + "description" + "\"");
+                    }
+
+                    _logger.LogInformation($"Upload {type} to WeChat", Severity.Information);
+                    var response = await SendHttpRequestAsync(HttpMethod.Post, url, mutipartDataContent, null, timeout).ConfigureAwait(false);
+
+                    // Disponse all http content in mutipart form data content before return.
+                    foreach (var httpContent in mutipartDataContent)
+                    {
+                        httpContent.Dispose();
+                    }
+
+                    return ConvertBytesToType<T>(response);
                 }
-
-                _logger.LogInformation($"Upload {type} to WeChat", Severity.Information);
-                var response = await SendHttpRequestAsync(HttpMethod.Post, url, content, null, timeout).ConfigureAwait(false);
-                return ConvertBytesToType<T>(response);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Failed To Upload Media, Type: {type}");
-                throw;
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, $"Failed To Upload Media, Type: {type}");
+                    throw;
+                }
             }
         }
     }

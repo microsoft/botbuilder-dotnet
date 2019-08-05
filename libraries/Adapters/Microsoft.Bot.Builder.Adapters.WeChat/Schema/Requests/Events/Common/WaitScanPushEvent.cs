@@ -8,10 +8,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Requests.Events.Common
     [XmlRoot("xml")]
     public class WaitScanPushEvent : RequestEventWithEventKey
     {
-        public override string Event
-        {
-            get { return EventType.WaitScanPush; }
-        }
+        public override string Event => EventType.WaitScanPush;
 
         [XmlElement(ElementName = "ScanCodeInfo")]
         public ScanCodeInfo ScanCodeInfo { get; set; }

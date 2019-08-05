@@ -17,10 +17,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Requests.Events.Common
         /// <value>
         /// EventType: subscribe.
         /// </value>
-        public override string Event
-        {
-            get { return EventType.Subscribe; }
-        }
+        public override string Event => EventType.Subscribe;
 
         /// <summary>
         /// Gets or sets Ticket.
