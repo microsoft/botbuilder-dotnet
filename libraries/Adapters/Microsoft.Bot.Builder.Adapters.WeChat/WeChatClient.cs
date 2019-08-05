@@ -147,7 +147,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         {
             var mediaHash = _attachmentHash.ComputeHash(attachmentData.OriginalBase64);
             var uploadResult = (await _attachmentStorage.GetAsync(mediaHash).ConfigureAwait(false)) as UploadTemporaryMediaResult;
-            if (uploadResult == null)
+            if (uploadResult == null || uploadResult.ExpiredTime <= DateTimeOffset.UtcNow.ToUnixTimeSeconds())
             {
                 var accessToken = await GetAccessTokenAsync().ConfigureAwait(false);
                 var url = GetUploadMediaEndPoint(accessToken, type, true);

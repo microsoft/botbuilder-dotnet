@@ -77,32 +77,25 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// <returns>Decrypted string.</returns>
         private static string AesDecrypt(string encryptString, string encodingAesKey, string appId)
         {
-            try
+            var key = Convert.FromBase64String(encodingAesKey + "=");
+            var iv = new byte[16];
+            Array.Copy(key, iv, 16);
+            var btmpMsg = AesDecrypt(encryptString, iv, key);
+
+            var len = BitConverter.ToInt32(btmpMsg, 16);
+            len = IPAddress.NetworkToHostOrder(len);
+
+            var messageBytes = new byte[len];
+            var appIdBytes = new byte[btmpMsg.Length - 20 - len];
+            Array.Copy(btmpMsg, 20, messageBytes, 0, len);
+            Array.Copy(btmpMsg, 20 + len, appIdBytes, 0, btmpMsg.Length - 20 - len);
+            var oriMsg = Encoding.UTF8.GetString(messageBytes);
+            if (appId != Encoding.UTF8.GetString(appIdBytes))
             {
-                var key = Convert.FromBase64String(encodingAesKey + "=");
-                var iv = new byte[16];
-                Array.Copy(key, iv, 16);
-                var btmpMsg = AesDecrypt(encryptString, iv, key);
-
-                var len = BitConverter.ToInt32(btmpMsg, 16);
-                len = IPAddress.NetworkToHostOrder(len);
-
-                var messageBytes = new byte[len];
-                var appIdBytes = new byte[btmpMsg.Length - 20 - len];
-                Array.Copy(btmpMsg, 20, messageBytes, 0, len);
-                Array.Copy(btmpMsg, 20 + len, appIdBytes, 0, btmpMsg.Length - 20 - len);
-                var oriMsg = Encoding.UTF8.GetString(messageBytes);
-                if (appId != Encoding.UTF8.GetString(appIdBytes))
-                {
-                    throw new ArgumentException("Failed to validate appId.", nameof(appId));
-                }
-
-                return oriMsg;
+                throw new ArgumentException("Failed to validate appId.", nameof(appId));
             }
-            catch (FormatException e)
-            {
-                throw new FormatException("Failed to decode base64 string.", e);
-            }
+
+            return oriMsg;
         }
 
         /// <summary>
