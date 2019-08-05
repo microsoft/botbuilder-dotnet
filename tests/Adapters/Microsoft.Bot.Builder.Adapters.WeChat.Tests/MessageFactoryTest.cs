@@ -1,4 +1,7 @@
-﻿using System.Xml.Linq;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System.Xml.Linq;
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Request;
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Request.Event;
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Request.Event.Common;

@@ -32,17 +32,14 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.TestBot
             // Create the Bot Framework Adapter with error handling enabled.
             services.AddSingleton<IBotFrameworkHttpAdapter, AdapterWithErrorHandler>();
 
-            #region For WeChat
-
             // Configure background task queue and hosted serivce.
             services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
             services.AddHostedService<QueuedHostedService>();
 
             // Configure Logger
             services.AddSingleton<IWeChatHttpAdapter, WeChatHttpAdapter>();
-            #endregion
 
-            // Create the storage we'll be using for User and Conversation state. (Memory is great for testing purposes.) 
+            // Create the storage we'll be using for User and Conversation state. (Memory is great for testing purposes.)
             services.AddSingleton<IStorage, MemoryStorage>();
 
             // Create the User state. (Used in this bot's Dialog implementation.)

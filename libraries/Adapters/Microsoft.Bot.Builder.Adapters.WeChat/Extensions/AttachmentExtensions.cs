@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using BotSchema = Microsoft.Bot.Schema;
@@ -6,9 +9,9 @@ using BotSchema = Microsoft.Bot.Schema;
 namespace Microsoft.Bot.Builder.Adapters.WeChat
 {
     /// <summary>
-    /// Attachment Extensions to easily convert attachemnt type to card, etc.
+    /// Attachment Extensions to easily convert attachment type to card, etc.
     /// </summary>
-    public static partial class AttachmentExtensions
+    public static class AttachmentExtensions
     {
         public static T ContentAs<T>(this BotSchema.Attachment attachment)
         {

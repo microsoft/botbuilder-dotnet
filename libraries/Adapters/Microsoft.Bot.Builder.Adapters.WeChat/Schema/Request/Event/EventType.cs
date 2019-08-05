@@ -1,4 +1,7 @@
-﻿namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Request.Event
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Request.Event
 {
     /// <summary>
     /// Detail Event type from wechat.

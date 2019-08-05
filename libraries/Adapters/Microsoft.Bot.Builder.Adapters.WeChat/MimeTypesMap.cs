@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -10,8 +13,8 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
     /// </summary>
     public static class MimeTypesMap
     {
-        private const string DefaultMimeType = "application/octet-stream";
         public const string DefaultExtension = "bin";
+        private const string DefaultMimeType = "application/octet-stream";
 
         /// <summary>
         /// Lazy instance of an Dictionary which store the extension/mimetype pairs.

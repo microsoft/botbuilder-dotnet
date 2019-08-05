@@ -1,4 +1,8 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
+using System.Globalization;
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Request;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
@@ -21,7 +25,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Extensions
         {
             if (wechatRequest is RequestMessage requestMessage)
             {
-                activity.Id = requestMessage.MsgId.ToString();
+                activity.Id = requestMessage.MsgId.ToString(CultureInfo.InvariantCulture);
             }
             else
             {

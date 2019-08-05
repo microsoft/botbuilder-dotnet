@@ -7,7 +7,6 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using AdaptiveCards;
-using AdaptiveCards.Rendering;
 using AdaptiveCards.Rendering.Html;
 using Microsoft.Bot.Builder.Adapters.WeChat.Extensions;
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema;
@@ -15,7 +14,6 @@ using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Request;
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Request.Event;
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Response;
 using Microsoft.Bot.Schema;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 

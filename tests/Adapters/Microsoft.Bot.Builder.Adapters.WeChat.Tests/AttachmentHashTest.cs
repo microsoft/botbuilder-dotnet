@@ -1,4 +1,7 @@
-﻿using System.Text;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System.Text;
 using Xunit;
 
 namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests

@@ -1,4 +1,7 @@
-﻿namespace Microsoft.Bot.Builder.Adapters.WeChat
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+namespace Microsoft.Bot.Builder.Adapters.WeChat
 {
     /// <summary>
     /// Media type acceptable by WeChat.
