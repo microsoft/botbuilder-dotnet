@@ -710,48 +710,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
-        public async Task AdaptiveDialog_IntentEvent()
-        {
-            var planningDialog = new AdaptiveDialog("planningTest")
-            {
-                AutoEndDialog = false,
-                Recognizer = new RegexRecognizer()
-                {
-                    Intents = new Dictionary<string, string>()
-                    {
-                        { "JokeIntent", "joke" }
-                    }
-                },
-                Events = new List<IOnEvent>()
-                {
-                    new OnBeginDialog()
-                    {
-                        Actions = new List<IDialog>()
-                        {
-                            new SendActivity("I'm a joke bot. To get started say 'tell me a joke'")
-                        },
-                    },
-                    new OnIntent("JokeIntent",
-                        actions: new List<IDialog>()
-                        {
-                            new SendActivity("Why did the chicken cross the road?"),
-                            new EndTurn(),
-                            new SendActivity("To get to the other side")
-                        }),
-                }
-            };
-
-            await CreateFlow(planningDialog)
-            .SendConversationUpdate()
-                .AssertReply("I'm a joke bot. To get started say 'tell me a joke'")
-            .Send("Do you know a joke?")
-                .AssertReply("Why did the chicken cross the road?")
-            .Send("Why?")
-                .AssertReply("To get to the other side")
-            .StartTestAsync();
-        }
-
-        [TestMethod]
         public async Task AdaptiveDialog_NestedRecognizers()
         {
             var outerDialog = new AdaptiveDialog("outer")

@@ -101,8 +101,15 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
                     {
                         entities = new Dictionary<string, object>
                         {
-                            { "city",  "Seattle" },
-                            { "ordinal",
+                            {
+                                "city",
+                                new[]
+                                {
+                                    "Seattle"
+                                }
+                            },
+                            {
+                                "ordinal",
                                 new[]
                                 {
                                     "1",
@@ -110,7 +117,8 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
                                     "3"
                                 }
                             },
-                            { "CompositeList1",
+                            {
+                                "CompositeList1",
                                 new[]
                                 {
                                     new[]
@@ -119,7 +127,8 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
                                     }
                                 }
                             },
-                            { "CompositeList2",
+                            {
+                                "CompositeList2",
                                 new[]
                                 {
                                     new[]
@@ -147,8 +156,8 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
                                     Time = "Today",
                                     People = "4"
                                 }
-                             }
-                         }
+                            }
+                        }
                     }
                 }
             },
@@ -584,6 +593,9 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("@city == 'Bellevue'", false, new HashSet<string> {"turn.recognized.entities.city"}),
             Test("@city", "Seattle", new HashSet<string> {"turn.recognized.entities.city"}),
             Test("@city == 'Seattle'", true, new HashSet<string> {"turn.recognized.entities.city"}),
+            Test("@@city[0]","Seattle", new HashSet<string> {"turn.recognized.entities.city[0]"}),
+            Test("count(@@city)", 1),
+            Test("count(@@city) == 1", true),
             Test("@ordinal", "1", new HashSet<string> {"turn.recognized.entities.ordinal"}),
             Test("@@ordinal[1]", "2", new HashSet<string> {"turn.recognized.entities.ordinal[1]"}),
             Test("@['city']", "Seattle", new HashSet<string> {"turn.recognized.entities.city"}),

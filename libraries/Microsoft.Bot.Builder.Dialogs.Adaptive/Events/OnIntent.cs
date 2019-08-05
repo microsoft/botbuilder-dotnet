@@ -19,10 +19,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
     {
         [JsonConstructor]
         public OnIntent(string intent = null, List<string> entities = null, List<IDialog> actions = null, string constraint = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
-            : base(events: new List<string>()
-            {
-                AdaptiveEvents.RecognizedIntent
-            },
+            : base(events: new List<string>() { AdaptiveEvents.RecognizedIntent },
             actions: actions,
             constraint: constraint,
             callerPath: callerPath, callerLine: callerLine)
@@ -31,15 +28,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
             Entities = entities ?? new List<string>();
         }
 
-
         /// <summary>
-        /// Intent to match on
+        /// Gets or sets intent to match on.
         /// </summary>
         [JsonProperty("intent")]
         public string Intent { get; set; }
 
         /// <summary>
-        /// Entities which must be recognized for this rule to trigger
+        /// Gets or sets entities which must be recognized for this rule to trigger.
         /// </summary>
         [JsonProperty("entities")]
         public List<string> Entities { get; set; }
@@ -48,14 +44,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
         {
 
             // add constraints for the intents property
-            if (String.IsNullOrEmpty(this.Intent))
+            if (string.IsNullOrEmpty(this.Intent))
             {
                 throw new ArgumentNullException(nameof(this.Intent));
             }
 
+            var intentExpression = factory.Parse($"turn.recognized.intent == '{this.Intent.TrimStart('#')}'");
 
-            return Expression.AndExpression(factory.Parse($"turn.dialogEvent.value.intents.{this.Intent}.score > 0.0"),
-                base.BuildExpression(factory));
+            // build expression to be INTENT AND (@ENTITY1 != null OR @ENTITY2 != null)
+            if (this.Entities.Any())
+            {
+                intentExpression = Expression.AndExpression(
+                    intentExpression,
+                    Expression.OrExpression(this.Entities.Select(entity => factory.Parse($"exists(turn.recognized.entities.{entity.TrimStart('@')})")).ToArray()));
+            }
+
+            return Expression.AndExpression(intentExpression, base.BuildExpression(factory));
         }
 
         protected override ActionChangeList OnCreateChangeList(SequenceContext planning, object dialogOptions = null)

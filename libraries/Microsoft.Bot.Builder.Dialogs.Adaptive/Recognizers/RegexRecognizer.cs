@@ -83,6 +83,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
                                 values = new List<string>();
                                 entities.Add(groupName, values);
                             }
+
                             values.Add(group.Value);
                         }
                     }

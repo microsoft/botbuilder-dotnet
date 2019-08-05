@@ -350,6 +350,22 @@ namespace Microsoft.Bot.Builder.Expressions
         }
 
         /// <summary>
+        /// Verify value is not null.
+        /// </summary>
+        /// <param name="value">Value to check.</param>
+        /// <param name="expression">Expression that led to value.</param>
+        /// <returns>Error or null if valid.</returns>
+        public static string VerifyNotNull(object value, Expression expression, int number)
+        {
+            string error = null;
+            if (value == null)
+            {
+                error = $"{expression} is null.";
+            }
+            return error;
+        }
+
+        /// <summary>
         /// Verify value is a number or string.
         /// </summary>
         /// <param name="value">Value to check.</param>
@@ -2398,7 +2414,7 @@ namespace Microsoft.Bot.Builder.Expressions
                 Comparison(ExpressionType.NotEqual, args => args[0] != args[1], ValidateBinary),
                 Comparison(ExpressionType.GreaterThan, args => args[0] > args[1], ValidateBinaryNumberOrString, VerifyNumberOrString),
                 Comparison(ExpressionType.GreaterThanOrEqual, args => args[0] >= args[1], ValidateBinaryNumberOrString, VerifyNumberOrString),
-                Comparison(ExpressionType.Exists, args => args[0] != null, ValidateUnary, VerifyNumberOrString),
+                Comparison(ExpressionType.Exists, args => args[0] != null, ValidateUnary, VerifyNotNull),
                 new ExpressionEvaluator(
                     ExpressionType.Contains,
                     (expression, state) =>
