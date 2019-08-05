@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
 using Microsoft.AspNetCore.Builder;
@@ -9,10 +9,7 @@ using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-using Microsoft.BotBuilderSamples.Bots;
-using Microsoft.Bot.Builder.EchoBot;
-
-namespace Microsoft.BotBuilderSamples
+namespace Microsoft.Bot.Builder.EchoBot
 {
     public class Startup
     {

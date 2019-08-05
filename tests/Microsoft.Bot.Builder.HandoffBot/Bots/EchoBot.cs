@@ -8,53 +8,41 @@ using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Builder.Handoff;
 
-namespace Microsoft.BotBuilderSamples.Bots
+namespace Microsoft.Bot.Builder.EchoBot
 {
-    public class EchoBot : ActivityHandler
+    public class EchoBot : ActivityHandlerWithHandoff
     {
-        public override async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default)
+        protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
-
-            switch(turnContext.Activity.Type)
+            if (turnContext.Activity.Text.Contains("human"))
             {
-                case ActivityTypes.Message:
-                {
-                    if (turnContext.Activity.Text.Contains("human"))
-                    {
-                        await turnContext.SendActivityAsync("You will be transferred to a human agent. Sit tight.");
+                await turnContext.SendActivityAsync("You will be transferred to a human agent. Sit tight.");
 
-                        var a1 = MessageFactory.Text($"first message");
-                        var a2 = MessageFactory.Text($"second message");
-                        var transcript = new Activity[] { a1, a2 };
-                        var context = new { Skill = "credit cards", MSCallerId = "CCI" };
-                        IHandoffRequest request = await turnContext.InitiateHandoffAsync(transcript, context, cancellationToken);
+                var a1 = MessageFactory.Text($"first message");
+                var a2 = MessageFactory.Text($"second message");
+                var transcript = new Activity[] { a1, a2 };
+                var context = new { Skill = "credit cards", MSCallerId = "CCI" };
+                IHandoffRequest request = await turnContext.InitiateHandoffAsync(transcript, context, cancellationToken);
 
-                        if (await request.IsCompletedAsync())
-                        {
-                            await turnContext.SendActivityAsync("Handoff request has been completed");
-                        }
-                        else
-                        {
-                            await turnContext.SendActivityAsync("Handoff request has NOT been completed");
-                        }
-                    }
-                    else
-                    {
-                        await turnContext.SendActivityAsync(MessageFactory.Text($"Echo: {turnContext.Activity.Text}"), cancellationToken);
-                    }
-                    return;
-                }
-                case ActivityTypes.Handoff:
+                if (await request.IsCompletedAsync())
                 {
-                    await turnContext.SendActivityAsync("Received Handoff ack from bot");
-                    return;
+                    await turnContext.SendActivityAsync("Handoff request has been completed");
                 }
-                default:
-                    break;
+                else
+                {
+                    await turnContext.SendActivityAsync("Handoff request has NOT been completed");
+                }
             }
+            else
+            {
+                await turnContext.SendActivityAsync(MessageFactory.Text($"Echo: {turnContext.Activity.Text}"), cancellationToken);
+            }
+        }
 
-            await base.OnTurnAsync(turnContext, cancellationToken);
-            return;
+        protected override async Task OnHandoffActivityAsync(ITurnContext<IHandoffActivity> turnContext, CancellationToken cancellationToken)
+        {
+            var conversationId = turnContext.Activity.Conversation.Id;
+            await turnContext.SendActivityAsync($"Received Handoff ack for conversation {conversationId}");
         }
 
         protected override async Task OnMembersAddedAsync(IList<ChannelAccount> membersAdded, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
