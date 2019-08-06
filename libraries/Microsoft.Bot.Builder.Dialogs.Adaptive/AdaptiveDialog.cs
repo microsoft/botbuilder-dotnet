@@ -226,6 +226,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                             var e = new DialogEvent() { Name = AdaptiveEvents.RecognizedIntent, Value = recognized, Bubble = false };
                             handled = await this.ProcessEventAsync(sequenceContext, dialogEvent: e, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
                         }
+
                         break;
                 }
             }
