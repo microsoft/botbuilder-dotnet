@@ -74,7 +74,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// <returns>Standard result of calling WeChat message API.</returns>
         public async Task<WeChatJsonResult> SendMessageToUser(object data, int timeout = 10000)
         {
-            _logger.LogInformation("Send new message to user.");
+            _logger.LogInformation("Send message to user.");
             var accessToken = await GetAccessTokenAsync().ConfigureAwait(false);
             var url = GetMessageApiEndPoint(accessToken);
 
@@ -83,7 +83,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
             if (sendResult.ErrorCode != 0)
             {
                 var exception = new Exception($"{sendResult}");
-                _logger.LogError(exception, "Send Message To User Failed.");
+                _logger.LogError(exception, "Send message to user failed.");
                 throw exception;
             }
 
@@ -102,7 +102,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// <returns>Response content as byte array.</returns>
         public virtual async Task<byte[]> SendHttpRequestAsync(HttpMethod method, string url, object data = null, string token = null, int timeout = 10000)
         {
-            _logger.LogInformation($"Send {method.Method} request to {url}", Severity.Information);
+            _logger.LogInformation($"Send {method.Method} request to {url}");
             using (var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromMilliseconds(timeout)))
             {
                 var result = await MakeHttpRequestAsync(token, method, url, data, cancellationTokenSource.Token).ConfigureAwait(false);
@@ -127,6 +127,13 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 var url = GetAccessTokenEndPoint(_appId, _appSecret);
                 var bytes = await SendHttpRequestAsync(HttpMethod.Get, url).ConfigureAwait(false);
                 var tokenResult = ConvertBytesToType<AccessTokenResult>(bytes);
+                if (tokenResult.ErrorCode != 0)
+                {
+                    var exception = new Exception($"{tokenResult}");
+                    _logger.LogError(exception, "Get access token failed.");
+                    throw exception;
+                }
+
                 token.ExpireTime = DateTimeOffset.UtcNow.AddSeconds(tokenResult.ExpireIn);
                 token.Token = tokenResult.Token;
                 await _tokenStorage.SaveAsync(_appId, token).ConfigureAwait(false);
@@ -158,7 +165,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 else
                 {
                     var exception = new Exception($"{uploadResult}");
-                    _logger.LogError(exception, $"Upload Temporary Media Failed, Type: {type}");
+                    _logger.LogError(exception, $"Upload temporary media failed, type: {type}");
                     throw exception;
                 }
             }
@@ -189,7 +196,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                     }
                     else
                     {
-                        _logger.LogError(new Exception($"{uploadResult}"), $"Upload Persistent Media Failed, Type: {type}");
+                        _logger.LogError(new Exception($"{uploadResult}"), $"Upload persistent media failed, type: {type}");
                     }
                 }
             }
@@ -220,7 +227,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                     }
                     else
                     {
-                        _logger.LogError(new Exception($"{uploadResult}"), $"Upload news image failed, Type: {type}");
+                        _logger.LogError(new Exception($"{uploadResult}"), $"Upload news image failed, type: {type}");
                     }
                 }
             }

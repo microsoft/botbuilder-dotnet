@@ -76,6 +76,11 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Extensions
                 // Call Dispose when we're done with the CancellationTokenSource.
                 _stoppingCts.Dispose();
             }
+
+            if (_executingTask != null)
+            {
+                _executingTask.Dispose();
+            }
         }
 
         /// <summary>

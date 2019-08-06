@@ -51,7 +51,6 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                     IConfiguration configuration,
                     IWeChatMessageMapper wechatMessageMapper = null,
                     WeChatClient wechatClient = null,
-                    BotStateSet botStateSet = null,
                     ILogger logger = null,
                     IBackgroundTaskQueue backgroundTaskQueue = null,
                     IHostedService backgroundService = null,
@@ -65,7 +64,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
             _token = configuration.GetSection("WeChatSetting").GetSection("Token")?.Value;
             _logger = logger ?? NullLogger.Instance;
             _wechatClient = wechatClient ?? new WeChatClient(_appId, appSecret, logger);
-            _wechatMessageMapper = wechatMessageMapper ?? new WeChatMessageMapper(wechatClient, uploadTemporaryMedia, logger);
+            _wechatMessageMapper = wechatMessageMapper ?? new WeChatMessageMapper(_wechatClient, uploadTemporaryMedia, logger);
             _taskQueue = backgroundTaskQueue ?? BackgroundTaskQueue.Instance;
             _backgroundService = backgroundService;
 
@@ -75,11 +74,6 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 {
                     await context.SendActivityAsync(DefaultErrorMessage).ConfigureAwait(false);
                 };
-            }
-
-            if (botStateSet != null)
-            {
-                Use(new AutoSaveStateMiddleware(botStateSet));
             }
         }
 
