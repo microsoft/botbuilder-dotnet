@@ -5,6 +5,6 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Requests.Events
 {
     public interface IRequestMessageEventBase : IRequestMessageBase
     {
-        string Event { get; }
+        string EventType { get; }
     }
 }

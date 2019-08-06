@@ -17,6 +17,6 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Requests.Events.Common
         /// <value>
         /// Event type click.
         /// </value>
-        public override string Event => EventType.Click;
+        public override string EventType => EventTypes.Click;
     }
 }

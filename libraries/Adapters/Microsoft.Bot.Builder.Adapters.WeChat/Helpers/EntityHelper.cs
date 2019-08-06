@@ -10,7 +10,7 @@ using System.Xml.Serialization;
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Requests;
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Responses;
 
-namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Helpers
+namespace Microsoft.Bot.Builder.Adapters.WeChat.Helpers
 {
     /// <summary>
     /// Entity related helper class.
@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Helpers
         /// Get the request message entity from XML.
         /// </summary>
         /// <typeparam name="T">Type of IRequestMessageBase.</typeparam>
-        /// <param name="doc">XML.</param>
+        /// <param name="doc">The XDocument.</param>
         /// <returns>Request Message Entity.</returns>
         public static IRequestMessageBase FillEntityWithXml<T>(XDocument doc)
             where T : IRequestMessageBase, new()
@@ -30,7 +30,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Helpers
             {
                 var requestMessage = new T();
                 var serializer = new XmlSerializer(typeof(T));
-                using (var reader = new StringReader(doc.ToString()))
+                using (var reader = doc.CreateReader())
                 {
                     requestMessage = (T)serializer.Deserialize(reader);
                 }
@@ -39,7 +39,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Helpers
             }
             catch (Exception e)
             {
-                throw new Exception("Deserialize Error", e);
+                throw new Exception("Deserialize XDocument failed.", e);
             }
         }
 
@@ -78,7 +78,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Helpers
             }
             catch (Exception e)
             {
-                throw new Exception("Serialize Error", e);
+                throw new Exception("Serialize WeChat response message failed.", e);
             }
         }
     }

@@ -4,9 +4,9 @@
 namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Requests.Events
 {
     /// <summary>
-    /// Detail Event type from wechat.
+    /// Detail Event type from WeChat.
     /// </summary>
-    public static class EventType
+    public static class EventTypes
     {
         /// <summary>
         /// Enter a conversation, may removed by wechat.

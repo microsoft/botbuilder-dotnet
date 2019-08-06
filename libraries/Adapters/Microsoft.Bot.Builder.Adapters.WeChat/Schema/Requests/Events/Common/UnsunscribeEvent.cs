@@ -17,6 +17,6 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Requests.Events.Common
         /// <value>
         /// EventType: unsubscribe.
         /// </value>
-        public override string Event => EventType.Unsubscribe;
+        public override string EventType => EventTypes.Unsubscribe;
     }
 }

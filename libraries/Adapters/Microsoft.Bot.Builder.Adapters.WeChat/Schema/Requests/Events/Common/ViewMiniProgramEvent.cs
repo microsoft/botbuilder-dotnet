@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Requests.Events.Common
     [XmlRoot("xml")]
     public class ViewMiniProgramEvent : RequestEventWithEventKey
     {
-        public override string Event => EventType.ViewMiniProgram;
+        public override string EventType => EventTypes.ViewMiniProgram;
 
         [XmlElement(ElementName = "MenuId")]
         public string MenuId { get; set; }

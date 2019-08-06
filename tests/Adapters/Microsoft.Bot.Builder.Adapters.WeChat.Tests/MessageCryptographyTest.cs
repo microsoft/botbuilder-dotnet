@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests
         public void EncodingAESKeyTest()
         {
             var result = Assert.Throws<ArgumentException>(() => new MessageCryptography(MockDataUtility.SecretInfoAESKeyError));
-            Assert.Equal("Invalid EncodingAESKey\r\nParameter name: secretInfo", result.Message);
+            Assert.Equal("Invalid EncodingAESKey.\r\nParameter name: secretInfo", result.Message);
         }
 
         [Fact]
@@ -32,7 +32,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests
         {
             var postData = MockDataUtility.XmlEncrypt;
             var result = Assert.Throws<UnauthorizedAccessException>(() => MockDataUtility.TestSignature.DecryptMessage(postData));
-            Assert.Equal("Signature validation failed.", result.Message);
+            Assert.Equal("Signature verification failed.", result.Message);
         }
     }
 }

@@ -17,6 +17,6 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Requests.Events.Common
         /// <value>
         /// EventType: ENTER.
         /// </value>
-        public override string Event => EventType.Enter;
+        public override string EventType => EventTypes.Enter;
     }
 }

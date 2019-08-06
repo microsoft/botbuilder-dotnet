@@ -11,13 +11,15 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Helpers
     public static class VerificationHelper
     {
         /// <summary>
-        /// Check the uncrypt message's signature.
+        /// Verify WeChat request message signature.
         /// </summary>
         /// <param name="signature">WeChat message signature in query params.</param>
         /// <param name="timestamp">WeChat message timestamp in query params.</param>
         /// <param name="nonce">WeChat message nonce in query params.</param>
-        /// <param name="token">validation token from WeChat.</param>
-        public static void Check(string signature, string timestamp, string nonce, string token = null)
+        /// <param name="token">Validation token from WeChat.</param>
+        /// <param name="postBody">Request body as string.</param>
+        /// <returns>Signature verification result.</returns>
+        public static bool VerifySignature(string signature, string timestamp, string nonce, string token = null, string postBody = null)
         {
             // token can be null when user did not set its value.
             if (string.IsNullOrEmpty(signature))
@@ -35,36 +37,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Helpers
                 throw new ArgumentException("Request validation failed - null Nonce", nameof(nonce));
             }
 
-            if (!VerifySignature(signature, token, timestamp, nonce))
-            {
-                throw new UnauthorizedAccessException("Request validation failed - Signature validation failed.");
-            }
-        }
-
-        /// <summary>
-        /// Verify WeChat request message signature.
-        /// </summary>
-        /// <param name="signature">WeChat message signature in query params.</param>
-        /// <param name="token">validation token from WeChat.</param>
-        /// <param name="timestamp">WeChat message timestamp in query params.</param>
-        /// <param name="nonce">WeChat message nonce in query params.</param>
-        /// <param name="postBody">Request body as string.</param>
-        /// <returns>Signature verification result.</returns>
-        public static bool VerifySignature(string signature, string token, string timestamp, string nonce, string postBody = null)
-        {
-            try
-            {
-                if (postBody == null)
-                {
-                    return signature == GenerateSignature(token, timestamp, nonce);
-                }
-
-                return signature == GenerateSignature(token, timestamp, nonce, postBody);
-            }
-            catch
-            {
-                return false;
-            }
+            return signature == GenerateSignature(token, timestamp, nonce, postBody);
         }
 
         /// <summary>
@@ -81,9 +54,12 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Helpers
             Array.Sort(arr, Compare);
             var raw = string.Join(string.Empty, arr);
 
+#pragma warning disable CA5350
+
             // WeChat use SHA1 to generate signature.
             // https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421135319
             using (var sha1 = SHA1.Create())
+#pragma warning restore CA5350
             {
                 var dataToHash = Encoding.ASCII.GetBytes(raw);
                 var dataHashed = sha1.ComputeHash(dataToHash);

@@ -1032,10 +1032,12 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         public static string GetMimeType(string fileName)
         {
             var ext = fileName;
-            var ind = ext.LastIndexOf('.');
-            if (ind != -1 && ext.Length > ind + 1)
+            var index = ext.LastIndexOf('.');
+            if (index != -1 && ext.Length > index + 1)
             {
-                ext = fileName.Substring(ind + 1).ToLower(CultureInfo.InvariantCulture);
+#pragma warning disable CA1308 // file extation should be lower case.
+                ext = fileName.Substring(index + 1).ToLowerInvariant();
+#pragma warning restore CA1308 // file extation should be lower case.
             }
 
             if (MimeTypeMap.Value.TryGetValue(ext, out var result))

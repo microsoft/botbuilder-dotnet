@@ -93,6 +93,7 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Adapters.WeChat.TestBot", "tests\Adapters\Microsoft.Bot.Builder.Adapters.WeChat.TestBot\Microsoft.Bot.Builder.Adapters.WeChat.TestBot.csproj", "{63C4D62E-C433-482A-9FC3-CC3F6D5B0188}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Adapters.WeChat.Tests", "tests\Adapters\Microsoft.Bot.Builder.Adapters.WeChat.Tests\Microsoft.Bot.Builder.Adapters.WeChat.Tests.csproj", "{3110DB90-9DA1-4988-A329-8DE34C5BAFAC}"
+EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.AI.Luis.TestUtils", "tests\Microsoft.Bot.Builder.AI.Luis.TestUtils\Microsoft.Bot.Builder.AI.Luis.TestUtils.csproj", "{685271A8-6C69-46E4-9B11-89AF9761CE0A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.AI.LuisV3", "libraries\Microsoft.Bot.Builder.AI.LuisV3\Microsoft.Bot.Builder.AI.LuisV3.csproj", "{EF46ABF9-0405-4EAA-BC1E-A2BC48DD1A69}"

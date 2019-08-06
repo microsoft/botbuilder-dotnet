@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Requests.Events.Common
         /// <value>
         /// EventType: MASSSENDJOBFINISH.
         /// </value>
-        public override string Event => EventType.MassSendJobFinished;
+        public override string EventType => EventTypes.MassSendJobFinished;
 
         /// <summary>
         /// Gets or sets status code.

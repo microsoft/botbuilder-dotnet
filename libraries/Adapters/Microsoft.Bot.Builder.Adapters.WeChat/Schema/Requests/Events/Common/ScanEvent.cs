@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Requests.Events.Common
         /// <value>
         /// EventType: scan.
         /// </value>
-        public override string Event => EventType.Scan;
+        public override string EventType => EventTypes.Scan;
 
         /// <summary>
         /// Gets or sets Ticket.

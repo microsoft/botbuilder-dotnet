@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Requests.Events
         /// The event type, should be one of EventType.
         /// </value>
         [XmlElement(ElementName = "Event")]
-        public virtual string Event { get; }
+        public virtual string EventType { get; }
 
         [XmlElement(ElementName = "Encrypt")]
         public string Encrypt { get; set; }

@@ -5,7 +5,6 @@ using System;
 using System.Globalization;
 using System.Xml.Linq;
 using Microsoft.Bot.Builder.Adapters.WeChat.Helpers;
-using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Helpers;
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Requests;
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Requests.Events;
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Requests.Events.Common;
@@ -56,52 +55,52 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema
                     case RequestMessageType.Event:
                         switch (doc.Root.Element("Event").Value)
                         {
-                            case EventType.Enter:
+                            case EventTypes.Enter:
                                 requestMessage = EntityHelper.FillEntityWithXml<EnterEvent>(doc);
                                 break;
-                            case EventType.Location:
+                            case EventTypes.Location:
                                 requestMessage = EntityHelper.FillEntityWithXml<LocationEvent>(doc);
                                 break;
-                            case EventType.Subscribe:
+                            case EventTypes.Subscribe:
                                 requestMessage = EntityHelper.FillEntityWithXml<SubscribeEvent>(doc);
                                 break;
-                            case EventType.Unsubscribe:
+                            case EventTypes.Unsubscribe:
                                 requestMessage = EntityHelper.FillEntityWithXml<UnsunscribeEvent>(doc);
                                 break;
-                            case EventType.Click:
+                            case EventTypes.Click:
                                 requestMessage = EntityHelper.FillEntityWithXml<ClickEvent>(doc);
                                 break;
-                            case EventType.Scan:
+                            case EventTypes.Scan:
                                 requestMessage = EntityHelper.FillEntityWithXml<ScanEvent>(doc);
                                 break;
-                            case EventType.View:
+                            case EventTypes.View:
                                 requestMessage = EntityHelper.FillEntityWithXml<ViewEvent>(doc);
                                 break;
-                            case EventType.ScanPush:
+                            case EventTypes.ScanPush:
                                 requestMessage = EntityHelper.FillEntityWithXml<ScanPushEvent>(doc);
                                 break;
-                            case EventType.WaitScanPush:
+                            case EventTypes.WaitScanPush:
                                 requestMessage = EntityHelper.FillEntityWithXml<WaitScanPushEvent>(doc);
                                 break;
-                            case EventType.Camera:
+                            case EventTypes.Camera:
                                 requestMessage = EntityHelper.FillEntityWithXml<CameraEvent>(doc);
                                 break;
-                            case EventType.CameraOrAlbum:
+                            case EventTypes.CameraOrAlbum:
                                 requestMessage = EntityHelper.FillEntityWithXml<CameraOrAlbumEvent>(doc);
                                 break;
-                            case EventType.WeChatAlbum:
+                            case EventTypes.WeChatAlbum:
                                 requestMessage = EntityHelper.FillEntityWithXml<WeChatAlbumEvent>(doc);
                                 break;
-                            case EventType.SelectLocation:
+                            case EventTypes.SelectLocation:
                                 requestMessage = EntityHelper.FillEntityWithXml<SelectLocationEvent>(doc);
                                 break;
-                            case EventType.MassSendJobFinished:
+                            case EventTypes.MassSendJobFinished:
                                 requestMessage = EntityHelper.FillEntityWithXml<MassSendJobFinishedEvent>(doc);
                                 break;
-                            case EventType.TemplateSendFinished:
+                            case EventTypes.TemplateSendFinished:
                                 requestMessage = EntityHelper.FillEntityWithXml<TemplateSendFinishedEvent>(doc);
                                 break;
-                            case EventType.ViewMiniProgram:
+                            case EventTypes.ViewMiniProgram:
                                 requestMessage = EntityHelper.FillEntityWithXml<ViewMiniProgramEvent>(doc);
                                 break;
 
@@ -158,7 +157,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema
             }
             catch (ArgumentException ex)
             {
-                logger.LogError(ex, string.Format("RequestMessage Error, MsgType may not exist, XML：{0}", doc, CultureInfo.InvariantCulture));
+                logger.LogError(ex, string.Format(CultureInfo.InvariantCulture, "RequestMessage Error, MsgType may not exist, XML：{0}", doc));
                 throw;
             }
 

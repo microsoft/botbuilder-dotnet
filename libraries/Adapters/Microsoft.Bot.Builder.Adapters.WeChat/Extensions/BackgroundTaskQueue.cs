@@ -46,7 +46,21 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Extensions
 
         public void Dispose()
         {
-            _signal.Dispose();
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                // free managed resources
+                if (_signal != null)
+                {
+                    _signal.Dispose();
+                    _signal = null;
+                }
+            }
         }
     }
 }

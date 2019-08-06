@@ -32,7 +32,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         {
             if (string.IsNullOrEmpty(secretInfo.EncodingAesKey) || secretInfo.EncodingAesKey.Length != 43)
             {
-                throw new ArgumentException("Invalid EncodingAESKey", nameof(secretInfo));
+                throw new ArgumentException("Invalid EncodingAESKey.", nameof(secretInfo));
             }
 
             _token = secretInfo.Token;
@@ -46,7 +46,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// <summary>
         /// Verify the authenticity of the message and get the decrypted plaintext.
         /// </summary>
-        /// <param name="postData">cipher message.</param>
+        /// <param name="postData">Cipher message.</param>
         /// <returns>Decrypted message string.</returns>
         public string DecryptMessage(string postData)
         {
@@ -62,7 +62,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
 
             if (!VerificationHelper.VerifySignature(_msgSignature, _token, _timestamp, _nonce, encryptMessage))
             {
-                throw new UnauthorizedAccessException("Signature validation failed.");
+                throw new UnauthorizedAccessException("Signature verification failed.");
             }
 
             return AesDecrypt(encryptMessage, _encodingAesKey, _appId);

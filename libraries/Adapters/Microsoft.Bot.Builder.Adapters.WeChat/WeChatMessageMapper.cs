@@ -263,81 +263,6 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         }
 
         /// <summary>
-        /// Convert all buttons in a message to text string for channels that can't display button.
-        /// </summary>
-        /// <param name="actions">CardAction list.</param>
-        /// <param name="actionToString">Specific way of converting actions to string was specified.</param>
-        /// <returns>CardAction as string.</returns>
-        public string ButtonsToText(IList<CardAction> actions, Func<CardAction, string> actionToString = null)
-        {
-            // Convert any options to text
-            var text = string.Empty;
-            actions = actions ?? new List<CardAction>();
-            for (var i = 0; i < actions.Count; i++)
-            {
-                var action = actions[i];
-                if (i > 0)
-                {
-                    text += NewLine;
-                }
-
-                // If a specific way of converting actions to string was specified, use it
-                if (actionToString != null)
-                {
-                    text += actionToString(action);
-                }
-
-                // Otherwise, use the default
-                else
-                {
-                    var index = actions.Count == 1 ? -1 : i + 1;
-                    text += ButtonToText(action, index);
-                }
-            }
-
-            return text;
-        }
-
-        /// <summary>
-        /// Convert buttons to text string for channels that can't display button.
-        /// </summary>
-        /// <param name="button">The Card Action.</param>
-        /// <param name="index">Index of current action in action list.</param>
-        /// <returns>Card action as string.</returns>
-        public string ButtonToText(CardAction button, int index = -1)
-        {
-            switch (button.Type)
-            {
-                case ActionTypes.OpenUrl:
-                case ActionTypes.PlayAudio:
-                case ActionTypes.PlayVideo:
-                case ActionTypes.ShowImage:
-                case ActionTypes.Signin:
-                case ActionTypes.DownloadFile:
-                    if (index != -1)
-                    {
-                        return $"{index}. <a href='{button.Value}'>{button.Title}</a>";
-                    }
-
-                    return $"<a href='{button.Value}'>{button.Title}</a>";
-                case ActionTypes.MessageBack:
-                    if (index != -1)
-                    {
-                        return $"{index}. {button.Title ?? button.Text}";
-                    }
-
-                    return $"{button.Title ?? button.Text}";
-                default:
-                    if (index != -1)
-                    {
-                        return $"{index}. {button.Title ?? button.Value}";
-                    }
-
-                    return $"{button.Title ?? button.Value}";
-            }
-        }
-
-        /// <summary>
         /// Create a News instance use hero card.
         /// </summary>
         /// <param name="activity">Message activity received from bot.</param>
@@ -358,7 +283,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 ContentSourceUrl = DefaultContentUrl,
             };
 
-            foreach (var image in heroCard.Images ?? new CardImage[] { })
+            foreach (var image in heroCard.Images ?? new List<CardImage>())
             {
                 var surrogate = new Attachment()
                 {
@@ -425,15 +350,271 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
             catch (AdaptiveException ex)
             {
                 // Failed rendering
-                _logger.LogError(ex, "Failed to rending adaptive card");
+                _logger.LogError(ex, "Failed to rending adaptive card.");
                 throw;
             }
             catch (Exception ex)
             {
                 // upload graphic message failed.
-                _logger.LogError(ex, "Error when uploading adaptive card");
+                _logger.LogError(ex, "Error when uploading adaptive card.");
                 throw;
             }
+        }
+
+        /// <summary>
+        /// Create a media type response message using mediaId and acitivity.
+        /// </summary>
+        /// <param name="activity">Activity from bot.</param>
+        /// <param name="mediaId">MediaId from WeChat.</param>
+        /// <param name="type">Media type.</param>
+        /// <returns>Media resposne such as ImageResponse, etc.</returns>
+        private static ResponseMessage CreateMediaResponse(IActivity activity, string mediaId, string type)
+        {
+            ResponseMessage response = null;
+            if (type.Contains(MediaTypes.Image))
+            {
+                response = new ImageResponse(mediaId);
+            }
+
+            if (type.Contains(MediaTypes.Video))
+            {
+                response = new VideoResponse(mediaId);
+            }
+
+            if (type.Contains(MediaTypes.Audio))
+            {
+                response = new VoiceResponse(mediaId);
+            }
+
+            response.SetProperties(activity);
+            return response;
+        }
+
+        /// <summary>
+        /// Convert Text To WeChat Message.
+        /// </summary>
+        /// <param name="activity">Message activity from bot.</param>
+        /// <returns>Response message to WeChat.</returns>
+        private static TextResponse CreateTextResponseFromMessageActivity(IMessageActivity activity)
+        {
+            var response = new TextResponse
+            {
+                Content = activity.Text,
+            };
+            response.SetProperties(activity);
+            return response;
+        }
+
+        /// <summary>
+        /// Add new line and append new text.
+        /// </summary>
+        /// <param name="text">The origin text.</param>
+        /// <param name="newText">Text need to be attached.</param>
+        /// <returns>Combined new text string.</returns>
+        private static string AddLine(string text, string newText)
+        {
+            if (string.IsNullOrEmpty(newText))
+            {
+                return text;
+            }
+
+            if (string.IsNullOrEmpty(text))
+            {
+                return newText;
+            }
+
+            return text + NewLine + newText;
+        }
+
+        /// <summary>
+        /// Add text break and append the new text.
+        /// </summary>
+        /// <param name="text">The origin text.</param>
+        /// <param name="newText">Text need to be attached.</param>
+        /// <returns>Combined new text string.</returns>
+        private static string AddText(string text, string newText)
+        {
+            if (string.IsNullOrEmpty(newText))
+            {
+                return text;
+            }
+
+            if (string.IsNullOrEmpty(text))
+            {
+                return newText;
+            }
+
+            return text + WordBreak + newText;
+        }
+
+        /// <summary>
+        /// Chunk the text message and return it as WeChat response.
+        /// </summary>
+        /// <param name="activity">Message activity from bot.</param>
+        /// <param name="text">Text content need to be chunked.</param>
+        /// <returns>Response message list.</returns>
+        private static IList<IResponseMessageBase> GetChunkedMessages(IMessageActivity activity, string text)
+        {
+            if (string.IsNullOrEmpty(text))
+            {
+                return new List<IResponseMessageBase>();
+            }
+
+            if (activity.TextFormat == TextFormatTypes.Markdown)
+            {
+                var marked = new Marked
+                {
+                    Options =
+                    {
+                        Sanitize = false,
+                        Mangle = false,
+                    },
+                };
+                marked.Options.Renderer = new TextMarkdownRenderer(marked.Options);
+
+                // Marked package will return additional new line in the end.
+                text = marked.Parse(text).Trim();
+            }
+
+            // If message doesn't need to be chunked just return it
+            if (text.Length <= MaxSingleMessageLength)
+            {
+                var textResponse = CreateTextResponseFromMessageActivity(activity);
+                textResponse.Content = text;
+                return new List<IResponseMessageBase>
+                {
+                    textResponse,
+                };
+            }
+
+            // Truncate to maximum total length as necessary
+            if (text.Length > MaxTotalMessageLength)
+            {
+                text = text.Substring(0, MaxTotalMessageLength);
+            }
+
+            // Split text into chunks
+            var messages = new List<IResponseMessageBase>();
+            var chunkLength = MaxSingleMessageLength - 20;  // leave 20 chars for footer
+            var chunkNum = 0;
+            var chunkCount = text.Length / chunkLength;
+
+            if (text.Length % chunkLength > 0)
+            {
+                chunkCount++;
+            }
+
+            for (var i = 0; i < text.Length; i += chunkLength)
+            {
+                if (chunkLength + i > text.Length)
+                {
+                    chunkLength = text.Length - i;
+                }
+
+                var chunk = text.Substring(i, chunkLength);
+
+                if (chunkCount > 1)
+                {
+                    chunk += $"{NewLine}({++chunkNum} of {chunkCount})";
+                }
+
+                // Create chunked message and add to list of messages
+                var textResponse = CreateTextResponseFromMessageActivity(activity);
+                textResponse.Content = chunk;
+                messages.Add(textResponse);
+            }
+
+            return messages;
+        }
+
+        /// <summary>
+        /// Convert buttons to text string for channels that can't display button.
+        /// </summary>
+        /// <param name="button">The Card Action.</param>
+        /// <param name="index">Index of current action in action list.</param>
+        /// <returns>Card action as string.</returns>
+        private static string ButtonToText(CardAction button, int index = -1)
+        {
+            switch (button.Type)
+            {
+                case ActionTypes.OpenUrl:
+                case ActionTypes.PlayAudio:
+                case ActionTypes.PlayVideo:
+                case ActionTypes.ShowImage:
+                case ActionTypes.Signin:
+                case ActionTypes.DownloadFile:
+                    if (index != -1)
+                    {
+                        return $"{index}. <a href='{button.Value}'>{button.Title}</a>";
+                    }
+
+                    return $"<a href='{button.Value}'>{button.Title}</a>";
+                case ActionTypes.MessageBack:
+                    if (index != -1)
+                    {
+                        return $"{index}. {button.Title ?? button.Text}";
+                    }
+
+                    return $"{button.Title ?? button.Text}";
+                default:
+                    if (index != -1)
+                    {
+                        return $"{index}. {button.Title ?? button.Value}";
+                    }
+
+                    return $"{button.Title ?? button.Value}";
+            }
+        }
+
+        /// <summary>
+        /// Convert all buttons in a message to text string for channels that can't display button.
+        /// </summary>
+        /// <param name="actions">CardAction list.</param>
+        /// <param name="actionToString">Specific way of converting actions to string was specified.</param>
+        /// <returns>CardAction as string.</returns>
+        private static string ButtonsToText(IList<CardAction> actions, Func<CardAction, string> actionToString = null)
+        {
+            // Convert any options to text
+            var text = string.Empty;
+            actions = actions ?? new List<CardAction>();
+            for (var i = 0; i < actions.Count; i++)
+            {
+                var action = actions[i];
+                if (i > 0)
+                {
+                    text += NewLine;
+                }
+
+                // If a specific way of converting actions to string was specified, use it
+                if (actionToString != null)
+                {
+                    text += actionToString(action);
+                }
+
+                // Otherwise, use the default
+                else
+                {
+                    var index = actions.Count == 1 ? -1 : i + 1;
+                    text += ButtonToText(action, index);
+                }
+            }
+
+            return text;
+        }
+
+        /// <summary>
+        /// Convert all suggestedActions to text string for channels that can't display them natively.
+        /// </summary>
+        /// <param name="actions">List of card action.</param>
+        /// <returns>CardAction as string.</returns>
+        private static string SuggestedActionsToText(IList<CardAction> actions)
+        {
+            var result = ButtonsToText(actions, action =>
+            {
+                var buttonText = action.Text == ActionTypes.MessageBack ? action.Text : action.Value as string;
+                return buttonText ?? action.Title;
+            });
+            return result;
         }
 
         /// <summary>
@@ -575,145 +756,6 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         }
 
         /// <summary>
-        /// Create a media type response message using mediaId and acitivity.
-        /// </summary>
-        /// <param name="activity">Activity from bot.</param>
-        /// <param name="mediaId">MediaId from WeChat.</param>
-        /// <param name="type">Media type.</param>
-        /// <returns>Media resposne such as ImageResponse, etc.</returns>
-        private ResponseMessage CreateMediaResponse(IActivity activity, string mediaId, string type)
-        {
-            ResponseMessage response = null;
-            if (type.Contains(MediaTypes.Image))
-            {
-                response = new ImageResponse(mediaId);
-            }
-
-            if (type.Contains(MediaTypes.Video))
-            {
-                response = new VideoResponse(mediaId);
-            }
-
-            if (type.Contains(MediaTypes.Audio))
-            {
-                response = new VoiceResponse(mediaId);
-            }
-
-            response.SetProperties(activity);
-            return response;
-        }
-
-        /// <summary>
-        /// Convert Text To WeChat Message.
-        /// </summary>
-        /// <param name="activity">Message activity from bot.</param>
-        /// <returns>Response message to WeChat.</returns>
-        private TextResponse CreateTextResponseFromMessageActivity(IMessageActivity activity)
-        {
-            var response = new TextResponse
-            {
-                Content = activity.Text,
-            };
-            response.SetProperties(activity);
-            return response;
-        }
-
-        /// <summary>
-        /// Convert all suggestedActions to text string for channels that can't display them natively.
-        /// </summary>
-        /// <param name="actions">List of card action.</param>
-        /// <returns>CardAction as string.</returns>
-        private string SuggestedActionsToText(IList<CardAction> actions)
-        {
-            var result = ButtonsToText(actions, action =>
-            {
-                var buttonText = action.Text == ActionTypes.MessageBack ? action.Text : action.Value as string;
-                return buttonText ?? action.Title;
-            });
-            return result;
-        }
-
-        /// <summary>
-        /// Chunk the text message and return it as WeChat response.
-        /// </summary>
-        /// <param name="activity">Message activity from bot.</param>
-        /// <param name="text">Text content need to be chunked.</param>
-        /// <returns>Response message list.</returns>
-        private IList<IResponseMessageBase> GetChunkedMessages(IMessageActivity activity, string text)
-        {
-            if (string.IsNullOrEmpty(text))
-            {
-                return new List<IResponseMessageBase>();
-            }
-
-            if (activity.TextFormat == TextFormatTypes.Markdown)
-            {
-                var marked = new Marked
-                {
-                    Options =
-                    {
-                        Sanitize = false,
-                        Mangle = false,
-                    },
-                };
-                marked.Options.Renderer = new TextMarkdownRenderer(marked.Options);
-
-                // Marked package will return additional new line in the end.
-                text = marked.Parse(text).Trim();
-            }
-
-            // If message doesn't need to be chunked just return it
-            if (text.Length <= MaxSingleMessageLength)
-            {
-                var textResponse = CreateTextResponseFromMessageActivity(activity);
-                textResponse.Content = text;
-                return new List<IResponseMessageBase>
-                {
-                    textResponse,
-                };
-            }
-
-            // Truncate to maximum total length as necessary
-            if (text.Length > MaxTotalMessageLength)
-            {
-                text = text.Substring(0, MaxTotalMessageLength);
-            }
-
-            // Split text into chunks
-            var messages = new List<IResponseMessageBase>();
-            var chunkLength = MaxSingleMessageLength - 20;  // leave 20 chars for footer
-            var chunkNum = 0;
-            var chunkCount = text.Length / chunkLength;
-
-            if (text.Length % chunkLength > 0)
-            {
-                chunkCount++;
-            }
-
-            for (var i = 0; i < text.Length; i += chunkLength)
-            {
-                if (chunkLength + i > text.Length)
-                {
-                    chunkLength = text.Length - i;
-                }
-
-                var chunk = text.Substring(i, chunkLength);
-
-                if (chunkCount > 1)
-                {
-                    chunk += $"{NewLine}({++chunkNum} of {chunkCount})";
-                }
-
-                // Create chunked message and add to list of messages
-                var textResponse = CreateTextResponseFromMessageActivity(activity);
-                textResponse.Content = chunk;
-                messages.Add(textResponse);
-            }
-
-            return messages;
-        }
-
-        /// <summary>
         /// render a adaptiveCard into text replies for low-fi channels.
         /// </summary>
         /// <param name="activity">Message activity from bot.</param>
@@ -730,7 +772,9 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 var mpnews = new MPNewsResponse(uploadResult.MediaId);
                 messages.Add(mpnews);
             }
+#pragma warning disable CA1031 // Do not catch general exception types, use fallback text instead.
             catch
+#pragma warning disable CA1031 // Do not catch general exception types, use fallback text instead.
             {
                 _logger.LogInformation("Convert adaptive card failed.");
                 messages.AddRange(GetChunkedMessages(activity, adaptiveCard.FallbackText));
@@ -927,7 +971,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
             }
 
             // Add mediaUrls
-            foreach (var mediaUrl in mediacard.Media ?? new MediaUrl[] { })
+            foreach (var mediaUrl in mediacard.Media ?? new List<MediaUrl>())
             {
                 var surrogate = new Attachment()
                 {
@@ -956,7 +1000,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
 
             // Build text portion of receipt
             var body = receiptCard.Title;
-            foreach (var fact in receiptCard.Facts ?? new Fact[] { })
+            foreach (var fact in receiptCard.Facts ?? new List<Fact>())
             {
                 body = AddLine(body, $"{fact.Key}:  {fact.Value}");
             }
@@ -965,7 +1009,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
 
             // Add items, grouping text only ones into a single post
             string textbody = null;
-            foreach (var item in receiptCard.Items ?? new ReceiptItem[] { })
+            foreach (var item in receiptCard.Items ?? new List<ReceiptItem>())
             {
                 if (item.Image != null)
                 {
@@ -1054,48 +1098,6 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
             }
 
             return messages;
-        }
-
-        /// <summary>
-        /// Add new line and append new text.
-        /// </summary>
-        /// <param name="text">The origin text.</param>
-        /// <param name="newText">Text need to be attached.</param>
-        /// <returns>Combined new text string.</returns>
-        private string AddLine(string text, string newText)
-        {
-            if (string.IsNullOrEmpty(newText))
-            {
-                return text;
-            }
-
-            if (string.IsNullOrEmpty(text))
-            {
-                return newText;
-            }
-
-            return text + NewLine + newText;
-        }
-
-        /// <summary>
-        /// Add text break and append the new text.
-        /// </summary>
-        /// <param name="text">The origin text.</param>
-        /// <param name="newText">Text need to be attached.</param>
-        /// <returns>Combined new text string.</returns>
-        private string AddText(string text, string newText)
-        {
-            if (string.IsNullOrEmpty(newText))
-            {
-                return text;
-            }
-
-            if (string.IsNullOrEmpty(text))
-            {
-                return newText;
-            }
-
-            return text + WordBreak + newText;
         }
     }
 }

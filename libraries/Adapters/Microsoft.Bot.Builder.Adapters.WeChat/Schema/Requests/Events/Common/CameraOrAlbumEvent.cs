@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Requests.Events.Common
     [XmlRoot("xml")]
     public class CameraOrAlbumEvent : RequestEventWithEventKey
     {
-        public override string Event => EventType.CameraOrAlbum;
+        public override string EventType => EventTypes.CameraOrAlbum;
 
         [XmlElement(ElementName = "SendPicsInfo")]
         public SendPicsInfo SendPicsInfo { get; set; }

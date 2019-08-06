@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Requests.Events.Common
         /// <value>
         /// EventType: LOCATION.
         /// </value>
-        public override string Event => EventType.Location;
+        public override string EventType => EventTypes.Location;
 
         /// <summary>
         /// Gets or sets latitude.

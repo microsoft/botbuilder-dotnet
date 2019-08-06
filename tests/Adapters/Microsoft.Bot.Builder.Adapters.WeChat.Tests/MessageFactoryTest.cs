@@ -110,8 +110,8 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests
                 Assert.True(result is ClickEvent);
                 EventBaseTest(result as RequestEvent);
                 var clickEvent = result as ClickEvent;
-                Assert.Equal(EventType.Click, clickEvent.Event);
-                Assert.Equal(clickEvent.Event, EventType.Click);
+                Assert.Equal(EventTypes.Click, clickEvent.EventType);
+                Assert.Equal(clickEvent.EventType, EventTypes.Click);
                 Assert.Equal("EVENTKEY", clickEvent.EventKey);
             }
 
@@ -122,7 +122,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests
                 Assert.True(result is LocationEvent);
                 EventBaseTest(result as RequestEvent);
                 var locationEvent = result as LocationEvent;
-                Assert.Equal(EventType.Location, locationEvent.Event);
+                Assert.Equal(EventTypes.Location, locationEvent.EventType);
                 Assert.Equal(23.104105, locationEvent.Latitude);
                 Assert.Equal(113.320107, locationEvent.Longitude);
                 Assert.Equal(65.000000, locationEvent.Precision);
@@ -135,7 +135,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests
                 Assert.True(result is ViewEvent);
                 EventBaseTest(result as RequestEvent);
                 var viewEvent = result as ViewEvent;
-                Assert.Equal(EventType.View, viewEvent.Event);
+                Assert.Equal(EventTypes.View, viewEvent.EventType);
                 Assert.Equal("www.qq.com", viewEvent.EventKey);
             }
 
@@ -146,7 +146,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests
                 Assert.True(result is SubscribeEvent);
                 EventBaseTest(result as RequestEvent);
                 var subscribeEvent = result as SubscribeEvent;
-                Assert.Equal(EventType.Subscribe, subscribeEvent.Event);
+                Assert.Equal(EventTypes.Subscribe, subscribeEvent.EventType);
                 Assert.Equal("qrscene_123123", subscribeEvent.EventKey);
                 Assert.Equal("TICKET", subscribeEvent.Ticket);
             }
@@ -158,7 +158,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests
                 Assert.True(result is ScanEvent);
                 EventBaseTest(result as RequestEvent);
                 var scanEvent = result as ScanEvent;
-                Assert.Equal(EventType.Scan, scanEvent.Event);
+                Assert.Equal(EventTypes.Scan, scanEvent.EventType);
                 Assert.Equal("SCENE_VALUE", scanEvent.EventKey);
                 Assert.Equal("TICKET", scanEvent.Ticket);
             }
@@ -170,7 +170,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests
                 Assert.True(result is ScanPushEvent);
                 EventBaseTest(result as RequestEvent);
                 var scanPushEvent = result as ScanPushEvent;
-                Assert.Equal(EventType.ScanPush, scanPushEvent.Event);
+                Assert.Equal(EventTypes.ScanPush, scanPushEvent.EventType);
                 Assert.Equal("6", scanPushEvent.EventKey);
                 Assert.Equal("qrcode", scanPushEvent.ScanCodeInfo.ScanType);
                 Assert.Equal("1", scanPushEvent.ScanCodeInfo.ScanResult);
@@ -183,7 +183,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests
                 Assert.True(result is WaitScanPushEvent);
                 EventBaseTest(result as RequestEvent);
                 var waitScanPushEvent = result as WaitScanPushEvent;
-                Assert.Equal(EventType.WaitScanPush, waitScanPushEvent.Event);
+                Assert.Equal(EventTypes.WaitScanPush, waitScanPushEvent.EventType);
                 Assert.Equal("6", waitScanPushEvent.EventKey);
                 Assert.Equal("qrcode", waitScanPushEvent.ScanCodeInfo.ScanType);
                 Assert.Equal("2", waitScanPushEvent.ScanCodeInfo.ScanResult);
@@ -196,7 +196,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests
                 Assert.True(result is CameraEvent);
                 EventBaseTest(result as RequestEvent);
                 var cameraEvent = result as CameraEvent;
-                Assert.Equal(EventType.Camera, cameraEvent.Event);
+                Assert.Equal(EventTypes.Camera, cameraEvent.EventType);
                 Assert.Equal("6", cameraEvent.EventKey);
                 Assert.Equal(1, cameraEvent.SendPicsInfo.Count);
                 Assert.Equal("1b5f7c23b5bf75682a53e7b6d163e185", cameraEvent.SendPicsInfo.PicList[0].Item.PicMD5Sum);
@@ -209,7 +209,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests
                 Assert.True(result is CameraOrAlbumEvent);
                 EventBaseTest(result as RequestEvent);
                 var cameraOrAlbumEvent = result as CameraOrAlbumEvent;
-                Assert.Equal(EventType.CameraOrAlbum, cameraOrAlbumEvent.Event);
+                Assert.Equal(EventTypes.CameraOrAlbum, cameraOrAlbumEvent.EventType);
                 Assert.Equal("6", cameraOrAlbumEvent.EventKey);
                 Assert.Equal(1, cameraOrAlbumEvent.SendPicsInfo.Count);
                 Assert.Equal("5a75aaca956d97be686719218f275c6b", cameraOrAlbumEvent.SendPicsInfo.PicList[0].Item.PicMD5Sum);
@@ -222,7 +222,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests
                 Assert.True(result is WeChatAlbumEvent);
                 EventBaseTest(result as RequestEvent);
                 var wechatAlbumEvent = result as WeChatAlbumEvent;
-                Assert.Equal(EventType.WeChatAlbum, wechatAlbumEvent.Event);
+                Assert.Equal(EventTypes.WeChatAlbum, wechatAlbumEvent.EventType);
                 Assert.Equal("6", wechatAlbumEvent.EventKey);
                 Assert.Equal(1, wechatAlbumEvent.SendPicsInfo.Count);
                 Assert.Equal("5a75aaca956d97be686719218f275c6b", wechatAlbumEvent.SendPicsInfo.PicList[0].Item.PicMD5Sum);
@@ -235,7 +235,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests
                 Assert.True(result is SelectLocationEvent);
                 EventBaseTest(result as RequestEvent);
                 var selectLocationEvent = result as SelectLocationEvent;
-                Assert.Equal(EventType.SelectLocation, selectLocationEvent.Event);
+                Assert.Equal(EventTypes.SelectLocation, selectLocationEvent.EventType);
                 Assert.Equal("6", selectLocationEvent.EventKey);
                 Assert.Equal("23", selectLocationEvent.SendLocationInfo.Latitude);
                 Assert.Equal("113", selectLocationEvent.SendLocationInfo.Longtitude);
@@ -251,7 +251,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests
                 Assert.True(result is ViewMiniProgramEvent);
                 EventBaseTest(result as RequestEvent);
                 var viewMiniProgramEvent = result as ViewMiniProgramEvent;
-                Assert.Equal(EventType.ViewMiniProgram, viewMiniProgramEvent.Event);
+                Assert.Equal(EventTypes.ViewMiniProgram, viewMiniProgramEvent.EventType);
                 Assert.Equal("pages/index/index", viewMiniProgramEvent.EventKey);
                 Assert.Equal("MENUID", viewMiniProgramEvent.MenuId);
             }
@@ -263,7 +263,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests
                 Assert.True(result is MassSendJobFinishedEvent);
                 EventBaseTest(result as RequestEvent);
                 var massSendJobFinishedEvent = result as MassSendJobFinishedEvent;
-                Assert.Equal(EventType.MassSendJobFinished, massSendJobFinishedEvent.Event);
+                Assert.Equal(EventTypes.MassSendJobFinished, massSendJobFinishedEvent.EventType);
                 Assert.Equal(1000001625, massSendJobFinishedEvent.MsgID);
                 Assert.Equal("err(30003)", massSendJobFinishedEvent.Status);
                 Assert.Equal(0, massSendJobFinishedEvent.TotalCount);
@@ -290,7 +290,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests
                 Assert.True(result is TemplateSendFinishedEvent);
                 EventBaseTest(result as RequestEvent);
                 var templateSendFinishedEvent = result as TemplateSendFinishedEvent;
-                Assert.Equal(EventType.TemplateSendFinished, templateSendFinishedEvent.Event);
+                Assert.Equal(EventTypes.TemplateSendFinished, templateSendFinishedEvent.EventType);
                 Assert.Equal(200163840, templateSendFinishedEvent.MsgID);
                 Assert.Equal("failed:user block", templateSendFinishedEvent.Status);
             }

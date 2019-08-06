@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Requests.Events.Common
     [XmlRoot("xml")]
     public class WeChatAlbumEvent : RequestEventWithEventKey
     {
-        public override string Event => EventType.WeChatAlbum;
+        public override string EventType => EventTypes.WeChatAlbum;
 
         [XmlElement(ElementName = "SendPicsInfo")]
         public SendPicsInfo SendPicsInfo { get; set; }

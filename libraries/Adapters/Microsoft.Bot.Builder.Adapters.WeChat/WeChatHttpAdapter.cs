@@ -118,23 +118,28 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 }
                 catch (Exception ex)
                 {
-                    // exception handing when bot throw an exception.
-                    await OnTurnError(context, ex).ConfigureAwait(false);
-                    return null;
+                    if (OnTurnError != null)
+                    {
+                        // exception handing when bot throw an exception.
+                        await OnTurnError(context, ex).ConfigureAwait(false);
+                        return null;
+                    }
+
+                    throw;
                 }
             }
         }
 
-        // Does not support by wechat.
+        // Does not support by WeChat.
         public override Task DeleteActivityAsync(ITurnContext turnContext, ConversationReference reference, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return Task.FromException<ResourceResponse>(new NotSupportedException("WeChat does not support deleting activities."));
         }
 
-        // Does not support by wechat.
+        // Does not support by WeChat.
         public override Task<ResourceResponse> UpdateActivityAsync(ITurnContext turnContext, Activity activity, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return Task.FromException<ResourceResponse>(new NotSupportedException("WeChat does not support updating activities."));
         }
 
         /// <inheritdoc/>
@@ -206,7 +211,10 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 throw new ArgumentNullException(nameof(secretInfo));
             }
 
-            VerificationHelper.Check(secretInfo.WebhookSignature, secretInfo.Timestamp, secretInfo.Nonce, _token);
+            if (!VerificationHelper.VerifySignature(secretInfo.WebhookSignature, secretInfo.Timestamp, secretInfo.Nonce, _token))
+            {
+                throw new UnauthorizedAccessException("Signature verification failed.");
+            }
 
             secretInfo.Token = _token;
             secretInfo.EncodingAesKey = _encodingAESKey;
@@ -222,7 +230,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                     // Running a background task, Get bot response and parse it from activity to wechat response message
                     if (_backgroundService == null)
                     {
-                        throw new ArgumentNullException("AdapterBackgroundService can not be null.");
+                        throw new NullReferenceException("AdapterBackgroundService can not be null.");
                     }
 
                     _taskQueue.QueueBackgroundWorkItem(async (ct) =>

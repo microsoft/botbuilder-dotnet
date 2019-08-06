@@ -17,6 +17,6 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Requests.Events.Common
         /// <value>
         /// EventType: VIEW.
         /// </value>
-        public override string Event => EventType.View;
+        public override string EventType => EventTypes.View;
     }
 }

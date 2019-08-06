@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Globalization;
 using System.Xml.Linq;
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Requests;
 
@@ -50,7 +49,9 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Helpers
             {
                 return (RequestMessageType)Enum.Parse(typeof(RequestMessageType), str, true);
             }
+#pragma warning disable CA1031 // Do not catch general exception types
             catch
+#pragma warning restore CA1031 // Do not catch general exception types
             {
                 return RequestMessageType.Unknown;
             }

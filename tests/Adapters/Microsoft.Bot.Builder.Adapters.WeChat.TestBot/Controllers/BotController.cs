@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Bot.Builder.Adapters.WeChat.Helpers;
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Extensions.Configuration;
 
 namespace Microsoft.Bot.Builder.Adapters.WeChat.TestBot
@@ -50,14 +51,13 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.TestBot
         [HttpGet("/WeChat")]
         public ActionResult Get(string echostr, [FromQuery] SecretInfo postModel)
         {
-            try
+            if (VerificationHelper.VerifySignature(postModel.WebhookSignature, postModel.Timestamp, postModel.Nonce, _token))
             {
-                VerificationHelper.Check(postModel.WebhookSignature, postModel.Timestamp, postModel.Nonce, _token);
                 return Content(echostr);
             }
-            catch
+            else
             {
-                return Content("failed:" + postModel.WebhookSignature);
+                return Content("Failed:" + postModel.WebhookSignature);
             }
         }
     }

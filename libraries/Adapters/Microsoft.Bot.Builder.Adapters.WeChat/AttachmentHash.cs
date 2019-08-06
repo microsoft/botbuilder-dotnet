@@ -17,7 +17,9 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         public string ComputeHash(byte[] inputBytes)
         {
             // step 1, calculate MD5 hash from input
+#pragma warning disable CA5351 // Only used to get a unique hash value
             using (var md5 = MD5.Create())
+#pragma warning restore CA5351 // Only used to get a unique hash value
             {
                 var hash = md5.ComputeHash(inputBytes);
 
@@ -33,9 +35,9 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         }
 
         /// <summary>
-        /// Calculates the MD5 hash value, used to ignore same file when upload media.
+        /// Calculates the hash value, used to ignore same file when upload media.
         /// </summary>
-        /// <param name="content">string content need to be hashed.</param>
+        /// <param name="content">String content need to be hashed.</param>
         /// <returns>Hash value.</returns>
         public string ComputeHash(string content)
         {

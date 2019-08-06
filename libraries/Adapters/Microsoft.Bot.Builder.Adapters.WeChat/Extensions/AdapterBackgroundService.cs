@@ -54,18 +54,28 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Extensions
             finally
             {
                 // Wait until the task completes or the stop token triggers
-                await Task.WhenAny(_executingTask, Task.Delay(Timeout.Infinite, cancellationToken));
+                await Task.WhenAny(_executingTask, Task.Delay(Timeout.Infinite, cancellationToken)).ConfigureAwait(false);
             }
         }
 
         /// <inheritdoc/>
-        public virtual void Dispose()
+        public void Dispose()
         {
-            // Signal cancellation to the executing method
-            _stoppingCts.Cancel();
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
 
-            // Call Dispose when we're done with the CancellationTokenSource.
-            _stoppingCts.Dispose();
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                // free managed resources
+                // Signal cancellation to the executing method
+                _stoppingCts.Cancel();
+
+                // Call Dispose when we're done with the CancellationTokenSource.
+                _stoppingCts.Dispose();
+            }
         }
 
         /// <summary>
