@@ -5,6 +5,15 @@
     <UserSecretsId>ade3d9c2-1633-4922-89e5-a4a50ccb3bc8</UserSecretsId>
   </PropertyGroup>
 
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="dialogSchema ../../libraries/**/*.schema ./**/*.schema -o app.schema" />
+  </Target>
+
+  <ItemGroup>
+    <Content Include="**/*.dialog"/>
+    <Content Include="**/*.lg"/>
+    <Content Include="**/*.lu"/>
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Jurassic" Version="3.0.0" />

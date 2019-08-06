@@ -32,10 +32,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         {
         }
 
-        public IEnumerable<IResourceProvider> ResourceProviders { get { return this.resourceProviders; } }
-
+        /// <summary>
+        /// Event which fires when a resource is changed.
+        /// </summary>
         public event ResourceChangedEventHandler Changed;
 
+        /// <summary>
+        /// Gets the resource providers.
+        /// </summary>
+        public IEnumerable<IResourceProvider> ResourceProviders { get { return this.resourceProviders; } }
+
+        /// <summary>
+        /// Add a resource provider to be managed.
+        /// </summary>
+        /// <param name="resourceProvider"></param>
+        /// <returns></returns>
         public ResourceExplorer AddResourceProvider(IResourceProvider resourceProvider)
         {
             resourceProvider.Changed += ResourceProvider_Changed;
@@ -76,7 +87,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         }
 
         /// <summary>
-        /// Add a .csproj as resource (adding the project, referenced projects and referenced packages)
+        /// Add a .csproj as resource (adding the project, referenced projects and referenced packages).
         /// </summary>
         /// <param name="manager"></param>
         /// <param name="projectFile"></param>
@@ -92,9 +103,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                 projectFile = Directory.EnumerateFiles(projectFile, "*.*proj").FirstOrDefault();
                 if (projectFile == null)
                 {
-                    throw new ArgumentNullException(nameof(projectFile));
+                    explorer.AddFolder(Path.GetDirectoryName(projectFile));
+                    return explorer;
                 }
             }
+
             string projectFolder = Path.GetDirectoryName(projectFile);
 
             XmlDocument xmlDoc = new XmlDocument();
@@ -121,6 +134,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                     explorer.AddResourceProvider(new FolderResourceProvider(path, includeSubFolders: true, monitorChanges: monitorChanges));
                 }
             }
+
             var packages = Path.GetFullPath("packages");
             var relativePackagePath = Path.Combine(@"..", "packages");
             while (!Directory.Exists(packages) && Path.GetDirectoryName(packages) != Path.GetPathRoot(packages))
@@ -131,6 +145,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                     throw new ArgumentNullException("Can't find packages folder");
                 }
             }
+
             var pathResolver = new PackagePathResolver(packages);
 
             // add nuget package references
@@ -154,7 +169,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         }
 
         /// <summary>
-        /// get resources of a given type
+        /// get resources of a given type.
         /// </summary>
         /// <param name="fileExtension"></param>
         /// <returns></returns>
@@ -170,7 +185,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         }
 
         /// <summary>
-        /// Get resource by filename
+        /// Get resource by filename.
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>

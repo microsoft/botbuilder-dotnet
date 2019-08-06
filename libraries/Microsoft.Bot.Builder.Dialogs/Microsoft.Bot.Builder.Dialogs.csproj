@@ -23,7 +23,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Prompts\BasicPrompt.cs" />
+    <Content Include="**/*.dialog" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="**/*.lg" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="**/*.lu" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="**/*.schema" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.Bot.Builder.LanguageGeneration;
-using System.Linq;
 using System.IO;
-using Microsoft.Bot.Builder.Expressions;
-using System.Diagnostics;
+using System.Linq;
+using Microsoft.Bot.Builder.LanguageGeneration;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 {
@@ -137,24 +134,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                 }
             };
 
-
-            //var alarmStrs = alarms.Select(x => engine.EvaluateTemplate("ShowAlarm", new { alarm = x })).ToList() ;
-            //var evaled = engine.EvaluateTemplate("ShowAlarms", new { alarms = alarmStrs });
-            //Assert.AreEqual("You have 2 alarms, 7 am at tomorrow and 8 pm at tomorrow", evaled);
-
-
             var evaled = engine.EvaluateTemplate("ShowAlarmsWithForeach", new { alarms = alarms });
             Assert.AreEqual("You have 2 alarms, 7 am at tomorrow and 8 pm at tomorrow", evaled);
-
-            //var evaled = engine.EvaluateTemplate("ShowAlarmsWithMemberForeach", new { alarms = alarms });
-            //Assert.AreEqual("You have 2 alarms, 7 am at tomorrow and 8 pm at tomorrow", evaled);
-
-            //var evaled = engine.EvaluateTemplate("ShowAlarmsWithHumanize", new { alarms = alarms });
-            //Assert.AreEqual("You have 2 alarms, 7 am at tomorrow and 8 pm at tomorrow", evaled);
-
-            //var evaled = engine.EvaluateTemplate("ShowAlarmsWithMemberHumanize", new { alarms = alarms });
-            //Assert.AreEqual("You have 2 alarms, 7 am at tomorrow and 8 pm at tomorrow", evaled);
-
         }
 
         [TestMethod]
@@ -219,17 +200,21 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.AreEqual(emptyEngine.Evaluate("Hi", null), "Hi");
             Assert.AreEqual(emptyEngine.Evaluate("Hi {name}", new { name = "DL" }), "Hi DL");
             Assert.AreEqual(emptyEngine.Evaluate("Hi {name.FirstName}{name.LastName}", new { name = new { FirstName = "D", LastName = "L" } }), "Hi DL");
-            Assert.AreEqual(emptyEngine.Evaluate("Hi {name.FirstName}{name.LastName} [RecentTasks]",
-                                                  new
-                                                  {
-                                                      name = new
-                                                      {
-                                                          FirstName = "D",
-                                                          LastName = "L"
-                                                      }
+            Assert.AreEqual(
+                emptyEngine.Evaluate(
+                    "Hi {name.FirstName}{name.LastName} [RecentTasks]",
+                    new
+                    {
+                        name = new
+                        {
+                            FirstName = "D",
+                            LastName = "L"
+                        }
 
-                                                  }), "Hi DL You don't have any tasks.");
-            Assert.AreEqual(emptyEngine.Evaluate("Hi {name.FirstName}{name.LastName} [RecentTasks]",
+                    }), "Hi DL You don't have any tasks.");
+            Assert.AreEqual(
+                emptyEngine.Evaluate(
+                    "Hi {name.FirstName}{name.LastName} [RecentTasks]",
                                                   new
                                                   {
                                                       name = new
@@ -239,7 +224,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                                                       },
                                                       recentTasks = new[] { "task1" }
 
-
                                                   }), "Hi DL Your most recent task is task1. You can let me know if you want to add or complete a task.");
 
         }
@@ -248,7 +232,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         public void TestMultiLine()
         {
             var engine = new TemplateEngine().AddFile(GetExampleFilePath("MultilineTextForAdaptiveCard.lg"));
-            var evaled1 = engine.EvaluateTemplate("wPhrase", "");
+            var evaled1 = engine.EvaluateTemplate("wPhrase", string.Empty);
             var options1 = new List<string> { "\r\ncardContent\r\n", "hello", "\ncardContent\n" };
             Assert.IsTrue(options1.Contains(evaled1), $"Evaled is {evaled1}");
 
@@ -343,7 +327,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var options = new List<string> { "Hi", "Hello" };
             Assert.AreEqual(options.Contains(evaled), true);
 
-            evaled = engine.EvaluateTemplate("TemplateD", new { b = "morning"});
+            evaled = engine.EvaluateTemplate("TemplateD", new { b = "morning" });
             options = new List<string> { "Hi morning", "Hello morning" };
             Assert.AreEqual(options.Contains(evaled), true);
         }
@@ -481,7 +465,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var evaled = engine.EvaluateTemplate("wPhrase", "");
             Assert.AreEqual(evaled, "Hi");
 
-            evaled = engine.EvaluateTemplate("wPhrase", new { name = "jack"});
+            evaled = engine.EvaluateTemplate("wPhrase", new { name = "jack" });
             Assert.AreEqual(evaled, "Hi jack");
 
             evaled = engine.EvaluateTemplate("wPhrase", new { name = "morethanfive" });

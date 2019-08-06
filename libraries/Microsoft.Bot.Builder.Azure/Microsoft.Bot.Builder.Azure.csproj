@@ -50,4 +50,12 @@
   <ItemGroup>
     <ProjectReference Include="..\Microsoft.Bot.Builder\Microsoft.Bot.Builder.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="**/*.dialog" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="**/*.lg" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="**/*.lu" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="**/*.schema" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>
