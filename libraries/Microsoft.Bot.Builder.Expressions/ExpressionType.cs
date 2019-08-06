@@ -143,7 +143,6 @@ namespace Microsoft.Bot.Builder.Expressions
         public const string SetPathToValue = "setPathToValue";
         public const string JPath = "jPath";
 
-
         // Regular expression
         public const string IsMatch = "isMatch";
 
