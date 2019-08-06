@@ -136,11 +136,5 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// </summary>
         /// <value>The API version used to process the message.</value>
         public string ApiVersion { get; set; }
-
-        /// <summary>
-        /// Gets or sets a specific type of event.
-        /// </summary>
-        /// <value>The event type.</value>
-        public string EventType { get; set; }
     }
 }

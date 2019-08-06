@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Threading;
@@ -60,7 +59,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// <param name="turnContext">A TurnContext representing the current incoming message and environment.</param>
         /// <param name="activities">An array of outgoing activities to be sent back to the messaging API.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
-        /// <returns>A resource response.</returns>
+        /// <returns>A resource response array with the message Sids.</returns>
         public override async Task<ResourceResponse[]> SendActivitiesAsync(ITurnContext turnContext, Activity[] activities, CancellationToken cancellationToken)
         {
             var responses = new List<ResourceResponse>();
@@ -266,12 +265,6 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
             }
 
             var twilioEvent = JsonConvert.DeserializeObject<TwilioEvent>(JsonConvert.SerializeObject(body));
-
-            if (int.TryParse(twilioEvent.NumMedia, out var numMediaResult) && numMediaResult > 0)
-            {
-                // specify a different event type
-                twilioEvent.EventType = "picture_message";
-            }
 
             return new Activity()
             {
