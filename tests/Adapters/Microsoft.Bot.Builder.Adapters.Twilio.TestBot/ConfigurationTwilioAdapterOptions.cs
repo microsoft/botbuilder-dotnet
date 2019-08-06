@@ -5,7 +5,7 @@
 
 using Microsoft.Extensions.Configuration;
 
-namespace Microsoft.Bot.Builder.Twilio.Sample
+namespace Microsoft.Bot.Builder.Adapters.Twilio.TestBot
 {
     public class ConfigurationTwilioAdapterOptions : SimpleTwilioAdapterOptions
     {

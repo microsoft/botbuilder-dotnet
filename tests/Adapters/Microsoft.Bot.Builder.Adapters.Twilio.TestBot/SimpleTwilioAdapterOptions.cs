@@ -3,9 +3,7 @@
 //
 // Generated with Bot Builder V4 SDK Template for Visual Studio EchoBot v4.3.0
 
-using Microsoft.Bot.Builder.Adapters.Twilio;
-
-namespace Microsoft.Bot.Builder.Twilio.Sample
+namespace Microsoft.Bot.Builder.Adapters.Twilio.TestBot
 {
     public class SimpleTwilioAdapterOptions : ITwilioAdapterOptions
     {

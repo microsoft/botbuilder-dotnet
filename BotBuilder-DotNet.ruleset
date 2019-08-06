@@ -185,4 +185,15 @@
     <Rule Id="SA1649" Action="Error" />
     <Rule Id="SA1651" Action="Error" />
   </Rules>
+  
+  <Rules AnalyzerId="Microsoft.CodeQuality.Analyzers" RuleNamespace="Microsoft.CodeQuality.Analyzers">
+	<Rule Id="CA1054" Action="None" /> <!-- UriParametersShouldNotBeStrings -->
+	<Rule Id="CA1056" Action="None" /> <!-- UriPropertiesShouldNotBeStrings -->
+	<Rule Id="CA1062" Action="None" /> <!-- ValidateArgumentsOfPublicMethods -->
+	<Rule Id="CA2227" Action="None" /> <!-- CollectionPropertiesShouldBeReadOnly -->	
+  </Rules>
+  
+  <Rules AnalyzerId="Microsoft.NetCore.Analyzers" RuleNamespace="Microsoft.NetCore.Analyzers">
+	<Rule Id="CA1303" Action="None" /> <!-- DoNotPassLiteralsAsLocalizedParameters -->
+  </Rules>  
 </RuleSet>
