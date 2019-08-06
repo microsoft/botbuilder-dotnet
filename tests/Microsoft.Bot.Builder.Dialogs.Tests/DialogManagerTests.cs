@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Rules;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Steps;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Events;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
 using Microsoft.Extensions.Configuration;
@@ -125,8 +125,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         {
             var adaptiveDialog = new AdaptiveDialog("planningTest");
 
-            adaptiveDialog.AddRule(
-                new UnknownIntentRule(
+            adaptiveDialog.AddEvent(
+                new OnUnknownIntent(
                     new List<IDialog>()
                     {
                         new TextInput()

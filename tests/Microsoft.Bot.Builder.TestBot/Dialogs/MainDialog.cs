@@ -41,9 +41,9 @@ namespace Microsoft.BotBuilderSamples
             {
                 steps = new WaterfallStep[]
                 {
-                    PromptForTaskStepAsync,
-                    InvokeTaskStepAsyncNoLuis,
-                    ResumeMainLoopStepAsync,
+                    PromptForTaskActionAsync,
+                    InvokeTaskActionAsyncNoLuis,
+                    ResumeMainLoopActionAsync,
                 };
             }
             else
@@ -51,9 +51,9 @@ namespace Microsoft.BotBuilderSamples
                 // LUIS is configured
                 steps = new WaterfallStep[]
                 {
-                    PromptForTaskStepAsync,
-                    InvokeTaskStepAsync,
-                    ResumeMainLoopStepAsync,
+                    PromptForTaskActionAsync,
+                    InvokeTaskActionAsync,
+                    ResumeMainLoopActionAsync,
                 };
             }
 
@@ -63,7 +63,7 @@ namespace Microsoft.BotBuilderSamples
             InitialDialogId = nameof(WaterfallDialog);
         }
 
-        private async Task<DialogTurnResult> PromptForTaskStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        private async Task<DialogTurnResult> PromptForTaskActionAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             if (_luisRecognizer == null)
             {
@@ -72,13 +72,13 @@ namespace Microsoft.BotBuilderSamples
                 await stepContext.Context.SendActivityAsync(activity, cancellationToken);
             }
 
-            // Use the text provided in ResumeMainLoopStepAsync or the default if it is the first time.
+            // Use the text provided in ResumeMainLoopActionAsync or the default if it is the first time.
             var promptText = stepContext.Options?.ToString() ?? "What can I help you with today?";
 
             return await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions { Prompt = MessageFactory.Text(promptText) }, cancellationToken);
         }
 
-        private async Task<DialogTurnResult> InvokeTaskStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        private async Task<DialogTurnResult> InvokeTaskActionAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var luisResult = await _luisRecognizer.RecognizeAsync<FlightBooking>(stepContext.Context, cancellationToken);
 
@@ -114,13 +114,13 @@ namespace Microsoft.BotBuilderSamples
             return await stepContext.NextAsync(null, cancellationToken);
         }
 
-        private async Task<DialogTurnResult> InvokeTaskStepAsyncNoLuis(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        private async Task<DialogTurnResult> InvokeTaskActionAsyncNoLuis(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             // We only handle book a flight if LUIS is not configured
             return await stepContext.BeginDialogAsync(nameof(BookingDialog), new BookingDetails(), cancellationToken);
         }
 
-        private async Task<DialogTurnResult> ResumeMainLoopStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        private async Task<DialogTurnResult> ResumeMainLoopActionAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             // We have completed the task (or the user cancelled), we restart main dialog with a different prompt text.
             var promptMessage = "What else can I do for you?";

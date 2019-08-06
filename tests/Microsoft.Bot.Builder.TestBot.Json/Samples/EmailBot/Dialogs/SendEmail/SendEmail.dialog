@@ -1,7 +1,7 @@
 {
   "$schema": "../../app.schema",
   "$type": "Microsoft.AdaptiveDialog",
-  "steps": [
+  "actions": [
     {
       "$type": "Microsoft.TextInput",
       "prompt": "OK, please enter the subject of your email.",
@@ -24,14 +24,14 @@
     {
       "$type": "Microsoft.IfCondition",
       "condition": "dialog.confirmed",
-      "steps": [
+      "actions": [
         "SendEmails",
         {
           "$type": "Microsoft.SendActivity",
           "activity": "Your email has been sent succsessfully"
         }
       ],
-      "elseSteps": [
+      "elseActions": [
         {
           "$type": "Microsoft.SendActivity",
           "activity": "OK, let's do it next time."

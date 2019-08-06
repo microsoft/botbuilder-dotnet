@@ -1,58 +1,61 @@
 {
-    "$schema": "../../app.schema",
-    "$type": "Microsoft.AdaptiveDialog",
-    "recognizer": {
-        "$type": "Microsoft.RegexRecognizer",
-        "intents": {
-            "Cancel": "(?i)cancel",
-        }
-    },
-    "rules": [
-        {
-            "$type": "Microsoft.IntentRule",
-            "intent": "Cancel",
-            "steps": [
-                {
-                    "$type": "Microsoft.SendActivity",
-                    "activity": "Cancel"
-                }
-            ]
-        }
-    ],
-    "steps": [
-        {
-            "$type": "Microsoft.IfCondition",
-            "condition": "user.name == null",
-            "steps": [
-                {
-                    "$type": "Microsoft.TextInput",
-                    "property": "user.name",
-                    "prompt": "Hello, I'm Zoidberg. What is your name?",
-                    "outputFormat": "trim",
-                    "allowInterruptions": "always"
-                }
-            ]
-        },
-        {
-            "$type": "Microsoft.SendActivity",
-            "activity": "Hello {user.name}, nice to talk to you!"
-        },
-        {
-            "$type": "Microsoft.IfCondition",
-            "condition": "user.name2 == null",
-            "steps": [
-                {
-                    "$type": "Microsoft.TextInput",
-                    "property": "user.name2",
-                    "prompt": "Hello, I'm Zoidberg. What is your name?",
-                    "outputFormat": "trim",
-                    "allowInterruptions": "notRecognized"
-                }
-            ]
-        },
-        {
-            "$type": "Microsoft.SendActivity",
-            "activity": "Hello {user.name2}, nice to talk to you!"
-        }
-    ]
+	"$schema": "../../app.schema",
+	"$type": "Microsoft.AdaptiveDialog",
+	"recognizer": {
+		"$type": "Microsoft.RegexRecognizer",
+		"intents": {
+			"Cancel": "(?i)cancel",
+		}
+	},
+	"events": [
+		{
+			"$type": "Microsoft.OnBeginDialog",
+			"actions": [
+				{
+					"$type": "Microsoft.IfCondition",
+					"condition": "user.name == null",
+					"actions": [
+						{
+							"$type": "Microsoft.TextInput",
+							"property": "user.name",
+							"prompt": "Hello, I'm Zoidberg. What is your name?",
+							"outputFormat": "trim",
+							"allowInterruptions": "always"
+						}
+					]
+				},
+				{
+					"$type": "Microsoft.SendActivity",
+					"activity": "Hello {user.name}, nice to talk to you!"
+				},
+				{
+					"$type": "Microsoft.IfCondition",
+					"condition": "user.name2 == null",
+					"actions": [
+						{
+							"$type": "Microsoft.TextInput",
+							"property": "user.name2",
+							"prompt": "Hello, I'm Zoidberg. What is your name?",
+							"outputFormat": "trim",
+							"allowInterruptions": "notRecognized"
+						}
+					]
+				},
+				{
+					"$type": "Microsoft.SendActivity",
+					"activity": "Hello {user.name2}, nice to talk to you!"
+				}
+			]
+		},
+		{
+			"$type": "Microsoft.OnIntent",
+			"intent": "Cancel",
+			"actions": [
+				{
+					"$type": "Microsoft.SendActivity",
+					"activity": "Cancel"
+				}
+			]
+		}
+	]
 }

@@ -1,36 +1,38 @@
 {
   "$schema": "../../app.schema",
   "$type": "Microsoft.AdaptiveDialog",
-  "steps": [
-
+  "events": [
     {
-      "$type": "Microsoft.IfCondition",
-      "condition": "dialog.token == null",
-      "steps": [
+      "$type": "Microsoft.OnBeginDialog",
+      "actions": [
         {
-          "$type": "Microsoft.OAuthPrompt",
-          "ConnectionName": "msgraph",
-          "Title": "Log in",
-          "Text": "Please log in to your calendar account",
-          "Property": "dialog.token"
+          "$type": "Microsoft.IfCondition",
+          "condition": "dialog.token == null",
+          "actions": [
+            {
+              "$type": "Microsoft.OAuthPrompt",
+              "ConnectionName": "msgraph",
+              "Title": "Log in",
+              "Text": "Please log in to your calendar account",
+              "Property": "dialog.token"
+            }
+          ]
+        },
+        {
+          "$type": "Microsoft.HttpRequest",
+          "url": "https://graph.microsoft.com/v1.0/me/events/{user.focusedMeeting.id}/accept",
+          "method": "POST",
+          "header": {
+            "Authorization": "Bearer {dialog.token.Token}"
+          },
+          "body": {},
+          "Property": "user.acceptResponse"
         }
+        //{
+        //  "$type": "Microsoft.SendActivity",
+        //  "activity": "response: {user.acceptResponse}"
+        //}
       ]
-    },
-
-    {
-      "$type": "Microsoft.HttpRequest",
-      "url": "https://graph.microsoft.com/v1.0/me/events/{user.focusedMeeting.id}/accept",
-      "method": "POST",
-      "header": {
-        "Authorization": "Bearer {dialog.token.Token}"
-      },
-      "body": {
-      },
-      "Property": "user.acceptResponse"
     }
-    //{
-    //  "$type": "Microsoft.SendActivity",
-    //  "activity": "response: {user.acceptResponse}"
-    //}
   ]
 }

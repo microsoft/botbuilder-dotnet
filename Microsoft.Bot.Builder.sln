@@ -72,8 +72,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Appli
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.TestBot", "tests\Microsoft.Bot.Builder.TestBot\Microsoft.Bot.Builder.TestBot.csproj", "{C113E0AE-5564-4389-BA39-183A8D574210}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Builder.TestBot.WebApi", "tests\Microsoft.Bot.Builder.TestBot.WebApi\Microsoft.Bot.Builder.TestBot.WebApi.csproj", "{610963BB-2717-47AB-BFEB-C8856A4A7CA7}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.FunctionalTests", "FunctionalTests\Microsoft.Bot.Builder.FunctionalTests\Microsoft.Bot.Builder.FunctionalTests.csproj", "{B9DDC8CB-8EDF-4D98-913A-22F19E642223}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FunctionalTests", "FunctionalTests", "{8667F820-8ADA-4498-91AE-AE95DEE5227E}"
@@ -136,7 +134,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Schemas", "Schemas", "{EE56
 		schemas\component.schema = schemas\component.schema
 		schemas\readme.md = schemas\readme.md
 		schemas\sdk.schema = schemas\sdk.schema
+		schemas\update.cmd = schemas\update.cmd
+		schemas\updateBranch.cmd = schemas\updateBranch.cmd
 	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.TestBot.Json", "tests\Microsoft.Bot.Builder.TestBot.Json\Microsoft.Bot.Builder.TestBot.Json.csproj", "{2454BBCD-77BC-4E3D-B5A6-3562BED898D6}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Dialogs.Form", "libraries\Microsoft.Bot.Builder.Dialogs.Form\Microsoft.Bot.Builder.Dialogs.Form.csproj", "{9E694B23-DF55-448D-B735-13713827FB7D}"
 EndProject
@@ -329,12 +331,6 @@ Global
 		{C113E0AE-5564-4389-BA39-183A8D574210}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C113E0AE-5564-4389-BA39-183A8D574210}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C113E0AE-5564-4389-BA39-183A8D574210}.Release|Any CPU.Build.0 = Release|Any CPU
-		{610963BB-2717-47AB-BFEB-C8856A4A7CA7}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{610963BB-2717-47AB-BFEB-C8856A4A7CA7}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
-		{610963BB-2717-47AB-BFEB-C8856A4A7CA7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{610963BB-2717-47AB-BFEB-C8856A4A7CA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{610963BB-2717-47AB-BFEB-C8856A4A7CA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{610963BB-2717-47AB-BFEB-C8856A4A7CA7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B9DDC8CB-8EDF-4D98-913A-22F19E642223}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
 		{B9DDC8CB-8EDF-4D98-913A-22F19E642223}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{B9DDC8CB-8EDF-4D98-913A-22F19E642223}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -491,6 +487,12 @@ Global
 		{E7CB7BE4-857A-4134-976E-9F309688A6C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E7CB7BE4-857A-4134-976E-9F309688A6C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E7CB7BE4-857A-4134-976E-9F309688A6C3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2454BBCD-77BC-4E3D-B5A6-3562BED898D6}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{2454BBCD-77BC-4E3D-B5A6-3562BED898D6}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
+		{2454BBCD-77BC-4E3D-B5A6-3562BED898D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2454BBCD-77BC-4E3D-B5A6-3562BED898D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2454BBCD-77BC-4E3D-B5A6-3562BED898D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2454BBCD-77BC-4E3D-B5A6-3562BED898D6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -529,7 +531,6 @@ Global
 		{873BCC1F-ED12-424E-93FA-D76F4BA022C2} = {0A0E26B0-7A46-4F1A-8BFE-9A763FDF6CF8}
 		{D790A4BB-D8AC-4AAE-B3FE-0CF432CA8031} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{C113E0AE-5564-4389-BA39-183A8D574210} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
-		{610963BB-2717-47AB-BFEB-C8856A4A7CA7} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{B9DDC8CB-8EDF-4D98-913A-22F19E642223} = {8667F820-8ADA-4498-91AE-AE95DEE5227E}
 		{060F070A-BBFA-490E-BE89-3844C857B771} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
 		{E4E13301-9193-4106-B0E3-41276B478E7C} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
@@ -554,6 +555,7 @@ Global
 		{038E1C00-13D6-4923-870E-CD5A97ED97B3} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
 		{B7DB6561-7D83-4706-9DE0-02C5520DE2B7} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{BDCAC491-8518-4CE6-B56A-9E36936C7E70} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
+		{2454BBCD-77BC-4E3D-B5A6-3562BED898D6} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{9E694B23-DF55-448D-B735-13713827FB7D} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
 		{E7CB7BE4-857A-4134-976E-9F309688A6C3} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 	EndGlobalSection

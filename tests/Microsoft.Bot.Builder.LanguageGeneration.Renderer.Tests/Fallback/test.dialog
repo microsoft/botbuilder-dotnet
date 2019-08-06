@@ -1,20 +1,30 @@
 ﻿{
-  "$type": "Microsoft.AdaptiveDialog",
-  "generator": "root.lg",
-  "steps": [
-    {
-        "$type": "Microsoft.SendActivity",
-        "activity": "[test]"
-    },
-    {
-        "$type": "Microsoft.AdaptiveDialog",
-        "generator": "subDialog.lg",
-        "steps": [
-            {
-                "$type": "Microsoft.SendActivity",
-                "activity": "[test]"
-            }
-        ]
-    }
-  ]
+    "$type": "Microsoft.AdaptiveDialog",
+    "generator": "root.lg",
+    "events": [
+        {
+            "$type": "Microsoft.OnBeginDialog",
+            "actions": [
+                {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "[test]"
+                },
+                {
+                    "$type": "Microsoft.AdaptiveDialog",
+                    "generator": "subDialog.lg",
+                    "events": [
+                        {
+                            "$type": "Microsoft.OnBeginDialog",
+                            "actions": [
+                                {
+                                    "$type": "Microsoft.SendActivity",
+                                    "activity": "[test]"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
 }

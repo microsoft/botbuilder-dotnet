@@ -14,45 +14,48 @@
             "CancelIntent": "(?i)cancel|never mind"
         }
     },
-    "steps": [
+    "events": [
         {
-            "$type": "Microsoft.SendActivity",
-            "activity": "Hi! I'm a ToDo bot. Say \"add a todo named first\" to get started."
-        }
-    ],
-    "rules": [
+            "$type":"Microsoft.OnBeginDialog",
+            "actions": [
+                {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "Hi! I'm a ToDo bot. Say \"add a todo named first\" to get started."
+                }
+            ]
+        },
         {
-            "$type": "Microsoft.IntentRule",
+            "$type": "Microsoft.OnIntent",
             "intent": "AddIntent",
-            "steps": [
+            "actions": [
                 "AddToDo"
             ]
         },
         {
-            "$type": "Microsoft.IntentRule",
+            "$type": "Microsoft.OnIntent",
             "intent": "DeleteIntent",
-            "steps": [
+            "actions": [
                 "DeleteToDo"
             ]
         },
         {
-            "$type": "Microsoft.IntentRule",
+            "$type": "Microsoft.OnIntent",
             "intent": "ClearIntent",
-            "steps": [
+            "actions": [
                 "ClearToDos"
             ]
         },
         {
-            "$type": "Microsoft.IntentRule",
+            "$type": "Microsoft.OnIntent",
             "intent": "ShowIntent",
-            "steps": [
+            "actions": [
                 "ShowToDos"
             ]
         },
         {
-            "$type": "Microsoft.IntentRule",
+            "$type": "Microsoft.OnIntent",
             "intent": "HelpIntent",
-            "steps": [
+            "actions": [
                 {
                     "$type": "Microsoft.SendActivity",
                     "activity": "[help]"
@@ -60,9 +63,9 @@
             ]
         },
         {
-            "$type": "Microsoft.IntentRule",
+            "$type": "Microsoft.OnIntent",
             "intent": "CancelIntent",
-            "steps": [
+            "actions": [
                 {
                     "$type": "Microsoft.SendActivity",
                     "activity": "ok."
@@ -73,8 +76,8 @@
             ]
         },
         {
-            "$type": "Microsoft.UnknownIntentRule",
-            "steps": [
+            "$type": "Microsoft.OnUnknownIntent",
+            "actions": [
                 {
                     "$type": "Microsoft.SendActivity",
                     "activity": "Hi! I'm a ToDo bot. Say \"add a todo named first\" to get started."

@@ -2,43 +2,46 @@
     "$schema": "../../app.schema",
     "$type": "Microsoft.AdaptiveDialog",
     "$id": "root",
-    "recognizer" : {
-        "$type":"Microsoft.RegexRecognizer",
+    "recognizer": {
+        "$type": "Microsoft.RegexRecognizer",
         "intents": {
             "cancel": "cancel"
         }
     },
-    "steps": [
+    "events": [
         {
-            "$type":"Microsoft.SendActivity",
-            "activity":"RepeatDialog.main.dialog starting"
+            "$type": "Microsoft.OnBeginDialog",
+            "actions": [
+                {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "RepeatDialog.main.dialog starting"
+                },
+                {
+                    "$type": "Microsoft.TextInput",
+                    "prompt": "Hello, what is your name?",
+                    "property": "user.name",
+                    "value": "user.name"
+                },
+                {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "Hello {user.name}, nice to meet you! (type cancel to end this)"
+                },
+                {
+                    "$type": "Microsoft.EndTurn"
+                },
+                {
+                    "$type": "Microsoft.RepeatDialog"
+                }
+            ]
         },
         {
-            "$type":"Microsoft.TextInput",
-            "prompt" : "Hello, what is your name?",
-            "property": "user.name",
-            "value": "user.name"
-        },
-        {
-            "$type":"Microsoft.SendActivity",
-            "activity": "Hello {user.name}, nice to meet you! (type cancel to end this)"
-        },
-        {
-            "$type":"Microsoft.EndTurn"
-        },
-        {
-            "$type":"Microsoft.RepeatDialog"
+            "$type": "Microsoft.OnIntent",
+            "intent": "cancel",
+            "actions": [
+                {
+                    "$type": "Microsoft.EndDialog"
+                }
+            ]
         }
-   ],
-   "rules": [
-       {
-           "$type":"Microsoft.IntentRule",
-           "intent": "cancel",
-           "steps": [
-               {
-                   "$type":"Microsoft.EndDialog"
-               }
-           ]
-       }
-   ]
+    ]
 }

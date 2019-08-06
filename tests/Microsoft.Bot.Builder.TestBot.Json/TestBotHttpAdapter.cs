@@ -31,8 +31,8 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             this.UseState(userState, conversationState);
             this.UseResourceExplorer(resourceExplorer, () =>
             {
-                TypeFactory.Register("Testbot.Multiply", typeof(MultiplyStep));
-                TypeFactory.Register("Testbot.JavascriptStep", typeof(JavascriptStep));
+                TypeFactory.Register("Testbot.Multiply", typeof(MultiplyAction));
+                TypeFactory.Register("Testbot.JavascriptAction", typeof(JavascriptAction));
             });
             this.UseLanguageGeneration(resourceExplorer);
             this.UseDebugger(configuration.GetValue<int>("debugport", 4712), events: new Events<AdaptiveEvents>());

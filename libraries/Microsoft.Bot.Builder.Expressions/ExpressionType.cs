@@ -141,6 +141,7 @@ namespace Microsoft.Bot.Builder.Expressions
         public const string Coalesce = "coalesce";
         public const string XPath = "xPath";
         public const string SetPathToValue = "setPathToValue";
+        public const string JPath = "jPath";
 
         // Regular expression
         public const string IsMatch = "isMatch";

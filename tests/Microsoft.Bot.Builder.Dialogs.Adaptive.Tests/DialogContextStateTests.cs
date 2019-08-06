@@ -4,8 +4,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Rules;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Steps;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Events;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
 using Microsoft.Bot.Builder.Expressions;
@@ -13,6 +13,7 @@ using Microsoft.Bot.Builder.Expressions.Parser;
 using Microsoft.Bot.Builder.LanguageGeneration;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Diagnostics.Tracing;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 {
@@ -256,14 +257,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         { "NameIntent", ".*name is (?<name>.*)" }
                     }
                 },
-                Steps = new List<IDialog>()
+                Events = new List<IOnEvent>()
                 {
-                    new SendActivity("{turn.activity.text}"),
-                },
-                Rules = new List<IRule>()
-                {
-                    new IntentRule(intent: "IntentNumber1",
-                        steps:new List<IDialog>()
+                    new OnBeginDialog()
+                    {
+                        Actions = new List<IDialog>()
+                        {
+                            new SendActivity("{turn.activity.text}"),
+                        }
+                    },
+                    new OnIntent(intent: "IntentNumber1",
+                        actions:new List<IDialog>()
                         {
                             new SendActivity("{turn.activity.text}"),
                             new SendActivity("{turn.recognized.intent}"),
@@ -271,10 +275,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             new SendActivity("{turn.recognized.text}"),
                             new SendActivity("{turn.recognized.intents.intentnumber1.score}"),
                         }),
-                    new IntentRule(intent: "NameIntent",
-                        steps:new List<IDialog>()
+                    new OnIntent(intent: "NameIntent",
+                        actions:new List<IDialog>()
                         {
-                            new SendActivity("{turn.recognized.entities.name}"),
+                            new SendActivity("{turn.recognized.entities.name[0]}"),
                         }),
                 }
             };
@@ -299,20 +303,27 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var testDialog = new AdaptiveDialog("testDialog")
             {
                 AutoEndDialog = false,
-                Steps = new List<IDialog>()
+                Events = new List<IOnEvent>()
                 {
-                    new SetProperty()
+                    new OnBeginDialog()
                     {
-                        Property = "dialog.name",
-                        Value = "'testDialog'"
-                    },
-                    new SendActivity("{dialog.name}"),
-                    new IfCondition()
-                    {
-                        Condition= "{dialog.name} == 'testDialog'",
-                        Steps = new List<IDialog>()
+
+                        Actions = new List<IDialog>()
                         {
-                            new SendActivity("nested dialogCommand {dialog.name}")
+                            new SetProperty()
+                            {
+                                Property = "dialog.name",
+                                Value = "'testDialog'"
+                            },
+                            new SendActivity("{dialog.name}"),
+                            new IfCondition()
+                            {
+                                Condition= "{dialog.name} == 'testDialog'",
+                                Actions = new List<IDialog>()
+                                {
+                                    new SendActivity("nested dialogCommand {dialog.name}")
+                                }
+                            }
                         }
                     }
                 }
@@ -328,39 +339,59 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         [TestMethod]
         public async Task DialogContextState_InputBinding()
         {
+            var d2 = new AdaptiveDialog("d2")
+            {
+                InputBindings = new Dictionary<string, string>() { { "dialog.name", "$name" } },
+                Events = new List<IOnEvent>()
+                                    {
+                                        new OnBeginDialog()
+                                        {
+                                            Actions = new List<IDialog>()
+                                            {
+                                                new SendActivity("nested d2 {$name}"),
+                                                new SetProperty() { Property = "dialog.name", Value = "'testDialogd2'" },
+                                                new SendActivity("nested d2 {$name}"),
+                                            }
+                                        }
+                                    }
+            };
+
             var testDialog = new AdaptiveDialog("testDialog")
             {
                 AutoEndDialog = false,
-                Steps = new List<IDialog>()
+
+                Events = new List<IOnEvent>()
                 {
-                    new SetProperty() { Property = "dialog.name", Value = "'testDialog'" },
-                    new SendActivity("{dialog.name}"),
-                    new AdaptiveDialog("d1")
+                    new OnBeginDialog()
                     {
-                        InputBindings = new Dictionary<string, string>() { { "dialog.name", "$name" } },
-                        Steps = new List<IDialog>()
+                        Actions = new List<IDialog>()
                         {
-                            new SendActivity("nested d1 {$name}"),
-                            new SetProperty() { Property = "dialog.name", Value = "'testDialogd1'" },
-                            new SendActivity("nested d1 {$name}"),
-                        }
-                    },
-                    new BeginDialog()
-                    {
-                        // bind dialog.name -> adaptive dialog
-                        Dialog = new AdaptiveDialog("d2")
-                        {
-                            InputBindings = new Dictionary<string, string>() { { "dialog.name", "$name" } },
-                            Steps = new List<IDialog>()
+                            new SetProperty() { Property = "dialog.name", Value = "'testDialog'" },
+                            new SendActivity("{dialog.name}"),
+                            new AdaptiveDialog("d1")
                             {
-                                new SendActivity("nested d2 {$name}"),
-                                new SetProperty() { Property = "dialog.name", Value = "'testDialogd2'" },
-                                new SendActivity("nested d2 {$name}"),
-                            }
+                                InputBindings = new Dictionary<string, string>() { { "dialog.name", "$name" } },
+
+                                Events = new List<IOnEvent>()
+                                {
+                                    new OnBeginDialog()
+                                    {
+                                        Actions = new List<IDialog>()
+                                        {
+                                            new SendActivity("nested d1 {$name}"),
+                                            new SetProperty() { Property = "dialog.name", Value = "'testDialogd1'" },
+                                            new SendActivity("nested d1 {$name}"),
+                                        }
+                                    }
+                                }
+                            },
+                            new BeginDialog(d2.Id)
                         }
-                    },
+                    }
                 }
             };
+
+            testDialog.AddDialog(d2);
 
             await CreateFlow(testDialog)
                     .SendConversationUpdate()
@@ -375,62 +406,87 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         [TestMethod]
         public async Task DialogContextState_OutputBinding()
         {
+            var d2 = new AdaptiveDialog("d2")
+            {
+                InputBindings = new Dictionary<string, string>() { { "$zzz", "dialog.name" } },
+                DefaultResultProperty = "$zzz",
+                // test output binding from adaptive dialog
+                OutputBinding = "dialog.name",
+                Events = new List<IOnEvent>()
+                {
+                    new OnBeginDialog()
+                    {
+                        Actions = new List<IDialog>()
+                        {
+                            new SendActivity("nested begindialog {$zzz}"),
+                            new SetProperty() { Property = "dialog.zzz", Value = "'newName2'" },
+                            new SendActivity("nested begindialog {$zzz}"),
+                        }
+                    }
+                }
+            };
+            var d3 = new AdaptiveDialog("d3")
+            {
+                InputBindings = new Dictionary<string, string>() { { "$qqq", "dialog.name" } },
+                DefaultResultProperty = "$qqq",
+                Events = new List<IOnEvent>()
+                                    {
+                                        new OnBeginDialog()
+                                        {
+                                            Actions = new List<IDialog>()
+                                            {
+                                                new SendActivity("nested begindialog2 {$qqq}"),
+                                                new SetProperty() { Property = "dialog.qqq", Value = "'newName3'" },
+                                                new SendActivity("nested begindialog2 {$qqq}"),
+                                            }
+                                        }
+                                    }
+            };
+
             var testDialog = new AdaptiveDialog("testDialog")
             {
                 AutoEndDialog = false,
-                Steps = new List<IDialog>()
+                Events = new List<IOnEvent>()
                 {
-                    new SetProperty() { Property = "dialog.name", Value = "'testDialog'" },
-                    new SendActivity("{dialog.name}"),
-                    new AdaptiveDialog("d1")
+                    new OnBeginDialog()
                     {
-                        InputBindings = new Dictionary<string, string>() { { "$xxx", "dialog.name" } },
-                        OutputBinding = "dialog.name",
-                        DefaultResultProperty = "$xxx",
-                        Steps = new List<IDialog>()
+                        Actions = new List<IDialog>()
                         {
-                            new SendActivity("nested dialogCommand {$xxx}"),
-                            new SetProperty() { Property = "dialog.xxx", Value = "'newName'" },
-                            new SendActivity("nested dialogCommand {$xxx}"),
-                        }
-                    },
-                    new SendActivity("{dialog.name}"),
-                    new BeginDialog()
-                    {
-                        Dialog = new AdaptiveDialog("d2")
-                        {
-                            InputBindings = new Dictionary<string, string>() { { "$zzz", "dialog.name" } },
-                            DefaultResultProperty = "$zzz",
-                            // test output binding from adaptive dialog
-                            OutputBinding = "dialog.name",
-                            Steps = new List<IDialog>()
+                            new SetProperty() { Property = "dialog.name", Value = "'testDialog'" },
+                            new SendActivity("{dialog.name}"),
+                            new AdaptiveDialog("d1")
                             {
-                                new SendActivity("nested begindialog {$zzz}"),
-                                new SetProperty() { Property = "dialog.zzz", Value = "'newName2'" },
-                                new SendActivity("nested begindialog {$zzz}"),
-                            }
-                        }
-                    },
-                    new SendActivity("{dialog.name}"),
-                    new BeginDialog()
-                    {
-                        // test output binding from beginDialog
-                        OutputBinding = "dialog.name",
-                        Dialog = new AdaptiveDialog("d3")
-                        {
-                            InputBindings = new Dictionary<string, string>() { { "$qqq", "dialog.name" } },
-                            DefaultResultProperty = "$qqq",
-                            Steps = new List<IDialog>()
+                                InputBindings = new Dictionary<string, string>() { { "$xxx", "dialog.name" } },
+                                OutputBinding = "dialog.name",
+                                DefaultResultProperty = "$xxx",
+                                Events = new List<IOnEvent>()
+                                {
+                                    new OnBeginDialog()
+                                    {
+                                        Actions = new List<IDialog>()
+                                        {
+                                            new SendActivity("nested dialogCommand {$xxx}"),
+                                            new SetProperty() { Property = "dialog.xxx", Value = "'newName'" },
+                                            new SendActivity("nested dialogCommand {$xxx}"),
+                                        }
+                                    }
+                                }
+                            },
+                            new SendActivity("{dialog.name}"),
+                            new BeginDialog(d2.Id),
+                            new SendActivity("{dialog.name}"),
+                            new BeginDialog(d3.Id)
                             {
-                                new SendActivity("nested begindialog2 {$qqq}"),
-                                new SetProperty() { Property = "dialog.qqq", Value = "'newName3'" },
-                                new SendActivity("nested begindialog2 {$qqq}"),
-                            }
+                                // test output binding from beginDialog
+                                OutputBinding = "dialog.name"
+                            },
+                            new SendActivity("{dialog.name}"),
                         }
-                    },
-                    new SendActivity("{dialog.name}"),
+                    }
                 }
             };
+            testDialog.AddDialog(d2);
+            testDialog.AddDialog(d3);
 
             await CreateFlow(testDialog)
                     .SendConversationUpdate()
@@ -450,46 +506,65 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         [TestMethod]
         public async Task DialogContextState_CallstackScope()
         {
+            var d3 = new AdaptiveDialog("d3")
+            {
+                Events = new List<IOnEvent>()
+                                                        {
+                                                            new OnBeginDialog()
+                                                            {
+                                                                Actions = new List<IDialog>()
+                                                                {
+                                                                    new SetProperty() { Property = "$zzz", Value = "'zzz'" },
+                                                                    new SetProperty() { Property = "$aaa", Value = "'d3'" },
+                                                                    new SendActivity("{$aaa}"),
+                                                                    new SendActivity("{$zzz}"),
+                                                                    new SendActivity("{$bbb}"),
+                                                                    new SendActivity("{$xyz}"),
+                                                                }
+                                                            }
+                                                        }
+            };
+
+            var d2 = new AdaptiveDialog("d2")
+            {
+                Events = new List<IOnEvent>()
+                                    {
+                                        new OnBeginDialog()
+                                        {
+                                            Actions = new List<IDialog>()
+                                            {
+                                                new SetProperty() { Property = "$bbb", Value = "'bbb'" },
+                                                new SendActivity("{$aaa}"),
+                                                new SendActivity("{$xyz}"),
+                                                new SendActivity("{$bbb}"),
+                                                new BeginDialog(d3.Id)
+                                            }
+                                        }
+                                    }
+            };
+            d2.AddDialog(d3);
+
             var testDialog = new AdaptiveDialog("testDialog")
             {
                 AutoEndDialog = false,
-                Steps = new List<IDialog>()
+                Events = new List<IOnEvent>()
                 {
-                    new SetProperty() { Property = "dialog.xyz", Value = "'xyz'" },
-                    new SetProperty() { Property = "$aaa", Value = "'d1'" },
-                    new SendActivity("{dialog.xyz}"),
-                    new SendActivity("{$xyz}"),
-                    new SendActivity("{$aaa}"),
-                    new BeginDialog()
+                    new OnBeginDialog()
                     {
-                        Dialog = new AdaptiveDialog("d2")
+                        Actions = new List<IDialog>()
                         {
-                            Steps = new List<IDialog>()
-                            {
-                                new SetProperty() { Property = "$bbb", Value = "'bbb'" },
-                                new SendActivity("{$aaa}"),
-                                new SendActivity("{$xyz}"),
-                                new SendActivity("{$bbb}"),
-                                new BeginDialog()
-                                {
-                                    Dialog = new AdaptiveDialog("d3")
-                                    {
-                                        Steps = new List<IDialog>()
-                                        {
-                                            new SetProperty() { Property = "$zzz", Value = "'zzz'" },
-                                            new SetProperty() { Property = "$aaa", Value = "'d3'" },
-                                            new SendActivity("{$aaa}"),
-                                            new SendActivity("{$zzz}"),
-                                            new SendActivity("{$bbb}"),
-                                            new SendActivity("{$xyz}"),
-                                        }
-                                    }
-                                },
-                            }
+                            new SetProperty() { Property = "dialog.xyz", Value = "'xyz'" },
+                            new SetProperty() { Property = "$aaa", Value = "'d1'" },
+                            new SendActivity("{dialog.xyz}"),
+                            new SendActivity("{$xyz}"),
+                            new SendActivity("{$aaa}"),
+                            new BeginDialog(d2.Id)
                         }
-                    },
+                    }
                 }
             };
+
+            testDialog.AddDialog(d2);
 
             await CreateFlow(testDialog)
                     .SendConversationUpdate()

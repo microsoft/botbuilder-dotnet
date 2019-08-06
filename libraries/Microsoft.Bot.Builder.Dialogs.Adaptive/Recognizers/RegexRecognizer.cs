@@ -61,23 +61,33 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
                     }
                 }
 
-                var match = regex.Match(utterance);
+                var matches = regex.Matches(utterance);
 
-                if (match.Success)
+                if (matches.Count > 0)
                 {
                     // TODO length weighted match and multiple intents
                     result.Intents.Add(intent.Replace(" ", "_"), new IntentScore() { Score = 1.0 });
 
                     // Check for named capture groups
-                    var entities = new Dictionary<string, string>();
-                    foreach (var name in regex.GetGroupNames().Where(name => name.Length > 1))
+                    var entities = new Dictionary<string, List<string>>();
+
+                    // only if we have a value and the name is not a number "0"
+                    foreach (var groupName in regex.GetGroupNames().Where(name => name.Length > 1))
                     {
-                        // only if we have a value and the name is not a number "0"
-                        if (!string.IsNullOrEmpty(match.Groups[name].Value))
+                        foreach (var match in matches.Cast<Match>())
                         {
-                            entities.Add(name, match.Groups[name].Value);
+                            var group = (Group)match.Groups[groupName];
+                            List<string> values;
+                            if (!entities.TryGetValue(groupName, out values))
+                            {
+                                values = new List<string>();
+                                entities.Add(groupName, values);
+                            }
+
+                            values.Add(group.Value);
                         }
                     }
+
                     result.Entities = JObject.FromObject(entities);
                 }
             }

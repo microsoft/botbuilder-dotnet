@@ -4,9 +4,9 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Events;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Rules;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Steps;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
@@ -105,19 +105,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             var dialog = new AdaptiveDialog();
             dialog.Recognizer = GetMultiLingualRecognizer();
-            dialog.AddRules(new List<IRule>()
+            dialog.AddEvents(new List<IOnEvent>()
             {
-                new IntentRule("Greeting", steps:
+                new OnIntent("Greeting", actions:
                     new List<IDialog>()
                     {
                         new SendActivity("greeting intent"),
                     }),
-                new IntentRule("Goodbye", steps:
+                new OnIntent("Goodbye", actions:
                     new List<IDialog>()
                     {
                         new SendActivity("goodbye intent"),
                     }),
-                new UnknownIntentRule(steps:
+                new OnUnknownIntent(actions:
                     new List<IDialog>()
                     {
                         new SendActivity("default rule"),

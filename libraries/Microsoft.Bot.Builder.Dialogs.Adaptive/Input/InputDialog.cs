@@ -373,7 +373,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                     }
                 }
 
-                // reset turn.processInput so subsequent steps are not impacted. 
+                // reset turn.processInput so subsequent actions are not impacted. 
                 dc.State.SetValue(PROCESS_INPUT_PROPERTY, false);
             }
 
