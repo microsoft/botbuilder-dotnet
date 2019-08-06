@@ -17,7 +17,7 @@ using Newtonsoft.Json.Linq;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
 {
     /// <summary>
-    /// Lets you modify an array in memory
+    /// Lets you modify an array in memory.
     /// </summary>
     public class EditArray : DialogCommand
     {
@@ -73,7 +73,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
         public ArrayChangeType ChangeType { get; set; }
 
         /// <summary>
-        /// Memory expression of the array to manipulate
+        /// Memory expression of the array to manipulate.
         /// </summary>Edit
         [JsonProperty("arrayProperty")]
         public string ArrayProperty
@@ -105,7 +105,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
         public EditArray(ArrayChangeType changeType, string arrayProperty = null, string value = null, string resultProperty = null)
             : base()
         {
-
             this.ChangeType = changeType;
 
             if (!string.IsNullOrEmpty(arrayProperty))
@@ -158,12 +157,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                     {
                         array.Add(itemResult);
                     }
+
                     break;
                 case ArrayChangeType.Take:
                     if (array.Count == 0)
                     {
                         break;
                     }
+
                     item = array[0];
                     array.RemoveAt(0);
                     result = item;
@@ -184,6 +185,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
                             }
                         }
                     }
+
                     break;
                 case ArrayChangeType.Clear:
                     result = array.Count > 0;
@@ -192,10 +194,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
             }
 
             dc.State.SetValue(this.arrayProperty, array);
+
             if (ResultProperty != null)
             {
                 dc.State.SetValue(resultProperty, result);
             }
+
             return await dc.EndDialogAsync(result);
         }
 
@@ -203,7 +207,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
         {
             if (Value == null)
             {
-                throw new Exception($"EditArray: \"{ ChangeType }\" operation couldn't be performed for array \"{ArrayProperty}\" because a value wasn't specified.");
+                throw new Exception($"EditArray: \"{ChangeType}\" operation couldn't be performed for array \"{ArrayProperty}\" because a value wasn't specified.");
             }
         }
 

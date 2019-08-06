@@ -201,6 +201,11 @@
             "$ref": "#/definitions/Microsoft.NumberInput"
         },
         {
+            "title": "Microsoft.OAuthInput",
+            "description": "This represents a dialog which gathers an OAuth token from user",
+            "$ref": "#/definitions/Microsoft.OAuthInput"
+        },
+        {
             "title": "Microsoft.QnAMakerDialog",
             "description": "This represents a dialog which is driven by a call to QnAMaker.ai knowledge base",
             "$ref": "#/definitions/Microsoft.QnAMakerDialog"
@@ -607,12 +612,17 @@
                     ]
                 },
                 "allowInterruptions": {
-                    "type": "boolean",
+                    "type": "string",
+                    "enum": [
+                        "always",
+                        "never",
+                        "notRecognized"
+                    ],
                     "title": "Allow Interruptions",
-                    "description": "If set to true this will always consult the parent dialog whether it will be interupt or not.",
-                    "default": true,
+                    "description": "Always will always consult parent dialogs first, never will not consult parent dialogs, notRecognized will consult parent only when it's not recognized",
+                    "default": "notRecognized",
                     "examples": [
-                        true
+                        "notRecognized"
                     ]
                 },
                 "outputFormat": {
@@ -942,12 +952,17 @@
                     ]
                 },
                 "allowInterruptions": {
-                    "type": "boolean",
+                    "type": "string",
+                    "enum": [
+                        "always",
+                        "never",
+                        "notRecognized"
+                    ],
                     "title": "Allow Interruptions",
-                    "description": "If set to true this will always consult the parent dialog whether it will be interupt or not.",
-                    "default": true,
+                    "description": "Always will always consult parent dialogs first, never will not consult parent dialogs, notRecognized will consult parent only when it's not recognized",
+                    "default": "notRecognized",
                     "examples": [
-                        true
+                        "notRecognized"
                     ]
                 },
                 "outputFormat": {
@@ -1308,12 +1323,17 @@
                     ]
                 },
                 "allowInterruptions": {
-                    "type": "boolean",
+                    "type": "string",
+                    "enum": [
+                        "always",
+                        "never",
+                        "notRecognized"
+                    ],
                     "title": "Allow Interruptions",
-                    "description": "If set to true this will always consult the parent dialog whether it will be interupt or not.",
-                    "default": true,
+                    "description": "Always will always consult parent dialogs first, never will not consult parent dialogs, notRecognized will consult parent only when it's not recognized",
+                    "default": "notRecognized",
                     "examples": [
-                        true
+                        "notRecognized"
                     ]
                 },
                 "defaultLocale": {
@@ -1615,12 +1635,17 @@
                     ]
                 },
                 "allowInterruptions": {
-                    "type": "boolean",
+                    "type": "string",
+                    "enum": [
+                        "always",
+                        "never",
+                        "notRecognized"
+                    ],
                     "title": "Allow Interruptions",
-                    "description": "If set to true this will always consult the parent dialog whether it will be interupt or not.",
-                    "default": true,
+                    "description": "Always will always consult parent dialogs first, never will not consult parent dialogs, notRecognized will consult parent only when it's not recognized",
+                    "default": "notRecognized",
                     "examples": [
-                        true
+                        "notRecognized"
                     ]
                 },
                 "defaultLocale": {
@@ -2888,6 +2913,11 @@
                     "$ref": "#/definitions/Microsoft.NumberInput"
                 },
                 {
+                    "title": "Microsoft.OAuthInput",
+                    "description": "This represents a dialog which gathers an OAuth token from user",
+                    "$ref": "#/definitions/Microsoft.OAuthInput"
+                },
+                {
                     "title": "Microsoft.QnAMakerDialog",
                     "description": "This represents a dialog which is driven by a call to QnAMaker.ai knowledge base",
                     "$ref": "#/definitions/Microsoft.QnAMakerDialog"
@@ -4134,12 +4164,17 @@
                     ]
                 },
                 "allowInterruptions": {
-                    "type": "boolean",
+                    "type": "string",
+                    "enum": [
+                        "always",
+                        "never",
+                        "notRecognized"
+                    ],
                     "title": "Allow Interruptions",
-                    "description": "If set to true this will always consult the parent dialog whether it will be interupt or not.",
-                    "default": true,
+                    "description": "Always will always consult parent dialogs first, never will not consult parent dialogs, notRecognized will consult parent only when it's not recognized",
+                    "default": "notRecognized",
                     "examples": [
-                        true
+                        "notRecognized"
                     ]
                 },
                 "outputFormat": {
@@ -4157,6 +4192,110 @@
                     "title": "Default Locale",
                     "description": "The prompts default locale that should be recognized.",
                     "default": "en-us"
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$type"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.OAuthInput": {
+            "$role": "unionType(Microsoft.IDialog)",
+            "title": "OAuthInput Dialog",
+            "description": "This represents a dialog which gathers an OAuth token from user",
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.OAuthInput"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "property": {
+                    "$role": "memoryPath",
+                    "title": "Property",
+                    "description": "This is that will be passed in as InputProperty and also set as the OutputProperty",
+                    "examples": [
+                        "value.birthday"
+                    ],
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
+                },
+                "inputBindings": {
+                    "type": "object",
+                    "title": "Input Bindings",
+                    "description": "This defines properties which be passed as arguments to this dialog",
+                    "examples": [
+                        "value.birthday"
+                    ],
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "outputBinding": {
+                    "$role": "memoryPath",
+                    "title": "Output Property binding",
+                    "description": "This is the property which the EndDialog(result) will be set to when EndDialog() is called",
+                    "examples": [
+                        "value.birthday"
+                    ],
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
+                },
+                "connectionName": {
+                    "type": "string",
+                    "title": "Connection Name",
+                    "description": "The connection name configured in Azure Web App Bot OAuth settings."
+                },
+                "text": {
+                    "type": "string",
+                    "title": "Text",
+                    "description": "Text shown in the OAuth signin card."
+                },
+                "title": {
+                    "type": "string",
+                    "title": "Title",
+                    "description": "Title shown in the OAuth signin card."
+                },
+                "timeout": {
+                    "type": "integer",
+                    "title": "Timeout",
+                    "description": "Time out setting for the OAuth signin card.",
+                    "default": "900000"
                 }
             },
             "additionalProperties": false,
@@ -4846,6 +4985,32 @@
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
                 },
+                "outputFormat": {
+                    "type": "string",
+                    "enum": [
+                        "none",
+                        "trim",
+                        "lowercase",
+                        "uppercase"
+                    ],
+                    "title": "Output Format",
+                    "description": "The TextInput output format.",
+                    "default": "none"
+                },
+                "allowInterruptions": {
+                    "default": "always",
+                    "type": "string",
+                    "enum": [
+                        "always",
+                        "never",
+                        "notRecognized"
+                    ],
+                    "title": "Allow Interruptions",
+                    "description": "Always will always consult parent dialogs first, never will not consult parent dialogs, notRecognized will consult parent only when it's not recognized",
+                    "examples": [
+                        "notRecognized"
+                    ]
+                },
                 "property": {
                     "$role": "memoryPath",
                     "title": "Property",
@@ -4944,27 +5109,6 @@
                     "examples": [
                         false
                     ]
-                },
-                "allowInterruptions": {
-                    "type": "boolean",
-                    "title": "Allow Interruptions",
-                    "description": "If set to true this will always consult the parent dialog whether it will be interupt or not.",
-                    "default": true,
-                    "examples": [
-                        true
-                    ]
-                },
-                "outputFormat": {
-                    "type": "string",
-                    "enum": [
-                        "none",
-                        "trim",
-                        "lowercase",
-                        "uppercase"
-                    ],
-                    "title": "Output Format",
-                    "description": "The TextInput output format.",
-                    "default": "none"
                 }
             },
             "additionalProperties": false,

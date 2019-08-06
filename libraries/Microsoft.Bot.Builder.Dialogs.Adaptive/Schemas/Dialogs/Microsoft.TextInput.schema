@@ -6,9 +6,6 @@
     "type": "object",
     "allOf": [
         {
-            "$ref": "./baseInputSchema.json"
-        },
-        {
             "properties": {
                 "outputFormat": {
                     "type": "string",
@@ -21,8 +18,14 @@
                     "title": "Output Format",
                     "description": "The TextInput output format.",
                     "default": "none"
+                },
+                "allowInterruptions": {
+                   "default":  "always"
                 }
             }
+        },
+        {
+            "$ref": "./baseInputSchema.json"
         }
     ]
 }

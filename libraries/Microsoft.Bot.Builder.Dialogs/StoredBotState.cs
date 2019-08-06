@@ -7,10 +7,8 @@ namespace Microsoft.Bot.Builder.Dialogs
 {
     public class StoredBotState
     {
-        public Dictionary<string, object> UserState { get; set; }
-
-        public Dictionary<string, object> ConversationState { get; set; }
-
-        public List<DialogInstance> DialogStack { get; set; }
+        public IDictionary<string, object> UserState { get; set; }
+        public IDictionary<string, object> ConversationState { get; set; }
+        public IList<DialogInstance> DialogStack { get; set; }
     }
 }

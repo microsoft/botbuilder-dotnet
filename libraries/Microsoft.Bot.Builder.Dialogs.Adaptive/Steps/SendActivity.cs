@@ -13,12 +13,12 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
 {
     /// <summary>
-    /// Send an activity back to the user
+    /// Send an activity back to the user.
     /// </summary>
     public class SendActivity : DialogCommand
     {
         /// <summary>
-        /// Template for the activity
+        /// Template for the activity.
         /// </summary>
         public ITemplate<Activity> Activity { get; set; }
 
@@ -58,21 +58,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
             return await dc.EndDialogAsync(response, cancellationToken).ConfigureAwait(false);
         }
 
-        public static string Ellipsis(string text, int length)
-        {
-            var ellipsis = text;
-            if (text.Length > length)
-            {
-                int pos = text.IndexOf(" ", length);
-                if (pos >= 0)
-                {
-                    ellipsis = text.Substring(0, pos) + "...";
-                }
-            }
-
-            return ellipsis;
-        }
-
         protected override string OnComputeId()
         {
             if (Activity is ActivityTemplate at)
@@ -81,6 +66,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Steps
             }
 
             return $"SendActivity('{Ellipsis(Activity?.ToString().Trim(), 30)}')";
+        }
+
+        private static string Ellipsis(string text, int length)
+        {
+            if (text.Length <= length) return text;
+            int pos = text.IndexOf(" ", length);
+
+            if (pos >= 0)
+            {
+                return text.Substring(0, pos) + "...";
+            }
+
+            return text;
         }
     }
 }

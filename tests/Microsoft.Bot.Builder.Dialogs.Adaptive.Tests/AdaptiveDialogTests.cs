@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
@@ -240,7 +241,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             new TextInput()
                             {
                                 Prompt = new ActivityTemplate("Hello, what is your name?"),
-                                Property = "user.name"
+                                Property = "user.name",
+                                AllowInterruptions = AllowInterruptions.Never,
                             }
                         }
                     },
@@ -735,7 +737,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     new NumberInput()
                     {
                         Prompt = new ActivityTemplate("age?"),
-                        Property = "user.age"
+                        Property = "user.age",
+                        AllowInterruptions = AllowInterruptions.Never,
+                        MaxTurnCount = 2,
+                    },
+                    new NumberInput()
+                    {
+                        Prompt = new ActivityTemplate("age?"),
+                        Property = "user.age",
+                        AllowInterruptions = AllowInterruptions.Always,
                     },
                     new SendActivity("{user.age}"),
                 },
@@ -777,7 +787,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .AssertReply("name?")
             .Send("Carlos")
                 .AssertReply("Carlos")
-                .AssertReply("age?")
+                .AssertReply("age?") // turnCount = 1
+            .Send("root") // allowInterruptions = never
+                .AssertReply("age?") // turnCount = 2
+            .Send("side") // fail to recognize and end
+                .AssertReply("age?") // new NumberInput with allowInterruptions = always
             .Send("root")
                 .AssertReply("rootintent")
                 .AssertReply("age?")
@@ -1045,7 +1059,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .AssertReply("Hello zoidberg, I have your age as 22")
             .StartTestAsync();
         }
-      
+
         [TestMethod]
         public async Task AdaptiveDialog_BindingTwoWayAcrossAdaptiveDialogs_AnonymousOptions()
         {
@@ -1064,6 +1078,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             await TestBindingTwoWayAcrossAdaptiveDialogs(new Dictionary<string, string>() { { "userName", "$name" } });
         }
 
+        /// <summary>
+        /// Test class to test two way binding with strongly typed options objects.
+        /// </summary>
         class Person
         {
             public string userName { get; set; }
@@ -1073,6 +1090,696 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         public async Task AdaptiveDialog_BindingTwoWayAcrossAdaptiveDialogs_StronglyTypedOptions()
         {
             await TestBindingTwoWayAcrossAdaptiveDialogs(new Person() { userName = "$name" });
+        }
+
+        [TestMethod]
+        public async Task AdaptiveDialog_PropertySetInInterruption()
+        {
+            var rootDialog = new AdaptiveDialog(nameof(AdaptiveDialog))
+            {
+                Generator = new TemplateEngineLanguageGenerator(),
+                Recognizer = new RegexRecognizer()
+                {
+                    Intents = new Dictionary<string, string>() {
+                        { "Interruption", "(?i)interrupt" },
+                        { "Greeting", "(?i)hi" },
+                        { "Start", "(?i)start" },
+                        { "noage", "(?i)no" },
+                        { "why", "(?i)why" },
+                        { "reset", "(?i)reset" }
+                    }
+                },
+                Rules = new List<IRule>()
+                {
+                    new UnknownIntentRule()
+                    {
+                        Steps = new List<IDialog>()
+                        {
+                            new SendActivity("Hello, I'm the demo bot.")
+                        }
+                    },
+                    new IntentRule()
+                    {
+                        Intent = "reset",
+                        Steps = new List<IDialog>() {
+                            new DeleteProperty()
+                            {
+                                Property = "user.name"
+                            },
+                            new SendActivity("Sure. I've reset your profile.")
+                        }
+                    },
+                    new IntentRule() {
+                        Intent = "Start",
+                        Steps = new List<IDialog>() {
+                            new TextInput() {
+                                Prompt = new ActivityTemplate("What is your name?"),
+                                Property = "user.name",
+                                AllowInterruptions = AllowInterruptions.Always
+                            },
+                            new SendActivity("I have {user.name} as your name")
+                        }
+                    },
+                    new IntentRule() {
+                        Intent = "Interruption",
+                        Steps = new List<IDialog>() {
+                            // short circuiting Interruption so consultation is terminated. 
+                            new SendActivity("In Interruption..."),
+                            // request the active input step to re-process user input. 
+                            new SetProperty()
+                            {
+                                Property = "turn.processInput",
+                                Value = "true"
+                            }
+                        }
+                    },
+                    new IntentRule() {
+                        Intent = "Greeting",
+                        Steps = new List<IDialog>() {
+                            new SendActivity("Hi, I'm the test bot!")
+                        }
+                    },
+                    new IntentRule()
+                    {
+                        Intent = "noage",
+                        Steps = new List<IDialog>()
+                        {
+                            new SendActivity("Sure, no problem. I'll set your name to 'Human'. you can say reset to start over"),
+                            new SetProperty()
+                            {
+                                Property = "user.name",
+                                Value = "'Human'"
+                            }
+                        }
+                    },
+                    new IntentRule()
+                    {
+                        Intent = "why",
+                        Steps = new List<IDialog>()
+                        {
+                            new SendActivity("I need your name to be able to address you correctly")
+                        }
+                    }
+                }
+            };
+
+            await CreateFlow(rootDialog)
+            .Send("start")
+                .AssertReply("What is your name?")
+            .Send("why")
+                .AssertReply("I need your name to be able to address you correctly")
+                .AssertReply("What is your name?")
+            .Send("hi")
+                .AssertReply("Hi, I'm the test bot!")
+                .AssertReply("What is your name?")
+            .Send("reset")
+                .AssertReply("Sure. I've reset your profile.")
+                .AssertReply("What is your name?")
+            .Send("no")
+                .AssertReply("Sure, no problem. I'll set your name to 'Human'. you can say reset to start over")
+                .AssertReply("I have Human as your name")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task AdaptiveDialog_ReProcessInputProperty()
+        {
+            var rootDialog = new AdaptiveDialog(nameof(AdaptiveDialog))
+            {
+                Generator = new TemplateEngineLanguageGenerator(),
+                Recognizer = new RegexRecognizer()
+                {
+                    Intents = new Dictionary<string, string>() {
+                        { "Interruption", "(?i)interrupt" },
+                        { "Start", "(?i)start" }
+                    }
+                },
+                Rules = new List<IRule>()
+                {
+                    new IntentRule() {
+                        Intent = "Start",
+                        Steps = new List<IDialog>() {
+                            new TextInput() {
+                                Prompt = new ActivityTemplate("What is your name?"),
+                                Property = "user.name",
+                                AllowInterruptions = AllowInterruptions.Always
+                            },
+                            new SendActivity("I have {user.name} as your name")
+                        }
+                    },
+                    new IntentRule() {
+                        Intent = "Interruption",
+                        Steps = new List<IDialog>() {
+                            // short circuiting Interruption so consultation is terminated. 
+                            new SendActivity("In Interruption..."),
+                            // request the active input step to re-process user input. 
+                            new SetProperty()
+                            {
+                                Property = "turn.processInput",
+                                Value = "true"
+                            }
+                        }
+                    },
+                }
+            };
+
+            await CreateFlow(rootDialog)
+            .Send("start")
+                .AssertReply("What is your name?")
+            .Send("interrupt")
+                .AssertReply("In Interruption...")
+                .AssertReply("I have interrupt as your name")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task AdaptiveDialog_ReProcessInputPropertyValidOnlyOnce()
+        {
+            var rootDialog = new AdaptiveDialog(nameof(AdaptiveDialog))
+            {
+                Generator = new TemplateEngineLanguageGenerator(),
+                Recognizer = new RegexRecognizer()
+                {
+                    Intents = new Dictionary<string, string>() {
+                        { "Interruption", "(?i)interrupt" },
+                        { "Start", "(?i)start" }
+                    }
+                },
+                Rules = new List<IRule>()
+                {
+                    new IntentRule() {
+                        Intent = "Start",
+                        Steps = new List<IDialog>() {
+                            new TextInput() {
+                                Prompt = new ActivityTemplate("What is your name?"),
+                                Property = "user.name",
+                                AllowInterruptions = AllowInterruptions.Always
+                            },
+                            new SendActivity("I have {user.name} as your name"),
+                            new NumberInput()
+                            {
+                                Prompt = new ActivityTemplate("What is your age?"),
+                                Property = "user.age",
+                                AllowInterruptions = AllowInterruptions.Always
+                            },
+                            new SendActivity("I have {user.age} as your age")
+                        }
+                    },
+                    new IntentRule() {
+                        Intent = "Interruption",
+                        Steps = new List<IDialog>() {
+                            // short circuiting Interruption so consultation is terminated. 
+                            new SendActivity("In Interruption..."),
+                            // request the active input step to re-process user input. 
+                            new SetProperty()
+                            {
+                                Property = "turn.processInput",
+                                Value = "true"
+                            }
+                        }
+                    },
+                    new IntentRule()
+                    {
+                        Intent = "None",
+                        Steps = new List<IDialog>()
+                        {
+                            new SendActivity("You said {turn.activity.text}"),
+                            new SetProperty()
+                            {
+                                Property = "turn.processInput",
+                                Value = "true"
+                            }
+                        }
+                    }
+                }
+            };
+
+            await CreateFlow(rootDialog)
+            .Send("start")
+                .AssertReply("What is your name?")
+            .Send("interrupt")
+                .AssertReply("In Interruption...")
+                .AssertReply("I have interrupt as your name")
+                .AssertReply("What is your age?")
+            .Send("36")
+                .AssertReply("You said 36")
+                .AssertReply("I have 36 as your age")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task AdaptiveDialog_AllowInterruptionAlwaysWithFailedValidation()
+        {
+            var rootDialog = new AdaptiveDialog(nameof(AdaptiveDialog))
+            {
+                Generator = new TemplateEngineLanguageGenerator(),
+                Recognizer = new RegexRecognizer()
+                {
+                    Intents = new Dictionary<string, string>() {
+                        { "Start", "(?i)start" },
+                        { "None", "200" }
+                    }
+                },
+                Rules = new List<IRule>()
+                {
+                    new IntentRule() {
+                        Intent = "Start",
+                        Steps = new List<IDialog>() {
+                            new NumberInput() {
+                                Prompt = new ActivityTemplate("What is your age?"),
+                                Property = "user.age",
+                                AllowInterruptions = AllowInterruptions.Always,
+                                Validations = new List<string>()
+                                {
+                                    "int(turn.value) >= 1",
+                                    "int(turn.value) <= 150"
+                                },
+                                InvalidPrompt = new ActivityTemplate("Sorry. {turn.value} does not work. I'm looking for a value between 1-150. What is your age?")
+                            },
+                            new SendActivity("I have {user.age} as your age")
+                        }
+                    },
+                    new IntentRule() {
+                        Intent = "None",
+                        Steps = new List<IDialog>() {
+                            // short circuiting Interruption so consultation is terminated. 
+                            new SendActivity("In None..."),
+                            // request the active input step to re-process user input. 
+                            new SetProperty()
+                            {
+                                Property = "turn.processInput",
+                                Value = "true"
+                            }
+                        }
+                    },
+                }
+            };
+
+            await CreateFlow(rootDialog)
+            .Send("start")
+                .AssertReply("What is your age?")
+            .Send("200")
+                .AssertReply("In None...")
+                .AssertReply("Sorry. 200 does not work. I'm looking for a value between 1-150. What is your age?")
+            .Send("500")
+                .AssertReply("In None...")
+                .AssertReply("Sorry. 500 does not work. I'm looking for a value between 1-150. What is your age?")
+            .Send("36")
+                .AssertReply("In None...")
+                .AssertReply("I have 36 as your age")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task AdaptiveDialog_AllowInterruptionNotRecognizedWithFailedValidation()
+        {
+            var rootDialog = new AdaptiveDialog(nameof(AdaptiveDialog))
+            {
+                Generator = new TemplateEngineLanguageGenerator(),
+                Recognizer = new RegexRecognizer()
+                {
+                    Intents = new Dictionary<string, string>() {
+                        { "Start", "(?i)start" }
+                    }
+                },
+                Rules = new List<IRule>()
+                {
+                    new IntentRule() {
+                        Intent = "Start",
+                        Steps = new List<IDialog>() {
+                            new NumberInput() {
+                                Prompt = new ActivityTemplate("What is your age?"),
+                                Property = "user.age",
+                                AllowInterruptions = AllowInterruptions.NotRecognized,
+                                Validations = new List<string>()
+                                {
+                                    "int(turn.value) >= 1",
+                                    "int(turn.value) <= 150"
+                                },
+                                InvalidPrompt = new ActivityTemplate("Sorry. {turn.value} does not work. I'm looking for a value between 1-150. What is your age?")
+                            },
+                            new SendActivity("I have {user.age} as your age")
+                        }
+                    },
+                    new IntentRule() {
+                        Intent = "None",
+                        Steps = new List<IDialog>() {
+                            // short circuiting Interruption so consultation is terminated. 
+                            new SendActivity("In None..."),
+                            // request the active input step to re-process user input. 
+                            new SetProperty()
+                            {
+                                Property = "turn.processInput",
+                                Value = "true"
+                            }
+                        }
+                    },
+                }
+            };
+
+            await CreateFlow(rootDialog)
+            .Send("start")
+                .AssertReply("What is your age?")
+            .Send("200")
+                .AssertReply("Sorry. 200 does not work. I'm looking for a value between 1-150. What is your age?")
+            .Send("500")
+                .AssertReply("Sorry. 500 does not work. I'm looking for a value between 1-150. What is your age?")
+            .Send("36")
+                .AssertReply("I have 36 as your age")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task AdaptiveDialog_AllowInterruptionAlwaysWithUnrecognizedInput()
+        {
+            var rootDialog = new AdaptiveDialog(nameof(AdaptiveDialog))
+            {
+                Generator = new TemplateEngineLanguageGenerator(),
+                Recognizer = new RegexRecognizer()
+                {
+                    Intents = new Dictionary<string, string>() {
+                        { "Start", "(?i)start" }
+                    }
+                },
+                Rules = new List<IRule>()
+                {
+                    new IntentRule() {
+                        Intent = "Start",
+                        Steps = new List<IDialog>() {
+                            new NumberInput() {
+                                Prompt = new ActivityTemplate("What is your age?"),
+                                Property = "user.age",
+                                AllowInterruptions = AllowInterruptions.Always,
+                                UnrecognizedPrompt = new ActivityTemplate("Sorry. I did not recognize a number. What is your age?")
+                            },
+                            new SendActivity("I have {user.age} as your age")
+                        }
+                    },
+                    new IntentRule() {
+                        Intent = "None",
+                        Steps = new List<IDialog>() {
+                            // short circuiting Interruption so consultation is terminated. 
+                            new SendActivity("In None..."),
+                            // request the active input step to re-process user input. 
+                            new SetProperty()
+                            {
+                                Property = "turn.processInput",
+                                Value = "true"
+                            }
+                        }
+                    },
+                }
+            };
+
+            await CreateFlow(rootDialog)
+            .Send("start")
+                .AssertReply("What is your age?")
+            .Send("santa")
+                .AssertReply("In None...")
+                .AssertReply("Sorry. I did not recognize a number. What is your age?")
+            .Send("red")
+                .AssertReply("In None...")
+                .AssertReply("Sorry. I did not recognize a number. What is your age?")
+            .Send("36")
+                .AssertReply("In None...")
+                .AssertReply("I have 36 as your age")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task AdaptiveDialog_AllowInterruptionNotRecognizedWithUnrecognizedInput()
+        {
+            var rootDialog = new AdaptiveDialog(nameof(AdaptiveDialog))
+            {
+                Generator = new TemplateEngineLanguageGenerator(),
+                Recognizer = new RegexRecognizer()
+                {
+                    Intents = new Dictionary<string, string>() {
+                        { "Start", "(?i)start" }
+                    }
+                },
+                Rules = new List<IRule>()
+                {
+                    new IntentRule() {
+                        Intent = "Start",
+                        Steps = new List<IDialog>() {
+                            new NumberInput() {
+                                Prompt = new ActivityTemplate("What is your age?"),
+                                Property = "user.age",
+                                AllowInterruptions = AllowInterruptions.NotRecognized,
+                                UnrecognizedPrompt = new ActivityTemplate("Sorry. I did not recognize a number. What is your age?")
+                            },
+                            new SendActivity("I have {user.age} as your age")
+                        }
+                    },
+                    new IntentRule() {
+                        Intent = "None",
+                        Steps = new List<IDialog>() {
+                            // short circuiting Interruption so consultation is terminated. 
+                            new SendActivity("In None..."),
+                            // request the active input step to re-process user input. 
+                            new SetProperty()
+                            {
+                                Property = "turn.processInput",
+                                Value = "true"
+                            }
+                        }
+                    },
+                }
+            };
+
+            await CreateFlow(rootDialog)
+            .Send("start")
+                .AssertReply("What is your age?")
+            .Send("santa")
+                .AssertReply("In None...")
+                .AssertReply("Sorry. I did not recognize a number. What is your age?")
+            .Send("red")
+                .AssertReply("In None...")
+                .AssertReply("Sorry. I did not recognize a number. What is your age?")
+            .Send("36")
+                .AssertReply("I have 36 as your age")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task AdaptiveDialog_AllowInterruptionNever()
+        {
+            var rootDialog = new AdaptiveDialog(nameof(AdaptiveDialog))
+            {
+                Generator = new TemplateEngineLanguageGenerator(),
+                Recognizer = new RegexRecognizer()
+                {
+                    Intents = new Dictionary<string, string>() {
+                        { "Start", "(?i)start" }
+                    }
+                },
+                Rules = new List<IRule>()
+                {
+                    new IntentRule() {
+                        Intent = "Start",
+                        Steps = new List<IDialog>() {
+                            new NumberInput() {
+                                Prompt = new ActivityTemplate("What is your age?"),
+                                Property = "user.age",
+                                AllowInterruptions = AllowInterruptions.Never,
+                            },
+                            new SendActivity("I have {user.age} as your age")
+                        }
+                    },
+                    new IntentRule() {
+                        Intent = "None",
+                        Steps = new List<IDialog>() {
+                            // short circuiting Interruption so consultation is terminated. 
+                            new SendActivity("In None..."),
+                            // request the active input step to re-process user input. 
+                            new SetProperty()
+                            {
+                                Property = "turn.processInput",
+                                Value = "true"
+                            }
+                        }
+                    },
+                }
+            };
+
+            await CreateFlow(rootDialog)
+            .Send("start")
+                .AssertReply("What is your age?")
+            .Send("santa")
+                .AssertReply("What is your age?")
+            .Send("red")
+                .AssertReply("What is your age?")
+            .Send("36")
+                .AssertReply("I have 36 as your age")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task AdaptiveDialog_AllowInterruptionNeverWithUnrecognizedInput()
+        {
+            var rootDialog = new AdaptiveDialog(nameof(AdaptiveDialog))
+            {
+                Generator = new TemplateEngineLanguageGenerator(),
+                Recognizer = new RegexRecognizer()
+                {
+                    Intents = new Dictionary<string, string>() {
+                        { "Start", "(?i)start" }
+                    }
+                },
+                Rules = new List<IRule>()
+                {
+                    new IntentRule() {
+                        Intent = "Start",
+                        Steps = new List<IDialog>() {
+                            new NumberInput() {
+                                Prompt = new ActivityTemplate("What is your age?"),
+                                Property = "user.age",
+                                AllowInterruptions = AllowInterruptions.Never,
+                                UnrecognizedPrompt = new ActivityTemplate("Sorry. I did not recognize a number. What is your age?")
+                            },
+                            new SendActivity("I have {user.age} as your age")
+                        }
+                    },
+                    new IntentRule() {
+                        Intent = "None",
+                        Steps = new List<IDialog>() {
+                            // short circuiting Interruption so consultation is terminated. 
+                            new SendActivity("In None..."),
+                            // request the active input step to re-process user input. 
+                            new SetProperty()
+                            {
+                                Property = "turn.processInput",
+                                Value = "true"
+                            }
+                        }
+                    },
+                }
+            };
+
+            await CreateFlow(rootDialog)
+            .Send("start")
+                .AssertReply("What is your age?")
+            .Send("santa")
+                .AssertReply("Sorry. I did not recognize a number. What is your age?")
+            .Send("red")
+                .AssertReply("Sorry. I did not recognize a number. What is your age?")
+            .Send("36")
+                .AssertReply("I have 36 as your age")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task AdaptiveDialog_AllowInterruptionNeverWithInvalidInput()
+        {
+            var rootDialog = new AdaptiveDialog(nameof(AdaptiveDialog))
+            {
+                Generator = new TemplateEngineLanguageGenerator(),
+                Recognizer = new RegexRecognizer()
+                {
+                    Intents = new Dictionary<string, string>() {
+                        { "Start", "(?i)start" }
+                    }
+                },
+                Rules = new List<IRule>()
+                {
+                    new IntentRule() {
+                        Intent = "Start",
+                        Steps = new List<IDialog>() {
+                            new NumberInput() {
+                                Prompt = new ActivityTemplate("What is your age?"),
+                                Property = "user.age",
+                                AllowInterruptions = AllowInterruptions.Never,
+                                Validations = new List<string>()
+                                {
+                                    "int(turn.value) >= 1",
+                                    "int(turn.value) <= 150"
+                                },
+                                InvalidPrompt = new ActivityTemplate("Sorry. {turn.value} does not work. I'm looking for a value between 1-150. What is your age?")
+                            },
+                            new SendActivity("I have {user.age} as your age")
+                        }
+                    },
+                    new IntentRule() {
+                        Intent = "None",
+                        Steps = new List<IDialog>() {
+                            // short circuiting Interruption so consultation is terminated. 
+                            new SendActivity("In None..."),
+                            // request the active input step to re-process user input. 
+                            new SetProperty()
+                            {
+                                Property = "turn.processInput",
+                                Value = "true"
+                            }
+                        }
+                    },
+                }
+            };
+
+            await CreateFlow(rootDialog)
+            .Send("start")
+                .AssertReply("What is your age?")
+            .Send("200")
+                .AssertReply("Sorry. 200 does not work. I'm looking for a value between 1-150. What is your age?")
+            .Send("500")
+                .AssertReply("Sorry. 500 does not work. I'm looking for a value between 1-150. What is your age?")
+            .Send("36")
+                .AssertReply("I have 36 as your age")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
+
+        public async Task AdaptiveDialog_AllowInterruptionNeverWithMaxCount()
+        {
+            var rootDialog = new AdaptiveDialog(nameof(AdaptiveDialog))
+            {
+                Generator = new TemplateEngineLanguageGenerator(),
+                Recognizer = new RegexRecognizer()
+                {
+                    Intents = new Dictionary<string, string>() {
+                        { "Start", "(?i)start" }
+                    }
+                },
+                Rules = new List<IRule>()
+                {
+                    new IntentRule() {
+                        Intent = "Start",
+                        Steps = new List<IDialog>() {
+                            new NumberInput() {
+                                Prompt = new ActivityTemplate("What is your age?"),
+                                Property = "user.age",
+                                AllowInterruptions = AllowInterruptions.Never,
+                                MaxTurnCount = 2,
+                                DefaultValue = "30"
+                            },
+                            new SendActivity("I have {user.age} as your age")
+                        }
+                    },
+                    new IntentRule() {
+                        Intent = "None",
+                        Steps = new List<IDialog>() {
+                            // short circuiting Interruption so consultation is terminated. 
+                            new SendActivity("In None..."),
+                            // request the active input step to re-process user input. 
+                            new SetProperty()
+                            {
+                                Property = "turn.processInput",
+                                Value = "true"
+                            }
+                        }
+                    },
+                }
+            };
+
+            await CreateFlow(rootDialog)
+            .Send("start")
+                .AssertReply("What is your age?")
+            .Send("vishwac")
+                .AssertReply("What is your age?")
+            .Send("carlos")
+                .AssertReply("I have 30 as your age")
+            .StartTestAsync();
         }
 
         public async Task TestBindingTwoWayAcrossAdaptiveDialogs(object options)
