@@ -22,7 +22,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// </summary>
         public ITemplate<Activity> Activity { get; set; }
 
-
         [JsonConstructor]
         public SendActivity(string text = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
@@ -45,11 +44,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             var activity = await Activity.BindToData(dc.Context, dc.State).ConfigureAwait(false);
             var response = await dc.Context.SendActivityAsync(activity, cancellationToken).ConfigureAwait(false);
-            if (ExpectedSlots != null)
-            {
-                dc.Context.TurnState.Add("expectedSlots", ExpectedSlots);
-            }
-
             return await dc.EndDialogAsync(response, cancellationToken).ConfigureAwait(false);
         }
 

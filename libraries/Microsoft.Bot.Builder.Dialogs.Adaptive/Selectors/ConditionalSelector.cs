@@ -19,8 +19,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
         private Expression condition;
 
         /// <summary>
-        /// Expression that determines which selector to use.
+        /// Gets or sets expression that determines which selector to use.
         /// </summary>
+        /// <value>
+        /// Expression that determines which selector to use.
+        /// </value>
         public string Condition
         {
             get { return condition?.ToString(); }
@@ -28,13 +31,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
         }
 
         /// <summary>
-        /// Selector if <see cref="Condition"/> is true.
+        /// Gets or sets selector if <see cref="Condition"/> is true.
         /// </summary>
+        /// <value>
+        /// Selector if <see cref="Condition"/> is true.
+        /// </value>
         public IEventSelector IfTrue { get; set; }
 
         /// <summary>
-        /// Selector if <see cref="Condition"/> is false.
+        /// Gets or sets selector if <see cref="Condition"/> is false.
         /// </summary>
+        /// <value>
+        /// Selector if <see cref="Condition"/> is false.
+        /// </value>
         public IEventSelector IfFalse { get; set; }
 
         public void Initialize(IEnumerable<IOnEvent> rules, bool evaluate = true)
@@ -43,7 +52,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
             _evaluate = evaluate;
         }
 
-        public async Task<IReadOnlyList<int>> Select(SequenceContext context, CancellationToken cancel = default(CancellationToken))
+        public async Task<IReadOnlyList<IOnEvent>> Select(SequenceContext context, CancellationToken cancel = default(CancellationToken))
         {
             var (value, error) = condition.TryEvaluate(context.State);
             var eval = error == null && (bool)value;
@@ -58,6 +67,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
                 selector = IfFalse;
                 IfFalse.Initialize(_rules, _evaluate);
             }
+
             return await selector.Select(context, cancel).ConfigureAwait(false);
         }
     }

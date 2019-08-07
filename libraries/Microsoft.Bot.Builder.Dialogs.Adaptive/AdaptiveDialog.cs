@@ -466,7 +466,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             var selection = await Selector.Select(sequenceContext, cancellationToken).ConfigureAwait(false);
             if (selection.Any())
             {
-                var evt = Events[selection.First()];
+                var evt = selection.First();
                 await sequenceContext.DebuggerStepAsync(evt, dialogEvent, cancellationToken).ConfigureAwait(false);
                 System.Diagnostics.Trace.TraceInformation($"Executing Dialog: {this.Id} Rule[{selection}]: {evt.GetType().Name}: {evt.GetExpression(null)}");
                 var changes = await evt.ExecuteAsync(sequenceContext).ConfigureAwait(false);

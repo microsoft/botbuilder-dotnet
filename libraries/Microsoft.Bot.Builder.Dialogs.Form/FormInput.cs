@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
         /// </summary>
         public IList<string> ExpectedSlots { get; set; }
 
-        protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
+        protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (ExpectedSlots != null)
             {

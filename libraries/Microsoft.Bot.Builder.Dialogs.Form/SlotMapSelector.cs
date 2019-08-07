@@ -51,17 +51,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
             }
         }
 
-        public Task<IReadOnlyList<int>> Select(SequenceContext context, CancellationToken cancel = default(CancellationToken))
+        public Task<IReadOnlyList<IOnEvent>> Select(SequenceContext context, CancellationToken cancel = default(CancellationToken))
         {
             var coverages = new double[_slotMappers.Count];
             foreach (var info in _slotMappers)
             {
                 coverages[info.Position] = ComputeCoverage(context, info.Entities);
             }
+
             // 1) Only mapping that sets
             // 2) Only mapping that does status
             // 3) Only mapping that does prompt
-            return 0;
+            return Task.FromResult((IReadOnlyList<IOnEvent>)_other);
         }
 
         private double ComputeCoverage(SequenceContext context, IEnumerable<string> entityNames)

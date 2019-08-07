@@ -20,9 +20,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
         private IExpressionParser _parser = new ExpressionEngine();
 
         /// <summary>
-        /// Optional seed for random number generator.
+        /// Gets or sets optional seed for random number generator.
         /// </summary>
         /// <remarks>If not specified a random seed will be used.</remarks>
+        /// <value>
+        /// Optional seed for random number generator.
+        /// </value>
         public int Seed
         {
             get => _seed;
@@ -43,34 +46,32 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
             }
         }
 
-        public Task<IReadOnlyList<int>> Select(SequenceContext context, CancellationToken cancel = default(CancellationToken))
+        public Task<IReadOnlyList<IOnEvent>> Select(SequenceContext context, CancellationToken cancel = default(CancellationToken))
         {
-            var candidates = new List<int>();
-            for (var i = 0; i < _rules.Count; ++i)
+            var candidates = _rules;
+            if (_evaluate)
             {
-                if (_evaluate)
+                candidates = new List<IOnEvent>();
+                foreach (var rule in _rules)
                 {
-                    var rule = _rules[i];
                     var expression = rule.GetExpression(_parser);
                     var (value, error) = expression.TryEvaluate(context.State);
                     var eval = error == null && (bool)value;
                     if (eval == true)
                     {
-                        candidates.Add(i);
+                        candidates.Add(rule);
                     }
                 }
-                else
-                {
-                    candidates.Add(i);
-                }
             }
-            var result = new List<int>();
+
+            var result = new List<IOnEvent>();
             if (candidates.Count > 0)
             {
                 var selection = _rand.Next(candidates.Count);
                 result.Add(candidates[selection]);
             }
-            return Task.FromResult((IReadOnlyList<int>)result);
+
+            return Task.FromResult((IReadOnlyList<IOnEvent>)result);
         }
     }
 }

@@ -22,29 +22,26 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
             _evaluate = evaluate;
         }
 
-        public Task<IReadOnlyList<int>> Select(SequenceContext context, CancellationToken cancel = default(CancellationToken))
+        public Task<IReadOnlyList<IOnEvent>> Select(SequenceContext context, CancellationToken cancel = default(CancellationToken))
         {
-            var candidates = new List<int>();
-            var parser = _evaluate ? new ExpressionEngine() : null;
-            for (var i = 0; i < _rules.Count; ++i)
+            var candidates = _rules;
+            if (_evaluate)
             {
-                if (_evaluate)
+                var parser = new ExpressionEngine();
+                candidates = new List<IOnEvent>();
+                foreach (var rule in _rules)
                 {
-                    var rule = _rules[i];
                     var expression = rule.GetExpression(parser);
                     var (value, error) = expression.TryEvaluate(context.State);
                     var result = error == null && (bool)value;
                     if (result == true)
                     {
-                        candidates.Add(i);
+                        candidates.Add(rule);
                     }
                 }
-                else
-                {
-                    candidates.Add(i);
-                }
             }
-            return Task.FromResult((IReadOnlyList<int>)candidates);
+
+            return Task.FromResult((IReadOnlyList<IOnEvent>)candidates);
         }
     }
 }

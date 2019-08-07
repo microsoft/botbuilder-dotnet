@@ -22,9 +22,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
             _evaluate = evaluate;
         }
 
-        public Task<IReadOnlyList<int>> Select(SequenceContext context, CancellationToken cancel)
+        public Task<IReadOnlyList<IOnEvent>> Select(SequenceContext context, CancellationToken cancel)
         {
-            var selection = -1;
+            IOnEvent selection = null;
             if (_evaluate)
             {
                 for (var i = 0; i < _rules.Count; i++)
@@ -35,7 +35,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
                     var eval = error == null && (bool)value;
                     if (eval == true)
                     {
-                        selection = i;
+                        selection = rule;
                         break;
                     }
                 }
@@ -44,15 +44,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
             {
                 if (_rules.Count > 0)
                 {
-                    selection = 0;
+                    selection = _rules[0];
                 }
             }
-            var result = new List<int>();
-            if (selection != -1)
+
+            var result = new List<IOnEvent>();
+            if (selection != null)
             {
                 result.Add(selection);
             }
-            return Task.FromResult((IReadOnlyList<int>)result);
+
+            return Task.FromResult((IReadOnlyList<IOnEvent>)result);
         }
     }
 }
