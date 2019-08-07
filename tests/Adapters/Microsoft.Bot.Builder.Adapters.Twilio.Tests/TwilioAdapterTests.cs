@@ -1,5 +1,7 @@
-﻿using System;
-using Microsoft.Bot.Builder.Adapters.Twilio;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using Xunit;
 
 namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
@@ -49,6 +51,19 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
             };
 
             Assert.Throws<Exception>(() => { new TwilioAdapter(options); });
+        }
+
+        [Fact]
+        public void Constructor_WithArguments_Succeeds()
+        {
+            ITwilioAdapterOptions options = new MockTwilioOptions
+            {
+                TwilioNumber = "Test",
+                AccountSid = "Test",
+                AuthToken = "Test",
+            };
+
+            Assert.NotNull(new TwilioAdapter(options));
         }
 
         private class MockTwilioOptions : ITwilioAdapterOptions
