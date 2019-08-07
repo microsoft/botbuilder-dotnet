@@ -116,7 +116,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             if (saveState)
             {
-                await SaveBotState(storage, storedState, keys).ConfigureAwait(false);
+                await SaveBotState(storage, storedState, keys, dc).ConfigureAwait(false);
                 return new DialogManagerResult()
                 {
                     TurnResult = result,
@@ -144,8 +144,12 @@ namespace Microsoft.Bot.Builder.Dialogs
             };
         }
 
-        private static async Task SaveBotState(IStorage storage, StoredBotState newState, BotStateStorageKeys keys)
+        private static async Task SaveBotState(IStorage storage, StoredBotState newState, BotStateStorageKeys keys, DialogContext dialogContext)
         {
+            // Save dialog and turn memory to the conversation state for inspection.
+            newState.ConversationState["dialog"] = dialogContext.DialogState;
+            newState.ConversationState["turn"] = dialogContext.State.Turn;
+
             await storage.WriteAsync(new Dictionary<string, object>()
             {
                 { keys.UserState, newState.UserState},
