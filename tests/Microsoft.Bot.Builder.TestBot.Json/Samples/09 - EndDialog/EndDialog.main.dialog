@@ -9,32 +9,37 @@
             "CancelIntent": "(?i)cancel|never mind"
         }
     },
-    "steps": [
+    "events": [
         {
-            "$type": "Microsoft.IfCondition",
-            "condition": "user.name == null",
-            "steps": [
+            "$type": "Microsoft.OnBeginDialog",
+            "actions": [
                 {
-                    "$type": "Microsoft.TextInput",
-                    "property": "user.name",
-                    "prompt": "Hello, I'm Zoidberg. What is your name?"
+                    "$type": "Microsoft.IfCondition",
+                    "condition": "user.name == null",
+                    "actions": [
+                        {
+                            "$type": "Microsoft.TextInput",
+                            "property": "user.name",
+                            "prompt": "Hello, I'm Zoidberg. What is your name?"
+                        }
+                    ]
+                },
+                {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "Hello {user.name}, nice to talk to you!"
+                },
+                {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "I'm a joke bot. To get started say \"joke\"."
                 }
             ]
         },
         {
-            "$type": "Microsoft.SendActivity",
-            "activity": "Hello {user.name}, nice to talk to you!"
-        },
-        {
-            "$type": "Microsoft.SendActivity",
-            "activity": "I'm a joke bot. To get started say \"joke\"."
-        }
-    ],
-    "rules": [
-        {
-            "$type": "Microsoft.EventRule",
-            "events": [ "cancelDialog" ],
-            "steps": [
+            "$type": "Microsoft.OnDialogEvent",
+            "events": [
+                "cancelDialog"
+            ],
+            "actions": [
                 {
                     "$type": "Microsoft.SendActivity",
                     "activity": "ok."
@@ -45,9 +50,9 @@
             ]
         },
         {
-            "$type": "Microsoft.IntentRule",
+            "$type": "Microsoft.OnIntent",
             "intent": "JokeIntent",
-            "steps": [
+            "actions": [
                 "EndDialog.TellJoke"
             ]
         }

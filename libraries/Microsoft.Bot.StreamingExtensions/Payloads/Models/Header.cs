@@ -24,7 +24,7 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
      *
      * ex: A.000168.68e999ca-a651-40f4-ad8f-3aaf781862b4.1\n
      */
-    internal class Header
+    public class Header
     {
         private int internalPayloadLength;
 

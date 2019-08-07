@@ -350,6 +350,22 @@ namespace Microsoft.Bot.Builder.Expressions
         }
 
         /// <summary>
+        /// Verify value is not null.
+        /// </summary>
+        /// <param name="value">Value to check.</param>
+        /// <param name="expression">Expression that led to value.</param>
+        /// <returns>Error or null if valid.</returns>
+        public static string VerifyNotNull(object value, Expression expression, int number)
+        {
+            string error = null;
+            if (value == null)
+            {
+                error = $"{expression} is null.";
+            }
+            return error;
+        }
+
+        /// <summary>
         /// Verify value is a number or string.
         /// </summary>
         /// <param name="value">Value to check.</param>
@@ -479,9 +495,15 @@ namespace Microsoft.Bot.Builder.Expressions
                 return (value, error);
             };
 
-        private static (object value, string error) Callstack(Expression expression, object state)
+
+        /// <summary>
+        /// walk dialog callstack looking for property
+        /// </summary>
+        /// <param name="expression"></param>
+        /// <param name="state"></param>
+        /// <returns></returns>
+        private static (object value, string error) CallstackScope(Expression expression, object state)
         {
-            // get collection
             // get collection
             var (result, error) = AccessProperty(state, "callstack");
             if (result != null)
@@ -1944,6 +1966,72 @@ namespace Microsoft.Bot.Builder.Expressions
             return (result, error);
         }
 
+        private static (object, string) JPath(object jsonEntity, string jpath)
+        {
+            object result = null;
+            string error = null;
+            object value = null;
+            JObject jsonObj = null;
+            if (jsonEntity is string jsonStr)
+            {
+                try
+                {
+                    jsonObj = JObject.Parse(jsonStr);
+                }
+                catch
+                {
+                    error = $"{jsonStr} is not a valid JSON string";
+                }
+            }
+            else if (jsonEntity is JObject parsed )
+            {
+                jsonObj = parsed;
+            }
+            else
+            {
+                error = $"{jsonEntity} is not a valid JSON object or a valid JSON string";
+            }
+
+            if (error == null)
+                {
+                    try
+                    {
+                        value = jsonObj.SelectTokens(jpath);
+                    }
+                    catch
+                    {
+                        error = $"{jpath} is not a valid path";
+                    }
+                }
+
+            if (error == null)
+            {
+                if (value is IEnumerable<JToken> products)
+                {
+                    if (products.Count() == 1)
+                    {
+                        result = ResolveValue(products.ElementAt(0)); ;
+                    }
+                    else if (products.Count() > 1)
+                    {
+                        var nodeList = new List<object>();
+                        foreach (JToken item in products)
+                        {
+                            nodeList.Add(ResolveValue(item));
+                        }
+
+                        result = nodeList;
+                    }
+                    else
+                    {
+                        error = $"there is no matching node for path: ${jpath} in the given JSON";
+                    }
+                }
+            }
+
+            return (result, error);
+        }
+
         // conversion functions
         private static string ToBinary(string strToConvert)
         {
@@ -2326,7 +2414,7 @@ namespace Microsoft.Bot.Builder.Expressions
                 Comparison(ExpressionType.NotEqual, args => args[0] != args[1], ValidateBinary),
                 Comparison(ExpressionType.GreaterThan, args => args[0] > args[1], ValidateBinaryNumberOrString, VerifyNumberOrString),
                 Comparison(ExpressionType.GreaterThanOrEqual, args => args[0] >= args[1], ValidateBinaryNumberOrString, VerifyNumberOrString),
-                Comparison(ExpressionType.Exists, args => args[0] != null, ValidateUnary, VerifyNumberOrString),
+                Comparison(ExpressionType.Exists, args => args[0] != null, ValidateUnary, VerifyNotNull),
                 new ExpressionEvaluator(
                     ExpressionType.Contains,
                     (expression, state) =>
@@ -2434,13 +2522,28 @@ namespace Microsoft.Bot.Builder.Expressions
                             }
                             else
                             {
-                                result = string.Join(args[1], list.OfType<object>().Select(x => x.ToString()));
+                                if (args.Count == 2)
+                                {
+                                    result = string.Join(args[1], list.OfType<object>().Select(x => x.ToString()));
+                                }
+                                else
+                                {
+                                    if (list.Count < 3)
+                                    {
+                                        result = string.Join(args[2], list.OfType<object>().Select(x => x.ToString()));
+                                    }
+                                    else
+                                    {
+                                        var firstPart = string.Join(args[1], list.OfType<object>().TakeWhile(o => o != null && o != list.OfType<object>().LastOrDefault()));
+                                        result = firstPart + args[2] + list.OfType<object>().Last().ToString();
+                                    }
+                                }
                             }
                         }
                         return (result, error);
                     },
                     ReturnType.String,
-                    expr => ValidateOrder(expr, null, ReturnType.Object, ReturnType.String)),
+                    expr => ValidateOrder(expr, new[] { ReturnType.String }, ReturnType.Object, ReturnType.String)),
                 new ExpressionEvaluator(
                     ExpressionType.NewGuid,
                     BuiltInFunctions.Apply(args => Guid.NewGuid().ToString()),
@@ -3126,6 +3229,7 @@ namespace Microsoft.Bot.Builder.Expressions
                 new ExpressionEvaluator(ExpressionType.Where, Where, ReturnType.Object, ValidateWhere),
                 new ExpressionEvaluator(ExpressionType.Coalesce, Apply(args => Coalesce(args.ToArray<object>())), ReturnType.Object, ValidateAtLeastOne),
                 new ExpressionEvaluator(ExpressionType.XPath, ApplyWithError(args => XPath(args[0], args[1])), ReturnType.Object, (expr) => ValidateOrder(expr, null, ReturnType.Object, ReturnType.String)),
+                new ExpressionEvaluator(ExpressionType.JPath, ApplyWithError(args => JPath(args[0], args[1])), ReturnType.Object, (expr) => ValidateOrder(expr, null, ReturnType.Object, ReturnType.String)),
 
                 // Regex expression
                 new ExpressionEvaluator(
@@ -3151,7 +3255,7 @@ namespace Microsoft.Bot.Builder.Expressions
                     ValidateIsMatch),
 
                 // Shorthand functions
-                new ExpressionEvaluator(ExpressionType.Callstack, Callstack, ReturnType.Object, ValidateUnary),
+                new ExpressionEvaluator(ExpressionType.CallstackScope, CallstackScope, ReturnType.Object, ValidateUnary),
                 new ExpressionEvaluator(
                     ExpressionType.SimpleEntity,
                     Apply(args =>

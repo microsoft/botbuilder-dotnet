@@ -36,21 +36,9 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
 
         private readonly IServiceProvider _services;
 
-#if DEBUG
-        public
-#else
-        private
-#endif
-        IStreamingTransportServer _transportServer;
+        private IStreamingTransportServer _transportServer;
 
-#pragma warning disable IDE0044
-#if DEBUG
-        public
-#else
-        private
-#endif
-        string _userAgent;
-#pragma warning restore IDE0044
+        public string UserAgent { get; private set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="StreamingRequestHandler"/> class.
@@ -62,12 +50,14 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
         /// <param name="onTurnError">Optional function to perform on turn errors.</param>
         /// <param name="bot">The <see cref="IBot"/> to be used for all requests to this handler.</param>
         /// <param name="middlewareSet">An optional set of middleware to register with the bot.</param>
-        public StreamingRequestHandler(Func<ITurnContext, Exception, Task> onTurnError, IBot bot, IList<IMiddleware> middlewareSet = null)
+        /// <param name="transportServer">An optional streaming transport server.</param>
+        public StreamingRequestHandler(Func<ITurnContext, Exception, Task> onTurnError, IBot bot, IList<IMiddleware> middlewareSet = null, IStreamingTransportServer transportServer = null)
         {
             _onTurnError = onTurnError;
             _bot = bot ?? throw new ArgumentNullException(nameof(bot));
             _middlewareSet = middlewareSet ?? new List<IMiddleware>();
-            _userAgent = GetUserAgent();
+            UserAgent = GetUserAgent();
+            _transportServer = transportServer;
         }
 
         /// <summary>
@@ -84,7 +74,7 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
             _onTurnError = onTurnError;
             _services = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
             _middlewareSet = middlewareSet ?? new List<IMiddleware>();
-            _userAgent = GetUserAgent();
+            UserAgent = GetUserAgent();
         }
 
         /// <summary>
@@ -137,7 +127,7 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
                          string.Equals(request.Path, "/api/version", StringComparison.InvariantCultureIgnoreCase))
             {
                 response.StatusCode = (int)HttpStatusCode.OK;
-                response.SetBody(new VersionInfo() { UserAgent = _userAgent });
+                response.SetBody(new VersionInfo() { UserAgent = UserAgent });
 
                 return response;
             }

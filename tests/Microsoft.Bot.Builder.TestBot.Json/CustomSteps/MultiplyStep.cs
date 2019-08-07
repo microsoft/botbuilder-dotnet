@@ -15,10 +15,10 @@ namespace Microsoft.Bot.Builder.TestBot.Json
     /// <summary>
     /// Custom command which takes takes 2 data bound arguments (arg1 and arg2) and multiplies them returning that as a databound result
     /// </summary>
-    public class MultiplyStep : DialogCommand
+    public class MultiplyAction : DialogAction
     {
         [JsonConstructor]
-        public MultiplyStep([CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
+        public MultiplyAction([CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
             : base()
         {
             // enable instances of this command as debug break point

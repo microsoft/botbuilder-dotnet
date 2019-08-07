@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         private static Lazy<IDictionary<string, string[]>> defaultPolicy = new Lazy<IDictionary<string, string[]>>(() =>
         {
             var cultureCodes = CultureInfo.GetCultures(CultureTypes.AllCultures).Select(c => c.IetfLanguageTag.ToLower()).ToList();
-            var policy = new Dictionary<string, string[]>();
+            var policy = new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase);
             foreach (var language in cultureCodes.Distinct())
             {
                 var lang = language.ToLower();
@@ -49,7 +49,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         });
 
         public LanguagePolicy()
-            : base(defaultPolicy.Value)
+            : base(defaultPolicy.Value, StringComparer.OrdinalIgnoreCase)
         {
         }
     }

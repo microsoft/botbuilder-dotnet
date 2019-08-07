@@ -1,7 +1,7 @@
 ﻿{
-    "$schema": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/master/packages/DialogSchema/src/dialogSchema.schema",
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
     "$role": "unionType(Microsoft.IDialog)",
-    "title": "Javascript Step",
+    "title": "Javascript Action",
     "description": "This gives you the ability to execute javascript to manipulate memory",
     "type": "object",
     "additionalProperties": false,

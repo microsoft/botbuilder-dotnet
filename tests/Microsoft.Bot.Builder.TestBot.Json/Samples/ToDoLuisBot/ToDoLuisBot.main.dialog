@@ -5,37 +5,40 @@
     "autoEndDialog": false,
     "generator": "ToDoLuisBot.lg",
     "recognizer": "ToDoLuis.lu",
-    "steps": [
+    "events": [
         {
-            "$type": "Microsoft.SendActivity",
-            "activity": "Hi"
-        }
-    ],
-    "rules": [
+            "$type": "Microsoft.OnBeginDialog",
+            "actions": [
+                {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "Hi"
+                }
+            ]
+        },
         {
-            "$type": "Microsoft.IntentRule",
+            "$type": "Microsoft.OnIntent",
             "intent": "AddToDo",
-            "steps": [
+            "actions": [
                 "ToDoLuisBot.AddItem"
             ]
         },
         {
-            "$type": "Microsoft.IntentRule",
+            "$type": "Microsoft.OnIntent",
             "intent": "DeleteToDo",
-            "steps": [
+            "actions": [
                 "ToDoLuisBot.DeleteItem"
             ]
         },
         {
-            "$type": "Microsoft.IntentRule",
+            "$type": "Microsoft.OnIntent",
             "intent": "ShowToDo",
-            "steps": [
+            "actions": [
                 "ToDoLuisBot.ShowItems"
             ]
         },
         {
-            "$type": "Microsoft.UnknownIntentRule",
-            "steps": [
+            "$type": "Microsoft.OnUnknownIntent",
+            "actions": [
                 {
                     "$type": "Microsoft.SendActivity",
                     "activity": "[LuisToDoHelp]"

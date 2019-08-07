@@ -309,10 +309,10 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("empty(1,2)"), //should have two params
             Test("first(items,2)"), //should have 1 param
             Test("last(items,2)"), //should have 1 param
-            Test("join(items, 'p1', 'p2','p3')"),//builtin function should have 3 params, 
-                                                    //method extension should have 2-3 params
+            Test("join(items, 'p1', 'p2','p3')"),//builtin function should have 2-3 params, 
             Test("join(hello, 'hi')"),// first param must list
             Test("join(items, 1)"),// second param must string 
+            Test("join(items, '1', 2)"),// third param must string 
             Test("foreach(hello, item, item)"),// first arg is not list
             Test("foreach(items, item)"),//should have three parameters
             Test("foreach(items, item, item2, item3)"),//should have three parameters
@@ -359,9 +359,12 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("removeProperty(json('{\"key1\":\"value1\",\"key2\":\"value2\"}'), 1))"),// second param should be string
             Test("removeProperty(json('{\"key1\":\"value1\",\"key2\":\"value2\"}'), '1', '2'))"),// should have 2 parameters
             Test("coalesce()"), // should have at least 1 parameter
-            Test("xPath(invalidXml, ''sum(/produce/item/count)')"), //not valid xml
+            Test("xPath(invalidXml, ''sum(/produce/item/count)')"), // not a valid xml
             Test("xPath(xmlStr)"), // should have two params
             Test("xPath(xmlStr, 'getTotal')"), // invalid xpath query
+            Test("jPath(hello,'Manufacturers[0].Products[0].Price')"), // not a valid json
+            Test("jPath(hello,'Manufacturers[0]/Products[0]/Price')"), // not a valid path
+            Test("jPath(jsonStr,'$..Products[?(@.Price >= 100)].Name')"), // no matched node
            # endregion
 
             #region  Short Hand Expression

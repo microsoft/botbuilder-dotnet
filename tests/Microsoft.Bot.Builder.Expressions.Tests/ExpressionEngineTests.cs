@@ -65,14 +65,51 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             { "timestampObj", DateTime.Parse("2018-03-15T13:00:00.000Z").ToUniversalTime() },
             { "unixTimestamp", 1521118800 },
             { "xmlStr", "<?xml version='1.0'?> <produce> <item> <name>Gala</name> <type>apple</type> <count>20</count> </item> <item> <name>Honeycrisp</name> <type>apple</type> <count>10</count> </item> </produce>" },
+            {"jsonStr", @"{
+                          'Stores': [
+                            'Lambton Quay',
+                            'Willis Street'
+                          ],
+                          'Manufacturers': [
+                            {
+                              'Name': 'Acme Co',
+                              'Products': [
+                                {
+                                  'Name': 'Anvil',
+                                  'Price': 50
+                                }
+                              ]
+                            },
+                            {
+                              'Name': 'Contoso',
+                              'Products': [
+                                {
+                                  'Name': 'Elbow Grease',
+                                  'Price': 99.95
+                                },
+                                {
+                                  'Name': 'Headlight Fluid',
+                                  'Price': 4
+                                }
+                              ]
+                            }
+                          ]
+                        }"},
             { "turn", new
                 {
                     recognized = new
                     {
                         entities = new Dictionary<string, object>
                         {
-                            { "city",  "Seattle" },
-                            { "ordinal",
+                            {
+                                "city",
+                                new[]
+                                {
+                                    "Seattle"
+                                }
+                            },
+                            {
+                                "ordinal",
                                 new[]
                                 {
                                     "1",
@@ -80,7 +117,8 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
                                     "3"
                                 }
                             },
-                            { "CompositeList1",
+                            {
+                                "CompositeList1",
                                 new[]
                                 {
                                     new[]
@@ -89,7 +127,8 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
                                     }
                                 }
                             },
-                            { "CompositeList2",
+                            {
+                                "CompositeList2",
                                 new[]
                                 {
                                     new[]
@@ -117,14 +156,15 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
                                     Time = "Today",
                                     People = "4"
                                 }
-                             }
-                         }
+                            }
+                        }
                     }
                 }
             },
             { "dialog",
                 new
                 {
+                    x=3,
                     instance = new
                     {
                         xxx = "instance",
@@ -144,9 +184,27 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             },
             { "callstack", new object[]
                 {
-                    new {x = 3 },
-                    new {x = 2, y = 2 },
-                    new {x = 1, y = 1, z = 1 },
+                    new
+                    {
+                        x = 3,
+                        instance = new
+                        {
+                            xxx = "instance",
+                            yyy = new
+                            {
+                                instanceY = "instanceY"
+                            }
+                        },
+                        options = new
+                        {
+                            xxx = "options",
+                            yyy = new[] { "optionY1", "optionY2" }
+                        },
+                        title = "Dialog Title",
+                        subTitle = "Dialog Sub Title"
+                    },
+                    new { x = 2, y = 2 },
+                    new { x = 1, y = 1, z = 1 }
                 }
             }
         };
@@ -491,6 +549,8 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("first(nestedItems).x", 1, new HashSet<string> { "nestedItems"}),
             Test("join(items,',')", "zero,one,two"),
             Test("join(createArray('a', 'b', 'c'), '.')", "a.b.c"),
+            Test("join(createArray('a', 'b', 'c'), ',', ' and ')", "a,b and c"),
+            Test("join(createArray('a', 'b'), ',', ' and ')", "a and b"),
             Test("join(foreach(items, item, item), ',')", "zero,one,two"),
             Test("join(foreach(nestedItems, i, i.x + first(nestedItems).x), ',')", "2,3,4", new HashSet<string>{ "nestedItems"}),
             Test("join(foreach(items, item, concat(item, string(count(items)))), ',')", "zero3,one3,two3", new HashSet<string>{ "items"}),
@@ -523,14 +583,19 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("string(setProperty(json('{\"key1\":\"value1\"}'), 'key1','value2'))", "{\"key1\":\"value2\"}"),
             Test("string(removeProperty(json('{\"key1\":\"value1\",\"key2\":\"value2\"}'), 'key2'))", "{\"key1\":\"value1\"}"),
             Test("coalesce(nullObj,hello,nullObj)", "hello"),
-            //Test("xPath(xmlStr,'/produce/item/name')", new[] { "<name>Gala</name>", "<name>Honeycrisp</name>"}),
+            Test("xPath(xmlStr,'/produce/item/name')", new[] { "<name>Gala</name>", "<name>Honeycrisp</name>"}),
             Test("xPath(xmlStr,'sum(/produce/item/count)')", 30),
+            Test("jPath(jsonStr,'Manufacturers[0].Products[0].Price')", 50),
+            Test("jPath(jsonStr,'$..Products[?(@.Price >= 50)].Name')", new[] {"Anvil", "Elbow Grease" }),
             # endregion
 
             # region  Short Hand Expression
             Test("@city == 'Bellevue'", false, new HashSet<string> {"turn.recognized.entities.city"}),
             Test("@city", "Seattle", new HashSet<string> {"turn.recognized.entities.city"}),
             Test("@city == 'Seattle'", true, new HashSet<string> {"turn.recognized.entities.city"}),
+            Test("@@city[0]","Seattle", new HashSet<string> {"turn.recognized.entities.city[0]"}),
+            Test("count(@@city)", 1),
+            Test("count(@@city) == 1", true),
             Test("@ordinal", "1", new HashSet<string> {"turn.recognized.entities.ordinal"}),
             Test("@@ordinal[1]", "2", new HashSet<string> {"turn.recognized.entities.ordinal[1]"}),
             Test("@['city']", "Seattle", new HashSet<string> {"turn.recognized.entities.city"}),
@@ -539,16 +604,22 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("#BookFlight == 'BookFlight'", true, new HashSet<string> {"turn.recognized.intents.BookFlight"}),
             Test("#BookHotel[1].Where", "Kirkland", new HashSet<string> {"turn.recognized.intents.BookHotel[1].Where"}),
             Test("exists(#BookFlight)", true, new HashSet<string> {"turn.recognized.intents.BookFlight"}),
-            Test("$title", "Dialog Title", new HashSet<string> {"dialog.title"}),
-            Test("$subTitle", "Dialog Sub Title", new HashSet<string> {"dialog.subTitle"}),
+            Test("dialog.title", "Dialog Title"),
+            Test("dialog.subTitle", "Dialog Sub Title"),
             Test("~xxx", "instance", new HashSet<string> {"dialog.instance.xxx"}),
             Test("~['yyy'].instanceY", "instanceY", new HashSet<string> {"dialog.instance.yyy.instanceY"}),
             Test("%xxx", "options", new HashSet<string> {"dialog.options.xxx"}),
             Test("%['xxx']", "options", new HashSet<string> {"dialog.options.xxx"}),
             Test("%yyy[1]", "optionY2", new HashSet<string> {"dialog.options.yyy[1]"}),
-            Test("^x", 3),
-            Test("^y", 2),
-            Test("^z", 1),
+            Test("dialog.x", 3),
+            Test("dialog.y", null),
+            Test("dialog.z", null),
+            Test("$x", 3),
+            Test("$y", 2),
+            Test("$z", 1),
+            // Test("^x", 3),
+            // Test("^y", 2),
+            // Test("^z", 1),
             Test("count(@@CompositeList1) == 1 && count(@@CompositeList1[0]) == 1", true),
             #endregion
 
@@ -654,7 +725,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
                 if (actual is int)
                 {
                     Assert.IsTrue(expected is int);
-                    Assert.AreEqual(actual, expected);
+                    Assert.AreEqual(expected, actual);
                 }
                 else
                 {

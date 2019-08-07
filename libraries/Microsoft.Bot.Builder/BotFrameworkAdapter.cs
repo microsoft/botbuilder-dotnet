@@ -18,6 +18,7 @@ using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Rest;
 using Microsoft.Rest.TransientFaultHandling;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -53,7 +54,7 @@ namespace Microsoft.Bot.Builder
         private readonly HttpClient _httpClient;
         private readonly RetryPolicy _connectorClientRetryPolicy;
         private readonly ILogger _logger;
-        private readonly ConcurrentDictionary<string, MicrosoftAppCredentials> _appCredentialMap = new ConcurrentDictionary<string, MicrosoftAppCredentials>();
+        private ConcurrentDictionary<string, ServiceClientCredentials> _appCredentialMap = new ConcurrentDictionary<string, ServiceClientCredentials>();
         private readonly AuthenticationConfiguration _authConfiguration;
 
         // There is a significant boost in throughput if we reuse a connectorClient
@@ -833,7 +834,7 @@ namespace Microsoft.Bot.Builder
                 if (tenantId != null)
                 {
                     // Putting tenantId in channelData is a temporary solution while we wait for the Teams API to be updated
-                    conversationParameters.ChannelData = new { tenant = new { tenantId= tenantId.ToString() } };
+                    conversationParameters.ChannelData = new { tenant = new { tenantId = tenantId.ToString() } };
 
                     // Permanent solution is to put tenantId in parameters.tenantId
                     conversationParameters.TenantId = tenantId.ToString();
@@ -915,9 +916,11 @@ namespace Microsoft.Bot.Builder
         /// <param name="serviceUrl">The service URL.</param>
         /// <param name="appCredentials">The application credentials for the bot.</param>
         /// <returns>Connector client instance.</returns>
-        private IConnectorClient CreateConnectorClient(string serviceUrl, MicrosoftAppCredentials appCredentials = null)
+        private IConnectorClient CreateConnectorClient(string serviceUrl, ServiceClientCredentials appCredentials = null)
         {
-            string clientKey = $"{serviceUrl}{appCredentials?.MicrosoftAppId ?? string.Empty}";
+            MicrosoftAppCredentials msftCredentials = appCredentials as MicrosoftAppCredentials;
+            string clientId = msftCredentials?.MicrosoftAppId ?? appCredentials?.ToString() ?? string.Empty;
+            string clientKey = $"{serviceUrl}{clientId}";
 
             return _connectorClients.GetOrAdd(clientKey, (key) =>
             {
@@ -950,7 +953,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="appId">The application identifier (AAD Id for the bot).</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>App credentials.</returns>
-        private async Task<MicrosoftAppCredentials> GetAppCredentialsAsync(string appId, CancellationToken cancellationToken)
+        private async Task<ServiceClientCredentials> GetAppCredentialsAsync(string appId, CancellationToken cancellationToken)
         {
             if (appId == null)
             {
@@ -958,6 +961,14 @@ namespace Microsoft.Bot.Builder
             }
 
             if (_appCredentialMap.TryGetValue(appId, out var appCredentials))
+            {
+                return appCredentials;
+            }
+
+            var serviceClientCredentialProvider = _credentialProvider as IServiceClientCredentialProvider;
+
+            appCredentials = serviceClientCredentialProvider?.GetCredentials();
+            if (appCredentials != null)
             {
                 return appCredentials;
             }

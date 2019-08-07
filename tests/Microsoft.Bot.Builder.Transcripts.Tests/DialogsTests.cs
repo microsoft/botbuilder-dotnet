@@ -366,18 +366,18 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
         private static WaterfallStep[] Create_Waterfall2()
         {
             return new WaterfallStep[] {
-                Waterfall2_Step1,
-                Waterfall2_Step2,
-                Waterfall2_Step3
+                Waterfall2_Action1,
+                Waterfall2_Action2,
+                Waterfall2_Action3
             };
         }
 
-        private static async Task Waterfall2_Step1(DialogContext dc, WaterfallStepContext stepContext)
+        private static async Task Waterfall2_Action1(DialogContext dc, WaterfallStepContext stepContext)
         {
             await dc.Context.SendActivityAsync("step1");
             await dc.PromptAsync("number", "Enter a number.", new PromptOptions { RetryPromptString = "It must be a number" });
         }
-        private static async Task Waterfall2_Step2(DialogContext dc, WaterfallStepContext stepContext)
+        private static async Task Waterfall2_Action2(DialogContext dc, WaterfallStepContext stepContext)
         {
             if (args != null)
             {
@@ -387,7 +387,7 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
             await dc.Context.SendActivityAsync("step2");
             await dc.PromptAsync("number", "Enter a number.", new PromptOptions { RetryPromptString = "It must be a number" });
         }
-        private static async Task Waterfall2_Step3(DialogContext dc, WaterfallStepContext stepContext)
+        private static async Task Waterfall2_Action3(DialogContext dc, WaterfallStepContext stepContext)
         {
             if (args != null)
             {
@@ -436,51 +436,51 @@ namespace Microsoft.Bot.Builder.Transcripts.Tests
         private static WaterfallStep[] Create_Waterfall3()
         {
             return new WaterfallStep[] {
-                Waterfall3_Step1,
-                Waterfall3_Step2
+                Waterfall3_Action1,
+                Waterfall3_Action2
             };
         }
         private static WaterfallStep[] Create_Waterfall4()
         {
             return new WaterfallStep[] {
-                Waterfall4_Step1,
-                Waterfall4_Step2
+                Waterfall4_Action1,
+                Waterfall4_Action2
             };
         }
 
         private static WaterfallStep[] Create_Waterfall5()
         {
             return new WaterfallStep[] {
-                Waterfall5_Step1,
-                Waterfall5_Step2
+                Waterfall5_Action1,
+                Waterfall5_Action2
             };
         }
 
-        private static async Task Waterfall3_Step1(DialogContext dc, WaterfallStepContext stepContext)
+        private static async Task Waterfall3_Action1(DialogContext dc, WaterfallStepContext stepContext)
         {
             await dc.Context.SendActivityAsync("step1");
             await dc.BeginAsync("test-waterfall-b");
         }
-        private static async Task Waterfall3_Step2(DialogContext dc, WaterfallStepContext stepContext)
+        private static async Task Waterfall3_Action2(DialogContext dc, WaterfallStepContext stepContext)
         {
             await dc.Context.SendActivityAsync("step2");
             await dc.BeginAsync("test-waterfall-c");
         }
 
-        private static async Task Waterfall4_Step1(DialogContext dc, WaterfallStepContext stepContext)
+        private static async Task Waterfall4_Action1(DialogContext dc, WaterfallStepContext stepContext)
         {
             await dc.Context.SendActivityAsync("step1.1");
         }
-        private static async Task Waterfall4_Step2(DialogContext dc, WaterfallStepContext stepContext)
+        private static async Task Waterfall4_Action2(DialogContext dc, WaterfallStepContext stepContext)
         {
             await dc.Context.SendActivityAsync("step1.2");
         }
 
-        private static async Task Waterfall5_Step1(DialogContext dc, WaterfallStepContext stepContext)
+        private static async Task Waterfall5_Action1(DialogContext dc, WaterfallStepContext stepContext)
         {
             await dc.Context.SendActivityAsync("step2.1");
         }
-        private static async Task Waterfall5_Step2(DialogContext dc, WaterfallStepContext stepContext)
+        private static async Task Waterfall5_Action2(DialogContext dc, WaterfallStepContext stepContext)
         {
             await dc.Context.SendActivityAsync("step2.2");
             await dc.EndDialogAsync();

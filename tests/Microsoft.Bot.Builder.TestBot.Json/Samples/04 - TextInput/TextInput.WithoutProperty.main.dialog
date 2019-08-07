@@ -1,14 +1,19 @@
 {
     "$schema": "../../app.schema",
     "$type": "Microsoft.AdaptiveDialog",
-    "steps": [
+    "events": [
         {
-            "$type": "Microsoft.TextInput",
-            "prompt": "Hello, I'm Zoidberg. What is your name?"
-        },
-        {
-            "$type": "Microsoft.SendActivity",
-            "activity": "Hello, nice to talk to you!"
+            "$type": "Microsoft.OnBeginDialog",
+            "actions": [
+                {
+                    "$type": "Microsoft.TextInput",
+                    "prompt": "Hello, I'm Zoidberg. What is your name?"
+                },
+                {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "Hello, nice to talk to you!"
+                }
+            ]
         }
     ]
 }

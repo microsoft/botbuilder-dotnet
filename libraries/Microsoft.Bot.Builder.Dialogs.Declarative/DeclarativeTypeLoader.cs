@@ -54,7 +54,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
                     Converters = new List<JsonConverter>()
                     {
                         new InterfaceConverter<IDialog>(refResolver, registry, paths),
-                        new InterfaceConverter<IRule>(refResolver, registry, paths),
+                        new InterfaceConverter<IOnEvent>(refResolver, registry, paths),
                         new InterfaceConverter<IStorage>(refResolver, registry, paths),
                         new InterfaceConverter<IRecognizer>(refResolver, registry, paths),
                         new LanguageGeneratorConverter(refResolver, registry, paths),

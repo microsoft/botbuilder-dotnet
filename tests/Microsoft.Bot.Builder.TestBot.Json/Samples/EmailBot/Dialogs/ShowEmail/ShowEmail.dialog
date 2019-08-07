@@ -10,38 +10,38 @@
       "ShowEmailIntent": "(?i)show"
     }
   },
-  "rules": [
+  "events": [
     {
-      "$type": "Microsoft.IntentRule",
+      "$type": "Microsoft.OnIntent",
       "intent": "ForwardEmailIntent",
-      "steps": [
+      "actions": [
         "ForwardEmail"
       ]
     },
     {
-      "$type": "Microsoft.IntentRule",
+      "$type": "Microsoft.OnIntent",
       "intent": "ReplyEmailIntent",
-      "steps": [
+      "actions": [
         "ReplyEmail"
       ]
     },
     {
-      "$type": "Microsoft.IntentRule",
+      "$type": "Microsoft.OnIntent",
       "intent": "ShowNextPageIntent",
-      "steps": [
+      "actions": [
         "NextPage",
         "DisplayEmailList"
       ]
     },
     {
-      "$type": "Microsoft.IntentRule",
+      "$type": "Microsoft.OnIntent",
       "intent": "ShowEmailIntent",
-      "steps": [
+      "actions": [
         "DisplayEmailList"
       ]
     }
   ],
-  "steps": [
+  "actions": [
     "DisplayEmailList",
     // Display overview again -- a little hack way. Always use intent to push a new dialog on top of stack, and reprompt this question after this new dialog is finished.
     // Question: How to build a dialog which can repeat itself: show email->read email->show again?->show email… Do we need to use Microsoft.RepeatDialog? How to use it?
@@ -56,9 +56,9 @@
     {
       "$type": "Microsoft.IfCondition",
       "condition": "dialog.confirmed",
-      "steps": [
+      "actions": [
       ],
-      "elseSteps": [
+      "elseActions": [
         {
           "$type": "Microsoft.SendActivity",
           "activity": "OK, have a good time."
@@ -79,14 +79,14 @@
     //{
     //  "$type": "Microsoft.IfCondition",
     //  "condition": "dialog.confirmed",
-    //  "steps": [
+    //  "actions": [
     //    //"ShowEmail",
     //    {
     //      "$type": "Microsoft.SendActivity",
     //      "activity": "Show email again."
     //    }
     //  ],
-    //  "elseSteps": [
+    //  "elseActions": [
     //    {
     //      "$type": "Microsoft.SendActivity",
     //      "activity": "OK, have a good time. You can also say 'next page email' to go to next page."

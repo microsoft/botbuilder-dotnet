@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Steps;
-using Microsoft.Bot.Builder.Expressions.Parser;
-using Newtonsoft.Json.Bson;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Events;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors;
 using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Serialization;
 
 namespace Microsoft.Bot.Builder.Dialogs.Form
 {
@@ -18,6 +15,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
         {
             InputSchema = inputSchema;
             OutputSchema = outputSchema;
+            Selector = new MostSpecificSelector { Selector = new SlotMapSelector() };
+
             if (outputSchema.Schema["type"].Value<string>() != "object")
             {
                 throw new ArgumentException("Forms must be an object schema.");
@@ -29,70 +28,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
         public DialogSchema InputSchema { get; }
 
         public DialogSchema OutputSchema { get; }
-
-        public void AnalyzeSchema(Func<string, JToken, bool> analyzer)
-        {
-            // AnalyzeSchema(OutputSchema, string.Empty, analyzer);
-        }
-
-        public JObject SchemaFor(string propertyPath)
-        {
-            JObject schema = null;
-            AnalyzeSchema((path, token) =>
-            {
-                bool stop = false;
-                if (path == propertyPath)
-                {
-                    stop = true;
-                    schema = token as JObject;
-                }
-
-                return stop;
-            });
-            return schema;
-        }
-
-        protected bool AnalyzeSchema(JToken token, string path, Func<string, JToken, bool> analyzer)
-        {
-            bool stop;
-            if (token is JObject jobj)
-            {
-                if (!(stop = analyzer(path, token)))
-                {
-                    // Arrays terminate schema from a slot mapping standpoint. 
-                    // We can handle mapping multiple leaf values, but not nested ones unless there is a sub-dialog.
-                    if (!path.EndsWith("[]"))
-                    {
-                        foreach (var prop in jobj.Properties())
-                        {
-                            var parent = prop.Parent;
-                            var grand = parent?.Parent;
-                            var newPath = path;
-                            if (grand != null && grand is JProperty grandProp && grandProp.Name == "properties")
-                            {
-                                newPath = path == string.Empty ? prop.Name : $"{path}.{prop.Name}";
-                                var type = prop.Value["type"];
-                                if (type != null && type.Value<string>() == "array")
-                                {
-                                    newPath += "[]";
-                                }
-                            }
-
-                            if (stop = AnalyzeSchema(prop.Value, newPath, analyzer))
-                            {
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-            else
-            {
-                stop = analyzer(path, token);
-            }
-
-            return stop;
-        }
 
         // For simple singleton slot:
         //  Set values
@@ -124,7 +59,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
         // * We will only generate a single instance of the form.  (Although there can be multiple ones inside.)
         // * You can map directly, but then must deal with that complexity of structures.  For example if you have multiple flight(origin, destination) and you want to map to hotel(location)
         //   you have to figure out how to deal with multiple flight structures and the underlying entity structures.
-        // * For now only leaves can be arrays.  If you need more, I think it is a subform.
+        // * For now only leaves can be arrays.  If you need more, I think it is a subform, but we could probably automatically generate a foreach step on top.
         //
         // 1) Find all most specific matches
         // 2) Identify any slots that compete for the same entity.  Select by in expected, then keep as slot ambiguous.
@@ -151,36 +86,46 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
 
             foreach (var mapping in property.Mappings)
             {
-                var entity = mapping.Value<string>()?.Replace("[]", string.Empty);
-                if (entity != null)
+                var expr = mapping.Value<string>()?.Replace("[]", string.Empty);
+                var path = FormPath(property.Path);
+                if (expr != null)
                 {
                     if (property.IsArray)
                     {
-                        AddRule(new FormRule(
-                            constraint: $"{entity}",
-                            steps: new List<IDialog>
+                        AddEvent(new OnDialogEvent(
+                            constraint: $"{expr}",
+                            actions: new List<IDialog>
                             {
                                     new SetProperty
                                     {
-                                        Property = FormPath(property.Path),
-                                        Value = entity
+                                        Property = path,
+                                        Value = expr
                                     }
                             }));
                     }
                     else
                     {
-                        AddRule(new FormRule(
-                            constraint: $"count({entity}) == 1",
-                            steps: new List<IDialog>
+                        // Just set value to singleton
+                        AddEvent(new OnDialogEvent(
+                            constraint: $"count({expr}) == 1",
+                            actions: new List<IDialog>
                             {
                                     new SetProperty
                                     {
-                                        Property = FormPath(property.Path),
-                                        Value = entity
+                                        Property = path,
+                                        Value = expr
                                     }
                             }));
 
-                        // TODO: Add disambiguation and constraint rules
+                        // Disambiguate to singleton
+                        AddEvent(new OnDialogEvent(
+                            constraint: $"count({expr}) > 1",
+                            actions: new List<IDialog>
+                            {
+                                new FormInput(
+                                    text: $"[disambiguate({expr}, {path})]",
+                                    expectedSlots: new List<string> { path })
+                            }));
                     }
                 }
                 else
@@ -190,26 +135,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
             }
         }
 
+        // TODO: For 
+
         protected string FormPath(string schemaPath) => $"^form.{schemaPath.Replace("[]", string.Empty)}";
-
-        protected JToken Mappings(string path, JObject schema)
-        {
-            JArray mapping = schema["mappings"] as JArray;
-            if (mapping == null)
-            {
-                var simplePath = path.Replace("[]", string.Empty);
-                if (path.Contains("."))
-                {
-                    // Default mapping is to isomorphic structure corresponding to parent
-                    mapping = new JArray($"dialog.form.{simplePath}");
-                }
-                else
-                {
-                    mapping = new JArray($"@@{simplePath}");
-                }
-            }
-
-            return mapping;
-        }
     }
 }

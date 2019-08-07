@@ -2,38 +2,43 @@
     "$schema": "../../app.schema",
     "$type": "Microsoft.AdaptiveDialog",
     "generator": "todo.lg",
-    "steps": [
+    "events": [
         {
-            "$type": "Microsoft.SetProperty",
-            "value": "@title",
-            "property": "dialog.todo"
-        },
-        {
-            "$type": "Microsoft.TextInput",
-            "prompt": "OK, please enter the title of your todo.",
-            "value":  "@title",
-            "property": "dialog.todo"
-        },
-        {
-            "$type": "Microsoft.IfCondition",
-            "condition": "user.todos == null",
-            "steps": [
+            "$type": "Microsoft.OnBeginDialog",
+            "actions": [
                 {
-                    "$type": "Microsoft.InitProperty",
-                    "property": "user.todos",
-                    "type": "array"
+                    "$type": "Microsoft.SetProperty",
+                    "value": "@title",
+                    "property": "dialog.todo"
+                },
+                {
+                    "$type": "Microsoft.TextInput",
+                    "prompt": "OK, please enter the title of your todo.",
+                    "value": "@title",
+                    "property": "dialog.todo"
+                },
+                {
+                    "$type": "Microsoft.IfCondition",
+                    "condition": "user.todos == null",
+                    "actions": [
+                        {
+                            "$type": "Microsoft.InitProperty",
+                            "property": "user.todos",
+                            "type": "array"
+                        }
+                    ]
+                },
+                {
+                    "$type": "Microsoft.EditArray",
+                    "changeType": "Push",
+                    "arrayProperty": "user.todos",
+                    "value": "dialog.todo"
+                },
+                {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "Successfully added a todo named \"{dialog.todo}\""
                 }
             ]
-        },
-        {
-            "$type": "Microsoft.EditArray",
-            "changeType": "Push",
-            "arrayProperty": "user.todos",
-            "value": "dialog.todo"
-        },
-        {
-            "$type": "Microsoft.SendActivity",
-            "activity": "Successfully added a todo named \"{dialog.todo}\""
         }
     ]
 }

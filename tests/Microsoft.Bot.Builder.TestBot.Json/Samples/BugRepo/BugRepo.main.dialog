@@ -11,24 +11,24 @@
             "End": "end"
         }
     },
-    "rules": [
+    "events": [
         {
-            "$type": "Microsoft.IntentRule",
+            "$type": "Microsoft.OnIntent",
             "intent": "End",
-            "steps": [
+            "actions": [
                 {
                     "$type": "Microsoft.EndDialog"
                 }
             ]
         },
         {
-            "$type": "Microsoft.IntentRule",
+            "$type": "Microsoft.OnIntent",
             "intent": "Test",
-            "steps": [
+            "actions": [
                 {
                     "$type": "Microsoft.BeginDialog",
                     "property": "dialog.name",
-                    "dialog": "AskForName"
+                    "dialogId": "AskForName"
                 },
                 {
                     "$type": "Microsoft.SendActivity",
@@ -37,7 +37,7 @@
                 {
                     "$type": "Microsoft.BeginDialog",
                     "property": "dialog.name",
-                    "dialog": "AskForName"
+                    "dialogId": "AskForName"
                 },
                 {
                     "$type": "Microsoft.SendActivity",

@@ -65,6 +65,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                 if (mappings == null)
                 {
                     mappings = new JArray($"@@{Path}");
+                    if (Type == "integer" || Type == "float")
+                    {
+                        // We want to pick up generic numbers when expected.
+                        mappings.Add("@@number");
+                    }
                 }
 
                 return mappings;

@@ -1,21 +1,19 @@
 ﻿// Licensed under the MIT License.
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.Dialogs.Declarative;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Tests.Recognizers;
-using Microsoft.Bot.Schema;
-using System.Collections.Generic;
-using System;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
-using Microsoft.Bot.Builder.Dialogs.Adaptive;
+using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
-using Microsoft.Bot.Builder.LanguageGeneration;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Tests.Recognizers;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
+using Microsoft.Bot.Schema;
+using Microsoft.Extensions.Configuration;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
 {
@@ -45,13 +43,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         public TestContext TestContext { get; set; }
 
         [TestMethod]
-        public async Task JsonDialogLoad_Steps()
+        public async Task JsonDialogLoad_Actions()
         {
-            await BuildTestFlow(@"Steps.main.dialog")
+            await BuildTestFlow(@"Actions.main.dialog")
                 .SendConversationUpdate()
-                .AssertReply("Step 1")
-                .AssertReply("Step 2")
-                .AssertReply("Step 3")
+                .AssertReply("Action 1")
+                .AssertReply("Action 2")
+                .AssertReply("Action 3")
             .StartTestAsync();
         }
 
@@ -103,10 +101,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
             await BuildTestFlow("TextInput.main.dialog")
             .SendConversationUpdate()
                 .AssertReply("Hello, I'm Zoidberg. What is your name?")
-            .Send("Carlos")
+            .Send("Cancel")
+                .AssertReply("Cancel")
+                .AssertReply("Hello, I'm Zoidberg. What is your name?")
+            .Send("Carlos  ") // outputFormat = trim
                 .AssertReply("Hello Carlos, nice to talk to you!")
-            .Send("hi")
-                .AssertReply("Hello Carlos, nice to talk to you!")
+                .AssertReply("Hello, I'm Zoidberg. What is your name?")
+            .Send("Cancel") // allowInterruptions = notRecognized
+                .AssertReply("Hello Cancel, nice to talk to you!")
                 .StartTestAsync();
         }
 
@@ -158,9 +160,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         }
 
         [TestMethod]
-        public async Task JsonDialogLoad_DoSteps()
+        public async Task JsonDialogLoad_DoActions()
         {
-            await BuildTestFlow("DoSteps.main.dialog")
+            await BuildTestFlow("DoActions.main.dialog")
             .Send(new Activity(ActivityTypes.ConversationUpdate, membersAdded: new List<ChannelAccount>() { new ChannelAccount("bot", "Bot") }))
             .SendConversationUpdate()
                 .AssertReply("Hello, I'm Zoidberg. What is your name?")
@@ -306,6 +308,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
                 .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
 
             var resource = resourceExplorer.GetResource(resourceName);
+            if (resource == null)
+                throw new Exception($"Resource[{resourceName}] not found");
             var dialog = DeclarativeTypeLoader.Load<IDialog>(resource, resourceExplorer, DebugSupport.SourceRegistry);
             DialogManager dm = new DialogManager(dialog);
 

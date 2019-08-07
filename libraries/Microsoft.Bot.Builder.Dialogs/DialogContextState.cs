@@ -19,17 +19,19 @@ namespace Microsoft.Bot.Builder.Dialogs
     public class DialogContextVisibleState
     {
         [JsonProperty(PropertyName = "user")]
-        public Dictionary<string, object> User { get; set; }
+        public IDictionary<string, object> User { get; set; }
 
         [JsonProperty(PropertyName = "conversation")]
-        public Dictionary<string, object> Conversation { get; set; }
+        public IDictionary<string, object> Conversation { get; set; }
 
         [JsonProperty(PropertyName = "dialog")]
-        public Dictionary<string, object> Dialog { get; set; }
+        public IDictionary<string, object> Dialog { get; set; }
     }
 
     public class DialogContextState : IDictionary<string, object>
     {
+        private const string prefixCallBack = "callstackScope('";
+
         private static JsonSerializerSettings expressionCaseSettings = new JsonSerializerSettings
         {
             ContractResolver = new DefaultContractResolver { NamingStrategy = new CamelCaseNamingStrategy() },
@@ -38,7 +40,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         private readonly DialogContext dialogContext;
 
-        public DialogContextState(DialogContext dc, Dictionary<string, object> settings, Dictionary<string, object> userState, Dictionary<string, object> conversationState, Dictionary<string, object> turnState)
+        public DialogContextState(DialogContext dc, IDictionary<string, object> settings, IDictionary<string, object> userState, IDictionary<string, object> conversationState, IDictionary<string, object> turnState)
         {
             this.dialogContext = dc ?? throw new ArgumentNullException(nameof(dc));
             this.Settings = settings;
@@ -66,25 +68,25 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// Gets or sets settings for the application.
         /// </summary>
         [JsonProperty(PropertyName = "settings")]
-        public Dictionary<string, object> Settings { get; set; }
+        public IDictionary<string, object> Settings { get; set; }
 
         /// <summary>
         /// Gets or sets state associated with the active user in the turn.
         /// </summary>
         [JsonProperty(PropertyName = "user")]
-        public Dictionary<string, object> User { get; set; }
+        public IDictionary<string, object> User { get; set; }
 
         /// <summary>
         /// Gets or sets state assocaited with the active conversation for the turn.
         /// </summary>
         [JsonProperty(PropertyName = "conversation")]
-        public Dictionary<string, object> Conversation { get; set; }
+        public IDictionary<string, object> Conversation { get; set; }
 
         /// <summary>
         /// Gets or sets state associated with the active dialog for the turn.
         /// </summary>
         [JsonProperty(PropertyName = "dialog")]
-        public Dictionary<string, object> Dialog
+        public IDictionary<string, object> Dialog
         {
             get
             {
@@ -157,7 +159,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// Gets or sets state associated with the current turn only (this is non-persisted).
         /// </summary>
         [JsonProperty(PropertyName = "turn")]
-        public Dictionary<string, object> Turn { get; set; }
+        public IDictionary<string, object> Turn { get; set; }
 
         public ICollection<string> Keys => new[] { "user", "conversation", "dialog", "callstack", "turn", "settings" };
 
@@ -212,6 +214,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             return json.SelectTokens(pathExpression);
         }
 
+        // TODO drop this function after we move RemoveProperty to use expressions
         public string ResolvePathShortcut(string path)
         {
             path = path.Trim();
@@ -224,25 +227,9 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             switch (path[0])
             {
-                case '#':
-                    // #BookFlight == turn.recognized.intents.BookFlight
-                    return $"turn.recognized.intents.{name}";
-
-                case '@':
-                    // @city == turn.recognized.entities.city
-                    return $"turn.recognized.entities.{name}";
-
                 case '$':
                     // $title == dialog.title
                     return $"dialog.{name}";
-
-                case '%':
-                    // %xxx == dialog.instance.xxx
-                    return $"dialog.instance.{name}";
-
-                case '^':
-                    // ^xxx == dialog.options.xxx
-                    return $"dialog.options.{name}";
 
                 default:
                     return path;
@@ -321,7 +308,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         public void SetValue(string pathExpression, object value)
         {
-            ObjectPath.SetValue(this, new ExpressionEngine().Parse(pathExpression), value);
+            SetValue(new ExpressionEngine().Parse(pathExpression), value);
         }
 
         public void SetValue(Expression pathExpression, object value)
@@ -329,6 +316,13 @@ namespace Microsoft.Bot.Builder.Dialogs
             if (value is Task)
             {
                 throw new Exception($"{pathExpression} = You can't pass an unresolved Task to SetValue");
+            }
+
+            var e = pathExpression.ToString();
+            if (e.StartsWith(prefixCallBack))
+            {
+                // turn $foo which comes in as callbackStack('foo') => dialog.foo
+                pathExpression = new ExpressionEngine().Parse($"dialog.{e.Substring(prefixCallBack.Length, e.Length - prefixCallBack.Length - 2)}");
             }
 
             ObjectPath.SetValue(this, pathExpression, value);

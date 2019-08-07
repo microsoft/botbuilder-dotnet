@@ -8,15 +8,15 @@ using Microsoft.Bot.Builder.Expressions.Parser;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
 {
     /// <summary>
-    /// Select the first true rule implementation of <see cref="IRuleSelector"/>.
+    /// Select the first true rule implementation of <see cref="IEventSelector"/>.
     /// </summary>
-    public class FirstSelector : IRuleSelector
+    public class FirstSelector : IEventSelector
     {
-        private List<IRule> _rules;
+        private List<IOnEvent> _rules;
         private bool _evaluate;
         private readonly IExpressionParser _parser = new ExpressionEngine();
 
-        public void Initialize(IEnumerable<IRule> rules, bool evaluate)
+        public void Initialize(IEnumerable<IOnEvent> rules, bool evaluate)
         {
             _rules = rules.ToList();
             _evaluate = evaluate;

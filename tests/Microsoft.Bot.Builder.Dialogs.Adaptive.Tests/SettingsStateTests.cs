@@ -4,8 +4,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Rules;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Steps;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Events;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Extensions.Configuration;
@@ -14,13 +14,13 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 {
     [TestClass]
-    public class SettingsState_Tests
+    public class SettingsStateTests
     {
         public TestContext TestContext { get; set; }
 
         public IConfiguration Configuration;
 
-        public SettingsState_Tests()
+        public SettingsStateTests()
         {
             var builder = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false);
@@ -46,9 +46,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var userState = new UserState(new MemoryStorage());
             var dialog = new AdaptiveDialog();
-            dialog.AddRules(new List<IRule>()
+            dialog.AddEvents(new List<IOnEvent>()
             {
-                new UnknownIntentRule(steps:
+                new OnUnknownIntent(actions:
                     new List<IDialog>()
                     {
                         new SendActivity()
