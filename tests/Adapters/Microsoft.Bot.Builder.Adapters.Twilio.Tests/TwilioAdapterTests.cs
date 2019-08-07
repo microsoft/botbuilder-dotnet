@@ -61,9 +61,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
                 AuthToken = "Test",
             };
 
-            var adapter = new TwilioAdapter(options);
-
-            Assert.NotNull(adapter);
+            Assert.NotNull(new TwilioAdapter(options));
         }
 
         private class MockTwilioOptions : ITwilioAdapterOptions
