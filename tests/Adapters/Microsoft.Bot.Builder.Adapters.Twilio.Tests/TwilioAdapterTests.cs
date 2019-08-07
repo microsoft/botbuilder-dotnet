@@ -2,6 +2,10 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
+using System.IO;
+using Microsoft.Bot.Schema;
+using Newtonsoft.Json;
 using Xunit;
 
 namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
@@ -64,6 +68,28 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
             };
 
             Assert.NotNull(new TwilioAdapter(options));
+        }
+
+        [Fact]
+        public void ActivityToTwilio_Should_Return_MessageOptions_With_MediaUrl()
+        {
+            ITwilioAdapterOptions options = new MockTwilioOptions
+            {
+                TwilioNumber = "Test",
+                AccountSid = "Test",
+                AuthToken = "Test",
+            };
+
+            var adapter = new TwilioAdapter(options);
+            var activity = JsonConvert.DeserializeObject<Activity>(File.ReadAllText(Directory.GetCurrentDirectory() + @"\files\Activities.json"));
+            var activities = new Activity[] { activity };
+            activity.Attachments = new List<Attachment> { new Attachment(contentUrl: "http://example.com") };
+            var messageOption = TwilioHelper.ActivityToTwilio(activity, "123456789");
+
+            Assert.Equal(activity.Conversation.Id, messageOption.ApplicationSid);
+            Assert.Equal("123456789", messageOption.From.ToString());
+            Assert.Equal(activity.Text, messageOption.Body);
+            Assert.Equal(new Uri(activity.Attachments[0].ContentUrl), messageOption.MediaUrl[0]);
         }
 
         private class MockTwilioOptions : ITwilioAdapterOptions
