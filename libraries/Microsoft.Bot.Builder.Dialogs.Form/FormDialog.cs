@@ -1,15 +1,11 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Rules;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Steps;
-using Microsoft.Bot.Builder.Expressions.Parser;
-using Newtonsoft.Json.Bson;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Events;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors;
 using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Serialization;
 
 namespace Microsoft.Bot.Builder.Dialogs.Form
 {
@@ -19,7 +15,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
         {
             InputSchema = inputSchema;
             OutputSchema = outputSchema;
-            Selector = new SlotMapSelector();
+            Selector = new MostSpecificSelector { Selector = new SlotMapSelector() };
 
             if (outputSchema.Schema["type"].Value<string>() != "object")
             {
@@ -96,9 +92,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                 {
                     if (property.IsArray)
                     {
-                        AddRule(new FormRule(
+                        AddEvent(new OnDialogEvent(
                             constraint: $"{expr}",
-                            steps: new List<IDialog>
+                            actions: new List<IDialog>
                             {
                                     new SetProperty
                                     {
@@ -110,9 +106,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                     else
                     {
                         // Just set value to singleton
-                        AddRule(new FormRule(
+                        AddEvent(new OnDialogEvent(
                             constraint: $"count({expr}) == 1",
-                            steps: new List<IDialog>
+                            actions: new List<IDialog>
                             {
                                     new SetProperty
                                     {
@@ -122,11 +118,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                             }));
 
                         // Disambiguate to singleton
-                        AddRule(new FormRule(
+                        AddEvent(new OnDialogEvent(
                             constraint: $"count({expr}) > 1",
-                            steps: new List<IDialog>
+                            actions: new List<IDialog>
                             {
-                                new SendActivity(
+                                new FormInput(
                                     text: $"[disambiguate({expr}, {path})]",
                                     expectedSlots: new List<string> { path })
                             }));

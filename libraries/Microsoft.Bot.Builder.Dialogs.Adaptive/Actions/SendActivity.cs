@@ -22,17 +22,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// </summary>
         public ITemplate<Activity> Activity { get; set; }
 
-        /// <summary>
-        /// Slots expected to be filled by response.
-        /// </summary>
-        public IList<string> ExpectedSlots { get; set; }
 
         [JsonConstructor]
-        public SendActivity(string text = null, IList<string> expectedSlots = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public SendActivity(string text = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
             this.RegisterSourceLocation(callerPath, callerLine);
             this.Activity = new ActivityTemplate(text ?? string.Empty);
-            this.ExpectedSlots = expectedSlots;
         }
 
         public SendActivity(Activity activity, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
