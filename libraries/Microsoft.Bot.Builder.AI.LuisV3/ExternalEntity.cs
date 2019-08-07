@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license.
+
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.AI.Luis
