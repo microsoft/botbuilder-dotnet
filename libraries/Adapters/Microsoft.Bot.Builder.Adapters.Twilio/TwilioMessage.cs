@@ -9,7 +9,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
     /// <summary>
     /// A class wrapping all the Twilio SMS event properties.
     /// </summary>
-    public class TwilioEvent
+    public class TwilioMessage
     {
         /// <summary>
         /// Gets or sets the receiver's country.
