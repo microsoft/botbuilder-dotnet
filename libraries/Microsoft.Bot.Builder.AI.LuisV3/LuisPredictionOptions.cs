@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license.
+
 using System.Collections.Generic;
 using Microsoft.Bot.Builder.AI.LuisV3;
 
