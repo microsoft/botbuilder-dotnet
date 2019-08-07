@@ -64,7 +64,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
             {
                 if (activity.Type == ActivityTypes.Message)
                 {
-                    var messageOptions = TwilioHelper.ActivityToTwilio(activity, _options);
+                    var messageOptions = TwilioHelper.ActivityToTwilio(activity, _options.TwilioNumber);
 
                     var res = await MessageResource.CreateAsync(messageOptions).ConfigureAwait(false);
 
@@ -109,7 +109,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
                 throw new ArgumentNullException(nameof(bot));
             }
 
-            var activity = TwilioHelper.RequestToActivity(httpRequest, _options);
+            var activity = TwilioHelper.RequestToActivity(httpRequest, _options.ValidationUrl, _options.AuthToken);
 
             // create a conversation reference
             using (var context = new TurnContext(this, activity))
