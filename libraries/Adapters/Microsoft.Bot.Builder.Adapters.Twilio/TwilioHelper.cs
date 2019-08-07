@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
@@ -12,6 +13,8 @@ using Newtonsoft.Json;
 using Twilio.Exceptions;
 using Twilio.Rest.Api.V2010.Account;
 using Twilio.Security;
+
+[assembly: InternalsVisibleTo("Microsoft.Bot.Builder.Adapters.Twilio.Tests")]
 
 namespace Microsoft.Bot.Builder.Adapters.Twilio
 {
