@@ -52,7 +52,6 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.TestBot
                 var conversationState = sp.GetService<ConversationState>();
                 return new BotStateSet(userState, conversationState);
             });
-            
             services.AddSingleton<IWeChatHttpAdapter>(sp =>
             {
                 var userState = sp.GetService<UserState>();
@@ -63,7 +62,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.TestBot
                 adapter.Use(new AutoSaveStateMiddleware(userState, conversationState));
                 return adapter;
             });
-            
+
             // The Dialog that will be run by the bot.
             services.AddSingleton<MainDialog>();
 
