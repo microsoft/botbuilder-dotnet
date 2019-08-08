@@ -24,5 +24,23 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
             Assert.Equal(activity.Text, messageOption.Body);
             Assert.Equal(new Uri(activity.Attachments[0].ContentUrl), messageOption.MediaUrl[0]);
         }
+
+        [Fact]
+        public void ActivityToTwilio_Should_Return_EmptyMediaUrl_With_Null_ActivityAttachments()
+        {
+            var twilioNumber = "+12345678";
+            var activity = new Activity()
+            {
+                Conversation = new ConversationAccount()
+                {
+                    Id = "testId",
+                },
+                Text = "Testing Null Attachments",
+                Attachments = null,
+            };
+
+            var messageOptions = TwilioHelper.ActivityToTwilio(activity, twilioNumber);
+            Assert.True(messageOptions.MediaUrl.Count == 0);
+        }
     }
 }

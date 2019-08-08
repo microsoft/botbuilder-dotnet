@@ -3,6 +3,7 @@
 
 using System;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Schema;
 using Moq;
@@ -136,6 +137,96 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
             {
                 await twilioAdapter.ProcessAsync(default(HttpRequest), default(HttpResponse), null, default(CancellationToken));
             });
+        }
+
+        [Fact]
+        public async void UpdateActivityAsync_Should_Throw_NotSupportedException()
+        {
+            var options = new Mock<ITwilioAdapterOptions>();
+            options.SetupAllProperties();
+            options.Object.AuthToken = "Test";
+            options.Object.TwilioNumber = "Test";
+            options.Object.AccountSid = "Test";
+
+            var twilioAdapter = new TwilioAdapter(options.Object);
+            var activity = new Activity();
+            var turnContext = new TurnContext(twilioAdapter, activity);
+
+            await Assert.ThrowsAsync<NotSupportedException>(async () => { await twilioAdapter.UpdateActivityAsync(turnContext, activity, default); });
+        }
+
+        [Fact]
+        public async void DeleteActivityAsync_Should_Throw_NotSupportedException()
+        {
+            var options = new Mock<ITwilioAdapterOptions>();
+            options.SetupAllProperties();
+            options.Object.AuthToken = "Test";
+            options.Object.TwilioNumber = "Test";
+            options.Object.AccountSid = "Test";
+
+            var twilioAdapter = new TwilioAdapter(options.Object);
+            var activity = new Activity();
+            var turnContext = new TurnContext(twilioAdapter, activity);
+            var conversationReference = new ConversationReference();
+
+            await Assert.ThrowsAsync<NotSupportedException>(async () => { await twilioAdapter.DeleteActivityAsync(turnContext, conversationReference, default); });
+        }
+
+        [Fact]
+        public async void ContinueConversationAsync_Should_Fail_With_Null_ConversationReference()
+        {
+            var options = new Mock<ITwilioAdapterOptions>();
+            options.SetupAllProperties();
+            options.Object.AuthToken = "Test";
+            options.Object.TwilioNumber = "Test";
+            options.Object.AccountSid = "Test";
+
+            var twilioAdapter = new TwilioAdapter(options.Object);
+
+            Task BotsLogic(ITurnContext turnContext, CancellationToken cancellationToken)
+            {
+                return Task.CompletedTask;
+            }
+
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => { await twilioAdapter.ContinueConversationAsync(null, BotsLogic, default); });
+        }
+
+        [Fact]
+        public async void ContinueConversationAsync_Should_Fail_With_Null_Logic()
+        {
+            var options = new Mock<ITwilioAdapterOptions>();
+            options.SetupAllProperties();
+            options.Object.AuthToken = "Test";
+            options.Object.TwilioNumber = "Test";
+            options.Object.AccountSid = "Test";
+
+            var twilioAdapter = new TwilioAdapter(options.Object);
+            var conversationReference = new ConversationReference();
+
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => { await twilioAdapter.ContinueConversationAsync(conversationReference, null, default); });
+        }
+
+        [Fact]
+        public async void ContinueConversationAsync_Should_Succeed()
+        {
+            bool callbackInvoked = false;
+            var options = new Mock<ITwilioAdapterOptions>();
+            options.SetupAllProperties();
+            options.Object.AuthToken = "Test";
+            options.Object.TwilioNumber = "Test";
+            options.Object.AccountSid = "Test";
+
+            var twilioAdapter = new TwilioAdapter(options.Object);
+            var conversationReference = new ConversationReference();
+
+            Task BotsLogic(ITurnContext turnContext, CancellationToken cancellationToken)
+            {
+                callbackInvoked = true;
+                return Task.CompletedTask;
+            }
+
+            await twilioAdapter.ContinueConversationAsync(conversationReference, BotsLogic, default);
+            Assert.True(callbackInvoked);
         }
     }
 }
