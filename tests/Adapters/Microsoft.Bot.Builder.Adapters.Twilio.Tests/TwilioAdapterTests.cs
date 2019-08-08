@@ -98,10 +98,12 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
             options.Object.AccountSid = "Test";
 
             var twilioAdapter = new TwilioAdapter(options.Object);
+            var httpResponse = new Mock<HttpResponse>();
+            var bot = new Mock<IBot>();
 
             await Assert.ThrowsAsync<ArgumentNullException>(async () =>
             {
-                await twilioAdapter.ProcessAsync(null, default(HttpResponse), default(IBot), default(CancellationToken));
+                await twilioAdapter.ProcessAsync(null, httpResponse.Object, bot.Object, default(CancellationToken));
             });
         }
 
@@ -115,10 +117,12 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
             options.Object.AccountSid = "Test";
 
             var twilioAdapter = new TwilioAdapter(options.Object);
+            var httpRequest = new Mock<HttpRequest>();
+            var bot = new Mock<IBot>();
 
             await Assert.ThrowsAsync<ArgumentNullException>(async () =>
             {
-                await twilioAdapter.ProcessAsync(default(HttpRequest), null, default(IBot), default(CancellationToken));
+                await twilioAdapter.ProcessAsync(httpRequest.Object, null, default(IBot), default(CancellationToken));
             });
         }
 
@@ -132,10 +136,12 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
             options.Object.AccountSid = "Test";
 
             var twilioAdapter = new TwilioAdapter(options.Object);
+            var httpRequest = new Mock<HttpRequest>();
+            var httpResponse = new Mock<HttpResponse>();
 
             await Assert.ThrowsAsync<ArgumentNullException>(async () =>
             {
-                await twilioAdapter.ProcessAsync(default(HttpRequest), default(HttpResponse), null, default(CancellationToken));
+                await twilioAdapter.ProcessAsync(httpRequest.Object, httpResponse.Object, null, default(CancellationToken));
             });
         }
 

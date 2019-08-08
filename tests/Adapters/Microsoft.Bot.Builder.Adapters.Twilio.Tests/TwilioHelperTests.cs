@@ -4,7 +4,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Schema;
+using Moq;
 using Newtonsoft.Json;
 using Xunit;
 
@@ -41,6 +43,19 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
 
             var messageOptions = TwilioHelper.ActivityToTwilio(activity, twilioNumber);
             Assert.True(messageOptions.MediaUrl.Count == 0);
+        }
+
+        [Fact]
+        public void ActivityToTwilio_Should_Fail_With_Null_Activity()
+        {
+            Assert.Null(TwilioHelper.ActivityToTwilio(null, "123456789"));
+        }
+
+        [Fact]
+        public void ActivityToTwilio_Should_Return_Null_With_Empty_Or_Invalid_Number()
+        {
+            Assert.Null(TwilioHelper.ActivityToTwilio(default(Activity), "not_a_number"));
+            Assert.Null(TwilioHelper.ActivityToTwilio(default(Activity), string.Empty));
         }
     }
 }
