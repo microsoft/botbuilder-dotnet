@@ -160,6 +160,16 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task ContinueConversationAsync(ConversationReference reference, BotCallbackHandler logic, CancellationToken cancellationToken)
         {
+            if (reference == null)
+            {
+                throw new ArgumentNullException(nameof(reference));
+            }
+
+            if (logic == null)
+            {
+                throw new ArgumentNullException(nameof(logic));
+            }
+
             var request = reference.GetContinuationActivity().ApplyConversationReference(reference, true);
 
             using (var context = new TurnContext(this, request))
