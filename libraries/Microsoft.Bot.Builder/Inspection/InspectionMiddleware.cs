@@ -11,6 +11,7 @@ using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder
 {
@@ -127,6 +128,11 @@ namespace Microsoft.Bot.Builder
                 if (_conversationState != null)
                 {
                     botState.Add("conversationState", _conversationState.Get(turnContext));
+                }
+
+                if (turnContext.TurnState != null && turnContext.TurnState.ContainsKey("TurnStateMap"))
+                {
+                    botState.Add("turnState", JObject.FromObject(turnContext.TurnState.Get<object>("TurnStateMap")));
                 }
 
                 await InvokeSendAsync(turnContext, session, botState.TraceActivity(), cancellationToken).ConfigureAwait(false);
