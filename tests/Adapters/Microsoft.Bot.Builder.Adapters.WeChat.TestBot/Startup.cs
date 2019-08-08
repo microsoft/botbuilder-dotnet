@@ -9,6 +9,8 @@ using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
 namespace Microsoft.Bot.Builder.Adapters.WeChat.TestBot
 {
@@ -36,9 +38,6 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.TestBot
             services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
             services.AddHostedService<QueuedHostedService>();
 
-            // Configure Logger
-            services.AddSingleton<IWeChatHttpAdapter, WeChatHttpAdapter>();
-
             // Create the storage we'll be using for User and Conversation state. (Memory is great for testing purposes.)
             services.AddSingleton<IStorage, MemoryStorage>();
 
@@ -53,7 +52,18 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.TestBot
                 var conversationState = sp.GetService<ConversationState>();
                 return new BotStateSet(userState, conversationState);
             });
-
+            
+            services.AddSingleton<IWeChatHttpAdapter>(sp =>
+            {
+                var userState = sp.GetService<UserState>();
+                var conversationState = sp.GetService<ConversationState>();
+                var backgroundTaskQueue = sp.GetService<IBackgroundTaskQueue>();
+                var hostedService = sp.GetService<IHostedService>();
+                var adapter = new WeChatHttpAdapter(Configuration, null, null, null, backgroundTaskQueue, hostedService, null);
+                adapter.Use(new AutoSaveStateMiddleware(userState, conversationState));
+                return adapter;
+            });
+            
             // The Dialog that will be run by the bot.
             services.AddSingleton<MainDialog>();
 
