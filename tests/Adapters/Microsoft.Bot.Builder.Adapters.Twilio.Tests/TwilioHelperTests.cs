@@ -3,7 +3,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.IO;
+using System.Security.Authentication;
+using System.Security.Cryptography;
+using System.Text;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Schema;
 using Moq;
@@ -56,6 +60,66 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
         {
             Assert.Null(TwilioHelper.ActivityToTwilio(default(Activity), "not_a_number"));
             Assert.Null(TwilioHelper.ActivityToTwilio(default(Activity), string.Empty));
+        }
+
+        [Fact]
+        public void QueryStringToDictionary_Should_Return_Empty_Dictionary_With_Empty_Query()
+        {
+            var authTokenString = "authToken";
+            var validationUrlString = "validationUrl";
+
+            var hmac = new HMACSHA1(Encoding.UTF8.GetBytes(authTokenString));
+            var builder = new StringBuilder(validationUrlString);
+            var hashArray = hmac.ComputeHash(Encoding.UTF8.GetBytes(builder.ToString()));
+            string hash = Convert.ToBase64String(hashArray);
+
+            var httpRequest = new Mock<HttpRequest>();
+            httpRequest.SetupAllProperties();
+            httpRequest.SetupGet(req => req.Headers[It.IsAny<string>()]).Returns(hash);
+            httpRequest.Object.Body = Stream.Null;
+
+            var activity = TwilioHelper.RequestToActivity(httpRequest.Object, validationUrlString, authTokenString);
+
+            Assert.Null(activity.Id);
+            Assert.Null(activity.Text);
+        }
+
+        [Fact]
+        public void RequestToActivity_Should_Return_Activity_EmptyAttachments_With_NonNumeric_NumMedia()
+        {
+            var authTokenString = "authToken";
+            var validationUrlString = "validationUrl";
+
+            var hmac = new HMACSHA1(Encoding.UTF8.GetBytes(authTokenString));
+            var builder = new StringBuilder(validationUrlString);
+            var hashArray = hmac.ComputeHash(Encoding.UTF8.GetBytes(builder.ToString()));
+            string hash = Convert.ToBase64String(hashArray);
+
+            var httpRequest = new Mock<HttpRequest>();
+            httpRequest.SetupAllProperties();
+            httpRequest.SetupGet(req => req.Headers[It.IsAny<string>()]).Returns(hash);
+
+            var bodyString = File.ReadAllText(Directory.GetCurrentDirectory() + @"\files\Payload.txt");
+
+            byte[] byteArray = Encoding.ASCII.GetBytes(bodyString);
+            MemoryStream stream = new MemoryStream(byteArray);
+            httpRequest.Object.Body = stream;
+
+            TwilioHelper.RequestToActivity(httpRequest.Object, validationUrlString, authTokenString);
+        }
+
+        [Fact]
+        public void ValidateRequest_Should_Fail_With_NonMatching_Signature()
+        {
+            var httpRequest = new Mock<HttpRequest>();
+            httpRequest.SetupAllProperties();
+            httpRequest.SetupGet(req => req.Headers[It.IsAny<string>()]).Returns("wrong_signature");
+            httpRequest.Object.Body = Stream.Null;
+
+            Assert.Throws<AuthenticationException>(() =>
+            {
+                return TwilioHelper.RequestToActivity(httpRequest.Object, string.Empty, string.Empty);
+            });
         }
     }
 }
