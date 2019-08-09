@@ -84,7 +84,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
         }
 
         [Fact]
-        public void RequestToActivity_Should_Return_Activity_EmptyAttachments_With_NonNumeric_NumMedia()
+        public void RequestToActivity_Should_Return_Null_Activity_Attachments_With_NumMedia_EqualToZero()
         {
             var authTokenString = "authToken";
             var validationUrlString = "validationUrl";
