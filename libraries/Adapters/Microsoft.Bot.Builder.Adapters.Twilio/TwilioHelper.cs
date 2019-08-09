@@ -14,6 +14,8 @@ using Twilio.Exceptions;
 using Twilio.Rest.Api.V2010.Account;
 using Twilio.Security;
 
+using AuthenticationException = System.Security.Authentication.AuthenticationException;
+
 [assembly: InternalsVisibleTo("Microsoft.Bot.Builder.Adapters.Twilio.Tests")]
 
 namespace Microsoft.Bot.Builder.Adapters.Twilio
@@ -127,11 +129,6 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// <returns>An Attachments array with the converted attachments.</returns>
         private static List<Attachment> GetMessageAttachments(int numMedia, Dictionary<string, string> message)
         {
-            if (message == null)
-            {
-                return null;
-            }
-
             var attachments = new List<Attachment>();
             for (var i = 0; i < numMedia; i++)
             {
@@ -153,13 +150,13 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// <returns>A dictionary with the query values.</returns>
         private static Dictionary<string, string> QueryStringToDictionary(string query)
         {
-            if (query == null)
+            var values = new Dictionary<string, string>();
+            if (string.IsNullOrWhiteSpace(query))
             {
-                return null;
+                return values;
             }
 
             var pairs = query.Replace("+", "%20").Split('&');
-            var values = new Dictionary<string, string>();
 
             foreach (var p in pairs)
             {

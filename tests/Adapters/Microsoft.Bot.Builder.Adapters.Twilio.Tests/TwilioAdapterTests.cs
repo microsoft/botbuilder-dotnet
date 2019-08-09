@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -16,7 +17,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
         [Fact]
         public void Constructor_Should_Fail_With_Null_Options()
         {
-            Assert.Throws<ArgumentNullException>(() => { new TwilioAdapter(null); });
+            Assert.Throws<ArgumentNullException>(() => { new TwilioAdapter(null, new Mock<ITwilioClient>().Object); });
         }
 
         [Fact]
@@ -27,7 +28,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
             options.Object.AuthToken = "Test";
             options.Object.AccountSid = "Test";
 
-            Assert.Throws<Exception>(() => { new TwilioAdapter(options.Object); });
+            Assert.Throws<Exception>(() => { new TwilioAdapter(options.Object, new Mock<ITwilioClient>().Object); });
         }
 
         [Fact]
@@ -38,7 +39,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
             options.Object.AuthToken = "Test";
             options.Object.TwilioNumber = "Test";
 
-            Assert.Throws<Exception>(() => { new TwilioAdapter(options.Object); });
+            Assert.Throws<Exception>(() => { new TwilioAdapter(options.Object, new Mock<ITwilioClient>().Object); });
         }
 
         [Fact]
@@ -49,7 +50,19 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
             options.Object.TwilioNumber = "Test";
             options.Object.AccountSid = "Test";
 
-            Assert.Throws<Exception>(() => { new TwilioAdapter(options.Object); });
+            Assert.Throws<Exception>(() => { new TwilioAdapter(options.Object, new Mock<ITwilioClient>().Object); });
+        }
+
+        [Fact]
+        public void Constructor_Should_Fail_With_Null_TwilioApi()
+        {
+            var options = new Mock<ITwilioAdapterOptions>();
+            options.SetupAllProperties();
+            options.Object.TwilioNumber = "Test";
+            options.Object.AccountSid = "Test";
+            options.Object.AuthToken = "Test";
+
+            Assert.Throws<Exception>(() => { new TwilioAdapter(options.Object, null); });
         }
 
         [Fact]
@@ -61,7 +74,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
             options.Object.TwilioNumber = "Test";
             options.Object.AccountSid = "Test";
 
-            Assert.NotNull(new TwilioAdapter(options.Object));
+            Assert.NotNull(new TwilioAdapter(options.Object, new Mock<ITwilioClient>().Object));
         }
 
         [Fact]
@@ -73,7 +86,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
             options.Object.TwilioNumber = "Test";
             options.Object.AccountSid = "Test";
 
-            var twilioAdapter = new TwilioAdapter(options.Object);
+            var twilioAdapter = new TwilioAdapter(options.Object, new Mock<ITwilioClient>().Object);
 
             var activity = new Activity()
             {
@@ -97,7 +110,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
             options.Object.TwilioNumber = "Test";
             options.Object.AccountSid = "Test";
 
-            var twilioAdapter = new TwilioAdapter(options.Object);
+            var twilioAdapter = new TwilioAdapter(options.Object, new Mock<ITwilioClient>().Object);
             var httpResponse = new Mock<HttpResponse>();
             var bot = new Mock<IBot>();
 
@@ -116,7 +129,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
             options.Object.TwilioNumber = "Test";
             options.Object.AccountSid = "Test";
 
-            var twilioAdapter = new TwilioAdapter(options.Object);
+            var twilioAdapter = new TwilioAdapter(options.Object, new Mock<ITwilioClient>().Object);
             var httpRequest = new Mock<HttpRequest>();
             var bot = new Mock<IBot>();
 
@@ -135,7 +148,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
             options.Object.TwilioNumber = "Test";
             options.Object.AccountSid = "Test";
 
-            var twilioAdapter = new TwilioAdapter(options.Object);
+            var twilioAdapter = new TwilioAdapter(options.Object, new Mock<ITwilioClient>().Object);
             var httpRequest = new Mock<HttpRequest>();
             var httpResponse = new Mock<HttpResponse>();
 
@@ -143,6 +156,44 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
             {
                 await twilioAdapter.ProcessAsync(httpRequest.Object, httpResponse.Object, null, default(CancellationToken));
             });
+        }
+
+        [Fact(Skip = "Can't mock extension methods")]
+        public async void ProcessAsync_Should_Succeed_With_HttpBody()
+        {
+            var options = new Mock<ITwilioAdapterOptions>();
+            options.SetupAllProperties();
+            options.Object.AuthToken = "Test";
+            options.Object.TwilioNumber = "Test";
+            options.Object.AccountSid = "Test";
+
+            var twilioAdapter = new TwilioAdapter(options.Object, new Mock<ITwilioClient>().Object);
+            var httpRequest = new Mock<HttpRequest>();
+            var httpResponse = new Mock<HttpResponse>();
+            httpResponse
+                .Setup(e => e.WriteAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .Returns(Task.CompletedTask);
+
+            await twilioAdapter.ProcessAsync(httpRequest.Object, httpResponse.Object, null, default(CancellationToken));
+        }
+
+        [Fact(Skip = "Can't mock extension methods")]
+        public async void ProcessAsync_Should_Succeed_With_Null_HttpBody()
+        {
+            var options = new Mock<ITwilioAdapterOptions>();
+            options.SetupAllProperties();
+            options.Object.AuthToken = "Test";
+            options.Object.TwilioNumber = "Test";
+            options.Object.AccountSid = "Test";
+
+            var twilioAdapter = new TwilioAdapter(options.Object, new Mock<ITwilioClient>().Object);
+            var httpRequest = new Mock<HttpRequest>();
+            var httpResponse = new Mock<HttpResponse>();
+            httpResponse
+                .Setup(e => e.WriteAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .Returns(Task.CompletedTask);
+
+            await twilioAdapter.ProcessAsync(httpRequest.Object, httpResponse.Object, null, default(CancellationToken));
         }
 
         [Fact]
@@ -154,7 +205,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
             options.Object.TwilioNumber = "Test";
             options.Object.AccountSid = "Test";
 
-            var twilioAdapter = new TwilioAdapter(options.Object);
+            var twilioAdapter = new TwilioAdapter(options.Object, new Mock<ITwilioClient>().Object);
             var activity = new Activity();
             var turnContext = new TurnContext(twilioAdapter, activity);
 
@@ -170,7 +221,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
             options.Object.TwilioNumber = "Test";
             options.Object.AccountSid = "Test";
 
-            var twilioAdapter = new TwilioAdapter(options.Object);
+            var twilioAdapter = new TwilioAdapter(options.Object, new Mock<ITwilioClient>().Object);
             var activity = new Activity();
             var turnContext = new TurnContext(twilioAdapter, activity);
             var conversationReference = new ConversationReference();
@@ -187,7 +238,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
             options.Object.TwilioNumber = "Test";
             options.Object.AccountSid = "Test";
 
-            var twilioAdapter = new TwilioAdapter(options.Object);
+            var twilioAdapter = new TwilioAdapter(options.Object, new Mock<ITwilioClient>().Object);
 
             Task BotsLogic(ITurnContext turnContext, CancellationToken cancellationToken)
             {
@@ -206,7 +257,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
             options.Object.TwilioNumber = "Test";
             options.Object.AccountSid = "Test";
 
-            var twilioAdapter = new TwilioAdapter(options.Object);
+            var twilioAdapter = new TwilioAdapter(options.Object, new Mock<ITwilioClient>().Object);
             var conversationReference = new ConversationReference();
 
             await Assert.ThrowsAsync<ArgumentNullException>(async () => { await twilioAdapter.ContinueConversationAsync(conversationReference, null, default); });
@@ -222,7 +273,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
             options.Object.TwilioNumber = "Test";
             options.Object.AccountSid = "Test";
 
-            var twilioAdapter = new TwilioAdapter(options.Object);
+            var twilioAdapter = new TwilioAdapter(options.Object, new Mock<ITwilioClient>().Object);
             var conversationReference = new ConversationReference();
 
             Task BotsLogic(ITurnContext turnContext, CancellationToken cancellationToken)
@@ -233,6 +284,36 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
 
             await twilioAdapter.ContinueConversationAsync(conversationReference, BotsLogic, default);
             Assert.True(callbackInvoked);
+        }
+
+        [Fact]
+        public async void SendActivitiesAsync_Should_Succeed()
+        {
+            // Setup mocked ITwilioAdapterOptions
+            var options = new Mock<ITwilioAdapterOptions>().SetupAllProperties();
+            options.Object.AccountSid = "MockTest";
+            options.Object.AuthToken = "MockToken";
+            options.Object.TwilioNumber = "MockNumber";
+
+            // Setup mocked Activity and get the message option
+            var activity = new Mock<Activity>().SetupAllProperties();
+            activity.Object.Type = "message";
+            activity.Object.Attachments = new List<Attachment> { new Attachment(contentUrl: "http://example.com") };
+            activity.Object.Conversation = new ConversationAccount(id: "MockId");
+            activity.Object.Text = "Hello, Bot!";
+            var messageOption = TwilioHelper.ActivityToTwilio(activity.Object, "123456789");
+
+            // Setup mocked Twilio API client
+            const string resourceIdentifier = "Mocked Resource Identifier";
+            var twilioApi = new Mock<ITwilioClient>();
+            twilioApi.Setup(x => x.GetResourceIdentifier(It.IsAny<object>())).Returns(Task.FromResult(resourceIdentifier));
+
+            // Create a new Twilio Adapter with the mocked classes and get the responses
+            var twilioAdapter = new TwilioAdapter(options.Object, twilioApi.Object);
+            var resourceResponses = await twilioAdapter.SendActivitiesAsync(null, new Activity[] { activity.Object }, default).ConfigureAwait(false);
+
+            // Assert the result
+            Assert.True(resourceResponses[0].Id == resourceIdentifier);
         }
     }
 }

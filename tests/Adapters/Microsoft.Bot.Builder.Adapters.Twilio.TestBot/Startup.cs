@@ -15,9 +15,13 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.TestBot
 {
     public class Startup
     {
+        private readonly TwilioAdapter _adapter;
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+            var options = new SimpleTwilioAdapterOptions(configuration["TwilioNumber"], configuration["AccountSid"], configuration["AuthToken"], configuration["ValidationUrl"]);
+            _adapter = new TwilioAdapter(options, new TwilioApi());
         }
 
         public IConfiguration Configuration { get; }
@@ -34,7 +38,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.TestBot
             services.AddSingleton<ITwilioAdapterOptions, ConfigurationTwilioAdapterOptions>();
 
             // Create the Twilio Adapter.
-            services.AddSingleton<TwilioAdapter>();
+            services.AddSingleton(_adapter);
 
             // Create the bot as a transient. In this case the ASP Controller is expecting an IBot.
             services.AddTransient<IBot, EchoBot>();
