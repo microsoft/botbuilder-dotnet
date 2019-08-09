@@ -84,6 +84,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                 throw new ArgumentException($"{property.Path} is a complex object and that is not supported yet.");
             }
 
+            var events = new List<string> { AdaptiveEvents.RecognizedIntent };
             foreach (var mapping in property.Mappings)
             {
                 var expr = mapping.Value<string>()?.Replace("[]", string.Empty);
@@ -93,6 +94,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                     if (property.IsArray)
                     {
                         AddEvent(new OnDialogEvent(
+                            events: events,
                             constraint: $"{expr}",
                             actions: new List<IDialog>
                             {
@@ -107,6 +109,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                     {
                         // Just set value to singleton
                         AddEvent(new OnDialogEvent(
+                            events: events,
                             constraint: $"count({expr}) == 1",
                             actions: new List<IDialog>
                             {
@@ -119,6 +122,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
 
                         // Disambiguate to singleton
                         AddEvent(new OnDialogEvent(
+                            events: events,
                             constraint: $"count({expr}) > 1",
                             actions: new List<IDialog>
                             {

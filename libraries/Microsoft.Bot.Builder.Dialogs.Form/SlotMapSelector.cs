@@ -21,7 +21,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
         private const string _entityPrefix = "turn.entities";
         private readonly IExpressionParser _parser = new ExpressionEngine(TriggerTree.LookupFunction);
         private DialogSchema _schema;
-        private Dictionary<string, List<EntityInfo>> _entityToInfo;
         private List<HandlerInfo> _slotMappers = new List<HandlerInfo>();
         private List<IOnEvent> _other = new List<IOnEvent>();
         private Dictionary<string, List<HandlerInfo>> _entityToMappers = new Dictionary<string, List<HandlerInfo>>();
@@ -61,102 +60,132 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
 
         public override async Task<IReadOnlyList<IOnEvent>> Select(SequenceContext context, CancellationToken cancel = default(CancellationToken))
         {
-            // Prefer handlers by:
-            // * Set & Expected slots
-            // * Set & Coverage
-            // * Set & Priority
-            // * Disambiguation & expected
-            // * Disambiguation & coverage
-            // * Disambiguation & priority
-            // * Prompt
-            AnalyzeEntities(context);
             var matches = await base.Select(context, cancel);
-            var actions = new List<IDialog>();
-            var coverages = new double[_slotMappers.Count];
-            foreach (var info in _slotMappers)
+            if (matches.Any())
             {
-                coverages[info.Position] = ComputeCoverage(context, info.Entities);
-            }
+                // A big issue is that we want multiple firings.  We can get this from quantification, but not arrays.
+                // If we have a rule for value ambiguity we would want it to fire for each value ambiguity.
+                // Possibly:
+                // * Iterate through ambiguous text and run rule?
+                // * Iterate through each ambiguous entity and collect firing rules.
+                // * Run rules on remaining
+                // Prefer handlers by:
+                // * Set & Expected slots
+                // * Set & Coverage
+                // * Set & Priority
+                // * Disambiguation & expected
+                // * Disambiguation & coverage
+                // * Disambiguation & priority
+                // * Prompt
 
-            // TODO: Need to figure out entities that overlap?
-            // What if you get number and something bigger
-            // Maybe for a given slot, prefer in order of mappings
-            foreach (var mappers in _entityToMappers.Values)
-            {
-                if (mappers.Count > 1)
+                // We have four kinds of ambiguity to deal with:
+                // * Ambiguous interpretation of entity value: (peppers -> [green peppers, red peppers]  Tell this by entity value is array.  Doesn't matter if slot singleton or not. Ask.
+                // * Ambiguous interpretion of text: (3 -> age or number) Identify by overlapping entities. Resolve by greater coverage, expected entity, ask.
+                // * Singleton value ambiguity: two different entities which could fill slot singleton.  Could be same type or different types.  Resolve by rule priority.
+                // * Across slot ambiguity: which slot should an entity go to.  Resolve by expected, then ask.
+                // Should rules by over entities directly or should we process them first into these forms?
+                // This is also complicated by singleton vs. array
+                // It would be nice if multiple entities were rolled up into a single entity, i.e. a toppings composite with topping inside of it.
+                // Rule for value ambiguity: foreach(entity in @entity) entity is array.
+                // Rule for text ambiguity: info overlaps...
+                // Rule for singleton ambiguity: multiple rules fire over different entities
+                // Rule for slot ambiguity: multiple rules fire for same entity
+                if (AnalyzeEntities(context, out var entityToInfo))
                 {
-                    // Prefer expected 
-                    foreach (var mapper in mappers)
+                    // There exist some entities
+                    var actions = new List<IDialog>();
+                    var coverages = new double[_slotMappers.Count];
+                    foreach (var info in _slotMappers)
                     {
-
+                        coverages[info.Position] = ComputeCoverage(context, info.Entities);
                     }
+
+                    // TODO: Need to figure out entities that overlap?
+                    // What if you get number and something bigger
+                    // Maybe for a given slot, prefer in order of mappings
+                    foreach (var mappers in _entityToMappers.Values)
+                    {
+                        if (mappers.Count > 1)
+                        {
+                            // Prefer expected 
+                            foreach (var mapper in mappers)
+                            {
+
+                            }
+                        }
+                    }
+
+                    // Same entity to multiple slots
+                    // Different entities to same slot 
+
+                    // Add any set property that is only consumer of entity.
+                    foreach (var mapping in _entityToMappers.Values)
+                    {
+                        if (mapping.Count == 1)
+                        {
+                            var ev = mapping[0];
+                            if (ev.IsSet)
+                            {
+                                AddActions(actions, ev);
+                            }
+                        }
+                    }
+
+                    // Status messages 
+                    foreach (var mapping in _entityToMappers.Values)
+                    {
+                        if (mapping.Count == 1)
+                        {
+                            var ev = mapping[0];
+                            if (ev.SendsActivity)
+                            {
+                                AddActions(actions, ev);
+                            }
+                        }
+                    }
+
+                    // ??? Need to know disambiguation instead of prompt ???
+
+                    // 1) Only mapping that sets
+                    // 2) Only mapping that does status
+                    // 3) Only mapping that does prompt
                 }
             }
 
-            // Same entity to multiple slots
-            // Different entities to same slot 
-
-            // Add any set property that is only consumer of entity.
-            foreach (var mapping in _entityToMappers.Values)
-            {
-                if (mapping.Count == 1)
-                {
-                    var ev = mapping[0];
-                    if (ev.IsSet)
-                    {
-                        AddActions(actions, ev);
-                    }
-                }
-            }
-
-            // Status messages 
-            foreach (var mapping in _entityToMappers.Values)
-            {
-                if (mapping.Count == 1)
-                {
-                    var ev = mapping[0];
-                    if (ev.SendsActivity)
-                    {
-                        AddActions(actions, ev);
-                    }
-                }
-            }
-
-            // ??? Need to know disambiguation instead of prompt ???
-
-            // 1) Only mapping that sets
-            // 2) Only mapping that does status
-            // 3) Only mapping that does prompt
-            return (IReadOnlyList<IOnEvent>)_other;
+            return matches;
         }
 
-        private void AnalyzeEntities(SequenceContext context)
+        private bool AnalyzeEntities(SequenceContext context, out Dictionary<string, List<EntityInfo>> entityToInfo)
         {
-            var entities = (Dictionary<string, object>)context.State.GetValue(DialogContextState.TURN_RECOGNIZED + ".entities");
-            // TODO: We should have RegexRecognizer return $instance or make this robust to it missing, i.e. assume no entities overlap
-            var metaData = (Dictionary<string, InstanceData[]>)entities["$instance"];
-            foreach (var entry in entities)
+            entityToInfo = new Dictionary<string, List<EntityInfo>>();
+            if (context.State.TryGetValue<dynamic>(DialogContextState.TURN_RECOGNIZED + ".entities", out var entities))
             {
-                var name = entry.Key;
-                if (!name.StartsWith("$"))
+                // TODO: We should have RegexRecognizer return $instance or make this robust to it missing, i.e. assume no entities overlap
+                var metaData = entities["$instance"];
+                foreach (var entry in entities)
                 {
-                    var values = (object[])entry.Value;
-                    var lastName = name.Substring(name.LastIndexOf("."));
-                    var instances = metaData[lastName];
-                    for (var i = 0; i < values.Count(); ++i)
+                    var name = entry.Name;
+                    if (!name.StartsWith("$"))
                     {
-                        var val = values[i];
-                        var instance = instances[i];
-                        if (!_entityToInfo.TryGetValue(name, out var infos))
+                        var values = entry.Value;
+                        var instances = metaData[name];
+                        for (var i = 0; i < values.Count; ++i)
                         {
-                            infos = new List<EntityInfo>();
-                            _entityToInfo[name] = infos;
-                        }
+                            var val = values[i];
+                            var instance = instances[i];
+                            if (!entityToInfo.TryGetValue(name, out List<EntityInfo> infos))
+                            {
+                                infos = new List<EntityInfo>();
+                                entityToInfo[name] = infos;
+                            }
 
-                        infos.Add(new EntityInfo(instance.StartIndex, instance.EndIndex, instance.Score ?? 0.0));
+                            infos.Add(new EntityInfo(val, (int)instance.startIndex, (int)instance.endIndex, (double)(instance.score ?? 0.0d)));
+                        }
                     }
                 }
             }
+
+            return entityToInfo.Any();
         }
 
         private void AddActions(List<IDialog> actions, HandlerInfo info)
@@ -256,12 +285,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
         private class EntityInfo
         {
 
-            public EntityInfo(int start, int end, double score = 0.0)
+            public EntityInfo(object entity, int start, int end, double score = 0.0)
             {
+                Entity = entity;
                 Start = start;
                 End = end;
                 Score = score;
             }
+
+            public object Entity { get; }
 
             public int Start { get; }
 

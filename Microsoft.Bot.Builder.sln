@@ -142,9 +142,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.TestB
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Dialogs.Form", "libraries\Microsoft.Bot.Builder.Dialogs.Form\Microsoft.Bot.Builder.Dialogs.Form.csproj", "{9E694B23-DF55-448D-B735-13713827FB7D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Dialogs.Form.Test", "tests\Microsoft.Bot.Builder.Dialogs.Form.Test\Microsoft.Bot.Builder.Dialogs.Form.Test.csproj", "{E7CB7BE4-857A-4134-976E-9F309688A6C3}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Builder.Dialogs.Form.Tests", "tests\Microsoft.Bot.Builder.Dialogs.Form.Tests\Microsoft.Bot.Builder.Dialogs.Form.Tests.csproj", "{D0ED187E-87A0-4373-A673-D690D1C863CE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Dialogs.Form.Tests", "tests\Microsoft.Bot.Builder.Dialogs.Form.Tests\Microsoft.Bot.Builder.Dialogs.Form.Tests.csproj", "{D0ED187E-87A0-4373-A673-D690D1C863CE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -489,12 +487,6 @@ Global
 		{9E694B23-DF55-448D-B735-13713827FB7D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9E694B23-DF55-448D-B735-13713827FB7D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9E694B23-DF55-448D-B735-13713827FB7D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E7CB7BE4-857A-4134-976E-9F309688A6C3}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{E7CB7BE4-857A-4134-976E-9F309688A6C3}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
-		{E7CB7BE4-857A-4134-976E-9F309688A6C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E7CB7BE4-857A-4134-976E-9F309688A6C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E7CB7BE4-857A-4134-976E-9F309688A6C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E7CB7BE4-857A-4134-976E-9F309688A6C3}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D0ED187E-87A0-4373-A673-D690D1C863CE}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
 		{D0ED187E-87A0-4373-A673-D690D1C863CE}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{D0ED187E-87A0-4373-A673-D690D1C863CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -565,7 +557,6 @@ Global
 		{BDCAC491-8518-4CE6-B56A-9E36936C7E70} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
 		{2454BBCD-77BC-4E3D-B5A6-3562BED898D6} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{9E694B23-DF55-448D-B735-13713827FB7D} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
-		{E7CB7BE4-857A-4134-976E-9F309688A6C3} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{D0ED187E-87A0-4373-A673-D690D1C863CE} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution

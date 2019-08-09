@@ -2,6 +2,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using Microsoft.Bot.Builder.Expressions;
 using Newtonsoft.Json;
@@ -74,8 +75,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
                 expressions.Add(factory.Parse($"turn.dialogEvent.name == '{evt}'"));
             }
 
-            return Expression.AndExpression(Expression.OrExpression(expressions.ToArray()), 
-                base.BuildExpression(factory));
+            return expressions.Any()
+                ? Expression.AndExpression(
+                    Expression.OrExpression(expressions.ToArray()),
+                    base.BuildExpression(factory))
+                : base.BuildExpression(factory);
         }
 
         public override string GetIdentity()

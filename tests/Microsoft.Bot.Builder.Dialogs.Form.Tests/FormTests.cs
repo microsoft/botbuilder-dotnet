@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
+using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.AI.Luis;
 using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
@@ -20,10 +18,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Form.Tests
         private static readonly string SchemaFile = @"resources\sandwich-schema.json";
 
         [Fact]
-        public void TestGeneration()
+        public async Task TestGeneration()
         {
-            CreateFlow("TestGeneration")
-                .Send("order a ham sandwich");
+            await CreateFlow("TestGeneration")
+                .Send("order a ham sandwich")
+                .StartTestAsync();
         }
 
         private TestFlow CreateFlow(string test, string locale = "en-us")
