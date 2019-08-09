@@ -54,6 +54,18 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
         }
 
         [Fact]
+        public void Constructor_Should_Fail_With_Null_TwilioApi()
+        {
+            var options = new Mock<ITwilioAdapterOptions>();
+            options.SetupAllProperties();
+            options.Object.TwilioNumber = "Test";
+            options.Object.AccountSid = "Test";
+            options.Object.AuthToken = "Test";
+
+            Assert.Throws<Exception>(() => { new TwilioAdapter(options.Object, null); });
+        }
+
+        [Fact]
         public void Constructor_WithArguments_Succeeds()
         {
             var options = new Mock<ITwilioAdapterOptions>();
