@@ -5,8 +5,6 @@ using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.AI.Luis;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Events;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
