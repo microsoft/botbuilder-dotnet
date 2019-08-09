@@ -273,5 +273,35 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
             await twilioAdapter.ContinueConversationAsync(conversationReference, BotsLogic, default);
             Assert.True(callbackInvoked);
         }
+
+        [Fact]
+        public async void SendActivitiesAsync_Should_Succeed()
+        {
+            // Setup mocked ITwilioAdapterOptions
+            var options = new Mock<ITwilioAdapterOptions>().SetupAllProperties();
+            options.Object.AccountSid = "MockTest";
+            options.Object.AuthToken = "MockToken";
+            options.Object.TwilioNumber = "MockNumber";
+
+            // Setup mocked Activity and get the message option
+            var activity = new Mock<Activity>().SetupAllProperties();
+            activity.Object.Type = "message";
+            activity.Object.Attachments = new List<Attachment> { new Attachment(contentUrl: "http://example.com") };
+            activity.Object.Conversation = new ConversationAccount(id: "MockId");
+            activity.Object.Text = "Hello, Bot!";
+            var messageOption = TwilioHelper.ActivityToTwilio(activity.Object, "123456789");
+
+            // Setup mocked Twilio API client
+            const string resourceIdentifier = "Mocked Resource Identifier";
+            var twilioApi = new Mock<ITwilioClient>();
+            twilioApi.Setup(x => x.GetResourceIdentifier(It.IsAny<object>())).Returns(Task.FromResult(resourceIdentifier));
+
+            // Create a new Twilio Adapter with the mocked classes and get the responses
+            var twilioAdapter = new TwilioAdapter(options.Object, twilioApi.Object);
+            var resourceResponses = await twilioAdapter.SendActivitiesAsync(null, new Activity[] { activity.Object }, default).ConfigureAwait(false);
+
+            // Assert the result
+            Assert.True(resourceResponses[0].Id == resourceIdentifier);
+        }
     }
 }
