@@ -145,6 +145,44 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
             });
         }
 
+        [Fact(Skip = "Can't mock extension methods")]
+        public async void ProcessAsync_Should_Succeed_With_HttpBody()
+        {
+            var options = new Mock<ITwilioAdapterOptions>();
+            options.SetupAllProperties();
+            options.Object.AuthToken = "Test";
+            options.Object.TwilioNumber = "Test";
+            options.Object.AccountSid = "Test";
+
+            var twilioAdapter = new TwilioAdapter(options.Object);
+            var httpRequest = new Mock<HttpRequest>();
+            var httpResponse = new Mock<HttpResponse>();
+            httpResponse
+                .Setup(e => e.WriteAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .Returns(Task.CompletedTask);
+
+            await twilioAdapter.ProcessAsync(httpRequest.Object, httpResponse.Object, null, default(CancellationToken));
+        }
+
+        [Fact(Skip = "Can't mock extension methods")]
+        public async void ProcessAsync_Should_Succeed_With_Null_HttpBody()
+        {
+            var options = new Mock<ITwilioAdapterOptions>();
+            options.SetupAllProperties();
+            options.Object.AuthToken = "Test";
+            options.Object.TwilioNumber = "Test";
+            options.Object.AccountSid = "Test";
+
+            var twilioAdapter = new TwilioAdapter(options.Object);
+            var httpRequest = new Mock<HttpRequest>();
+            var httpResponse = new Mock<HttpResponse>();
+            httpResponse
+                .Setup(e => e.WriteAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .Returns(Task.CompletedTask);
+
+            await twilioAdapter.ProcessAsync(httpRequest.Object, httpResponse.Object, null, default(CancellationToken));
+        }
+
         [Fact]
         public async void UpdateActivityAsync_Should_Throw_NotSupportedException()
         {
