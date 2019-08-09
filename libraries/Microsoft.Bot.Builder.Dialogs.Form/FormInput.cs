@@ -12,7 +12,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
     public class FormInput : SendActivity
     {
         [JsonConstructor]
-        public FormInput(string text = null, IList<string> expectedSlots = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public FormInput(
+            string text = null, 
+            IList<string> expectedSlots = null, 
+            [CallerFilePath] string callerPath = "", 
+            [CallerLineNumber] int callerLine = 0)
         : base(text, callerPath, callerLine)
         {
             this.RegisterSourceLocation(callerPath, callerLine);
@@ -21,8 +25,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
         }
 
         /// <summary>
-        /// Slots expected to be filled by response.
+        /// Gets or sets slots expected to be filled by response.
         /// </summary>
+        /// <value>
+        /// Slots expected to be filled by response.
+        /// </value>
         public IList<string> ExpectedSlots { get; set; }
 
         protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))

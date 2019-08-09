@@ -14,16 +14,28 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
     public class OnDialogEvent : OnEvent
     {
         /// <summary>
-        /// List of events to filter
+        /// Gets or sets list of events to filter.
         /// </summary>
+        /// <value>
+        /// List of events to filter.
+        /// </value>
         public List<string> Events { get; set; }
 
+        /// <summary>
+        /// Gets or sets the relative priority of this event handler.
+        /// </summary>
+        /// <value>
+        /// The relative priority of this event handler.
+        /// </value>
+        public int Priority { get; set; }
+
         [JsonConstructor]
-        public OnDialogEvent(List<string> events = null, List<IDialog> actions = null, string constraint = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public OnDialogEvent(List<string> events = null, List<IDialog> actions = null, string constraint = null, int priority = 0, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base(constraint: constraint, actions: actions, callerPath: callerPath, callerLine: callerLine)
         {
             this.Events = events ?? new List<string>();
             this.Actions = actions ?? new List<IDialog>();
+            this.Priority = priority;
         }
 
         protected override ActionChangeList OnCreateChangeList(SequenceContext planning, object dialogOptions = null)

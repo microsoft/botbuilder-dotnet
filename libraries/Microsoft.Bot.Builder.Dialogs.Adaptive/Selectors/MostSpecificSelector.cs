@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
         /// </value>
         public IEventSelector Selector { get; set; }
 
-        public void Initialize(IEnumerable<IOnEvent> rules, bool evaluate)
+        public virtual void Initialize(IEnumerable<IOnEvent> rules, bool evaluate)
         {
             var parser = new ExpressionEngine(TriggerTree.LookupFunction);
             foreach (var rule in rules)
@@ -32,7 +32,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
             }
         }
 
-        public async Task<IReadOnlyList<IOnEvent>> Select(SequenceContext context, CancellationToken cancel)
+        public virtual async Task<IReadOnlyList<IOnEvent>> Select(SequenceContext context, CancellationToken cancel)
         {
             var nodes = _tree.Matches(context.State);
             var matches = new List<IOnEvent>();

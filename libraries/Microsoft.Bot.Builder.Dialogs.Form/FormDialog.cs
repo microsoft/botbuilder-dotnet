@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
         {
             InputSchema = inputSchema;
             OutputSchema = outputSchema;
-            Selector = new MostSpecificSelector { Selector = new SlotMapSelector() };
+            Selector = new SlotMapSelector(outputSchema);
 
             if (outputSchema.Schema["type"].Value<string>() != "object")
             {
@@ -137,6 +137,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
 
         // TODO: For 
 
-        protected string FormPath(string schemaPath) => $"^form.{schemaPath.Replace("[]", string.Empty)}";
+        protected string FormPath(string schemaPath) => $"$form.{schemaPath.Replace("[]", string.Empty)}";
     }
 }

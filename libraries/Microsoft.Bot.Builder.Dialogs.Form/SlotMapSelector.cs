@@ -10,34 +10,42 @@ using Microsoft.Bot.Builder.AI.Luis;
 using Microsoft.Bot.Builder.AI.TriggerTrees;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors;
 using Microsoft.Bot.Builder.Expressions;
 using Microsoft.Bot.Builder.Expressions.Parser;
 
 namespace Microsoft.Bot.Builder.Dialogs.Form
 {
-    public class SlotMapSelector : IEventSelector
+    public class SlotMapSelector : MostSpecificSelector
     {
         private const string _entityPrefix = "turn.entities";
         private readonly IExpressionParser _parser = new ExpressionEngine(TriggerTree.LookupFunction);
-        private List<Info> _slotMappers = new List<Info>();
+        private DialogSchema _schema;
+        private Dictionary<string, List<EntityInfo>> _entityToInfo;
+        private List<HandlerInfo> _slotMappers = new List<HandlerInfo>();
         private List<IOnEvent> _other = new List<IOnEvent>();
-        private Dictionary<string, List<Info>> _entityToMappers = new Dictionary<string, List<Info>>();
+        private Dictionary<string, List<HandlerInfo>> _entityToMappers = new Dictionary<string, List<HandlerInfo>>();
 
-        public void Initialize(IEnumerable<IOnEvent> onEvents, bool evaluate = false)
+        public SlotMapSelector(DialogSchema schema)
         {
+            _schema = schema;
+        }
+
+        public override void Initialize(IEnumerable<IOnEvent> onEvents, bool evaluate = false)
+        {
+            base.Initialize(onEvents, true);
             var pos = 0u;
             foreach (var ev in onEvents)
             {
-                var info = new Info(pos++, ev, _parser);
+                var info = new HandlerInfo(pos++, ev, _parser);
                 if (info.Entities.Any())
                 {
                     _slotMappers.Add(info);
                     foreach (var entity in info.Entities)
                     {
-                        List<Info> mappings;
-                        if (!_entityToMappers.TryGetValue(entity, out mappings))
+                        if (!_entityToMappers.TryGetValue(entity, out var mappings))
                         {
-                            mappings = new List<Info>();
+                            mappings = new List<HandlerInfo>();
                             _entityToMappers[entity] = mappings;
                         }
 
@@ -51,18 +59,112 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
             }
         }
 
-        public Task<IReadOnlyList<IOnEvent>> Select(SequenceContext context, CancellationToken cancel = default(CancellationToken))
+        public override async Task<IReadOnlyList<IOnEvent>> Select(SequenceContext context, CancellationToken cancel = default(CancellationToken))
         {
+            // Prefer handlers by:
+            // * Set & Expected slots
+            // * Set & Coverage
+            // * Set & Priority
+            // * Disambiguation & expected
+            // * Disambiguation & coverage
+            // * Disambiguation & priority
+            // * Prompt
+            AnalyzeEntities(context);
+            var matches = await base.Select(context, cancel);
+            var actions = new List<IDialog>();
             var coverages = new double[_slotMappers.Count];
             foreach (var info in _slotMappers)
             {
                 coverages[info.Position] = ComputeCoverage(context, info.Entities);
             }
 
+            // TODO: Need to figure out entities that overlap?
+            // What if you get number and something bigger
+            // Maybe for a given slot, prefer in order of mappings
+            foreach (var mappers in _entityToMappers.Values)
+            {
+                if (mappers.Count > 1)
+                {
+                    // Prefer expected 
+                    foreach (var mapper in mappers)
+                    {
+
+                    }
+                }
+            }
+
+            // Same entity to multiple slots
+            // Different entities to same slot 
+
+            // Add any set property that is only consumer of entity.
+            foreach (var mapping in _entityToMappers.Values)
+            {
+                if (mapping.Count == 1)
+                {
+                    var ev = mapping[0];
+                    if (ev.IsSet)
+                    {
+                        AddActions(actions, ev);
+                    }
+                }
+            }
+
+            // Status messages 
+            foreach (var mapping in _entityToMappers.Values)
+            {
+                if (mapping.Count == 1)
+                {
+                    var ev = mapping[0];
+                    if (ev.SendsActivity)
+                    {
+                        AddActions(actions, ev);
+                    }
+                }
+            }
+
+            // ??? Need to know disambiguation instead of prompt ???
+
             // 1) Only mapping that sets
             // 2) Only mapping that does status
             // 3) Only mapping that does prompt
-            return Task.FromResult((IReadOnlyList<IOnEvent>)_other);
+            return (IReadOnlyList<IOnEvent>)_other;
+        }
+
+        private void AnalyzeEntities(SequenceContext context)
+        {
+            var entities = (Dictionary<string, object>)context.State.GetValue(DialogContextState.TURN_RECOGNIZED + ".entities");
+            // TODO: We should have RegexRecognizer return $instance or make this robust to it missing, i.e. assume no entities overlap
+            var metaData = (Dictionary<string, InstanceData[]>)entities["$instance"];
+            foreach (var entry in entities)
+            {
+                var name = entry.Key;
+                if (!name.StartsWith("$"))
+                {
+                    var values = (object[])entry.Value;
+                    var lastName = name.Substring(name.LastIndexOf("."));
+                    var instances = metaData[lastName];
+                    for (var i = 0; i < values.Count(); ++i)
+                    {
+                        var val = values[i];
+                        var instance = instances[i];
+                        if (!_entityToInfo.TryGetValue(name, out var infos))
+                        {
+                            infos = new List<EntityInfo>();
+                            _entityToInfo[name] = infos;
+                        }
+
+                        infos.Add(new EntityInfo(instance.StartIndex, instance.EndIndex, instance.Score ?? 0.0));
+                    }
+                }
+            }
+        }
+
+        private void AddActions(List<IDialog> actions, HandlerInfo info)
+        {
+            foreach (var action in info.Handler.Actions)
+            {
+                actions.Add(action);
+            }
         }
 
         private double ComputeCoverage(SequenceContext context, IEnumerable<string> entityNames)
@@ -103,9 +205,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
             return (double)covered / text.Length;
         }
 
-        private class Info
+        private class HandlerInfo
         {
-            public Info(uint position, IOnEvent handler, IExpressionParser parser)
+            public HandlerInfo(uint position, IOnEvent handler, IExpressionParser parser)
             {
                 Position = position;
                 Handler = handler;
@@ -125,7 +227,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                         Slots.Add(prop.Property);
                     }
 
-                    if (action is SendActivity)
+                    if (action is FormInput)
+                    {
+                        FormInput = true;
+                    }
+                    else if (action is SendActivity)
                     {
                         SendsActivity = true;
                     }
@@ -141,6 +247,27 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
             public List<string> Slots { get; } = new List<string>();
 
             public bool SendsActivity { get; }
+
+            public bool FormInput { get; }
+
+            public bool IsSet => Slots.Any() && !SendsActivity && !FormInput;
+        }
+
+        private class EntityInfo
+        {
+
+            public EntityInfo(int start, int end, double score = 0.0)
+            {
+                Start = start;
+                End = end;
+                Score = score;
+            }
+
+            public int Start { get; }
+
+            public int End { get; }
+
+            public double Score { get; }
         }
     }
 }

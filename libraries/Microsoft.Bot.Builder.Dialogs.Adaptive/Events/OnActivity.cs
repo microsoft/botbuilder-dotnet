@@ -18,14 +18,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
     public class OnActivity : OnDialogEvent
     {
         [JsonConstructor]
-        public OnActivity(string type=null, List<IDialog> actions = null, string constraint = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
-            : base(events: new List<string>()
+        public OnActivity(string type = null, List<IDialog> actions = null, string constraint = null, int priority = 0, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+            : base(
+            events: new List<string>()
             {
                 AdaptiveEvents.ActivityReceived
             },
             actions: actions,
             constraint: constraint,
-            callerPath: callerPath, callerLine: callerLine)
+            priority: priority,
+            callerPath: callerPath, 
+            callerLine: callerLine)
         {
             Type = type;
         }
@@ -40,7 +43,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
         {
 
             // add constraints for activity type
-            return Expression.AndExpression(factory.Parse($"turn.dialogEvent.value.type == '{this.Type}'"), 
+            return Expression.AndExpression(factory.Parse($"turn.dialogEvent.value.type == '{this.Type}'"),
                 base.BuildExpression(factory));
         }
 

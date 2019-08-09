@@ -521,6 +521,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                             Selector = new FirstSelector()
                         };
                     }
+
                     this.Selector.Initialize(this.Events, true);
                 }
             }
