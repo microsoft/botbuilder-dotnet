@@ -49,6 +49,19 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
         }
 
         [Fact]
+        public void ActivityToTwilio_Should_Return_Empty_MediaUrl_With_Null_MediaUrls()
+        {
+            var activity = JsonConvert.DeserializeObject<Activity>(File.ReadAllText(Directory.GetCurrentDirectory() + @"\files\Activities.json"));
+            activity.Attachments = null;
+            var messageOption = TwilioHelper.ActivityToTwilio(activity, "123456789");
+
+            Assert.Equal(activity.Conversation.Id, messageOption.ApplicationSid);
+            Assert.Equal("123456789", messageOption.From.ToString());
+            Assert.Equal(activity.Text, messageOption.Body);
+            Assert.Empty(messageOption.MediaUrl);
+        }
+
+        [Fact]
         public void ActivityToTwilio_Should_Return_Null_With_Null_Activity()
         {
             Assert.Null(TwilioHelper.ActivityToTwilio(null, "123456789"));
@@ -184,6 +197,15 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
             var activity = TwilioHelper.RequestToActivity(httpRequest.Object, validationUrlString, authTokenString);
 
             Assert.Null(activity.Attachments);
+        }
+
+        [Fact]
+        public void RequestToActivity_Should_Return_Null_With_Null_HttpRequest()
+        {
+            var authTokenString = "authToken";
+            var validationUrlString = "validationUrl";
+
+            Assert.Null(TwilioHelper.RequestToActivity(null, validationUrlString, authTokenString));
         }
 
         [Fact]
