@@ -80,7 +80,62 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
             var activity = TwilioHelper.RequestToActivity(httpRequest.Object, validationUrlString, authTokenString);
 
             Assert.Null(activity.Id);
+            Assert.Null(activity.Conversation.Id);
+            Assert.Null(activity.From.Id);
+            Assert.Null(activity.Recipient.Id);
             Assert.Null(activity.Text);
+        }
+
+        [Fact]
+        public void QueryStringToDictionary_Should_Return_Dictionary_With_Valid_Query()
+        {
+            var authTokenString = "authToken";
+            var validationUrlString = "validationUrl";
+
+            var hmac = new HMACSHA1(Encoding.UTF8.GetBytes(authTokenString));
+            var builder = new StringBuilder(validationUrlString);
+
+            var bodyString = File.ReadAllText(Directory.GetCurrentDirectory() + @"\files\Payload.txt");
+            byte[] byteArray = Encoding.ASCII.GetBytes(bodyString);
+            MemoryStream stream = new MemoryStream(byteArray);
+
+            var values = new Dictionary<string, string>();
+
+            var pairs = bodyString.Replace("+", "%20").Split('&');
+
+            foreach (var p in pairs)
+            {
+                var pair = p.Split('=');
+                var key = pair[0];
+                var value = Uri.UnescapeDataString(pair[1]);
+
+                values.Add(key, value);
+            }
+
+            var sortedKeys = new List<string>(values.Keys);
+            sortedKeys.Sort(StringComparer.Ordinal);
+
+            foreach (var key in sortedKeys)
+            {
+                builder.Append(key).Append(values[key] ?? string.Empty);
+            }
+
+            var hashArray = hmac.ComputeHash(Encoding.UTF8.GetBytes(builder.ToString()));
+            string hash = Convert.ToBase64String(hashArray);
+
+            var httpRequest = new Mock<HttpRequest>();
+            httpRequest.SetupAllProperties();
+            httpRequest.SetupGet(req => req.Headers[It.IsAny<string>()]).Returns(hash);
+
+            httpRequest.Object.Body = stream;
+
+            var activity = TwilioHelper.RequestToActivity(httpRequest.Object, validationUrlString, authTokenString);
+
+            Assert.NotNull(activity.Id);
+            Assert.NotNull(activity.Conversation.Id);
+            Assert.NotNull(activity.From.Id);
+            Assert.NotNull(activity.Recipient.Id);
+            Assert.NotNull(activity.Text);
         }
 
         [Fact]
@@ -127,14 +182,9 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
             httpRequest.Object.Body = stream;
 
             var activity = TwilioHelper.RequestToActivity(httpRequest.Object, validationUrlString, authTokenString);
+
             Assert.Null(activity.Attachments);
         }
-
-        /*[Fact]
-        public void RequestToActivity_Should_Return_Activity_EmptyAttachments_With_NumMedia_EqualToCero()
-        {
-
-        }*/
 
         [Fact]
         public void ValidateRequest_Should_Fail_With_NonMatching_Signature()
@@ -146,15 +196,13 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
 
             Assert.Throws<AuthenticationException>(() =>
             {
-                return TwilioHelper.RequestToActivity(httpRequest.Object, string.Empty, string.Empty);
+                TwilioHelper.RequestToActivity(httpRequest.Object, string.Empty, string.Empty);
             });
         }
 
-        /* [Fact]
-        public void GetMessageAttachments_Should_Return_Null_With_Null_Message()
+        /*[Fact]
+        public void RequestToActivity_Should_Return_Activity_Attachments_With_NumMedia_GreaterThanZero()
         {
-
-        }
-        */
+        }*/
     }
 }

@@ -129,11 +129,6 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// <returns>An Attachments array with the converted attachments.</returns>
         private static List<Attachment> GetMessageAttachments(int numMedia, Dictionary<string, string> message)
         {
-            if (message == null)
-            {
-                return null;
-            }
-
             var attachments = new List<Attachment>();
             for (var i = 0; i < numMedia; i++)
             {
