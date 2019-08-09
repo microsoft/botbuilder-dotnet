@@ -3,18 +3,18 @@
 
 using System;
 using System.Globalization;
+using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using BotSchema = Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Adapters.WeChat.Extensions
 {
     /// <summary>
     /// Attachment Extensions to easily convert attachment type to card, etc.
     /// </summary>
-    public static class AttachmentExtensions
+    internal static class AttachmentExtensions
     {
-        public static T ContentAs<T>(this BotSchema.Attachment attachment)
+        public static T ContentAs<T>(this Attachment attachment)
         {
             if (attachment.Content == null)
             {

@@ -3,12 +3,12 @@
 
 using System.Xml.Serialization;
 
-namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Requests.Events.Common
+namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Requests.Events
 {
     [XmlRoot("xml")]
-    public class CameraEvent : RequestEventWithEventKey
+    public class CameraOrAlbumEvent : RequestEventWithEventKey
     {
-        public override string EventType => EventTypes.Camera;
+        public override string EventType => EventTypes.CameraOrAlbum;
 
         [XmlElement(ElementName = "SendPicsInfo")]
         public SendPicsInfo SendPicsInfo { get; set; }

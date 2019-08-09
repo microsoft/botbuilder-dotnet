@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System.Xml;
 using System.Xml.Serialization;
 
 namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Responses
@@ -23,14 +24,14 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Responses
         }
 
         [XmlIgnore]
-        public override string MsgType => ResponseMessageType.Voice;
+        public override string MsgType => ResponseMessageTypes.Voice;
 
         [XmlElement(ElementName = "MsgType")]
-        public System.Xml.XmlCDataSection MsgTypeCData
+        public XmlCDataSection MsgTypeCData
         {
             get
             {
-                return new System.Xml.XmlDocument().CreateCDataSection(MsgType);
+                return new XmlDocument().CreateCDataSection(MsgType);
             }
 
             set

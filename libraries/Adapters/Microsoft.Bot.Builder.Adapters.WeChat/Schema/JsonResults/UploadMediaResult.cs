@@ -6,5 +6,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.JsonResults
     {
         [JsonProperty("media_id")]
         public string MediaId { get; set; }
+
+        public virtual bool Expired() => false;
     }
 }

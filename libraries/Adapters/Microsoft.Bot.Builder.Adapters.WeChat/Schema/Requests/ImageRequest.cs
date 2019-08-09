@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Requests
     [XmlRoot("xml")]
     public class ImageRequest : RequestMessage
     {
-        public override RequestMessageType MsgType => RequestMessageType.Image;
+        public override string MsgType => RequestMessageTypes.Image;
 
         /// <summary>
         /// Gets or sets MediaId.

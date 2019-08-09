@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System.Xml;
 using System.Xml.Serialization;
 
 namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Responses
@@ -9,14 +10,14 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Responses
     public class TextResponse : ResponseMessage
     {
         [XmlIgnore]
-        public override string MsgType => ResponseMessageType.Text;
+        public override string MsgType => ResponseMessageTypes.Text;
 
         [XmlElement(ElementName = "MsgType")]
-        public System.Xml.XmlCDataSection MsgTypeCData
+        public XmlCDataSection MsgTypeCData
         {
             get
             {
-                return new System.Xml.XmlDocument().CreateCDataSection(MsgType);
+                return new XmlDocument().CreateCDataSection(MsgType);
             }
 
             set
@@ -29,11 +30,11 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Responses
         public string Content { get; set; }
 
         [XmlElement(ElementName = "Content")]
-        public System.Xml.XmlCDataSection ContentCData
+        public XmlCDataSection ContentCData
         {
             get
             {
-                return new System.Xml.XmlDocument().CreateCDataSection(Content);
+                return new XmlDocument().CreateCDataSection(Content);
             }
 
             set

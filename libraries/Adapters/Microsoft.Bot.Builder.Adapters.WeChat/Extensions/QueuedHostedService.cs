@@ -4,18 +4,19 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Microsoft.Bot.Builder.Adapters.WeChat.Extensions
 {
-    public class QueuedHostedService : AdapterBackgroundService
+    public class QueuedHostedService : BackgroundService
     {
         private readonly ILogger _logger;
 
-        public QueuedHostedService(IBackgroundTaskQueue queue = null, ILogger logger = null)
+        public QueuedHostedService(IBackgroundTaskQueue backgroundTaskQueue, ILogger logger = null)
         {
-            TaskQueue = queue ?? BackgroundTaskQueue.Instance;
+            TaskQueue = backgroundTaskQueue ?? throw new ArgumentNullException(nameof(backgroundTaskQueue));
             _logger = logger ?? NullLogger.Instance;
         }
 

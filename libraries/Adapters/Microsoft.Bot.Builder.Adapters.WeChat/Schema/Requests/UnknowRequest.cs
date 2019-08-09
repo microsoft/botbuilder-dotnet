@@ -9,7 +9,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Requests
     [XmlRoot("xml")]
     public class UnknowRequest : RequestMessage
     {
-        public override RequestMessageType MsgType => RequestMessageType.Unknown;
+        public override string MsgType => RequestMessageTypes.Unknown;
 
         /// <summary>
         /// Gets or sets Content.

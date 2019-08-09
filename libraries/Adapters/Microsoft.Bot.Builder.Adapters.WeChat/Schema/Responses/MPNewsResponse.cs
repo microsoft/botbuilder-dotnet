@@ -10,7 +10,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Responses
             MediaId = mediaId;
         }
 
-        public override string MsgType => ResponseMessageType.MPNews;
+        public override string MsgType => ResponseMessageTypes.MPNews;
 
         public string MediaId { get; set; }
     }

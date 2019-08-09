@@ -5,7 +5,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Requests;
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Requests.Events;
-using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Requests.Events.Common;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging;

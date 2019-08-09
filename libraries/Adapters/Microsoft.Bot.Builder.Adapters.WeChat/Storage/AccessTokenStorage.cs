@@ -10,13 +10,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Storage
 {
     public sealed class AccessTokenStorage : IWeChatStorage<WeChatAccessToken>
     {
-        public static readonly AccessTokenStorage Instance = new AccessTokenStorage();
         private readonly IStorage _storage;
-
-        public AccessTokenStorage()
-        {
-            _storage = new MemoryStorage();
-        }
 
         public AccessTokenStorage(IStorage storage)
         {

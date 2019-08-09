@@ -3,62 +3,6 @@
 
 namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Requests
 {
-    /// <summary>
-    /// Request Message types.
-    /// </summary>
-    public enum RequestMessageType
-    {
-        /// <summary>
-        /// Unknown
-        /// </summary>
-        Unknown = -1,
-
-        /// <summary>
-        /// Text
-        /// </summary>
-        Text = 0,
-
-        /// <summary>
-        /// Location
-        /// </summary>
-        Location = 1,
-
-        /// <summary>
-        /// Image
-        /// </summary>
-        Image = 2,
-
-        /// <summary>
-        /// Voice
-        /// </summary>
-        Voice = 3,
-
-        /// <summary>
-        /// Video
-        /// </summary>
-        Video = 4,
-
-        /// <summary>
-        /// Link
-        /// </summary>
-        Link = 5,
-
-        /// <summary>
-        /// ShortVideo
-        /// </summary>
-        ShortVideo = 6,
-
-        /// <summary>
-        /// Event
-        /// </summary>
-        Event = 7,
-
-        /// <summary>
-        /// File
-        /// </summary>
-        File = 8,
-    }
-
     public interface IRequestMessageBase
     {
         /// <summary>
@@ -67,7 +11,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Requests
         /// <value>
         /// Message type of the request.
         /// </value>
-        RequestMessageType MsgType { get; }
+        string MsgType { get; }
 
         string Encrypt { get; set; }
 

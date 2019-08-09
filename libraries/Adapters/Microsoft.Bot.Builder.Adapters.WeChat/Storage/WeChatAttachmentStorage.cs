@@ -8,23 +8,16 @@ using Microsoft.Bot.Builder.Adapters.WeChat.Schema.JsonResults;
 
 namespace Microsoft.Bot.Builder.Adapters.WeChat.Storage
 {
-    public class WeChatAttachmentStorage : IWeChatStorage<WeChatJsonResult>
+    public class WeChatAttachmentStorage : IWeChatStorage<UploadMediaResult>
     {
-        public static readonly WeChatAttachmentStorage Instance = new WeChatAttachmentStorage();
-
         private readonly IStorage _storage;
-
-        public WeChatAttachmentStorage()
-        {
-            _storage = new MemoryStorage();
-        }
 
         public WeChatAttachmentStorage(IStorage storage)
         {
             _storage = storage;
         }
 
-        public async Task SaveAsync(string key, WeChatJsonResult value, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task SaveAsync(string key, UploadMediaResult value, CancellationToken cancellationToken = default(CancellationToken))
         {
             var dict = new Dictionary<string, object>
             {
@@ -33,10 +26,10 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Storage
             await _storage.WriteAsync(dict, cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<WeChatJsonResult> GetAsync(string key, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<UploadMediaResult> GetAsync(string key, CancellationToken cancellationToken = default(CancellationToken))
         {
             var keys = new string[] { key };
-            var result = await _storage.ReadAsync<WeChatJsonResult>(keys, cancellationToken).ConfigureAwait(false);
+            var result = await _storage.ReadAsync<UploadMediaResult>(keys, cancellationToken).ConfigureAwait(false);
             result.TryGetValue(key, out var wechatResult);
             return wechatResult;
         }

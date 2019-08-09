@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
+using System.Xml;
 using System.Xml.Serialization;
 
 namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Responses
@@ -10,14 +11,14 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Responses
     public class NewsResponse : ResponseMessage
     {
         [XmlIgnore]
-        public override string MsgType => ResponseMessageType.News;
+        public override string MsgType => ResponseMessageTypes.News;
 
         [XmlElement(ElementName = "MsgType")]
-        public System.Xml.XmlCDataSection MsgTypeCData
+        public XmlCDataSection MsgTypeCData
         {
             get
             {
-                return new System.Xml.XmlDocument().CreateCDataSection(MsgType);
+                return new XmlDocument().CreateCDataSection(MsgType);
             }
 
             set

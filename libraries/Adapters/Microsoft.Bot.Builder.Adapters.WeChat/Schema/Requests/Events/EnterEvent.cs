@@ -3,20 +3,20 @@
 
 using System.Xml.Serialization;
 
-namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Requests.Events.Common
+namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Requests.Events
 {
     /// <summary>
-    /// Url jump to view.
+    /// Enter a conversation.
     /// </summary>
     [XmlRoot("xml")]
-    public class ViewEvent : RequestEventWithEventKey
+    public class EnterEvent : RequestEvent
     {
         /// <summary>
-        /// Gets event, EventType: VIEW.
+        /// Gets event, EventType: ENTER.
         /// </summary>
         /// <value>
-        /// EventType: VIEW.
+        /// EventType: ENTER.
         /// </value>
-        public override string EventType => EventTypes.View;
+        public override string EventType => EventTypes.Enter;
     }
 }

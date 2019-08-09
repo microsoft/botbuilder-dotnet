@@ -10,8 +10,6 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Extensions
 {
     public class BackgroundTaskQueue : IBackgroundTaskQueue, IDisposable
     {
-        public static readonly BackgroundTaskQueue Instance = new BackgroundTaskQueue();
-
         private readonly ConcurrentQueue<Func<CancellationToken, Task>> _workItems = new ConcurrentQueue<Func<CancellationToken, Task>>();
         private SemaphoreSlim _signal = new SemaphoreSlim(0);
 

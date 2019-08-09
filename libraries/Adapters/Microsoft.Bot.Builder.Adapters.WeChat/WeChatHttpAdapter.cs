@@ -3,11 +3,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml;
 using System.Xml.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Builder.Adapters.WeChat.Extensions;
@@ -33,12 +35,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// </summary>
         private const string TurnResponseKey = "turnResponse";
 
-        /// <summary>
-        /// Default error message when bot adapter failed.
-        /// </summary>
-        private const string DefaultErrorMessage = "Sorry, something went wrong.";
-
-        private readonly IWeChatMessageMapper _wechatMessageMapper;
+        private readonly WeChatMessageMapper _wechatMessageMapper;
         private readonly WeChatClient _wechatClient;
         private readonly ILogger _logger;
         private readonly string _appId;
@@ -49,12 +46,11 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
 
         public WeChatHttpAdapter(
                     IConfiguration configuration,
-                    IWeChatMessageMapper wechatMessageMapper = null,
-                    WeChatClient wechatClient = null,
-                    ILogger logger = null,
+                    IStorage storage,
                     IBackgroundTaskQueue backgroundTaskQueue = null,
                     IHostedService backgroundService = null,
-                    Func<ITurnContext, Exception, Task> onTurnError = null)
+                    IMiddleware middleware = null,
+                    ILogger logger = null)
         {
             var uploadTemporaryMedia = configuration.GetSection("WeChatSetting")?.GetValue<bool>("UploadTemporaryMedia") ?? true;
             var appSecret = configuration.GetSection("WeChatSetting").GetSection("AppSecret")?.Value;
@@ -62,18 +58,15 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
             _appId = configuration.GetSection("WeChatSetting").GetSection("AppId")?.Value;
             _encodingAESKey = configuration.GetSection("WeChatSetting").GetSection("EncodingAESKey")?.Value;
             _token = configuration.GetSection("WeChatSetting").GetSection("Token")?.Value;
+            _wechatClient = new WeChatClient(_appId, appSecret, storage, logger);
+            _wechatMessageMapper = new WeChatMessageMapper(_wechatClient, uploadTemporaryMedia, logger);
             _logger = logger ?? NullLogger.Instance;
-            _wechatClient = wechatClient ?? new WeChatClient(_appId, appSecret, logger);
-            _wechatMessageMapper = wechatMessageMapper ?? new WeChatMessageMapper(_wechatClient, uploadTemporaryMedia, logger);
-            _taskQueue = backgroundTaskQueue ?? BackgroundTaskQueue.Instance;
+            _taskQueue = backgroundTaskQueue;
             _backgroundService = backgroundService;
 
-            if (onTurnError == null)
+            if (middleware != null)
             {
-                OnTurnError = async (context, exception) =>
-                {
-                    await context.SendActivityAsync(DefaultErrorMessage).ConfigureAwait(false);
-                };
+                Use(middleware);
             }
         }
 
@@ -106,7 +99,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                     catch (Exception e)
                     {
                         // TODO: exception handling when send message to wechat api failed.
-                        _logger.LogError(e, "Failed to process bot response");
+                        _logger.LogError(e, "Failed to process bot response.");
                         throw;
                     }
                 }
@@ -213,7 +206,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
             secretInfo.Token = _token;
             secretInfo.EncodingAesKey = _encodingAESKey;
             secretInfo.AppId = _appId;
-            var postDataDocument = XmlHelper.Convert(httpRequest.Body);
+            var postDataDocument = Convert(httpRequest.Body);
             var wechatRequest = GetRequestMessage(postDataDocument, secretInfo);
 
             try
@@ -221,10 +214,15 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 // Reply WeChat(User) request have two ways, set response in http response or use background task to process the request async.
                 if (!passiveResponse)
                 {
-                    // Running a background task, Get bot response and parse it from activity to wechat response message
+                    // Running a background task, Get bot response and parse it from activity to WeChat response message
                     if (_backgroundService == null)
                     {
-                        throw new NullReferenceException("AdapterBackgroundService can not be null.");
+                        throw new NullReferenceException("BackgroundService can not be null.");
+                    }
+
+                    if (_taskQueue == null)
+                    {
+                        throw new NullReferenceException("Background task queue can not be null.");
                     }
 
                     _taskQueue.QueueBackgroundWorkItem(async (ct) =>
@@ -284,6 +282,24 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
             var requestMessage = WeChatMessageFactory.GetRequestEntity(decryptDoc, _logger);
 
             return requestMessage;
+        }
+
+        /// <summary>
+        /// Get XDocument from stream.
+        /// </summary>
+        /// <param name="stream">The stream contain the xml.</param>
+        /// <returns>Stream content as XDocument.</returns>
+        private XDocument Convert(Stream stream)
+        {
+            if (stream.CanSeek)
+            {
+                stream.Seek(0, SeekOrigin.Begin);
+            }
+
+            using (var xr = XmlReader.Create(stream))
+            {
+                return XDocument.Load(xr);
+            }
         }
 
         /// <summary>
@@ -363,47 +379,47 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 {
                     switch (response.MsgType)
                     {
-                        case ResponseMessageType.Text:
+                        case ResponseMessageTypes.Text:
                             var textResponse = response as TextResponse;
                             await _wechatClient.SendTextAsync(openId, textResponse.Content).ConfigureAwait(false);
                             break;
 
-                        case ResponseMessageType.Image:
+                        case ResponseMessageTypes.Image:
                             var imageResposne = response as ImageResponse;
                             await _wechatClient.SendImageAsync(openId, imageResposne.Image.MediaId).ConfigureAwait(false);
                             break;
 
-                        case ResponseMessageType.News:
+                        case ResponseMessageTypes.News:
                             var newsResponse = response as NewsResponse;
                             await _wechatClient.SendNewsAsync(openId, newsResponse.Articles).ConfigureAwait(false);
                             break;
 
-                        case ResponseMessageType.Music:
+                        case ResponseMessageTypes.Music:
                             var musicResponse = response as MusicResponse;
                             var music = musicResponse.Music;
                             await _wechatClient.SendMusicAsync(openId, music.Title, music.Description, music.MusicUrl, music.HQMusicUrl, music.ThumbMediaId).ConfigureAwait(false);
                             break;
 
-                        case ResponseMessageType.MPNews:
+                        case ResponseMessageTypes.MPNews:
                             var mpnewsResponse = response as MPNewsResponse;
                             await _wechatClient.SendMPNewsAsync(openId, mpnewsResponse.MediaId).ConfigureAwait(false);
                             break;
 
-                        case ResponseMessageType.Video:
+                        case ResponseMessageTypes.Video:
                             var videoResposne = response as VideoResponse;
                             var video = videoResposne.Video;
                             await _wechatClient.SendVideoAsync(openId, video.MediaId, video.Title, video.Description).ConfigureAwait(false);
                             break;
 
-                        case ResponseMessageType.Voice:
+                        case ResponseMessageTypes.Voice:
                             var voiceResponse = response as VoiceResponse;
                             var voice = voiceResponse.Voice;
                             await _wechatClient.SendVoiceAsync(openId, voice.MediaId).ConfigureAwait(false);
                             break;
-                        case ResponseMessageType.LocationMessage:
-                        case ResponseMessageType.SuccessResponse:
-                        case ResponseMessageType.Unknown:
-                        case ResponseMessageType.NoResponse:
+                        case ResponseMessageTypes.LocationMessage:
+                        case ResponseMessageTypes.SuccessResponse:
+                        case ResponseMessageTypes.Unknown:
+                        case ResponseMessageTypes.NoResponse:
                         default:
                             _logger.LogInformation($"Unsupported message type: {response.MsgType}");
                             break;

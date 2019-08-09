@@ -31,7 +31,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Requests
         /// Message type of the request message, override it if needed.
         /// </value>
         [XmlElement(ElementName = "MsgType")]
-        public abstract RequestMessageType MsgType { get; }
+        public abstract string MsgType { get; }
 
         /// <summary>
         /// Gets or sets ToUserName.

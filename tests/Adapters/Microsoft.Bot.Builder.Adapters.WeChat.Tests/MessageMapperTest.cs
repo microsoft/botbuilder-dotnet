@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Adapters.WeChat.Schema;
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Requests;
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Requests.Events;
 using Microsoft.Bot.Builder.Adapters.WeChat.Tests.TestUtilities;
@@ -51,7 +50,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests
         public async Task ToWeChatMessagesTest_MessageActivityWithAttachment()
         {
             var messageActivity = MockDataUtility.GetMockMessageActivity();
-            var attachments = await MockDataUtility.GetGeneralAttachmentList();
+            var attachments = await MockDataUtility.GetGeneralAttachmentList(true);
             foreach (var att in attachments)
             {
                 messageActivity.Attachments.Add(att);

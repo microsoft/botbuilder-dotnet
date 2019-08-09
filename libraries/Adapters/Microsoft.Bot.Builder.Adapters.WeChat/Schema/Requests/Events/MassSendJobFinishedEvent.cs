@@ -3,7 +3,7 @@
 
 using System.Xml.Serialization;
 
-namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Requests.Events.Common
+namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Requests.Events
 {
     /// <summary>
     /// Group message send finish event.

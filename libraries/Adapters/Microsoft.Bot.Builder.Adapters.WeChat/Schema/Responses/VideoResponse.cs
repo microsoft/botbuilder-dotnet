@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System.Xml;
 using System.Xml.Serialization;
 
 namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Responses
@@ -12,25 +13,20 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Responses
         {
         }
 
-        public VideoResponse(Video video)
-        {
-            Video = video;
-        }
-
         public VideoResponse(string mediaId, string title = null, string description = null)
         {
             Video = new Video(mediaId, title, description);
         }
 
         [XmlIgnore]
-        public override string MsgType => ResponseMessageType.Video;
+        public override string MsgType => ResponseMessageTypes.Video;
 
         [XmlElement(ElementName = "MsgType")]
-        public System.Xml.XmlCDataSection MsgTypeCData
+        public XmlCDataSection MsgTypeCData
         {
             get
             {
-                return new System.Xml.XmlDocument().CreateCDataSection(MsgType);
+                return new XmlDocument().CreateCDataSection(MsgType);
             }
 
             set

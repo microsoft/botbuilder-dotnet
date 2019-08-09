@@ -4,9 +4,7 @@
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Adapters.WeChat.Schema;
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema.JsonResults;
-using Microsoft.Bot.Builder.Adapters.WeChat.Storage;
 using Microsoft.Bot.Builder.Adapters.WeChat.Tests.TestUtilities;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -18,11 +16,10 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests
         public MockWeChatClient(
             string appId,
             string appSecret,
+            IStorage storage,
             ILogger logger = null,
-            WeChatAttachmentStorage attachmentStorage = null,
-            AccessTokenStorage tokenStorage = null,
             IAttachmentHash attachmentHash = null)
-            : base(appId, appSecret, logger, attachmentStorage, tokenStorage, attachmentHash)
+            : base(appId, appSecret, storage, logger, attachmentHash)
         {
         }
 
@@ -41,13 +38,13 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests
             }
             else if (url.Contains("media"))
             {
-                var result = JsonConvert.SerializeObject(MockDataUtility.MockTempMediaResult(UploadMediaType.Image));
+                var result = JsonConvert.SerializeObject(MockDataUtility.MockTempMediaResult(Schema.MediaTypes.Image));
                 var byteResult = Encoding.UTF8.GetBytes(result);
                 return Task.FromResult(byteResult);
             }
             else if (url.Contains("news"))
             {
-                var result = JsonConvert.SerializeObject(MockDataUtility.MockTempMediaResult(UploadMediaType.News));
+                var result = JsonConvert.SerializeObject(MockDataUtility.MockTempMediaResult(Schema.MediaTypes.News));
                 var byteResult = Encoding.UTF8.GetBytes(result);
                 return Task.FromResult(byteResult);
             }

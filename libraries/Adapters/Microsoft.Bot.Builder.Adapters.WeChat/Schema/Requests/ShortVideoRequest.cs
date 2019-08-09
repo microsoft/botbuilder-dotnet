@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Requests
     [XmlRoot("xml")]
     public class ShortVideoRequest : RequestMessage
     {
-        public override RequestMessageType MsgType => RequestMessageType.ShortVideo;
+        public override string MsgType => RequestMessageTypes.ShortVideo;
 
         [XmlElement(ElementName = "MediaId")]
         public string MediaId { get; set; }

@@ -19,8 +19,10 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests
 
         public AdapterTest()
         {
-            testAdapter = new WeChatHttpAdapter(MockDataUtility.MockConfiguration(), backgroundService: new QueuedHostedService());
-            testAdapterUseTempMedia = new WeChatHttpAdapter(MockDataUtility.MockConfiguration(false), backgroundService: new QueuedHostedService());
+            var storage = new MemoryStorage();
+            var taskQueue = new BackgroundTaskQueue();
+            testAdapter = new WeChatHttpAdapter(MockDataUtility.MockConfiguration(), storage, taskQueue, new QueuedHostedService(taskQueue));
+            testAdapterUseTempMedia = new WeChatHttpAdapter(MockDataUtility.MockConfiguration(false), storage, taskQueue, new QueuedHostedService(taskQueue));
         }
 
         [Fact]
@@ -41,14 +43,10 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests
 
             // Do not dispose writer.
             var sw = new StreamWriter(ms);
-
             var json = body as string ?? JsonConvert.SerializeObject(body);
-
             sw.Write(json);
             sw.Flush();
-
             ms.Position = 0;
-
             var mockRequest = new Mock<HttpRequest>();
             mockRequest.Setup(x => x.Body).Returns(ms);
             var mockHeaders = new HeaderDictionary

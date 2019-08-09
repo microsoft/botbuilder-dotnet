@@ -11,7 +11,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Requests
     [XmlRoot("xml")]
     public class LinkRequest : RequestMessage
     {
-        public override RequestMessageType MsgType => RequestMessageType.Link;
+        public override string MsgType => RequestMessageTypes.Link;
 
         [XmlElement(ElementName = "Title")]
         public string Title { get; set; }

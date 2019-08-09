@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System.Xml;
 using System.Xml.Serialization;
 
 namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Responses
@@ -17,11 +18,11 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Responses
         public string ToUserName { get; set; }
 
         [XmlElement(ElementName = "ToUserName")]
-        public System.Xml.XmlCDataSection ToUserNameCData
+        public XmlCDataSection ToUserNameCData
         {
             get
             {
-                return new System.Xml.XmlDocument().CreateCDataSection(ToUserName);
+                return new XmlDocument().CreateCDataSection(ToUserName);
             }
 
             set
@@ -40,11 +41,11 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Responses
         public string FromUserName { get; set; }
 
         [XmlElement(ElementName = "FromUserName")]
-        public System.Xml.XmlCDataSection FromUserNameCData
+        public XmlCDataSection FromUserNameCData
         {
             get
             {
-                return new System.Xml.XmlDocument().CreateCDataSection(FromUserName);
+                return new XmlDocument().CreateCDataSection(FromUserName);
             }
 
             set

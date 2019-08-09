@@ -3,7 +3,7 @@
 
 namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema
 {
-    public static class UploadMediaType
+    public static class MediaTypes
     {
         /// <summary>
         /// Image: 2M, support PNG/JEPG/JPG/GIF.
@@ -21,6 +21,11 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema
         public const string Video = "video";
 
         /// <summary>
+        /// General audio type.
+        /// </summary>
+        public const string Audio = "audio";
+
+        /// <summary>
         /// Thumb：64KB，support JPG.
         /// </summary>
         public const string Thumb = "thumb";
@@ -29,5 +34,10 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema
         /// News type.
         /// </summary>
         public const string News = "news";
+
+        /// <summary>
+        /// Image type 'gif'.
+        /// </summary>
+        public const string Gif = "image/gif";
     }
 }

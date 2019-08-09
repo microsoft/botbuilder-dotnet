@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System.Xml;
 using System.Xml.Serialization;
 
 namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema
@@ -21,11 +22,11 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema
         public string MediaId { get; set; }
 
         [XmlElement(ElementName = "MediaId")]
-        public System.Xml.XmlCDataSection MediaIdCData
+        public XmlCDataSection MediaIdCData
         {
             get
             {
-                return new System.Xml.XmlDocument().CreateCDataSection(MediaId);
+                return new XmlDocument().CreateCDataSection(MediaId);
             }
 
             set

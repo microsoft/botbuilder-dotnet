@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System.Xml;
 using System.Xml.Serialization;
 
 namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema
@@ -12,11 +13,11 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema
         public string Title { get; set; }
 
         [XmlElement(ElementName = "Title")]
-        public System.Xml.XmlCDataSection TitleCData
+        public XmlCDataSection TitleCData
         {
             get
             {
-                return new System.Xml.XmlDocument().CreateCDataSection(Title);
+                return new XmlDocument().CreateCDataSection(Title);
             }
 
             set
@@ -29,11 +30,11 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema
         public string Description { get; set; }
 
         [XmlElement(ElementName = "Description")]
-        public System.Xml.XmlCDataSection DescriptionCData
+        public XmlCDataSection DescriptionCData
         {
             get
             {
-                return new System.Xml.XmlDocument().CreateCDataSection(Description);
+                return new XmlDocument().CreateCDataSection(Description);
             }
 
             set
@@ -46,11 +47,11 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema
         public string MusicUrl { get; set; }
 
         [XmlElement(ElementName = "MusicUrl")]
-        public System.Xml.XmlCDataSection MusicUrlCData
+        public XmlCDataSection MusicUrlCData
         {
             get
             {
-                return new System.Xml.XmlDocument().CreateCDataSection(MusicUrl);
+                return new XmlDocument().CreateCDataSection(MusicUrl);
             }
 
             set
@@ -63,11 +64,11 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema
         public string HQMusicUrl { get; set; }
 
         [XmlElement(ElementName = "HQMusicUrl")]
-        public System.Xml.XmlCDataSection HQMusicUrlCData
+        public XmlCDataSection HQMusicUrlCData
         {
             get
             {
-                return new System.Xml.XmlDocument().CreateCDataSection(HQMusicUrl);
+                return new XmlDocument().CreateCDataSection(HQMusicUrl);
             }
 
             set
@@ -80,11 +81,11 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema
         public string ThumbMediaId { get; set; }
 
         [XmlElement(ElementName = "ThumbMediaId")]
-        public System.Xml.XmlCDataSection ThumbMediaIdCData
+        public XmlCDataSection ThumbMediaIdCData
         {
             get
             {
-                return new System.Xml.XmlDocument().CreateCDataSection(ThumbMediaId);
+                return new XmlDocument().CreateCDataSection(ThumbMediaId);
             }
 
             set

@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System.Xml;
 using System.Xml.Serialization;
 
 namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema
@@ -12,11 +13,11 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema
         public string Title { get; set; }
 
         [XmlElement(ElementName = "Title")]
-        public System.Xml.XmlCDataSection TitleCData
+        public XmlCDataSection TitleCData
         {
             get
             {
-                return new System.Xml.XmlDocument().CreateCDataSection(Title);
+                return new XmlDocument().CreateCDataSection(Title);
             }
 
             set
@@ -29,11 +30,11 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema
         public string Description { get; set; }
 
         [XmlElement(ElementName = "Description")]
-        public System.Xml.XmlCDataSection DescriptionCData
+        public XmlCDataSection DescriptionCData
         {
             get
             {
-                return new System.Xml.XmlDocument().CreateCDataSection(Description);
+                return new XmlDocument().CreateCDataSection(Description);
             }
 
             set
@@ -46,11 +47,11 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema
         public string Url { get; set; }
 
         [XmlElement(ElementName = "Url")]
-        public System.Xml.XmlCDataSection UrlCData
+        public XmlCDataSection UrlCData
         {
             get
             {
-                return new System.Xml.XmlDocument().CreateCDataSection(Url);
+                return new XmlDocument().CreateCDataSection(Url);
             }
 
             set
@@ -69,11 +70,11 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema
         public string PicUrl { get; set; }
 
         [XmlElement(ElementName = "PicUrl")]
-        public System.Xml.XmlCDataSection PicUrlCData
+        public XmlCDataSection PicUrlCData
         {
             get
             {
-                return new System.Xml.XmlDocument().CreateCDataSection(PicUrl);
+                return new XmlDocument().CreateCDataSection(PicUrl);
             }
 
             set

@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Requests
     [XmlRoot("xml")]
     public class VoiceRequest : RequestMessage
     {
-        public override RequestMessageType MsgType => RequestMessageType.Voice;
+        public override string MsgType => RequestMessageTypes.Voice;
 
         [XmlElement(ElementName = "MediaId")]
         public string MediaId { get; set; }

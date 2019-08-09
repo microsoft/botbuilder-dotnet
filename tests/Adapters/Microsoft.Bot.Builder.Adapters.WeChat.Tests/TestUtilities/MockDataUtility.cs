@@ -392,8 +392,9 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests.TestUtilities
             Description = "description",
         };
 
-        public static readonly VideoResponse VideoResponse = new VideoResponse(Video)
+        public static readonly VideoResponse VideoResponse = new VideoResponse()
         {
+            Video = Video,
             ToUserName = "toUser",
             FromUserName = "fromUser",
             CreateTime = 12345678,
@@ -533,7 +534,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests.TestUtilities
             return activityList;
         }
 
-        public static async Task<List<Attachment>> GetGeneralAttachmentList()
+        public static async Task<List<Attachment>> GetGeneralAttachmentList(bool isValid)
         {
             var attachmentList = new List<Attachment>();
 
@@ -566,18 +567,12 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests.TestUtilities
             var contentTypes = new string[]
             {
                     "image/jpeg",
-                    null,
-                    string.Empty,
-                    "invalid",
             };
 
             var contentUrls = new string[]
             {
                     url,
                     dataUri,
-                    null,
-                    string.Empty,
-                    invalidUrl,
             };
 
             var thumbnailUrls = new string[]
@@ -586,7 +581,6 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests.TestUtilities
                     dataUri,
                     null,
                     string.Empty,
-                    invalidUrl,
             };
 
             var content = new object[]
@@ -597,11 +591,44 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests.TestUtilities
                     null,
                     string.Empty,
                     "data:,",  // valid uri but no data
+            };
+            if (!isValid)
+            {
+                names = new string[]
+                {
+                    null,
+                    string.Empty,
+                    "fi€€€le.jpg", // Unicode chars
+                };
+                contentTypes = new string[]
+                {
+                    null,
+                    string.Empty,
+                    "invalid",
+                };
+                contentUrls = new string[]
+                {
+                    null,
+                    string.Empty,
+                    invalidUrl,
+                };
+                thumbnailUrls = new string[]
+                {
+                    null,
+                    string.Empty,
+                    invalidUrl,
+                };
+                content = new object[]
+                {
+                    null,
+                    string.Empty,
+                    "data:,",  // valid uri but no data
                     "12345",
                     invalidUrl,
                     new byte[10],
                     Array.Empty<byte>(),
-            };
+                };
+            }
 
             var num = 0;
             foreach (var n in names)
@@ -678,21 +705,19 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests.TestUtilities
 
         public static WeChatClient GetMockWeChatClient()
         {
-            var wechatClient = new Mock<WeChatClient>("wx77f941c869071d99", "secret", null, null, null, null);
+            var storage = new MemoryStorage();
+            var wechatClient = new Mock<WeChatClient>("wx77f941c869071d99", "secret", storage, null, null);
             var result = JsonConvert.SerializeObject(WeChatJsonResult);
             var byteResult = Encoding.UTF8.GetBytes(result);
             wechatClient.Setup(c => c.GetAccessTokenAsync()).Returns(Task.FromResult("mockToken"));
             wechatClient.Setup(c => c.SendHttpRequestAsync(It.IsAny<HttpMethod>(), It.IsAny<string>(), It.IsAny<object>(), It.IsAny<string>(), It.IsAny<int>())).Returns(Task.FromResult(byteResult));
-
-            wechatClient.Setup(c => c.UploadTemporaryMediaAsync(It.IsAny<string>(), It.IsAny<AttachmentData>(), It.IsAny<int>())).Returns(MockTempMediaResult(UploadMediaType.Image));
-            wechatClient.Setup(c => c.UploadTemporaryNewsAsync(It.IsAny<News[]>(), It.IsAny<int>())).Returns(MockTempMediaResult(UploadMediaType.News));
-            wechatClient.Setup(c => c.UploadPersistentMediaAsync(It.IsAny<string>(), It.IsAny<AttachmentData>(), It.IsAny<int>())).Returns(MockForeverMediaResult());
-            wechatClient.Setup(c => c.UploadPersistentNewsAsync(It.IsAny<News[]>(), It.IsAny<int>())).Returns(MockForeverMediaResult());
+            wechatClient.Setup(c => c.UploadMediaAsync(It.IsAny<AttachmentData>(), It.IsAny<bool>(), It.IsAny<int>())).Returns(Task.FromResult(MockTempMediaResult(MediaTypes.Image)));
+            wechatClient.Setup(c => c.UploadNewsAsync(It.IsAny<News[]>(), It.IsAny<bool>(), It.IsAny<int>())).Returns(Task.FromResult(MockTempMediaResult(MediaTypes.News)));
 
             return wechatClient.Object;
         }
 
-        public static Task<UploadTemporaryMediaResult> MockTempMediaResult(string type)
+        public static UploadMediaResult MockTempMediaResult(string type)
         {
             var uploadResult = new UploadTemporaryMediaResult()
             {
@@ -702,10 +727,10 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests.TestUtilities
                 ThumbMediaId = "thumbMediaId",
                 Type = type,
             };
-            return Task.FromResult(uploadResult);
+            return uploadResult;
         }
 
-        public static Task<UploadPersistentMediaResult> MockForeverMediaResult()
+        public static UploadPersistentMediaResult MockForeverMediaResult()
         {
             var uploadResult = new UploadPersistentMediaResult()
             {
@@ -714,7 +739,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests.TestUtilities
                 ErrorCode = 0,
                 ErrorMessage = "ok",
             };
-            return Task.FromResult(uploadResult);
+            return uploadResult;
         }
     }
 }

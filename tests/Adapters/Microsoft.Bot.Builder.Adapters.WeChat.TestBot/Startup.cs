@@ -34,10 +34,6 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.TestBot
             // Create the Bot Framework Adapter with error handling enabled.
             services.AddSingleton<IBotFrameworkHttpAdapter, AdapterWithErrorHandler>();
 
-            // Configure background task queue and hosted serivce.
-            services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
-            services.AddHostedService<QueuedHostedService>();
-
             // Create the storage we'll be using for User and Conversation state. (Memory is great for testing purposes.)
             services.AddSingleton<IStorage, MemoryStorage>();
 
@@ -52,13 +48,18 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.TestBot
                 var conversationState = sp.GetService<ConversationState>();
                 return new BotStateSet(userState, conversationState);
             });
+
+            // Configure background task queue and hosted serivce.
+            services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
+            services.AddHostedService<QueuedHostedService>();
             services.AddSingleton<IWeChatHttpAdapter>(sp =>
             {
                 var userState = sp.GetService<UserState>();
                 var conversationState = sp.GetService<ConversationState>();
                 var backgroundTaskQueue = sp.GetService<IBackgroundTaskQueue>();
                 var hostedService = sp.GetService<IHostedService>();
-                var adapter = new WeChatHttpAdapter(Configuration, null, null, null, backgroundTaskQueue, hostedService, null);
+                var storage = sp.GetService<IStorage>();
+                var adapter = new WeChatHttpAdapter(Configuration, storage, backgroundTaskQueue, hostedService);
                 adapter.Use(new AutoSaveStateMiddleware(userState, conversationState));
                 return adapter;
             });

@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Requests.Events
         /// <value>
         /// Event message type, should be a static value.
         /// </value>
-        public RequestMessageType MsgType => RequestMessageType.Event;
+        public string MsgType => RequestMessageTypes.Event;
 
         /// <summary>
         /// Gets or sets ToUserName.

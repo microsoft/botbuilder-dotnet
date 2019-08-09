@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -13,6 +12,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema;
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema.JsonResults;
+using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Requests.Events;
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Responses;
 using Microsoft.Bot.Builder.Adapters.WeChat.Storage;
 using Microsoft.Bot.Schema;
@@ -40,16 +40,15 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         public WeChatClient(
             string appId,
             string appSecret,
+            IStorage storage,
             ILogger logger = null,
-            WeChatAttachmentStorage attachmentStorage = null,
-            AccessTokenStorage tokenStorage = null,
             IAttachmentHash attachmentHash = null)
         {
             _appId = appId;
             _appSecret = appSecret;
+            _attachmentStorage = new WeChatAttachmentStorage(storage);
+            _tokenStorage = new AccessTokenStorage(storage);
             _logger = logger ?? NullLogger.Instance;
-            _attachmentStorage = attachmentStorage ?? WeChatAttachmentStorage.Instance;
-            _tokenStorage = tokenStorage ?? AccessTokenStorage.Instance;
             _attachmentHash = attachmentHash ?? new AttachmentHash();
         }
 
@@ -117,25 +116,25 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         public virtual async Task<string> GetAccessTokenAsync()
         {
             var token = await _tokenStorage.GetAsync(_appId).ConfigureAwait(false);
-            if (token == null)
-            {
-                token = new WeChatAccessToken(_appId, _appSecret);
-            }
-
-            if (token.ExpireTime.ToUnixTimeSeconds() <= DateTimeOffset.UtcNow.ToUnixTimeSeconds())
+            if (token == null || token.ExpireTime.ToUnixTimeSeconds() <= DateTimeOffset.UtcNow.ToUnixTimeSeconds())
             {
                 var url = GetAccessTokenEndPoint(_appId, _appSecret);
                 var bytes = await SendHttpRequestAsync(HttpMethod.Get, url).ConfigureAwait(false);
                 var tokenResult = ConvertBytesToType<AccessTokenResult>(bytes);
                 if (tokenResult.ErrorCode != 0)
                 {
-                    var exception = new Exception($"{tokenResult}");
+                    var exception = new Exception(tokenResult.ToString());
                     _logger.LogError(exception, "Get access token failed.");
                     throw exception;
                 }
 
-                token.ExpireTime = DateTimeOffset.UtcNow.AddSeconds(tokenResult.ExpireIn);
-                token.Token = tokenResult.Token;
+                token = new WeChatAccessToken()
+                {
+                    AppId = _appId,
+                    Secret = _appSecret,
+                    ExpireTime = DateTimeOffset.UtcNow.AddSeconds(tokenResult.ExpireIn),
+                    Token = tokenResult.Token,
+                };
                 await _tokenStorage.SaveAsync(_appId, token).ConfigureAwait(false);
             }
 
@@ -145,164 +144,83 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// <summary>
         /// Upload temporary media (originally uploaded media files api).
         /// </summary>
-        /// <param name="type">Media type.</param>
         /// <param name="attachmentData">attachment data to be uploaded.</param>
+        /// <param name="isTemporary">If upload media as a temporary media.</param>
         /// <param name="timeout">Upload temporary media timeout.</param>
         /// <returns>Result of upload Temporary media.</returns>
-        public virtual async Task<UploadTemporaryMediaResult> UploadTemporaryMediaAsync(string type, AttachmentData attachmentData, int timeout = 30000)
+        public virtual async Task<UploadMediaResult> UploadMediaAsync(AttachmentData attachmentData, bool isTemporary, int timeout = 30000)
         {
-            var mediaHash = _attachmentHash.ComputeHash(attachmentData.OriginalBase64);
-            var uploadResult = (await _attachmentStorage.GetAsync(mediaHash).ConfigureAwait(false)) as UploadTemporaryMediaResult;
-            if (uploadResult == null || uploadResult.ExpiredTime <= DateTimeOffset.UtcNow.ToUnixTimeSeconds())
+            var mediaHash = _attachmentHash.ComputeHash(attachmentData.OriginalBase64) + isTemporary;
+            var cachedResult = await _attachmentStorage.GetAsync(mediaHash).ConfigureAwait(false);
+            var accessToken = await GetAccessTokenAsync().ConfigureAwait(false);
+            var url = GetUploadMediaEndPoint(accessToken, attachmentData.Type, isTemporary);
+            if (cachedResult == null || cachedResult.Expired())
             {
-                var accessToken = await GetAccessTokenAsync().ConfigureAwait(false);
-                var url = GetUploadMediaEndPoint(accessToken, type, true);
-                uploadResult = await UploadMediaAsync<UploadTemporaryMediaResult>(attachmentData, url, type, mediaHash, true, timeout).ConfigureAwait(false);
-                if (uploadResult.ErrorCode == 0)
-                {
-                    await _attachmentStorage.SaveAsync(mediaHash, uploadResult).ConfigureAwait(false);
-                }
-                else
-                {
-                    var exception = new Exception($"{uploadResult}");
-                    _logger.LogError(exception, $"Upload temporary media failed, type: {type}");
-                    throw exception;
-                }
+                var uploadResult = await UploadMediaAsync(attachmentData, url, attachmentData.Type, mediaHash, isTemporary, timeout).ConfigureAwait(false);
+                await CheckAndUpdateAttachmentStorage(mediaHash, uploadResult).ConfigureAwait(false);
+                return uploadResult;
             }
 
-            return uploadResult;
+            return cachedResult;
         }
 
         /// <summary>
         /// Added other types of permanent material.
         /// </summary>
-        /// <param name="type">Upload media file type.</param>
         /// <param name="attachmentData">Attachment data to be uploaded.</param>
         /// <param name="timeout">Upload persistent media timeout.</param>
         /// <returns>Result of upload persistent media.</returns>
-        public virtual async Task<UploadPersistentMediaResult> UploadPersistentMediaAsync(string type, AttachmentData attachmentData, int timeout = 30000)
+        public virtual async Task<UploadMediaResult> UploadNewsImageAsync(AttachmentData attachmentData, int timeout = 30000)
         {
             var mediaHash = _attachmentHash.ComputeHash(attachmentData.OriginalBase64);
-            var uploadResult = (await _attachmentStorage.GetAsync(mediaHash).ConfigureAwait(false)) as UploadPersistentMediaResult;
-            if (uploadResult == null)
-            {
-                var accessToken = await GetAccessTokenAsync().ConfigureAwait(false);
-                var url = GetUploadMediaEndPoint(accessToken, type, false);
-                {
-                    uploadResult = await UploadMediaAsync<UploadPersistentMediaResult>(attachmentData, url, type, mediaHash, false, timeout).ConfigureAwait(false);
-                    if (uploadResult.ErrorCode == 0)
-                    {
-                        await _attachmentStorage.SaveAsync(mediaHash, uploadResult).ConfigureAwait(false);
-                    }
-                    else
-                    {
-                        _logger.LogError(new Exception($"{uploadResult}"), $"Upload persistent media failed, type: {type}");
-                    }
-                }
-            }
-
-            return uploadResult;
-        }
-
-        /// <summary>
-        /// Added other types of permanent material.
-        /// </summary>
-        /// <param name="type">Upload media file type.</param>
-        /// <param name="attachmentData">Attachment data to be uploaded.</param>
-        /// <param name="timeout">Upload persistent media timeout.</param>
-        /// <returns>Result of upload persistent media.</returns>
-        public virtual async Task<UploadPersistentMediaResult> UploadNewsImageAsync(string type, AttachmentData attachmentData, int timeout = 30000)
-        {
-            var mediaHash = _attachmentHash.ComputeHash(attachmentData.OriginalBase64);
-            var uploadResult = (await _attachmentStorage.GetAsync(mediaHash).ConfigureAwait(false)) as UploadPersistentMediaResult;
-            if (uploadResult == null)
+            var cachedResult = await _attachmentStorage.GetAsync(mediaHash).ConfigureAwait(false);
+            if (cachedResult == null || cachedResult.Expired())
             {
                 var accessToken = await GetAccessTokenAsync().ConfigureAwait(false);
                 var url = GetAcquireMediaUrlEndPoint(accessToken);
-                {
-                    uploadResult = await UploadMediaAsync<UploadPersistentMediaResult>(attachmentData, url, type, mediaHash, false, timeout).ConfigureAwait(false);
-                    if (uploadResult.ErrorCode == 0)
-                    {
-                        await _attachmentStorage.SaveAsync(mediaHash, uploadResult).ConfigureAwait(false);
-                    }
-                    else
-                    {
-                        _logger.LogError(new Exception($"{uploadResult}"), $"Upload news image failed, type: {type}");
-                    }
-                }
+                var uploadResult = await UploadMediaAsync(attachmentData, url, attachmentData.Type, mediaHash, false, timeout).ConfigureAwait(false);
+                await CheckAndUpdateAttachmentStorage(mediaHash, uploadResult).ConfigureAwait(false);
+                return uploadResult;
             }
 
-            return uploadResult;
+            return cachedResult;
         }
 
         /// <summary>
         /// Upload temporary graphic media.
         /// </summary>
         /// <param name="newsList">Graphic material list.</param>
-        /// <param name="timeout">Upload persistent news timeout.</param>
-        /// <returns>Result of upload a persistent news.</returns>
-        public virtual async Task<UploadPersistentMediaResult> UploadPersistentNewsAsync(News[] newsList, int timeout = 30000)
-        {
-            var mediaHash = _attachmentHash.ComputeHash(JsonConvert.SerializeObject(newsList));
-            var uploadResult = (await _attachmentStorage.GetAsync(mediaHash).ConfigureAwait(false)) as UploadPersistentMediaResult;
-            if (uploadResult == null)
-            {
-                var accessToken = await GetAccessTokenAsync().ConfigureAwait(false);
-                var url = GetUploadNewsEndPoint(accessToken, false);
-                var data = new
-                {
-                    articles = newsList,
-                };
-                var bytes = await SendHttpRequestAsync(HttpMethod.Post, url, data, null, timeout).ConfigureAwait(false);
-                uploadResult = ConvertBytesToType<UploadPersistentMediaResult>(bytes);
-                if (uploadResult.ErrorCode == 0)
-                {
-                    await _attachmentStorage.SaveAsync(mediaHash, uploadResult).ConfigureAwait(false);
-                }
-                else
-                {
-                    var exception = new Exception($"{uploadResult}");
-                    _logger.LogError(exception, "Upload persistent news failed.");
-                    throw exception;
-                }
-            }
-
-            return uploadResult;
-        }
-
-        /// <summary>
-        /// Upload temporary graphic media.
-        /// </summary>
-        /// <param name="newsList">Graphic material list.</param>
+        /// <param name="isTemporary">If upload media as a temporary media.</param>
         /// <param name="timeout">Upload temporary news timeout.</param>
         /// <returns>Result of upload a temporary news.</returns>
-        public virtual async Task<UploadTemporaryMediaResult> UploadTemporaryNewsAsync(News[] newsList, int timeout = 30000)
+        public virtual async Task<UploadMediaResult> UploadNewsAsync(News[] newsList, bool isTemporary, int timeout = 30000)
         {
-            var mediaHash = _attachmentHash.ComputeHash(JsonConvert.SerializeObject(newsList));
-            var uploadResult = await _attachmentStorage.GetAsync(mediaHash).ConfigureAwait(false) as UploadTemporaryMediaResult;
-            if (uploadResult == null || uploadResult.ExpiredTime <= DateTimeOffset.UtcNow.ToUnixTimeSeconds())
+            var mediaHash = _attachmentHash.ComputeHash(JsonConvert.SerializeObject(newsList)) + isTemporary;
+            var cachedResult = await _attachmentStorage.GetAsync(mediaHash).ConfigureAwait(false);
+            var accessToken = await GetAccessTokenAsync().ConfigureAwait(false);
+            var url = GetUploadNewsEndPoint(accessToken, isTemporary);
+            if (cachedResult == null || cachedResult.Expired())
             {
-                var accessToken = await GetAccessTokenAsync().ConfigureAwait(false);
-                var url = GetUploadNewsEndPoint(accessToken, true);
                 var data = new
                 {
                     articles = newsList,
                 };
                 var bytes = await SendHttpRequestAsync(HttpMethod.Post, url, data, null, timeout).ConfigureAwait(false);
-                uploadResult = ConvertBytesToType<UploadTemporaryMediaResult>(bytes);
-                if (uploadResult.ErrorCode == 0)
+                UploadMediaResult uploadResult;
+                if (isTemporary)
                 {
-                    await _attachmentStorage.SaveAsync(mediaHash, uploadResult).ConfigureAwait(false);
+                    uploadResult = ConvertBytesToType<UploadTemporaryMediaResult>(bytes);
                 }
                 else
                 {
-                    var exception = new Exception($"{uploadResult}");
-                    _logger.LogError(exception, "Upload temporary news failed.");
-                    throw exception;
+                    uploadResult = ConvertBytesToType<UploadPersistentMediaResult>(bytes);
                 }
+
+                await CheckAndUpdateAttachmentStorage(mediaHash, uploadResult).ConfigureAwait(false);
+                return uploadResult;
             }
 
-            return uploadResult;
+            return cachedResult;
         }
 
         /// <summary>
@@ -321,7 +239,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 data = new
                 {
                     touser = openId,
-                    msgtype = ResponseMessageType.Image,
+                    msgtype = ResponseMessageTypes.Image,
                     image = new
                     {
                         media_id = mediaId,
@@ -333,7 +251,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 data = new
                 {
                     touser = openId,
-                    msgtype = ResponseMessageType.Image,
+                    msgtype = ResponseMessageTypes.Image,
                     image = new
                     {
                         media_id = mediaId,
@@ -365,7 +283,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 data = new
                 {
                     touser = openId,
-                    msgtype = ResponseMessageType.MPNews,
+                    msgtype = ResponseMessageTypes.MPNews,
                     mpnews = new
                     {
                         media_id = mediaId,
@@ -377,7 +295,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 data = new
                 {
                     touser = openId,
-                    msgtype = ResponseMessageType.MPNews,
+                    msgtype = ResponseMessageTypes.MPNews,
                     mpnews = new
                     {
                         media_id = mediaId,
@@ -412,7 +330,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 data = new
                 {
                     touser = openId,
-                    msgtype = ResponseMessageType.Music,
+                    msgtype = ResponseMessageTypes.Music,
                     music = new
                     {
                         title = title,
@@ -428,7 +346,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 data = new
                 {
                     touser = openId,
-                    msgtype = ResponseMessageType.Music,
+                    msgtype = ResponseMessageTypes.Music,
                     music = new
                     {
                         title = title,
@@ -463,7 +381,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 data = new
                 {
                     touser = openId,
-                    msgtype = ResponseMessageType.News,
+                    msgtype = ResponseMessageTypes.News,
                     news = new
                     {
                         articles = articles.Select(article => new
@@ -481,7 +399,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 data = new
                 {
                     touser = openId,
-                    msgtype = ResponseMessageType.News,
+                    msgtype = ResponseMessageTypes.News,
                     news = new
                     {
                         articles = articles.Select(article => new
@@ -518,7 +436,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 data = new
                 {
                     touser = openId,
-                    msgtype = ResponseMessageType.Text,
+                    msgtype = ResponseMessageTypes.Text,
                     text = new
                     {
                         content = content,
@@ -530,7 +448,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 data = new
                 {
                     touser = openId,
-                    msgtype = ResponseMessageType.Text,
+                    msgtype = ResponseMessageTypes.Text,
                     text = new
                     {
                         content = content,
@@ -564,7 +482,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 data = new
                 {
                     touser = openId,
-                    msgtype = ResponseMessageType.Video,
+                    msgtype = ResponseMessageTypes.Video,
                     video = new
                     {
                         media_id = mediaId,
@@ -579,7 +497,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 data = new
                 {
                     touser = openId,
-                    msgtype = ResponseMessageType.Video,
+                    msgtype = ResponseMessageTypes.Video,
                     video = new
                     {
                         media_id = mediaId,
@@ -613,7 +531,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 data = new
                 {
                     touser = openId,
-                    msgtype = ResponseMessageType.Voice,
+                    msgtype = ResponseMessageTypes.Voice,
                     voice = new
                     {
                         media_id = mediaId,
@@ -625,7 +543,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 data = new
                 {
                     touser = openId,
-                    msgtype = ResponseMessageType.Voice,
+                    msgtype = ResponseMessageTypes.Voice,
                     voice = new
                     {
                         media_id = mediaId,
@@ -641,7 +559,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         }
 
         /// <summary>
-        /// All http request send to wechat will be handled by this method.
+        /// All http request send to WeChat will be handled by this method.
         /// </summary>
         /// <param name="token">Authentication token.</param>
         /// <param name="method">Http method.</param>
@@ -728,24 +646,24 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         private static string GetMediaExtension(string link, string mimeType, string type)
         {
             var ext = MimeTypesMap.GetExtension(mimeType);
-            if (ext == MimeTypesMap.DefaultExtension)
+            if (string.IsNullOrEmpty(ext))
             {
                 mimeType = MimeTypesMap.GetMimeType(link);
                 ext = MimeTypesMap.GetExtension(mimeType);
             }
 
-            if (ext == MimeTypesMap.DefaultExtension)
+            if (string.IsNullOrEmpty(ext))
             {
                 switch (type)
                 {
-                    case UploadMediaType.Image:
-                    case UploadMediaType.Thumb:
+                    case MediaTypes.Image:
+                    case MediaTypes.Thumb:
                         ext = "jpg";
                         break;
-                    case UploadMediaType.Video:
+                    case MediaTypes.Video:
                         ext = "mp4";
                         break;
-                    case UploadMediaType.Voice:
+                    case MediaTypes.Voice:
                         ext = "mp3";
                         break;
                 }
@@ -767,6 +685,26 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         }
 
         /// <summary>
+        /// Check if upload media successful then update attachment storage.
+        /// </summary>
+        /// <param name="mediaHash">Hash value of the media.</param>
+        /// <param name="uploadResult">Upload media result.</param>
+        /// <returns>Task of updating media.</returns>
+        private async Task CheckAndUpdateAttachmentStorage(string mediaHash, UploadMediaResult uploadResult)
+        {
+            if (uploadResult.ErrorCode == 0)
+            {
+                await _attachmentStorage.SaveAsync(mediaHash, uploadResult).ConfigureAwait(false);
+            }
+            else
+            {
+                var exception = new Exception($"{uploadResult}");
+                _logger.LogError(exception, $"Upload media to WeChat failed.");
+                throw exception;
+            }
+        }
+
+        /// <summary>
         /// Upload media data to WeChat.
         /// </summary>
         /// <typeparam name="T">The upload result type.</typeparam>
@@ -777,7 +715,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// <param name="isTemporaryMedia">If upload media as a temporary media.</param>
         /// <param name="timeout">Upload media timeout.</param>
         /// <returns>Uploaded result from WeChat.</returns>
-        private async Task<T> UploadMediaAsync<T>(AttachmentData attachmentData, string url, string type, string mediaHash, bool isTemporaryMedia, int timeout = 30000)
+        private async Task<UploadMediaResult> UploadMediaAsync(AttachmentData attachmentData, string url, string type, string mediaHash, bool isTemporaryMedia, int timeout = 30000)
         {
             try
             {
@@ -799,7 +737,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
 
                     // Additional form is required when upload a forever video.
                     StringContent stringContent = null;
-                    if (isTemporaryMedia == false && type == UploadMediaType.Video)
+                    if (isTemporaryMedia == false && type == MediaTypes.Video)
                     {
                         var additionalForm = string.Format(CultureInfo.InvariantCulture, "{{\"title\":\"{0}\", \"introduction\":\"introduction\"}}", attachmentData.Name);
 
@@ -818,7 +756,12 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                         stringContent.Dispose();
                     }
 
-                    return ConvertBytesToType<T>(response);
+                    if (isTemporaryMedia)
+                    {
+                        return ConvertBytesToType<UploadTemporaryMediaResult>(response);
+                    }
+
+                    return ConvertBytesToType<UploadPersistentMediaResult>(response);
                 }
             }
             catch (Exception ex)

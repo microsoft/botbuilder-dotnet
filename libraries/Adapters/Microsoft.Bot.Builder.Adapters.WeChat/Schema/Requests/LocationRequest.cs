@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Requests
     [XmlRoot("xml")]
     public class LocationRequest : RequestMessage
     {
-        public override RequestMessageType MsgType => RequestMessageType.Location;
+        public override string MsgType => RequestMessageTypes.Location;
 
         /// <summary>
         /// Gets or sets Latitude.

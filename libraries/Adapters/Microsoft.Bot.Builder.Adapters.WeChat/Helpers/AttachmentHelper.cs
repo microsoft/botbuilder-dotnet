@@ -35,50 +35,27 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Helpers
 
         public static byte[] DecodeBase64String(string base64Encoded, out string contentType)
         {
-            contentType = GetContentTypeFromDataUrl(base64Encoded);
+            contentType = null;
 
-            if (string.IsNullOrWhiteSpace(base64Encoded))
-            {
-                return null;
-            }
-
-            // string off header
-            var start = base64Encoded.IndexOf("base64,", StringComparison.InvariantCulture);
-            if (start >= 0)
-            {
-                base64Encoded = base64Encoded.Substring(start + 7).Trim();
-            }
-
-            // base64 length must be multiple of 4
-            if ((base64Encoded.Length % 4) != 0)
-            {
-                return null;
-            }
-
-            try
-            {
-                return Convert.FromBase64String(base64Encoded);
-            }
-            catch (FormatException)
-            {
-                return null;
-            }
-        }
-
-        private static string GetContentTypeFromDataUrl(string dataUrl)
-        {
             // ContentUrl may contain base64 encoded string of form: "data:[<MIME-type>][;charset=<encoding>][;base64],<data>"
-            if (dataUrl?.TrimStart().StartsWith("data:", StringComparison.OrdinalIgnoreCase) == true)
+            if (base64Encoded?.TrimStart().StartsWith("data:", StringComparison.OrdinalIgnoreCase) == true)
             {
-                var start = dataUrl.IndexOf("data:", StringComparison.InvariantCulture) + 5;
-                var end = dataUrl.IndexOfAny(";,".ToArray(), start);
+                var start = base64Encoded.IndexOf("data:", StringComparison.InvariantCulture) + 5;
+                var end = base64Encoded.IndexOfAny(";,".ToArray(), start);
                 if (end > start)
                 {
-                    return dataUrl.Substring(start, end - start).Trim();
+                    contentType = base64Encoded.Substring(start, end - start).Trim();
                 }
             }
 
-            return null;
+            // string off header
+            var headerIndex = base64Encoded.IndexOf("base64,", StringComparison.InvariantCulture);
+            if (headerIndex >= 0)
+            {
+                base64Encoded = base64Encoded.Substring(headerIndex + 7).Trim();
+            }
+
+            return Convert.FromBase64String(base64Encoded);
         }
     }
 }

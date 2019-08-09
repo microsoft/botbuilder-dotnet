@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Helpers
     /// <summary>
     /// Entity related helper class.
     /// </summary>
-    public static class EntityHelper
+    internal static class EntityHelper
     {
         /// <summary>
         /// Get the request message entity from XML.

@@ -3,7 +3,7 @@
 
 namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Responses
 {
-    public static class ResponseMessageType
+    public static class ResponseMessageTypes
     {
         /// <summary>
         /// Text message.

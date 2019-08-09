@@ -7,7 +7,6 @@ using System.Xml.Linq;
 using Microsoft.Bot.Builder.Adapters.WeChat.Helpers;
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Requests;
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Requests.Events;
-using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Requests.Events.Common;
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Responses;
 using Microsoft.Extensions.Logging;
 
@@ -24,35 +23,34 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema
         public static IRequestMessageBase GetRequestEntity(XDocument doc, ILogger logger)
         {
             IRequestMessageBase requestMessage = null;
-            RequestMessageType msgType;
 
             try
             {
-                msgType = MsgTypeHelper.GetRequestMsgType(doc);
+                var msgType = GetRequestMsgTypeString(doc);
                 switch (msgType)
                 {
-                    case RequestMessageType.Location:
+                    case RequestMessageTypes.Location:
                         requestMessage = EntityHelper.FillEntityWithXml<LocationRequest>(doc);
                         break;
-                    case RequestMessageType.Image:
+                    case RequestMessageTypes.Image:
                         requestMessage = EntityHelper.FillEntityWithXml<ImageRequest>(doc);
                         break;
-                    case RequestMessageType.Link:
+                    case RequestMessageTypes.Link:
                         requestMessage = EntityHelper.FillEntityWithXml<LinkRequest>(doc);
                         break;
-                    case RequestMessageType.Text:
+                    case RequestMessageTypes.Text:
                         requestMessage = EntityHelper.FillEntityWithXml<TextRequest>(doc);
                         break;
-                    case RequestMessageType.Video:
+                    case RequestMessageTypes.Video:
                         requestMessage = EntityHelper.FillEntityWithXml<VideoRequest>(doc);
                         break;
-                    case RequestMessageType.Voice:
+                    case RequestMessageTypes.Voice:
                         requestMessage = EntityHelper.FillEntityWithXml<VoiceRequest>(doc);
                         break;
-                    case RequestMessageType.ShortVideo:
+                    case RequestMessageTypes.ShortVideo:
                         requestMessage = EntityHelper.FillEntityWithXml<ShortVideoRequest>(doc);
                         break;
-                    case RequestMessageType.Event:
+                    case RequestMessageTypes.Event:
                         switch (doc.Root.Element("Event").Value)
                         {
                             case EventTypes.Enter:
@@ -103,44 +101,6 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema
                             case EventTypes.ViewMiniProgram:
                                 requestMessage = EntityHelper.FillEntityWithXml<ViewMiniProgramEvent>(doc);
                                 break;
-
-                                /* Not support right now
-                                case "CARD_PASS_CHECK":
-                                    requestMessage = EntityHelper.FillEntityWithXml<CardReviewSuccessfulEvent>(doc);
-                                    break;
-                                case "CARD_NOT_PASS_CHECK":
-                                    requestMessage = EntityHelper.FillEntityWithXml<CardReviewFailedEvent>(doc);
-                                    break;
-                                case "USER_GET_CARD":
-                                    requestMessage = EntityHelper.FillEntityWithXml<CardCollectedEvent>(doc);
-                                    break;
-                                case "USER_DEL_CARD":
-                                    requestMessage = EntityHelper.FillEntityWithXml<CardDeletedEvent>(doc);
-                                    break;
-                                case "USER_GIFTING_CARD":
-                                    requestMessage = EntityHelper.FillEntityWithXml<CardGiftingEvent>(doc);
-                                    break;
-                                case "USER_CONSUME_CARD":
-                                    requestMessage = EntityHelper.FillEntityWithXml<RemoveAfterUseEvent>(doc);
-                                    break;
-                                case "USER_VIEW_CARD":
-                                    requestMessage = EntityHelper.FillEntityWithXml<ViewCardEvent>(doc);
-                                    break;
-                                case "UPDATE_MEMBER_CARD":
-                                    requestMessage = EntityHelper.FillEntityWithXml<MemberCardUpdatedEvent>(doc);
-                                    break;
-                                case "CARD_SKU_REMIND":
-                                    requestMessage = EntityHelper.FillEntityWithXml<CardLowInStockEvent>(doc);
-                                    break;
-                                case "CARD_PAY_ORDER":
-                                    requestMessage = EntityHelper.FillEntityWithXml<CardPointChangeEvent>(doc);
-                                    break;
-                                case "SUBMIT_MEMBERCARD_USER_INFO":
-                                    requestMessage = EntityHelper.FillEntityWithXml<MemberShipActivatedEvent>(doc);
-                                    break;
-                                */
-
-                                // TODO: kf, verify, WeApp, Wxa
                         }
 
                         break;
@@ -173,22 +133,22 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema
             {
                 switch (responseMessage.MsgType)
                 {
-                    case ResponseMessageType.Text:
+                    case ResponseMessageTypes.Text:
                         responseXmlString = EntityHelper.ConvertEntityToXmlString<TextResponse>(responseMessage);
                         break;
-                    case ResponseMessageType.Image:
+                    case ResponseMessageTypes.Image:
                         responseXmlString = EntityHelper.ConvertEntityToXmlString<ImageResponse>(responseMessage);
                         break;
-                    case ResponseMessageType.Voice:
+                    case ResponseMessageTypes.Voice:
                         responseXmlString = EntityHelper.ConvertEntityToXmlString<VoiceResponse>(responseMessage);
                         break;
-                    case ResponseMessageType.Video:
+                    case ResponseMessageTypes.Video:
                         responseXmlString = EntityHelper.ConvertEntityToXmlString<VideoResponse>(responseMessage);
                         break;
-                    case ResponseMessageType.Music:
+                    case ResponseMessageTypes.Music:
                         responseXmlString = EntityHelper.ConvertEntityToXmlString<MusicResponse>(responseMessage);
                         break;
-                    case ResponseMessageType.News:
+                    case ResponseMessageTypes.News:
                         responseXmlString = EntityHelper.ConvertEntityToXmlString<NewsResponse>(responseMessage);
                         break;
                 }
@@ -199,6 +159,22 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema
             }
 
             return responseXmlString;
+        }
+
+        /// <summary>
+        /// Return RequestMessageType based on xml info.
+        /// </summary>
+        /// <param name="requestMessageDocument">Xml document.</param>
+        /// <returns>Request message type string.</returns>
+        private static string GetRequestMsgTypeString(XDocument requestMessageDocument)
+        {
+            if (requestMessageDocument == null || requestMessageDocument.Root == null || requestMessageDocument.Root.Element("MsgType") == null)
+            {
+                // Enum ToString(IFormatProvider provider) is obsolete.
+                return RequestMessageTypes.Unknown;
+            }
+
+            return requestMessageDocument.Root.Element("MsgType").Value;
         }
     }
 }

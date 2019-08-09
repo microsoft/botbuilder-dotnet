@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Requests
     [XmlRoot("xml")]
     public class TextRequest : RequestMessage
     {
-        public override RequestMessageType MsgType => RequestMessageType.Text;
+        public override string MsgType => RequestMessageTypes.Text;
 
         [XmlElement(ElementName = "Content")]
         public string Content { get; set; }
