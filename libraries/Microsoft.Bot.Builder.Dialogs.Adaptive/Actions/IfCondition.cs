@@ -55,7 +55,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             if (dc is SequenceContext planning)
             {
                 var (value, error) = condition.TryEvaluate(dc.State);
-                var conditionResult = error == null && (bool)value;
+                var conditionResult = error == null && value != null && (bool)value;
 
                 var actions = new List<IDialog>();
                 if (conditionResult == true)

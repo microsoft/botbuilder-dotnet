@@ -4,6 +4,7 @@ using System.Linq;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Events;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Form
@@ -14,7 +15,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
         {
             InputSchema = inputSchema;
             OutputSchema = outputSchema;
-            Selector = new SlotMapSelector(outputSchema);
+            Selector = new FirstSelector();  // new SlotMapSelector(outputSchema);
 
             if (outputSchema.Schema["type"].Value<string>() != "object")
             {
@@ -76,10 +77,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
         // Should this be a flat set of rules?
         protected void GenerateRules()
         {
+            AddEvent(new OnMessageActivity
+            {
+                Actions = new List<IDialog>
+                {
+                    MemoryTest()
+                }
+            });
+            /*
             foreach (var child in OutputSchema.Property.Children)
             {
                 GenerateRules(child);
             }
+            */
         }
 
         protected void GenerateRules(PropertySchema property)
@@ -144,10 +154,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                     {
                         Actions = new List<IDialog>
                         {
-                            new BeginDialog("test")
+                            new IfCondition
                             {
-
-                            }
+                                Condition = $"dialog.isChild",
+                                Actions = new List<IDialog>
+                                {
+                                    new SendActivity("inChild")
+                                },
+                                ElseActions = new List<IDialog>
+                                {
+                                    new SetProperty {
+                                        Property = "dialog.ischild",
+                                        Value = "true"
+                                    },
+                                    new BeginDialog("test")
+                                }
+                            },
                         }
                     }
                 }
