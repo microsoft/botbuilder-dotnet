@@ -133,15 +133,16 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
             {
                 Expression result;
                 var symbol = context.GetText();
-                if (symbol == "false")
+                var normalized = symbol.ToLower();
+                if (normalized == "false")
                 {
                     result = Expression.ConstantExpression(false);
                 }
-                else if (symbol == "true")
+                else if (normalized == "true")
                 {
                     result = Expression.ConstantExpression(true);
                 }
-                else if (symbol == "null")
+                else if (normalized == "null")
                 {
                     result = Expression.ConstantExpression(null);
                 }
