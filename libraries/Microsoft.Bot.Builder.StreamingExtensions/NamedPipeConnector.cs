@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.BotFramework;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
@@ -72,7 +73,7 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
         /// <param name="bot">The bot to use when processing messages.</param>
         /// <param name="middleware">The middleware the bot will execute as part of the pipeline.</param>
         /// <param name="onTurnError">Callback to execute when an error occurs while executing the pipeline.</param>
-        public void InitializeNamedPipeServer(IBot bot, IList<IMiddleware> middleware = null, Func<ITurnContext, Exception, Task> onTurnError = null)
+        public void InitializeNamedPipeServer(ConfigurationCredentialProvider configurationCredentialProvider, IBot bot, IList<IMiddleware> middleware = null, Func<ITurnContext, Exception, Task> onTurnError = null)
         {
             if (bot == null)
             {
@@ -80,7 +81,7 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
             }
 
             middleware = middleware ?? new List<IMiddleware>();
-            var handler = new StreamingRequestHandler(onTurnError, bot, middleware);
+            var handler = new StreamingRequestHandler(configurationCredentialProvider, onTurnError, bot, middleware);
             StartServer(handler);
         }
 

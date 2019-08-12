@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.StreamingExtensions;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json.Linq;
@@ -148,7 +149,18 @@ namespace Microsoft.Bot.Builder.Dialogs
             else
             {
                 // Prompt user to login
-                await SendOAuthCardAsync(dc.Context, opt?.Prompt, cancellationToken).ConfigureAwait(false);
+                await this.SendOAuthCardAsync(dc.Context, opt?.Prompt, cancellationToken).ConfigureAwait(false);
+
+                // Begin polling for token
+                if (dc.Context.Adapter is BotFrameworkStreamingExtensionsAdapter botFrameworkStreamingExtensionsAdapter)
+                {
+                    var tokenResponse = await botFrameworkStreamingExtensionsAdapter.StartPollingForToken(dc.Context, _settings.ConnectionName, null, (int)_settings.Timeout, cancellationToken).ConfigureAwait(false);
+                    {
+                        // Return token
+                        return await dc.EndDialogAsync(tokenResponse, cancellationToken).ConfigureAwait(false);
+                    }
+                }
+
                 return Dialog.EndOfTurn;
             }
         }
