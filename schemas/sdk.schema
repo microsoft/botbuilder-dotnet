@@ -4181,7 +4181,7 @@
                     "type": "string",
                     "enum": [
                         "float",
-                        "interger"
+                        "integer"
                     ],
                     "title": "Output Format",
                     "description": "The NumberInput output format.",
