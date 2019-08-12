@@ -19,7 +19,6 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Description>Classes for using QnA Maker Cognitive Service on the Microsoft Bot Builder SDK</Description>
     <Summary>This library implements C# classes for building bots using Microsoft Cognitive services.</Summary>
-    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>

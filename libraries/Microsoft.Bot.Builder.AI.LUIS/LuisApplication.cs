@@ -31,7 +31,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <summary>
         /// Initializes a new instance of the <see cref="LuisApplication"/> class.
         /// </summary>
-        /// <param name="service">LUIS coonfiguration.</param>
+        /// <param name="service">LUIS configuration.</param>
         public LuisApplication(LuisService service)
             : this((service.AppId, service.SubscriptionKey, service.GetEndpoint()))
         {
@@ -50,7 +50,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
         {
             var (applicationId, endpointKey, endpoint) = props;
 
-            if (!Guid.TryParse(applicationId, out var appGuid))
+            if (!Guid.TryParse(applicationId, out var _))
             {
                 throw new ArgumentException($"\"{applicationId}\" is not a valid LUIS application id.");
             }

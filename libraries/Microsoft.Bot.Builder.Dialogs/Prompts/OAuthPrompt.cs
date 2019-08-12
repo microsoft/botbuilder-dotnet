@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     ///
     /// - The automatic signin flow where once the user signs in and the SSO service will forward the bot
     /// the users access token using either an `event` or `invoke` activity.
-    /// - The "magic code" flow where where once the user signs in they will be prompted by the SSO
+    /// - The "magic code" flow where once the user signs in they will be prompted by the SSO
     /// service to send the bot a six digit code confirming their identity. This code will be sent as a
     /// standard `message` activity.
     ///
@@ -108,12 +108,12 @@ namespace Microsoft.Bot.Builder.Dialogs
                     opt = options as PromptOptions;
                     if (opt.Prompt != null && string.IsNullOrEmpty(opt.Prompt.InputHint))
                     {
-                        opt.Prompt.InputHint = InputHints.ExpectingInput;
+                        opt.Prompt.InputHint = InputHints.AcceptingInput;
                     }
 
                     if (opt.RetryPrompt != null && string.IsNullOrEmpty(opt.RetryPrompt.InputHint))
                     {
-                        opt.RetryPrompt.InputHint = InputHints.ExpectingInput;
+                        opt.RetryPrompt.InputHint = InputHints.AcceptingInput;
                     }
                 }
                 else
@@ -330,7 +330,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             // Set input hint
             if (string.IsNullOrEmpty(prompt.InputHint))
             {
-                prompt.InputHint = InputHints.ExpectingInput;
+                prompt.InputHint = InputHints.AcceptingInput;
             }
 
             await turnContext.SendActivityAsync(prompt, cancellationToken).ConfigureAwait(false);

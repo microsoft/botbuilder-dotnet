@@ -23,13 +23,13 @@ namespace Microsoft.Bot.Builder.Testing.Tests.XUnit
         public async Task ShouldLogIncomingAndOutgoingMessageActivities(string utterance, string textReply, string speakReply, string inputHint)
         {
             var mockOutput = new MockTestOutputHelper();
-            var sut = new XUnitOutputMiddleware(mockOutput);
+            var sut = new XUnitDialogTestLogger(mockOutput);
             var testClient = new DialogTestClient(Channels.Test, new EchoDialog(textReply, speakReply, inputHint), null, new List<IMiddleware> { sut });
             await testClient.SendActivityAsync<IMessageActivity>(utterance);
 
             Assert.Equal("\r\nUser:  Hi", mockOutput.Output[0]);
             Assert.StartsWith("       -> ts: ", mockOutput.Output[1]);
-            Assert.StartsWith($"\r\nBot:   Text={textReply}\r\n       Speak={speakReply}\r\n       InputHint={inputHint}", mockOutput.Output[2]);
+            Assert.StartsWith($"\r\nBot:   Text = {textReply}\r\n       Speak = {speakReply}\r\n       InputHint = {inputHint}", mockOutput.Output[2]);
             Assert.StartsWith("       -> ts: ", mockOutput.Output[3]);
             Assert.Contains("elapsed", mockOutput.Output[3]);
         }
@@ -52,7 +52,7 @@ namespace Microsoft.Bot.Builder.Testing.Tests.XUnit
         public async Task ShouldLogOtherIncomingAndOutgoingActivitiesAsRawJson(string activityType)
         {
             var mockOutput = new MockTestOutputHelper();
-            var sut = new XUnitOutputMiddleware(mockOutput);
+            var sut = new XUnitDialogTestLogger(mockOutput);
             var testClient = new DialogTestClient(Channels.Test, new EchoDialog(), null, new List<IMiddleware> { sut });
 
             var activity = new Activity(activityType);

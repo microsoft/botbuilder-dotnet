@@ -187,7 +187,7 @@ namespace Microsoft.Bot.Builder.Adapters
                 {
                     // The BotFrameworkAdapter and Console adapter implement this
                     // hack directly in the POST method. Replicating that here
-                    // to keep the behavior as close as possible to facillitate
+                    // to keep the behavior as close as possible to facilitate
                     // more realistic tests.
                     var delayMs = (int)activity.Value;
 
@@ -298,7 +298,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
-        /// <remarks>This resets the <see cref="ActiveQueue"/>, and does not maintain multiple converstion queues.</remarks>
+        /// <remarks>This resets the <see cref="ActiveQueue"/>, and does not maintain multiple conversation queues.</remarks>
         public Task CreateConversationAsync(string channelId, BotCallbackHandler callback, CancellationToken cancellationToken)
         {
             ActiveQueue.Clear();
@@ -502,7 +502,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// </summary>
         /// <param name="context">The turnContext (with a valid Activity).</param>
         /// <param name="userId">The user id.</param>
-        /// <param name="includeFilter">Optional comma seperated list of connection's to include. Blank will return token status for all configured connections.</param>
+        /// <param name="includeFilter">Optional comma separated list of connection's to include. Blank will return token status for all configured connections.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>Array of TokenStatus.</returns>
         public virtual Task<TokenStatus[]> GetTokenStatusAsync(ITurnContext context, string userId, string includeFilter = null, CancellationToken cancellationToken = default(CancellationToken))
@@ -531,7 +531,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <param name="resourceUrls">The list of AAD resource URLs.</param>
         /// <param name="userId">The user ID.</param>
         /// <param name="cancellationToken">The cancellationToken.</param>
-        /// <returns>The dicitonary of TokenResponses for each resource URL.</returns>
+        /// <returns>The dictionary of TokenResponses for each resource URL.</returns>
         public virtual Task<Dictionary<string, TokenResponse>> GetAadTokensAsync(ITurnContext context, string connectionName, string[] resourceUrls, string userId = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             return Task.FromResult(new Dictionary<string, TokenResponse>());

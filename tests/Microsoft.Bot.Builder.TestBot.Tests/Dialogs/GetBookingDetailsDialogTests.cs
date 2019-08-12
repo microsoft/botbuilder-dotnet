@@ -29,7 +29,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
             // Arrange
             var bookingTestData = testData.GetObject<GetBookingDetailsDialogTestCase>();
             var sut = new GetBookingDetailsDialog();
-            var testClient = new DialogTestClient(Channels.Test, sut, bookingTestData.InitialBookingDetails, new[] { new XUnitOutputMiddleware(Output) });
+            var testClient = new DialogTestClient(Channels.Test, sut, bookingTestData.InitialBookingDetails, new[] { new XUnitDialogTestLogger(Output) });
 
             // Act/Assert
             Output.WriteLine($"Test Case: {bookingTestData.Name}");
@@ -39,11 +39,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
                 Assert.Equal(bookingTestData.UtterancesAndReplies[i, 1], reply?.Text);
             }
 
-            if (testClient.DialogTurnResult.Status == DialogTurnStatus.Cancelled)
-            {
-                Assert.Null(testClient.DialogTurnResult.Result);
-            }
-            else
+            if (testClient.DialogTurnResult.Result != null)
             {
                 var bookingResults = (BookingDetails)testClient.DialogTurnResult.Result;
                 Assert.Equal(bookingTestData.ExpectedBookingDetails.Origin, bookingResults.Origin);

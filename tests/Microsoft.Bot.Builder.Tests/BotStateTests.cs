@@ -169,7 +169,7 @@ namespace Microsoft.Bot.Builder.Tests
         [Description("Cannot get a bool with no default set")]
         public async Task State_bool_NoDefault()
         {
-            // Arange
+            // Arrange
             var dictionary = new Dictionary<string, JObject>();
             var userState = new UserState(new MemoryStorage(dictionary));
             var context = TestUtilities.CreateEmptyContext();
@@ -583,33 +583,36 @@ namespace Microsoft.Bot.Builder.Tests
             await new TestFlow(
                 adapter,
                 async (context, cancellationToken) =>
-                {
-                    var botStateManager = new TestBotState(new MemoryStorage());
+                    {
+                        var botStateManager = new TestBotState(new MemoryStorage());
 
-                    var testProperty = botStateManager.CreateProperty<CustomState>("test");
+                        var testProperty = botStateManager.CreateProperty<CustomState>("test");
 
-                    // read initial state object
-                    await botStateManager.LoadAsync(context);
+                        // read initial state object
+                        await botStateManager.LoadAsync(context);
 
-                    var customState = await testProperty.GetAsync(context, () => new CustomState());
+                        var customState = await testProperty.GetAsync(context, () => new CustomState());
 
-                    // this should be a 'new CustomState' as nothing is currently stored in storage
-                    Assert.Equals(customState, new CustomState());
+                        // this should be a 'new CustomState' as nothing is currently stored in storage
+                        Assert.IsNotNull(customState);
+                        Assert.IsInstanceOfType(customState, typeof(CustomState));
+                        Assert.IsNull(customState.CustomString);
 
-                    // amend property and write to storage
-                    customState.CustomString = "test";
-                    await botStateManager.SaveChangesAsync(context);
+                        // amend property and write to storage
+                        customState.CustomString = "test";
+                        await botStateManager.SaveChangesAsync(context);
 
-                    customState.CustomString = "asdfsadf";
+                        customState.CustomString = "asdfsadf";
 
-                    // read into context again
-                    await botStateManager.LoadAsync(context);
+                        // read into context again
+                        await botStateManager.LoadAsync(context, force: true);
 
-                    customState = await testProperty.GetAsync(context);
+                        customState = await testProperty.GetAsync(context);
 
-                    // check object read from value has the correct value for CustomString
-                    Assert.Equals(customState.CustomString, "test");
-                })
+                        // check object read from value has the correct value for CustomString
+                        Assert.AreEqual("test", customState.CustomString);
+                    })
+                .Send(new Activity() { Type = ActivityTypes.ConversationUpdate })
                 .StartTestAsync();
         }
 

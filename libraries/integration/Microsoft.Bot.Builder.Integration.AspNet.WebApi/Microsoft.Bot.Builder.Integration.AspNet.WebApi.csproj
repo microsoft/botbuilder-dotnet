@@ -25,8 +25,7 @@
 	<PropertyGroup>		
 		<AssemblyName>Microsoft.Bot.Builder.Integration.AspNet.WebApi</AssemblyName>
 		<RootNamespace>Microsoft.Bot.Builder.Integration.AspNet.NetFx</RootNamespace>
-		<LangVersion>latest</LangVersion>
-	</PropertyGroup>
+  </PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
 		<DocumentationFile>bin\$(Configuration)\net461\Microsoft.Bot.Builder.Integration.AspNet.WebApi.xml</DocumentationFile>		
@@ -37,7 +36,6 @@
 		<PackageReference Include="Microsoft.AspNet.WebApi" Version="5.2.6" />
     <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(PackageVersion)' == '' " Version="4.0.0-local" />
     <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(PackageVersion)' != '' " Version="$(PackageVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.1.1" />
     <PackageReference Include="SourceLink.Create.CommandLine" Version="2.8.3" />
   </ItemGroup>
 

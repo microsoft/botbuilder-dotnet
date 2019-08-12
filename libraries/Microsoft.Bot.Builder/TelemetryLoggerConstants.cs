@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Builder
     /// </summary>
     public static class TelemetryLoggerConstants
     {
-        // The name of the event when when new message is received from the user.
+        // The name of the event when a new message is received from the user.
         public static readonly string BotMsgReceiveEvent = "BotMessageReceived";
 
         // The name of the event when logged when a message is sent from the bot to the user.

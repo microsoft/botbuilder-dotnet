@@ -243,7 +243,7 @@ namespace Microsoft.Bot.Connector
         /// Get the raw signin link to be sent to the user for signin for a connection name.
         /// </summary>
         /// <param name="state">A serialized and encoded parameter of a TokenExchangeState parameter.</param>
-        /// <param name="finalRedirect">The endpoint URL for the final page of a succesful login attempt.</param>
+        /// <param name="finalRedirect">The endpoint URL for the final page of a successful login attempt.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
@@ -316,7 +316,7 @@ namespace Microsoft.Bot.Connector
         /// Get the status of tokens for connections for this bot for a particular user.
         /// </summary>
         /// <param name="userId">User id.</param>
-        /// <param name="includeFilter">A comma seperated list of connections to include. If null, then all connections are returned.</param>
+        /// <param name="includeFilter">A comma separated list of connections to include. If null, then all connections are returned.</param>
         /// <param name="cancellationToken">Cancellation Token.</param>
         /// <returns>TokenStatus.</returns>
         public async Task<TokenStatus[]> GetTokenStatusAsync(string userId, string includeFilter = null, CancellationToken cancellationToken = default(CancellationToken))

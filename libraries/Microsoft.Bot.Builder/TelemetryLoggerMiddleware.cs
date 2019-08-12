@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder
         /// Initializes a new instance of the <see cref="TelemetryLoggerMiddleware"/> class.
         /// </summary>
         /// <param name="telemetryClient">The IBotTelemetryClient implementation used for registering telemetry events.</param>
-        /// <param name="logPersonalInformation"> (Optional) TRUE to include personally indentifiable information.</param>
+        /// <param name="logPersonalInformation"> (Optional) TRUE to include personally identifiable information.</param>
         public TelemetryLoggerMiddleware(IBotTelemetryClient telemetryClient, bool logPersonalInformation = false)
         {
             TelemetryClient = telemetryClient ?? new NullBotTelemetryClient();

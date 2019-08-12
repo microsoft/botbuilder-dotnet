@@ -33,7 +33,7 @@ namespace Microsoft.Bot.Builder.Tests
         {
             var a = new TestAdapter();
             var c = new TurnContext(a, null);
-            Assert.Fail("Should Fail due to null Activty");
+            Assert.Fail("Should Fail due to null Activity");
         }
 
         [TestMethod]
