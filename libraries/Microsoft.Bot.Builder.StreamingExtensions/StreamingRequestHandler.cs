@@ -7,11 +7,14 @@ using System.Net;
 using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.BotFramework;
 using Microsoft.Bot.Connector;
+using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.StreamingExtensions;
 using Microsoft.Bot.StreamingExtensions.Transport;
 using Microsoft.Bot.StreamingExtensions.Transport.NamedPipes;
 using Microsoft.Bot.StreamingExtensions.Transport.WebSockets;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -35,6 +38,8 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
         private readonly Func<ITurnContext, Exception, Task> _onTurnError;
 
         private readonly IServiceProvider _services;
+
+        private readonly ICredentialProvider _credentialProvider;
 
 #if DEBUG
         public
@@ -62,12 +67,13 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
         /// <param name="onTurnError">Optional function to perform on turn errors.</param>
         /// <param name="bot">The <see cref="IBot"/> to be used for all requests to this handler.</param>
         /// <param name="middlewareSet">An optional set of middleware to register with the bot.</param>
-        public StreamingRequestHandler(Func<ITurnContext, Exception, Task> onTurnError, IBot bot, IList<IMiddleware> middlewareSet = null)
+        public StreamingRequestHandler(ConfigurationCredentialProvider configurationCredentialProvider, Func<ITurnContext, Exception, Task> onTurnError, IBot bot, IList<IMiddleware> middlewareSet = null)
         {
             _onTurnError = onTurnError;
             _bot = bot ?? throw new ArgumentNullException(nameof(bot));
             _middlewareSet = middlewareSet ?? new List<IMiddleware>();
             _userAgent = GetUserAgent();
+            _credentialProvider = configurationCredentialProvider;
         }
 
         /// <summary>
@@ -85,6 +91,19 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
             _services = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
             _middlewareSet = middlewareSet ?? new List<IMiddleware>();
             _userAgent = GetUserAgent();
+            _credentialProvider = GetCredentialProider();
+        }
+
+        private ICredentialProvider GetCredentialProider()
+        {
+            // First check if an IBot type definition is available from the service provider.
+            if (_services != null)
+            {
+                var conf = _services.GetService<ICredentialProvider>();
+                return conf;
+            }
+
+            return default(ConfigurationCredentialProvider);
         }
 
         /// <summary>
@@ -198,7 +217,8 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
 
             try
             {
-                var adapter = new BotFrameworkStreamingExtensionsAdapter(_transportServer, _middlewareSet, logger);
+                AuthenticationConfiguration authConfig = new AuthenticationConfiguration();
+                var adapter = new BotFrameworkStreamingExtensionsAdapter(_credentialProvider, authConfig, _transportServer, _middlewareSet, logger);
                 IBot bot = null;
 
                 // First check if an IBot type definition is available from the service provider.
