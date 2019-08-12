@@ -827,9 +827,7 @@ namespace Microsoft.Bot.Builder
         {
             if (reference.Conversation != null)
             {
-                var typeOfDynamic = reference.Conversation.GetType();
-                var tenantProperty = typeOfDynamic.GetProperty("TenantId");
-                var tenantId = tenantProperty?.GetValue(reference.Conversation, null);
+                var tenantId = reference.Conversation.TenantId;
 
                 if (tenantId != null)
                 {
