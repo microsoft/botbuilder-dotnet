@@ -94,6 +94,11 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.TestBot
                     // Display a VideoCard
                     reply.Attachments.Add(Cards.GetVideoCard().ToAttachment());
                     break;
+                case "Adaptive Card":
+                    // Display a VideoCard
+                    reply.Text = "adaptive card";
+                    reply.Attachments.Add(Cards.CreateAdaptiveCardAttachment());
+                    break;
                 default:
                     // Give the user instructions about what to do next
                     await stepContext.Context.SendActivityAsync(MessageFactory.Text("Type anything to see another card."), cancellationToken);
@@ -120,6 +125,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.TestBot
                 new Choice() { Value = "Signin Card", Synonyms = new List<string>() { "signin" } },
                 new Choice() { Value = "Thumbnail Card", Synonyms = new List<string>() { "thumbnail", "thumb" } },
                 new Choice() { Value = "Video Card", Synonyms = new List<string>() { "video" } },
+                new Choice() { Value = "Adaptive Card", Synonyms = new List<string>() { "adaptive" } },
             };
 
             return cardOptions;

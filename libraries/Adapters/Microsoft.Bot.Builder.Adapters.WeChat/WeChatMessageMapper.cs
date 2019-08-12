@@ -9,6 +9,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using AdaptiveCards;
 using AdaptiveCards.Rendering.Html;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Bot.Builder.Adapters.WeChat.Extensions;
 using Microsoft.Bot.Builder.Adapters.WeChat.Helpers;
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema;
@@ -747,17 +748,17 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         private static string GetFixedMeidaType(string type)
         {
             var fixedType = string.Empty;
-            if (type.Contains(MediaTypes.Image))
+            if (type.IndexOf(MediaTypes.Image, StringComparison.InvariantCultureIgnoreCase) >= 0)
             {
                 fixedType = MediaTypes.Image;
             }
 
-            if (type.Contains(MediaTypes.Video))
+            if (type.IndexOf(MediaTypes.Video, StringComparison.InvariantCultureIgnoreCase) >= 0)
             {
                 fixedType = MediaTypes.Video;
             }
 
-            if (type.Contains(MediaTypes.Audio))
+            if (type.IndexOf(MediaTypes.Voice, StringComparison.InvariantCultureIgnoreCase) >= 0)
             {
                 fixedType = MediaTypes.Voice;
             }
@@ -802,23 +803,35 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// Create WeChat news instance from the given adaptive card.
         /// </summary>
         /// <param name="activity">Message activity received from bot.</param>
-        /// <param name="card">Adaptive card instance.</param>
+        /// <param name="adaptiveCard">Adaptive card instance.</param>
         /// <param name="title">Title or name of the card attachment.</param>
         /// <returns>A <seealso cref="News"/> converted from adaptive card.</returns>
-        private async Task<News> CreateNewsFromAdaptiveCard(IMessageActivity activity, AdaptiveCard card, string title)
+        private async Task<News> CreateNewsFromAdaptiveCard(IMessageActivity activity, AdaptiveCard adaptiveCard, string title)
         {
             try
             {
+                if (adaptiveCard.BackgroundImage == null)
+                {
+                    throw new ArgumentException("Background image is required.", nameof(adaptiveCard));
+                }
+
                 var renderer = new AdaptiveCardRenderer();
                 var schemaVersion = renderer.SupportedSchemaVersion;
-
-                foreach (var element in card.Body)
+                var thumbMediaId = string.Empty;
+                foreach (var element in adaptiveCard.Body)
                 {
                     await ReplaceAdaptiveImageUri(element).ConfigureAwait(false);
                 }
 
+                if (adaptiveCard.BackgroundImage != null)
+                {
+                    var titleImageUrl = adaptiveCard.BackgroundImage.AbsoluteUri;
+                    var attachmentData = await CreateAttachmentDataAsync(title ?? activity.Text, titleImageUrl, MediaTypes.Image).ConfigureAwait(false);
+                    thumbMediaId = (await _wechatClient.UploadMediaAsync(attachmentData, false).ConfigureAwait(false)).MediaId;
+                }
+
                 // Render the card
-                var renderedCard = renderer.RenderCard(card);
+                var renderedCard = renderer.RenderCard(adaptiveCard);
 
                 // Get the output HTML
                 var html = renderedCard.Html;
@@ -832,13 +845,14 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 var news = new News
                 {
                     Author = activity.From.Name,
-                    Description = card.Speak ?? card.FallbackText,
+                    Description = adaptiveCard.Speak ?? adaptiveCard.FallbackText,
                     Content = html.ToString(),
                     Title = title ?? new Guid().ToString(),
 
                     // Set not should cover, because adaptive card don't have a cover.
                     ShowCoverPicture = "0",
                     ContentSourceUrl = DefaultContentUrl,
+                    ThumbMediaId = thumbMediaId,
                 };
 
                 // WeChat news don't support background image.
@@ -883,6 +897,13 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
             else if (element is AdaptiveContainer container)
             {
                 foreach (var item in container.Items)
+                {
+                    await ReplaceAdaptiveImageUri(item).ConfigureAwait(false);
+                }
+            }
+            else if (element is AdaptiveColumnSet columnSet)
+            {
+                foreach (var item in columnSet.Columns)
                 {
                     await ReplaceAdaptiveImageUri(item).ConfigureAwait(false);
                 }
@@ -943,7 +964,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 var news = await CreateNewsFromAdaptiveCard(activity, adaptiveCard, name).ConfigureAwait(false);
 
                 // TODO: Upload news image must be persistent media.
-                var uploadResult = await _wechatClient.UploadNewsAsync(new News[] { news }, _uploadTemporaryMedia).ConfigureAwait(false);
+                var uploadResult = await _wechatClient.UploadNewsAsync(new News[] { news }, false).ConfigureAwait(false);
                 var mpnews = new MPNewsResponse(uploadResult.MediaId);
                 messages.Add(mpnews);
             }

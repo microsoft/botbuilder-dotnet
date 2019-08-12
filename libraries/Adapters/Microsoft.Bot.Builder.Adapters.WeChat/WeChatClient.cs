@@ -12,7 +12,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema;
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema.JsonResults;
-using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Requests.Events;
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Responses;
 using Microsoft.Bot.Builder.Adapters.WeChat.Storage;
 using Microsoft.Bot.Schema;

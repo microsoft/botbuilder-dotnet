@@ -18,6 +18,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.TestBot
 
             var adaptiveCardAttachment = new Attachment()
             {
+                Name = "adaptive card",
                 ContentType = "application/vnd.microsoft.card.adaptive",
                 Content = JsonConvert.DeserializeObject(adaptiveCardJson),
             };
