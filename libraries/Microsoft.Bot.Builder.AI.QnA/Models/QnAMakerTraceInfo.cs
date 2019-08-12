@@ -75,5 +75,14 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// </value>
         [JsonProperty("metadataBoost")]
         public Metadata[] MetadataBoost { get; set; }
+
+        /// <summary>
+        /// Gets or sets context for multi-turn responses.
+        /// </summary>
+        /// <value>
+        /// The context from which the QnA was extracted.
+        /// </value>
+        [JsonProperty("context")]
+        public QnARequestContext Context { get; set; }
     }
 }
