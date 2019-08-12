@@ -290,101 +290,6 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         }
 
         /// <summary>
-        /// Create a News instance use hero card.
-        /// </summary>
-        /// <param name="activity">Message activity received from bot.</param>
-        /// <param name="heroCard">Hero card instance.</param>
-        /// <returns>A new instance of News create by hero card.</returns>
-        public async Task<News> CreateNewsFromHeroCard(IMessageActivity activity, HeroCard heroCard)
-        {
-            // Add text
-            var news = new News
-            {
-                Author = activity.From.Name,
-                Description = heroCard.Subtitle,
-                Content = heroCard.Text,
-                Title = heroCard.Title,
-                ShowCoverPicture = heroCard.Images.Count > 0 ? "1" : "0",
-
-                // Hero card don't have original url, but it's required by WeChat.
-                // Set a default value instead.
-                ContentSourceUrl = DefaultContentUrl,
-            };
-
-            foreach (var image in heroCard.Images ?? new List<CardImage>())
-            {
-                // MP news image is required and can not be a temporary media.
-                var mediaMessage = await MediaContentToWeChatResponse(activity, image.Alt, image.Url, MediaTypes.Image).ConfigureAwait(false);
-                news.ThumbMediaId = (mediaMessage as ImageResponse).Image.MediaId;
-                news.ThumbUrl = image.Url;
-            }
-
-            return news;
-        }
-
-        public async Task<News> CreateNewsFromAdaptiveCard(IMessageActivity activity, AdaptiveCard card, string title)
-        {
-            try
-            {
-                var renderer = new AdaptiveCardRenderer();
-                var schemaVersion = renderer.SupportedSchemaVersion;
-
-                // TODO: should upload all media.
-                foreach (var element in card.Body)
-                {
-                    if (element is AdaptiveMedia adaptiveMedia)
-                    {
-                        foreach (var media in adaptiveMedia.Sources)
-                        {
-                            var attachmentData = await CreateAttachmentDataAsync(adaptiveMedia.AltText ?? adaptiveMedia.Id, media.Url, media.MimeType).ConfigureAwait(false);
-                            var uploadResult = await _wechatClient.UploadMediaAsync(attachmentData, false).ConfigureAwait(false) as UploadPersistentMediaResult;
-                            media.Url = uploadResult.Url;
-                        }
-                    }
-                }
-
-                // Render the card
-                var renderedCard = renderer.RenderCard(card);
-
-                // Get the output HTML
-                var html = renderedCard.Html;
-
-                // (Optional) Check for any renderer warnings
-                // This includes things like an unknown element type found in the card
-                // Or the card exceeded the maximum number of supported actions, etc
-                var warnings = renderedCard.Warnings;
-
-                // Add text
-                var news = new News
-                {
-                    Author = activity.From.Name,
-                    Description = card.Speak ?? card.FallbackText,
-                    Content = html.ToString(),
-                    Title = title ?? new Guid().ToString(),
-
-                    // Set not should cover, because adaptive card don't have a cover.
-                    ShowCoverPicture = "0",
-                    ContentSourceUrl = DefaultContentUrl,
-                };
-
-                // WeChat news don't support background image.
-                return news;
-            }
-            catch (AdaptiveException ex)
-            {
-                // Failed rendering
-                _logger.LogError(ex, "Failed to rending adaptive card.");
-                throw;
-            }
-            catch (Exception ex)
-            {
-                // upload graphic message failed.
-                _logger.LogError(ex, "Error when uploading adaptive card.");
-                throw;
-            }
-        }
-
-        /// <summary>
         /// Create a media type response message using mediaId and acitivity.
         /// </summary>
         /// <param name="activity">Activity from bot.</param>
@@ -860,6 +765,136 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
             return fixedType;
         }
 
+        /// <summary>
+        /// Create a News instance use hero card.
+        /// </summary>
+        /// <param name="activity">Message activity received from bot.</param>
+        /// <param name="heroCard">Hero card instance.</param>
+        /// <returns>A new instance of News create by hero card.</returns>
+        private async Task<News> CreateNewsFromHeroCard(IMessageActivity activity, HeroCard heroCard)
+        {
+            // Add text
+            var news = new News
+            {
+                Author = activity.From.Name,
+                Description = heroCard.Subtitle,
+                Content = heroCard.Text,
+                Title = heroCard.Title,
+                ShowCoverPicture = heroCard.Images.Count > 0 ? "1" : "0",
+
+                // Hero card don't have original url, but it's required by WeChat.
+                // Set a default value instead.
+                ContentSourceUrl = DefaultContentUrl,
+            };
+
+            foreach (var image in heroCard.Images ?? new List<CardImage>())
+            {
+                // MP news image is required and can not be a temporary media.
+                var mediaMessage = await MediaContentToWeChatResponse(activity, image.Alt, image.Url, MediaTypes.Image).ConfigureAwait(false);
+                news.ThumbMediaId = (mediaMessage as ImageResponse).Image.MediaId;
+                news.ThumbUrl = image.Url;
+            }
+
+            return news;
+        }
+
+        /// <summary>
+        /// Create WeChat news instance from the given adaptive card.
+        /// </summary>
+        /// <param name="activity">Message activity received from bot.</param>
+        /// <param name="card">Adaptive card instance.</param>
+        /// <param name="title">Title or name of the card attachment.</param>
+        /// <returns>A <seealso cref="News"/> converted from adaptive card.</returns>
+        private async Task<News> CreateNewsFromAdaptiveCard(IMessageActivity activity, AdaptiveCard card, string title)
+        {
+            try
+            {
+                var renderer = new AdaptiveCardRenderer();
+                var schemaVersion = renderer.SupportedSchemaVersion;
+
+                foreach (var element in card.Body)
+                {
+                    await ReplaceAdaptiveImageUri(element).ConfigureAwait(false);
+                }
+
+                // Render the card
+                var renderedCard = renderer.RenderCard(card);
+
+                // Get the output HTML
+                var html = renderedCard.Html;
+
+                // (Optional) Check for any renderer warnings
+                // This includes things like an unknown element type found in the card
+                // Or the card exceeded the maximum number of supported actions, etc
+                var warnings = renderedCard.Warnings;
+
+                // Add text
+                var news = new News
+                {
+                    Author = activity.From.Name,
+                    Description = card.Speak ?? card.FallbackText,
+                    Content = html.ToString(),
+                    Title = title ?? new Guid().ToString(),
+
+                    // Set not should cover, because adaptive card don't have a cover.
+                    ShowCoverPicture = "0",
+                    ContentSourceUrl = DefaultContentUrl,
+                };
+
+                // WeChat news don't support background image.
+                return news;
+            }
+            catch (AdaptiveException ex)
+            {
+                // Failed rendering
+                _logger.LogError(ex, "Failed to rending adaptive card.");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                // upload graphic message failed.
+                _logger.LogError(ex, "Error when uploading adaptive card.");
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// WeChat won't accept the image link outside its domain, recursive upload the image to get the url first.
+        /// </summary>
+        /// <param name="element">Adaptive card element.</param>
+        /// <returns>Task of replace the adaptive card image uri.</returns>
+        private async Task ReplaceAdaptiveImageUri(AdaptiveElement element)
+        {
+            if (element is AdaptiveImage adaptiveImage)
+            {
+                var attachmentData = await CreateAttachmentDataAsync(adaptiveImage.AltText ?? adaptiveImage.Id, adaptiveImage.Url.AbsoluteUri, adaptiveImage.Type).ConfigureAwait(false);
+                var uploadResult = await _wechatClient.UploadNewsImageAsync(attachmentData).ConfigureAwait(false) as UploadPersistentMediaResult;
+                adaptiveImage.Url = new Uri(uploadResult.Url);
+                return;
+            }
+
+            if (element is AdaptiveImageSet imageSet)
+            {
+                foreach (var image in imageSet.Images)
+                {
+                    await ReplaceAdaptiveImageUri(image).ConfigureAwait(false);
+                }
+            }
+            else if (element is AdaptiveContainer container)
+            {
+                foreach (var item in container.Items)
+                {
+                    await ReplaceAdaptiveImageUri(item).ConfigureAwait(false);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Process animation card and convert it to WeChat response messages.
+        /// </summary>
+        /// <param name="activity">Message activity from bot.</param>
+        /// <param name="animationCard">Animation card instance need to be converted.</param>
+        /// <returns>List of WeChat response message.</returns>
         private async Task<IList<IResponseMessageBase>> ProcessAnimationCardAsync(IMessageActivity activity, AnimationCard animationCard)
         {
             var messages = new List<IResponseMessageBase>();
@@ -893,12 +928,12 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         }
 
         /// <summary>
-        /// render a adaptiveCard into text replies for low-fi channels.
+        /// Process adaptive card and convert it into WeChat response messages.
         /// </summary>
         /// <param name="activity">Message activity from bot.</param>
         /// <param name="adaptiveCard">Adaptive card instance need to be converted.</param>
         /// <param name="name">Name of the adaptive card attachment.</param>
-        /// <returns>WeChat response message.</returns>
+        /// <returns>List of WeChat response message.</returns>
         private async Task<IList<IResponseMessageBase>> ProcessAdaptiveCardAsync(IMessageActivity activity, AdaptiveCard adaptiveCard, string name)
         {
             var messages = new List<IResponseMessageBase>();
@@ -928,7 +963,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// </summary>
         /// <param name="activity">Message activity from bot.</param>
         /// <param name="heroCard">Hero card instance need to be converted.</param>
-        /// <returns>WeChat response message.</returns>
+        /// <returns>List of WeChat response message.</returns>
         private async Task<IList<IResponseMessageBase>> ProcessHeroCardAsync(IMessageActivity activity, HeroCard heroCard)
         {
             var messages = new List<IResponseMessageBase>();
@@ -952,7 +987,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// </summary>
         /// <param name="activity">Message activity from bot.</param>
         /// <param name="videoCard">Video card instance need to be converted.</param>
-        /// <returns>WeChat response message.</returns>
+        /// <returns>List of WeChat response message.</returns>
         private async Task<IList<IResponseMessageBase>> ProcessVideoCardAsync(IMessageActivity activity, VideoCard videoCard)
         {
             var messages = new List<IResponseMessageBase>();
@@ -995,7 +1030,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// Convert audio card as music resposne.
         /// Thumbnail image size limitation is not clear.
         /// </summary>
-        /// <returns>List of response message to WeChat.</returns>
+        /// <returns>List of WeChat response message.</returns>
         private async Task<IList<IResponseMessageBase>> ProcessAudioCardAsync(IMessageActivity activity, AudioCard audioCard)
         {
             var messages = new List<IResponseMessageBase>();
@@ -1047,7 +1082,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// <param name="name">Media's name.</param>
         /// <param name="content">Media content, can be a url or base64 string.</param>
         /// <param name="contentType">Media content type.</param>
-        /// <returns>Response message to WeChat.</returns>
+        /// <returns>WeChat response message.</returns>
         private async Task<IResponseMessageBase> MediaContentToWeChatResponse(IMessageActivity activity, string name, string content, string contentType)
         {
             var attachmentData = await CreateAttachmentDataAsync(name, content, contentType).ConfigureAwait(false);
