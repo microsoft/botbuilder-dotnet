@@ -1,9 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Runtime.InteropServices;
-using System.Runtime.InteropServices.ComTypes;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.AI.Luis;
@@ -20,10 +16,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
     {
         private const string _entityPrefix = "turn.entities";
         private readonly IExpressionParser _parser = new ExpressionEngine(TriggerTree.LookupFunction);
-        private DialogSchema _schema;
-        private List<HandlerInfo> _slotMappers = new List<HandlerInfo>();
-        private List<IOnEvent> _other = new List<IOnEvent>();
-        private Dictionary<string, List<HandlerInfo>> _entityToMappers = new Dictionary<string, List<HandlerInfo>>();
+        private readonly DialogSchema _schema;
+        private readonly List<HandlerInfo> _slotMappers = new List<HandlerInfo>();
+        private readonly List<IOnEvent> _other = new List<IOnEvent>();
+        private readonly Dictionary<string, List<HandlerInfo>> _entityToMappers = new Dictionary<string, List<HandlerInfo>>();
 
         public SlotMapSelector(DialogSchema schema)
         {
@@ -79,17 +75,29 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                 // * Prompt
 
                 // We have four kinds of ambiguity to deal with:
-                // * Ambiguous interpretation of entity value: (peppers -> [green peppers, red peppers]  Tell this by entity value is array.  Doesn't matter if slot singleton or not. Ask.
-                // * Ambiguous interpretion of text: (3 -> age or number) Identify by overlapping entities. Resolve by greater coverage, expected entity, ask.
-                // * Singleton value ambiguity: two different entities which could fill slot singleton.  Could be same type or different types.  Resolve by rule priority.
-                // * Across slot ambiguity: which slot should an entity go to.  Resolve by expected, then ask.
+                // * Value: Ambiguous interpretation of entity value: (peppers -> [green peppers, red peppers]  Tell this by entity value is array.  Doesn't matter if slot singleton or not. Ask.
+                // * Text: Ambiguous interpretion of text: (3 -> age or number) Identify by overlapping entities. Resolve by greater coverage, expected entity, ask.
+                // * Singelton: two different entities which could fill slot singleton.  Could be same type or different types.  Resolve by rule priority.
+                // * Slot: Which slot should an entity go to?  Resolve by expected, then ask.
                 // Should rules by over entities directly or should we process them first into these forms?
                 // This is also complicated by singleton vs. array
                 // It would be nice if multiple entities were rolled up into a single entity, i.e. a toppings composite with topping inside of it.
-                // Rule for value ambiguity: foreach(entity in @entity) entity is array.
+                // Rule for value ambiguity: foreach(entity in @entity) entity is array.    
                 // Rule for text ambiguity: info overlaps...
                 // Rule for singleton ambiguity: multiple rules fire over different entities
                 // Rule for slot ambiguity: multiple rules fire for same entity
+                // Preference is for expected slots
+                // Want to write rules that:
+                // * Allow mapping a slot through steps.
+                // * Allow disambiguation
+                // * More specific win from trigger tree
+                // * Easy to understand
+                // How to deal with multiple entities.
+                // * Rules are over them all--some of which have ambiguity
+                // * Rules are specific to individual entity.  Easier to write, but less powerful and lots of machinery for singleton/array
+                //
+                // Key assumptions:
+                // * A single entity type maps to a single slot.  Otherwise we have to figure out how to name different entity instances.
                 if (AnalyzeEntities(context, out var entityToInfo))
                 {
                     // There exist some entities
@@ -284,7 +292,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
 
         private class EntityInfo
         {
-
             public EntityInfo(object entity, int start, int end, double score = 0.0)
             {
                 Entity = entity;

@@ -4,7 +4,6 @@ using System.Linq;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Events;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Form
@@ -69,6 +68,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
         // 1) Flat entity resolution, treat properties as independent.
         // 2) Hierarchical, the first level you get to count(@@flight) == 1, then for count(first(@@flight).origin) == 1
         // We know which is which by entity path, i.e. flight.origin -> hierarchical whereas origin is flat.
+        //
+        // In order to robustly handle we need a progression of transformations, i.e. to map @meat to meatSlot singleton:
+        // @meat -> meatSlot_choice (m->1) ->
+        //                          (1->1) -> foreach meatslot_clarify -> set meat slot (clears others)
+        // If we get a new @meat, then it would reset them all.
+        // Should this be a flat set of rules?
         protected void GenerateRules()
         {
             foreach (var child in OutputSchema.Property.Children)
@@ -108,17 +113,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                     else
                     {
                         // Just set value to singleton
-                        AddEvent(new OnDialogEvent(
-                            events: events,
-                            constraint: $"count({expr}) == 1",
-                            actions: new List<IDialog>
-                            {
-                                    new SetProperty
-                                    {
-                                        Property = path,
-                                        Value = expr
-                                    }
-                            }));
+
 
                         // Disambiguate to singleton
                         AddEvent(new OnDialogEvent(
@@ -139,7 +134,118 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
             }
         }
 
-        // TODO: For 
+        protected IDialog MemoryTest()
+        {
+            var dialog = new AdaptiveDialog("test")
+            {
+                Events = new List<IOnEvent>
+                {
+                    new OnMessageActivity
+                    {
+                        Actions = new List<IDialog>
+                        {
+                            new BeginDialog("test")
+                            {
+
+                            }
+                        }
+                    }
+                }
+            };
+            return dialog;
+        }
+
+        // If one @@entity then goes to foreach
+        protected IOnEvent SingletonEntityStart(string entity, string slot)
+        {
+            var name = entity;
+            var slots = new List<string> { slot };
+            var choice = $"{slot}_choice";
+            return new OnDialogEvent(
+                events: new List<string> { AdaptiveEvents.RecognizedIntent },
+                constraint: $"{entity}",
+                actions: new List<IDialog>
+                {
+                    // If multiple choices for singleton ask which one.
+                    new IfCondition()
+                    {
+                        Condition = $"count({entity}) > 1",
+                        Actions = new List<IDialog>
+                        {
+                            // Ask which one
+                            new SetProperty { Property = $"dialog.{slot}_choice", Value = entity },
+                            new FormInput($"which({name}, {entity})]", expectedSlots: new List<string>())
+                            // TODO: Create new list of just selected value.
+                        },
+                        ElseActions = new List<IDialog>
+                        {
+
+                        }
+                    },
+
+                    // Loop over each entity to clarify
+                    new Foreach()
+                    {
+                        ValueProperty = entity,
+                        Actions = new List<IDialog>
+                        {
+                            new IfCondition()
+                            {
+                                Condition = $"count(dialog.value) > 1",
+                                Actions = new List<IDialog>
+                                {
+                                    // Clarify value
+                                    new FormInput($"[clarification({name})]", slots),
+                                    new IfCondition()
+                                    {
+                                        Condition = ""
+                                    }
+                                },
+                                ElseActions = new List<IDialog>
+                                {
+                                    // TODO: Fill in 
+                                    new SetProperty
+                                    {
+                                        Property = slot,
+                                        Value = "dialog.value"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+        }
+
+        protected IDialog Clarify(string slot, string source, string working, string result)
+        {
+            return new IfCondition
+            {
+                Condition = $"count(where({source}, value, count(value) > 1)) > 0",
+                Actions = new List<IDialog>
+                {
+                    new SetProperty {Property = working, Value = source},
+                    new Foreach
+                    {
+                         ListProperty = source,
+                         Actions = new List<IDialog>
+                         {
+                             new IfCondition
+                             {
+                                 Condition = $"count(working[dialog.index]) > 1",
+                                 Actions = new List<IDialog>
+                                 {
+                                     new FormInput($"[clarify({slot}, dialog.value)]")
+                                 }
+                             }
+                         }
+                    }
+                },
+                ElseActions = new List<IDialog>
+                {
+                    new SetProperty { Property = result, Value = source}
+                }
+            };
+        }
 
         protected string FormPath(string schemaPath) => $"$form.{schemaPath.Replace("[]", string.Empty)}";
     }
