@@ -33,6 +33,15 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests
         };
 
         [Fact]
+        public async Task SendRequestTest()
+        {
+            var storage = new MemoryStorage();
+            var mockClient = new WeChatClient("wx77f941c869071d99", "secret", storage);
+            await mockClient.SendHttpRequestAsync(HttpMethod.Get, "https://dev.botframework.com");
+            await mockClient.SendHttpRequestAsync(HttpMethod.Get, "https://dev.botframework.com", "mockdata");
+        }
+
+        [Fact]
         public async Task GetAccessTokenTest()
         {
             var storage = new MemoryStorage();
@@ -52,6 +61,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests
             var result2 = await mockClient.UploadNewsAsync(new News[] { new News { Title = "test" } }, true);
             var result3 = await mockClient.UploadMediaAsync(mockAttachemntData, false, 10000);
             var result4 = await mockClient.UploadNewsAsync(new News[] { new News { Title = "test" } }, false);
+            var result5 = await mockClient.UploadNewsImageAsync(mockAttachemntData);
 
             // Assert.Equal("testToken", result1.MediaId);
             // Assert.Equal("bmwipabotwx", result2.MediaId);
