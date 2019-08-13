@@ -159,15 +159,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                                 Condition = $"dialog.isChild",
                                 Actions = new List<IDialog>
                                 {
-                                    new SendActivity("inChild")
+                                    new SendActivity("inChild"),
+                                    new SetProperty()
+                                    {
+                                        Property = "$dialog.isChild",
+                                        Value = "false"
+                                    },
+                                    new DebugBreak(),
+                                    new EndDialog()
                                 },
                                 ElseActions = new List<IDialog>
                                 {
                                     new SetProperty {
-                                        Property = "dialog.ischild",
+                                        Property = "dialog.isChild",
                                         Value = "true"
                                     },
-                                    new BeginDialog("test")
+                                    new BeginDialog("test"),
+                                    new SendActivity("Value {dialog.isChild}")
                                 }
                             },
                         }
