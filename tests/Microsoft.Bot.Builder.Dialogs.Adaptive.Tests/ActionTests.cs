@@ -161,11 +161,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     {
                         new IfCondition()
                         {
-                            Condition = "user.name == null",
+                            Condition = "!dialog.foo && user.name == null",
                             Actions = new List<IDialog>()
                             {
                                 new TextInput() {
-                                    Prompt  = new ActivityTemplate("Hello, what is your name?"),
+                                    Prompt = new ActivityTemplate("Hello, what is your name?"),
                                     OutputBinding = "user.name"
                                 },
                                 new SendActivity("Hello {user.name}, nice to meet you!")

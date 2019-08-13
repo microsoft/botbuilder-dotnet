@@ -74,13 +74,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         [JsonProperty("url")]
         public string Url { get; set; }
 
-        [JsonProperty("header")]
+        [JsonProperty("headers")]
         public Dictionary<string, string> Headers { get; set; }
 
         [JsonProperty("body")]
         public JToken Body { get; set; }
 
-        [JsonProperty("returnType")]
+        [JsonProperty("responseType")]
         public ResponseTypes ResponseType { get; set; } = ResponseTypes.Json;
 
         /// <summary>
