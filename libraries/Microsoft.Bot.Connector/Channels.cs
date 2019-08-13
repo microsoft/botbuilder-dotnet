@@ -92,5 +92,10 @@ namespace Microsoft.Bot.Connector
         /// Test channel.
         /// </summary>
         public const string Test = "test";
+
+        /// <summary>
+        /// Twilio channel.
+        /// </summary>
+        public const string Twilio = "twilio-sms";
     }
 }
