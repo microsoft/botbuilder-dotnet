@@ -529,7 +529,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
 
             var options = new QnAMakerOptions()
             {
-                Top = 1,
+                Top = 3,
             };
 
             var results = await qna.GetAnswersAsync(GetContext("Where can I buy?"), options);
