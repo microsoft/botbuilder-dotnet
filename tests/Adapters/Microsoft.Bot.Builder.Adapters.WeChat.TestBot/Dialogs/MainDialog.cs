@@ -101,7 +101,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.TestBot
                     break;
                 default:
                     // Give the user instructions about what to do next
-                    await stepContext.Context.SendActivityAsync(MessageFactory.Text("Type anything to see another card."), cancellationToken);
+                    await stepContext.Context.SendActivityAsync(MessageFactory.Text("Type anything to show the card list again."), cancellationToken);
                     return await stepContext.EndDialogAsync();
             }
 
@@ -109,7 +109,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.TestBot
             await stepContext.Context.SendActivityAsync(reply, cancellationToken);
 
             // Give the user instructions about what to do next
-            await stepContext.Context.SendActivityAsync(MessageFactory.Text("Type anything to see another card."), cancellationToken);
+            await stepContext.Context.SendActivityAsync(MessageFactory.Text("Type anything to show the card list again."), cancellationToken);
 
             return await stepContext.EndDialogAsync();
         }

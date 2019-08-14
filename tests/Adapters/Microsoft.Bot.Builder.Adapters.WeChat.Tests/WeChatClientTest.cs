@@ -3,8 +3,10 @@
 
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema;
+using Microsoft.Bot.Builder.Adapters.WeChat.Schema.JsonResults;
 using Microsoft.Bot.Builder.Adapters.WeChat.Tests.TestUtilities;
 using Xunit;
 
@@ -38,7 +40,16 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests
             var storage = new MemoryStorage();
             var mockClient = new WeChatClient("wx77f941c869071d99", "secret", storage);
             await mockClient.SendHttpRequestAsync(HttpMethod.Get, "https://dev.botframework.com");
-            await mockClient.SendHttpRequestAsync(HttpMethod.Get, "https://dev.botframework.com", "mockdata");
+            await mockClient.SendHttpRequestAsync(HttpMethod.Get, "https://dev.botframework.com", "mockdata", "testToken");
+        }
+
+        [Fact]
+        public async Task SendRequestTimeoutTest()
+        {
+            var storage = new MemoryStorage();
+            var mockClient = new WeChatClient("wx77f941c869071d99", "secret", storage);
+            await mockClient.SendHttpRequestAsync(HttpMethod.Get, "https://dev.botframework.com", timeout: 1000);
+            Thread.Sleep(1500);
         }
 
         [Fact]
@@ -57,16 +68,18 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests
             var storage = new MemoryStorage();
             var mockClient = new MockWeChatClient("wx77f941c869071d99", "secret", storage);
             var mockAttachemntData = MockDataUtility.GetMockAttachmentData();
-            var result1 = await mockClient.UploadMediaAsync(mockAttachemntData, true, 10000);
-            var result2 = await mockClient.UploadNewsAsync(new News[] { new News { Title = "test" } }, true);
-            var result3 = await mockClient.UploadMediaAsync(mockAttachemntData, false, 10000);
-            var result4 = await mockClient.UploadNewsAsync(new News[] { new News { Title = "test" } }, false);
-            var result5 = await mockClient.UploadNewsImageAsync(mockAttachemntData);
-
-            // Assert.Equal("testToken", result1.MediaId);
-            // Assert.Equal("bmwipabotwx", result2.MediaId);
-            // Assert.Equal("testToken", result3.MediaId);
-            // Assert.Equal("bmwipabotwx", result4.MediaId);
+            var result1 = await mockClient.UploadMediaAsync(mockAttachemntData, true, 10000) as UploadTemporaryMediaResult;
+            var result2 = await mockClient.UploadMediaAsync(mockAttachemntData, true, 10000) as UploadTemporaryMediaResult;
+            var result3 = await mockClient.UploadNewsAsync(new News[] { new News { Title = "test" } }, true) as UploadTemporaryMediaResult;
+            var result4 = await mockClient.UploadMediaAsync(mockAttachemntData, false, 10000) as UploadPersistentMediaResult;
+            var result5 = await mockClient.UploadNewsAsync(new News[] { new News { Title = "test" } }, false) as UploadPersistentMediaResult;
+            var result6 = await mockClient.UploadNewsImageAsync(mockAttachemntData) as UploadPersistentMediaResult;
+            Assert.Equal("mediaId", result1.MediaId);
+            Assert.Equal("mediaId", result2.MediaId);
+            Assert.Equal(MediaTypes.News, result3.Type);
+            Assert.Equal("foreverMedia", result4.MediaId);
+            Assert.Equal("foreverNews", result5.MediaId);
+            Assert.Equal("foreverImage", result6.MediaId);
         }
 
         /// <summary>

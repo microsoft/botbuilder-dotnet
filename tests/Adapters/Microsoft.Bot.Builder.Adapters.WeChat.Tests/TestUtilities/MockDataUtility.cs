@@ -446,7 +446,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests.TestUtilities
 
         public static AttachmentData GetMockAttachmentData() => new AttachmentData()
         {
-            Name = "testimage",
+            Name = "tempImage",
             Type = "image/png",
             OriginalBase64 = Encoding.UTF8.GetBytes(ImageDataUrl),
             ThumbnailBase64 = Encoding.UTF8.GetBytes(ImageDataUrl),
@@ -690,16 +690,6 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests.TestUtilities
             var mockConfiguration = new Mock<IConfiguration>();
             mockConfiguration.Setup(a => a.GetSection(It.Is<string>(s => s == "WeChatSetting"))).Returns(mockConfSection.Object);
 
-            // var section1 = new Mock<IConfigurationSection>();
-            // var section2 = new Mock<IConfigurationSection>();
-            // section2.SetupGet(x => x[It.Is<string>(s => s == "WeChatSetting:Token")]).Returns("bmwipabotwx");
-            // section2.SetupGet(x => x[It.Is<string>(s => s == "WeChatSetting:AppId")]).Returns("bmwipabotwx");
-            // section2.SetupGet(x => x[It.Is<string>(s => s == "WeChatSetting:EncodingAESKey")]).Returns("bmwipabotwx");
-            // section2.SetupGet(x => x[It.Is<string>(s => s == "Token")]).Returns("bmwipabotwx");
-            // var value = section2.Object;
-            // value.Value = "";
-            // section1.Setup(c => c.GetSection(It.IsAny<string>())).Returns(value);
-            // configuration.Setup(c => c.GetSection(It.IsAny<string>())).Returns(section1.Object);
             return mockConfiguration.Object;
         }
 
@@ -713,15 +703,16 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests.TestUtilities
             wechatClient.Setup(c => c.SendHttpRequestAsync(It.IsAny<HttpMethod>(), It.IsAny<string>(), It.IsAny<object>(), It.IsAny<string>(), It.IsAny<int>())).Returns(Task.FromResult(byteResult));
             wechatClient.Setup(c => c.UploadMediaAsync(It.IsAny<AttachmentData>(), It.IsAny<bool>(), It.IsAny<int>())).Returns(Task.FromResult(MockTempMediaResult(MediaTypes.Image)));
             wechatClient.Setup(c => c.UploadNewsAsync(It.IsAny<News[]>(), It.IsAny<bool>(), It.IsAny<int>())).Returns(Task.FromResult(MockTempMediaResult(MediaTypes.News)));
+            wechatClient.Setup(c => c.UploadNewsImageAsync(It.IsAny<AttachmentData>(), It.IsAny<int>())).Returns(Task.FromResult(MockForeverMediaResult("foreverMedia")));
 
             return wechatClient.Object;
         }
 
-        public static UploadMediaResult MockTempMediaResult(string type)
+        public static UploadMediaResult MockTempMediaResult(string type, string mediaId = null)
         {
             var uploadResult = new UploadTemporaryMediaResult()
             {
-                MediaId = "mediaId",
+                MediaId = mediaId ?? "mediaId",
                 ErrorCode = 0,
                 ErrorMessage = "ok",
                 ThumbMediaId = "thumbMediaId",
@@ -730,12 +721,12 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests.TestUtilities
             return uploadResult;
         }
 
-        public static UploadPersistentMediaResult MockForeverMediaResult()
+        public static UploadMediaResult MockForeverMediaResult(string mediaId = null)
         {
             var uploadResult = new UploadPersistentMediaResult()
             {
-                MediaId = "mediaId",
-                Url = "mediaUrl",
+                MediaId = mediaId ?? "mediaId",
+                Url = "https://mediaUrl",
                 ErrorCode = 0,
                 ErrorMessage = "ok",
             };

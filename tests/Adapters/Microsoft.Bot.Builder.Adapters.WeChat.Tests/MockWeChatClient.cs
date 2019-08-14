@@ -4,6 +4,7 @@
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Adapters.WeChat.Schema;
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema.JsonResults;
 using Microsoft.Bot.Builder.Adapters.WeChat.Tests.TestUtilities;
 using Microsoft.Extensions.Logging;
@@ -25,35 +26,46 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests
 
         public override Task<byte[]> SendHttpRequestAsync(HttpMethod method, string url, object data = null, string token = null, int timeout = 10000)
         {
-            if (url.Contains("token"))
+            var result = JsonConvert.SerializeObject(MockDataUtility.WeChatJsonResult);
+            var byteResult = Encoding.UTF8.GetBytes(result);
+
+            if (url.Contains("cgi-bin/token"))
             {
                 var tokenResult = new AccessTokenResult()
                 {
                     ExpireIn = 7200,
                     Token = "testToken",
                 };
-                var result = JsonConvert.SerializeObject(tokenResult);
-                var byteResult = Encoding.UTF8.GetBytes(result);
-                return Task.FromResult(byteResult);
+                result = JsonConvert.SerializeObject(tokenResult);
+                byteResult = Encoding.UTF8.GetBytes(result);
             }
-            else if (url.Contains("media"))
+            else if (url.Contains("upload?access_token"))
             {
-                var result = JsonConvert.SerializeObject(MockDataUtility.MockTempMediaResult(Schema.MediaTypes.Image));
-                var byteResult = Encoding.UTF8.GetBytes(result);
-                return Task.FromResult(byteResult);
+                result = JsonConvert.SerializeObject(MockDataUtility.MockTempMediaResult(MediaTypes.Image));
+                byteResult = Encoding.UTF8.GetBytes(result);
             }
-            else if (url.Contains("news"))
+            else if (url.Contains("add_material"))
             {
-                var result = JsonConvert.SerializeObject(MockDataUtility.MockTempMediaResult(Schema.MediaTypes.News));
-                var byteResult = Encoding.UTF8.GetBytes(result);
-                return Task.FromResult(byteResult);
+                result = JsonConvert.SerializeObject(MockDataUtility.MockForeverMediaResult("foreverMedia"));
+                byteResult = Encoding.UTF8.GetBytes(result);
             }
-            else
+            else if (url.Contains("uploadnews"))
             {
-                var result = JsonConvert.SerializeObject(MockDataUtility.WeChatJsonResult);
-                var byteResult = Encoding.UTF8.GetBytes(result);
-                return Task.FromResult(byteResult);
+                result = JsonConvert.SerializeObject(MockDataUtility.MockTempMediaResult(MediaTypes.News));
+                byteResult = Encoding.UTF8.GetBytes(result);
             }
+            else if (url.Contains("add_news"))
+            {
+                result = JsonConvert.SerializeObject(MockDataUtility.MockForeverMediaResult("foreverNews"));
+                byteResult = Encoding.UTF8.GetBytes(result);
+            }
+            else if (url.Contains("uploadimg"))
+            {
+                result = JsonConvert.SerializeObject(MockDataUtility.MockForeverMediaResult("foreverImage"));
+                byteResult = Encoding.UTF8.GetBytes(result);
+            }
+
+            return Task.FromResult(byteResult);
         }
     }
 }
