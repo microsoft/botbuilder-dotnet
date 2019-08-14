@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
-        /// Register UserState and ConversationState objects so they are accessible via TurnContext.Get&lt;UserState&gt() and add auto save middleware.
+        /// Register UserState and ConversationState objects so they are accessible via TurnContext.Get&lt;UserState&gt;() and add auto save middleware.
         /// </summary>
         /// <param name="botAdapter">bot adapater to add save state to</param>
         /// <param name="userState">UserState to use (default is new UserState(registered storage))</param>

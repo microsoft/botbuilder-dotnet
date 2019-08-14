@@ -64,7 +64,7 @@ namespace Microsoft.Bot.Builder
 
         /// <summary>
         /// Invoked when a message activity is received from the user when the base behavior of
-        /// <see cref="OnTurnAsync(ITurnContext{IConversationUpdateActivity}, CancellationToken)"/> is used.
+        /// <see cref="OnTurnAsync(ITurnContext, CancellationToken)"/> is used.
         /// If overridden, this could potentially contain conversational logic.
         /// By default, this method does nothing.
         /// </summary>
@@ -79,7 +79,7 @@ namespace Microsoft.Bot.Builder
 
         /// <summary>
         /// Invoked when a conversation update activity is received from the channel when the base behavior of
-        /// <see cref="OnTurnAsync(ITurnContext{IConversationUpdateActivity}, CancellationToken)"/> is used.
+        /// <see cref="OnTurnAsync(ITurnContext, CancellationToken)"/> is used.
         /// Conversation update activities are useful when it comes to responding to users being added to or removed from the conversation.
         /// For example, a bot could respond to a user being added by greeting the user.
         /// By default, this method will call <see cref="OnMembersAddedAsync(IList{ChannelAccount}, ITurnContext{IConversationUpdateActivity}, CancellationToken)"/>
