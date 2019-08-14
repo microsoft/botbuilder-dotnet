@@ -28,7 +28,6 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <param name="endpoint">QnA Maker endpoint details.</param>
         /// <param name="options">QnA Maker options.</param>
         /// <param name="httpClient">Http client.</param>
-        /// <param name="logPersonalInformation">Log personal Information.</param>
         public GenerateAnswerUtils(IBotTelemetryClient telemetryClient, QnAMakerEndpoint endpoint, QnAMakerOptions options, HttpClient httpClient)
         {
             this.telemetryClient = telemetryClient;

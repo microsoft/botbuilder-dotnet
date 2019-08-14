@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Schema
     /// Trace activities are normally not shown to the user, and are internal to transcript logging
     /// and developer debugging.
     /// </remarks>
-    /// <seealso cref="Microsoft.Bot.Builder.InspectionMiddleware" />
+    /// <seealso cref="Bot.Builder.InspectionMiddleware" />
     public interface ITraceActivity : IActivity
     {
         /// <summary>
