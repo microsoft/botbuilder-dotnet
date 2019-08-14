@@ -14,7 +14,7 @@
                     "type": "TextBlock",
                     "size": "Medium",
                     "weight": "Bolder",
-                    "text": "@{replace(replace(x.title, '\"', \"'\"), '\\', '\\\\')}"
+                    "text": "@{x.title}"
                 },
                 {
                     "type": "ColumnSet",
