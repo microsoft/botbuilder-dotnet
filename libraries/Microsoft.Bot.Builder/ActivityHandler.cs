@@ -218,7 +218,7 @@ namespace Microsoft.Bot.Builder
 
         /// <summary>
         /// Invoked when a <c>tokens/response</c> event is received when the base behavior of
-        /// <see cref="OnEventActivityAsync(ITurnContext{IEventActivity}, CancellationToken)"/> is used.
+        /// <see cref="OnEventActivityAsync(ITurnContext{IConversationUpdateActivity} , CancellationToken)"/> is used.
         /// If using an <c>OAuthPrompt</c>, override this method to forward this <see cref="Activity"/> to the current dialog.
         /// By default, this method does nothing.
         /// </summary>
@@ -233,7 +233,7 @@ namespace Microsoft.Bot.Builder
 
         /// <summary>
         /// Invoked when an event other than <c>tokens/response</c> is received when the base behavior of
-        /// <see cref="OnEventActivityAsync(ITurnContext{IEventActivity}, CancellationToken)"/> is used.
+        /// <see cref="OnEventActivityAsync(ITurnContext{IConversationUpdateActivity}, CancellationToken)"/> is used.
         /// This method could optionally be overridden if the bot is meant to handle miscellaneous events.
         /// By default, this method does nothing.
         /// </summary>
