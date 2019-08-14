@@ -4,7 +4,7 @@
 namespace Microsoft.Bot.Builder.Adapters.Twilio
 {
     /// <summary>
-    /// Interface to represent the format of the options for the Twilio adapter.
+    /// Defines values that a <see cref="TwilioAdapter"/> can use to connect to Twilio's SMS service.
     /// </summary>
     public interface ITwilioAdapterOptions
     {
@@ -17,9 +17,9 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         string TwilioNumber { get; set; }
 
         /// <summary>
-        /// Gets or sets the account Sid from the Twilio account.
+        /// Gets or sets the account SID from the Twilio account.
         /// </summary>
-        /// <value>The account Sid.</value>
+        /// <value>The account SID.</value>
         string AccountSid { get; set; }
 
         /// <summary>
@@ -29,9 +29,11 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         string AuthToken { get; set; }
 
         /// <summary>
-        /// Gets or sets an optional validation url.
+        /// Gets or sets an optional validation URL.
         /// </summary>
-        /// <value>An optional url to override the automatically generated url signature used to validate incoming requests. See Twilio docs (https://www.twilio.com/docs/usage/security#validating-requests).</value>
+        /// <value>Optional validation URL to override the automatically generated URL signature used
+        /// to validate incoming requests. See the Twilio security documentation on
+        /// [validating requests](https://www.twilio.com/docs/usage/security#validating-requests).</value>
         string ValidationUrl { get; set; }
     }
 }

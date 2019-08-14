@@ -12,6 +12,9 @@ using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Adapters.Twilio
 {
+    /// <summary>
+    /// A <see cref="BotAdapter"/> that can connect to Twilio's SMS service.
+    /// </summary>
     public class TwilioAdapter : BotAdapter
     {
         private readonly ITwilioAdapterOptions _options;
@@ -20,10 +23,9 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TwilioAdapter"/> class.
-        /// A Twilio adapter will allow the Bot to connect to Twilio's SMS service.
         /// </summary>
-        /// <param name="options">A set of params with the required values for authentication.</param>
-        /// <param name="twilioApi">A Twilio API interface.</param>
+        /// <param name="options">The options to use to authenticate the bot with the Twilio service.</param>
+        /// <param name="twilioApi">The Twilio client to connect to.</param>
         public TwilioAdapter(ITwilioAdapterOptions options, ITwilioClient twilioApi)
         {
             if (options == null)
