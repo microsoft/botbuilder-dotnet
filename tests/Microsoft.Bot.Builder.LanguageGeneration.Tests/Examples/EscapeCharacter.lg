@@ -5,3 +5,12 @@
 
 # otherEscape
 - Hi \y \
+
+# escapeInExpression
+- Hi {replace('hello\', '\', '\\')}
+
+# escapeInExpression2
+- Hi {replace('hello"', '"', "'")}
+
+# escapeInExpression3
+- Hi {replace("hello'", "'", '"')"}

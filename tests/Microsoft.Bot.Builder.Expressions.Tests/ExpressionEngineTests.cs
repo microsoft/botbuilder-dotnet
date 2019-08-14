@@ -303,6 +303,9 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("count(concat(hello,world))",10),
             Test("replace('hello', 'l', 'k')","hekko"),
             Test("replace('hello', 'L', 'k')","hello"),
+            Test("replace('hello\"', '\"', \"'\")", "hello'"),
+            Test("replace(\"hello'\", \"'\", '\"')", "hello\""),
+            Test("replace('hello\\', '\\', '\\\\')", "hello\\\\"),
             Test("replaceIgnoreCase('hello', 'L', 'k')","hekko"),
             Test("split('hello','e')",new string[]{ "h","llo"}),
             Test("substring('hello', 0, 5)", "hello"),
@@ -668,8 +671,8 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("isMatch('abacaxc', 'ab.??c')", true), // "??" (lazy versions)
             Test("isMatch('12abc34', '([0-9]+)([a-z]+)([0-9]+)')", true), // "(...)" (simple group)
             Test("isMatch('12abc', '([0-9]+)([a-z]+)([0-9]+)')", false), // "(...)" (simple group)
-            Test(@"isMatch('a', '\\w{1}')", true), // "\w" (match [a-zA-Z0-9_])
-            Test(@"isMatch('1', '\\d{1}')", true), // "\d" (match [0-9])
+            Test(@"isMatch('a', '\w{1}')", true), // "\w" (match [a-zA-Z0-9_])
+            Test(@"isMatch('1', '\d{1}')", true), // "\d" (match [0-9])
             # endregion
         };
 

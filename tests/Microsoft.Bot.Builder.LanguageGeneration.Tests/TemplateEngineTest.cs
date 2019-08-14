@@ -287,6 +287,15 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             evaled = engine.EvaluateTemplate("otherEscape", null);
             Assert.AreEqual(evaled, @"Hi \y \");
+
+            evaled = engine.EvaluateTemplate("escapeInExpression", null);
+            Assert.AreEqual(evaled, "Hi hello\\\\");
+
+            evaled = engine.EvaluateTemplate("escapeInExpression2", null);
+            Assert.AreEqual(evaled, "Hi hello'");
+
+            evaled = engine.EvaluateTemplate("escapeInExpression3", null);
+            Assert.AreEqual(evaled, "Hi hello\"");
         }
 
         [TestMethod]
