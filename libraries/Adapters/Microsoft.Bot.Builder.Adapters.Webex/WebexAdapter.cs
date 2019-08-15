@@ -29,7 +29,6 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// </summary>
         /// <param name="config">An object containing API credentials, a webhook verification token and other options.</param>
         public WebexAdapter(IWebexAdapterOptions config)
-            : base()
         {
             if (string.IsNullOrWhiteSpace(_config.AccessToken))
             {
@@ -42,14 +41,9 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
             }
 
             _config = config;
-            _api = TeamsAPI.CreateVersion1Client(config.AccessToken);
-
-            if (_api == null)
-            {
-                throw new Exception("Could not create the Webex Teams API client");
-            }
-
             _config.PublicAddress = new Uri(_config.PublicAddress).Host;
+            _api = TeamsAPI.CreateVersion1Client(_config.AccessToken)
+                   ?? throw new Exception("Could not create the Webex Teams API client");
         }
 
         /// <summary>
