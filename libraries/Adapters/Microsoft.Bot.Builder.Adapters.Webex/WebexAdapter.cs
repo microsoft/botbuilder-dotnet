@@ -200,14 +200,17 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         public async Task ProcessAsync(HttpRequest request, HttpResponse response, IBot bot, CancellationToken cancellationToken = default(CancellationToken))
         {
             response.StatusCode = 200;
-            await response.WriteAsync(string.Empty).ConfigureAwait(false);
+            await response.WriteAsync(string.Empty, cancellationToken).ConfigureAwait(false);
 
-            var bodyStream = new StreamReader(request.Body);
-            dynamic payload = JsonConvert.DeserializeObject(bodyStream.ReadToEnd());
+            dynamic payload;
+            using (var bodyStream = new StreamReader(request.Body))
+            {
+                payload = JsonConvert.DeserializeObject(bodyStream.ReadToEnd());
+            }
 
             var json = JsonConvert.SerializeObject(payload);
 
-            if (!string.Equals(_config.Secret, string.Empty))
+            if (!string.IsNullOrWhiteSpace(_config.Secret))
             {
                 var signature = request.Headers["x-spark-signature"];
 
@@ -217,7 +220,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
 
                     var hash = BitConverter.ToString(hashArray).Replace("-", string.Empty).ToLower();
 
-                    if (!string.Equals(signature, hash))
+                    if (signature != hash)
                     {
                         throw new Exception("WARNING: Webhook received message with invalid signature. Potential malicious behavior!");
                     }
@@ -272,14 +275,8 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
 
                     var action = decryptedMessage.Html.Replace(pattern.ToString(), string.Empty);
 
-                    // strip the remaining HTML tags
-                    action = action.Replace("/<.*?>/img", string.Empty);
-
-                    // strip remaining whitespace
-                    action = action.Trim();
-
-                    // replace the message text with the the HTML version
-                    activity.Text = action;
+                    // Strip the remaining HTML tags and replace the message text with the the HTML version
+                    activity.Text = action.Replace("/<.*?>/img", string.Empty).Trim();
                 }
                 else
                 {
@@ -287,9 +284,10 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                     activity.Text = activity.Text.Replace(pattern.ToString(), string.Empty);
                 }
 
-                var context = new TurnContext(this, activity);
-
-                await RunPipelineAsync(context, bot.OnTurnAsync, default(CancellationToken)).ConfigureAwait(false);
+                using (var context = new TurnContext(this, activity))
+                {
+                    await RunPipelineAsync(context, bot.OnTurnAsync, cancellationToken).ConfigureAwait(false);
+                }
             }
             else
             {
@@ -316,9 +314,10 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
 
                 (activity.ChannelData as dynamic).botkitEventType = payload.resource + "." + payload["event"];
 
-                var context = new TurnContext(this, activity);
-
-                await RunPipelineAsync(context, bot.OnTurnAsync, default(CancellationToken)).ConfigureAwait(false);
+                using (var context = new TurnContext(this, activity))
+                {
+                    await RunPipelineAsync(context, bot.OnTurnAsync, cancellationToken).ConfigureAwait(false);
+                }
             }
         }
     }
