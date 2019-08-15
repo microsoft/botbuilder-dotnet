@@ -58,7 +58,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task GetIdentityAsync()
         {
-            await _api.GetMeAsync().ContinueWith((task) => { Identity = task.Result.Data; });
+            await _api.GetMeAsync().ContinueWith(task => { Identity = task.Result.Data; }).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -67,13 +67,13 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task ResetWebhookSubscriptions()
         {
-            await _api.ListWebhooksAsync().ContinueWith(async (task) =>
+            await _api.ListWebhooksAsync().ContinueWith(async task =>
             {
                 for (int i = 0; i < task.Result.Data.ItemCount; i++)
                 {
-                    await _api.DeleteWebhookAsync(task.Result.Data.Items[i]);
+                    await _api.DeleteWebhookAsync(task.Result.Data.Items[i]).ConfigureAwait(false);
                 }
-            });
+            }).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -101,13 +101,13 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
 
                 if (hookId != null)
                 {
-                    await _api.UpdateWebhookAsync(hookId, webHookName, new Uri(hookUrl), _config.Secret);
+                    await _api.UpdateWebhookAsync(hookId, webHookName, new Uri(hookUrl), _config.Secret).ConfigureAwait(false);
                 }
                 else
                 {
-                    await _api.CreateWebhookAsync(webHookName, new Uri(hookUrl), EventResource.All, EventType.All, null, _config.Secret);
+                    await _api.CreateWebhookAsync(webHookName, new Uri(hookUrl), EventResource.All, EventType.All, null, _config.Secret).ConfigureAwait(false);
                 }
-            });
+            }).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -147,7 +147,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         public override async Task<ResourceResponse> UpdateActivityAsync(ITurnContext turnContext, Activity activity, CancellationToken cancellationToken)
         {
             // Webex adapter does not support updateActivity.
-            return await Task.FromException<ResourceResponse>(new NotImplementedException("Webex adapter does not support updateActivity."));
+            return await Task.FromException<ResourceResponse>(new NotImplementedException("Webex adapter does not support updateActivity.")).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -161,7 +161,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         {
             if (reference.ActivityId != null)
             {
-                await _api.DeleteMessageAsync(reference.ActivityId, default(CancellationToken));
+                await _api.DeleteMessageAsync(reference.ActivityId, default(CancellationToken)).ConfigureAwait(false);
             }
         }
 
@@ -177,7 +177,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
 
             var context = new TurnContext(this, request);
 
-            await RunPipelineAsync(context, logic, default(CancellationToken));
+            await RunPipelineAsync(context, logic, default(CancellationToken)).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -191,7 +191,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         public async Task ProcessAsync(HttpRequest request, HttpResponse response, IBot bot, CancellationToken cancellationToken = default(CancellationToken))
         {
             response.StatusCode = 200;
-            await response.WriteAsync(string.Empty);
+            await response.WriteAsync(string.Empty).ConfigureAwait(false);
 
             var bodyStream = new StreamReader(request.Body);
             dynamic payload = JsonConvert.DeserializeObject(bodyStream.ReadToEnd());
@@ -280,7 +280,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
 
                 var context = new TurnContext(this, activity);
 
-                await RunPipelineAsync(context, bot.OnTurnAsync, default(CancellationToken));
+                await RunPipelineAsync(context, bot.OnTurnAsync, default(CancellationToken)).ConfigureAwait(false);
             }
             else
             {
@@ -309,7 +309,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
 
                 var context = new TurnContext(this, activity);
 
-                await RunPipelineAsync(context, bot.OnTurnAsync, default(CancellationToken));
+                await RunPipelineAsync(context, bot.OnTurnAsync, default(CancellationToken)).ConfigureAwait(false);
             }
         }
     }
