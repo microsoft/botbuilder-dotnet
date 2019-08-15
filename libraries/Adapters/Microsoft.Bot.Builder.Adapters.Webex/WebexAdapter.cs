@@ -10,7 +10,6 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Bot.Builder.BotKit.Core;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 using Thrzn41.WebexTeams;
@@ -73,12 +72,6 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         }
 
         /// <summary>
-        /// Gets a customized BotWorker.
-        /// </summary>
-        /// <value>A customized BotWorker object that exposes additional utility methods.</value>
-        public WebexBotWorker BotkitWorker { get; private set; }
-
-        /// <summary>
         /// Gets or sets the identity of the bot.
         /// </summary>
         private Person Identity { get; set; }
@@ -91,21 +84,6 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         public async Task GetIdentityAsync()
         {
             await this.api.GetMeAsync().ContinueWith((task) => { this.Identity = task.Result.Data; });
-        }
-
-        /// <summary>
-        /// Botkit-only: Initialization function called automatically when used with Botkit.
-        /// </summary>
-        /// <param name="botkit">A botkit object.</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public async Task Init(Botkit botkit)
-        {
-            // when the bot is ready, register the webhook subscription with the Webex API
-            botkit.AddDep("webex-identity");
-
-            await this.GetIdentityAsync().ContinueWith((task) => botkit.CompleteDep("webex-identity"));
-
-            botkit.Ready(async () => { await (botkit.Adapter as WebexAdapter).RegisterWebhookSubscriptionAsync(botkit.GetConfig("webhook_uri").ToString()); });
         }
 
         /// <summary>
