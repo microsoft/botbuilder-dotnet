@@ -40,6 +40,6 @@ IDENTIFIER : (LETTER | '_') (LETTER | DIGIT | '-' | '_')*;
 
 NEWLINE : '\r'? '\n' -> skip;
 
-STRING : ('\\'? '\'' (~'\'')* '\\'? '\'') | ('\\'? '"' (~'"')* '\\'? '"');
+STRING : ('\'' (~'\'')* '\'') | ('"' (~'"')* '"');
 
 INVALID_TOKEN_DEFAULT_MODE : . ;

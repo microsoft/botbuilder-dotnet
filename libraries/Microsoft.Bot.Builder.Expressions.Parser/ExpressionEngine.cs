@@ -218,12 +218,12 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
                 var text = context.GetText();
                 if (text.StartsWith("'"))
                 {
-                    return Expression.ConstantExpression(text.Trim('\''));
+                    return Expression.ConstantExpression(Regex.Unescape(text.Trim('\'')));
                 }
                 else
                 {
                     // start with "
-                    return Expression.ConstantExpression(text.Trim('"'));
+                    return Expression.ConstantExpression(Regex.Unescape(text.Trim('"')));
                 }
             }
 
