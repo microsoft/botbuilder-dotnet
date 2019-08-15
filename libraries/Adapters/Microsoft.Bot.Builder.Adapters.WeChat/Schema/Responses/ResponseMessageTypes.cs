@@ -46,6 +46,11 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Responses
         public const string MultipleNews = "mutiplenews";
 
         /// <summary>
+        /// MessageMenu message.
+        /// </summary>
+        public const string MessageMenu = "msgmenu";
+
+        /// <summary>
         /// Location message.
         /// </summary>
         public const string LocationMessage = "location";

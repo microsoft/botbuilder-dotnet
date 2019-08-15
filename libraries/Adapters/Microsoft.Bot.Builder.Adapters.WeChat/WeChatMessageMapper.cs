@@ -6,10 +6,10 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using AdaptiveCards;
 using AdaptiveCards.Rendering.Html;
-using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Bot.Builder.Adapters.WeChat.Extensions;
 using Microsoft.Bot.Builder.Adapters.WeChat.Helpers;
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema;
@@ -34,19 +34,20 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
     public class WeChatMessageMapper
     {
         /// <summary>
-        /// Max size for a single WeChat response message.
+        /// Max length for a single WeChat response message.
+        /// Must less then 2048.
         /// </summary>
-        private const int MaxSingleMessageLength = 2048;
+        private const int MaxSingleMessageLength = 2047;
 
         /// <summary>
-        /// Max size for one request to WeChat.
+        /// Key of content source url.
         /// </summary>
-        private const int MaxTotalMessageLength = 20480;
+        private const string ContentSourceUrlKey = "contentSourceUrl";
 
         /// <summary>
-        /// Default value for WeChat news message.
+        /// Key of cover image.
         /// </summary>
-        private const string DefaultContentUrl = "https://dev.botframework.com";
+        private const string CoverImageUrlKey = "coverImageUrl";
 
         /// <summary>
         /// Default word break when join two word.
@@ -160,22 +161,15 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
 
                 if (activity is IMessageActivity messageActivity)
                 {
-                    // Chunk message into pieces as necessary
                     responseMessageList.AddRange(GetChunkedMessages(messageActivity, messageActivity.Text));
 
-                    // Process suggested actions if any
-                    if (messageActivity.SuggestedActions?.Actions?.Any() == true)
+                    // Chunk message into pieces as necessary
+                    if (messageActivity.SuggestedActions?.Actions != null)
                     {
-                        responseMessageList.Add(SuggestionActionsToWeChatMessage(messageActivity, messageActivity.SuggestedActions));
+                        responseMessageList.AddRange(ProcessCardActions(messageActivity, messageActivity.SuggestedActions.Actions));
                     }
 
-                    // Message with no attachments
-                    if (messageActivity.Attachments == null || messageActivity.Attachments.Count == 0)
-                    {
-                        return responseMessageList;
-                    }
-
-                    foreach (var attachment in messageActivity.Attachments)
+                    foreach (var attachment in messageActivity.Attachments ?? new List<Attachment>())
                     {
                         if (attachment.ContentType == AdaptiveCard.ContentType ||
                             attachment.ContentType == "application/adaptive-card" ||
@@ -212,12 +206,12 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                         else if (attachment.ContentType == SigninCard.ContentType)
                         {
                             var signinCard = attachment.ContentAs<SigninCard>();
-                            responseMessageList.AddRange(ProcessSigninCard(signinCard, messageActivity));
+                            responseMessageList.AddRange(ProcessSigninCard(messageActivity, signinCard));
                         }
                         else if (attachment.ContentType == OAuthCard.ContentType)
                         {
                             var oauthCard = attachment.ContentAs<OAuthCard>();
-                            responseMessageList.AddRange(ProcessOAuthCard(oauthCard, messageActivity));
+                            responseMessageList.AddRange(ProcessOAuthCard(messageActivity, oauthCard));
                         }
                         else if (attachment.ContentType == VideoCard.ContentType)
                         {
@@ -266,6 +260,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
             if (mediaId != null)
             {
                 responseList.Add(CreateMediaResponse(activity, mediaId.ToString(), attachment.ContentType));
+                return responseList;
             }
 
             if (!string.IsNullOrEmpty(attachment.ThumbnailUrl))
@@ -428,12 +423,6 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 };
             }
 
-            // Truncate to maximum total length as necessary
-            if (text.Length > MaxTotalMessageLength)
-            {
-                text = text.Substring(0, MaxTotalMessageLength);
-            }
-
             // Split text into chunks
             var messages = new List<IResponseMessageBase>();
             var chunkLength = MaxSingleMessageLength - 20;  // leave 20 chars for footer
@@ -551,65 +540,37 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// Convert all buttons in a message to text string for channels that can't display button.
         /// </summary>
         /// <param name="actions">CardAction list.</param>
-        /// <param name="actionToString">Specific way of converting actions to string was specified.</param>
-        /// <returns>CardAction as string.</returns>
-        private static string ButtonsToText(IList<CardAction> actions, Func<CardAction, string> actionToString = null)
+        /// <returns>WeChatResponses converted from card actions.</returns>
+        private static IList<IResponseMessageBase> ProcessCardActions(IMessageActivity activity, IList<CardAction> actions, string headerContent = null, string footerContent = null)
         {
             // Convert any options to text
-            var text = string.Empty;
             actions = actions ?? new List<CardAction>();
-            for (var i = 0; i < actions.Count; i++)
+            var menuItems = new List<MenuItem>();
+            foreach (var action in actions)
             {
-                var action = actions[i];
-                if (i > 0)
-                {
-                    text += NewLine;
-                }
+                var actionContent = action.Title ?? action.DisplayText ?? action.Text;
 
-                // If a specific way of converting actions to string was specified, use it
-                if (actionToString != null)
+                var menuItem = new MenuItem
                 {
-                    text += actionToString(action);
-                }
+                    Id = actionContent,
 
-                // Otherwise, use the default
-                else
-                {
-                    var index = actions.Count == 1 ? -1 : i + 1;
-                    text += ButtonToText(action, index);
-                }
+                    // TODO: fix this link can not open issue
+                    Content = action.Value?.ToString(), // AttachmentHelper.IsUrl(action.Value) ? $"<a href=\"{action.Value}\">{actionContent}</a>" : actionContent,
+                };
+                menuItems.Add(menuItem);
             }
 
-            return text;
-        }
-
-        /// <summary>
-        /// Convert all suggestedActions to text string for channels that can't display them natively.
-        /// </summary>
-        /// <param name="actions">List of card action.</param>
-        /// <returns>CardAction as string.</returns>
-        private static string SuggestedActionsToText(IList<CardAction> actions)
-        {
-            var result = ButtonsToText(actions, action =>
+            var menuResponse = new MessageMenuResponse()
             {
-                var buttonText = action.Text == ActionTypes.MessageBack ? action.Text : action.Value as string;
-                return buttonText ?? action.Title;
-            });
-            return result;
-        }
-
-        /// <summary>
-        /// Convert suggestion actions to WeChat message.
-        /// </summary>
-        /// <param name="activity">message activity from bot.</param>
-        /// <param name="suggestedActions">the suggestions.</param>
-        /// <returns>Response message to WeChat.</returns>
-        private static IResponseMessageBase SuggestionActionsToWeChatMessage(IMessageActivity activity, SuggestedActions suggestedActions)
-        {
-            var response = CreateTextResponseFromMessageActivity(activity);
-            var actionString = SuggestedActionsToText(suggestedActions.Actions);
-            response.Content = actionString;
-            return response;
+                MessageMenu = new MessageMenu()
+                {
+                    HeaderContent = headerContent ?? string.Empty,
+                    MenuItems = menuItems,
+                    TailContent = footerContent ?? string.Empty,
+                },
+            };
+            SetCommenField(menuResponse, activity);
+            return new List<IResponseMessageBase>() { menuResponse };
         }
 
         /// <summary>
@@ -637,13 +598,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 Articles = new List<Article>() { article },
             };
             messages.Add(newsResponse);
-
-            // Add buttons
-            if (thumbnailCard.Buttons != null && thumbnailCard.Buttons.Count > 0)
-            {
-                var buttonString = ButtonsToText(thumbnailCard.Buttons);
-                messages.AddRange(GetChunkedMessages(activity, buttonString));
-            }
+            messages.AddRange(ProcessCardActions(activity, thumbnailCard.Buttons));
 
             return messages;
         }
@@ -663,41 +618,19 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 body = AddLine(body, $"{fact.Key}:  {fact.Value}");
             }
 
-            messages.AddRange(GetChunkedMessages(activity, body));
-
             // Add items, grouping text only ones into a single post
-            string textbody = null;
             foreach (var item in receiptCard.Items ?? new List<ReceiptItem>())
             {
-                if (item.Image != null)
-                {
-                    body = AddText(item.Title, item.Price);
-                    body = AddLine(body, item.Subtitle);
-                    body = AddLine(body, item.Text);
-                    messages.AddRange(GetChunkedMessages(activity, body));
-                }
-                else
-                {
-                    textbody = AddLine(textbody, item.Title);
-                    textbody = AddText(textbody, item.Price);
-                    textbody = AddLine(textbody, item.Subtitle);
-                    textbody = AddLine(textbody, item.Text);
-                }
+                body = AddText(item.Title, item.Price);
+                body = AddLine(body, item.Subtitle);
+                body = AddLine(body, item.Text);
+                messages.AddRange(GetChunkedMessages(activity, body));
             }
-
-            // Add textonly items
-            messages.AddRange(GetChunkedMessages(activity, textbody));
 
             // Add totals
             body = $"Tax:  {receiptCard.Tax}";
             body = AddLine(body, $"Total:  {receiptCard.Total}");
-
-            // Add buttons
-            if (receiptCard.Buttons != null && receiptCard.Buttons.Count > 0)
-            {
-                body = AddLine(body, ButtonsToText(receiptCard.Buttons));
-            }
-
+            messages.AddRange(ProcessCardActions(activity, receiptCard.Buttons));
             messages.AddRange(GetChunkedMessages(activity, body));
 
             return messages;
@@ -706,7 +639,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// <summary>
         /// Downgrade SigninCard into text replies for low-fi channels.
         /// </summary>
-        private static List<IResponseMessageBase> ProcessSigninCard(SigninCard signinCard, IMessageActivity activity)
+        private static IList<IResponseMessageBase> ProcessSigninCard(IMessageActivity activity, SigninCard signinCard)
         {
             var messages = new List<IResponseMessageBase>();
 
@@ -724,19 +657,13 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// <summary>
         /// Downgrade OAuthCard into text replies for low-fi channels.
         /// </summary>
-        private static List<IResponseMessageBase> ProcessOAuthCard(OAuthCard oauthCard, IMessageActivity activity)
+        private static List<IResponseMessageBase> ProcessOAuthCard(IMessageActivity activity, OAuthCard oauthCard)
         {
             var messages = new List<IResponseMessageBase>();
 
             // Add text
             messages.AddRange(GetChunkedMessages(activity, oauthCard.Text));
-
-            // Add button
-            if (oauthCard.Buttons != null)
-            {
-                messages.AddRange(GetChunkedMessages(activity, ButtonToText(oauthCard.Buttons.FirstOrDefault())));
-            }
-
+            messages.AddRange(ProcessCardActions(activity, oauthCard.Buttons));
             return messages;
         }
 
@@ -774,18 +701,22 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// <returns>A new instance of News create by hero card.</returns>
         private async Task<News> CreateNewsFromHeroCard(IMessageActivity activity, HeroCard heroCard)
         {
-            // Add text
+            if (heroCard.Tap == null)
+            {
+                throw new ArgumentException("Tap action is required.", nameof(heroCard));
+            }
+
             var news = new News
             {
                 Author = activity.From.Name,
                 Description = heroCard.Subtitle,
                 Content = heroCard.Text,
                 Title = heroCard.Title,
-                ShowCoverPicture = heroCard.Images.Count > 0 ? "1" : "0",
+                ShowCoverPicture = heroCard.Images?.Count > 0 ? "1" : "0",
 
                 // Hero card don't have original url, but it's required by WeChat.
-                // Set a default value instead.
-                ContentSourceUrl = DefaultContentUrl,
+                // Let user use openurl action as tap action instead.
+                ContentSourceUrl = heroCard.Tap.Value.ToString(),
             };
 
             foreach (var image in heroCard.Images ?? new List<CardImage>())
@@ -810,64 +741,54 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         {
             try
             {
-                if (adaptiveCard.BackgroundImage == null)
+                if (!adaptiveCard.AdditionalProperties.ContainsKey(CoverImageUrlKey))
                 {
-                    throw new ArgumentException("Background image is required.", nameof(adaptiveCard));
+                    throw new ArgumentException("Cover image is required.", nameof(adaptiveCard));
+                }
+
+                if (!adaptiveCard.AdditionalProperties.ContainsKey(ContentSourceUrlKey))
+                {
+                    throw new ArgumentException("Content source URL is required.", nameof(adaptiveCard));
                 }
 
                 var renderer = new AdaptiveCardRenderer();
                 var schemaVersion = renderer.SupportedSchemaVersion;
-                var thumbMediaId = string.Empty;
+                var converImageUrl = adaptiveCard.AdditionalProperties[CoverImageUrlKey].ToString();
+                var attachmentData = await CreateAttachmentDataAsync(title ?? activity.Text, converImageUrl, MediaTypes.Image).ConfigureAwait(false);
+                var thumbMediaId = (await _wechatClient.UploadMediaAsync(attachmentData, false).ConfigureAwait(false)).MediaId;
+
+                // Replace all image URL to WeChat acceptable URL
                 foreach (var element in adaptiveCard.Body)
                 {
                     await ReplaceAdaptiveImageUri(element).ConfigureAwait(false);
                 }
 
-                if (adaptiveCard.BackgroundImage != null)
-                {
-                    var titleImageUrl = adaptiveCard.BackgroundImage.AbsoluteUri;
-                    var attachmentData = await CreateAttachmentDataAsync(title ?? activity.Text, titleImageUrl, MediaTypes.Image).ConfigureAwait(false);
-                    thumbMediaId = (await _wechatClient.UploadMediaAsync(attachmentData, false).ConfigureAwait(false)).MediaId;
-                }
-
                 // Render the card
                 var renderedCard = renderer.RenderCard(adaptiveCard);
-
-                // Get the output HTML
                 var html = renderedCard.Html;
 
                 // (Optional) Check for any renderer warnings
                 // This includes things like an unknown element type found in the card
                 // Or the card exceeded the maximum number of supported actions, etc
                 var warnings = renderedCard.Warnings;
-
-                // Add text
                 var news = new News
                 {
                     Author = activity.From.Name,
                     Description = adaptiveCard.Speak ?? adaptiveCard.FallbackText,
                     Content = html.ToString(),
-                    Title = title ?? new Guid().ToString(),
+                    Title = title,
 
                     // Set not should cover, because adaptive card don't have a cover.
                     ShowCoverPicture = "0",
-                    ContentSourceUrl = DefaultContentUrl,
+                    ContentSourceUrl = adaptiveCard.AdditionalProperties[ContentSourceUrlKey].ToString(),
                     ThumbMediaId = thumbMediaId,
                 };
 
-                // WeChat news don't support background image.
                 return news;
-            }
-            catch (AdaptiveException ex)
-            {
-                // Failed rendering
-                _logger.LogError(ex, "Failed to rending adaptive card.");
-                throw;
             }
             catch (Exception ex)
             {
-                // upload graphic message failed.
-                _logger.LogError(ex, "Error when uploading adaptive card.");
+                _logger.LogError(ex, "Process adaptive card failed.");
                 throw;
             }
         }
@@ -920,16 +841,11 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         {
             var messages = new List<IResponseMessageBase>();
 
-            // Generate body
+            // Add text body
             var body = animationCard.Title;
             body = AddLine(body, animationCard.Subtitle);
             body = AddLine(body, animationCard.Text);
-
-            // Add buttons
-            if (animationCard.Buttons != null && animationCard.Buttons.Count > 0)
-            {
-                body = AddLine(body, ButtonsToText(animationCard.Buttons));
-            }
+            messages.AddRange(GetChunkedMessages(activity, body));
 
             // Add image
             if (!string.IsNullOrEmpty(animationCard.Image?.Url))
@@ -943,7 +859,8 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 messages.Add(await MediaContentToWeChatResponse(activity, mediaUrl.Profile, mediaUrl.Url, MediaTypes.Gif).ConfigureAwait(false));
             }
 
-            messages.AddRange(GetChunkedMessages(activity, body));
+            // Add buttons
+            messages.AddRange(ProcessCardActions(activity, animationCard.Buttons));
 
             return messages;
         }
@@ -992,13 +909,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
             var uploadResult = await _wechatClient.UploadNewsAsync(new News[] { news }, _uploadTemporaryMedia).ConfigureAwait(false);
             var mpnews = new MPNewsResponse(uploadResult.MediaId);
             messages.Add(mpnews);
-
-            // Add buttons
-            if (heroCard.Buttons != null && heroCard.Buttons.Count > 0)
-            {
-                var buttonString = ButtonsToText(heroCard.Buttons);
-                messages.AddRange(GetChunkedMessages(activity, buttonString));
-            }
+            messages.AddRange(ProcessCardActions(activity, heroCard.Buttons));
 
             return messages;
         }
@@ -1035,14 +946,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 ToUserName = activity.Recipient.Id,
                 Video = video,
             });
-
-            // Add buttons
-            if (videoCard.Buttons != null && videoCard.Buttons.Count > 0)
-            {
-                var buttonString = string.Empty;
-                buttonString = ButtonsToText(videoCard.Buttons);
-                messages.AddRange(GetChunkedMessages(activity, buttonString));
-            }
+            messages.AddRange(ProcessCardActions(activity, videoCard.Buttons));
 
             return messages;
         }
@@ -1084,14 +988,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 Music = music,
             };
             messages.Add(musicResponse);
-
-            // Add buttons
-            if (audioCard.Buttons != null && audioCard.Buttons.Count > 0)
-            {
-                var buttonString = string.Empty;
-                buttonString = ButtonsToText(audioCard.Buttons);
-                messages.AddRange(GetChunkedMessages(activity, buttonString));
-            }
+            messages.AddRange(ProcessCardActions(activity, audioCard.Buttons));
 
             return messages;
         }

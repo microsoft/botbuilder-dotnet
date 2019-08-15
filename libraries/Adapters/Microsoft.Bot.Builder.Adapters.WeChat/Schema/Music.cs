@@ -9,6 +9,12 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema
     [XmlRoot("Music")]
     public class Music
     {
+        /// <summary>
+        /// Gets or sets Title.
+        /// </summary>
+        /// <value>
+        /// Title of music.
+        /// </value>
         [XmlIgnore]
         public string Title { get; set; }
 
@@ -26,6 +32,12 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema
             }
         }
 
+        /// <summary>
+        /// Gets or sets Description.
+        /// </summary>
+        /// <value>
+        /// Description of music.
+        /// </value>
         [XmlIgnore]
         public string Description { get; set; }
 
@@ -43,6 +55,12 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema
             }
         }
 
+        /// <summary>
+        /// Gets or sets MusicUrl.
+        /// </summary>
+        /// <value>
+        /// Url of music.
+        /// </value>
         [XmlIgnore]
         public string MusicUrl { get; set; }
 
@@ -60,6 +78,12 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema
             }
         }
 
+        /// <summary>
+        /// Gets or sets HQMusicUrl.
+        /// </summary>
+        /// <value>
+        /// High quality music Url.
+        /// </value>
         [XmlIgnore]
         public string HQMusicUrl { get; set; }
 
@@ -77,6 +101,12 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema
             }
         }
 
+        /// <summary>
+        /// Gets or sets ThumbMediaId.
+        /// </summary>
+        /// <value>
+        /// Thumbnail image id of the music.
+        /// </value>
         [XmlIgnore]
         public string ThumbMediaId { get; set; }
 

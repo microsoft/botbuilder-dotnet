@@ -66,6 +66,11 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.TestBot
             // Decide which type of card(s) we are going to show the user
             switch (((FoundChoice)stepContext.Result).Value)
             {
+                case "Markdown":
+                    // Display an AnimationCard.
+                    reply.Text = "*text downgrade from markdown bold text*";
+                    reply.TextFormat = TextFormatTypes.Markdown;
+                    break;
                 case "Animation Card":
                     // Display an AnimationCard.
                     reply.Attachments.Add(Cards.GetAnimationCard().ToAttachment());
@@ -99,9 +104,31 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.TestBot
                     reply.Text = "adaptive card";
                     reply.Attachments.Add(Cards.CreateAdaptiveCardAttachment());
                     break;
+                case "Carousel":
+                    // Display a VideoCard
+                    reply.Text = "WeChat not support carousel natively, will downgrade to list.";
+                    reply.Attachments.Add(Cards.GetAnimationCard().ToAttachment());
+                    reply.Attachments.Add(Cards.GetThumbnailCard().ToAttachment());
+                    reply.Attachments.Add(Cards.GetAudioCard().ToAttachment());
+                    reply.Attachments.Add(Cards.GetSigninCard().ToAttachment());
+                    reply.Attachments.Add(Cards.GetVideoCard().ToAttachment());
+                    reply.Attachments.Add(Cards.CreateAdaptiveCardAttachment());
+                    break;
+                case "SuggestedActions":
+                    // Display a VideoCard
+                    reply.Text = "Suggest Actions";
+                    reply.SuggestedActions = new SuggestedActions()
+                    {
+                        Actions = new List<CardAction>()
+                        {
+                            new CardAction() { Title = ActionTypes.MessageBack, Type = ActionTypes.MessageBack, Value = "messageBack" },
+                            new CardAction() { Title = ActionTypes.ImBack, Type = ActionTypes.ImBack, Value = "imBack" },
+                        },
+                    };
+                    break;
                 default:
                     // Give the user instructions about what to do next
-                    await stepContext.Context.SendActivityAsync(MessageFactory.Text("Type anything to show the card list again."), cancellationToken);
+                    await stepContext.Context.SendActivityAsync(MessageFactory.Text("Type anything to show the choice list again."), cancellationToken);
                     return await stepContext.EndDialogAsync();
             }
 
@@ -109,7 +136,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.TestBot
             await stepContext.Context.SendActivityAsync(reply, cancellationToken);
 
             // Give the user instructions about what to do next
-            await stepContext.Context.SendActivityAsync(MessageFactory.Text("Type anything to show the card list again."), cancellationToken);
+            await stepContext.Context.SendActivityAsync(MessageFactory.Text("Type anything to show the choice list again."), cancellationToken);
 
             return await stepContext.EndDialogAsync();
         }
@@ -118,6 +145,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.TestBot
         {
             var cardOptions = new List<Choice>()
             {
+                new Choice() { Value = "Markdown", Synonyms = new List<string>() { "markdown", "mark" } },
                 new Choice() { Value = "Animation Card", Synonyms = new List<string>() { "animation" } },
                 new Choice() { Value = "Audio Card", Synonyms = new List<string>() { "audio" } },
                 new Choice() { Value = "Hero Card", Synonyms = new List<string>() { "hero" } },
@@ -126,6 +154,8 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.TestBot
                 new Choice() { Value = "Thumbnail Card", Synonyms = new List<string>() { "thumbnail", "thumb" } },
                 new Choice() { Value = "Video Card", Synonyms = new List<string>() { "video" } },
                 new Choice() { Value = "Adaptive Card", Synonyms = new List<string>() { "adaptive" } },
+                new Choice() { Value = "Carousel", Synonyms = new List<string>() { "carousel" } },
+                new Choice() { Value = "SuggestedActions", Synonyms = new List<string>() { "suggestedactions", "suggest", "suggested" } },
             };
 
             return cardOptions;

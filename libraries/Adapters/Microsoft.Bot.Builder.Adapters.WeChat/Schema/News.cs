@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema
         /// Gets or sets ThumbMediaId.
         /// </summary>
         /// <value>
-        /// Thumbnail image media id.
+        /// Thumbnail image id.
         /// </value>
         [JsonProperty("thumb_media_id")]
         public string ThumbMediaId { get; set; }

@@ -6,7 +6,8 @@
   "version": "1.0",
   "type": "AdaptiveCard",
   "speak": "Your flight is confirmed for you and 3 other passengers from San Francisco to Amsterdam on Friday, October 10 8:30 AM",
-  "backgroundImage": "https://docs.microsoft.com/en-us/adaptive-cards/content/videoposter.png",
+  "coverImageUrl": "https://docs.microsoft.com/en-us/adaptive-cards/content/videoposter.png",
+  "contentSourceUrl": "https://docs.microsoft.com/en-us/adaptive-cards/content/videoposter.png",
   "body": [
     {
       "type": "TextBlock",

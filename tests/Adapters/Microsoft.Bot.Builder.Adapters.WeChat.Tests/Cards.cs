@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using System.IO;
+using System.Net.Mime;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
@@ -35,6 +36,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests
                        " from text/sms to Skype, Slack, Office 365 mail and other popular services.",
                 Images = new List<CardImage> { new CardImage("https://sec.ch9.ms/ch9/7ff5/e07cfef0-aa3b-40bb-9baa-7c9ef8ff7ff5/buildreactionbotframework_960.jpg") },
                 Buttons = new List<CardAction> { new CardAction(ActionTypes.OpenUrl, "Get Started", value: "https://docs.microsoft.com/bot-framework") },
+                Tap = new CardAction(ActionTypes.OpenUrl, value: "https://sec.ch9.ms/ch9/7ff5/e07cfef0-aa3b-40bb-9baa-7c9ef8ff7ff5/buildreactionbotframework_960.jpg"),
             };
 
             return heroCard;
@@ -99,6 +101,22 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests
             };
 
             return signinCard;
+        }
+
+        public static Attachment GetOAuthCardAttachment()
+        {
+            var oauthCard = new OAuthCard
+            {
+                Text = "BotFramework Sign-in Card",
+                ConnectionName = "connectionName",
+                Buttons = new List<CardAction> { new CardAction(ActionTypes.Signin, "Sign-in", value: "https://login.microsoftonline.com/") },
+            };
+            var oauthAttachment = new Attachment
+            {
+                ContentType = OAuthCard.ContentType,
+                Content = oauthCard,
+            };
+            return oauthAttachment;
         }
 
         public static AnimationCard GetAnimationCard()

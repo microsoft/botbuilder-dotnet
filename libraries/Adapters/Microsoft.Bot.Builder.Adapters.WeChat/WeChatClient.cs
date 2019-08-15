@@ -558,6 +558,43 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         }
 
         /// <summary>
+        /// Send a voice message.
+        /// </summary>
+        /// <param name="openId">User's open id from WeChat.</param>
+        /// <param name="messageMenu">Message menu that need to be sent.</param>
+        /// <param name="timeout">Send message operation timeout.</param>
+        /// <param name="customerServiceAccount">Customer service account open id.</param>
+        /// <returns>Standard result of calling WeChat message API.</returns>
+        public async Task<WeChatJsonResult> SendMessageMenuAsync(string openId, MessageMenu messageMenu, int timeout = 10000, string customerServiceAccount = "")
+        {
+            object data;
+            if (string.IsNullOrWhiteSpace(customerServiceAccount))
+            {
+                data = new
+                {
+                    touser = openId,
+                    msgtype = ResponseMessageTypes.MessageMenu,
+                    msgmenu = messageMenu,
+                };
+            }
+            else
+            {
+                data = new
+                {
+                    touser = openId,
+                    msgtype = ResponseMessageTypes.MessageMenu,
+                    msgmenu = messageMenu,
+                    customservice = new
+                    {
+                        kf_account = customerServiceAccount,
+                    },
+                };
+            }
+
+            return await SendMessageToUser(data, timeout).ConfigureAwait(false);
+        }
+
+        /// <summary>
         /// All http request send to WeChat will be handled by this method.
         /// </summary>
         /// <param name="token">Authentication token.</param>

@@ -383,38 +383,36 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                             var textResponse = response as TextResponse;
                             await _wechatClient.SendTextAsync(openId, textResponse.Content).ConfigureAwait(false);
                             break;
-
                         case ResponseMessageTypes.Image:
                             var imageResposne = response as ImageResponse;
                             await _wechatClient.SendImageAsync(openId, imageResposne.Image.MediaId).ConfigureAwait(false);
                             break;
-
                         case ResponseMessageTypes.News:
                             var newsResponse = response as NewsResponse;
                             await _wechatClient.SendNewsAsync(openId, newsResponse.Articles).ConfigureAwait(false);
                             break;
-
                         case ResponseMessageTypes.Music:
                             var musicResponse = response as MusicResponse;
                             var music = musicResponse.Music;
                             await _wechatClient.SendMusicAsync(openId, music.Title, music.Description, music.MusicUrl, music.HQMusicUrl, music.ThumbMediaId).ConfigureAwait(false);
                             break;
-
                         case ResponseMessageTypes.MPNews:
                             var mpnewsResponse = response as MPNewsResponse;
                             await _wechatClient.SendMPNewsAsync(openId, mpnewsResponse.MediaId).ConfigureAwait(false);
                             break;
-
                         case ResponseMessageTypes.Video:
                             var videoResposne = response as VideoResponse;
                             var video = videoResposne.Video;
                             await _wechatClient.SendVideoAsync(openId, video.MediaId, video.Title, video.Description).ConfigureAwait(false);
                             break;
-
                         case ResponseMessageTypes.Voice:
                             var voiceResponse = response as VoiceResponse;
                             var voice = voiceResponse.Voice;
                             await _wechatClient.SendVoiceAsync(openId, voice.MediaId).ConfigureAwait(false);
+                            break;
+                        case ResponseMessageTypes.MessageMenu:
+                            var menuResponse = response as MessageMenuResponse;
+                            await _wechatClient.SendMessageMenuAsync(openId, menuResponse.MessageMenu).ConfigureAwait(false);
                             break;
                         case ResponseMessageTypes.LocationMessage:
                         case ResponseMessageTypes.SuccessResponse:

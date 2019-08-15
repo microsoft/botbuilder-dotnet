@@ -484,8 +484,15 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests.TestUtilities
             mockActivity.Timestamp = DateTimeOffset.UtcNow;
             mockActivity.Text = "text";
 
-            // TODO: enable channelData test
-            // mockActivity.ChannelData = request;
+            mockActivity.SuggestedActions = new SuggestedActions()
+            {
+                Actions = new List<CardAction>()
+                    {
+                        new CardAction() { Title = ActionTypes.MessageBack, Type = ActionTypes.MessageBack, Value = "messageBack" },
+                        new CardAction() { Title = ActionTypes.ImBack, Type = ActionTypes.ImBack, Value = "imBack" },
+                        new CardAction() { Title = ActionTypes.OpenUrl, Type = ActionTypes.OpenUrl, Value = "http://test.com" },
+                    },
+            };
             return mockActivity;
         }
 
@@ -521,6 +528,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests.TestUtilities
             mockActivity.Attachments.Add(Cards.GetReceiptCard().ToAttachment());
             mockActivity.Attachments.Add(Cards.GetSigninCard().ToAttachment());
             mockActivity.Attachments.Add(Cards.GetThumbnailCard().ToAttachment());
+            mockActivity.Attachments.Add(Cards.GetOAuthCardAttachment());
             mockActivity.Attachments.Add(Cards.GetVideoCard().ToAttachment());
             mockActivity.Attachments.Add(Cards.CreateAdaptiveCardAttachment());
 
