@@ -51,7 +51,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
             {
                 var endpoint = new Uri(_config.PublicAddress);
 
-                if (endpoint.Host != null)
+                if (string.IsNullOrWhiteSpace(endpoint.Host))
                 {
                     _config.PublicAddress = endpoint.Host;
                 }
@@ -151,10 +151,6 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                     TeamsResult<Message> webexResponse = await _api.CreateDirectMessageAsync(personIDorEmail, text);
                     var response = new ResourceResponse(webexResponse.Data.Id);
                     responses.Add(response);
-                }
-                else
-                {
-                    // not type message
                 }
             }
 
