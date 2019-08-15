@@ -6,14 +6,18 @@ using System;
 namespace Microsoft.Bot.Builder
 {
     /// <summary>
-    /// Handles persistence of a user state object using the user ID as part of the key.
+    /// Defines a state management object for user state.
     /// </summary>
+    /// <remarks>
+    /// User state is available in any turn that the bot is conversing with that user on that
+    /// channel, regardless of the conversation.
+    /// </remarks>
     public class UserState : BotState
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="UserState"/> class.
         /// </summary>
-        /// <param name="storage">The storage provider to use.</param>
+        /// <param name="storage">The storage layer to use.</param>
         public UserState(IStorage storage)
             : base(storage, nameof(UserState))
         {
@@ -24,6 +28,13 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         /// <param name="turnContext">The context object for this turn.</param>
         /// <returns>The storage key.</returns>
+        /// <remarks>
+        /// User state includes the channel ID and user ID as part of its storage key.
+        /// </remarks>
+        /// <exception cref="ArgumentNullException">The <see cref="ITurnContext.Activity"/> for the
+        /// current turn is missing <see cref="Schema.Activity.ChannelId"/> or
+        /// <see cref="Schema.Activity.From"/> information, or the sender's
+        /// <see cref="Schema.ConversationAccount.Id"/> is missing.</exception>
         protected override string GetStorageKey(ITurnContext turnContext)
         {
             var channelId = turnContext.Activity.ChannelId ?? throw new ArgumentNullException("invalid activity-missing channelId");
