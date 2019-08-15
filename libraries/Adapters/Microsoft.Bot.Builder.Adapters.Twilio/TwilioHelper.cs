@@ -16,12 +16,14 @@ using Twilio.Security;
 
 using AuthenticationException = System.Security.Authentication.AuthenticationException;
 
+[assembly: InternalsVisibleTo("Microsoft.Bot.Builder.Adapters.Twilio.Tests")]
+
 namespace Microsoft.Bot.Builder.Adapters.Twilio
 {
     /// <summary>
     /// A helper class to create Activities and Twilio messages.
     /// </summary>
-    public static class TwilioHelper
+    internal static class TwilioHelper
     {
         /// <summary>
         /// Formats a BotBuilder activity into an outgoing Twilio SMS message.
