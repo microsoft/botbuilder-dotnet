@@ -10,6 +10,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
     {
         public string Type;
         public object Value;
+
         public Comparison(string type, object value)
         {
             Type = type;
@@ -343,6 +344,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
                     binaryExpression = Expression.MakeExpression(type, binaryExpression, info.Expression);
                 }
             }
+
             return binaryExpression;
         }
 
@@ -364,6 +366,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
                     break;
                 }
             }
+
             baseName = mem.Substring(0, i);
             return int.Parse(mem.Substring(i));
         }
@@ -407,6 +410,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
                             }
                         }
                     }
+
                     var any = Rand.NextDouble() < 0.5;
                     if (any)
                     {
@@ -511,8 +515,8 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
                     }
 
                     break;
-
             }
+
             return isNot ? null : new Comparison(comparison.Type, value);
         }
 
@@ -548,6 +552,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
 
                 result[type].Add(binding.Key);
             }
+
             return result;
         }
 
@@ -580,6 +585,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
             {
                 totalWeight += choice.Weight;
             }
+
             var selection = Rand.NextDouble() * totalWeight;
             var soFar = 0.0;
             var result = default(T);

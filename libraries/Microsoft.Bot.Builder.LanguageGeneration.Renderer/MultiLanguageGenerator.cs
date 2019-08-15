@@ -6,7 +6,6 @@ using Microsoft.Bot.Builder.Dialogs;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
-
     /// <summary>
     /// ILanguageGenerator which uses implements a map of locale->ILanguageGenerator for the locale and has a policy which controls fallback (try en-us -> en -> default)
     /// </summary>

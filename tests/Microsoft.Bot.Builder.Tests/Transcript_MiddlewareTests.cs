@@ -46,7 +46,6 @@ namespace Microsoft.Bot.Builder.Tests
         {
             var transcriptStore = new MemoryTranscriptStore();
             await _TestDateLogUpdateActivitiesTest(transcriptStore);
-
         }
 
         [TestMethod]
@@ -79,7 +78,6 @@ namespace Microsoft.Bot.Builder.Tests
         {
             var transcriptStore = GetFileTranscriptLogger();
             await _TestDateLogUpdateActivitiesTest(transcriptStore);
-
         }
 
         private FileTranscriptLogger GetFileTranscriptLogger()
@@ -92,6 +90,7 @@ namespace Microsoft.Bot.Builder.Tests
                 foreach (var file in Directory.GetFiles(path, "*.transcript", new EnumerationOptions() { RecurseSubdirectories = true }))
                     File.Delete(file);
             }
+
             var transcriptStore = new FileTranscriptLogger(path);
             return transcriptStore;
         }
@@ -137,7 +136,6 @@ namespace Microsoft.Bot.Builder.Tests
                 Assert.IsTrue(activity.Timestamp > default(DateTimeOffset));
             }
         }
-
 
         public static async Task _LogUpdateActivitiesTest(ITranscriptStore transcriptStore)
         {
@@ -226,7 +224,6 @@ namespace Microsoft.Bot.Builder.Tests
             pagedResult = await transcriptStore.GetTranscriptActivitiesAsync(conversation.ChannelId, conversation.Conversation.Id, null, DateTimeOffset.MaxValue);
             Assert.AreEqual(0, pagedResult.Items.Length);
         }
-
 
         private static async Task _LogDeleteActivitesTest(ITranscriptStore transcriptStore)
         {

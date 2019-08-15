@@ -55,7 +55,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             var fib9999 = 1242044891;
             var fib100000 = 2132534333;
             var maxIdx = 10000;
-            for (int i = 2; i <= maxIdx; i++){
+            for (int i = 2; i <= maxIdx; i++) {
                 cache.TryGet(i - 2,  out var prev2);
                 cache.TryGet(i - 1, out var prev1);
                 cache.Set(i, prev1 + prev2);
@@ -112,6 +112,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             {
                 tasks.Add(Task.Run(() => storeElement(cache, numOfOps, i)));
             }
+
             await Task.WhenAll(tasks);
 
             for (var i = numOfOps - numOfThreads; i < numOfOps; i++)

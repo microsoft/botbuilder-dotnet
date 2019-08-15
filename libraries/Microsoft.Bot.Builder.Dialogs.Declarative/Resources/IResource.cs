@@ -24,6 +24,5 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// </summary>
         /// <returns></returns>
         Task<Stream> OpenStreamAsync();
-
     }
 }

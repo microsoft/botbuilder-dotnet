@@ -101,6 +101,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                             {
                                 this.Actions.Clear();
                             }
+
                             await EmitEventAsync(name: AdaptiveEvents.SequenceEnded, value: null, bubble: false).ConfigureAwait(false);
                             break;
                         case ActionChangeType.ReplaceSequence:
@@ -108,6 +109,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                             {
                                 this.Actions.Clear();
                             }
+
                             await UpdateSequenceAsync(change, cancellationToken).ConfigureAwait(false);
                             break;
                     }

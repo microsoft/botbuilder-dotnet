@@ -6,7 +6,6 @@ using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
-
     /// <summary>
     /// Defines an activity Template where the template expression is local aka "inline".
     /// </summary>

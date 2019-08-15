@@ -47,6 +47,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
                         matches.Add(pos);
                     }
                 }
+
                 selections = matches;
             }
             else
@@ -59,11 +60,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
                         matches.Add((ValueTuple<int, IOnEvent>)trigger.Action);
                     }
                 }
+
                 // Sort rules by original order and then pass to child selector
                 matches = (from candidate in matches orderby candidate.Item1 ascending select candidate).ToList();
                 Selector.Initialize(matches.Select(m => m.Item2), false);
                 selections = (from match in await Selector.Select(context, cancel).ConfigureAwait(false) select matches[match].Item1).ToList();
             }
+
             return selections;
         }
     }

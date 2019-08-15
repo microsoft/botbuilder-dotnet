@@ -44,6 +44,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 botAdapter.UseLanguageGeneration(resourceExplorer, new ResourceMultiLanguageGenerator(defaultLg));
             }
+
             return botAdapter;
         }
 

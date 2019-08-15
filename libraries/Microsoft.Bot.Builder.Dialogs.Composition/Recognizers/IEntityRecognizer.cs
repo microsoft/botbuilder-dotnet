@@ -9,7 +9,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition
     /// </summary>
     public interface IEntityRecognizer
     {
-
         /// <summary>
         /// RecognizerEntities() - given a pool of entities and context add additional entities
         /// </summary>

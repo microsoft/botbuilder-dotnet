@@ -91,7 +91,6 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <returns></returns>
         Task EndDialogAsync(ITurnContext turnContext, DialogInstance instance, DialogReason reason, CancellationToken cancellationToken = default(CancellationToken));
 
-
         /// <summary>
         /// Called when an event has been raised, using `DialogContext.emitEvent()`, by either the current dialog or a dialog that the current dialog started.
         /// </summary>

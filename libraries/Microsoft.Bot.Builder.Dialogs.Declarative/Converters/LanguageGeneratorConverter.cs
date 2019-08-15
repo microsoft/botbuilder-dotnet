@@ -15,7 +15,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
 {
     public class LanguageGeneratorConverter : InterfaceConverter<ILanguageGenerator>
     {
-
         public LanguageGeneratorConverter(IRefResolver refResolver, Source.IRegistry registry, Stack<string> paths)
             : base(refResolver, registry, paths)
         { }
@@ -27,6 +26,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
                 string readerValue = reader.Value.ToString();
                 return TypeFactory.Build<ILanguageGenerator>("DefaultLanguageGenerator", readerValue, serializer);
             }
+
             return base.ReadJson(reader, objectType, existingValue, serializer);
         }
     }

@@ -18,7 +18,8 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
         /// <summary>
         /// Create a new clause for each possible binding of variable.
         /// </summary>
-        Any };
+        Any }
+;
 
     /// <summary>
     /// Quantifier for allowing runtime expansion of expressions.
@@ -56,7 +57,6 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
         public override string ToString()
         {
             return $"{Type} {Variable} {Bindings.Count()}";
-
         }
     }
 }

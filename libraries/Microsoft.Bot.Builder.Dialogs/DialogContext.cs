@@ -480,6 +480,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             await EndActiveDialogAsync(DialogReason.ReplaceCalled, cancellationToken: cancellationToken).ConfigureAwait(false);
 
             this.State.Turn["__repeatDialogId"] = dialogId;
+
             // Start replacement dialog
             return await BeginDialogAsync(dialogId, options, cancellationToken).ConfigureAwait(false);
         }

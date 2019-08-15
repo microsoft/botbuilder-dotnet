@@ -15,6 +15,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     public class EditActions : DialogAction, IDialogDependencies
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="EditActions"/> class.
+        /// </summary>
+        [JsonConstructor]
+        public EditActions([CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
+            : base()
+        {
+            this.RegisterSourceLocation(sourceFilePath, sourceLineNumber);
+        }
+
+        /// <summary>
         /// Gets or sets the actions to be applied to the active action.
         /// </summary>
         [JsonProperty("actions")]
@@ -26,19 +36,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         [JsonProperty("changeType")]
         public ActionChangeType ChangeType { get; set; }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="EditActions"/> class.
-        /// </summary>
-        [JsonConstructor]
-        public EditActions([CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
-            : base()
+        public override List<IDialog> ListDependencies()
         {
-            this.RegisterSourceLocation(sourceFilePath, sourceLineNumber);
+            return this.Actions;
         }
 
         protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-
             if (dc is SequenceContext sc)
             {
                 var planActions = Actions.Select(s => new ActionState()
@@ -74,11 +78,5 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             var idList = Actions.Select(s => s.Id);
             return $"{nameof(EditActions)}({this.ChangeType}|{string.Join(",", idList)})";
         }
-
-        public override List<IDialog> ListDependencies()
-        {
-            return this.Actions;
-        }
-
     }
 }

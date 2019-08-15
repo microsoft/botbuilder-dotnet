@@ -82,7 +82,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         public string Condition
         {
             get { return condition?.ToString(); }
-            set {condition = (value != null) ? new ExpressionEngine().Parse(value) : null; }
+            set { condition = (value != null) ? new ExpressionEngine().Parse(value) : null; }
         }
 
         /// <summary>
@@ -96,7 +96,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         public List<IDialog> Default { get; set; } = new List<IDialog>();
 
         [JsonConstructor]
-        public SwitchCondition([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0) : base()
+        public SwitchCondition([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+            : base()
         {
             this.RegisterSourceLocation(callerPath, callerLine);
         }
@@ -132,7 +133,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
                 foreach (var caseCondition in this.Cases)
                 {
-
                     var (value, error) = this.caseExpressions[caseCondition.Value].TryEvaluate(dc.State);
 
                     if (error != null)

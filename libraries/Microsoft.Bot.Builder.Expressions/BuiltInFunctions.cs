@@ -495,7 +495,6 @@ namespace Microsoft.Bot.Builder.Expressions
                 return (value, error);
             };
 
-
         /// <summary>
         /// walk dialog callstack looking for property
         /// </summary>

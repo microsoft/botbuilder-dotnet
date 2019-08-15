@@ -57,6 +57,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             {
                 return OutputBinding;
             }
+
             set
             {
                 InputBindings[DialogContextState.DIALOG_VALUE] = value;

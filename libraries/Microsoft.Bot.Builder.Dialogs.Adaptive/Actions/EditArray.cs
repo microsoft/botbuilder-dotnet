@@ -21,6 +21,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// </summary>
     public class EditArray : DialogAction
     {
+        private Expression value;
+        private Expression arrayProperty;
+        private Expression resultProperty;
+
         public enum ArrayChangeType
         {
             /// <summary>
@@ -49,20 +53,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             Clear
         }
 
-        private Expression value;
-        private Expression arrayProperty;
-        private Expression resultProperty;
-
         [JsonConstructor]
         public EditArray([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base()
         {
             this.RegisterSourceLocation(callerPath, callerLine);
-        }
-
-        protected override string OnComputeId()
-        {
-            return $"array[{ChangeType + ": " + ArrayProperty}]";
         }
 
         /// <summary>
@@ -71,6 +66,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         [JsonConverter(typeof(StringEnumConverter))]
         [JsonProperty("changeType")]
         public ArrayChangeType ChangeType { get; set; }
+
+        protected override string OnComputeId()
+        {
+            return $"array[{ChangeType + ": " + ArrayProperty}]";
+        }
 
         /// <summary>
         /// Gets or sets memory expression of the array to manipulate.
@@ -142,7 +142,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             if (string.IsNullOrEmpty(ArrayProperty))
             {
-                throw new Exception($"EditArray: \"{ ChangeType }\" operation couldn't be performed because the arrayProperty wasn't specified.");
+                throw new Exception($"EditArray: \"{ChangeType}\" operation couldn't be performed because the arrayProperty wasn't specified.");
             }
 
             var array = dc.State.GetValue<JArray>(this.arrayProperty, new JArray());
@@ -217,6 +217,5 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new Exception($"EditArray: \"{ChangeType}\" operation couldn't be performed for array \"{ArrayProperty}\" because a value wasn't specified.");
             }
         }
-
     }
 }

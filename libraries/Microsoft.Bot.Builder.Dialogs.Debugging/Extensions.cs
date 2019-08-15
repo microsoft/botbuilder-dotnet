@@ -11,10 +11,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         public struct Releaser : IDisposable
         {
             public SemaphoreSlim Semaphore { get; }
+
             public Releaser(SemaphoreSlim semaphore)
             {
                 Semaphore = semaphore ?? throw new ArgumentNullException(nameof(semaphore));
             }
+
             public void Dispose()
             {
                 Semaphore.Release();

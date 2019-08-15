@@ -8,13 +8,13 @@ using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
-    class DialogManagerAdapter : BotAdapter
+    public class DialogManagerAdapter : BotAdapter
     {
+        public readonly List<Activity> Activities = new List<Activity>();
+
         public DialogManagerAdapter()
         {
         }
-
-        public readonly List<Activity> Activities = new List<Activity>();
 
         public override Task<ResourceResponse[]> SendActivitiesAsync(ITurnContext turnContext, Activity[] activities, CancellationToken cancellationToken)
         {

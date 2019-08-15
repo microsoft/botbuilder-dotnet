@@ -42,7 +42,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
 
         protected override Expression BuildExpression(IExpressionParser factory)
         {
-
             // add constraints for the intents property
             if (string.IsNullOrEmpty(this.Intent))
             {

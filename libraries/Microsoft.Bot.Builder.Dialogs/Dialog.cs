@@ -20,6 +20,8 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         private IBotTelemetryClient _telemetryClient;
 
+        private string id;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Dialog"/> class.
         /// Called from constructors in derived classes to initialize the <see cref="Dialog"/> class.
@@ -30,8 +32,6 @@ namespace Microsoft.Bot.Builder.Dialogs
             Id = dialogId;
             _telemetryClient = NullBotTelemetryClient.Instance;
         }
-
-        private string id;
 
         /// <summary>
         /// Unique id for the dialog.

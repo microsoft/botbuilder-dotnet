@@ -69,7 +69,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public void DialogManager_UserState_PersistedAcrossTurns()
         {
-
         }
 
         [TestMethod]
@@ -106,7 +105,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var componentDialog = new ComponentDialog();
             componentDialog.AddDialog(outerAdaptiveDialog);
 
-
             await CreateFlow(componentDialog, storage, firstConversationId)
             .Send("hi")
                 .AssertReply("Hello, what is your name?")
@@ -119,7 +117,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 .AssertReply("Hello Carlos, nice to meet you!")
             .StartTestAsync();
         }
-
 
         private AdaptiveDialog CreateTestDialog(string property = "user.name")
         {

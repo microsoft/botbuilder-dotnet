@@ -10,7 +10,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition.Recognizers
     {
         public BaseEntityRecognizer()
         {
-
         }
 
         protected abstract List<ModelResult> Recognize(string text, string culture);
@@ -35,6 +34,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition.Recognizers
                     }
                 }
             }
+
             return Task.FromResult((IList<Entity>)newEntities);
         }
     }

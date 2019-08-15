@@ -20,7 +20,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
     public class Bar
     {
         public string Name { get; set; }
+
         public int Age { get; set; }
+
         public bool cool { get; set; }
     }
 
@@ -66,7 +68,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 userState: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase),
                 conversationState: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase),
                 turnState: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase));
-
 
             // simple value types
             state.SetValue("UseR.nuM", 15);
@@ -116,7 +117,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 conversationState: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase),
                 turnState: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase));
 
-
             // complex type paths
             state.SetValue("UseR.fOo", foo);
             Assert.IsTrue(state.HasValue("user.foo.SuBname.name"), "should have the value");
@@ -150,7 +150,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 conversationState: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase),
                 turnState: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase));
 
-
             // complex type paths
             state.SetValue("user.name", "joe");
             state.SetValue("conversation[user.name]", "test");
@@ -173,7 +172,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 userState: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase),
                 conversationState: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase),
                 turnState: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase));
-
 
             // complex type paths
 #pragma warning disable CS0168 // The variable 'val' is declared but never used
@@ -205,7 +203,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 userState: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase),
                 conversationState: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase),
                 turnState: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase));
-
 
             // complex type paths
             state.SetValue("UseR.fOo", foo);
@@ -307,7 +304,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 {
                     new OnBeginDialog()
                     {
-
                         Actions = new List<IDialog>()
                         {
                             new SetProperty()
@@ -583,6 +579,5 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         .AssertReply("xyz")
                     .StartTestAsync();
         }
-
     }
 }

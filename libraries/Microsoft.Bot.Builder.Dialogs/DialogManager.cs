@@ -148,7 +148,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             await storage.WriteAsync(new Dictionary<string, object>()
             {
-                { keys.UserState, newState.UserState},
+                { keys.UserState, newState.UserState },
                 { keys.ConversationState, newState.ConversationState },
                 { keys.DialogState, newState.DialogStack },
             }).ConfigureAwait(false);

@@ -12,6 +12,7 @@ namespace Microsoft.Bot.Builder.TemplateManager
     {
         [JsonProperty(PropertyName = "template")]
         public string TemplateId { get; set; }
+
         [JsonProperty(PropertyName = "data")]
         public object Data { get; set; }
     }

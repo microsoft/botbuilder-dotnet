@@ -13,7 +13,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         Trim,
         Lowercase,
         UpperCase
-    };
+    }
+;
 
     /// <summary>
     /// Declarative text input to gather text data from users

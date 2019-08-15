@@ -35,7 +35,6 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("user.lists.{dialog.listName}")
         };
 
-
         [DataTestMethod]
         [DynamicData(nameof(InvalidExpressions))]
         [ExpectedException(typeof(Exception))]
@@ -51,7 +50,6 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
                 throw e;
             }
         }
-
 
         public static IEnumerable<object[]> BadExpressions => new[]
         {

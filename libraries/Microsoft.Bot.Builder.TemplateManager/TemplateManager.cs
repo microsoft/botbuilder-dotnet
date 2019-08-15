@@ -38,9 +38,9 @@ namespace Microsoft.Bot.Builder.TemplateManager
         {
             if (!this.Renderers.Contains(renderer))
             {
-
                 this.Renderers.Add(renderer);
             }
+
             return this;
         }
 

@@ -63,6 +63,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             {
                 context.TurnState.Add<ILanguageGenerator>(generator);
             }
+
             return context;
         }
 
@@ -74,7 +75,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var lg = new TemplateEngineLanguageGenerator("", "test", resourceResolver);
             await lg.Generate(context, "[tesdfdfsst]", null);
         }
-
 
         [TestMethod]
         public async Task TestImport()

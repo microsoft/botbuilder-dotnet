@@ -13,7 +13,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
     /// </summary>
     public class MultiLanguageRecognizer : IRecognizer
     {
-
         /// <summary>
         /// Policy for languages fallback 
         /// </summary>
@@ -28,7 +27,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
 
         public MultiLanguageRecognizer()
         {
-
         }
 
         public Task<RecognizerResult> RecognizeAsync(ITurnContext turnContext, CancellationToken cancellationToken)
@@ -43,6 +41,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
                     return recognizer.RecognizeAsync(turnContext, cancellationToken);
                 }
             }
+
             // nothing recognized
             return Task.FromResult(new RecognizerResult() { });
         }
@@ -59,6 +58,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
                     return recognizer.RecognizeAsync<T>(turnContext, cancellationToken);
                 }
             }
+
             // nothing recognized
             return Task.FromResult(default(T));
         }

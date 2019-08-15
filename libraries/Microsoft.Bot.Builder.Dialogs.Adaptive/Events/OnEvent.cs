@@ -120,7 +120,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
                     throw new Exception($"Invalid constraint expression: {this.Constraint}, {e.Message}");
                 }
             }
-                
         }
 
         /// <summary>
@@ -133,7 +132,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
         {
             return await OnExecuteAsync(planningContext).ConfigureAwait(false);
         }
-
 
         /// <summary>
         /// Method called to process the request to execute the actions

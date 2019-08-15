@@ -17,7 +17,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     public class InitProperty : DialogAction
     {
         [JsonConstructor]
-        public InitProperty([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0) : base()
+        public InitProperty([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+            : base()
         {
             this.RegisterSourceLocation(callerPath, callerLine);
         }
@@ -31,6 +32,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             {
                 return OutputBinding;
             }
+
             set
             {
                 InputBindings[DialogContextState.DIALOG_VALUE] = value;
@@ -49,7 +51,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             {
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
-
 
             // Ensure planning context
             if (dc is SequenceContext planning)

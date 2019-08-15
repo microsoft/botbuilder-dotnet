@@ -201,7 +201,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 }
                 catch
                 {
-
                 }
 
                 if (choices == null || choices.Count == 0)
@@ -213,7 +212,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                     }
                     catch
                     {
-
                     }
                 }
             }

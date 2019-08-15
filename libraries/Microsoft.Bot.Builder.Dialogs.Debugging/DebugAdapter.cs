@@ -37,15 +37,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 TurnContext = turnContext;
                 CodeModel = codeModel;
             }
+
             public ITurnContext TurnContext { get; }
+
             public ICodeModel CodeModel { get; }
+
             public string Name => TurnContext.Activity.Text;
+
             public IReadOnlyList<ICodePoint> Frames => CodeModel.PointsFor(LastContext, LastItem, LastMore);
+
             public RunModel Run { get; } = new RunModel();
+
             public Identifier<ICodePoint> FrameCodes { get; } = new Identifier<ICodePoint>();
+
             public Identifier<object> ValueCodes { get; } = new Identifier<object>();
+
             public DialogContext LastContext { get; set; }
+
             public object LastItem { get; set; }
+
             public string LastMore { get; set; }
         }
 
@@ -54,7 +64,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         public sealed class RunModel
         {
             public Phase? PhaseSent { get; set; }
+
             public Phase Phase { get; set; } = Phase.Started;
+
             public object Gate { get; } = new object();
 
             public void Post(Phase what)
@@ -327,6 +339,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         }
 
         private int sequence = 0;
+
         private int NextSeq => Interlocked.Increment(ref sequence);
 
         private Protocol.Capabilities MakeCapabilities()

@@ -40,11 +40,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             TypeFactory.RegisterAdaptiveTypes();
             resourceExplorer = ResourceExplorer.LoadProject(GetProjectFolder());
         }
+
         private static string GetProjectFolder()
         {
             return AppContext.BaseDirectory.Substring(0, AppContext.BaseDirectory.IndexOf("bin"));
         }
-
 
         [ClassCleanup]
         public static void ClassCleanup()
@@ -61,13 +61,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
         private async Task<ITurnContext> GetTurnContext(string lgFile)
         {
-
             var context = new TurnContext(new TestAdapter(), new Activity());
             var lgText = await resourceExplorer.GetResource(lgFile).ReadTextAsync();
             context.TurnState.Add<ILanguageGenerator>(new TemplateEngineLanguageGenerator(lgText, "test", LanguageGeneratorManager.ResourceResolver(resourceExplorer)));
             return context;
         }
-
 
         [TestMethod]
         public async Task TestInline()
@@ -198,7 +196,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.AreEqual("https://docs.microsoft.com/en-us/bot-framework/media/how-it-works/architecture-resize.png", activity.Attachments[0].ContentUrl);
         }
 
-
         [TestMethod]
         public async Task TestLocalImageAttachment()
         {
@@ -216,7 +213,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var bytes = Convert.FromBase64String(content);
             Assert.AreEqual(237449, bytes.Length);
         }
-
 
         [TestMethod]
         public async Task TestAdaptiveCard()
@@ -297,7 +293,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.AreEqual("test", (string)((dynamic)activity.Attachments[1].Content).body[0].text);
         }
 
-
         [TestMethod]
         public async Task TestAttachmentContentType()
         {
@@ -313,6 +308,5 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.AreEqual("image/png", activity.Attachments[0].ContentType);
             Assert.AreEqual(data.url.ToString(), activity.Attachments[0].ContentUrl.ToString());
         }
-
     }
 }

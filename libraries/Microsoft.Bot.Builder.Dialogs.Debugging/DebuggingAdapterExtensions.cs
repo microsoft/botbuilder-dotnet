@@ -35,7 +35,5 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 dataModel: dataModel, 
                 logger: logger));
         }
-
-
     }
 }

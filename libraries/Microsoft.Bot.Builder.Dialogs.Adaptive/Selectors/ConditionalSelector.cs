@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
         public string Condition
         {
             get { return condition?.ToString(); }
-            set {this.condition = (value != null) ? new ExpressionEngine().Parse(value) : null; }
+            set { this.condition = (value != null) ? new ExpressionEngine().Parse(value) : null; }
         }
 
         /// <summary>
@@ -58,6 +58,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
                 selector = IfFalse;
                 IfFalse.Initialize(_rules, _evaluate);
             }
+
             return await selector.Select(context, cancel).ConfigureAwait(false);
         }
     }

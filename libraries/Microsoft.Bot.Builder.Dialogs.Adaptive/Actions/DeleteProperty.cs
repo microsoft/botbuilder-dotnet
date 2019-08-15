@@ -20,7 +20,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         public string Property { get; set; }
 
         [JsonConstructor]
-        public DeleteProperty([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0) : base()
+        public DeleteProperty([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+            : base()
         {
             this.RegisterSourceLocation(callerPath, callerLine);
         }

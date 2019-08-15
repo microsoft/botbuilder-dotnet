@@ -10,10 +10,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
     public sealed class ReferenceEquality<T> : IEqualityComparer<T>
     {
         public static readonly IEqualityComparer<T> Instance = new ReferenceEquality<T>();
+
         private ReferenceEquality()
         {
         }
+
         bool IEqualityComparer<T>.Equals(T x, T y) => object.ReferenceEquals(x, y);
+
         int IEqualityComparer<T>.GetHashCode(T obj) => RuntimeHelpers.GetHashCode(obj);
     }
 
@@ -21,6 +24,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
     {
         private const ulong MORE = 0x80;
         private const ulong DATA = 0x7F;
+
         private static void Encode(ulong source, ref ulong target, ref int offset)
         {
             while (source > DATA)
@@ -37,6 +41,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 offset += 8;
             }
         }
+
         private static void Decode(ref ulong source, out ulong target)
         {
             target = 0;
@@ -55,6 +60,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 offset += 7;
             }
         }
+
         public static ulong Encode(ulong one, ulong two)
         {
             ulong target = 0;
@@ -102,6 +108,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 return code;
             }
         }
+
         public void Remove(T item)
         {
             lock (gate)
@@ -143,6 +150,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 }
             }
         }
+
         public ulong this[T item]
         {
             get

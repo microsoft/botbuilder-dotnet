@@ -52,6 +52,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             {
                 eval = BuiltInFunctions.Lookup(type);
             }
+
             return eval;
         }
 

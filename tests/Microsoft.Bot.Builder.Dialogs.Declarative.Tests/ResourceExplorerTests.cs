@@ -43,7 +43,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
             Assert.IsNull(dialog, $"GetResource({id}) should return null");
             var dialogs = explorer.GetResources("dialog");
             Assert.IsFalse(dialogs.Where(d => d.Id == id).Any(), $"getResources({id}) should not return resource");
-
         }
 
         private async Task AssertResourceContents(ResourceExplorer explorer, string id, string contents)
@@ -162,7 +161,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
                 await AssertResourceContents(explorer, testId, contents);
             }
         }
-
 
         [TestMethod]
         public async Task TestFolderSource_DeleteFiresChanged()

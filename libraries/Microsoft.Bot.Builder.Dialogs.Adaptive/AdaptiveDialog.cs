@@ -19,7 +19,6 @@ using static Microsoft.Bot.Builder.Dialogs.Debugging.DebugSupport;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 {
-
     /// <summary>
     /// The Adaptive Dialog models conversation using events and events to adapt dynamicaly to changing conversation flow
     /// </summary>
@@ -230,6 +229,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                                 handled = false;
                             }
                         }
+
                         break;
                 }
             }
@@ -457,7 +457,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     },
                     Entities = JObject.Parse("{}")
                 };
-
             }
         }
 
@@ -477,6 +476,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     return true;
                 }
             }
+
             return false;
         }
 
@@ -521,6 +521,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                             Selector = new FirstSelector()
                         };
                     }
+
                     this.Selector.Initialize(this.Events, true);
                 }
             }

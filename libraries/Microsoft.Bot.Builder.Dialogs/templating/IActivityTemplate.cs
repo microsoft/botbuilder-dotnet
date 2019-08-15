@@ -7,6 +7,5 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// </summary>
     public interface IActivityTemplate : ITemplate<Activity>
     {
-
     }
 }

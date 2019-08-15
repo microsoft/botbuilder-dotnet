@@ -25,6 +25,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             {
                 Debugger.Break();
             }
+
             return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 

@@ -133,7 +133,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         AlwaysPrompt = true,
                         Prompt = new ActivityTemplate("Please add an item to todos."),
                         Property = "dialog.todo"
-
                     },
                     new EditArray(EditArray.ArrayChangeType.Push, "user.todos", "dialog.todo"),
                     new SendActivity() { Activity = new ActivityTemplate("Your todos: {join(user.todos, ',')}") },
@@ -594,7 +593,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     {
                         new OnBeginDialog()
                         {
-
                             Actions = new List<IDialog>()
                             {
                                 new IfCondition()
@@ -624,7 +622,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         {
                             new OnBeginDialog()
                             {
-
                                 Actions = new List<IDialog>()
                                 {
                                     new SendActivity("Why did the chicken cross the road?"),
@@ -680,7 +677,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 }
             };
             outerDialog.AddDialogs(new List<IDialog>() { innerDialog });
-
 
             await CreateFlow(outerDialog)
             .Send("hi")

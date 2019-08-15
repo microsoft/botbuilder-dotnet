@@ -11,7 +11,6 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
 {
-
     /// <summary>
     /// Folder/FileResources
     /// </summary>
@@ -129,7 +128,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             }
         }
 
-
         /// <summary>
         /// GetResource by id
         /// </summary>
@@ -169,7 +167,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
 
     public static class FolderResourceProviderExtensions
     {
-
         /// <summary>
         /// Add a folder resource
         /// </summary>
@@ -211,8 +208,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             {
                 explorer.AddFolder(folder, includeSubFolders: true, monitorChanges: monitorChanges);
             }
+
             return explorer;
         }
-
     }
 }

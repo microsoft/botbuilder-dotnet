@@ -5,7 +5,6 @@ using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
-
     /// <summary>
     /// Defins a static activity as a template.
     /// </summary>

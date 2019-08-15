@@ -29,6 +29,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
             {
                 return type;
             }
+
             return base.BindToType(assemblyName, typeName);
         }
     }

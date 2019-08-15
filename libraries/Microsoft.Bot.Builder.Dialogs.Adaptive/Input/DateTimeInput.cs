@@ -8,7 +8,6 @@ using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text.DateTime;
 using static Microsoft.Recognizers.Text.Culture;
 
-
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 {
     public class DateTimeInput : InputDialog

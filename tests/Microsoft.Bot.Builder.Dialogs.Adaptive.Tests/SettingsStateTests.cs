@@ -75,6 +75,5 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
             });
         }
-
     }
 }

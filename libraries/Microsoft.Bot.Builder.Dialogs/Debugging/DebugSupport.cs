@@ -10,12 +10,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 {
     public static partial class DebugSupport
     {
-        public static IRegistry SourceRegistry { get; set; } = NullRegistry.Instance;
-
         public interface IDebugger
         {
             Task StepAsync(DialogContext context, object item, string more, CancellationToken cancellationToken);
         }
+
+        public static IRegistry SourceRegistry { get; set; } = NullRegistry.Instance;
 
         public static IDebugger GetDebugger(this ITurnContext context) =>
             context.TurnState.Get<IDebugger>() ?? NullDebugger.Instance;

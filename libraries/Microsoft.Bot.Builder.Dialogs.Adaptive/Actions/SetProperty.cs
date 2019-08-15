@@ -21,7 +21,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         private Expression property;
 
         [JsonConstructor]
-        public SetProperty([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0) : base()
+        public SetProperty([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+            : base()
         {
             this.RegisterSourceLocation(callerPath, callerLine);
         }
@@ -33,7 +34,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         public string Value
         {
             get { return value?.ToString(); }
-            set {this.value = (value != null) ? new ExpressionEngine().Parse(value) : null; }
+            set { this.value = (value != null) ? new ExpressionEngine().Parse(value) : null; }
         }
 
         /// <summary>

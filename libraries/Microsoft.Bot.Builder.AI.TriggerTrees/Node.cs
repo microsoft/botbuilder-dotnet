@@ -64,7 +64,6 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
         /// </summary>
         public TriggerTree Tree { get; }
 
-
 #if TraceTree
         public static bool ShowTrace = true;
 #endif
@@ -487,6 +486,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                 Debug.Assert(CheckInvariants(), "bad invariants");
 #endif
             }
+
             return added;
         }
 
@@ -531,6 +531,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                                     break;
                                 }
                             }
+
                             if (add)
                             {
 #if TraceTree

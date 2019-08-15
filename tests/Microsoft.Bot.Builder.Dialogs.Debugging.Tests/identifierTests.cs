@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging.Tests
     [TestClass]
     public sealed class IdentifierTests
     {
-        public static IEnumerable<ulong> Bytes => new[]{
+        public static IEnumerable<ulong> Bytes => new[] {
             0ul, 0x7Eul, 0x7Ful, 0x80ul, 0x81ul, 0xFFul,
         };
 

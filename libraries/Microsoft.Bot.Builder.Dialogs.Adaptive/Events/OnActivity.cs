@@ -11,7 +11,6 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
 {
-
     /// <summary>
     /// Event triggered when a Activity of a given type is received 
     /// </summary>
@@ -38,7 +37,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
 
         protected override Expression BuildExpression(IExpressionParser factory)
         {
-
             // add constraints for activity type
             return Expression.AndExpression(factory.Parse($"turn.dialogEvent.value.type == '{this.Type}'"), 
                 base.BuildExpression(factory));
@@ -62,5 +60,4 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
             return $"{this.GetType().Name}({this.Type})[{this.Constraint}]";
         }
     }
-
 }

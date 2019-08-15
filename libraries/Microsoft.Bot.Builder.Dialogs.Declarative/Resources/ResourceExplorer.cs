@@ -95,6 +95,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                     throw new ArgumentNullException(nameof(projectFile));
                 }
             }
+
             string projectFolder = Path.GetDirectoryName(projectFile);
 
             XmlDocument xmlDoc = new XmlDocument();
@@ -121,6 +122,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                     explorer.AddResourceProvider(new FolderResourceProvider(path, includeSubFolders: true, monitorChanges: monitorChanges));
                 }
             }
+
             var packages = Path.GetFullPath("packages");
             var relativePackagePath = Path.Combine(@"..", "packages");
             while (!Directory.Exists(packages) && Path.GetDirectoryName(packages) != Path.GetPathRoot(packages))
@@ -131,6 +133,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                     throw new ArgumentNullException("Can't find packages folder");
                 }
             }
+
             var pathResolver = new PackagePathResolver(packages);
 
             // add nuget package references
@@ -184,6 +187,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                     return resource;
                 }
             }
+
             return null;
         }
 

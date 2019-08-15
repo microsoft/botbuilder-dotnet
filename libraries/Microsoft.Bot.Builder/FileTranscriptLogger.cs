@@ -20,32 +20,9 @@ namespace Microsoft.Bot.Builder
     /// </remarks>
     public class FileTranscriptLogger : ITranscriptStore
     {
-        private static JsonSerializerSettings jsonSettings = new JsonSerializerSettings()
-        {
-            Formatting = Formatting.Indented,
-            NullValueHandling = NullValueHandling.Ignore,
-        };
-
         private string folder;
         private bool unitTestMode;
         private HashSet<string> started = new HashSet<string>();
-
-        private static async Task<Activity[]> LoadTranscript(string transcriptFile)
-        {
-            if (File.Exists(transcriptFile))
-            {
-                using (var stream = File.OpenRead(transcriptFile))
-                {
-                    using (var reader = new StreamReader(stream) as TextReader)
-                    {
-                        var json = await reader.ReadToEndAsync().ConfigureAwait(false);
-                        return JsonConvert.DeserializeObject<Activity[]>(json);
-                    }
-                }
-            }
-
-            return Array.Empty<Activity>();
-        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FileTranscriptLogger"/> class.
@@ -68,6 +45,29 @@ namespace Microsoft.Bot.Builder
 
             this.folder = folder;
             this.unitTestMode = unitTestMode;
+        }
+
+        private static JsonSerializerSettings jsonSettings = new JsonSerializerSettings()
+        {
+            Formatting = Formatting.Indented,
+            NullValueHandling = NullValueHandling.Ignore,
+        };
+
+        private static async Task<Activity[]> LoadTranscript(string transcriptFile)
+        {
+            if (File.Exists(transcriptFile))
+            {
+                using (var stream = File.OpenRead(transcriptFile))
+                {
+                    using (var reader = new StreamReader(stream) as TextReader)
+                    {
+                        var json = await reader.ReadToEndAsync().ConfigureAwait(false);
+                        return JsonConvert.DeserializeObject<Activity[]>(json);
+                    }
+                }
+            }
+
+            return Array.Empty<Activity>();
         }
 
         /// <summary>
@@ -117,7 +117,7 @@ namespace Microsoft.Bot.Builder
                         switch (activity.Type)
                         {
                             case ActivityTypes.MessageDelete:
-                                await messageDelete(activity, transcriptFile).ConfigureAwait(false);
+                                await MessageDelete(activity, transcriptFile).ConfigureAwait(false);
                                 return;
 
                             case ActivityTypes.MessageUpdate:
@@ -257,7 +257,7 @@ namespace Microsoft.Bot.Builder
             }
         }
 
-        private async Task messageDelete(IActivity activity, string transcriptFile)
+        private async Task MessageDelete(IActivity activity, string transcriptFile)
         {
             // load all activities
             var transcript = await LoadTranscript(transcriptFile).ConfigureAwait(false);

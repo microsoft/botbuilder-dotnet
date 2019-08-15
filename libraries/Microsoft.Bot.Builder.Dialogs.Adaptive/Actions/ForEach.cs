@@ -22,12 +22,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     {
         private Expression listProperty;
 
+        [JsonConstructor]
+        public Foreach([CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
+            : base()
+        {
+            this.RegisterSourceLocation(sourceFilePath, sourceLineNumber);
+        }
+
         // Expression used to compute the list that should be enumerated.
         [JsonProperty("listProperty")]
         public string ListProperty
         {
             get { return listProperty?.ToString(); }
-            set {this.listProperty = (value != null) ? new ExpressionEngine().Parse(value) : null; }
+            set { this.listProperty = (value != null) ? new ExpressionEngine().Parse(value) : null; }
         }
 
         // In-memory property that will contain the current items index. Defaults to `dialog.index`.
@@ -42,11 +49,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         [JsonProperty("actions")]
         public List<IDialog> Actions { get; set; } = new List<IDialog>();
 
-        [JsonConstructor]
-        public Foreach([CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
-            : base()
+        public override List<IDialog> ListDependencies()
         {
-            this.RegisterSourceLocation(sourceFilePath, sourceLineNumber);
+            return this.Actions;
+        }
+
+        public class ForeachOptions
+        {
+            public Expression list { get; set; }
+
+            public int offset { get; set; }
         }
 
         protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
@@ -111,6 +123,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             }
         }
 
+        protected override string OnComputeId()
+        {
+            return $"{nameof(Foreach)}({this.ListProperty})";
+        }
+
         private object GetItem(object list, int index)
         {
             JToken result = null;
@@ -125,23 +142,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             {
                 result = ((JObject)list).SelectToken(index.ToString());
             }
-           
+
             return result;
-        }
-        protected override string OnComputeId()
-        {
-            return $"{nameof(Foreach)}({this.ListProperty})";
-        }
-
-        public override List<IDialog> ListDependencies()
-        {
-            return this.Actions;
-        }
-
-        public class ForeachOptions
-        {
-            public Expression list { get; set; }
-            public int offset { get; set; }
         }
     }
 }

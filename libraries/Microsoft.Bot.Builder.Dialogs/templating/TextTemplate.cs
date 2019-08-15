@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
-
     /// <summary>
     /// Defines an text Template where the template expression is local aka "inline".
     /// </summary>
@@ -46,6 +45,5 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             return $"{nameof(TextTemplate)}({this.Template})";
         }
-
     }
 }

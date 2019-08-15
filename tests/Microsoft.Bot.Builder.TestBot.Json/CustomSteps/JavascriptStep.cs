@@ -67,6 +67,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                 payload.state.Turn = response.state.turn;
                 return dc.EndDialogAsync((object)response.result, cancellationToken: cancellationToken);
             }
+
             return dc.EndDialogAsync(cancellationToken: cancellationToken);
         }
 
@@ -103,7 +104,5 @@ namespace Microsoft.Bot.Builder.TestBot.Json
 
             scriptEngine.Evaluate(sb.ToString());
         }
-
-
     }
 }

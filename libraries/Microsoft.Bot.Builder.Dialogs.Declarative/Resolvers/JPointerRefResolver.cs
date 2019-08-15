@@ -73,12 +73,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resolvers
                             JObject targetProperty = json[prop.Name] as JObject;
                             targetProperty.Merge(prop.Value);
                         }
+
                         // JToken is an object, so we merge objects
                         else if (json[prop.Name] != null && json[prop.Name].Type == JTokenType.Array)
                         {
                             JArray targetArray = json[prop.Name] as JArray;
                             targetArray.Merge(prop.Value);
                         }
+
                         // JToken is a value, simply assign
                         else
                         {

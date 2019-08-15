@@ -138,8 +138,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                     }
                 }
             }
+
             return page;
         }
+
         protected override string OnComputeId()
         {
             return $"{nameof(Foreach)}({this.ListProperty})";
@@ -153,7 +155,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         public class ForeachPageOptions
         {
             public Expression list { get; set; }
+
             public int offset { get; set; }
+
             public int pageSize { get; set; }
         }
     }

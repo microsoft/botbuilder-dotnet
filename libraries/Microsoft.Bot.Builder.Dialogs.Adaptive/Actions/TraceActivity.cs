@@ -16,7 +16,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// </summary>
     public class TraceActivity : DialogAction
     {
-
         /// <summary>
         /// Name of the trace activity
         /// </summary>

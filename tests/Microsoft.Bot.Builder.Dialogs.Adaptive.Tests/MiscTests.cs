@@ -84,6 +84,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 {
                                     new SendActivity("notcanceling")
                                 }
+
                                 // We do not need to specify an else block here since if user said no,
                                 // the control flow will automatically return to the last active step (if any)
                             }
@@ -148,7 +149,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         }
                     }
                 }
-
             };
 
             await CreateFlow(testDialog)

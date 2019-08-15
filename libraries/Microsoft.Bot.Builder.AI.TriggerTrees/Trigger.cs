@@ -196,6 +196,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                                 soFar.Clear();
                                 break;
                             }
+
                             if (first)
                             {
                                 soFar.AddRange(clauses);
@@ -214,14 +215,17 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                                         newClauses.Add(new Clause(children));
                                     }
                                 }
+
                                 soFar = newClauses;
                             }
                         }
+
                         foreach (var clause in soFar)
                         {
                             yield return clause;
                         }
                     }
+
                     break;
                 case ExpressionType.Or:
                     {
@@ -233,6 +237,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                             }
                         }
                     }
+
                     break;
                 case TriggerTree.Optional:
                     {
@@ -242,6 +247,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                             yield return clause;
                         }
                     }
+
                     break;
                 default:
                     // True becomes empty expression and false drops clause
@@ -256,6 +262,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                     {
                         yield return new Clause(expression);
                     }
+
                     break;
             }
         }
@@ -281,11 +288,13 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                             break;
                         }
                     }
+
                     if (!found)
                     {
                         children.Add(pred);
                     }
                 }
+
                 _clauses[i] = new Clause(children);
             }
         }
@@ -349,6 +358,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                     {
                         newClauses.AddRange(ExpandQuantifier(quantifier, clause));
                     }
+
                     _clauses = newClauses;
                 }
             }
@@ -375,11 +385,13 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                     children.Add(SubstituteVariable(variable, binding, child, out var childChanged));
                     changed = changed || childChanged;
                 }
+
                 if (changed)
                 {
                     newExpr = new Expression(expression.Evaluator, children.ToArray());
                 }
             }
+
             return newExpr;
         }
 
@@ -416,6 +428,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                         }
                     }
                 }
+
                 yield return new Clause(children);
             }
             else
@@ -433,10 +446,12 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                             changed = changed || predicateChanged;
                             children.Add(newPredicate);
                         }
+
                         if (changed)
                         {
                             newClause.AnyBindings.Add(quantifier.Variable, binding);
                         }
+
                         newClause.Children = children.ToArray();
                         yield return newClause;
                         if (!changed)
@@ -458,6 +473,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                             break;
                         }
                     }
+
                     if (!changed)
                     {
                         yield return clause;
@@ -488,6 +504,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                         }
                     }
                 }
+
                 clause.Children = predicates.ToArray();
             }
         }

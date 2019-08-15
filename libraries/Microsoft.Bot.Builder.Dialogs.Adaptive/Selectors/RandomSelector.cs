@@ -64,12 +64,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
                     candidates.Add(i);
                 }
             }
+
             var result = new List<int>();
             if (candidates.Count > 0)
             {
                 var selection = _rand.Next(candidates.Count);
                 result.Add(candidates[selection]);
             }
+
             return Task.FromResult((IReadOnlyList<int>)result);
         }
     }

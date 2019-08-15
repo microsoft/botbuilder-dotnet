@@ -104,6 +104,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             {
                 return OutputBinding;
             }
+
             set
             {
                 InputBindings[DialogContextState.DIALOG_VALUE] = value;
@@ -312,6 +313,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                     {
                         return await this.InvalidPrompt.BindToData(dc.Context, dc.State).ConfigureAwait(false);
                     }
+
                     break;
 
                 case InputState.Invalid:
@@ -323,8 +325,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                     {
                         return await this.UnrecognizedPrompt.BindToData(dc.Context, dc.State).ConfigureAwait(false);
                     }
-                    break;
 
+                    break;
             }
 
             return await this.Prompt.BindToData(dc.Context, dc.State);
@@ -392,6 +394,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                             return InputState.Invalid;
                         }
                     }
+
                     return InputState.Valid;
                 }
                 else

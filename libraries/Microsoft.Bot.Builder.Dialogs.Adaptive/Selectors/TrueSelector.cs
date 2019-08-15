@@ -44,6 +44,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
                     candidates.Add(i);
                 }
             }
+
             return Task.FromResult((IReadOnlyList<int>)candidates);
         }
     }

@@ -61,7 +61,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             });
         }
 
-
         [TestMethod]
         public async Task QnAMakerDialog_Answers()
         {

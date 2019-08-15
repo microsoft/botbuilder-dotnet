@@ -6,7 +6,6 @@ using Microsoft.Extensions.Configuration;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
-
     public static class Configuration
     {
         /// <summary>

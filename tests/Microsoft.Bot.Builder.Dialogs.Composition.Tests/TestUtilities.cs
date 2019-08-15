@@ -59,6 +59,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition.Tests
                 if (string.IsNullOrWhiteSpace(value))
                     value = null;
             }
+
             return value;
         }
     }

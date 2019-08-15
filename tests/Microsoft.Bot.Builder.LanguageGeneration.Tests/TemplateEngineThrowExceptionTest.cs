@@ -21,6 +21,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         }
 
         public static object[] Test(string input) => new object[] { input };
+
         public static object[] TestTemplate(string input, string templateName) => new object[] { input, templateName };
 
         public static IEnumerable<object[]> StaticCheckExceptionData => new[]
@@ -63,7 +64,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             TestTemplate("LoopDetected.lg", "wPhrase"),
             TestTemplate("LoopDetected.lg", "NotExistTemplate"),
         };
-
 
         [DataTestMethod]
         [DynamicData(nameof(StaticCheckExceptionData))]
@@ -113,6 +113,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                 isFail = true;
                 errorMessage = "error occurs when parsing file";
             }
+
             if (!isFail)
             {
                 try

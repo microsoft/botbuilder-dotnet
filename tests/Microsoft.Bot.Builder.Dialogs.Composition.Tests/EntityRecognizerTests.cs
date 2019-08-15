@@ -84,7 +84,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition.Recognizers.Tests
             Assert.AreEqual(1, results.Where(entity => entity.Type == "datetimeV2.datetime").Count(), "Should have 1 datetime result");
         }
 
-
         [TestMethod]
         public void TestDimension()
         {
@@ -185,7 +184,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition.Recognizers.Tests
             Assert.AreEqual(3, results.Count, "Should be 2 entities found");
             Assert.AreEqual(1, results.Where(entity => entity.Type == "percentage").Count(), "Should have 1 percentage");
         }
-
 
         [TestMethod]
         public void TestPhoneNumber()

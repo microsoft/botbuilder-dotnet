@@ -272,7 +272,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 {
                     new OnBeginDialog()
                     {
-
                         Actions = new List<IDialog>()
                         {
                             new SetProperty()
@@ -311,7 +310,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 {
                     new OnBeginDialog()
                     {
-
                         Actions = new List<IDialog>()
                         {
                             new SetProperty()
@@ -473,7 +471,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 {
                     new OnBeginDialog()
                     {
-
                         Actions = new List<IDialog>()
                         {
                             new ChoiceInput()
@@ -602,7 +599,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 {
                     new OnBeginDialog()
                     {
-
                         Actions = new List<IDialog>()
                         {
                             new SetProperty()
@@ -912,7 +908,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         new SendActivity("One") { Tags = { "a" } },
                         new SendActivity("Three") { Tags = { "c" } },
                     }
-
                 },
                 new OnIntent()
                 {
@@ -989,7 +984,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             .StartTestAsync();
         }
 
-
         [TestMethod]
         public async Task Action_BeginDialog()
         {
@@ -1012,7 +1006,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 {
                     new OnBeginDialog()
                     {
-
                         Actions = new List<IDialog>()
                         {
                             new IfCondition()
@@ -1033,12 +1026,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 }
             };
 
-
             var testDialog = new AdaptiveDialog("planningTest");
             testDialog.AutoEndDialog = false;
 
             testDialog.Recognizer = new RegexRecognizer() { Intents = new Dictionary<string, string>() { { "JokeIntent", "joke" } } };
-
 
             testDialog.AddEvents(new List<IOnEvent>()
             {
@@ -1098,7 +1089,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 {
                     new OnBeginDialog()
                     {
-
                         Actions = new List<IDialog>()
                         {
                             new IfCondition()
@@ -1216,7 +1206,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 {
                     new OnBeginDialog()
                     {
-
                         Actions = new List<IDialog>()
                         {
                             new TextInput() { Prompt = new ActivityTemplate("Hello, what is your name?"), OutputBinding = "user.name" , Value = "user.name" },
@@ -1284,7 +1273,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 {
                     new OnBeginDialog()
                     {
-
                         Actions = new List<IDialog>()
                         {
                             new BeginDialog(outer.Id)

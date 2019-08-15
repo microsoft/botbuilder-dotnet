@@ -71,6 +71,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                     return await textReader.ReadToEndAsync().ConfigureAwait(false);
                 });
             }
+
             return this.textTask;
         }
 

@@ -17,5 +17,4 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
         public OnEventActivity(List<IDialog> actions = null, string constraint= null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base(type: ActivityTypes.Event, actions: actions, constraint: constraint, callerPath: callerPath, callerLine: callerLine) { }
     }
-
 }

@@ -9,9 +9,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
     public interface IBreakpoints
     {
         bool IsBreakPoint(object item);
+
         object ItemFor(Protocol.Breakpoint breakpoint);
+
         IReadOnlyList<Protocol.Breakpoint> SetBreakpoints(Protocol.Source source, IReadOnlyList<Protocol.SourceBreakpoint> sourceBreakpoints);
+
         IReadOnlyList<Protocol.Breakpoint> SetBreakpoints(IReadOnlyList<Protocol.FunctionBreakpoint> functionBreakpoints);
+
         IReadOnlyList<Protocol.Breakpoint> ApplyUpdates();
     }
 
@@ -64,14 +68,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 Source = source;
                 SourceBreakpoint = sourceBreakpoint;
             }
+
             public Row(Protocol.FunctionBreakpoint functionBreakpoint)
             {
                 FunctionBreakpoint = functionBreakpoint;
             }
+
             public Protocol.Source Source { get; }
+
             public Protocol.SourceBreakpoint SourceBreakpoint { get; }
+
             public Protocol.FunctionBreakpoint FunctionBreakpoint { get; }
+
             public Protocol.Breakpoint Breakpoint { get; } = new Protocol.Breakpoint();
+
             public object item { get; set; }
         }
 

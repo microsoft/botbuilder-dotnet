@@ -108,6 +108,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
             {
                 eval = BuiltInFunctions.Lookup(type);
             }
+
             return eval;
         }
 
@@ -233,6 +234,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                         output.WriteLine(" -> {");
                         first = false;
                     }
+
                     output.WriteLine($"{spaces}{NameNode(child)}");
                 }
 

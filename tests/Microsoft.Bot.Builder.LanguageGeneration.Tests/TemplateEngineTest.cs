@@ -20,7 +20,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             return Path.Combine(AppContext.BaseDirectory, "Examples", fileName);
         }
 
-
         [TestMethod]
         public void TestBasic()
         {
@@ -137,11 +136,9 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                 }
             };
 
-
             //var alarmStrs = alarms.Select(x => engine.EvaluateTemplate("ShowAlarm", new { alarm = x })).ToList() ;
             //var evaled = engine.EvaluateTemplate("ShowAlarms", new { alarms = alarmStrs });
             //Assert.AreEqual("You have 2 alarms, 7 am at tomorrow and 8 pm at tomorrow", evaled);
-
 
             var evaled = engine.EvaluateTemplate("ShowAlarmsWithForeach", new { alarms = alarms });
             Assert.AreEqual("You have 2 alarms, 7 am at tomorrow and 8 pm at tomorrow", evaled);
@@ -154,7 +151,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             //var evaled = engine.EvaluateTemplate("ShowAlarmsWithMemberHumanize", new { alarms = alarms });
             //Assert.AreEqual("You have 2 alarms, 7 am at tomorrow and 8 pm at tomorrow", evaled);
-
         }
 
         [TestMethod]
@@ -227,7 +223,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                                                           FirstName = "D",
                                                           LastName = "L"
                                                       }
-
                                                   }), "Hi DL You don't have any tasks.");
             Assert.AreEqual(emptyEngine.Evaluate("Hi {name.FirstName}{name.LastName} [RecentTasks]",
                                                   new
@@ -238,10 +233,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                                                           LastName = "L"
                                                       },
                                                       recentTasks = new[] { "task1" }
-
-
                                                   }), "Hi DL Your most recent task is task1. You can let me know if you want to add or complete a task.");
-
         }
 
         [TestMethod]
@@ -393,8 +385,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                 TestContext.WriteLine(e.Message);
             }
         }
-
-
 
         [TestMethod]
         public void TestMultipleLgFiles()

@@ -27,7 +27,6 @@ namespace Microsoft.Bot.Builder.Azure.Tests
     [TestCategory("Storage - BlobTranscripts")]
     public class AzureBlobTranscriptStoreTests : StorageBaseTests
     {
-
         private const string ConnectionString = @"AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;DefaultEndpointsProtocol=http;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10001/devstoreaccount1;TableEndpoint=http://127.0.0.1:10002/devstoreaccount1;";
         private const string ChannelId = "test";
 
@@ -125,7 +124,6 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 
                 Assert.AreEqual(5, loggedActivities.Length);
             }
-
         }
 
         // These tests require Azure Storage Emulator v5.7
@@ -172,7 +170,6 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             if (CheckEmulator())
             {
-
                 for (var i = 0; i < ConversationSpecialIds.Length; i++)
                 {
                     var a = CreateActivity(i, i, ConversationSpecialIds);
@@ -191,7 +188,6 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             if (CheckEmulator())
             {
-
                 var cleanChanel = Guid.NewGuid().ToString();
 
                 var loggedPagedResult = new PagedResult<IActivity>();
@@ -244,7 +240,6 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             if (CheckEmulator())
             {
-
                 try
                 {
                     var a = CreateActivity(0, 0, LongId);
@@ -256,6 +251,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 {
                     return;
                 }
+
                 Assert.Fail("Should have thrown ");
             }
         }
@@ -287,7 +283,6 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             if (CheckEmulator())
             {
-
                 AzureBlobTranscriptStore store = null;
 
                 await Assert.ThrowsExceptionAsync<NullReferenceException>(async () =>
@@ -303,7 +298,6 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             if (CheckEmulator())
             {
-
                 var conversation = TestAdapter.CreateConversation(Guid.NewGuid().ToString("n"));
                 TestAdapter adapter = new TestAdapter(conversation)
                     .Use(new TranscriptLoggerMiddleware(TranscriptStore));
@@ -351,7 +345,6 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             if (CheckEmulator())
             {
-
                 var conversation = TestAdapter.CreateConversation(Guid.NewGuid().ToString("n"));
                 TestAdapter adapter = new TestAdapter(conversation)
                     .Use(new TranscriptLoggerMiddleware(TranscriptStore));

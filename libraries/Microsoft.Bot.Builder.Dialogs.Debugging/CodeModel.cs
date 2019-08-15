@@ -8,6 +8,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
     public interface ICodeModel
     {
         string NameFor(object item);
+
         IReadOnlyList<ICodePoint> PointsFor(DialogContext dialogContext, object item, string more);
     }
 
@@ -58,9 +59,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
     public interface ICodePoint
     {
         object Item { get; }
+
         string More { get; }
+
         string Name { get; }
+
         object Data { get; }
+
         object Evaluate(string expression);
     }
 
@@ -75,11 +80,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         }
 
         private ICodeModel CodeModel { get; }
+
         private DialogContext DialogContext { get; }
+
         public object Item { get; }
+
         public string More { get; }
 
         public string Name => CodeModel.NameFor(Item) + (More != null ? ":" + More : string.Empty);
+
         public object Data
         {
             get

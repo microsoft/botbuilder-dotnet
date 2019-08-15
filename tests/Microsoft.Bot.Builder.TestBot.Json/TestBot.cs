@@ -45,7 +45,6 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             LoadDialogs();
         }
 
-
         private void LoadDialogs()
         {
             System.Diagnostics.Trace.TraceInformation("Loading resources...");
@@ -75,6 +74,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                 var dialog = DeclarativeTypeLoader.Load<IDialog>(resource, this.resourceExplorer, DebugSupport.SourceRegistry);
                 handleChoice.Cases.Add(new Case($"{name}", new List<IDialog>() { dialog }));
             }
+
             choiceInput.Style = ListStyle.Auto;
             rootDialog.Events.Add(new OnBeginDialog()
             {

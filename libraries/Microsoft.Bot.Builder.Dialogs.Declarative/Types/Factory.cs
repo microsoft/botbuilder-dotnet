@@ -77,6 +77,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
             {
                 throw new ArgumentException($"Type {name} not registered in factory.");
             }
+
             var found = builders.TryGetValue(type, out builder);
 
             if (!found)

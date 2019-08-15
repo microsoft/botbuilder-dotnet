@@ -6,7 +6,6 @@ using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Dialogs.Composition.Recognizers
 {
-
     /// <summary>
     /// EntityRecognizerSet - Implements a workflow against a pool of IEntityRecognizer instances, iterating until nobody has anything new to add.
     /// </summary>
@@ -45,7 +44,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition.Recognizers
                 {
                     try
                     {
-
                         // get new entities
                         var newEntities = await recognizer.RecognizeEntities(turnContext, entitiesToProcess).ConfigureAwait(false);
 
@@ -70,7 +68,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition.Recognizers
 
                 // switch to next pool of new entities to process
                 entitiesToProcess = newEntitiesToProcess;
-
             } while (entitiesToProcess.Count > 0);
 
             return allNewEntities;

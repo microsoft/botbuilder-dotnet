@@ -11,7 +11,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition.Recognizers
     {
         public OrdinalEntityRecognizer()
         {
-
         }
 
         protected override List<ModelResult> Recognize(string text, string culture)

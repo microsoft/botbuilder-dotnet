@@ -32,6 +32,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
                     Text = (string)reader.Value
                 };
             }
+
             return JToken.Load(reader).ToObject<Activity>();
         }
 

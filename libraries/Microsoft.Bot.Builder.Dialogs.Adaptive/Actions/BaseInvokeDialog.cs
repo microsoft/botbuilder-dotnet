@@ -18,6 +18,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// Action which calls another dialog.
     public abstract class BaseInvokeDialog : DialogAction
     {
+        public BaseInvokeDialog(string dialogIdToCall = null, string property = null, IDictionary<string, string> bindingOptions = null)
+            : base()
+        {
+            this.DialogId = dialogIdToCall;
+
+            if (bindingOptions != null)
+            {
+                this.Options = bindingOptions;
+            }
+
+            if (!string.IsNullOrEmpty(property))
+            {
+                Property = property;
+            }
+        }
+
         /// <summary>
         /// Gets or sets configurable options for the dialog. 
         /// </summary>
@@ -42,22 +58,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             {
                 InputBindings[DialogContextState.DIALOG_VALUE] = value;
                 OutputBinding = value;
-            }
-        }
-
-        public BaseInvokeDialog(string dialogIdToCall = null, string property = null, IDictionary<string, string> bindingOptions = null)
-            : base()
-        {
-            this.DialogId = dialogIdToCall;
-
-            if (bindingOptions != null)
-            {
-                this.Options = bindingOptions;
-            }
-
-            if (!string.IsNullOrEmpty(property))
-            {
-                Property = property;
             }
         }
 

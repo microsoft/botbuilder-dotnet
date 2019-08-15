@@ -16,8 +16,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         private const string eventValueProperty = "eventValue";
 
         public string EventName { get; set; }
+
         public object EventValue { get; set; }
+
         public bool BubbleEvent { get; set; }
+
+        [JsonConstructor]
+        public EmitEvent(string eventName = null, object eventValue = null, bool bubble = true, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+            : base()
+        {
+            this.RegisterSourceLocation(callerPath, callerLine);
+            this.EventName = eventName;
+            this.EventValue = EventValue;
+            this.BubbleEvent = bubble;
+        }
 
         public string EventValueProperty
         {
@@ -27,6 +39,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 {
                     return InputBindings[eventValueProperty];
                 }
+
                 return string.Empty;
             }
 
@@ -49,16 +62,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         //        OutputBinding = value;
         //    }
         //}
-
-        [JsonConstructor]
-        public EmitEvent(string eventName = null, object eventValue = null, bool bubble = true, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
-            : base()
-        {
-            this.RegisterSourceLocation(callerPath, callerLine);
-            this.EventName = eventName;
-            this.EventValue = EventValue;
-            this.BubbleEvent = bubble;
-        }
 
         protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
