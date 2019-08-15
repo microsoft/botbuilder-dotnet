@@ -69,7 +69,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         {
             await _api.ListWebhooksAsync().ContinueWith(async task =>
             {
-                for (int i = 0; i < task.Result.Data.ItemCount; i++)
+                for (var i = 0; i < task.Result.Data.ItemCount; i++)
                 {
                     await _api.DeleteWebhookAsync(task.Result.Data.Items[i]).ConfigureAwait(false);
                 }
@@ -119,7 +119,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public override async Task<ResourceResponse[]> SendActivitiesAsync(ITurnContext turnContext, Activity[] activities, CancellationToken cancellationToken)
         {
-            List<ResourceResponse> responses = new List<ResourceResponse>();
+            var responses = new List<ResourceResponse>();
             for (int i = 0; i < activities.Length; i++)
             {
                 var activity = activities[i];
@@ -206,7 +206,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                 {
                     var hashArray = hmac.ComputeHash(Encoding.UTF8.GetBytes(json));
 
-                    string hash = BitConverter.ToString(hashArray).Replace("-", string.Empty).ToLower();
+                    var hash = BitConverter.ToString(hashArray).Replace("-", string.Empty).ToLower();
 
                     if (!string.Equals(signature, hash))
                     {
@@ -257,7 +257,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                         var encodedId = Identity.Id;
 
                         // this should look like ciscospark://us/PEOPLE/<id string>
-                        Match match = Regex.Match(encodedId, "/ciscospark://.*/(.*)/im");
+                        var match = Regex.Match(encodedId, "/ciscospark://.*/(.*)/im");
                         pattern = new Regex("^(<p>)?<spark-mention .*?data-object-id=\"" + match.Captures[1] + "\".*?>.*?</spark-mention>");
                     }
 
