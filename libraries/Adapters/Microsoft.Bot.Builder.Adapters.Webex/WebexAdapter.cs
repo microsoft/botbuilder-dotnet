@@ -49,11 +49,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                 throw new Exception("Could not create the Webex Teams API client");
             }
 
-            var endpoint = new Uri(_config.PublicAddress);
-
-            _config.PublicAddress = !string.IsNullOrWhiteSpace(endpoint.Host)
-                ? _config.PublicAddress = endpoint.Host
-                : throw new Exception("Could not determine hostname of public address");
+            _config.PublicAddress = new Uri(_config.PublicAddress).Host;
         }
 
         /// <summary>
