@@ -165,9 +165,9 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public override async Task DeleteActivityAsync(ITurnContext turnContext, ConversationReference reference, CancellationToken cancellationToken)
         {
-            if (reference.ActivityId != null)
+            if (!string.IsNullOrWhiteSpace(reference.ActivityId))
             {
-                await _api.DeleteMessageAsync(reference.ActivityId, default(CancellationToken)).ConfigureAwait(false);
+                await _api.DeleteMessageAsync(reference.ActivityId, cancellationToken).ConfigureAwait(false);
             }
         }
 
