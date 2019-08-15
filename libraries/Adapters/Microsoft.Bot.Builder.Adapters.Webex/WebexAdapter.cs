@@ -122,17 +122,22 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
             var responses = new List<ResourceResponse>();
             foreach (var activity in activities)
             {
-                if (!activity.Type.Equals(ActivityTypes.Message))
+                if (activity.Type != ActivityTypes.Message)
                 {
                     continue;
                 }
 
                 // transform activity into the webex message format
-                var personIDorEmail = ((activity.ChannelData as dynamic)?.toPersonEmail != null) ? (activity.ChannelData as dynamic).toPersonEmail : activity.Recipient.Id;
-                var text = (activity.ChannelData != null) ? (activity.ChannelData as dynamic).markdown : activity.Text;
+                var personIDorEmail = (activity.ChannelData as dynamic)?.toPersonEmail != null
+                                    ? (activity.ChannelData as dynamic).toPersonEmail
+                                    : activity.Recipient.Id;
+
+                var text = activity.ChannelData != null
+                            ? (activity.ChannelData as dynamic).markdown
+                            : activity.Text;
+
                 TeamsResult<Message> webexResponse = await _api.CreateDirectMessageAsync(personIDorEmail, text);
-                var response = new ResourceResponse(webexResponse.Data.Id);
-                responses.Add(response);
+                responses.Add(new ResourceResponse(webexResponse.Data.Id));
             }
 
             return responses.ToArray();
