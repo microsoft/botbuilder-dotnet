@@ -288,9 +288,10 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("one > 0.5 || two < 1.5", true, oneTwo),
             Test("one / 0 || two", true),
             Test("0/3", 0),
-            # endregion
+            Test("True == true", true),
+            #endregion
 
-            # region  String functions test
+            #region  String functions test
             Test("concat(hello,world)","helloworld"),
             Test("concat('hello','world')","helloworld"),
             Test("concat(\"hello\",\"world\")","helloworld"),

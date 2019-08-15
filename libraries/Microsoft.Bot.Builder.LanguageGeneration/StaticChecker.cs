@@ -477,8 +477,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 DiagnosticSeverity severity = DiagnosticSeverity.Error,
                 ParserRuleContext context = null)
             {
-                var startPosition = context == null ? new Position(0, 0) : new Position(context.Start.Line - 1, context.Start.Column);
-                var stopPosition = context == null ? new Position(0, 0) : new Position(context.Stop.Line - 1, context.Stop.Column + context.Stop.Text.Length);
+                var startPosition = context == null ? new Position(0, 0) : new Position(context.Start.Line, context.Start.Column);
+                var stopPosition = context == null ? new Position(0, 0) : new Position(context.Stop.Line, context.Stop.Column + context.Stop.Text.Length);
                 var range = new Range(startPosition, stopPosition);
                 message = $"source: {currentSource}. error message: {message}";
                 return new Diagnostic(range, message, severity);
