@@ -3,7 +3,6 @@
 
 using System.Collections.Generic;
 using System.IO;
-using System.Net.Mime;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 

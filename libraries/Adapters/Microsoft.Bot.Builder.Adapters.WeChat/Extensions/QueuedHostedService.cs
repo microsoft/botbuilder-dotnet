@@ -32,13 +32,14 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Extensions
                 {
                     await workItem(stoppingToken).ConfigureAwait(false);
                 }
+#pragma warning disable CA1031 // Do not throw exception, you will always need the hosted service.
                 catch (Exception e)
+#pragma warning restore CA1031
                 {
                     // Execute work item in adapter background service.
                     // Typically work item is about convert activity to WeChat message and send it.
                     // Log and rethrow the exception to developer.
                     _logger.LogError(e, "Execute Background Queued Task Failed.");
-                    throw;
                 }
             }
         }

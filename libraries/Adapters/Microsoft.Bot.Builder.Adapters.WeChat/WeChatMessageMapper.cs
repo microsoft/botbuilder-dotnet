@@ -541,36 +541,55 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// </summary>
         /// <param name="actions">CardAction list.</param>
         /// <returns>WeChatResponses converted from card actions.</returns>
-        private static IList<IResponseMessageBase> ProcessCardActions(IMessageActivity activity, IList<CardAction> actions, string headerContent = null, string footerContent = null)
+        private static IList<IResponseMessageBase> ProcessCardActions(IMessageActivity activity, IList<CardAction> actions)
         {
+            var messages = new List<IResponseMessageBase>();
+
             // Convert any options to text
             actions = actions ?? new List<CardAction>();
             var menuItems = new List<MenuItem>();
+            var text = string.Empty;
             foreach (var action in actions)
             {
                 var actionContent = action.Title ?? action.DisplayText ?? action.Text;
-
-                var menuItem = new MenuItem
+                if (!AttachmentHelper.IsUrl(action.Value))
                 {
-                    Id = actionContent,
-
-                    // TODO: fix this link can not open issue
-                    Content = action.Value?.ToString(), // AttachmentHelper.IsUrl(action.Value) ? $"<a href=\"{action.Value}\">{actionContent}</a>" : actionContent,
-                };
-                menuItems.Add(menuItem);
+                    var menuItem = new MenuItem
+                    {
+                        Id = actionContent,
+                        Content = action.Value.ToString(),
+                    };
+                    menuItems.Add(menuItem);
+                }
+                else
+                {
+                    text += $"<a href=\"{action.Value}\">{actionContent}</a>";
+                }
             }
 
-            var menuResponse = new MessageMenuResponse()
+            if (menuItems.Count != 0)
             {
-                MessageMenu = new MessageMenu()
+                var menuResponse = new MessageMenuResponse()
                 {
-                    HeaderContent = headerContent ?? string.Empty,
-                    MenuItems = menuItems,
-                    TailContent = footerContent ?? string.Empty,
-                },
-            };
-            SetCommenField(menuResponse, activity);
-            return new List<IResponseMessageBase>() { menuResponse };
+                    MessageMenu = new MessageMenu()
+                    {
+                        HeaderContent = string.Empty,
+                        MenuItems = menuItems,
+                        TailContent = string.Empty,
+                    },
+                };
+                SetCommenField(menuResponse, activity);
+                messages.Add(menuResponse);
+            }
+
+            if (!string.IsNullOrEmpty(text))
+            {
+                var textResponse = CreateTextResponseFromMessageActivity(activity);
+                textResponse.Content = text;
+                messages.Add(textResponse);
+            }
+
+            return messages;
         }
 
         /// <summary>
