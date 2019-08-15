@@ -19,11 +19,6 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
 {
     public class WebexAdapter : BotAdapter
     {
-        /// <summary>
-        /// Name used by Botkit plugin loader.
-        /// </summary>
-        public const string Name = "Webex Adapter";
-
         private readonly IWebexAdapterOptions _config;
 
         private readonly TeamsAPIClient _api;
