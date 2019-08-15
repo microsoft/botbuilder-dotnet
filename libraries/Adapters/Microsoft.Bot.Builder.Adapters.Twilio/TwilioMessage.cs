@@ -12,6 +12,12 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
     public class TwilioMessage
     {
         /// <summary>
+        /// Gets or sets the Author of the message.
+        /// </summary>
+        /// <value>The Author of the message.</value>
+        public string Author { get; set; }
+
+        /// <summary>
         /// Gets or sets the receiver's country.
         /// </summary>
         /// <value>The receiver's country. E.g. "US".</value>
