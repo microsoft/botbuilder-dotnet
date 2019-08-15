@@ -30,7 +30,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WebexAdapter"/> class.
-        /// Creates a Webex adapter. See [WebexAdapterOptions] for a full definition of the allowed parameters.
+        /// Creates a Webex adapter. See <see cref="IWebexAdapterOptions"/> for a full definition of the allowed parameters.
         /// </summary>
         /// <param name="config">An object containing API credentials, a webhook verification token and other options.</param>
         public WebexAdapter(IWebexAdapterOptions config)
@@ -77,7 +77,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         private Person Identity { get; set; }
 
         /// <summary>
-        /// Load the bot's identity via the Webex API.
+        /// Load the bot's identity via the WebEx API.
         /// MUST be called by BotBuilder bots in order to filter messages sent by the bot.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
@@ -104,7 +104,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <summary>
         /// Register a webhook subscription with Webex Teams to start receiving message events.
         /// </summary>
-        /// <param name="webhookPath">The path of the webhook endpoint like `/api/messages`.</param>
+        /// <param name="webhookPath">The path of the webhook endpoint like '/api/messages'.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task RegisterWebhookSubscriptionAsync(string webhookPath)
         {
@@ -182,8 +182,8 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <summary>
         /// Standard BotBuilder adapter method to delete a previous message.
         /// </summary>
-        /// <param name="turnContext">A TurnContext representing the current incoming message and environment.</param>
-        /// <param name="reference">An object in the form `{activityId: -id of message to delete-, conversation: { id: -id of Webex channel>}}`.</param>
+        /// <param name="turnContext">A <see cref="ITurnContext"/> representing the current incoming message and environment.</param>
+        /// <param name="reference">A <see cref="ConversationReference"/> object.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public override async Task DeleteActivityAsync(ITurnContext turnContext, ConversationReference reference, CancellationToken cancellationToken)
@@ -197,8 +197,8 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <summary>
         /// Standard BotBuilder adapter method for continuing an existing conversation based on a conversation reference.
         /// </summary>
-        /// <param name="reference">A conversation reference to be applied to future messages.</param>
-        /// <param name="logic">A bot logic function that will perform continuing action in the form 'async(context) => { ... }'.</param>
+        /// <param name="reference">A <see cref="ConversationReference"/> to be applied to future messages.</param>
+        /// <param name="logic">A bot logic function that will perform continuing action.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task ContinueConversationAsync(ConversationReference reference, BotCallbackHandler logic)
         {
@@ -210,11 +210,11 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         }
 
         /// <summary>
-        /// Accept an incoming webhook request and convert it into a TurnContext which can be processed by the bot's logic.
+        /// Accept an incoming webhook <see cref="HttpRequest"/> and convert it into a <see cref="TurnContext"/> which can be processed by the bot's logic.
         /// </summary>
-        /// <param name="request">A request object from Restify or Express.</param>
-        /// <param name="response">A response object from Restify or Express.</param>
-        /// <param name="bot">A bot with logic function in the form `async(context) => { ... }`.</param>
+        /// <param name="request">A <see cref="HttpRequest"/> object.</param>
+        /// <param name="response">A <see cref="HttpResponse"/> object.</param>
+        /// <param name="bot">A bot with logic function in the form.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task ProcessAsync(HttpRequest request, HttpResponse response, IBot bot, CancellationToken cancellationToken = default(CancellationToken))
