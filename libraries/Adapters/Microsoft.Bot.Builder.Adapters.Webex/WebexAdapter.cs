@@ -176,14 +176,17 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// </summary>
         /// <param name="reference">A <see cref="ConversationReference"/> to be applied to future messages.</param>
         /// <param name="logic">A bot logic function that will perform continuing action.</param>
+        /// <param name="cancellationToken">A cancellation token for the task</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public async Task ContinueConversationAsync(ConversationReference reference, BotCallbackHandler logic)
+        public async Task ContinueConversationAsync(ConversationReference reference, BotCallbackHandler logic, CancellationToken cancellationToken)
         {
             var request = reference.GetContinuationActivity().ApplyConversationReference(reference, true);
 
-            var context = new TurnContext(this, request);
+            using (var context = new TurnContext(this, request))
+            {
+                await RunPipelineAsync(context, logic, cancellationToken).ConfigureAwait(false);
+            }
 
-            await RunPipelineAsync(context, logic, default(CancellationToken)).ConfigureAwait(false);
         }
 
         /// <summary>
