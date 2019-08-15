@@ -24,9 +24,9 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// </summary>
         public const string Name = "Webex Adapter";
 
-        private readonly IWebexAdapterOptions config;
+        private readonly IWebexAdapterOptions _config;
 
-        private readonly TeamsAPIClient api;
+        private readonly TeamsAPIClient _api;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WebexAdapter"/> class.
@@ -36,13 +36,13 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         public WebexAdapter(IWebexAdapterOptions config)
             : base()
         {
-            this.config = config;
+            _config = config;
 
-            if (this.config.AccessToken != null)
+            if (_config.AccessToken != null)
             {
-                this.api = TeamsAPI.CreateVersion1Client(config.AccessToken);
+                _api = TeamsAPI.CreateVersion1Client(config.AccessToken);
 
-                if (this.api == null)
+                if (_api == null)
                 {
                     throw new Exception("Could not create the Webex Teams API client");
                 }
@@ -52,13 +52,13 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                 throw new Exception("AccessToken required to create controller");
             }
 
-            if (this.config.PublicAddress != null)
+            if (_config.PublicAddress != null)
             {
-                var endpoint = new Uri(this.config.PublicAddress);
+                var endpoint = new Uri(_config.PublicAddress);
 
                 if (endpoint.Host != null)
                 {
-                    this.config.PublicAddress = endpoint.Host;
+                    _config.PublicAddress = endpoint.Host;
                 }
                 else
                 {
@@ -83,7 +83,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task GetIdentityAsync()
         {
-            await this.api.GetMeAsync().ContinueWith((task) => { this.Identity = task.Result.Data; });
+            await _api.GetMeAsync().ContinueWith((task) => { Identity = task.Result.Data; });
         }
 
         /// <summary>
@@ -92,11 +92,11 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task ResetWebhookSubscriptions()
         {
-            await this.api.ListWebhooksAsync().ContinueWith(async (task) =>
+            await _api.ListWebhooksAsync().ContinueWith(async (task) =>
             {
                 for (int i = 0; i < task.Result.Data.ItemCount; i++)
                 {
-                    await this.api.DeleteWebhookAsync(task.Result.Data.Items[i]);
+                    await _api.DeleteWebhookAsync(task.Result.Data.Items[i]);
                 }
             });
         }
@@ -108,9 +108,9 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task RegisterWebhookSubscriptionAsync(string webhookPath)
         {
-            var webHookName = this.config.WebhookName ?? "Botkit Firehose";
+            var webHookName = _config.WebhookName ?? "Botkit Firehose";
 
-            await this.api.ListWebhooksAsync().ContinueWith(async (task) =>
+            await _api.ListWebhooksAsync().ContinueWith(async (task) =>
             {
                 string hookId = null;
 
@@ -122,15 +122,15 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                     }
                 }
 
-                var hookURL = "https://" + this.config.PublicAddress + webhookPath;
+                var hookUrl = "https://" + _config.PublicAddress + webhookPath;
 
                 if (hookId != null)
                 {
-                    await this.api.UpdateWebhookAsync(hookId, webHookName, new Uri(hookURL), this.config.Secret);
+                    await _api.UpdateWebhookAsync(hookId, webHookName, new Uri(hookUrl), _config.Secret);
                 }
                 else
                 {
-                    await this.api.CreateWebhookAsync(webHookName, new Uri(hookURL), EventResource.All, EventType.All, null, this.config.Secret);
+                    await _api.CreateWebhookAsync(webHookName, new Uri(hookUrl), EventResource.All, EventType.All, null, _config.Secret);
                 }
             });
         }
@@ -153,7 +153,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                     // transform activity into the webex message format
                     var personIDorEmail = ((activity.ChannelData as dynamic)?.toPersonEmail != null) ? (activity.ChannelData as dynamic).toPersonEmail : activity.Recipient.Id;
                     var text = (activity.ChannelData != null) ? (activity.ChannelData as dynamic).markdown : activity.Text;
-                    TeamsResult<Message> webexResponse = await this.api.CreateDirectMessageAsync(personIDorEmail, text);
+                    TeamsResult<Message> webexResponse = await _api.CreateDirectMessageAsync(personIDorEmail, text);
                     var response = new ResourceResponse(webexResponse.Data.Id);
                     responses.Add(response);
                 }
@@ -190,7 +190,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         {
             if (reference.ActivityId != null)
             {
-                await this.api.DeleteMessageAsync(reference.ActivityId, default(CancellationToken));
+                await _api.DeleteMessageAsync(reference.ActivityId, default(CancellationToken));
             }
         }
 
@@ -206,7 +206,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
 
             var context = new TurnContext(this, request);
 
-            await this.RunPipelineAsync(context, logic, default(CancellationToken));
+            await RunPipelineAsync(context, logic, default(CancellationToken));
         }
 
         /// <summary>
@@ -227,11 +227,11 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
 
             var json = JsonConvert.SerializeObject(payload);
 
-            if (!string.Equals(this.config.Secret, string.Empty))
+            if (!string.Equals(_config.Secret, string.Empty))
             {
                 var signature = request.Headers["x-spark-signature"];
 
-                using (var hmac = new HMACSHA1(Encoding.UTF8.GetBytes(this.config.Secret)))
+                using (var hmac = new HMACSHA1(Encoding.UTF8.GetBytes(_config.Secret)))
                 {
                     var hashArray = hmac.ComputeHash(Encoding.UTF8.GetBytes(json));
 
@@ -247,7 +247,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
             Activity activity;
             if (payload.resource == "messages" && payload["event"] == "created")
             {
-                Message decryptedMessage = (await this.api.GetMessageAsync(payload.data.id.ToString())).GetData();
+                Message decryptedMessage = (await _api.GetMessageAsync(payload.data.id.ToString())).GetData();
                 activity = new Activity()
                 {
                     Id = decryptedMessage.Id,
@@ -264,7 +264,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                     },
                     Recipient = new ChannelAccount()
                     {
-                        Id = this.Identity.Id,
+                        Id = Identity.Id,
                     },
                     Text = decryptedMessage.Text,
                     ChannelData = decryptedMessage,
@@ -272,7 +272,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                 };
 
                 // this is the bot speaking
-                if (activity.From.Id == this.Identity.Id)
+                if (activity.From.Id == Identity.Id)
                 {
                     (activity.ChannelData as dynamic).botkitEventType = "self_message";
                     activity.Type = ActivityTypes.Event;
@@ -280,10 +280,10 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
 
                 if (decryptedMessage.HasHtml)
                 {
-                    var pattern = new Regex("^(<p>)?<spark-mention .*?data-object-id=\"" + this.Identity.Id + "\".*?>.*?</spark-mention>");
+                    var pattern = new Regex("^(<p>)?<spark-mention .*?data-object-id=\"" + Identity.Id + "\".*?>.*?</spark-mention>");
                     if (!decryptedMessage.Html.Equals(pattern))
                     {
-                        var encodedId = this.Identity.Id;
+                        var encodedId = Identity.Id;
 
                         // this should look like ciscospark://us/PEOPLE/<id string>
                         Match match = Regex.Match(encodedId, "/ciscospark://.*/(.*)/im");
@@ -303,13 +303,13 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                 }
                 else
                 {
-                    var pattern = new Regex("^" + this.Identity.DisplayName + "\\s+");
+                    var pattern = new Regex("^" + Identity.DisplayName + "\\s+");
                     activity.Text = activity.Text.Replace(pattern.ToString(), string.Empty);
                 }
 
                 var context = new TurnContext(this, activity);
 
-                await this.RunPipelineAsync(context, bot.OnTurnAsync, default(CancellationToken));
+                await RunPipelineAsync(context, bot.OnTurnAsync, default(CancellationToken));
             }
             else
             {
@@ -328,7 +328,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                     },
                     Recipient = new ChannelAccount()
                     {
-                        Id = this.Identity.Id,
+                        Id = Identity.Id,
                     },
                     ChannelData = payload,
                     Type = ActivityTypes.Event,
@@ -338,7 +338,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
 
                 var context = new TurnContext(this, activity);
 
-                await this.RunPipelineAsync(context, bot.OnTurnAsync, default(CancellationToken));
+                await RunPipelineAsync(context, bot.OnTurnAsync, default(CancellationToken));
             }
         }
     }
