@@ -51,14 +51,9 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
             {
                 var endpoint = new Uri(_config.PublicAddress);
 
-                if (string.IsNullOrWhiteSpace(endpoint.Host))
-                {
-                    _config.PublicAddress = endpoint.Host;
-                }
-                else
-                {
-                    throw new Exception("Could not determine hostname of public address");
-                }
+                _config.PublicAddress = !string.IsNullOrWhiteSpace(endpoint.Host)
+                                        ? _config.PublicAddress = endpoint.Host
+                                        : throw new Exception("Could not determine hostname of public address");
             }
             else
             {
