@@ -31,34 +31,29 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         public WebexAdapter(IWebexAdapterOptions config)
             : base()
         {
-            _config = config;
-
-            if (_config.AccessToken != null)
-            {
-                _api = TeamsAPI.CreateVersion1Client(config.AccessToken);
-
-                if (_api == null)
-                {
-                    throw new Exception("Could not create the Webex Teams API client");
-                }
-            }
-            else
+            if (string.IsNullOrWhiteSpace(_config.AccessToken))
             {
                 throw new Exception("AccessToken required to create controller");
             }
 
-            if (_config.PublicAddress != null)
-            {
-                var endpoint = new Uri(_config.PublicAddress);
-
-                _config.PublicAddress = !string.IsNullOrWhiteSpace(endpoint.Host)
-                                        ? _config.PublicAddress = endpoint.Host
-                                        : throw new Exception("Could not determine hostname of public address");
-            }
-            else
+            if (string.IsNullOrWhiteSpace(_config.PublicAddress))
             {
                 throw new Exception("PublicAddress parameter required to receive webhooks");
             }
+
+            _config = config;
+            _api = TeamsAPI.CreateVersion1Client(config.AccessToken);
+
+            if (_api == null)
+            {
+                throw new Exception("Could not create the Webex Teams API client");
+            }
+
+            var endpoint = new Uri(_config.PublicAddress);
+
+            _config.PublicAddress = !string.IsNullOrWhiteSpace(endpoint.Host)
+                ? _config.PublicAddress = endpoint.Host
+                : throw new Exception("Could not determine hostname of public address");
         }
 
         /// <summary>
