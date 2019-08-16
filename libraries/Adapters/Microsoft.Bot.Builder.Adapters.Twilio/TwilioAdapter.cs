@@ -33,21 +33,21 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
 
             if (string.IsNullOrWhiteSpace(options.TwilioNumber))
             {
-                throw new Exception("TwilioNumber is a required part of the configuration.");
+                throw new ArgumentException("TwilioNumber is a required part of the configuration.", nameof(options));
             }
 
             if (string.IsNullOrWhiteSpace(options.AccountSid))
             {
-                throw new Exception("AccountSid is a required part of the configuration.");
+                throw new ArgumentException("AccountSid is a required part of the configuration.", nameof(options));
             }
 
             if (string.IsNullOrWhiteSpace(options.AuthToken))
             {
-                throw new Exception("AuthToken is a required part of the configuration.");
+                throw new ArgumentException("AuthToken is a required part of the configuration.", nameof(options));
             }
 
+            _twilioApi = twilioApi ?? throw new ArgumentNullException(nameof(twilioApi));
             _options = options;
-            _twilioApi = twilioApi ?? throw new Exception("'twilioApi' is required.");
 
             _twilioApi.LogIn(_options.AccountSid, _options.AuthToken);
         }
