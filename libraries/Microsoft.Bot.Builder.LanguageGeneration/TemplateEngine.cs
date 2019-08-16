@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// or you can just use this empty engine to evaluate inline template.
         /// </summary>
         /// <param name="expressionEngine">The expression engine this template engine based on</param>
-        public TemplateEngine(ExpressionEngine expressionEngine)
+        public TemplateEngine(ExpressionEngine expressionEngine = null)
         {
             this.expressionEngine = expressionEngine ?? new ExpressionEngine();
         }
