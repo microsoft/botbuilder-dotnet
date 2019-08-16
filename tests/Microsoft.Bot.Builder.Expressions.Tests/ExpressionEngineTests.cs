@@ -288,9 +288,10 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("one > 0.5 || two < 1.5", true, oneTwo),
             Test("one / 0 || two", true),
             Test("0/3", 0),
-            # endregion
+            Test("True == true", true),
+            #endregion
 
-            # region  String functions test
+            #region  String functions test
             Test("concat(hello,world)","helloworld"),
             Test("concat('hello','world')","helloworld"),
             Test("concat(\"hello\",\"world\")","helloworld"),
@@ -377,6 +378,11 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("if(0, 'r1', 'r2')", "r1"),//true
             Test("if(bool('true'), 'r1', 'r2')", "r1"),//true
             Test("if(istrue, 'r1', 'r2')", "r1"),//true
+            Test("if(bag.name == null, \"hello\",  bag.name)", "mybag"),
+            Test("if(user.name == null, \"hello\",  user.name)", "hello"), // user.name don't exist
+            Test("if(user.name == null, '',  user.name)", ""), // user.name don't exist
+            Test("if(one > 0, one, two)", 1),
+            Test("if(one < 0, one, two)", 2),
             Test("exists(one)", true),
             Test("exists(xxx)", false),
             Test("exists(one.xxx)", false),

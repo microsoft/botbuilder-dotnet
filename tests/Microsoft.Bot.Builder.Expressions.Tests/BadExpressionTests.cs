@@ -32,6 +32,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("a.#title"),
             Test("\"hello'"),
             Test("'hello'.length()"), // not supported currently
+            Test("user.lists.{dialog.listName}")
         };
 
 

@@ -30,8 +30,6 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
             { "~", $"dialog.instance" },
         };
 
-        private readonly EvaluatorLookup _lookup;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="ExpressionEngine"/> class.
         /// Constructor.
@@ -39,15 +37,17 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
         /// <param name="lookup">If present delegate to lookup evaluation information from type string.</param>
         public ExpressionEngine(EvaluatorLookup lookup = null)
         {
-            _lookup = lookup ?? BuiltInFunctions.Lookup;
+            EvaluatorLookup = lookup ?? BuiltInFunctions.Lookup;
         }
+
+        public EvaluatorLookup EvaluatorLookup { get; }
 
         /// <summary>
         /// Parse the input into an expression.
         /// </summary>
         /// <param name="expression">Expression to parse.</param>
         /// <returns>Expresion tree.</returns>
-        public Expression Parse(string expression) => new ExpressionTransformer(_lookup).Transform(AntlrParse(expression));
+        public Expression Parse(string expression) => new ExpressionTransformer(EvaluatorLookup).Transform(AntlrParse(expression));
 
         protected static IParseTree AntlrParse(string expression)
         {
@@ -133,15 +133,16 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
             {
                 Expression result;
                 var symbol = context.GetText();
-                if (symbol == "false")
+                var normalized = symbol.ToLower();
+                if (normalized == "false")
                 {
                     result = Expression.ConstantExpression(false);
                 }
-                else if (symbol == "true")
+                else if (normalized == "true")
                 {
                     result = Expression.ConstantExpression(true);
                 }
-                else if (symbol == "null")
+                else if (normalized == "null")
                 {
                     result = Expression.ConstantExpression(null);
                 }

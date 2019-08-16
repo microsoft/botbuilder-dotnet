@@ -318,7 +318,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             new SendActivity("{dialog.name}"),
                             new IfCondition()
                             {
-                                Condition= "{dialog.name} == 'testDialog'",
+                                Condition= "dialog.name == 'testDialog'",
                                 Actions = new List<IDialog>()
                                 {
                                     new SendActivity("nested dialogCommand {dialog.name}")
