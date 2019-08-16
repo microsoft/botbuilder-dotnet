@@ -227,6 +227,13 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
             }
         }
 
+        /// <summary>
+        /// Validates the local secret against the one obtained from the request header.
+        /// </summary>
+        /// <param name="secret">The local stored secret.</param>
+        /// <param name="request">The <see cref="HttpRequest"/> with the signature.</param>
+        /// <param name="json">The serialized payload to be use for comparison.</param>
+        /// <returns>The result of the comparison between the signature in the request and hashed json.</returns>
         private static bool ValidateSignature(string secret, HttpRequest request, string json)
         {
             var signature = request.Headers.ContainsKey("x-spark-signature")
@@ -242,6 +249,11 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
             }
         }
 
+        /// <summary>
+        /// Creates a <see cref="Activity"/> using the body of a request.
+        /// </summary>
+        /// <param name="payload">The payload obtained from the body of the request.</param>
+        /// <returns>An <see cref="Activity"/> object.</returns>
         private Activity PayloadToActivity(dynamic payload)
         {
             var activity = new Activity
@@ -270,6 +282,11 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
             return activity;
         }
 
+        /// <summary>
+        /// Converts a decrypted <see cref="Message"/> into an <see cref="Activity"/>.
+        /// </summary>
+        /// <param name="payload">The payload obtained from the body of the request.</param>
+        /// <returns>An <see cref="Activity"/> object.</returns>
         private async Task<Activity> DecryptedMessageToActivityAsync(dynamic payload)
         {
             Message decryptedMessage = (await _api.GetMessageAsync(payload.data.id.ToString())).GetData();
