@@ -33,7 +33,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     {
         private readonly Dictionary<string, LGTemplate> templateMap;
 
-        private readonly ExpressionEngine _expressionParser;
+        private readonly IExpressionParser _expressionParser;
 
         private Stack<EvaluationTarget> evaluationTargetStack = new Stack<EvaluationTarget>();
 
