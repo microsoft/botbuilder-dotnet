@@ -95,7 +95,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
 
             Activity[] activities = { activity };
 
-            await Assert.ThrowsAsync<Exception>(async () =>
+            await Assert.ThrowsAsync<ArgumentException>(async () =>
             {
                 await twilioAdapter.SendActivitiesAsync(new TurnContext(twilioAdapter, activity), activities, default);
             });

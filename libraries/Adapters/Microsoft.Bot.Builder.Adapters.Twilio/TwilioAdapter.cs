@@ -79,7 +79,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
                 }
                 else
                 {
-                    throw new Exception("Unknown message type");
+                    throw new ArgumentException("Unknown message type of Activity.", nameof(activities));
                 }
             }
 
