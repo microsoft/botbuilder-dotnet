@@ -142,5 +142,11 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// </summary>
         /// <value>The API version used to process the message.</value>
         public string ApiVersion { get; set; }
+
+        /// <summary>
+        /// Gets or sets the event type for using with Twilio Conversation API.
+        /// </summary>
+        /// <value>The type of event, e.g. "onMessageAdd", "onMessageAdded", "onConversationAdd".</value>
+        public string EventType { get; set; }
     }
 }
