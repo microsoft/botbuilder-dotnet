@@ -106,16 +106,31 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             private Dictionary<string, LGTemplate> templateMap = new Dictionary<string, LGTemplate>();
 
             private string currentSource = string.Empty;
+            private ExpressionEngine baseExpressionEngine;
 
-            private readonly IExpressionParser expressionParser;
+            private IExpressionParser _expressionParser;
+
+
 
             public StaticCheckerInner(List<LGTemplate> templates, ExpressionEngine expressionEngine)
             {
                 Templates = templates;
+                baseExpressionEngine = expressionEngine;
+            }
 
-                // create an evaluator to leverage it's customized function look up for checking
-                var evaluator = new Evaluator(Templates, expressionEngine);
-                this.expressionParser = evaluator.ExpressionEngine;
+            // Create a property because we want this to be lazy loaded
+            private IExpressionParser ExpressionParser
+            {
+                get
+                {
+                    if (_expressionParser == null)
+                    {
+                        // create an evaluator to leverage it's customized function look up for checking
+                        var evaluator = new Evaluator(Templates, baseExpressionEngine);
+                        _expressionParser = evaluator.ExpressionEngine;
+                    }
+                    return _expressionParser;
+                }
             }
 
             public List<LGTemplate> Templates { get; }
@@ -421,7 +436,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
                 try
                 {
-                    expressionParser.Parse(expression);
+                    ExpressionParser.Parse(expression);
                 }
                 catch (Exception e)
                 {
@@ -467,7 +482,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
                 try
                 {
-                    expressionParser.Parse(exp);
+                    ExpressionParser.Parse(exp);
                 }
                 catch (Exception e)
                 {
