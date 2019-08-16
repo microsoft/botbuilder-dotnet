@@ -26,6 +26,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// </summary>
         /// <param name="options">The options to use to authenticate the bot with the Twilio service.</param>
         /// <param name="twilioApi">The Twilio client to connect to.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="options"/> is <c>null</c>.</exception>
         public TwilioAdapter(ITwilioAdapterOptions options, ITwilioClient twilioApi)
         {
             if (options == null)
@@ -55,12 +56,17 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         }
 
         /// <summary>
-        /// Standard BotBuilder adapter method to send a message from the bot to the messaging API.
+        /// Sends activities to the conversation.
         /// </summary>
-        /// <param name="turnContext">A TurnContext representing the current incoming message and environment.</param>
-        /// <param name="activities">An array of outgoing activities to be sent back to the messaging API.</param>
-        /// <param name="cancellationToken">A cancellation token for the task.</param>
-        /// <returns>A resource response array with the message Sids.</returns>
+        /// <param name="turnContext">The context object for the turn.</param>
+        /// <param name="activities">The activities to send.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>If the activities are successfully sent, the task result contains
+        /// an array of <see cref="ResourceResponse"/> objects containing the SIDs that
+        /// Twilio assigned to the activities.</remarks>
+        /// <seealso cref="ITurnContext.OnSendActivities(SendActivitiesHandler)"/>
         public override async Task<ResourceResponse[]> SendActivitiesAsync(ITurnContext turnContext, Activity[] activities, CancellationToken cancellationToken)
         {
             var responses = new List<ResourceResponse>();
@@ -89,13 +95,16 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         }
 
         /// <summary>
-        /// Accept an incoming webhook httpRequest and convert it into a TurnContext which can be processed by the bot's logic.
+        /// Creates a turn context and runs the middleware pipeline for an incoming activity.
         /// </summary>
-        /// <param name="httpRequest">A httpRequest object.</param>
-        /// <param name="httpResponse">A httpResponse object.</param>
-        /// <param name="bot">A bot with logic function in the form `async(context) => { ... }`.</param>
-        /// <param name="cancellationToken">A cancellation token for the task.</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        /// <param name="httpRequest">The incoming HTTP request.</param>
+        /// <param name="httpResponse">When this method completes, the HTTP response to send.</param>
+        /// <param name="bot">The bot that will handle the incoming activity.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="httpRequest"/>,
+        /// <paramref name="httpResponse"/>, or <paramref name="bot"/> is <c>null</c>.</exception>
         public async Task ProcessAsync(HttpRequest httpRequest, HttpResponse httpResponse, IBot bot, CancellationToken cancellationToken = default)
         {
             if (httpRequest == null)
@@ -130,12 +139,16 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         }
 
         /// <summary>
-        /// Standard BotBuilder adapter method to update a previous message with new content.
+        /// Replaces an existing activity in the conversation.
+        /// Twilio SMS does not support this operation.
         /// </summary>
-        /// <param name="turnContext">A TurnContext representing the current incoming message and environment.</param>
-        /// <param name="activity">The updated activity in the form '{id: `id of activity to update`, ...}'.</param>
-        /// <param name="cancellationToken">A cancellation token for the task.</param>
-        /// <returns>A resource response with the Id of the updated activity.</returns>
+        /// <param name="turnContext">The context object for the turn.</param>
+        /// <param name="activity">New replacement activity.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>This method always returns a faulted task.</remarks>
+        /// <seealso cref="ITurnContext.OnUpdateActivity(UpdateActivityHandler)"/>
         public override Task<ResourceResponse> UpdateActivityAsync(ITurnContext turnContext, Activity activity, CancellationToken cancellationToken)
         {
             // Twilio adapter does not support updateActivity.
@@ -143,12 +156,16 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         }
 
         /// <summary>
-        /// Standard BotBuilder adapter method to delete a previous message.
+        /// Deletes an existing activity in the conversation.
+        /// Twilio SMS does not support this operation.
         /// </summary>
-        /// <param name="turnContext">A TurnContext representing the current incoming message and environment.</param>
-        /// <param name="reference">An object in the form "{activityId: `id of message to delete`, conversation: { id: `id of channel`}}".</param>
-        /// <param name="cancellationToken">A cancellation token for the task.</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        /// <param name="turnContext">The context object for the turn.</param>
+        /// <param name="reference">Conversation reference for the activity to delete.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>This method always returns a faulted task.</remarks>
+        /// <seealso cref="ITurnContext.OnDeleteActivity(DeleteActivityHandler)"/>
         public override Task DeleteActivityAsync(ITurnContext turnContext, ConversationReference reference, CancellationToken cancellationToken)
         {
             // Twilio adapter does not support deleteActivity.
@@ -156,12 +173,19 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         }
 
         /// <summary>
-        /// Standard BotBuilder adapter method for continuing an existing conversation based on a conversation reference.
+        /// Sends a proactive message to a conversation.
         /// </summary>
-        /// <param name="reference">A conversation reference to be applied to future messages.</param>
-        /// <param name="logic">A bot logic function that will perform continuing action in the form 'async(context) => { ... }'.</param>
-        /// <param name="cancellationToken">A cancellation token for the task.</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        /// <param name="reference">A reference to the conversation to continue.</param>
+        /// <param name="logic">The method to call for the resulting bot turn.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>Call this method to proactively send a message to a conversation.
+        /// Most channels require a user to initiate a conversation with a bot
+        /// before the bot can send activities to the user.</remarks>
+        /// <seealso cref="RunPipelineAsync(ITurnContext, BotCallbackHandler, CancellationToken)"/>
+        /// <exception cref="ArgumentNullException"><paramref name="reference"/> or
+        /// <paramref name="logic"/> is <c>null</c>.</exception>
         public async Task ContinueConversationAsync(ConversationReference reference, BotCallbackHandler logic, CancellationToken cancellationToken)
         {
             if (reference == null)

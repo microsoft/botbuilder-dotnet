@@ -11,17 +11,18 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
     public interface ITwilioClient
     {
         /// <summary>
-        /// Logs into the Twilio API service.
+        /// Initializes the Twilio client with a user name and password.
         /// </summary>
         /// <param name="username">The user name for the Twilio API.</param>
         /// <param name="password">The password for the Twilio API.</param>
         void LogIn(string username, string password);
 
         /// <summary>
-        /// Returns the resource ID from a message.
+        /// Sends a Twilio SMS message.
         /// </summary>
-        /// <param name="messageOptions">An object that represents the Twilio message options.</param>
-        /// <returns>The ID from the Twilio message.</returns>
+        /// <param name="messageOptions">An object containing the parameters for the message to send.</param>
+        /// <returns>The SID of the Twilio message sent.</returns>
+        /// <remarks><paramref name="messageOptions"/> should be a <see cref="CreateMessageOptions"/> object.</remarks>
         Task<string> GetResourceIdentifier(object messageOptions);
     }
 }
