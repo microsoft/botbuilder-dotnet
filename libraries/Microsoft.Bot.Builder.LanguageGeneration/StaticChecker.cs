@@ -6,13 +6,20 @@ using System.Text.RegularExpressions;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
+using Microsoft.Bot.Builder.Expressions;
 using Microsoft.Bot.Builder.Expressions.Parser;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
     public class StaticChecker
     {
-        public static List<Diagnostic> CheckFiles(IEnumerable<string> filePaths, ImportResolverDelegate importResolver = null)
+        private readonly ExpressionEngine expressionEngine;
+        public StaticChecker(ExpressionEngine expressionEngine = null)
+        {
+            this.expressionEngine = expressionEngine ?? new ExpressionEngine();
+        }
+
+        public List<Diagnostic> CheckFiles(IEnumerable<string> filePaths, ImportResolverDelegate importResolver = null)
         {
             var result = new List<Diagnostic>();
             var templates = new List<LGTemplate>();
@@ -51,9 +58,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return result;
         }
 
-        public static List<Diagnostic> CheckFile(string filePath, ImportResolverDelegate importResolver = null) => CheckFiles(new List<string>() { filePath }, importResolver);
+        public List<Diagnostic> CheckFile(string filePath, ImportResolverDelegate importResolver = null) => CheckFiles(new List<string>() { filePath }, importResolver);
 
-        public static List<Diagnostic> CheckText(string content, string id = "", ImportResolverDelegate importResolver = null)
+        public List<Diagnostic> CheckText(string content, string id = "", ImportResolverDelegate importResolver = null)
         {
             if (importResolver == null)
             {
@@ -92,7 +99,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return result;
         }
 
-        public static List<Diagnostic> CheckTemplates(List<LGTemplate> templates) => new StaticCheckerInner(templates).Check();
+        public List<Diagnostic> CheckTemplates(List<LGTemplate> templates) => new StaticCheckerInner(templates, expressionEngine).Check();
 
         private class StaticCheckerInner : LGFileParserBaseVisitor<List<Diagnostic>>
         {
@@ -100,9 +107,15 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             private string currentSource = string.Empty;
 
-            public StaticCheckerInner(List<LGTemplate> templates)
+            private readonly IExpressionParser expressionParser;
+
+            public StaticCheckerInner(List<LGTemplate> templates, ExpressionEngine expressionEngine)
             {
                 Templates = templates;
+
+                // create an evaluator to leverage it's customized function look up for checking
+                var evaluator = new Evaluator(Templates, expressionEngine);
+                this.expressionParser = evaluator.ExpressionEngine;
             }
 
             public List<LGTemplate> Templates { get; }
@@ -408,7 +421,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
                 try
                 {
-                    new ExpressionEngine(new GetMethodExtensions(new Evaluator(this.Templates, null)).GetMethodX).Parse(expression);
+                    expressionParser.Parse(expression);
                 }
                 catch (Exception e)
                 {
@@ -454,7 +467,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
                 try
                 {
-                    new ExpressionEngine(new GetMethodExtensions(new Evaluator(this.Templates, null)).GetMethodX).Parse(exp);
+                    expressionParser.Parse(exp);
                 }
                 catch (Exception e)
                 {
