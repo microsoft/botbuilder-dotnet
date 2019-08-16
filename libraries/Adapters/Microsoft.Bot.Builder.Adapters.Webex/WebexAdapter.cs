@@ -217,97 +217,13 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                 }
             }
 
-            Activity activity;
-            if (payload.resource == "messages" && payload["event"] == "created")
+            var activity = payload.resource == "messages" && payload["event"] == "created"
+                ? await DecryptedMessageToActivityAsync(payload)
+                : PayloadToActivity(payload);
+
+            using (var context = new TurnContext(this, activity))
             {
-                Message decryptedMessage = (await _api.GetMessageAsync(payload.data.id.ToString())).GetData();
-                activity = new Activity()
-                {
-                    Id = decryptedMessage.Id,
-                    Timestamp = new DateTime(),
-                    ChannelId = "webex",
-                    Conversation = new ConversationAccount()
-                    {
-                        Id = (decryptedMessage as dynamic).SpaceId,
-                    },
-                    From = new ChannelAccount()
-                    {
-                        Id = decryptedMessage.PersonId,
-                        Name = decryptedMessage.PersonEmail,
-                    },
-                    Recipient = new ChannelAccount()
-                    {
-                        Id = Identity.Id,
-                    },
-                    Text = decryptedMessage.Text,
-                    ChannelData = decryptedMessage,
-                    Type = ActivityTypes.Message,
-                };
-
-                // this is the bot speaking
-                if (activity.From.Id == Identity.Id)
-                {
-                    (activity.ChannelData as dynamic).botkitEventType = "self_message";
-                    activity.Type = ActivityTypes.Event;
-                }
-
-                if (decryptedMessage.HasHtml)
-                {
-                    var pattern = new Regex("^(<p>)?<spark-mention .*?data-object-id=\"" + Identity.Id + "\".*?>.*?</spark-mention>");
-                    if (!decryptedMessage.Html.Equals(pattern))
-                    {
-                        var encodedId = Identity.Id;
-
-                        // this should look like ciscospark://us/PEOPLE/<id string>
-                        var match = Regex.Match(encodedId, "/ciscospark://.*/(.*)/im");
-                        pattern = new Regex("^(<p>)?<spark-mention .*?data-object-id=\"" + match.Captures[1] + "\".*?>.*?</spark-mention>");
-                    }
-
-                    var action = decryptedMessage.Html.Replace(pattern.ToString(), string.Empty);
-
-                    // Strip the remaining HTML tags and replace the message text with the the HTML version
-                    activity.Text = action.Replace("/<.*?>/img", string.Empty).Trim();
-                }
-                else
-                {
-                    var pattern = new Regex("^" + Identity.DisplayName + "\\s+");
-                    activity.Text = activity.Text.Replace(pattern.ToString(), string.Empty);
-                }
-
-                using (var context = new TurnContext(this, activity))
-                {
-                    await RunPipelineAsync(context, bot.OnTurnAsync, cancellationToken).ConfigureAwait(false);
-                }
-            }
-            else
-            {
-                activity = new Activity()
-                {
-                    Id = payload.id,
-                    Timestamp = new DateTime(),
-                    ChannelId = "webex",
-                    Conversation = new ConversationAccount()
-                    {
-                        Id = payload.data.roomId,
-                    },
-                    From = new ChannelAccount()
-                    {
-                        Id = payload.actorId,
-                    },
-                    Recipient = new ChannelAccount()
-                    {
-                        Id = Identity.Id,
-                    },
-                    ChannelData = payload,
-                    Type = ActivityTypes.Event,
-                };
-
-                (activity.ChannelData as dynamic).botkitEventType = payload.resource + "." + payload["event"];
-
-                using (var context = new TurnContext(this, activity))
-                {
-                    await RunPipelineAsync(context, bot.OnTurnAsync, cancellationToken).ConfigureAwait(false);
-                }
+                await RunPipelineAsync(context, bot.OnTurnAsync, cancellationToken).ConfigureAwait(false);
             }
         }
 
@@ -324,6 +240,93 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
 
                 return signature == hash;
             }
+        }
+
+        private Activity PayloadToActivity(dynamic payload)
+        {
+            var activity = new Activity
+            {
+                Id = payload.id,
+                Timestamp = new DateTime(),
+                ChannelId = "webex",
+                Conversation = new ConversationAccount
+                {
+                    Id = payload.data.roomId,
+                },
+                From = new ChannelAccount
+                {
+                    Id = payload.actorId,
+                },
+                Recipient = new ChannelAccount
+                {
+                    Id = Identity.Id,
+                },
+                ChannelData = payload,
+                Type = ActivityTypes.Event,
+            };
+
+            (activity.ChannelData as dynamic).botkitEventType = payload.resource + "." + payload["event"];
+
+            return activity;
+        }
+
+        private async Task<Activity> DecryptedMessageToActivityAsync(dynamic payload)
+        {
+            Message decryptedMessage = (await _api.GetMessageAsync(payload.data.id.ToString())).GetData();
+            var activity = new Activity
+            {
+                Id = decryptedMessage.Id,
+                Timestamp = new DateTime(),
+                ChannelId = "webex",
+                Conversation = new ConversationAccount
+                {
+                    Id = (decryptedMessage as dynamic).SpaceId,
+                },
+                From = new ChannelAccount
+                {
+                    Id = decryptedMessage.PersonId,
+                    Name = decryptedMessage.PersonEmail,
+                },
+                Recipient = new ChannelAccount
+                {
+                    Id = Identity.Id,
+                },
+                Text = decryptedMessage.Text,
+                ChannelData = decryptedMessage,
+                Type = ActivityTypes.Message,
+            };
+
+            // this is the bot speaking
+            if (activity.From.Id == Identity.Id)
+            {
+                (activity.ChannelData as dynamic).botkitEventType = "self_message";
+                activity.Type = ActivityTypes.Event;
+            }
+
+            if (decryptedMessage.HasHtml)
+            {
+                var pattern = new Regex("^(<p>)?<spark-mention .*?data-object-id=\"" + Identity.Id + "\".*?>.*?</spark-mention>");
+                if (!decryptedMessage.Html.Equals(pattern))
+                {
+                    var encodedId = Identity.Id;
+
+                    // this should look like ciscospark://us/PEOPLE/<id string>
+                    var match = Regex.Match(encodedId, "/ciscospark://.*/(.*)/im");
+                    pattern = new Regex("^(<p>)?<spark-mention .*?data-object-id=\"" + match.Captures[1] + "\".*?>.*?</spark-mention>");
+                }
+
+                var action = decryptedMessage.Html.Replace(pattern.ToString(), string.Empty);
+
+                // Strip the remaining HTML tags and replace the message text with the the HTML version
+                activity.Text = action.Replace("/<.*?>/img", string.Empty).Trim();
+            }
+            else
+            {
+                var pattern = new Regex("^" + Identity.DisplayName + "\\s+");
+                activity.Text = activity.Text.Replace(pattern.ToString(), string.Empty);
+            }
+
+            return activity;
         }
     }
 }
