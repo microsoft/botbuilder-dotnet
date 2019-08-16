@@ -9,18 +9,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
     public interface IResource
     {
         /// <summary>
-        /// Resource name
+        /// Resource name.
         /// </summary>
         string Id { get; }
 
         /// <summary>
-        /// Get resource as text async
+        /// Get resource as text async.
         /// </summary>
         /// <returns></returns>
         Task<string> ReadTextAsync();
 
         /// <summary>
-        /// Get readonly stream 
+        /// Get readonly stream. 
         /// </summary>
         /// <returns></returns>
         Task<Stream> OpenStreamAsync();

@@ -25,12 +25,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         }
 
         /// <summary>
-        /// Event name 
+        /// Event name. 
         /// </summary>
         public string EventName { get; set; }
 
         /// <summary>
-        /// Event value
+        /// Event value.
         /// </summary>
         public string EventValue { get; set; }
 

@@ -11,18 +11,18 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
     /// <summary>
-    /// Write log activity to console log
+    /// Write log activity to console log.
     /// </summary>
     public class LogAction : DialogAction
     {
         /// <summary>
-        /// LG expression to log
+        /// LG expression to log.
         /// </summary>
         [JsonProperty("text")]
         public ITextTemplate Text { get; set; }
 
         /// <summary>
-        /// If set to true a TraceActivity will be sent in addition to console log
+        /// If set to true a TraceActivity will be sent in addition to console log.
         /// </summary>
         [JsonProperty("traceActivity")]
         public bool TraceActivity { get; set; } = false;

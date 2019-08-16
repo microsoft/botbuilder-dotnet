@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <summary>
         /// Initializes a new instance of the <see cref="LanguageGeneratorManager"/> class.
         /// </summary>
-        /// <param name="resourceExplorer">resourceExplorer to manage LG files from</param>
+        /// <param name="resourceExplorer">resourceExplorer to manage LG files from.</param>
         public LanguageGeneratorManager(ResourceExplorer resourceExplorer)
         {
             this.resourceExplorer = resourceExplorer;
@@ -54,7 +54,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         }
 
         /// <summary>
-        /// Generators
+        /// Generators.
         /// </summary>
         public ConcurrentDictionary<string, ILanguageGenerator> LanguageGenerators { get; set; } = new ConcurrentDictionary<string, ILanguageGenerator>(StringComparer.OrdinalIgnoreCase);
 

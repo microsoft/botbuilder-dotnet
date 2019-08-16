@@ -12,10 +12,10 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <summary>
         /// Method to bind data to string.
         /// </summary>
-        /// <param name="turnContext">turnContext</param>
+        /// <param name="turnContext">turnContext.</param>
         /// <param name="template">template or [templateId].</param>
         /// <param name="data">data to bind to.</param>
-        /// <returns>text</returns>
+        /// <returns>text.</returns>
         Task<string> Generate(ITurnContext turnContext, string template, object data);
     }
 }

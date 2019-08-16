@@ -411,7 +411,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     }
 
     /// <summary>
-    /// Defines the shape of the state object returned by calling DialogContext.State.ToJson()
+    /// Defines the shape of the state object returned by calling DialogContext.State.ToJson().
     /// </summary>
     public class DialogContextVisibleState
     {

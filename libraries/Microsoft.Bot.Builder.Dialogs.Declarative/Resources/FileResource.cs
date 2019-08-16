@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
 {
     /// <summary>
-    /// File resource
+    /// File resource.
     /// </summary>
     public class FileResource : IResource
     {
@@ -57,7 +57,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         }
 
         /// <summary>
-        /// Get resource as atext
+        /// Get resource as atext.
         /// </summary>
         /// <returns></returns>
         public Task<string> ReadTextAsync()

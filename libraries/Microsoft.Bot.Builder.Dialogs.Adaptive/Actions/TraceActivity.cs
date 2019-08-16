@@ -12,22 +12,22 @@ using Newtonsoft.Json.Linq;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
     /// <summary>
-    /// Send an Tace activity back to the transcript
+    /// Send an Tace activity back to the transcript.
     /// </summary>
     public class TraceActivity : DialogAction
     {
         /// <summary>
-        /// Name of the trace activity
+        /// Name of the trace activity.
         /// </summary>
         public string Name { get; set; }
 
         /// <summary>
-        /// Value type of the trace activity
+        /// Value type of the trace activity.
         /// </summary>
         public string ValueType { get; set; }
 
         /// <summary>
-        /// Property binding to memory to send as the value 
+        /// Property binding to memory to send as the value. 
         /// </summary>
         public string Value { get; set; }
 

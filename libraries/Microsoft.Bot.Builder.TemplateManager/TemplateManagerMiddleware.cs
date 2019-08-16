@@ -11,7 +11,7 @@ using Newtonsoft.Json.Linq;
 namespace Microsoft.Bot.Builder.TemplateManager
 {
     /// <summary>
-    /// Middleware for registering ITemplateRender
+    /// Middleware for registering ITemplateRender.
     /// </summary>
     public class TemplateManagerMiddleware : IMiddleware
     {
@@ -29,12 +29,12 @@ namespace Microsoft.Bot.Builder.TemplateManager
         }
 
         /// <summary>
-        /// Template Renderers
+        /// Template Renderers.
         /// </summary>
         public List<ITemplateRenderer> Renderers { get { return this.TemplateManager.Renderers; } set { this.TemplateManager.Renderers = value; } }
 
         /// <summary>
-        /// Language fallback policy
+        /// Language fallback policy.
         /// </summary>
         public List<string> LanguageFallback { get { return this.TemplateManager.LanguageFallback; } set { this.TemplateManager.LanguageFallback = value; } }
 

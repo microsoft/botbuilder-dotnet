@@ -17,7 +17,7 @@ using Newtonsoft.Json.Linq;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
     /// <summary>
-    /// Action for HttpRequests
+    /// Action for HttpRequests.
     /// </summary>
     public class HttpRequest : DialogAction
     {
@@ -84,7 +84,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         public ResponseTypes ResponseType { get; set; } = ResponseTypes.Json;
 
         /// <summary>
-        /// Property which is bidirectional property for input and output.  Example: user.age will be passed in, and user.age will be set when the dialog completes
+        /// Property which is bidirectional property for input and output.  Example: user.age will be passed in, and user.age will be set when the dialog completes.
         /// </summary>
         public string Property
         {

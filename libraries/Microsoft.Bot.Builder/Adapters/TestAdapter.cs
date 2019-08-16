@@ -86,12 +86,12 @@ namespace Microsoft.Bot.Builder.Adapters
         public ConversationReference Conversation { get; set; }
 
         /// <summary>
-        /// Create a ConversationReference 
+        /// Create a ConversationReference. 
         /// </summary>
-        /// <param name="name">name of the conversation (also id)</param>
+        /// <param name="name">name of the conversation (also id).</param>
         /// <param name="user">name of the user (also id) default:User1.</param>
         /// <param name="bot">name of the bot (also id) default:Bot.</param>
-        /// <returns>ConversationReference</returns>
+        /// <returns>ConversationReference.</returns>
         public static ConversationReference CreateConversation(string name, string user = "User1", string bot = "Bot")
         {
             return new ConversationReference

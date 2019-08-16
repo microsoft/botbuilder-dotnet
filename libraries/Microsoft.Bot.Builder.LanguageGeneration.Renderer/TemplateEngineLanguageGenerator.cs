@@ -23,9 +23,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <summary>
         /// Initializes a new instance of the <see cref="TemplateEngineLanguageGenerator"/> class.
         /// </summary>
-        /// <param name="lgText">lg template text</param>
-        /// <param name="importResolver">template resource loader (id) => templateText</param>
-        /// <param name="id">optional label for the source of the templates (used for labeling source of template errors)</param>
+        /// <param name="lgText">lg template text.</param>
+        /// <param name="importResolver">template resource loader (id) => templateText.</param>
+        /// <param name="id">optional label for the source of the templates (used for labeling source of template errors).</param>
         public TemplateEngineLanguageGenerator(string lgText, string id = null, ImportResolverDelegate importResolver = null)
         {
             this.Id = id ?? DEFAULTLABEL;
@@ -35,8 +35,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <summary>
         /// Initializes a new instance of the <see cref="TemplateEngineLanguageGenerator"/> class.
         /// </summary>
-        /// <param name="engine">template engine</param>
-        /// <param name="name">optional label for the source of the templates (used for labeling source of template errors)</param>
+        /// <param name="engine">template engine.</param>
+        /// <param name="name">optional label for the source of the templates (used for labeling source of template errors).</param>
         public TemplateEngineLanguageGenerator(TemplateEngine engine)
         {
             this.engine = engine;
@@ -50,10 +50,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <summary>
         /// Method to generate text from given template and data.
         /// </summary>
-        /// <param name="turnContext">context</param>
-        /// <param name="template">template to evaluate</param>
-        /// <param name="data">data to bind to</param>
-        /// <returns>generated text</returns>
+        /// <param name="turnContext">context.</param>
+        /// <param name="template">template to evaluate.</param>
+        /// <param name="data">data to bind to.</param>
+        /// <returns>generated text.</returns>
         public async Task<string> Generate(ITurnContext turnContext, string template, object data)
         {
             try

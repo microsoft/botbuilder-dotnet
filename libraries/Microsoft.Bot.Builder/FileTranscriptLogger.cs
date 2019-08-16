@@ -13,10 +13,10 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder
 {
     /// <summary>
-    /// FileTranscriptLogger which creates a .transcript file for each conversationId
+    /// FileTranscriptLogger which creates a .transcript file for each conversationId.
     /// </summary>
     /// <remarks>
-    /// This is a useful class for unit tests
+    /// This is a useful class for unit tests.
     /// </remarks>
     public class FileTranscriptLogger : ITranscriptStore
     {
@@ -24,11 +24,17 @@ namespace Microsoft.Bot.Builder
         private bool unitTestMode;
         private HashSet<string> started = new HashSet<string>();
 
+        private static JsonSerializerSettings jsonSettings = new JsonSerializerSettings()
+        {
+            Formatting = Formatting.Indented,
+            NullValueHandling = NullValueHandling.Ignore,
+        };
+
         /// <summary>
         /// Initializes a new instance of the <see cref="FileTranscriptLogger"/> class.
         /// </summary>
-        /// <param name="folder">folder to place the transcript files (Default current folder)</param>
-        /// <param name="unitTestMode">unitTestMode will overwrite transcript files</param>
+        /// <param name="folder">folder to place the transcript files (Default current folder).</param>
+        /// <param name="unitTestMode">unitTestMode will overwrite transcript files.</param>
         public FileTranscriptLogger(string folder = null, bool unitTestMode = true)
         {
             if (folder == null)
@@ -45,29 +51,6 @@ namespace Microsoft.Bot.Builder
 
             this.folder = folder;
             this.unitTestMode = unitTestMode;
-        }
-
-        private static JsonSerializerSettings jsonSettings = new JsonSerializerSettings()
-        {
-            Formatting = Formatting.Indented,
-            NullValueHandling = NullValueHandling.Ignore,
-        };
-
-        private static async Task<Activity[]> LoadTranscript(string transcriptFile)
-        {
-            if (File.Exists(transcriptFile))
-            {
-                using (var stream = File.OpenRead(transcriptFile))
-                {
-                    using (var reader = new StreamReader(stream) as TextReader)
-                    {
-                        var json = await reader.ReadToEndAsync().ConfigureAwait(false);
-                        return JsonConvert.DeserializeObject<Activity[]>(json);
-                    }
-                }
-            }
-
-            return Array.Empty<Activity>();
         }
 
         /// <summary>
@@ -176,6 +159,23 @@ namespace Microsoft.Bot.Builder
             var transcriptFile = GetTranscriptFile(channelId, conversationId);
             File.Delete(transcriptFile);
             return Task.CompletedTask;
+        }
+
+        private static async Task<Activity[]> LoadTranscript(string transcriptFile)
+        {
+            if (File.Exists(transcriptFile))
+            {
+                using (var stream = File.OpenRead(transcriptFile))
+                {
+                    using (var reader = new StreamReader(stream) as TextReader)
+                    {
+                        var json = await reader.ReadToEndAsync().ConfigureAwait(false);
+                        return JsonConvert.DeserializeObject<Activity[]>(json);
+                    }
+                }
+            }
+
+            return Array.Empty<Activity>();
         }
 
         private string GetTranscriptFile(string channelId, string conversationId)

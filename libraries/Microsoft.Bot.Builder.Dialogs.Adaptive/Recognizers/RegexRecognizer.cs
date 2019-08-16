@@ -15,14 +15,14 @@ using Newtonsoft.Json.Linq;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
 {
     /// <summary>
-    /// IRecognizer implementation which uses regex expressions to identify intents
+    /// IRecognizer implementation which uses regex expressions to identify intents.
     /// </summary>
     public class RegexRecognizer : IRecognizer
     {
         private Dictionary<string, Regex> patterns = new Dictionary<string, Regex>();
 
         /// <summary>
-        /// Dictionary of patterns -> Intent names
+        /// Dictionary of patterns -> Intent names.
         /// </summary>
         [JsonProperty("intents")]
         public Dictionary<string, string> Intents { get; set; } = new Dictionary<string, string>();

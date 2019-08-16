@@ -517,8 +517,8 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <summary>
         /// Find the dialog id for the given context.
         /// </summary>
-        /// <param name="dialogId">dialog id to find</param>
-        /// <returns>dialog with that id</returns>
+        /// <param name="dialogId">dialog id to find.</param>
+        /// <returns>dialog with that id.</returns>
         public IDialog FindDialog(string dialogId)
         {
             if (this.Dialogs != null)

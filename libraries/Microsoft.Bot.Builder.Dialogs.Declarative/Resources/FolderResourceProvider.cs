@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
 {
     /// <summary>
-    /// Folder/FileResources
+    /// Folder/FileResources.
     /// </summary>
     public class FolderResourceProvider : IResourceProvider, IDisposable
     {
@@ -105,7 +105,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         }
 
         /// <summary>
-        /// folder to enumerate
+        /// folder to enumerate.
         /// </summary>
         public DirectoryInfo Directory { get; set; }
 
@@ -129,7 +129,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         }
 
         /// <summary>
-        /// GetResource by id
+        /// GetResource by id.
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -147,7 +147,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         }
 
         /// <summary>
-        /// Get Resources by extension
+        /// Get Resources by extension.
         /// </summary>
         public IEnumerable<IResource> GetResources(string extension)
         {
@@ -168,7 +168,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
     public static class FolderResourceProviderExtensions
     {
         /// <summary>
-        /// Add a folder resource
+        /// Add a folder resource.
         /// </summary>
         /// <param name="explorer"></param>
         /// <param name="folder"></param>
@@ -182,7 +182,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         }
 
         /// <summary>
-        ///  Add folder resources
+        ///  Add folder resources.
         /// </summary>
         /// <param name="explorer"></param>
         /// <param name="folder"></param>

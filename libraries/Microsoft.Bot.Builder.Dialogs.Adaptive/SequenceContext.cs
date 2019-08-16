@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         public AdaptiveDialogState Plans { get; private set; }
 
         /// <summary>
-        /// List of actions being executed
+        /// List of actions being executed.
         /// </summary>
         public List<ActionState> Actions { get; set; }
         
@@ -47,7 +47,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// <summary>
         /// Queues up a set of changes that will be applied when ApplyChanges is called.
         /// </summary>
-        /// <param name="changes">Plan changes to queue up</param>
+        /// <param name="changes">Plan changes to queue up.</param>
         public void QueueChanges(ActionChangeList changes)
         {
             // Pull change lists from turn context
@@ -338,7 +338,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         public List<string> Tags { get; set; } = new List<string>();
 
         /// <summary>
-        /// Gets or sets turn state associated with the plan change list (it will be applied to turn state when plan is applied)
+        /// Gets or sets turn state associated with the plan change list (it will be applied to turn state when plan is applied).
         /// </summary>
         [JsonProperty(PropertyName = "turn")]
         public Dictionary<string, object> Turn { get; set; }

@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
 {
     /// <summary>
-    /// Event for MessageReaction Activity
+    /// Event for MessageReaction Activity.
     /// </summary>
     public class OnMessageReactionActivity : OnActivity
     {

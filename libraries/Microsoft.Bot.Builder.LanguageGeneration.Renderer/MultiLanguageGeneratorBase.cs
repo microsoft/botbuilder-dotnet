@@ -21,10 +21,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <summary>
         /// abstract method to lookup a ILanguageGeneartor by locale.
         /// </summary>
-        /// <param name="context">context</param>
-        /// <param name="locale">locale</param>
-        /// <param name="generator">generator to return</param>
-        /// <returns>true if found</returns>
+        /// <param name="context">context.</param>
+        /// <param name="locale">locale.</param>
+        /// <param name="generator">generator to return.</param>
+        /// <returns>true if found.</returns>
         public abstract bool TryGetGenerator(ITurnContext context, string locale, out ILanguageGenerator generator);
 
         /// <summary>

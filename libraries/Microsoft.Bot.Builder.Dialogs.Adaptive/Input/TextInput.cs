@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 ;
 
     /// <summary>
-    /// Declarative text input to gather text data from users
+    /// Declarative text input to gather text data from users.
     /// </summary>
     public class TextInput : InputDialog
     {

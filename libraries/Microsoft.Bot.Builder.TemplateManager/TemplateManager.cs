@@ -20,17 +20,17 @@ namespace Microsoft.Bot.Builder.TemplateManager
         }
 
         /// <summary>
-        /// Template Renderers
+        /// Template Renderers.
         /// </summary>
         public List<ITemplateRenderer> Renderers { get; set; } = new List<ITemplateRenderer>();
 
         /// <summary>
-        /// Language fallback policy
+        /// Language fallback policy.
         /// </summary>
         public List<string> LanguageFallback { get; set; } = new List<string>();
 
         /// <summary>
-        /// Add a template engine for binding templates
+        /// Add a template engine for binding templates.
         /// </summary>
         /// <param name="renderer">Data for binding templates.</param>
         /// <returns>Reurns a template manager.</returns>

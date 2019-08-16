@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition.Tests
         private static JsonSerializerSettings jsonSerializerSettings = new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore, Formatting = Formatting.Indented };
 
         /// <summary>
-        /// Create test flow
+        /// Create test flow.
         /// </summary>
         private TestAdapter CreateTestAdapter(string initialDialog, out DialogSet dialogs, out BotCallbackHandler botHandler)
         {

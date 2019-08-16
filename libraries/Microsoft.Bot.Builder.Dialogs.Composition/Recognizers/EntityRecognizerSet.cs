@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition.Recognizers
         public EntityRecognizerSet() { }
 
         /// <summary>
-        /// Recognizer pool 
+        /// Recognizer pool. 
         /// </summary>
         public IList<IEntityRecognizer> Recognizers { get; set; } = new List<IEntityRecognizer>();
 
@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition.Recognizers
         /// Implement RecognizeEntities by iterating against the Recognizer pool.
         /// </summary>
         /// <param name="turnContext"></param>
-        /// <param name="entities">if no entities are passed in, it will generate a TextEntity for turnContext.Activity.Text and then generate entities off of that</param>
+        /// <param name="entities">if no entities are passed in, it will generate a TextEntity for turnContext.Activity.Text and then generate entities off of that.</param>
         /// <returns></returns>
         public async Task<IList<Entity>> RecognizeEntities(ITurnContext turnContext, IEnumerable<Entity> entities = null)
         {

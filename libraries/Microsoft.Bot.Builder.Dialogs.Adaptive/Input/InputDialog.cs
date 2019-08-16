@@ -55,7 +55,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         public AllowInterruptions AllowInterruptions { get; set; } = AllowInterruptions.NotRecognized;
 
         /// <summary>
-        /// Initial value for the prompt
+        /// Initial value for the prompt.
         /// </summary>
         [JsonProperty("value")]
         public string Value
@@ -65,17 +65,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         }
 
         /// <summary>
-        /// Activity to send to the user
+        /// Activity to send to the user.
         /// </summary>
         public ITemplate<Activity> Prompt { get; set; }
 
         /// <summary>
-        /// Activity template for retrying prompt
+        /// Activity template for retrying prompt.
         /// </summary>
         public ITemplate<Activity> UnrecognizedPrompt { get; set; }
 
         /// <summary>
-        /// Activity template to send to the user whenever the value provided is invalid
+        /// Activity template to send to the user whenever the value provided is invalid.
         /// </summary>
         public ITemplate<Activity> InvalidPrompt { get; set; }
 
@@ -87,7 +87,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         public int? MaxTurnCount { get; set; }
 
         /// <summary>
-        /// Default value for the input dialog
+        /// Default value for the input dialog.
         /// </summary>
         public string DefaultValue
         {

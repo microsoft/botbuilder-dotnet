@@ -17,7 +17,7 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
 {
     /// <summary>
-    /// Defines basic OnEvent handler
+    /// Defines basic OnEvent handler.
     /// </summary>
     [DebuggerDisplay("{GetIdentity()}")]
     public abstract class OnEvent : IOnEvent, IItemIdentity
@@ -38,19 +38,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
         }
 
         /// <summary>
-        /// Gets or sets the constraint to apply to the rule (OPTIONAL) 
+        /// Gets or sets the constraint to apply to the rule (OPTIONAL). 
         /// </summary>
         [JsonProperty("constraint")]
         public string Constraint { get; set; }
 
         /// <summary>
-        /// Gets or sets the actions to add to the plan when the rule constraints are met
+        /// Gets or sets the actions to add to the plan when the rule constraints are met.
         /// </summary>
         [JsonProperty("actions")]
         public List<IDialog> Actions { get; set; } = new List<IDialog>();
 
         /// <summary>
-        /// Get the expression for this rule by calling GatherConstraints()
+        /// Get the expression for this rule by calling GatherConstraints().
         /// </summary>
         public Expression GetExpression(IExpressionParser parser)
         {
@@ -66,9 +66,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
         }
 
         /// <summary>
-        /// Override this method to define the expression which is evaluated to determine if this rule should fire
+        /// Override this method to define the expression which is evaluated to determine if this rule should fire.
         /// </summary>
-        /// <returns>Expression which will be cached and used to evaluate this rule</returns>
+        /// <returns>Expression which will be cached and used to evaluate this rule.</returns>
         protected virtual Expression BuildExpression(IExpressionParser factory)
         {
             List<Expression> allExpressions = new List<Expression>();
@@ -100,7 +100,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
         }
 
         /// <summary>
-        /// Add external constraint to the rule (mostly used by RuleSet to apply external constraints to rule)
+        /// Add external constraint to the rule (mostly used by RuleSet to apply external constraints to rule).
         /// </summary>
         /// <param name="constraint"></param>
         public void AddConstraint(string constraint)
@@ -123,7 +123,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
         }
 
         /// <summary>
-        /// Method called to execute the rule's actions
+        /// Method called to execute the rule's actions.
         /// </summary>
         /// <param name="planningContext"></param>
         /// <param name="dialogEvent"></param>
@@ -134,7 +134,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
         }
 
         /// <summary>
-        /// Method called to process the request to execute the actions
+        /// Method called to process the request to execute the actions.
         /// </summary>
         /// <param name="context"></param>
         /// <param name="dialogEvent"></param>

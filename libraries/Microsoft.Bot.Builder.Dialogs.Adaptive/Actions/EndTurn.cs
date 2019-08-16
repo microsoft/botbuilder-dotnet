@@ -14,7 +14,7 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
     /// <summary>
-    /// This command ends the current turn without ending the dialog
+    /// This command ends the current turn without ending the dialog.
     /// </summary>
     public class EndTurn : DialogAction
     {

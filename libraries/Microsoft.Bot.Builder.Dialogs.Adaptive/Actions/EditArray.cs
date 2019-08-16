@@ -61,7 +61,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         }
 
         /// <summary>
-        /// Gets or sets type of change being applied
+        /// Gets or sets type of change being applied.
         /// </summary>
         [JsonConverter(typeof(StringEnumConverter))]
         [JsonProperty("changeType")]
@@ -83,7 +83,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         }
 
         /// <summary>
-        /// Gets or sets the result of the action
+        /// Gets or sets the result of the action.
         /// </summary>
         [JsonProperty("resultProperty")]
         public string ResultProperty 
@@ -106,9 +106,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// Initializes a new instance of the <see cref="EditArray"/> class.
         /// </summary>
         /// <param name="changeType">change type.</param>
-        /// <param name="arrayProperty">array property (optional)</param>
-        /// <param name="value">value to insert</param>
-        /// <param name="resultProperty">output property to put Pop/Take into</param>
+        /// <param name="arrayProperty">array property (optional).</param>
+        /// <param name="value">value to insert.</param>
+        /// <param name="resultProperty">output property to put Pop/Take into.</param>
         public EditArray(ArrayChangeType changeType, string arrayProperty = null, string value = null, string resultProperty = null)
             : base()
         {

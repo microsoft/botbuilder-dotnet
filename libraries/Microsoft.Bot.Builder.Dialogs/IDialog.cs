@@ -29,12 +29,12 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <summary>
         /// Gets expression in the callers memory to store the result returned via `endDialog()` is called.
         /// </summary>
-        /// <remarks>This the property which the result of EndDialog() for this dialog will be mapped to in the caller's dialog state</remarks>
-        /// <example>$foo will be set to EndDialog(result)</example>
+        /// <remarks>This the property which the result of EndDialog() for this dialog will be mapped to in the caller's dialog state.</remarks>
+        /// <example>$foo will be set to EndDialog(result).</example>
         string OutputBinding { get; }
 
         /// <summary>
-        /// Telemetry client
+        /// Telemetry client.
         /// </summary>
         IBotTelemetryClient TelemetryClient { get; set; }
 

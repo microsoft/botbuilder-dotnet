@@ -9,18 +9,18 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
 {
     /// <summary>
-    /// Defines map of languages -> recognizer
+    /// Defines map of languages -> recognizer.
     /// </summary>
     public class MultiLanguageRecognizer : IRecognizer
     {
         /// <summary>
-        /// Policy for languages fallback 
+        /// Policy for languages fallback. 
         /// </summary>
         [JsonProperty("languagePolicy")]
         public ILanguagePolicy LanguagePolicy { get; set; } = new LanguagePolicy();
 
         /// <summary>
-        /// Map of languages -> IRecognizer
+        /// Map of languages -> IRecognizer.
         /// </summary>
         [JsonProperty("recognizers")]
         public IDictionary<string, IRecognizer> Recognizers { get; set; } = new Dictionary<string, IRecognizer>();

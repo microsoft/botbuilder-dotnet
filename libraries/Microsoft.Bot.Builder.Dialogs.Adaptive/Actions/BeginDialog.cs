@@ -14,7 +14,7 @@ using Newtonsoft.Json.Linq;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
     /// <summary>
-    /// Action which begins executing another dialog, when it is done, it will return to the caller
+    /// Action which begins executing another dialog, when it is done, it will return to the caller.
     /// </summary>
     public class BeginDialog : BaseInvokeDialog
     {

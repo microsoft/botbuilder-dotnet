@@ -23,12 +23,12 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// Generate the activity 
+        /// Generate the activity. 
         /// </summary>
-        /// <param name="turnContext">turn context</param>
+        /// <param name="turnContext">turn context.</param>
         /// <param name="template">(optional) inline template definition.</param>
         /// <param name="data">data to bind the template to.</param>
-        /// <returns>message activity</returns>
+        /// <returns>message activity.</returns>
         public async Task<IMessageActivity> Generate(ITurnContext turnContext, string template, object data)
         {
             var languageGenerator = turnContext.TurnState.Get<ILanguageGenerator>();
@@ -47,7 +47,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// Given a text result (text or text||speak or text||speak with [herocard... etc), create an activity
+        /// Given a text result (text or text||speak or text||speak with [herocard... etc), create an activity.
         /// </summary>
         /// <remarks>
         /// This method will create an MessageActivity from text.  It supports 3 formats
@@ -55,11 +55,11 @@ namespace Microsoft.Bot.Builder.Dialogs
         ///     text || speak
         ///     text || speak [Herocard][attachment]etc...
         /// </remarks>
-        /// <param name="text">text</param>
-        /// <param name="data">data to bind to</param>
-        /// <param name="languageGenerator">languageGenerator</param>
-        /// <param name="turnContext">turnContext</param>
-        /// <returns>MessageActivity for it</returns>
+        /// <param name="text">text.</param>
+        /// <param name="data">data to bind to.</param>
+        /// <param name="languageGenerator">languageGenerator.</param>
+        /// <param name="turnContext">turnContext.</param>
+        /// <returns>MessageActivity for it.</returns>
         public async Task<IMessageActivity> CreateActivityFromText(string text, object data, ITurnContext turnContext, ILanguageGenerator languageGenerator)
         {
             var activity = Activity.CreateMessageActivity();

@@ -40,7 +40,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// assumes that switch case values are compile time constants and not expressions
         /// that can be evaluated against state.
         /// </summary>
-        /// <returns>An expression that reflects the constant case value</returns>
+        /// <returns>An expression that reflects the constant case value.</returns>
         public Expression CreateValueExpression()
         {
             Expression expression = null;
@@ -67,7 +67,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     }
 
     /// <summary>
-    /// Conditional branch with multiple cases
+    /// Conditional branch with multiple cases.
     /// </summary>
     public class SwitchCondition : DialogAction, IDialogDependencies
     {
@@ -76,7 +76,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         private Expression condition;
 
         /// <summary>
-        /// Condition expression against memory Example: "user.age > 18"
+        /// Condition expression against memory Example: "user.age > 18".
         /// </summary>
         [JsonProperty("condition")]
         public string Condition
@@ -86,12 +86,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         }
 
         /// <summary>
-        /// Cases
+        /// Cases.
         /// </summary>
         public List<Case> Cases = new List<Case>();
 
         /// <summary>
-        /// Default case
+        /// Default case.
         /// </summary>
         public List<IDialog> Default { get; set; } = new List<IDialog>();
 

@@ -8,14 +8,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     /// Uses resourceExplorer to mount root lg and all language variants as a multi language generator.
     /// </summary>
     /// <remarks>
-    /// Given file name like "foo.lg" this will generate a map of foo.{LOCALE}.lg files
+    /// Given file name like "foo.lg" this will generate a map of foo.{LOCALE}.lg files.
     /// </remarks>
     public class ResourceMultiLanguageGenerator : MultiLanguageGeneratorBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ResourceMultiLanguageGenerator"/> class.
         /// </summary>
-        /// <param name="resourceId">foo.lg</param>
+        /// <param name="resourceId">foo.lg.</param>
         public ResourceMultiLanguageGenerator(string resourceId=null)
         {
             this.ResourceId = resourceId;
@@ -27,10 +27,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <summary>
         /// Implementation of lookup by locale.  This uses resourceId and ResourceExplorer to lookup.
         /// </summary>
-        /// <param name="context">context</param>
-        /// <param name="locale">locale to lookup</param>
-        /// <param name="languageGenerator">found LanguageGenerator</param>
-        /// <returns>true if found</returns>
+        /// <param name="context">context.</param>
+        /// <param name="locale">locale to lookup.</param>
+        /// <param name="languageGenerator">found LanguageGenerator.</param>
+        /// <returns>true if found.</returns>
         public override bool TryGetGenerator(ITurnContext context, string locale, out ILanguageGenerator languageGenerator)
         {
             var lgm = context.TurnState.Get<LanguageGeneratorManager>();

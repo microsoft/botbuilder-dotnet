@@ -113,7 +113,7 @@ namespace Microsoft.Bot.Builder.Expressions
         /// Validate the number and type of arguments to a function.
         /// </summary>
         /// <param name="expression">Expression to validate.</param>
-        /// <param name="optional">Optional types in order.</parm>
+        /// <param name="optional">Optional types in order.</param>
         /// <param name="types">Expected types in order.</param>
         public static void ValidateOrder(Expression expression, ReturnType[] optional, params ReturnType[] types)
         {
@@ -496,7 +496,7 @@ namespace Microsoft.Bot.Builder.Expressions
             };
 
         /// <summary>
-        /// walk dialog callstack looking for property
+        /// walk dialog callstack looking for property.
         /// </summary>
         /// <param name="expression"></param>
         /// <param name="state"></param>
@@ -1082,7 +1082,7 @@ namespace Microsoft.Bot.Builder.Expressions
         }
 
         /// <summary>
-        /// return new object list replace jarray.ToArray<object>().
+        /// return new object list replace jarray.ToArray&lt;object&gt;().
         /// </summary>
         /// <param name="jarray"></param>
         /// <returns></returns>

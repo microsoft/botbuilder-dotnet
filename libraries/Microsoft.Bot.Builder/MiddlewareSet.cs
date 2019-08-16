@@ -61,6 +61,11 @@ namespace Microsoft.Bot.Builder
             return this._middleware.GetEnumerator();
         }
 
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return this._middleware.GetEnumerator();
+        }
+
         private Task ReceiveActivityInternalAsync(ITurnContext turnContext, BotCallbackHandler callback, int nextMiddlewareIndex, CancellationToken cancellationToken)
         {
             // Check if we're at the end of the middleware list yet
@@ -87,11 +92,6 @@ namespace Microsoft.Bot.Builder
                 turnContext,
                 (ct) => ReceiveActivityInternalAsync(turnContext, callback, nextMiddlewareIndex + 1, ct),
                 cancellationToken);
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return this._middleware.GetEnumerator();
         }
     }
 }

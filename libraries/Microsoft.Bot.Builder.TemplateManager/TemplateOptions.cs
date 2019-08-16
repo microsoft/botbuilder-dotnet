@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.TemplateManager
 {
     /// <summary>
-    /// ChannelData for Activity template of type Template
+    /// ChannelData for Activity template of type Template.
     /// </summary>
     public class TemplateOptions
     {

@@ -20,7 +20,7 @@ using static Microsoft.Bot.Builder.Dialogs.Debugging.DebugSupport;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 {
     /// <summary>
-    /// The Adaptive Dialog models conversation using events and events to adapt dynamicaly to changing conversation flow
+    /// The Adaptive Dialog models conversation using events and events to adapt dynamicaly to changing conversation flow.
     /// </summary>
     public class AdaptiveDialog : DialogContainer
     {
@@ -35,26 +35,26 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         public IStatePropertyAccessor<Dictionary<string, object>> UserState { get; set; }
 
         /// <summary>
-        /// Recognizer for processing incoming user input
+        /// Recognizer for processing incoming user input.
         /// </summary>
         public IRecognizer Recognizer { get; set; }
 
         /// <summary>
-        /// Language Generator override
+        /// Language Generator override.
         /// </summary>
         public ILanguageGenerator Generator { get; set; }
 
         /// <summary>
-        /// Rules for handling events to dynamic modifying the executing plan 
+        /// Rules for handling events to dynamic modifying the executing plan. 
         /// </summary>
         public virtual List<IOnEvent> Events { get; set; } = new List<IOnEvent>();
 
         /// <summary>
-        /// Gets or sets the policty to Automatically end the dialog when there are no actions to execute
+        /// Gets or sets the policty to Automatically end the dialog when there are no actions to execute.
         /// </summary>
         /// <remarks>
         /// If true, when there are no actions to execute the current dialog will end
-        /// If false, when there are no actions to execute the current dialog will simply end the turn and still be active
+        /// If false, when there are no actions to execute the current dialog will simply end the turn and still be active.
         /// </remarks>
         public bool AutoEndDialog { get; set; } = true;
 

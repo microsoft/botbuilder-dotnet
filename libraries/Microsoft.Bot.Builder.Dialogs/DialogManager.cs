@@ -56,10 +56,10 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// Run a dialog purely by processing an activity and getting the result. 
         /// </summary>
         /// <remarks>
-        /// NOTE: does not support any activity semantic other then SendActivity
+        /// NOTE: does not support any activity semantic other then SendActivity.
         /// </remarks>
-        /// <param name="activity">activity to process</param>
-        /// <param name="state">state to use</param>
+        /// <param name="activity">activity to process.</param>
+        /// <param name="state">state to use.</param>
         /// <returns>result of the running the logic against the activity.</returns>
         public async Task<DialogManagerResult> RunAsync(Activity activity, StoredBotState state = null)
         {

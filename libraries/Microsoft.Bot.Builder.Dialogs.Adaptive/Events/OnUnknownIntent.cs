@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
     /// It will only trigger if and when 
     /// * it is the leaf dialog AND 
     /// * none of the parent dialogs handle the event 
-    /// This provides the parent dialogs the opportunity to handle global commands as fallback interruption
+    /// This provides the parent dialogs the opportunity to handle global commands as fallback interruption.
     /// </summary>
     public class OnUnknownIntent : OnDialogEvent
     {

@@ -13,7 +13,7 @@ using Newtonsoft.Json.Linq;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
     /// <summary>
-    /// Sets a property with the result of evaluating a value expression
+    /// Sets a property with the result of evaluating a value expression.
     /// </summary>
     public class SetProperty : DialogAction
     {
@@ -28,7 +28,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         }
 
         /// <summary>
-        /// Value expression
+        /// Value expression.
         /// </summary>
         [JsonProperty("value")]
         public string Value
@@ -38,7 +38,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         }
 
         /// <summary>
-        /// Property to put the value in
+        /// Property to put the value in.
         /// </summary>
         [JsonProperty("property")]
         public string Property 

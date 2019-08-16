@@ -74,7 +74,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
         }
 
         /// <summary>
-        /// Load a settings style path settings.x.y.z -> x:y:z 
+        /// Load a settings style path settings.x.y.z -> x:y:z. 
         /// </summary>
         /// <param name="configuration"></param>
         /// <param name="value"></param>

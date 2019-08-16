@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
     public delegate void ResourceChangedEventHandler(IResource[] resources);
 
     /// <summary>
-    /// Class which gives standard access to file based resources
+    /// Class which gives standard access to file based resources.
     /// </summary>
     public class ResourceExplorer : IDisposable
     {
@@ -76,7 +76,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         }
 
         /// <summary>
-        /// Add a .csproj as resource (adding the project, referenced projects and referenced packages)
+        /// Add a .csproj as resource (adding the project, referenced projects and referenced packages).
         /// </summary>
         /// <param name="manager"></param>
         /// <param name="projectFile"></param>
@@ -157,7 +157,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         }
 
         /// <summary>
-        /// get resources of a given type
+        /// get resources of a given type.
         /// </summary>
         /// <param name="fileExtension"></param>
         /// <returns></returns>
@@ -173,7 +173,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         }
 
         /// <summary>
-        /// Get resource by filename
+        /// Get resource by filename.
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>

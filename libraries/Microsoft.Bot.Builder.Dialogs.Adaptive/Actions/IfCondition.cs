@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         private Expression condition;
 
         /// <summary>
-        /// Condition expression against memory Example: "user.age > 18"
+        /// Condition expression against memory Example: "user.age > 18".
         /// </summary>
         [JsonProperty("condition")]
         public string Condition

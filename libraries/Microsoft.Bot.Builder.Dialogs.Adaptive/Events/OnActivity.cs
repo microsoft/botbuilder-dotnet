@@ -12,7 +12,7 @@ using Newtonsoft.Json.Linq;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
 {
     /// <summary>
-    /// Event triggered when a Activity of a given type is received 
+    /// Event triggered when a Activity of a given type is received. 
     /// </summary>
     public class OnActivity : OnDialogEvent
     {
@@ -30,7 +30,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
         }
 
         /// <summary>
-        /// ActivityType
+        /// ActivityType.
         /// </summary>
         [JsonProperty("type")]
         public string Type { get; set; }

@@ -7,7 +7,7 @@ using Microsoft.Bot.Builder.Dialogs;
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
     /// <summary>
-    /// ILanguageGenerator which uses implements a map of locale->ILanguageGenerator for the locale and has a policy which controls fallback (try en-us -> en -> default)
+    /// ILanguageGenerator which uses implements a map of locale->ILanguageGenerator for the locale and has a policy which controls fallback (try en-us -> en -> default).
     /// </summary>
     public class MultiLanguageGenerator : MultiLanguageGeneratorBase
     {
@@ -21,10 +21,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <summary>
         /// Implementation of lookup by locale.  This uses internal dictionary to lookup.
         /// </summary>
-        /// <param name="context">context</param>
-        /// <param name="locale">locale</param>
-        /// <param name="generator">generator to return</param>
-        /// <returns>true if found</returns>
+        /// <param name="context">context.</param>
+        /// <param name="locale">locale.</param>
+        /// <param name="generator">generator to return.</param>
+        /// <returns>true if found.</returns>
         public override bool TryGetGenerator(ITurnContext context, string locale, out ILanguageGenerator languageGenerator)
         {
             return this.LanguageGenerators.TryGetValue(locale, out languageGenerator);

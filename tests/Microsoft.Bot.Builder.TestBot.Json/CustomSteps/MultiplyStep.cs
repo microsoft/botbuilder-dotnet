@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace Microsoft.Bot.Builder.TestBot.Json
 {
     /// <summary>
-    /// Custom command which takes takes 2 data bound arguments (arg1 and arg2) and multiplies them returning that as a databound result
+    /// Custom command which takes takes 2 data bound arguments (arg1 and arg2) and multiplies them returning that as a databound result.
     /// </summary>
     public class MultiplyAction : DialogAction
     {
@@ -26,19 +26,19 @@ namespace Microsoft.Bot.Builder.TestBot.Json
         }
 
         /// <summary>
-        /// memory path to bind to arg1 (ex: conversation.width)
+        /// memory path to bind to arg1 (ex: conversation.width).
         /// </summary>
         [JsonProperty("arg1")]
         public string Arg1 { get { return this.InputBindings["arg1"]; } set { this.InputBindings["arg1"] = value; } }
 
         /// <summary>
-        /// memory path to bind to arg2 (ex: conversation.height)
+        /// memory path to bind to arg2 (ex: conversation.height).
         /// </summary>
         [JsonProperty("arg2")]
         public string Arg2 { get { return this.InputBindings["arg2"]; } set { this.InputBindings["arg2"] = value; } }
 
         /// <summary>
-        /// caller's memory path to store the result of this step in (ex: conversation.area)
+        /// caller's memory path to store the result of this step in (ex: conversation.area).
         /// </summary>
         [JsonProperty("result")]
         public string Result { get { return this.OutputBinding; } set { this.OutputBinding = value; } }

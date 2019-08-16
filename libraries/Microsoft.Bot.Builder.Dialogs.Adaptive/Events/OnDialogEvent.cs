@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
     public class OnDialogEvent : OnEvent
     {
         /// <summary>
-        /// List of events to filter
+        /// List of events to filter.
         /// </summary>
         public List<string> Events { get; set; }
 

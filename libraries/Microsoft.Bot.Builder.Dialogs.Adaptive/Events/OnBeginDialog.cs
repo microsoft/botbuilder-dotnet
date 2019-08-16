@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
 {
     /// <summary>
-    /// Rule triggered when a dialog is started via BeginDialog()
+    /// Rule triggered when a dialog is started via BeginDialog().
     /// </summary>
     public class OnBeginDialog : OnDialogEvent
     {

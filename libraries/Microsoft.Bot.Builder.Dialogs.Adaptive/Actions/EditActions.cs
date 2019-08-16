@@ -10,7 +10,7 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
     /// <summary>
-    /// Class which allows you to edit the current actions 
+    /// Class which allows you to edit the current actions. 
     /// </summary>
     public class EditActions : DialogAction, IDialogDependencies
     {

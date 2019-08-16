@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
         private string script;
 
         /// <summary>
-        /// Javascript bound to memory run function(user, conversation, dialog, turn)
+        /// Javascript bound to memory run function(user, conversation, dialog, turn).
         /// </summary>
         /// <example>
         /// example inline script:
@@ -30,7 +30,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
         ///    if (user.age)
         ///        return user.age* 7;
         ///    return 0;
-        /// }
+        /// }.
         /// </example>
         public string Script { get { return script; } set { LoadScript(value); } }
 

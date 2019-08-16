@@ -159,7 +159,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// Finds a dialog by ID (ONLY in this ComponentDialog, use DialogContext.FindDialog to get scoped dialogs)
+        /// Finds a dialog by ID (ONLY in this ComponentDialog, use DialogContext.FindDialog to get scoped dialogs).
         /// </summary>
         /// <param name="dialogId">The ID of the dialog to find.</param>
         /// <returns>The dialog; or <c>null</c> if there is not a match for the ID.</returns>

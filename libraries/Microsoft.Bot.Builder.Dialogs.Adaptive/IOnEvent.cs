@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         Expression GetExpression(IExpressionParser parser);
 
         /// <summary>
-        /// Execute the action for this rule
+        /// Execute the action for this rule.
         /// </summary>
         /// <param name="context"></param>
         /// <param name="dialogEvent"></param>
@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         Task<List<ActionChangeList>> ExecuteAsync(SequenceContext context);
 
         /// <summary>
-        /// Actions to add to the plan when the rule is activated
+        /// Actions to add to the plan when the rule is activated.
         /// </summary>
         List<IDialog> Actions { get; }
     }
