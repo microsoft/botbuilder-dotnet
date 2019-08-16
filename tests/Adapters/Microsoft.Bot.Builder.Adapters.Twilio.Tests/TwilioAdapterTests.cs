@@ -28,7 +28,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
             options.Object.AuthToken = "Test";
             options.Object.AccountSid = "Test";
 
-            Assert.Throws<Exception>(() => { new TwilioAdapter(options.Object, new Mock<ITwilioClient>().Object); });
+            Assert.Throws<ArgumentException>(() => { new TwilioAdapter(options.Object, new Mock<ITwilioClient>().Object); });
         }
 
         [Fact]
@@ -39,7 +39,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
             options.Object.AuthToken = "Test";
             options.Object.TwilioNumber = "Test";
 
-            Assert.Throws<Exception>(() => { new TwilioAdapter(options.Object, new Mock<ITwilioClient>().Object); });
+            Assert.Throws<ArgumentException>(() => { new TwilioAdapter(options.Object, new Mock<ITwilioClient>().Object); });
         }
 
         [Fact]
@@ -50,7 +50,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
             options.Object.TwilioNumber = "Test";
             options.Object.AccountSid = "Test";
 
-            Assert.Throws<Exception>(() => { new TwilioAdapter(options.Object, new Mock<ITwilioClient>().Object); });
+            Assert.Throws<ArgumentException>(() => { new TwilioAdapter(options.Object, new Mock<ITwilioClient>().Object); });
         }
 
         [Fact]
@@ -62,7 +62,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
             options.Object.AccountSid = "Test";
             options.Object.AuthToken = "Test";
 
-            Assert.Throws<Exception>(() => { new TwilioAdapter(options.Object, null); });
+            Assert.Throws<ArgumentNullException>(() => { new TwilioAdapter(options.Object, null); });
         }
 
         [Fact]
@@ -95,7 +95,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
 
             Activity[] activities = { activity };
 
-            await Assert.ThrowsAsync<Exception>(async () =>
+            await Assert.ThrowsAsync<ArgumentException>(async () =>
             {
                 await twilioAdapter.SendActivitiesAsync(new TurnContext(twilioAdapter, activity), activities, default);
             });
