@@ -19,8 +19,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
         private Expression condition;
 
         /// <summary>
-        /// Expression that determines which selector to use.
+        /// Gets or sets expression that determines which selector to use.
         /// </summary>
+        /// <value>
+        /// Expression that determines which selector to use.
+        /// </value>
         public string Condition
         {
             get { return condition?.ToString(); }
@@ -28,13 +31,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
         }
 
         /// <summary>
-        /// Selector if <see cref="Condition"/> is true.
+        /// Gets or sets selector if <see cref="Condition"/> is true.
         /// </summary>
+        /// <value>
+        /// Selector if <see cref="Condition"/> is true.
+        /// </value>
         public IEventSelector IfTrue { get; set; }
 
         /// <summary>
-        /// Selector if <see cref="Condition"/> is false.
+        /// Gets or sets selector if <see cref="Condition"/> is false.
         /// </summary>
+        /// <value>
+        /// Selector if <see cref="Condition"/> is false.
+        /// </value>
         public IEventSelector IfFalse { get; set; }
 
         public void Initialize(IEnumerable<IOnEvent> rules, bool evaluate = true)

@@ -29,13 +29,19 @@ namespace Microsoft.Bot.Builder.TemplateManager
         }
 
         /// <summary>
-        /// Template Renderers.
+        /// Gets or sets template Renderers.
         /// </summary>
+        /// <value>
+        /// Template Renderers.
+        /// </value>
         public List<ITemplateRenderer> Renderers { get { return this.TemplateManager.Renderers; } set { this.TemplateManager.Renderers = value; } }
 
         /// <summary>
-        /// Language fallback policy.
+        /// Gets or sets language fallback policy.
         /// </summary>
+        /// <value>
+        /// Language fallback policy.
+        /// </value>
         public List<string> LanguageFallback { get { return this.TemplateManager.LanguageFallback; } set { this.TemplateManager.LanguageFallback = value; } }
 
         /// <summary>

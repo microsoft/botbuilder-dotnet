@@ -139,7 +139,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 {
                      {
                         "en-us",
-                        new RegexRecognizer() {
+                        new RegexRecognizer()
+                        {
                             Intents = new Dictionary<string, string>()
                             {
                                 { "Greeting", "(?i)howdy" },
@@ -149,7 +150,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                      },
                      {
                         "en-gb",
-                        new RegexRecognizer() {
+                        new RegexRecognizer()
+                        {
                             Intents = new Dictionary<string, string>()
                             {
                                 { "Greeting", "(?i)hiya" },
@@ -159,7 +161,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                      },
                      {
                         "en",
-                        new RegexRecognizer() {
+                        new RegexRecognizer()
+                        {
                             Intents = new Dictionary<string, string>()
                             {
                                 { "Greeting", "(?i)hello" },
@@ -169,7 +172,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                      },
                      {
                         "",
-                        new RegexRecognizer() {
+                        new RegexRecognizer()
+                        {
                             Intents = new Dictionary<string, string>()
                             {
                                 { "Greeting", "(?i)salve" },

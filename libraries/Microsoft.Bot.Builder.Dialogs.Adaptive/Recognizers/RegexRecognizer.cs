@@ -22,8 +22,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         private Dictionary<string, Regex> patterns = new Dictionary<string, Regex>();
 
         /// <summary>
-        /// Dictionary of patterns -> Intent names.
+        /// Gets or sets dictionary of patterns -> Intent names.
         /// </summary>
+        /// <value>
+        /// Dictionary of patterns -> Intent names.
+        /// </value>
         [JsonProperty("intents")]
         public Dictionary<string, string> Intents { get; set; } = new Dictionary<string, string>();
 

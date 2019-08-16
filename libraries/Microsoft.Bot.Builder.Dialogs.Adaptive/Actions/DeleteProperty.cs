@@ -15,8 +15,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     public class DeleteProperty : DialogAction
     {
         /// <summary>
-        /// Property to path to remove Example: user.age will remove "age" from "user".
+        /// Gets or sets property to path to remove Example: user.age will remove "age" from "user".
         /// </summary>
+        /// <value>
+        /// Property to path to remove Example: user.age will remove "age" from "user".
+        /// </value>
         public string Property { get; set; }
 
         [JsonConstructor]

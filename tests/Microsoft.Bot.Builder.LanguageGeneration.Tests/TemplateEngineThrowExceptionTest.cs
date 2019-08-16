@@ -13,6 +13,10 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         ///  Gets or sets the test context which provides
         ///  information about and functionality for the current test run.
         ///</summary>
+        /// <value>
+        /// The test context which provides
+        ///  information about and functionality for the current test run.
+        /// </value>
         public TestContext TestContext { get; set; }
 
         private string GetExampleFilePath(string fileName)

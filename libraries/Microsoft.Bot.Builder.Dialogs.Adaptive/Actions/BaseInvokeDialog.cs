@@ -16,6 +16,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
     /// <summary>
     /// Action which calls another dialog.
+    /// </summary>
     public abstract class BaseInvokeDialog : DialogAction
     {
         public BaseInvokeDialog(string dialogIdToCall = null, string property = null, IDictionary<string, string> bindingOptions = null)
@@ -37,16 +38,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <summary>
         /// Gets or sets configurable options for the dialog. 
         /// </summary>
+        /// <value>
+        /// Configurable options for the dialog. 
+        /// </value>
         public object Options { get; set; } = new JObject();
 
         /// <summary>
         /// Gets or sets the dialog ID to call.
         /// </summary>
+        /// <value>
+        /// The dialog ID to call.
+        /// </value>
         public string DialogId { get; set; }
 
         /// <summary>
-        /// The property from memory to pass to the calling dialog and to set the return value to.
+        /// Gets or sets the property from memory to pass to the calling dialog and to set the return value to.
         /// </summary>
+        /// <value>
+        /// The property from memory to pass to the calling dialog and to set the return value to.
+        /// </value>
         public string Property
         {
             get

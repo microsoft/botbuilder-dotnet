@@ -12,11 +12,17 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <summary>
         /// Gets or sets unique id for the dialog.
         /// </summary>
+        /// <value>
+        /// Unique id for the dialog.
+        /// </value>
         string Id { get; set; }
 
         /// <summary>
         /// Gets tags assigned to the dialog.
         /// </summary>
+        /// <value>
+        /// Tags assigned to the dialog.
+        /// </value>
         List<string> Tags { get; }
 
         /// <summary>
@@ -24,6 +30,9 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         /// <remarks>Key = property expression to set in this dialog's memory context, Value = property expression of value you want to get from caller's memory context.</remarks>
         /// <example>{ "key": "value" } maps to set newDialogState.key = callerDialogState.value.</example>
+        /// <value>
+        /// Dictionary of memory bindings which are evaluated in a call to `beginDialog()`.
+        /// </value>
         Dictionary<string, string> InputBindings { get; }
 
         /// <summary>
@@ -31,11 +40,17 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         /// <remarks>This the property which the result of EndDialog() for this dialog will be mapped to in the caller's dialog state.</remarks>
         /// <example>$foo will be set to EndDialog(result).</example>
+        /// <value>
+        /// Expression in the callers memory to store the result returned via `endDialog()` is called.
+        /// </value>
         string OutputBinding { get; }
 
         /// <summary>
-        /// Telemetry client.
+        /// Gets or sets telemetry client.
         /// </summary>
+        /// <value>
+        /// Telemetry client.
+        /// </value>
         IBotTelemetryClient TelemetryClient { get; set; }
 
         /// <summary>

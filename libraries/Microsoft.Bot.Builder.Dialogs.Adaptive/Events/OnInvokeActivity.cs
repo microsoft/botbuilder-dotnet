@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
     public class OnInvokeActivity : OnActivity
     {
         [JsonConstructor]
-        public OnInvokeActivity(List<IDialog> actions = null, string constraint= null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public OnInvokeActivity(List<IDialog> actions = null, string constraint = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base(type: ActivityTypes.Invoke, actions: actions, constraint: constraint, callerPath: callerPath, callerLine: callerLine) { }
     }
 }

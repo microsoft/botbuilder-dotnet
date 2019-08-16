@@ -285,7 +285,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         public void TestAnalyzer()
         {
             var testData = new object[]
-            {   new
+            {
+                new
                 {
                     name = "orderReadOut",
                     variableOptions = new string[] { "orderType", "userName", "base", "topping", "bread", "meat" },
@@ -300,6 +301,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                 new
                 {
                     name = "template1",
+
                     // TODO: input.property should really be: customer.property but analyzer needs to be
                     variableOptions = new string[] { "alarms", "customer", "tasks[0]", "age", "city" },
                     templateRefOptions = new string[] { "template2", "template3", "template4", "template5", "template6" }

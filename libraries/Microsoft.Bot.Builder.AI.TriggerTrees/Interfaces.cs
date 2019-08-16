@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
         /// Optionally rewrite a clause.
         /// </summary>
         /// <param name="clause">Original clause.</param>
-        /// <returns></returns>
+        /// <returns>Optimized clause.</returns>
         Clause Optimize(Clause clause);
     }
 

@@ -20,15 +20,15 @@ namespace Microsoft.Bot.Builder
     /// </remarks>
     public class FileTranscriptLogger : ITranscriptStore
     {
-        private string folder;
-        private bool unitTestMode;
-        private HashSet<string> started = new HashSet<string>();
-
         private static JsonSerializerSettings jsonSettings = new JsonSerializerSettings()
         {
             Formatting = Formatting.Indented,
             NullValueHandling = NullValueHandling.Ignore,
         };
+
+        private string folder;
+        private bool unitTestMode;
+        private HashSet<string> started = new HashSet<string>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FileTranscriptLogger"/> class.

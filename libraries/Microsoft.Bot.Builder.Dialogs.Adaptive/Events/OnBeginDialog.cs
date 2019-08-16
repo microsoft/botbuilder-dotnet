@@ -15,13 +15,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
     {
         [JsonConstructor]
         public OnBeginDialog(List<IDialog> actions = null, string constraint = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
-            : base(events: new List<string>()
-            {
+            : base(
+                events: new List<string>()
+                {
                 AdaptiveEvents.BeginDialog
-            },
-            actions: actions,
-            constraint: constraint,
-            callerPath: callerPath, callerLine: callerLine)
+                },
+                actions: actions,
+                constraint: constraint,
+                callerPath: callerPath, 
+                callerLine: callerLine)
         {
         }
     }

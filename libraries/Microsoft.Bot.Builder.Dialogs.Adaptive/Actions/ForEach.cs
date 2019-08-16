@@ -54,13 +54,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             return this.Actions;
         }
 
-        public class ForeachOptions
-        {
-            public Expression list { get; set; }
-
-            public int offset { get; set; }
-        }
-
         protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (options is CancellationToken)
@@ -76,8 +69,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 if (options != null && options is ForeachOptions)
                 {
                     var opt = options as ForeachOptions;
-                    listProperty = opt.list;
-                    offset = opt.offset;
+                    listProperty = opt.List;
+                    offset = opt.Offset;
                 }
 
                 if (listProperty == null)
@@ -107,8 +100,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                             DialogId = this.Id,
                             Options = new ForeachOptions()
                             {
-                                list = listProperty,
-                                offset = offset + 1
+                                List = listProperty,
+                                Offset = offset + 1
                             }
                         });
                         sc.QueueChanges(changes);
@@ -144,6 +137,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             }
 
             return result;
+        }
+
+        public class ForeachOptions
+        {
+            public Expression List { get; set; }
+
+            public int Offset { get; set; }
         }
     }
 }

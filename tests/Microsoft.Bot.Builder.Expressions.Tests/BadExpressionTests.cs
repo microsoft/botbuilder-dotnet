@@ -15,6 +15,10 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
         ///  Gets or sets the test context which provides
         ///  information about and functionality for the current test run.
         ///</summary>
+        /// <value>
+        /// The test context which provides
+        ///  information about and functionality for the current test run.
+        /// </value>
         public TestContext TestContext
         {
             get { return testContextInstance; }
@@ -133,6 +137,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("lessOrEquals(one)"), // function need two parameters
             Test("equals(one)"), // equals must accept two parameters
             Test("exists(1, 2)"), // function need one parameter
+
             //Test("if(!exists(one), one, hello)"), // the second and third parameters of if must the same type
             Test("not(false, one)"), // function need one parameter
             # endregion

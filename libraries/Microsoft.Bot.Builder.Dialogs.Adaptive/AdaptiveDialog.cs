@@ -35,37 +35,55 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         public IStatePropertyAccessor<Dictionary<string, object>> UserState { get; set; }
 
         /// <summary>
-        /// Recognizer for processing incoming user input.
+        /// Gets or sets recognizer for processing incoming user input.
         /// </summary>
+        /// <value>
+        /// Recognizer for processing incoming user input.
+        /// </value>
         public IRecognizer Recognizer { get; set; }
 
         /// <summary>
-        /// Language Generator override.
+        /// Gets or sets language Generator override.
         /// </summary>
+        /// <value>
+        /// Language Generator override.
+        /// </value>
         public ILanguageGenerator Generator { get; set; }
 
         /// <summary>
-        /// Rules for handling events to dynamic modifying the executing plan. 
+        /// Gets or sets rules for handling events to dynamic modifying the executing plan. 
         /// </summary>
+        /// <value>
+        /// Rules for handling events to dynamic modifying the executing plan. 
+        /// </value>
         public virtual List<IOnEvent> Events { get; set; } = new List<IOnEvent>();
 
         /// <summary>
-        /// Gets or sets the policty to Automatically end the dialog when there are no actions to execute.
+        /// Gets or sets a value indicating whether gets or sets the policty to Automatically end the dialog when there are no actions to execute.
         /// </summary>
         /// <remarks>
         /// If true, when there are no actions to execute the current dialog will end
         /// If false, when there are no actions to execute the current dialog will simply end the turn and still be active.
         /// </remarks>
+        /// <value>
+        /// The policty to Automatically end the dialog when there are no actions to execute.
+        /// </value>
         public bool AutoEndDialog { get; set; } = true;
 
         /// <summary>
         /// Gets or sets the selector for picking the possible events to execute.
         /// </summary>
+        /// <value>
+        /// The selector for picking the possible events to execute.
+        /// </value>
         public IEventSelector Selector { get; set; }
 
         /// <summary>
         /// Gets or sets the property to return as the result when the dialog ends when there are no more Actions and AutoEndDialog = true.
         /// </summary>
+        /// <value>
+        /// The property to return as the result when the dialog ends when there are no more Actions and AutoEndDialog = true.
+        /// </value>
         public string DefaultResultProperty { get; set; } = "dialog.result";
 
         public override IBotTelemetryClient TelemetryClient
@@ -440,6 +458,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             if (Recognizer != null)
             {
                 var result = await Recognizer.RecognizeAsync(context, cancellationToken).ConfigureAwait(false);
+
                 // only allow one intent
                 var topIntent = result.GetTopScoringIntent();
                 result.Intents.Clear();

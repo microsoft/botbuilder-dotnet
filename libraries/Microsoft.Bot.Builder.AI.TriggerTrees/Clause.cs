@@ -8,8 +8,9 @@
 
     public class Clause : Expression
     {
-        private Dictionary<string, string> anyBindings = new Dictionary<string, string>();
         internal bool Subsumed = false;
+
+        private Dictionary<string, string> anyBindings = new Dictionary<string, string>();
 
         internal Clause()
             : base(ExpressionType.And)

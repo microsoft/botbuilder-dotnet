@@ -135,7 +135,8 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
 
             var templateManager = new TemplateManager()
             {
-                Renderers = {
+                Renderers =
+                {
                     new DictionaryRenderer(templates1),
                     new DictionaryRenderer(templates2)
                 }

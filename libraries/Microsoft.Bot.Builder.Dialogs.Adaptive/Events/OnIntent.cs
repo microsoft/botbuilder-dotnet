@@ -31,12 +31,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
         /// <summary>
         /// Gets or sets intent to match on.
         /// </summary>
+        /// <value>
+        /// Intent to match on.
+        /// </value>
         [JsonProperty("intent")]
         public string Intent { get; set; }
 
         /// <summary>
         /// Gets or sets entities which must be recognized for this rule to trigger.
         /// </summary>
+        /// <value>
+        /// Entities which must be recognized for this rule to trigger.
+        /// </value>
         [JsonProperty("entities")]
         public List<string> Entities { get; set; }
 
@@ -74,7 +80,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
 
                     Turn = new Dictionary<string, object>()
                     {
-                        { "recognized" , JObject.FromObject(new
+                        {
+                            "recognized" , JObject.FromObject(new
                             {
                                 text = recognizerResult.Text,
                                 alteredText = recognizerResult.AlteredText,

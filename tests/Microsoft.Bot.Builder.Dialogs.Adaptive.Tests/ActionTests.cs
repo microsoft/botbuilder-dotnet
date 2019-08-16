@@ -57,7 +57,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     {
                         new TextInput() { Prompt = new ActivityTemplate("Hello, what is your name?"),  OutputBinding = "user.name" },
                         new SendActivity("Hello {user.name}, nice to meet you!"),
-                    })});
+                    })
+            });
 
             await CreateFlow(testDialog)
             .Send("hi")
@@ -129,7 +130,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             Name = "test",
                             ValueType = "memory"
                         }
-                    })});
+                    })
+            });
 
             await CreateFlow(dialog, sendTrace: true)
             .Send("hi")
@@ -164,7 +166,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             Condition = "!dialog.foo && user.name == null",
                             Actions = new List<IDialog>()
                             {
-                                new TextInput() {
+                                new TextInput()
+                                {
                                     Prompt = new ActivityTemplate("Hello, what is your name?"),
                                     OutputBinding = "user.name"
                                 },
@@ -175,7 +178,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 new SendActivity("Hello {user.name}, nice to see you again!")
                             }
                         },
-                    })});
+                    })
+            });
 
             await CreateFlow(testDialog)
             .Send("hi")
@@ -366,7 +370,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             }
                         },
                         new SendActivity("Hello {user.name}, nice to meet you!")
-                    })});
+                    })
+            });
 
             await CreateFlow(testDialog)
             .Send("hi")
@@ -389,7 +394,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 {
                     Actions = new List<IDialog>()
                     {
-                        new NumberInput() {
+                        new NumberInput()
+                        {
                             MaxTurnCount = 1,
                             DefaultValue = "10",
                             Prompt = new ActivityTemplate("What is your age?"),
@@ -817,7 +823,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             }
                         },
                         new SendActivity("Hello {user.name}, nice to meet you!")
-                    })});
+                    })
+            });
 
             await CreateFlow(testDialog)
             .Send("hi")
@@ -836,7 +843,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             {
                 Recognizer = new RegexRecognizer()
                 {
-                    Intents = new Dictionary<string, string>() {
+                    Intents = new Dictionary<string, string>()
+                    {
                         { "Replace", "(?i)replace" }
                     }
                 }
@@ -848,7 +856,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 {
                     Actions = new List<IDialog>()
                     {
-                        new TextInput() {
+                        new TextInput()
+                        {
                             Prompt = new ActivityTemplate("Say replace to replace these actions"),
                             Property = "turn.tempInput"
                         },
@@ -856,15 +865,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         new RepeatDialog()
                     }
                 },
-                new OnIntent() {
+                new OnIntent()
+                {
                     Intent = "Replace",
-                    Actions = new List<IDialog>() {
+                    Actions = new List<IDialog>()
+                    {
                         new SendActivity("I'm going to replace the original actions via EditActions"),
-                        new EditActions() {
+                        new EditActions()
+                        {
                             ChangeType = ActionChangeType.ReplaceSequence,
-                            Actions = new List<IDialog>() {
+                            Actions = new List<IDialog>()
+                            {
                                 new SendActivity("New actions..."),
-                                new TextInput() {
+                                new TextInput()
+                                {
                                     Prompt = new ActivityTemplate("What's your name?"),
                                     Property = "turn.tempInput"
                                 }
@@ -891,7 +905,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             {
                 Recognizer = new RegexRecognizer()
                 {
-                    Intents = new Dictionary<string, string>() {
+                    Intents = new Dictionary<string, string>()
+                    {
                         { "Insert", "(?i)insert" },
                         { "Execute", "(?i)execute" }
                     }
@@ -968,7 +983,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             }
                         },
                         new SendActivity("Hello {user.name}, nice to meet you!")
-                    })});
+                    })
+            });
 
             await CreateFlow(testDialog)
             .Send("hi")

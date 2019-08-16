@@ -314,7 +314,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             new SendActivity("{dialog.name}"),
                             new IfCondition()
                             {
-                                Condition= "dialog.name == 'testDialog'",
+                                Condition = "dialog.name == 'testDialog'",
                                 Actions = new List<IDialog>()
                                 {
                                     new SendActivity("nested dialogCommand {dialog.name}")
@@ -406,6 +406,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             {
                 InputBindings = new Dictionary<string, string>() { { "$zzz", "dialog.name" } },
                 DefaultResultProperty = "$zzz",
+
                 // test output binding from adaptive dialog
                 OutputBinding = "dialog.name",
                 Events = new List<IOnEvent>()
@@ -564,14 +565,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             await CreateFlow(testDialog)
                     .SendConversationUpdate()
+
                         // d1
                         .AssertReply("xyz")
                         .AssertReply("xyz")
                         .AssertReply("d1")
+
                         // d2
                         .AssertReply("d1")
                         .AssertReply("xyz")
                         .AssertReply("bbb")
+
                         // d3
                         .AssertReply("d3")
                         .AssertReply("zzz")

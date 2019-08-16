@@ -14,8 +14,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition.Recognizers
         public EntityRecognizerSet() { }
 
         /// <summary>
-        /// Recognizer pool. 
+        /// Gets or sets recognizer pool. 
         /// </summary>
+        /// <value>
+        /// Recognizer pool. 
+        /// </value>
         public IList<IEntityRecognizer> Recognizers { get; set; } = new List<IEntityRecognizer>();
 
         /// <summary>
@@ -68,7 +71,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition.Recognizers
 
                 // switch to next pool of new entities to process
                 entitiesToProcess = newEntitiesToProcess;
-            } while (entitiesToProcess.Count > 0);
+            }
+            while (entitiesToProcess.Count > 0);
 
             return allNewEntities;
         }

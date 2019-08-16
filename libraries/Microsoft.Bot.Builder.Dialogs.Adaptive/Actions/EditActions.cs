@@ -17,6 +17,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <summary>
         /// Initializes a new instance of the <see cref="EditActions"/> class.
         /// </summary>
+        /// <param name="sourceFilePath"></param>
+        /// <param name="sourceLineNumber"></param>
         [JsonConstructor]
         public EditActions([CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
             : base()
@@ -27,12 +29,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <summary>
         /// Gets or sets the actions to be applied to the active action.
         /// </summary>
+        /// <value>
+        /// The actions to be applied to the active action.
+        /// </value>
         [JsonProperty("actions")]
         public List<IDialog> Actions { get; set; } = new List<IDialog>();
 
         /// <summary>
         /// Gets or sets the type of change to appy to the active actions.
         /// </summary>
+        /// <value>
+        /// The type of change to appy to the active actions.
+        /// </value>
         [JsonProperty("changeType")]
         public ActionChangeType ChangeType { get; set; }
 

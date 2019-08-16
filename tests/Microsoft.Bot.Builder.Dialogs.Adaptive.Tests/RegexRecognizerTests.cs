@@ -51,6 +51,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             Assert.AreEqual("b2", (string)entities.code[1], "should find b2");
 
             tc = CreateContext("red and orange");
+
             // intent assertions
             result = await recognizer.RecognizeAsync(tc, CancellationToken.None);
             Assert.AreEqual(1, result.Intents.Count, "Should recognize one intent");

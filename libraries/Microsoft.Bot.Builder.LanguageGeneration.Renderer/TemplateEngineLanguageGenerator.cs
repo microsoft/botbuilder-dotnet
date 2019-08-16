@@ -45,6 +45,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <summary>
         /// Gets or sets id of the source of this template (used for labeling errors).
         /// </summary>
+        /// <value>
+        /// Id of the source of this template (used for labeling errors).
+        /// </value>
         public string Id { get; set; } = String.Empty;
 
         /// <summary>

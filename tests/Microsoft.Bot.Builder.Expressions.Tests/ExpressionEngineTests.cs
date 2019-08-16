@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
 
         public static HashSet<string> one = new HashSet<string> { "one" };
         public static HashSet<string> oneTwo = new HashSet<string> { "one", "two" };
-        private static readonly string nullStr = null;
+        private static readonly string NullStr = null;
 
         private readonly object scope = new Dictionary<string, object>
         {
@@ -26,8 +26,9 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             { "cit", "cit" },
             { "y", "y" },
             { "istrue", true },
-            { "nullObj", nullStr },
-            { "bag", new Dictionary<string, object>
+            { "nullObj", NullStr },
+            {
+                "bag", new Dictionary<string, object>
                 {
                     { "three", 3.0 },
                     { "set", new { four = 4.0 } },
@@ -37,7 +38,8 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
                 }
             },
             { "items", new string[] { "zero", "one", "two" } },
-            { "nestedItems",
+            {
+                "nestedItems",
                 new[]
                 {
                     new { x = 1 },
@@ -45,7 +47,8 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
                     new { x = 3 }
                 }
             },
-            { "user",
+            {
+                "user",
                 new
                 {
                     lists = new
@@ -65,7 +68,8 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             { "timestampObj", DateTime.Parse("2018-03-15T13:00:00.000Z").ToUniversalTime() },
             { "unixTimestamp", 1521118800 },
             { "xmlStr", "<?xml version='1.0'?> <produce> <item> <name>Gala</name> <type>apple</type> <count>20</count> </item> <item> <name>Honeycrisp</name> <type>apple</type> <count>10</count> </item> </produce>" },
-            { "jsonStr", @"{
+            {
+                "jsonStr", @"{
                           'Stores': [
                             'Lambton Quay',
                             'Willis Street'
@@ -95,7 +99,8 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
                             }
                           ]
                         }"},
-            { "turn", new
+            {
+                "turn", new
                 {
                     recognized = new
                     {
@@ -161,7 +166,8 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
                     }
                 }
             },
-            { "dialog",
+            {
+                "dialog",
                 new
                 {
                     x=3,
@@ -182,7 +188,8 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
                     subTitle = "Dialog Sub Title"
                 }
             },
-            { "callstack", new object[]
+            {
+                "callstack", new object[]
                 {
                     new
                     {
@@ -460,6 +467,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             # endregion
 
             # region  Date and time function test
+
             //init dateTime: 2018-03-15T13:00:00Z
             Test("addDays(timestamp, 1)", "2018-03-16T13:00:00.000Z"),
             Test("addDays(timestamp, 1,'MM-dd-yy')", "03-16-18"),
@@ -618,6 +626,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("$x", 3),
             Test("$y", 2),
             Test("$z", 1),
+
             // Test("^x", 3),
             // Test("^y", 2),
             // Test("^z", 1),

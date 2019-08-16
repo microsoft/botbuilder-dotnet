@@ -24,8 +24,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         Task<List<ActionChangeList>> ExecuteAsync(SequenceContext context);
 
         /// <summary>
-        /// Actions to add to the plan when the rule is activated.
+        /// Gets actions to add to the plan when the rule is activated.
         /// </summary>
+        /// <value>
+        /// Actions to add to the plan when the rule is activated.
+        /// </value>
         List<IDialog> Actions { get; }
     }
 }

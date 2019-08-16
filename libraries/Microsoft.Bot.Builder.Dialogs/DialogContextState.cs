@@ -15,16 +15,6 @@ namespace Microsoft.Bot.Builder.Dialogs
 {
     public class DialogContextState : IDictionary<string, object>
     {
-        private const string PrefixCallBack = "callstackScope('";
-
-        private static JsonSerializerSettings expressionCaseSettings = new JsonSerializerSettings
-        {
-            ContractResolver = new DefaultContractResolver { NamingStrategy = new CamelCaseNamingStrategy() },
-            NullValueHandling = NullValueHandling.Ignore,
-        };
-
-        private readonly DialogContext dialogContext;
-
         /// <summary>
         /// Common state properties paths.
         /// </summary>
@@ -40,6 +30,16 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         public const string STEP_OPTIONS_PROPERTY = "dialog.step.options";
 
+        private const string PrefixCallBack = "callstackScope('";
+
+        private static JsonSerializerSettings expressionCaseSettings = new JsonSerializerSettings
+        {
+            ContractResolver = new DefaultContractResolver { NamingStrategy = new CamelCaseNamingStrategy() },
+            NullValueHandling = NullValueHandling.Ignore,
+        };
+
+        private readonly DialogContext dialogContext;
+
         public DialogContextState(DialogContext dc, IDictionary<string, object> settings, IDictionary<string, object> userState, IDictionary<string, object> conversationState, IDictionary<string, object> turnState)
         {
             this.dialogContext = dc ?? throw new ArgumentNullException(nameof(dc));
@@ -52,24 +52,36 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <summary>
         /// Gets or sets settings for the application.
         /// </summary>
+        /// <value>
+        /// Settings for the application.
+        /// </value>
         [JsonProperty(PropertyName = "settings")]
         public IDictionary<string, object> Settings { get; set; }
 
         /// <summary>
         /// Gets or sets state associated with the active user in the turn.
         /// </summary>
+        /// <value>
+        /// State associated with the active user in the turn.
+        /// </value>
         [JsonProperty(PropertyName = "user")]
         public IDictionary<string, object> User { get; set; }
 
         /// <summary>
         /// Gets or sets state assocaited with the active conversation for the turn.
         /// </summary>
+        /// <value>
+        /// State assocaited with the active conversation for the turn.
+        /// </value>
         [JsonProperty(PropertyName = "conversation")]
         public IDictionary<string, object> Conversation { get; set; }
 
         /// <summary>
         /// Gets or sets state associated with the active dialog for the turn.
         /// </summary>
+        /// <value>
+        /// State associated with the active dialog for the turn.
+        /// </value>
         [JsonProperty(PropertyName = "dialog")]
         public IDictionary<string, object> Dialog
         {
@@ -115,6 +127,9 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <summary>
         /// Gets access to the callstack of dialog state.
         /// </summary>
+        /// <value>
+        /// Access to the callstack of dialog state.
+        /// </value>
         [JsonIgnore]
         public IEnumerable<object> CallStack
         {
@@ -143,6 +158,9 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <summary>
         /// Gets or sets state associated with the current turn only (this is non-persisted).
         /// </summary>
+        /// <value>
+        /// State associated with the current turn only (this is non-persisted).
+        /// </value>
         [JsonProperty(PropertyName = "turn")]
         public IDictionary<string, object> Turn { get; set; }
 

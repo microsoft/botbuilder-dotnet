@@ -10,12 +10,12 @@ namespace Microsoft.Bot.Builder.Expressions
 {
     public class CommonRegex
     {
-        private static readonly LRUCache<string, Regex> regexCache = new LRUCache<string, Regex>(15);
+        private static readonly LRUCache<string, Regex> RegexCache = new LRUCache<string, Regex>(15);
 
         public static Regex CreateRegex(string pattern)
         {
             Regex result;
-            if (!string.IsNullOrEmpty(pattern) && regexCache.TryGet(pattern, out var regex))
+            if (!string.IsNullOrEmpty(pattern) && RegexCache.TryGet(pattern, out var regex))
             {
                 result = regex;
             }
@@ -27,7 +27,7 @@ namespace Microsoft.Bot.Builder.Expressions
                 }
 
                 result = new Regex(pattern, RegexOptions.Compiled);
-                regexCache.Set(pattern, result);
+                RegexCache.Set(pattern, result);
             }
 
             return result;

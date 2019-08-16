@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
     public class OnMessageReactionActivity : OnActivity
     {
         [JsonConstructor]
-        public OnMessageReactionActivity(List<IDialog> actions = null, string constraint= null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public OnMessageReactionActivity(List<IDialog> actions = null, string constraint = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base(type: ActivityTypes.MessageReaction, actions: actions, constraint: constraint, callerPath: callerPath, callerLine: callerLine) { }
     }
 }

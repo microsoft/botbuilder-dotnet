@@ -52,38 +52,59 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         };
 
         /// <summary>
-        /// List of choices to present to user.
+        /// Gets or sets list of choices to present to user.
         /// </summary>
+        /// <value>
+        /// List of choices to present to user.
+        /// </value>
         public List<Choice> Choices { get; set; }
 
         /// <summary>
-        /// Expression collection of choices to present o user.
+        /// Gets or sets expression collection of choices to present o user.
         /// </summary>
+        /// <value>
+        /// Expression collection of choices to present o user.
+        /// </value>
         public string ChoicesProperty { get; set; }
 
         /// <summary>
-        /// ListStyle to use to render the choices.
+        /// Gets or sets listStyle to use to render the choices.
         /// </summary>
+        /// <value>
+        /// ListStyle to use to render the choices.
+        /// </value>
         public ListStyle Style { get; set; } = ListStyle.Auto;
 
         /// <summary>
-        /// DefaultLocale.
+        /// Gets or sets defaultLocale.
         /// </summary>
+        /// <value>
+        /// DefaultLocale.
+        /// </value>
         public string DefaultLocale { get; set; } = null;
 
         /// <summary>
-        /// Control the format of the response (value or the index of the choice).
+        /// Gets or sets control the format of the response (value or the index of the choice).
         /// </summary>
+        /// <value>
+        /// Control the format of the response (value or the index of the choice).
+        /// </value>
         public ChoiceOutputFormat OutputFormat { get; set; } = ChoiceOutputFormat.Value;
 
         /// <summary>
-        /// ChoiceOptions controls display options for customizing language.
+        /// Gets or sets choiceOptions controls display options for customizing language.
         /// </summary>
+        /// <value>
+        /// ChoiceOptions controls display options for customizing language.
+        /// </value>
         public ChoiceFactoryOptions ChoiceOptions { get; set; } = null;
 
         /// <summary>
-        /// Customize how to use the choices to recognize the response from the user.
+        /// Gets or sets customize how to use the choices to recognize the response from the user.
         /// </summary>
+        /// <value>
+        /// Customize how to use the choices to recognize the response from the user.
+        /// </value>
         public FindChoicesOptions RecognizerOptions { get; set; } = null;
 
         public ChoiceInput([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)

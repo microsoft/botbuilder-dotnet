@@ -40,12 +40,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
         /// <summary>
         /// Gets or sets the constraint to apply to the rule (OPTIONAL). 
         /// </summary>
+        /// <value>
+        /// The constraint to apply to the rule (OPTIONAL). 
+        /// </value>
         [JsonProperty("constraint")]
         public string Constraint { get; set; }
 
         /// <summary>
         /// Gets or sets the actions to add to the plan when the rule constraints are met.
         /// </summary>
+        /// <value>
+        /// The actions to add to the plan when the rule constraints are met.
+        /// </value>
         [JsonProperty("actions")]
         public List<IDialog> Actions { get; set; } = new List<IDialog>();
 

@@ -30,8 +30,11 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// Root dialog to use to start conversation.
+        /// Gets or sets root dialog to use to start conversation.
         /// </summary>
+        /// <value>
+        /// Root dialog to use to start conversation.
+        /// </value>
         public IDialog RootDialog
         {
             get

@@ -187,6 +187,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
                         changeFired.SetResult(true);
                     }
                 };
+
                 // changed file
                 File.Delete(testDialogFile);
 

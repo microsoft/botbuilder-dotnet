@@ -112,6 +112,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.AreEqual(3, card.Buttons.Count, "card buttons should be set");
             for (int i = 0; i <= 2; i++)
                 Assert.AreEqual($"Option {i + 1}", card.Buttons[i].Title, "card buttons should be set");
+
             // TODO add all of the other property types
         }
 
@@ -138,6 +139,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.AreEqual(3, card.Buttons.Count, "card buttons should be set");
             for (int i = 0; i <= 2; i++)
                 Assert.AreEqual($"Option {i + 1}", card.Buttons[i].Title, "card buttons should be set");
+
             // TODO add all of the other property types
         }
 
@@ -168,6 +170,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.AreEqual(3, card.Buttons.Count, "card buttons should be set");
             for (int i = 0; i <= 2; i++)
                 Assert.AreEqual($"Option {i + 1}", card.Buttons[i].Title, "card buttons should be set");
+
             // TODO add all of the other property types
         }
 

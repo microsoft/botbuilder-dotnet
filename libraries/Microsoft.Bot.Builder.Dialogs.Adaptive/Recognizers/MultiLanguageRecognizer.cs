@@ -14,14 +14,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
     public class MultiLanguageRecognizer : IRecognizer
     {
         /// <summary>
-        /// Policy for languages fallback. 
+        /// Gets or sets policy for languages fallback. 
         /// </summary>
+        /// <value>
+        /// Policy for languages fallback. 
+        /// </value>
         [JsonProperty("languagePolicy")]
         public ILanguagePolicy LanguagePolicy { get; set; } = new LanguagePolicy();
 
         /// <summary>
-        /// Map of languages -> IRecognizer.
+        /// Gets or sets map of languages -> IRecognizer.
         /// </summary>
+        /// <value>
+        /// Map of languages -> IRecognizer.
+        /// </value>
         [JsonProperty("recognizers")]
         public IDictionary<string, IRecognizer> Recognizers { get; set; } = new Dictionary<string, IRecognizer>();
 

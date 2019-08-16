@@ -7,8 +7,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
     public interface IResourceProvider
     {
         /// <summary>
-        /// id for the resource provider.
+        /// Gets id for the resource provider.
         /// </summary>
+        /// <value>
+        /// id for the resource provider.
+        /// </value>
         string Id { get; }
 
         event ResourceChangedEventHandler Changed;

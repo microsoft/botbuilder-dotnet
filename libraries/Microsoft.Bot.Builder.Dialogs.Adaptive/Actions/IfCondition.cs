@@ -22,13 +22,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         private Expression condition;
 
         /// <summary>
-        /// Condition expression against memory Example: "user.age > 18".
+        /// Gets or sets condition expression against memory. Example: "user.age > 18".
         /// </summary>
+        /// <value>
+        /// Condition expression against memory.
+        /// </value>
         [JsonProperty("condition")]
         public string Condition
         {
             get { return condition?.ToString(); }
-            set { lock(this) condition = (value != null) ? new ExpressionEngine().Parse(value) : null; }
+            set { lock (this) condition = value != null ? new ExpressionEngine().Parse(value) : null; }
         }
 
         [JsonProperty("actions")]
@@ -42,6 +45,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             : base()
         {
             this.RegisterSourceLocation(sourceFilePath, sourceLineNumber);
+        }
+
+        public override List<IDialog> ListDependencies()
+        {
+            var combined = new List<IDialog>(Actions);
+            combined.AddRange(ElseActions);
+            return combined;
         }
 
         protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
@@ -93,13 +103,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         {
             var idList = Actions.Select(s => s.Id);
             return $"{nameof(IfCondition)}({this.Condition}|{string.Join(",", idList)})";
-        }
-
-        public override List<IDialog> ListDependencies()
-        {
-            var combined = new List<IDialog>(Actions);
-            combined.AddRange(ElseActions);
-            return combined;
         }
     }
 }

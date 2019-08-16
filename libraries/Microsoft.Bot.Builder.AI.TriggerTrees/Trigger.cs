@@ -20,6 +20,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
         private List<Clause> _clauses;
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="Trigger"/> class.
         /// Construct a trigger expression.
         /// </summary>
         /// <param name="tree">Trigger tree that contains this trigger.</param>
@@ -49,13 +50,21 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
         }
 
         /// <summary>
-        /// Action to take when trigger is true.
+        /// Gets action to take when trigger is true.
         /// </summary>
+        /// <value>
+        /// Action to take when trigger is true.
+        /// </value>
         public object Action { get; }
 
         /// <summary>
-        /// Expressions are converted into Disjunctive Normal Form where ! is pushed to the leaves and there is an implicit || between clauses and && within a clause. 
+        /// Gets list of expressions converted into Disjunctive Normal Form where ! is pushed to the leaves and 
+        /// there is an implicit || between clauses and &amp;&amp; within a clause. 
         /// </summary>
+        /// <value>
+        /// List of expressions converted into Disjunctive Normal Form where ! is pushed to the leaves and 
+        /// there is an implicit || between clauses and &amp;&amp; within a clause. 
+        /// </value>
         public IReadOnlyList<Clause> Clauses => _clauses;
 
         public override string ToString()
@@ -100,6 +109,34 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
             }
 
             return result;
+        }
+
+        protected void ToString(StringBuilder builder, int indent = 0)
+        {
+            builder.Append(' ', indent);
+            if (_clauses.Any())
+            {
+                var first = true;
+                foreach (var clause in _clauses)
+                {
+                    if (first)
+                    {
+                        first = false;
+                    }
+                    else
+                    {
+                        builder.AppendLine();
+                        builder.Append(' ', indent);
+                        builder.Append("|| ");
+                    }
+
+                    builder.Append(clause.ToString());
+                }
+            }
+            else
+            {
+                builder.Append("<Empty>");
+            }
         }
 
         private RelationshipType Relationship(Trigger trigger, Trigger other, Dictionary<string, IPredicateComparer> comparers)
@@ -148,34 +185,6 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
 
             // Either incomparable, equal or specializes
             return soFar;
-        }
-
-        protected void ToString(StringBuilder builder, int indent = 0)
-        {
-            builder.Append(' ', indent);
-            if (_clauses.Any())
-            {
-                var first = true;
-                foreach (var clause in _clauses)
-                {
-                    if (first)
-                    {
-                        first = false;
-                    }
-                    else
-                    {
-                        builder.AppendLine();
-                        builder.Append(' ', indent);
-                        builder.Append("|| ");
-                    }
-
-                    builder.Append(clause.ToString());
-                }
-            }
-            else
-            {
-                builder.Append("<Empty>");
-            }
         }
 
         private IEnumerable<Clause> GenerateClauses(Expression expression)

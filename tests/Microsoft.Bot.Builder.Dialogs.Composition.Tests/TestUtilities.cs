@@ -26,7 +26,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition.Tests
                 }, 
                 Conversation = new ConversationAccount()
                 {
-                    Id="213123123123"
+                    Id = "213123123123"
                 }
             };
             var bc = new TurnContext(b, a);

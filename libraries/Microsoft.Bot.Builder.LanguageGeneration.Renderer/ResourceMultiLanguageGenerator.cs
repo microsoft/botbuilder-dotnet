@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// Initializes a new instance of the <see cref="ResourceMultiLanguageGenerator"/> class.
         /// </summary>
         /// <param name="resourceId">foo.lg.</param>
-        public ResourceMultiLanguageGenerator(string resourceId=null)
+        public ResourceMultiLanguageGenerator(string resourceId = null)
         {
             this.ResourceId = resourceId;
         }

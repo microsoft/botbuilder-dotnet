@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
     public class OnHandoffActivity : OnActivity
     {
         [JsonConstructor]
-        public OnHandoffActivity(List<IDialog> actions = null, string constraint= null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public OnHandoffActivity(List<IDialog> actions = null, string constraint = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base(type: ActivityTypes.Handoff, actions: actions, constraint: constraint, callerPath: callerPath, callerLine: callerLine) { }
     }
 }

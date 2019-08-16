@@ -9,8 +9,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
     public interface IResource
     {
         /// <summary>
-        /// Resource name.
+        /// Gets resource name.
         /// </summary>
+        /// <value>
+        /// Resource name.
+        /// </value>
         string Id { get; }
 
         /// <summary>

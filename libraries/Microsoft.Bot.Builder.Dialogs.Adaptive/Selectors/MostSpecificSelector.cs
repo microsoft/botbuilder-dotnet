@@ -16,8 +16,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
         private readonly TriggerTree _tree = new TriggerTree();
 
         /// <summary>
-        /// Optional rule selector to use when more than one most specific rule is true.
+        /// Gets or sets optional rule selector to use when more than one most specific rule is true.
         /// </summary>
+        /// <value>
+        /// Optional rule selector to use when more than one most specific rule is true.
+        /// </value>
         public IEventSelector Selector { get; set; }
 
         public void Initialize(IEnumerable<IOnEvent> rules, bool evaluate)

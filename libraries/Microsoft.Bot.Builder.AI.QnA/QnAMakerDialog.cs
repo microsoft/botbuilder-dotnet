@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
     {
         private QnAMaker qnamaker;
 
-        public QnAMakerDialog(string dialogId = null, QnAMaker qnamaker=null)
+        public QnAMakerDialog(string dialogId = null, QnAMaker qnamaker = null)
             : base(dialogId)
         {
             this.qnamaker = qnamaker;

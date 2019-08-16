@@ -17,21 +17,26 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
     public class OnActivity : OnDialogEvent
     {
         [JsonConstructor]
-        public OnActivity(string type=null, List<IDialog> actions = null, string constraint = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
-            : base(events: new List<string>()
-            {
-                AdaptiveEvents.ActivityReceived
-            },
-            actions: actions,
-            constraint: constraint,
-            callerPath: callerPath, callerLine: callerLine)
+        public OnActivity(string type = null, List<IDialog> actions = null, string constraint = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+            : base(
+                events: new List<string>()
+                {
+                    AdaptiveEvents.ActivityReceived
+                },
+                actions: actions,
+                constraint: constraint,
+                callerPath: callerPath, 
+                callerLine: callerLine)
         {
             Type = type;
         }
 
         /// <summary>
-        /// ActivityType.
+        /// Gets or sets activityType.
         /// </summary>
+        /// <value>
+        /// ActivityType.
+        /// </value>
         [JsonProperty("type")]
         public string Type { get; set; }
 

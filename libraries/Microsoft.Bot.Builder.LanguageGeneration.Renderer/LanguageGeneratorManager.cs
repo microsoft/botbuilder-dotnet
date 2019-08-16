@@ -54,8 +54,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         }
 
         /// <summary>
-        /// Generators.
+        /// Gets or sets generators.
         /// </summary>
+        /// <value>
+        /// Generators.
+        /// </value>
         public ConcurrentDictionary<string, ILanguageGenerator> LanguageGenerators { get; set; } = new ConcurrentDictionary<string, ILanguageGenerator>(StringComparer.OrdinalIgnoreCase);
 
         public static ImportResolverDelegate ResourceResolver(ResourceExplorer resourceExplorer) =>

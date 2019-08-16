@@ -105,8 +105,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         }
 
         /// <summary>
-        /// folder to enumerate.
+        /// Gets or sets folder to enumerate.
         /// </summary>
+        /// <value>
+        /// folder to enumerate.
+        /// </value>
         public DirectoryInfo Directory { get; set; }
 
         public bool IncludeSubFolders { get; set; }

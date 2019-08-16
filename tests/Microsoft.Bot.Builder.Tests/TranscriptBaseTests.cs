@@ -144,6 +144,7 @@ namespace Microsoft.Bot.Builder.Tests
                 ServiceUrl = activities[1].ServiceUrl,
             };
             await Store.LogActivityAsync(deleteActivity);
+
             // tombstone the deleted record
             activities[1] = new Activity()
             {

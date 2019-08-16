@@ -214,12 +214,14 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.AreEqual("foo", pagedResult.Items[0].AsMessageActivity().Text);
             Assert.AreEqual("new response", pagedResult.Items[1].AsMessageActivity().Text);
             Assert.AreEqual("update", pagedResult.Items[2].AsMessageActivity().Text);
+
             // Perform some queries
             pagedResult = await transcriptStore.GetTranscriptActivitiesAsync(conversation.ChannelId, conversation.Conversation.Id, null, DateTimeOffset.MinValue);
             Assert.AreEqual(3, pagedResult.Items.Length);
             Assert.AreEqual("foo", pagedResult.Items[0].AsMessageActivity().Text);
             Assert.AreEqual("new response", pagedResult.Items[1].AsMessageActivity().Text);
             Assert.AreEqual("update", pagedResult.Items[2].AsMessageActivity().Text);
+
             // Perform some queries
             pagedResult = await transcriptStore.GetTranscriptActivitiesAsync(conversation.ChannelId, conversation.Conversation.Id, null, DateTimeOffset.MaxValue);
             Assert.AreEqual(0, pagedResult.Items.Length);

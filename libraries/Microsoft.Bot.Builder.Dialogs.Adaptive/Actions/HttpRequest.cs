@@ -21,7 +21,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// </summary>
     public class HttpRequest : DialogAction
     {
-        private static readonly HttpClient client = new HttpClient();
+        private static readonly HttpClient Client = new HttpClient();
+
+        [JsonConstructor]
+        public HttpRequest([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+            : base()
+        {
+            this.RegisterSourceLocation(callerPath, callerLine);
+        }
 
         public enum ResponseTypes
         {
@@ -55,13 +62,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             DELETE
         }
 
-        [JsonConstructor]
-        public HttpRequest([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
-            : base()
-        {
-            this.RegisterSourceLocation(callerPath, callerLine);
-        }
-
         protected override string OnComputeId()
         {
             return $"HttpRequest[{Method} {Url}]";
@@ -84,8 +84,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         public ResponseTypes ResponseType { get; set; } = ResponseTypes.Json;
 
         /// <summary>
-        /// Property which is bidirectional property for input and output.  Example: user.age will be passed in, and user.age will be set when the dialog completes.
+        /// Gets or sets bidirectional property for input and output.  Example: user.age will be passed in, and user.age will be set when the dialog completes.
         /// </summary>
+        /// <value>
+        /// Property for input and output.
+        /// </value>
         public string Property
         {
             get
@@ -162,7 +165,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             }
 
             // Single command running with a copy of the original data
-            client.DefaultRequestHeaders.Clear();
+            Client.DefaultRequestHeaders.Clear();
 
             JToken instanceBody = null;
             if (this.Body != null)
@@ -186,7 +189,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             {
                 foreach (var unit in instanceHeaders)
                 {
-                    client.DefaultRequestHeaders.Add(
+                    Client.DefaultRequestHeaders.Add(
                         await new TextTemplate(unit.Key).BindToData(dc.Context, dc.State),
                         await new TextTemplate(unit.Value).BindToData(dc.Context, dc.State));
                 }
@@ -199,11 +202,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 case HttpMethod.POST:
                     if (instanceBody == null)
                     {
-                        response = await client.PostAsync(instanceUrl, null);
+                        response = await Client.PostAsync(instanceUrl, null);
                     }
                     else
                     {
-                        response = await client.PostAsync(instanceUrl, new StringContent(instanceBody.ToString(), Encoding.UTF8, "application/json"));
+                        response = await Client.PostAsync(instanceUrl, new StringContent(instanceBody.ToString(), Encoding.UTF8, "application/json"));
                     }
 
                     break;
@@ -212,13 +215,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                     if (instanceBody == null)
                     {
                         var request = new HttpRequestMessage(new System.Net.Http.HttpMethod("PATCH"), instanceUrl);
-                        response = await client.SendAsync(request);
+                        response = await Client.SendAsync(request);
                     }
                     else
                     {
                         var request = new HttpRequestMessage(new System.Net.Http.HttpMethod("PATCH"), instanceUrl);
                         request.Content = new StringContent(instanceBody.ToString(), Encoding.UTF8, "application/json");
-                        response = await client.SendAsync(request);
+                        response = await Client.SendAsync(request);
                     }
 
                     break;
@@ -226,21 +229,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 case HttpMethod.PUT:
                     if (instanceBody == null)
                     {
-                        response = await client.PutAsync(instanceUrl, null);
+                        response = await Client.PutAsync(instanceUrl, null);
                     }
                     else
                     {
-                        response = await client.PutAsync(instanceUrl, new StringContent(instanceBody.ToString(), Encoding.UTF8, "application/json"));
+                        response = await Client.PutAsync(instanceUrl, new StringContent(instanceBody.ToString(), Encoding.UTF8, "application/json"));
                     }
 
                     break;
 
                 case HttpMethod.DELETE:
-                    response = await client.DeleteAsync(instanceUrl);
+                    response = await Client.DeleteAsync(instanceUrl);
                     break;
 
                 case HttpMethod.GET:
-                    response = await client.GetAsync(instanceUrl);
+                    response = await Client.GetAsync(instanceUrl);
                     break;
             }
 

@@ -21,6 +21,9 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <summary>
         /// Gets or sets the template to evaluate to create the IMessageActivity.
         /// </summary>
+        /// <value>
+        /// The template to evaluate to create the IMessageActivity.
+        /// </value>
         public string Template { get; set; }
 
         public async Task<Activity> BindToData(ITurnContext context, object data)

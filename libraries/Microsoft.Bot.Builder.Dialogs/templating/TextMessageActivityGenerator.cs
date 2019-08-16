@@ -17,6 +17,161 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// </summary>
     public class TextMessageActivityGenerator : IMessageActivityGenerator
     {
+        private static int AddJsonAttachment(IMessageActivity activity, string[] lines, int iLine)
+        {
+            StringBuilder sb = new StringBuilder();
+            for (; iLine < lines.Length; iLine++)
+            {
+                if (lines[iLine].TrimEnd() == "]")
+                {
+                    break;
+                }
+
+                sb.AppendLine(lines[iLine]);
+            }
+
+            dynamic obj = JsonConvert.DeserializeObject(sb.ToString());
+            string contentType = "application/json";
+
+            if (obj.type == "AdaptiveCard")
+            {
+                contentType = "application/vnd.microsoft.card.adaptive";
+            }
+
+            var attachment = new Attachment(contentType, content: obj);
+            activity.Attachments.Add(attachment);
+            return iLine;
+        }
+
+        private static void AddSuggestions(IMessageActivity activity, string line)
+        {
+            var value = line.Split('=');
+            if (value.Length > 1)
+            {
+                var suggestions = value[1].Split('|');
+                activity.SuggestedActions = new SuggestedActions();
+                activity.SuggestedActions.Actions = suggestions.Select(s =>
+                {
+                    var text = s.TrimEnd(']').Trim();
+                    return new CardAction(type: ActionTypes.MessageBack, title: text, displayText: text, text: text);
+                }).ToList();
+            }
+        }
+
+        private static void AddAttachmentLayout(IMessageActivity activity, string line)
+        {
+            var value = line.Split('=');
+            if (value.Length > 1)
+            {
+                activity.AttachmentLayout = value[1].TrimEnd(']').Trim();
+            }
+        }
+
+        private static int AddGenericCardAtttachment(IMessageActivity activity, string type, string[] lines, int iLine)
+        {
+            var attachment = new Attachment(type, content: new JObject());
+            iLine = BuildGenericCard(attachment.Content, type, lines, iLine);
+            activity.Attachments.Add(attachment);
+            return iLine;
+        }
+
+        private static int BuildGenericCard(dynamic card, string type, string[] lines, int iLine)
+        {
+            bool lastLine = false;
+
+            for (; !lastLine && iLine < lines.Length; iLine++)
+            {
+                var line = lines[iLine];
+                var start = line.IndexOf('=');
+                if (start > 0)
+                {
+                    var property = line.Substring(0, start).Trim().ToLower();
+                    var value = line.Substring(start + 1).Trim();
+                    if (value.EndsWith("]"))
+                    {
+                        value = value.TrimEnd(']');
+                        lastLine = true;
+                    }
+
+                    switch (property.ToLower())
+                    {
+                        case "title":
+                        case "subtitle":
+                        case "text":
+                        case "aspect":
+                        case "value":
+                        case "connectionName":
+                            card[property] = value;
+                            break;
+
+                        case "image":
+                        case "images":
+                            if (type == HeroCard.ContentType || type == ThumbnailCard.ContentType)
+                            {
+                                // then it's images
+                                if (card["images"] == null)
+                                {
+                                    card["images"] = new JArray();
+                                }
+
+                                var urlObj = new JObject() { { "url", value } };
+                                ((JArray)card["images"]).Add(urlObj);
+                            }
+                            else
+                            {
+                                // then it's image
+                                var urlObj = new JObject() { { "url", value } };
+                                card["image"] = urlObj;
+                            }
+
+                            break;
+
+                        case "media":
+                            if (card[property] == null)
+                            {
+                                card[property] = new JArray();
+                            }
+
+                            var mediaObj = new JObject() { { "url", value } };
+                            ((JArray)card[property]).Add(mediaObj);
+                            break;
+
+                        case "buttons":
+                            if (card[property] == null)
+                            {
+                                card[property] = new JArray();
+                            }
+
+                            foreach (var button in value.Split('|'))
+                            {
+                                var buttonObj = new JObject() { { "title", button.Trim() }, { "type", "imBack" }, { "value", button.Trim() } };
+                                ((JArray)card[property]).Add(buttonObj);
+                            }
+
+                            break;
+
+                        case "autostart":
+                        case "sharable":
+                        case "autoloop":
+                            card[property] = value.ToLower() == "true";
+                            break;
+                        case "":
+                            break;
+                        default:
+                            System.Diagnostics.Debug.WriteLine(string.Format("Skipping unknown card property {0}", property));
+                            break;
+                    }
+
+                    if (lastLine)
+                    {
+                        break;
+                    }
+                }
+            }
+
+            return iLine;
+        }
+
         // Fixed text constructor
         public TextMessageActivityGenerator()
         {
@@ -57,8 +212,8 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </remarks>
         /// <param name="text">text.</param>
         /// <param name="data">data to bind to.</param>
-        /// <param name="languageGenerator">languageGenerator.</param>
         /// <param name="turnContext">turnContext.</param>
+        /// <param name="languageGenerator">languageGenerator.</param>
         /// <returns>MessageActivity for it.</returns>
         public async Task<IMessageActivity> CreateActivityFromText(string text, object data, ITurnContext turnContext, ILanguageGenerator languageGenerator)
         {
@@ -269,161 +424,6 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             activity.Attachments.Add(attachment);
-        }
-
-        private static int AddJsonAttachment(IMessageActivity activity, string[] lines, int iLine)
-        {
-            StringBuilder sb = new StringBuilder();
-            for (; iLine < lines.Length; iLine++)
-            {
-                if (lines[iLine].TrimEnd() == "]")
-                {
-                    break;
-                }
-
-                sb.AppendLine(lines[iLine]);
-            }
-
-            dynamic obj = JsonConvert.DeserializeObject(sb.ToString());
-            string contentType = "application/json";
-
-            if (obj.type == "AdaptiveCard")
-            {
-                contentType = "application/vnd.microsoft.card.adaptive";
-            }
-
-            var attachment = new Attachment(contentType, content: obj);
-            activity.Attachments.Add(attachment);
-            return iLine;
-        }
-
-        private static void AddSuggestions(IMessageActivity activity, string line)
-        {
-            var value = line.Split('=');
-            if (value.Length > 1)
-            {
-                var suggestions = value[1].Split('|');
-                activity.SuggestedActions = new SuggestedActions();
-                activity.SuggestedActions.Actions = suggestions.Select(s =>
-                {
-                    var text = s.TrimEnd(']').Trim();
-                    return new CardAction(type: ActionTypes.MessageBack, title: text, displayText: text, text: text);
-                }).ToList();
-            }
-        }
-
-        private static void AddAttachmentLayout(IMessageActivity activity, string line)
-        {
-            var value = line.Split('=');
-            if (value.Length > 1)
-            {
-                activity.AttachmentLayout = value[1].TrimEnd(']').Trim();
-            }
-        }
-
-        private static int AddGenericCardAtttachment(IMessageActivity activity, string type, string[] lines, int iLine)
-        {
-            var attachment = new Attachment(type, content: new JObject());
-            iLine = BuildGenericCard(attachment.Content, type, lines, iLine);
-            activity.Attachments.Add(attachment);
-            return iLine;
-        }
-
-        private static int BuildGenericCard(dynamic card, string type, string[] lines, int iLine)
-        {
-            bool lastLine = false;
-
-            for (; !lastLine && iLine < lines.Length; iLine++)
-            {
-                var line = lines[iLine];
-                var start = line.IndexOf('=');
-                if (start > 0)
-                {
-                    var property = line.Substring(0, start).Trim().ToLower();
-                    var value = line.Substring(start + 1).Trim();
-                    if (value.EndsWith("]"))
-                    {
-                        value = value.TrimEnd(']');
-                        lastLine = true;
-                    }
-
-                    switch (property.ToLower())
-                    {
-                        case "title":
-                        case "subtitle":
-                        case "text":
-                        case "aspect":
-                        case "value":
-                        case "connectionName":
-                            card[property] = value;
-                            break;
-
-                        case "image":
-                        case "images":
-                            if (type == HeroCard.ContentType || type == ThumbnailCard.ContentType)
-                            {
-                                // then it's images
-                                if (card["images"] == null)
-                                {
-                                    card["images"] = new JArray();
-                                }
-
-                                var urlObj = new JObject() { { "url", value } };
-                                ((JArray)card["images"]).Add(urlObj);
-                            }
-                            else
-                            {
-                                // then it's image
-                                var urlObj = new JObject() { { "url", value } };
-                                card["image"] = urlObj;
-                            }
-
-                            break;
-
-                        case "media":
-                            if (card[property] == null)
-                            {
-                                card[property] = new JArray();
-                            }
-
-                            var mediaObj = new JObject() { { "url", value } };
-                            ((JArray)card[property]).Add(mediaObj);
-                            break;
-
-                        case "buttons":
-                            if (card[property] == null)
-                            {
-                                card[property] = new JArray();
-                            }
-
-                            foreach (var button in value.Split('|'))
-                            {
-                                var buttonObj = new JObject() { { "title", button.Trim() }, { "type", "imBack" }, { "value", button.Trim() } };
-                                ((JArray)card[property]).Add(buttonObj);
-                            }
-
-                            break;
-
-                        case "autostart":
-                        case "sharable":
-                        case "autoloop":
-                            card[property] = value.ToLower() == "true";
-                            break;
-                        case "":
-                            break;
-                        default:
-                            System.Diagnostics.Debug.WriteLine(string.Format("Skipping unknown card property {0}", property));
-                            break;
-                    }
-
-                    if (lastLine)
-                    {
-                        break;
-                    }
-                }
-            }
-
-            return iLine;
         }
     }
 }

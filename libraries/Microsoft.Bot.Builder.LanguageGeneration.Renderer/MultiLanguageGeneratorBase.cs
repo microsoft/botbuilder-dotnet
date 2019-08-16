@@ -28,8 +28,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public abstract bool TryGetGenerator(ITurnContext context, string locale, out ILanguageGenerator generator);
 
         /// <summary>
-        /// Language Policy which defines per language fallback policies.
+        /// Gets or sets language Policy which defines per language fallback policies.
         /// </summary>
+        /// <value>
+        /// Language Policy which defines per language fallback policies.
+        /// </value>
         public ILanguagePolicy LanguagePolicy { get; set; } = new LanguagePolicy();
 
         public async Task<string> Generate(ITurnContext turnContext, string template, object data)

@@ -11,6 +11,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 {
     public static class Source
     {
+        public interface IRegistry
+        {
+            void Add(object item, Range range);
+
+            bool TryGetValue(object item, out Range range);
+        }
+
         public struct Point
         {
             public int LineIndex { get; set; }
@@ -39,13 +46,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             }
 
             public override string ToString() => $"{LineIndex}:{CharIndex}";
-        }
-
-        public interface IRegistry
-        {
-            void Add(object item, Range range);
-
-            bool TryGetValue(object item, out Range range);
         }
 
         public sealed class Range

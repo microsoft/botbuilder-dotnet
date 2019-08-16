@@ -105,7 +105,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
             Rand = new Random(seed);
         }
 
-        private static readonly string[] comparisons = new string[]
+        private static readonly string[] Comparisons = new string[]
         {
             ExpressionType.LessThan,
             ExpressionType.LessThanOrEqual,
@@ -164,7 +164,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
         {
             Expression expression = null;
             object value = null;
-            var type = RandomChoice<string>(comparisons);
+            var type = RandomChoice<string>(Comparisons);
             switch (Rand.Next(2))
             {
                 case 0:
@@ -246,7 +246,8 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
                     do
                     {
                         choice = Rand.Next(predicates.Count);
-                    } while (used.Contains(choice));
+                    }
+                    while (used.Contains(choice));
 
                     expressions.Add(predicates[choice]);
                     used.Add(choice);
@@ -273,7 +274,8 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
                     do
                     {
                         choice = Rand.Next(predicates.Count);
-                    } while (used.Contains(choice));
+                    }
+                    while (used.Contains(choice));
                     expressions.Add(predicates[choice]);
                     used.Add(choice);
                 }
@@ -299,7 +301,8 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
                     do
                     {
                         choice = Rand.Next(predicates.Count);
-                    } while (used.Contains(choice));
+                    }
+                    while (used.Contains(choice));
 
                     var predicate = predicates[choice];
                     if (j == 0)
@@ -386,11 +389,13 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
                 for (var quant = 0; quant < maxBase; ++quant)
                 {
                     KeyValuePair<string, Comparison> baseBinding;
+
                     // Can only map each expression variable once in a quantifier
                     do
                     {
                         baseBinding = expression.Bindings.ElementAt(Rand.Next(expression.Bindings.Count));
-                    } while (chosen.Contains(baseBinding.Key));
+                    }
+                    while (chosen.Contains(baseBinding.Key));
                     chosen.Add(baseBinding.Key);
                     SplitMemory(baseBinding.Key, out var baseName);
                     var mappings = new List<string>();

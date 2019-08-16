@@ -53,7 +53,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition
         {
             var defaultOptions = new Options() { };
 
-            var overlay= new Options()
+            var overlay = new Options()
             {
                 LastName = "Smith",
                 FirstName = "Fred",

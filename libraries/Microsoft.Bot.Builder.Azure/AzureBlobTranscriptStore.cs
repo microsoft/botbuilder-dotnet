@@ -109,6 +109,7 @@ namespace Microsoft.Bot.Builder.Azure
                         if (blob != null)
                         {
                             var originalActivity = JsonConvert.DeserializeObject<Activity>(await blob.DownloadTextAsync().ConfigureAwait(false));
+
                             // tombstone the original message
                             var tombstonedActivity = new Activity()
                             {

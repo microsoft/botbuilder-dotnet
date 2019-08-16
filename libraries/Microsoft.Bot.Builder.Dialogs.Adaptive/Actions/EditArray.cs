@@ -63,6 +63,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <summary>
         /// Gets or sets type of change being applied.
         /// </summary>
+        /// <value>
+        /// Type of change being applied.
+        /// </value>
         [JsonConverter(typeof(StringEnumConverter))]
         [JsonProperty("changeType")]
         public ArrayChangeType ChangeType { get; set; }
@@ -74,7 +77,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
         /// <summary>
         /// Gets or sets memory expression of the array to manipulate.
-        /// </summary>Edit
+        /// </summary>
+        /// <value>
+        /// Memory expression of the array to manipulate.
+        /// </value>Edit
         [JsonProperty("arrayProperty")]
         public string ArrayProperty
         {
@@ -85,6 +91,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <summary>
         /// Gets or sets the result of the action.
         /// </summary>
+        /// <value>
+        /// The result of the action.
+        /// </value>
         [JsonProperty("resultProperty")]
         public string ResultProperty 
         {
@@ -95,6 +104,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <summary>
         /// Gets or sets the expression of the item to put onto the array.
         /// </summary>
+        /// <value>
+        /// The expression of the item to put onto the array.
+        /// </value>
         [JsonProperty("value")]
         public string Value
         {

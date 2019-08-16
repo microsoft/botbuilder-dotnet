@@ -55,8 +55,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         public AllowInterruptions AllowInterruptions { get; set; } = AllowInterruptions.NotRecognized;
 
         /// <summary>
-        /// Initial value for the prompt.
+        /// Gets or sets initial value for the prompt.
         /// </summary>
+        /// <value>
+        /// Initial value for the prompt.
+        /// </value>
         [JsonProperty("value")]
         public string Value
         {
@@ -65,30 +68,45 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         }
 
         /// <summary>
-        /// Activity to send to the user.
+        /// Gets or sets activity to send to the user.
         /// </summary>
+        /// <value>
+        /// Activity to send to the user.
+        /// </value>
         public ITemplate<Activity> Prompt { get; set; }
 
         /// <summary>
-        /// Activity template for retrying prompt.
+        /// Gets or sets activity template for retrying prompt.
         /// </summary>
+        /// <value>
+        /// Activity template for retrying prompt.
+        /// </value>
         public ITemplate<Activity> UnrecognizedPrompt { get; set; }
 
         /// <summary>
-        /// Activity template to send to the user whenever the value provided is invalid.
+        /// Gets or sets activity template to send to the user whenever the value provided is invalid.
         /// </summary>
+        /// <value>
+        /// Activity template to send to the user whenever the value provided is invalid.
+        /// </value>
         public ITemplate<Activity> InvalidPrompt { get; set; }
 
         public List<string> Validations { get; set; } = new List<string>();
 
         /// <summary>
-        /// Maximum number of times to ask the user for this value before the dilog gives up.
+        /// Gets or sets maximum number of times to ask the user for this value before the dilog gives up.
         /// </summary>
+        /// <value>
+        /// Maximum number of times to ask the user for this value before the dilog gives up.
+        /// </value>
         public int? MaxTurnCount { get; set; }
 
         /// <summary>
-        /// Default value for the input dialog.
+        /// Gets or sets default value for the input dialog.
         /// </summary>
+        /// <value>
+        /// Default value for the input dialog.
+        /// </value>
         public string DefaultValue
         {
             get { return defaultValue?.ToString(); }
@@ -96,8 +114,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         }
 
         /// <summary>
-        /// The property from memory to pass to the calling dialog and to set the return value to.
+        /// Gets or sets the property from memory to pass to the calling dialog and to set the return value to.
         /// </summary>
+        /// <value>
+        /// The property from memory to pass to the calling dialog and to set the return value to.
+        /// </value>
         public string Property
         {
             get

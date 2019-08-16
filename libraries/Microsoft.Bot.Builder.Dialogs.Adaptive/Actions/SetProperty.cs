@@ -28,8 +28,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         }
 
         /// <summary>
-        /// Value expression.
+        /// Gets or sets value expression.
         /// </summary>
+        /// <value>
+        /// Value expression.
+        /// </value>
         [JsonProperty("value")]
         public string Value
         {
@@ -38,8 +41,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         }
 
         /// <summary>
-        /// Property to put the value in.
+        /// Gets or sets property to put the value in.
         /// </summary>
+        /// <value>
+        /// Property to put the value in.
+        /// </value>
         [JsonProperty("property")]
         public string Property 
         {

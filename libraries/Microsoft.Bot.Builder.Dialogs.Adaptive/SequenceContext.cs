@@ -23,13 +23,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         public AdaptiveDialogState Plans { get; private set; }
 
         /// <summary>
+        /// Gets or sets list of actions being executed.
+        /// </summary>
+        /// <value>
         /// List of actions being executed.
-        /// </summary>
+        /// </value>
         public List<ActionState> Actions { get; set; }
-        
+
         /// <summary>
-        /// List of changes that are queued to be applied.
+        /// Gets list of changes that are queued to be applied.
         /// </summary>
+        /// <value>
+        /// List of changes that are queued to be applied.
+        /// </value>
         public List<ActionChangeList> Changes
         {
             get { return this.Context.TurnState.Get<List<ActionChangeList>>(changeKey); }
@@ -340,6 +346,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// <summary>
         /// Gets or sets turn state associated with the plan change list (it will be applied to turn state when plan is applied).
         /// </summary>
+        /// <value>
+        /// Turn state associated with the plan change list (it will be applied to turn state when plan is applied).
+        /// </value>
         [JsonProperty(PropertyName = "turn")]
         public Dictionary<string, object> Turn { get; set; }
     }

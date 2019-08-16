@@ -29,6 +29,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <summary>
         /// Gets or sets the property to return as the result ending the dialog.
         /// </summary>
+        /// <value>
+        /// The property to return as the result ending the dialog.
+        /// </value>
         public string ResultProperty { get; set; } = "dialog.result";
 
         protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
