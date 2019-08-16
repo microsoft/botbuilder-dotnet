@@ -207,22 +207,13 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                 payload = JsonConvert.DeserializeObject(bodyStream.ReadToEnd());
             }
 
-            var json = JsonConvert.SerializeObject(payload);
-
             if (!string.IsNullOrWhiteSpace(_config.Secret))
             {
-                var signature = request.Headers["x-spark-signature"];
+                var json = JsonConvert.SerializeObject(payload);
 
-                using (var hmac = new HMACSHA1(Encoding.UTF8.GetBytes(_config.Secret)))
+                if (!ValidateSignature(_config.Secret, request, json))
                 {
-                    var hashArray = hmac.ComputeHash(Encoding.UTF8.GetBytes(json));
-
-                    var hash = BitConverter.ToString(hashArray).Replace("-", string.Empty).ToLower();
-
-                    if (signature != hash)
-                    {
-                        throw new Exception("WARNING: Webhook received message with invalid signature. Potential malicious behavior!");
-                    }
+                    throw new Exception("WARNING: Webhook received message with invalid signature. Potential malicious behavior!");
                 }
             }
 
@@ -317,6 +308,21 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                 {
                     await RunPipelineAsync(context, bot.OnTurnAsync, cancellationToken).ConfigureAwait(false);
                 }
+            }
+        }
+
+        private static bool ValidateSignature(string secret, HttpRequest request, string json)
+        {
+            var signature = request.Headers.ContainsKey("x-spark-signature")
+                ? request.Headers["x-spark-signature"].ToString().ToUpperInvariant()
+                : throw new Exception("HttpRequest is missing \"x-spark-signature\"");
+
+            using (var hmac = new HMACSHA1(Encoding.UTF8.GetBytes(secret)))
+            {
+                var hashArray = hmac.ComputeHash(Encoding.UTF8.GetBytes(json));
+                var hash = BitConverter.ToString(hashArray).Replace("-", string.Empty).ToUpperInvariant();
+
+                return signature == hash;
             }
         }
     }
