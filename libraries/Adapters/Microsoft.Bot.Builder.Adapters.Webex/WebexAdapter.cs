@@ -322,14 +322,12 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
 
             if (decryptedMessage.HasHtml)
             {
-                var pattern = new Regex("^(<p>)?<spark-mention .*?data-object-id=\"" + Identity.Id + "\".*?>.*?</spark-mention>");
+                var pattern = new Regex($"^(<p>)?<spark-mention .*?data-object-id=\"{Identity.Id}\".*?>.*?</spark-mention>");
                 if (!decryptedMessage.Html.Equals(pattern))
                 {
-                    var encodedId = Identity.Id;
-
                     // this should look like ciscospark://us/PEOPLE/<id string>
-                    var match = Regex.Match(encodedId, "/ciscospark://.*/(.*)/im");
-                    pattern = new Regex("^(<p>)?<spark-mention .*?data-object-id=\"" + match.Captures[1] + "\".*?>.*?</spark-mention>");
+                    var match = Regex.Match(Identity.Id, "/ciscospark://.*/(.*)/im");
+                    pattern = new Regex($"^(<p>)?<spark-mention .*?data-object-id=\"{match.Captures[1]}\".*?>.*?</spark-mention>");
                 }
 
                 var action = decryptedMessage.Html.Replace(pattern.ToString(), string.Empty);
