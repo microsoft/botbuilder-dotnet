@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Threading.Tasks;
+using Twilio.Rest.Api.V2010.Account;
 
 namespace Microsoft.Bot.Builder.Adapters.Twilio
 {
@@ -19,6 +20,6 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// </summary>
         /// <param name="messageOptions">Object that represents the Twilio message options.</param>
         /// <returns>ID from Twilio message.</returns>
-        Task<string> GetResourceIdentifier(object messageOptions);
+        Task<string> SendMessage(CreateMessageOptions messageOptions);
     }
 }

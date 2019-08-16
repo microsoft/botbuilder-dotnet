@@ -20,11 +20,11 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         }
 
         /// <summary>
-        /// Returns the resource ID from a message.
+        /// Sends a message and returns its resource ID.
         /// </summary>
         /// <param name="messageOptions">Object that represents the Twilio message options.</param>
-        /// <returns>ID from Twilio message.</returns>
-        public async Task<string> GetResourceIdentifier(object messageOptions)
+        /// <returns>ID from the created Twilio message.</returns>
+        public async Task<string> SendMessage(CreateMessageOptions messageOptions)
         {
             var messageResource = await MessageResource.CreateAsync((CreateMessageOptions)messageOptions).ConfigureAwait(false);
             return messageResource.Sid;

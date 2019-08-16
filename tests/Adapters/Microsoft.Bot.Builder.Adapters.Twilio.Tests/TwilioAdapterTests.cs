@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Schema;
 using Moq;
+using Twilio.Rest.Api.V2010.Account;
 using Xunit;
 
 namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
@@ -306,7 +307,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
             // Setup mocked Twilio API client
             const string resourceIdentifier = "Mocked Resource Identifier";
             var twilioApi = new Mock<ITwilioClient>();
-            twilioApi.Setup(x => x.GetResourceIdentifier(It.IsAny<object>())).Returns(Task.FromResult(resourceIdentifier));
+            twilioApi.Setup(x => x.SendMessage(It.IsAny<CreateMessageOptions>())).Returns(Task.FromResult(resourceIdentifier));
 
             // Create a new Twilio Adapter with the mocked classes and get the responses
             var twilioAdapter = new TwilioAdapter(options.Object, twilioApi.Object);
