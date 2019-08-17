@@ -33,6 +33,26 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
             {
                 Children = new List<PropertySchema>();
             }
+
+            var list = new List<string>();
+            var mappings = schema["$mappings"]?.Value<JArray>();
+            if (mappings == null)
+            {
+                list.Add(path);
+                if (Type == "integer" || Type == "float")
+                {
+                    // We want to pick up generic numbers when expected.
+                    list.Add("number");
+                }
+                Mappings = list;
+            }
+            else
+            {
+                foreach (var mapping in mappings)
+                {
+                    list.Add(mapping.Value<string>());
+                }
+            }
         }
 
         /// <summary>
@@ -57,24 +77,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
 
         public bool IsArray => Schema?.Parent?.Parent["type"]?.Value<string>() == "array";
 
-        public JArray Mappings
-        {
-            get
-            {
-                var mappings = Schema["$mappings"]?.Value<JArray>();
-                if (mappings == null)
-                {
-                    mappings = new JArray($"@@{Path}");
-                    if (Type == "integer" || Type == "float")
-                    {
-                        // We want to pick up generic numbers when expected.
-                        mappings.Add("@@number");
-                    }
-                }
-
-                return mappings;
-            }
-        }
+        public IReadOnlyList<string> Mappings { get; }
 
         /// <summary>
         /// Gets child properties if there are any.

@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 using Microsoft.Bot.Builder.AI.Luis;
 using Microsoft.Bot.Builder.AI.TriggerTrees;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
@@ -56,6 +58,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
 
         public override async Task<IReadOnlyList<IOnEvent>> Select(SequenceContext context, CancellationToken cancel = default(CancellationToken))
         {
+            //
+            // 1) @@entity to entities array
+            // 2) Use schema information + expected to assign each entity to one of: choice(slot), clarify(slot), unknown, slots and remove any overlapping entities.
+            // 3) Run rules to pick one rule for doing next.  They are in terms of the processing queues and other memory.
+            // On the next cycle go ahead and add to process queues
+            // Implied in this is that mapping information consists of simple paths to entities.
+            // Choice[slot] = [[entity, ...]]
+            // Clarify[slot] = [entity, ...]
+            // Slots = [{entity, [slots]}]
+            // Unknown = [entity, ...]
+            // Set = [{entity, slot, op}]
+            // For rules, prefer non-forminput, then forminput.
+            var entities = NormalizeEntities(context);
+            if (entities.Any())
+            {
+                context.State.Dialog.Add("entities", entities);
+            }
+
             var matches = await base.Select(context, cancel);
             if (matches.Any())
             {
@@ -163,9 +183,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
             return matches;
         }
 
-        private bool AnalyzeEntities(SequenceContext context, out Dictionary<string, List<EntityInfo>> entityToInfo)
+        private Dictionary<string, List<EntityInfo>> NormalizeEntities(SequenceContext context)
         {
-            entityToInfo = new Dictionary<string, List<EntityInfo>>();
+            var entityToInfo = new Dictionary<string, List<EntityInfo>>();
+
+            // TODO: In a multiple event world, we only want to do this at the end of the RecognizedIntent round
             if (context.State.TryGetValue<dynamic>(DialogContextState.TURN_RECOGNIZED + ".entities", out var entities))
             {
                 // TODO: We should have RegexRecognizer return $instance or make this robust to it missing, i.e. assume no entities overlap
@@ -187,13 +209,105 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                                 entityToInfo[name] = infos;
                             }
 
-                            infos.Add(new EntityInfo(val, (int)instance.startIndex, (int)instance.endIndex, (double)(instance.score ?? 0.0d)));
+                            var info = new EntityInfo
+                            {
+                                Entity = val,
+                                Start = (int)instance.startIndex,
+                                End = (int)instance.endIndex,
+                                Text = (string)instance.text,
+                                Type = (string)instance.type,
+                                Role = (string)instance.role,
+                                Score = (double)(instance.score ?? 0.0d)
+                            };
+
+                            // Eventually this could be passed in
+                            info.Priority = info.Role == null ? 1 : 0;
+                            infos.Add(info);
                         }
                     }
                 }
             }
 
-            return entityToInfo.Any();
+            return entityToInfo;
+        }
+
+        private Queues AssignEntities(Dictionary<string, List<EntityInfo>> entities)
+        {
+            var queues = new Queues();
+            var candidates = new List<SlotEntityInfo>();
+            foreach (var slot in _schema.Property.Children)
+            {
+                foreach (var mapping in slot.Mappings)
+                {
+                    if (entities.TryGetValue(mapping, out var possiblities))
+                    {
+                        foreach (var possible in possiblities)
+                        {
+                            var candidate = new SlotEntityInfo
+                            {
+                                Entity = possible,
+                                Slot = slot,
+                            };
+                        }
+                    }
+                }
+            }
+
+            // Group by specific entity order by priority then by slots across expected/unexpected
+            var choices = from candidate in candidates
+                          group candidate by candidate.Entity into entityGroup
+                          orderby entityGroup.Key.Priority
+                          select new
+                          {
+                              entityGroup.Key,
+                              slots = from slot in entityGroup
+                                      group slot by slot.Expected into expected
+                                      orderby expected.Key descending
+                                      select expected
+                          };
+            // TODO: need to identify multiple entities going to a singleton slot
+            // This involves being able to move from existing queues
+            var slotToEntities = new Dictionary<PropertySchema, List<EntityInfo>>();
+            foreach (var entityChoices in choices)
+            {
+                foreach (var entitySlots in entityChoices.slots)
+                {
+                    if (entitySlots.Count() == 1)
+                    {
+                        // Only a single slot consumes entity
+                        var slotEntity = entitySlots.First();
+                        var entity = slotEntity.Entity;
+                        var slot = slotEntity.Slot;
+                        if (!slot.IsArray)
+                        {
+                            if (!slotToEntities.TryGetValue(slot, out var slotEntities))
+                            {
+                                slotEntities = new List<EntityInfo>();
+                                slotToEntities.Add(slot, slotEntities);
+                            }
+
+                            slotEntities.Add(entity);
+                        }
+
+                        // TODO: Figure out operation from role?
+                        // If composite do we have role:value, add{role:value}, remove{role:value}, add{type:value}, ...
+                        // Would be nice if extensible...
+
+                        // TODO: Figure out if entity needs clarification
+                        // Put in either clarify or set
+                    }
+                    else
+                    {
+                        // Multiple slots want the same entity
+                    }
+                }
+            }
+
+            // TODO: Need to go through and pull out singleton slots with multiple entities
+
+            // TODO: Any entity not in mapped goes to unknown
+
+            return queues;
         }
 
         private void AddActions(List<IDialog> actions, HandlerInfo info)
@@ -240,6 +354,55 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
             }
 
             return (double)covered / text.Length;
+        }
+
+        private class SlotEntityInfo
+        {
+            public PropertySchema Slot { get; set; }
+
+            public EntityInfo Entity { get; set; }
+
+            public bool Expected { get; set; }
+        }
+
+        private class SlotOp
+        {
+            public string Slot { get; set; }
+
+            public string Operation { get; set; }
+        }
+
+        private class SlotAndEntity
+        {
+            public SlotOp Slot { get; set; }
+
+            public EntityInfo Entity { get; set; }
+        }
+
+        private class SingletonChoices
+        {
+            public List<EntityInfo> Entities { get; set; } = new List<EntityInfo>();
+            public SlotOp Slot { get; set; }
+        }
+
+        private class SlotChoices
+        {
+            public List<SlotOp> Slots { get; set; } = new List<SlotOp>();
+
+            public EntityInfo Entity;
+        }
+
+        private class Queues
+        {
+            public List<EntityInfo> Unknown { get; } = new List<EntityInfo>();
+
+            public List<SlotAndEntity> Set { get; } = new List<SlotAndEntity>();
+
+            public List<SlotAndEntity> Clarify { get; } = new List<SlotAndEntity>();
+
+            public List<SingletonChoices> SingletonChoice { get; } = new List<SingletonChoices>();
+
+            public List<SlotChoices> SlotChoices { get; } = new List<SlotChoices>();
         }
 
         private class HandlerInfo
@@ -292,21 +455,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
 
         private class EntityInfo
         {
-            public EntityInfo(object entity, int start, int end, double score = 0.0)
-            {
-                Entity = entity;
-                Start = start;
-                End = end;
-                Score = score;
-            }
+            public object Entity { get; set; }
 
-            public object Entity { get; }
+            public int Start { get; set; }
 
-            public int Start { get; }
+            public int End { get; set; }
 
-            public int End { get; }
+            public double Score { get; set; }
 
-            public double Score { get; }
+            public string Text { get; set; }
+
+            public string Role { get; set; }
+
+            public string Type { get; set; }
+
+            public int Priority { get; set; }
         }
     }
 }

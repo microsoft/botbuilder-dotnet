@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
@@ -28,6 +29,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
         public DialogSchema InputSchema { get; }
 
         public DialogSchema OutputSchema { get; }
+
+        protected List<string> Entities { get; } = new List<string>();
 
         // For simple singleton slot:
         //  Set values
@@ -77,6 +80,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
         // Should this be a flat set of rules?
         protected void GenerateRules()
         {
+            /*
             AddEvent(new OnMessageActivity
             {
                 Actions = new List<IDialog>
@@ -84,13 +88,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                     MemoryTest()
                 }
             });
-            /*
+            */
             foreach (var child in OutputSchema.Property.Children)
             {
                 GenerateRules(child);
             }
-            */
         }
+
+        protected string Suffix(string prefix, string source)
+            => source.Substring(prefix.Length);
 
         protected void GenerateRules(PropertySchema property)
         {
@@ -102,37 +108,44 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
             var events = new List<string> { AdaptiveEvents.RecognizedIntent };
             foreach (var mapping in property.Mappings)
             {
-                var expr = mapping.Value<string>()?.Replace("[]", string.Empty);
+                // Entity names are simple indices to internal structures, not @@ or full expressions
+                var entity = mapping.Value<string>()?.Replace("[]", string.Empty);
                 var path = FormPath(property.Path);
-                if (expr != null)
+                if (entity != null)
                 {
                     if (property.IsArray)
                     {
                         AddEvent(new OnDialogEvent(
                             events: events,
-                            constraint: $"{expr}",
+                            constraint: $"{entity}",
                             actions: new List<IDialog>
                             {
                                     new SetProperty
                                     {
                                         Property = path,
-                                        Value = expr
+                                        Value = entity
                                     }
                             }));
                     }
                     else
                     {
-                        // Just set value to singleton
-
+                        // Check for choice
+                        AddEvent(new OnDialogEvent(
+                            events: events,
+                            constraint: $"count(Entities[{entity}]) > 1",
+                            actions: new List<IDialog>
+                            {
+                                // TODO: 
+                            });
 
                         // Disambiguate to singleton
                         AddEvent(new OnDialogEvent(
                             events: events,
-                            constraint: $"count({expr}) > 1",
+                            constraint: $"count({entity}) > 1",
                             actions: new List<IDialog>
                             {
                                 new FormInput(
-                                    text: $"[disambiguate({expr}, {path})]",
+                                    text: $"[disambiguate({entity}, {path})]",
                                     expectedSlots: new List<string> { path })
                             }));
                     }
@@ -144,6 +157,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
             }
         }
 
+        // TODO: Remove this--experiment only
         protected IDialog MemoryTest()
         {
             var dialog = new AdaptiveDialog("test")
@@ -156,13 +170,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                         {
                             new IfCondition
                             {
-                                Condition = $"dialog.isChild",
+                                Condition = $"$isChild",
                                 Actions = new List<IDialog>
                                 {
                                     new SendActivity("inChild"),
                                     new SetProperty()
                                     {
-                                        Property = "$dialog.isChild",
+                                        Property = "$isChild",
                                         Value = "false"
                                     },
                                     new DebugBreak(),
@@ -170,12 +184,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                                 },
                                 ElseActions = new List<IDialog>
                                 {
+                                    // new DebugBreak(),
                                     new SetProperty {
-                                        Property = "dialog.isChild",
+                                        Property = "$isChild",
                                         Value = "true"
                                     },
                                     new BeginDialog("test"),
-                                    new SendActivity("Value {dialog.isChild}")
+                                    new SendActivity("Value {dialog.isChild}"),
+                                    new DebugBreak()
                                 }
                             },
                         }
