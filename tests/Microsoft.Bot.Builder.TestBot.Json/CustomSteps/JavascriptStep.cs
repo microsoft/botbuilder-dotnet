@@ -61,7 +61,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             string payloadJson = JsonConvert.SerializeObject(payload);
             var responseJson = scriptEngine.CallGlobalFunction<string>("callAction", payloadJson);
 
-            if (!String.IsNullOrEmpty(responseJson))
+            if (!string.IsNullOrEmpty(responseJson))
             {
                 dynamic response = JsonConvert.DeserializeObject(responseJson);
                 payload.state.User = response.state.user;

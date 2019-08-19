@@ -29,6 +29,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
         /// </value>
         public List<string> Events { get; set; }
 
+        public override string GetIdentity()
+        {
+            return $"{this.GetType().Name}({string.Join(",", Events)})";
+        }
+
         protected override ActionChangeList OnCreateChangeList(SequenceContext planning, object dialogOptions = null)
         {
             var changeList = new ActionChangeList()
@@ -65,13 +70,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
                 expressions.Add(factory.Parse($"turn.dialogEvent.name == '{evt}'"));
             }
 
-            return Expression.AndExpression(Expression.OrExpression(expressions.ToArray()), 
-                base.BuildExpression(factory));
-        }
-
-        public override string GetIdentity()
-        {
-            return $"{this.GetType().Name}({string.Join(",", Events)})";
+            return Expression.AndExpression(Expression.OrExpression(expressions.ToArray()), base.BuildExpression(factory));
         }
     }
 }

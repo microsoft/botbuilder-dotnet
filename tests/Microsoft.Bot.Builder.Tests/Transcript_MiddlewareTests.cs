@@ -88,7 +88,9 @@ namespace Microsoft.Bot.Builder.Tests
             else
             {
                 foreach (var file in Directory.GetFiles(path, "*.transcript", new EnumerationOptions() { RecurseSubdirectories = true }))
+                {
                     File.Delete(file);
+                }
             }
 
             var transcriptStore = new FileTranscriptLogger(path);

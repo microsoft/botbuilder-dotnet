@@ -12,18 +12,20 @@ using Newtonsoft.Json.Linq;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
 {
     /// <summary>
-    /// Rule triggered when a message is received and the recognized intents & entities match a
-    /// specified list of intent & entity filters.
+    /// Rule triggered when a message is received and the recognized intents and entities match a
+    /// specified list of intent and entity filters.
     /// </summary>
     public class OnIntent : OnDialogEvent
     {
         [JsonConstructor]
         public OnIntent(string intent = null, List<string> entities = null, List<IDialog> actions = null, string constraint = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
-            : base(events: new List<string>() { AdaptiveEvents.RecognizedIntent },
-            actions: actions,
-            constraint: constraint,
-            callerPath: callerPath, callerLine: callerLine)
-        {
+            : base(
+                events: new List<string>() { AdaptiveEvents.RecognizedIntent },
+                actions: actions,
+                constraint: constraint,
+                callerPath: callerPath, 
+                callerLine: callerLine)
+            {
             Intent = intent ?? null;
             Entities = entities ?? new List<string>();
         }
@@ -45,6 +47,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
         /// </value>
         [JsonProperty("entities")]
         public List<string> Entities { get; set; }
+
+        public override string GetIdentity()
+        {
+            return $"{this.GetType().Name}({this.Intent})[{string.Join(",", this.Entities)}]";
+        }
 
         protected override Expression BuildExpression(IExpressionParser factory)
         {
@@ -77,11 +84,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
                     //ChangeType = this.ChangeType,
 
                     // proposed turn state changes
-
                     Turn = new Dictionary<string, object>()
                     {
                         {
-                            "recognized" , JObject.FromObject(new
+                            "recognized", JObject.FromObject(new
                             {
                                 text = recognizerResult.Text,
                                 alteredText = recognizerResult.AlteredText,
@@ -110,11 +116,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
                     Options = dialogOptions
                 }).ToList()
             };
-        }
-
-        public override string GetIdentity()
-        {
-            return $"{this.GetType().Name}({this.Intent})[{String.Join(",", this.Entities)}]";
         }
     }
 }

@@ -90,19 +90,19 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <summary>
         /// Trigger the dialog to prompt again.
         /// </summary>
-        /// <param name="turnContext"></param>
-        /// <param name="instance"></param>
-        /// <param name="cancellationToken"></param>
+        /// <param name="turnContext">Dialog turn context.</param>
+        /// <param name="instance">Dialog instance.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns></returns>
         Task RepromptDialogAsync(ITurnContext turnContext, DialogInstance instance, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// End the dialog.
         /// </summary>
-        /// <param name="turnContext"></param>
-        /// <param name="instance"></param>
+        /// <param name="turnContext">Dialog turn context.</param>
+        /// <param name="instance">Dialog instance.</param>
         /// <param name="reason"></param>
-        /// <param name="cancellationToken"></param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns></returns>
         Task EndDialogAsync(ITurnContext turnContext, DialogInstance instance, DialogReason reason, CancellationToken cancellationToken = default(CancellationToken));
 

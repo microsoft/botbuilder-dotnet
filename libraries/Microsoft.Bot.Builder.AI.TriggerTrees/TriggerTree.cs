@@ -58,11 +58,6 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
     [DebuggerTypeProxy(typeof(Debugger))]
     public class TriggerTree
     {
-        public List<IOptimizer> Optimizers = new List<IOptimizer>();
-        public Dictionary<string, IPredicateComparer> Comparers = new Dictionary<string, IPredicateComparer>();
-        public Node Root;
-        public int TotalTriggers = 0;
-
         /// <summary>
         /// Mark a sub-expression as optional.
         /// </summary>
@@ -73,6 +68,11 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
         /// </remarks>
         public const string Optional = "optional";
 
+        public List<IOptimizer> Optimizers = new List<IOptimizer>();
+        public Dictionary<string, IPredicateComparer> Comparers = new Dictionary<string, IPredicateComparer>();
+        public Node Root;
+        public int TotalTriggers = 0;
+
         /// <summary>
         /// Any predicate expression wrapped in this will be ignored for specialization.
         /// </summary>
@@ -82,6 +82,8 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
         /// but all such rules would be incomparable because they counter is per-rule. 
         /// </remarks>
         public const string Ignore = "ignore";
+
+        private static readonly IExpressionParser _parser = new ExpressionEngine(LookupFunction);
 
         public static ExpressionEvaluator LookupFunction(string type)
         {
@@ -98,8 +100,6 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
 
             return eval;
         }
-
-        private static readonly IExpressionParser _parser = new ExpressionEngine(LookupFunction);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TriggerTree"/> class.
@@ -193,6 +193,19 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
             }
         }
 
+        /// <summary>
+        /// Return the possible matches given the current state.
+        /// </summary>
+        /// <param name="state">State to evaluate against.</param>
+        /// <returns>Enumeration of possible matches.</returns>
+        public IEnumerable<Node> Matches(object state) => Root.Matches(state);
+
+        /// <summary>
+        /// Verify the tree meets speicalization/generalization invariants. 
+        /// </summary>
+        /// <returns>Bad node if found.</returns>
+        public Node VerifyTree() => VerifyTree(Root, new HashSet<Node>());
+
         private void TreeToString(StringBuilder builder, Node node, int indent)
         {
             node.ToString(builder, indent);
@@ -236,19 +249,6 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                 }
             }
         }
-
-        /// <summary>
-        /// Return the possible matches given the current state.
-        /// </summary>
-        /// <param name="state">State to evaluate against.</param>
-        /// <returns>Enumeration of possible matches.</returns>
-        public IEnumerable<Node> Matches(object state) => Root.Matches(state);
-
-        /// <summary>
-        /// Verify the tree meets speicalization/generalization invariants. 
-        /// </summary>
-        /// <returns></returns>
-        public Node VerifyTree() => VerifyTree(Root, new HashSet<Node>());
 
         private Node VerifyTree(Node node, HashSet<Node> visited)
         {

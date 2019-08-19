@@ -33,6 +33,48 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
             Inserted
         }
 
+        internal Node(Clause clause, TriggerTree tree, Trigger trigger = null)
+        {
+            // In order to debug:
+            // 1) Enable Count and VerifyTree
+            // 2) Run your scenario
+            // 3) You will most likely get a beak on the error.
+            // 4) Enable TraceTree and set it hear to get the trace before count
+            // Node._count has the global count for breakpointd
+            // ShowTrace = _count > 280000;
+            Clause = clause;
+            Tree = tree;
+            if (trigger != null)
+            {
+                _allTriggers.Add(trigger);
+                _triggers.Add(trigger);
+                if (Clause != null)
+                {
+                    var children = new List<Expression>();
+                    foreach (var child in Clause.Children)
+                    {
+                        var predicate = child;
+                        if (predicate.Type == TriggerTree.Ignore)
+                        {
+                            predicate = child.Children[0];
+                        }
+
+                        children.Add(predicate);
+                    }
+
+                    if (children.Any())
+                    {
+                        Expression = Expression.MakeExpression(ExpressionType.And, children.ToArray());
+                    }
+                }
+            }
+
+            if (Expression == null)
+            {
+                Expression = Expression.ConstantExpression(true);
+            }
+        }
+
 #if Count
         private static int _count = 0;
 #endif
@@ -95,48 +137,6 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
         public static bool ShowTrace = true;
 #endif
 
-        internal Node(Clause clause, TriggerTree tree, Trigger trigger = null)
-        {
-            // In order to debug:
-            // 1) Enable Count and VerifyTree
-            // 2) Run your scenario
-            // 3) You will most likely get a beak on the error.
-            // 4) Enable TraceTree and set it hear to get the trace before count
-            // Node._count has the global count for breakpointd
-            // ShowTrace = _count > 280000;
-            Clause = clause;
-            Tree = tree;
-            if (trigger != null)
-            {
-                _allTriggers.Add(trigger);
-                _triggers.Add(trigger);
-                if (Clause != null)
-                {
-                    var children = new List<Expression>();
-                    foreach (var child in Clause.Children)
-                    {
-                        var predicate = child;
-                        if (predicate.Type == TriggerTree.Ignore)
-                        {
-                            predicate = child.Children[0];
-                        }
-
-                        children.Add(predicate);
-                    }
-
-                    if (children.Any())
-                    {
-                        Expression = Expression.MakeExpression(ExpressionType.And, children.ToArray());
-                    }
-                }
-            }
-
-            if (Expression == null)
-            {
-                Expression = Expression.ConstantExpression(true);
-            }
-        }
-
         public override string ToString()
         {
             var builder = new StringBuilder();
@@ -150,7 +150,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
         /// <summary>
         /// Identify the relationship between two nodes.
         /// </summary>
-        /// <param name="other"></param>
+        /// <param name="other">Node to compare against.</param>
         /// <returns>Relationship between this node and the other.</returns>
         public RelationshipType Relationship(Node other)
             => Clause.Relationship(other.Clause, Tree.Comparers);

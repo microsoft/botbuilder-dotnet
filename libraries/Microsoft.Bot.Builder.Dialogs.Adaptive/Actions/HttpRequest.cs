@@ -23,6 +23,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     {
         private static readonly HttpClient Client = new HttpClient();
 
+        public HttpRequest(HttpMethod method, string url, string property, Dictionary<string, string> headers = null, JObject body = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        {
+            this.RegisterSourceLocation(callerPath, callerLine);
+            this.Method = method;
+            this.Url = url ?? throw new ArgumentNullException(nameof(url));
+            this.Property = property;
+            this.Headers = headers;
+            this.Body = body;
+        }
+
         [JsonConstructor]
         public HttpRequest([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base()
@@ -62,11 +72,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             DELETE
         }
 
-        protected override string OnComputeId()
-        {
-            return $"HttpRequest[{Method} {Url}]";
-        }
-
         [JsonConverter(typeof(StringEnumConverter))]
         [JsonProperty("method")]
         public HttpMethod Method { get; set; }
@@ -103,58 +108,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             }
         }
 
-        public HttpRequest(HttpMethod method, string url, string property, Dictionary<string, string> headers = null, JObject body = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        protected override string OnComputeId()
         {
-            this.RegisterSourceLocation(callerPath, callerLine);
-            this.Method = method;
-            this.Url = url ?? throw new ArgumentNullException(nameof(url));
-            this.Property = property;
-            this.Headers = headers;
-            this.Body = body;
-        }
-
-        private async Task ReplaceJTokenRecursively(DialogContext dc, JToken token)
-        {
-            switch (token.Type)
-            {
-                case JTokenType.Object:
-                    foreach (var child in token.Children<JProperty>())
-                    {
-                        await ReplaceJTokenRecursively(dc, child);
-                    }
-
-                    break;
-
-                case JTokenType.Array:
-                    foreach (var child in token.Children())
-                    {
-                        await ReplaceJTokenRecursively(dc, child);
-                    }
-
-                    break;
-
-                case JTokenType.Property:
-                    await ReplaceJTokenRecursively(dc, ((JProperty)token).Value);
-                    break;
-
-                default:
-                    if (token.Type == JTokenType.String)
-                    {
-                        var temp = await new TextTemplate(token.ToString()).BindToData(dc.Context, dc.State);
-                        if ((temp.StartsWith("{") && temp.EndsWith("}")) || (temp.StartsWith("[") && temp.EndsWith("]")))
-                        {
-                            // try parse with json                        
-                            var jtoken = JToken.Parse(temp);
-                            token.Replace(jtoken);
-                        }
-                        else
-                        {
-                            token.Replace(temp);
-                        }
-                    }
-
-                    break;
-            }
+            return $"HttpRequest[{Method} {Url}]";
         }
 
         protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
@@ -277,6 +233,50 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 case ResponseTypes.None:
                 default:
                     return await dc.EndDialogAsync(cancellationToken: cancellationToken);
+            }
+        }
+
+        private async Task ReplaceJTokenRecursively(DialogContext dc, JToken token)
+        {
+            switch (token.Type)
+            {
+                case JTokenType.Object:
+                    foreach (var child in token.Children<JProperty>())
+                    {
+                        await ReplaceJTokenRecursively(dc, child);
+                    }
+
+                    break;
+
+                case JTokenType.Array:
+                    foreach (var child in token.Children())
+                    {
+                        await ReplaceJTokenRecursively(dc, child);
+                    }
+
+                    break;
+
+                case JTokenType.Property:
+                    await ReplaceJTokenRecursively(dc, ((JProperty)token).Value);
+                    break;
+
+                default:
+                    if (token.Type == JTokenType.String)
+                    {
+                        var temp = await new TextTemplate(token.ToString()).BindToData(dc.Context, dc.State);
+                        if ((temp.StartsWith("{") && temp.EndsWith("}")) || (temp.StartsWith("[") && temp.EndsWith("]")))
+                        {
+                            // try parse with json                        
+                            var jtoken = JToken.Parse(temp);
+                            token.Replace(jtoken);
+                        }
+                        else
+                        {
+                            token.Replace(temp);
+                        }
+                    }
+
+                    break;
             }
         }
     }

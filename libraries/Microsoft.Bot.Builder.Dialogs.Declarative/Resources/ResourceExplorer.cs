@@ -66,7 +66,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                         .ContinueWith(t =>
                         {
                             if (t.IsCanceled)
+                            {
                                 return;
+                            }
+
                             var changed = changedResources.ToArray();
                             changedResources = new ConcurrentBag<IResource>();
                             this.Changed(changed);
@@ -142,7 +145,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                 string packageName = node.Attributes["Include"]?.Value;
                 string version = node.Attributes["Version"]?.Value;
                 NuGetVersion nugetVersion;
-                if (!String.IsNullOrEmpty(packageName) && !String.IsNullOrEmpty(version) && NuGetVersion.TryParse(version, out nugetVersion))
+                if (!string.IsNullOrEmpty(packageName) && !string.IsNullOrEmpty(version) && NuGetVersion.TryParse(version, out nugetVersion))
                 {
                     var package = new PackageIdentity(packageName, nugetVersion);
                     var folder = Path.Combine(packages, PathUtils.NormalizePath(pathResolver.GetPackageDirectoryName(package)));

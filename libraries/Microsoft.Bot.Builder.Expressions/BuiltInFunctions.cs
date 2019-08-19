@@ -45,6 +45,11 @@ namespace Microsoft.Bot.Builder.Expressions
         public static readonly string DefaultDateTimeFormat = "yyyy-MM-ddTHH:mm:ss.fffZ";
 
         /// <summary>
+        /// Dictionary of built-in functions.
+        /// </summary>
+        private static readonly Dictionary<string, ExpressionEvaluator> _functions = BuildFunctionLookup();
+
+        /// <summary>
         /// Verify the result of an expression is of the appropriate type and return a string if not.
         /// </summary>
         /// <param name="value">Value to verify.</param>
@@ -52,11 +57,6 @@ namespace Microsoft.Bot.Builder.Expressions
         /// <param name="child">Index of child expression.</param>
         /// <returns>Null if value if correct or error string otherwise.</returns>
         public delegate string VerifyExpression(object value, Expression expression, int child);
-
-        /// <summary>
-        /// Dictionary of built-in functions.
-        /// </summary>
-        private static readonly Dictionary<string, ExpressionEvaluator> _functions = BuildFunctionLookup();
 
         // Validators do static validation of expressions
 

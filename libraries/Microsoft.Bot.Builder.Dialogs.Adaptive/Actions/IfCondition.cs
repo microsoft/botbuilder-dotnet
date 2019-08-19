@@ -21,6 +21,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     {
         private Expression condition;
 
+        [JsonConstructor]
+        public IfCondition([CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
+            : base()
+        {
+            this.RegisterSourceLocation(sourceFilePath, sourceLineNumber);
+        }
+
         /// <summary>
         /// Gets or sets condition expression against memory. Example: "user.age > 18".
         /// </summary>
@@ -30,8 +37,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         [JsonProperty("condition")]
         public string Condition
         {
-            get { return condition?.ToString(); }
-            set { lock (this) condition = value != null ? new ExpressionEngine().Parse(value) : null; }
+            get
+            {
+                return condition?.ToString();
+            }
+
+            set
+            {
+                lock (this)
+                {
+                    condition = value != null ? new ExpressionEngine().Parse(value) : null;
+                }
+            }
         }
 
         [JsonProperty("actions")]
@@ -39,13 +56,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
         [JsonProperty("elseActions")]
         public List<IDialog> ElseActions { get; set; } = new List<IDialog>();
-
-        [JsonConstructor]
-        public IfCondition([CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
-            : base()
-        {
-            this.RegisterSourceLocation(sourceFilePath, sourceLineNumber);
-        }
 
         public override List<IDialog> ListDependencies()
         {

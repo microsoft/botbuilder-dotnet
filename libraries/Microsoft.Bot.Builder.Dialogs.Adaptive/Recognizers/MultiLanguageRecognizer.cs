@@ -38,7 +38,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         public Task<RecognizerResult> RecognizeAsync(ITurnContext turnContext, CancellationToken cancellationToken)
         {
             if (!LanguagePolicy.TryGetValue(turnContext.Activity.Locale ?? string.Empty, out string[] policy))
+            {
                 policy = new string[] { string.Empty };
+            }
 
             foreach (var option in policy)
             {
@@ -55,7 +57,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         public Task<T> RecognizeAsync<T>(ITurnContext turnContext, CancellationToken cancellationToken) where T : IRecognizerConvert, new()
         {
             if (!LanguagePolicy.TryGetValue(turnContext.Activity.Locale ?? string.Empty, out string[] policy))
+            {
                 policy = new string[] { string.Empty };
+            }
 
             foreach (var option in policy)
             {

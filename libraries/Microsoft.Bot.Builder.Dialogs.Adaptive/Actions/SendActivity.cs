@@ -15,6 +15,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// </summary>
     public class SendActivity : DialogAction
     {
+        public SendActivity(Activity activity, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        {
+            this.RegisterSourceLocation(callerPath, callerLine);
+            this.Activity = new StaticActivityTemplate(activity);
+        }
+
         [JsonConstructor]
         public SendActivity(string text = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
@@ -29,12 +35,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// Template for the activity.
         /// </value>
         public ITemplate<Activity> Activity { get; set; }
-
-        public SendActivity(Activity activity, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
-        {
-            this.RegisterSourceLocation(callerPath, callerLine);
-            this.Activity = new StaticActivityTemplate(activity);
-        }
 
         protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {

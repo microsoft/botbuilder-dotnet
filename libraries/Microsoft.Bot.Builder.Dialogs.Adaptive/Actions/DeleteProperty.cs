@@ -14,6 +14,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// </summary>
     public class DeleteProperty : DialogAction
     {
+        [JsonConstructor]
+        public DeleteProperty([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+            : base()
+        {
+            this.RegisterSourceLocation(callerPath, callerLine);
+        }
+
         /// <summary>
         /// Gets or sets property to path to remove Example: user.age will remove "age" from "user".
         /// </summary>
@@ -21,13 +28,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// Property to path to remove Example: user.age will remove "age" from "user".
         /// </value>
         public string Property { get; set; }
-
-        [JsonConstructor]
-        public DeleteProperty([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
-            : base()
-        {
-            this.RegisterSourceLocation(callerPath, callerLine);
-        }
 
         public DeleteProperty(string property, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base()

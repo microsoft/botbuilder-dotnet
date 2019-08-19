@@ -32,6 +32,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         }
 
         /// <summary>
+        /// Cases.
+        /// </summary>
+        public List<Case> Cases = new List<Case>();
+
+        /// <summary>
         /// Gets or sets condition expression against memory Example: "user.age > 18".
         /// </summary>
         /// <value>
@@ -45,17 +50,31 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         }
 
         /// <summary>
-        /// Cases.
-        /// </summary>
-        public List<Case> Cases = new List<Case>();
-
-        /// <summary>
         /// Gets or sets default case.
         /// </summary>
         /// <value>
         /// Default case.
         /// </value>
         public List<IDialog> Default { get; set; } = new List<IDialog>();
+
+        public override List<IDialog> ListDependencies()
+        {
+            var dialogs = new List<IDialog>();
+            if (this.Default != null)
+            {
+                dialogs.AddRange(this.Default);
+            }
+
+            if (this.Cases != null)
+            {
+                foreach (var conidtionalCase in this.Cases)
+                {
+                    dialogs.AddRange(conidtionalCase.Actions);
+                }
+            }
+
+            return dialogs;
+        }
 
         protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -130,25 +149,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         {
             return $"Switch({this.Condition})";
         }
-
-        public override List<IDialog> ListDependencies()
-        {
-            var dialogs = new List<IDialog>();
-            if (this.Default != null)
-            {
-                dialogs.AddRange(this.Default);
-            }
-
-            if (this.Cases != null)
-            {
-                foreach (var conidtionalCase in this.Cases)
-                {
-                    dialogs.AddRange(conidtionalCase.Actions);
-                }
-            }
-
-            return dialogs;
-        }
     }
 
     public class Case
@@ -187,7 +187,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         {
             Expression expression = null;
 
-            if (Int64.TryParse(Value, out Int64 i))
+            if (long.TryParse(Value, out Int64 i))
             {
                 expression = Expression.ConstantExpression(i);
             }

@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public TemplateEngineLanguageGenerator(string lgText, string id = null, ImportResolverDelegate importResolver = null)
         {
             this.Id = id ?? DEFAULTLABEL;
-            this.engine = new TemplateEngine().AddText(lgText ?? String.Empty, this.Id, importResolver: importResolver);
+            this.engine = new TemplateEngine().AddText(lgText ?? string.Empty, this.Id, importResolver: importResolver);
         }
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <value>
         /// Id of the source of this template (used for labeling errors).
         /// </value>
-        public string Id { get; set; } = String.Empty;
+        public string Id { get; set; } = string.Empty;
 
         /// <summary>
         /// Method to generate text from given template and data.
@@ -65,7 +65,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
             catch (Exception err)
             {
-                if (!String.IsNullOrEmpty(this.Id))
+                if (!string.IsNullOrEmpty(this.Id))
                 {
                     throw new Exception($"{Id}:{err.Message}");
                 }

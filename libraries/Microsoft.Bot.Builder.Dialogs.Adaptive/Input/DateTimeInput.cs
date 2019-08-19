@@ -12,12 +12,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 {
     public class DateTimeInput : InputDialog
     {
-        public string DefaultLocale { get; set; } = null;
-
         public DateTimeInput([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
             this.RegisterSourceLocation(callerPath, callerLine);
         }
+
+        public string DefaultLocale { get; set; } = null;
 
         protected override string OnComputeId()
         {

@@ -25,14 +25,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
     {
         [JsonConstructor]
         public OnUnknownIntent(List<IDialog> actions = null, string constraint = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
-            : base(events: new List<string>()
+            : base(
+                events: new List<string>()
+                {
+                    AdaptiveEvents.UnknownIntent
+                },
+                actions: actions,
+                constraint: constraint,
+                callerPath: callerPath, 
+                callerLine: callerLine)
             {
-                AdaptiveEvents.UnknownIntent
-            },
-            actions: actions,
-            constraint: constraint,
-            callerPath: callerPath, callerLine: callerLine)
-        {
         }
     }
 }

@@ -180,7 +180,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             string value;
             state.SetValue("user.name", "joe");
             Assert.AreEqual("joe", state.GetValue("user.name"));
-            Assert.AreEqual("joe", state.GetValue<String>("user.name"));
+            Assert.AreEqual("joe", state.GetValue<string>("user.name"));
             Assert.IsTrue(state.TryGetValue<string>("user.name", out value));
             Assert.AreEqual("joe", value);
 

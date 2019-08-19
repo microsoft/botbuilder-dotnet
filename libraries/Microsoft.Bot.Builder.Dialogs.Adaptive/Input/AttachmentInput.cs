@@ -17,12 +17,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
     public class AttachmentInput : InputDialog
     {
-        public AttachmentOutputFormat OutputFormat { get; set; } = AttachmentOutputFormat.First;
-
         public AttachmentInput([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
             this.RegisterSourceLocation(callerPath, callerLine);
         }
+
+        public AttachmentOutputFormat OutputFormat { get; set; } = AttachmentOutputFormat.First;
 
         protected override string OnComputeId()
         {

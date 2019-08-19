@@ -28,6 +28,19 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
     public class Quantifier
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="Quantifier"/> class.
+        /// </summary>
+        /// <param name="variable">Name of variable to replace.</param>
+        /// <param name="type">Type of quantifier.</param>
+        /// <param name="bindings">Possible bindings for variable.</param>
+        public Quantifier(string variable, QuantifierType type, IEnumerable<string> bindings)
+        {
+            Variable = variable;
+            Type = type;
+            Bindings = bindings;
+        }
+
+        /// <summary>
         /// Gets name of variable that will be replaced.
         /// </summary>
         /// <value>
@@ -50,19 +63,6 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
         /// Possible bindings for quantifier.
         /// </value>
         public IEnumerable<string> Bindings { get; }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Quantifier"/> class.
-        /// </summary>
-        /// <param name="variable">Name of variable to replace.</param>
-        /// <param name="type">Type of quantifier.</param>
-        /// <param name="bindings">Possible bindings for variable.</param>
-        public Quantifier(string variable, QuantifierType type, IEnumerable<string> bindings)
-        {
-            Variable = variable;
-            Type = type;
-            Bindings = bindings;
-        }
 
         public override string ToString()
         {

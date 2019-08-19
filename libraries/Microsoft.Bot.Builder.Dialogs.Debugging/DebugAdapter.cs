@@ -173,12 +173,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         static public string Ellipsis(string text, int length)
         {
             if (text == null)
-                return String.Empty;
+            {
+                return string.Empty;
+            }
 
-            if (text.Length <= length) return text;
+            if (text.Length <= length)
+            {
+                return text;
+            }
+
             int pos = text.IndexOf(" ", length);
             if (pos >= 0)
+            {
                 return text.Substring(0, pos) + "...";
+            }
+
             return text;
         }
 
@@ -186,9 +195,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         {
             try
             {
-                var turnText = context.Context.Activity.Text?.Trim() ?? String.Empty;
+                var turnText = context.Context.Activity.Text?.Trim() ?? string.Empty;
                 if (turnText.Length == 0)
+                {
                     turnText = context.Context.Activity.Type;
+                }
+
                 var threadText = $"'{Ellipsis(turnText, 18)}'";
                 await OutputAsync($"{threadText} ==> {more?.PadRight(16) ?? ""} ==> {codeModel.NameFor(item)} ", item, cancellationToken).ConfigureAwait(false);
 
@@ -278,7 +290,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             var suffix = item != null ? $" ==> {codeModel.NameFor(item)}" : string.Empty;
             var threadText = $"{Ellipsis(thread?.Name, 18)}";
             if (threadText.Length <= 2)
+            {
                 threadText = thread.TurnContext.Activity.Type;
+            }
+
             var description = $"{threadText} ==> {phase.ToString().PadRight(16)}{suffix}";
 
             await OutputAsync(description, item, cancellationToken).ConfigureAwait(false);

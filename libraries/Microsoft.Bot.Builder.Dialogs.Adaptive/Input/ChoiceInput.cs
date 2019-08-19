@@ -16,11 +16,6 @@ using static Microsoft.Recognizers.Text.Culture;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 {
-    public class ChoiceInputOptions : InputDialogOptions
-    {
-        public List<Choice> Choices { get; set; }
-    }
-
     public enum ChoiceOutputFormat
     {
         /// <summary>
@@ -50,6 +45,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             { Portuguese, new ChoiceFactoryOptions { InlineSeparator = ", ", InlineOr = " ou ", InlineOrMore = ", ou ", IncludeNumbers = true } },
             { Chinese, new ChoiceFactoryOptions { InlineSeparator = "， ", InlineOr = " 要么 ", InlineOrMore = "， 要么 ", IncludeNumbers = true } },
         };
+
+        public ChoiceInput([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        {
+            this.RegisterSourceLocation(callerPath, callerLine);
+        }
 
         /// <summary>
         /// Gets or sets list of choices to present to user.
@@ -106,11 +106,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// Customize how to use the choices to recognize the response from the user.
         /// </value>
         public FindChoicesOptions RecognizerOptions { get; set; } = null;
-
-        public ChoiceInput([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
-        {
-            this.RegisterSourceLocation(callerPath, callerLine);
-        }
 
         protected override object OnInitializeOptions(DialogContext dc, object options)
         {
@@ -240,4 +235,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             return choices;
         }
     }
+    public class ChoiceInputOptions : InputDialogOptions
+    {
+        public List<Choice> Choices { get; set; }
+    }
+
 }

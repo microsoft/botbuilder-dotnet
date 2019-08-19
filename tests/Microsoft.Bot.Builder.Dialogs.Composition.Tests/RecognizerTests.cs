@@ -55,7 +55,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition.Tests
 
                 var results = await dialogContext.ContinueDialogAsync(cancellationToken);
                 if (results.Status == DialogTurnStatus.Empty)
+                {
                     results = await dialogContext.BeginDialogAsync(initialDialog, null, cancellationToken);
+                }
             };
 
             return adapter;

@@ -58,6 +58,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
         /// <summary>
         /// Get the expression for this rule by calling GatherConstraints().
         /// </summary>
+        /// <param name="parser">Expression parser.</param>
+        /// <returns>Expression which will be cached and used to evaluate this rule.</returns>
         public Expression GetExpression(IExpressionParser parser)
         {
             lock (this.extraConstraints)
@@ -72,43 +74,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
         }
 
         /// <summary>
-        /// Override this method to define the expression which is evaluated to determine if this rule should fire.
-        /// </summary>
-        /// <returns>Expression which will be cached and used to evaluate this rule.</returns>
-        protected virtual Expression BuildExpression(IExpressionParser factory)
-        {
-            List<Expression> allExpressions = new List<Expression>();
-            if (!string.IsNullOrWhiteSpace(this.Constraint))
-            {
-                try
-                {
-                    allExpressions.Add(factory.Parse(this.Constraint));
-                }
-                catch(Exception e)
-                {
-                    throw new Exception($"Invalid constraint expression: {this.Constraint}, {e.Message}");
-                }
-            }
-
-            if (this.extraConstraints.Any())
-            {
-                allExpressions.AddRange(this.extraConstraints);
-            }
-
-            if (allExpressions.Any())
-            {
-                return Expression.AndExpression(allExpressions.ToArray());
-            }
-            else
-            {
-                return Expression.ConstantExpression(true);
-            }
-        }
-
-        /// <summary>
         /// Add external constraint to the rule (mostly used by RuleSet to apply external constraints to rule).
         /// </summary>
-        /// <param name="constraint"></param>
+        /// <param name="constraint">External constraint to add.</param>
         public void AddConstraint(string constraint)
         {
             if (!string.IsNullOrWhiteSpace(constraint))
@@ -132,7 +100,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
         /// Method called to execute the rule's actions.
         /// </summary>
         /// <param name="planningContext"></param>
-        /// <param name="dialogEvent"></param>
         /// <returns></returns>
         public async Task<List<ActionChangeList>> ExecuteAsync(SequenceContext planningContext)
         {
@@ -142,8 +109,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
         /// <summary>
         /// Method called to process the request to execute the actions.
         /// </summary>
-        /// <param name="context"></param>
-        /// <param name="dialogEvent"></param>
+        /// <param name="planning">Context.</param>
         /// <returns></returns>
         public async virtual Task<List<ActionChangeList>> OnExecuteAsync(SequenceContext planning)
         {
@@ -151,6 +117,46 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
             {
                 this.OnCreateChangeList(planning)
             };
+        }
+
+        public virtual string GetIdentity()
+        {
+            return $"{this.GetType().Name}()";
+        }
+
+        /// <summary>
+        /// Override this method to define the expression which is evaluated to determine if this rule should fire.
+        /// </summary>
+        /// <param name="factory">Expression parser.</param>
+        /// <returns>Expression which will be cached and used to evaluate this rule.</returns>
+        protected virtual Expression BuildExpression(IExpressionParser factory)
+        {
+            List<Expression> allExpressions = new List<Expression>();
+            if (!string.IsNullOrWhiteSpace(this.Constraint))
+            {
+                try
+                {
+                    allExpressions.Add(factory.Parse(this.Constraint));
+                }
+                catch (Exception e)
+                {
+                    throw new Exception($"Invalid constraint expression: {this.Constraint}, {e.Message}");
+                }
+            }
+
+            if (this.extraConstraints.Any())
+            {
+                allExpressions.AddRange(this.extraConstraints);
+            }
+
+            if (allExpressions.Any())
+            {
+                return Expression.AndExpression(allExpressions.ToArray());
+            }
+            else
+            {
+                return Expression.ConstantExpression(true);
+            }
         }
 
         protected virtual ActionChangeList OnCreateChangeList(SequenceContext planning, object dialogOptions = null)
@@ -190,11 +196,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
                     After = new Source.Point() { LineIndex = lineNumber + 1, CharIndex = 0 },
                 });
             }
-        }
-
-        public virtual string GetIdentity()
-        {
-            return $"{this.GetType().Name}()";
         }
     }
 }

@@ -13,7 +13,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
     public class EmitEvent : DialogAction
     {
-        private const string eventValueProperty = "eventValue";
+        private const string EventValuePropertyValue = "eventValue";
 
         public string EventName { get; set; }
 
@@ -35,9 +35,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         {
             get
             {
-                if (InputBindings.ContainsKey(eventValueProperty))
+                if (InputBindings.ContainsKey(EventValuePropertyValue))
                 {
-                    return InputBindings[eventValueProperty];
+                    return InputBindings[EventValuePropertyValue];
                 }
 
                 return string.Empty;
@@ -45,7 +45,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             set
             {
-                InputBindings[eventValueProperty] = value;
+                InputBindings[EventValuePropertyValue] = value;
             }
         }
 

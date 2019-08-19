@@ -17,6 +17,11 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// </summary>
     public class TextMessageActivityGenerator : IMessageActivityGenerator
     {
+        // Fixed text constructor
+        public TextMessageActivityGenerator()
+        {
+        }
+
         private static int AddJsonAttachment(IMessageActivity activity, string[] lines, int iLine)
         {
             StringBuilder sb = new StringBuilder();
@@ -170,11 +175,6 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             return iLine;
-        }
-
-        // Fixed text constructor
-        public TextMessageActivityGenerator()
-        {
         }
 
         /// <summary>

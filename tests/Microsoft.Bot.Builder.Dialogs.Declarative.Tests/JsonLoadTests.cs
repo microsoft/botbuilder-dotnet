@@ -309,7 +309,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
 
             var resource = resourceExplorer.GetResource(resourceName);
             if (resource == null)
+            {
                 throw new Exception($"Resource[{resourceName}] not found");
+            }
+
             var dialog = DeclarativeTypeLoader.Load<IDialog>(resource, resourceExplorer, DebugSupport.SourceRegistry);
             DialogManager dm = new DialogManager(dialog);
 

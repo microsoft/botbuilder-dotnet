@@ -57,7 +57,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition.Tests
                 // fallback to environment variables
                 value = Environment.GetEnvironmentVariable(key);
                 if (string.IsNullOrWhiteSpace(value))
+                {
                     value = null;
+                }
             }
 
             return value;

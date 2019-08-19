@@ -34,7 +34,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public override bool TryGetGenerator(ITurnContext context, string locale, out ILanguageGenerator languageGenerator)
         {
             var lgm = context.TurnState.Get<LanguageGeneratorManager>();
-            var resourceId = (String.IsNullOrEmpty(locale)) ? this.ResourceId : this.ResourceId.Replace(".lg", $".{locale}.lg");
+            var resourceId = (string.IsNullOrEmpty(locale)) ? this.ResourceId : this.ResourceId.Replace(".lg", $".{locale}.lg");
             return lgm.LanguageGenerators.TryGetValue(resourceId, out languageGenerator);
         }
     }

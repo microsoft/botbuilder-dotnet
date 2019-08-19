@@ -111,7 +111,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.AreEqual("https://memegenerator.net/img/instances/500x/73055378/cheese-gromit.jpg", card.Images[1].Url, "image should be set");
             Assert.AreEqual(3, card.Buttons.Count, "card buttons should be set");
             for (int i = 0; i <= 2; i++)
+            {
                 Assert.AreEqual($"Option {i + 1}", card.Buttons[i].Title, "card buttons should be set");
+            }
 
             // TODO add all of the other property types
         }
@@ -138,7 +140,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.AreEqual("https://memegenerator.net/img/instances/500x/73055378/cheese-gromit.jpg", card.Images[1].Url, "image should be set");
             Assert.AreEqual(3, card.Buttons.Count, "card buttons should be set");
             for (int i = 0; i <= 2; i++)
+            {
                 Assert.AreEqual($"Option {i + 1}", card.Buttons[i].Title, "card buttons should be set");
+            }
 
             // TODO add all of the other property types
         }
@@ -169,7 +173,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.AreEqual("https://memegenerator.net/img/instances/500x/73055378/cheese-gromit.jpg", card.Images[0].Url, "image should be set");
             Assert.AreEqual(3, card.Buttons.Count, "card buttons should be set");
             for (int i = 0; i <= 2; i++)
+            {
                 Assert.AreEqual($"Option {i + 1}", card.Buttons[i].Title, "card buttons should be set");
+            }
 
             // TODO add all of the other property types
         }
@@ -291,7 +297,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.AreEqual("https://memegenerator.net/img/instances/500x/73055378/cheese-gromit.jpg", card.Images[0].Url, "image should be set");
             Assert.AreEqual(3, card.Buttons.Count, "card buttons should be set");
             for (int i = 0; i <= 2; i++)
+            {
                 Assert.AreEqual($"Option {i + 1}", card.Buttons[i].Title, "card buttons should be set");
+            }
 
             Assert.AreEqual("test", (string)((dynamic)activity.Attachments[1].Content).body[0].text);
         }

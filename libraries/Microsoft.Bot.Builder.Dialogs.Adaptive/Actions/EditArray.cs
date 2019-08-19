@@ -25,6 +25,44 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         private Expression arrayProperty;
         private Expression resultProperty;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EditArray"/> class.
+        /// </summary>
+        /// <param name="changeType">change type.</param>
+        /// <param name="arrayProperty">array property (optional).</param>
+        /// <param name="value">value to insert.</param>
+        /// <param name="resultProperty">output property to put Pop/Take into.</param>
+        public EditArray(ArrayChangeType changeType, string arrayProperty = null, string value = null, string resultProperty = null)
+            : base()
+        {
+            this.ChangeType = changeType;
+
+            if (!string.IsNullOrEmpty(arrayProperty))
+            {
+                this.ArrayProperty = arrayProperty;
+            }
+
+            switch (changeType)
+            {
+                case ArrayChangeType.Clear:
+                case ArrayChangeType.Pop:
+                case ArrayChangeType.Take:
+                    this.ResultProperty = resultProperty;
+                    break;
+                case ArrayChangeType.Push:
+                case ArrayChangeType.Remove:
+                    this.Value = value;
+                    break;
+            }
+        }
+
+        [JsonConstructor]
+        public EditArray([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+            : base()
+        {
+            this.RegisterSourceLocation(callerPath, callerLine);
+        }
+
         public enum ArrayChangeType
         {
             /// <summary>
@@ -53,13 +91,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             Clear
         }
 
-        [JsonConstructor]
-        public EditArray([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
-            : base()
-        {
-            this.RegisterSourceLocation(callerPath, callerLine);
-        }
-
         /// <summary>
         /// Gets or sets type of change being applied.
         /// </summary>
@@ -69,11 +100,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         [JsonConverter(typeof(StringEnumConverter))]
         [JsonProperty("changeType")]
         public ArrayChangeType ChangeType { get; set; }
-
-        protected override string OnComputeId()
-        {
-            return $"array[{ChangeType + ": " + ArrayProperty}]";
-        }
 
         /// <summary>
         /// Gets or sets memory expression of the array to manipulate.
@@ -114,35 +140,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             set { this.value = (value != null) ? new ExpressionEngine().Parse(value) : null; }
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="EditArray"/> class.
-        /// </summary>
-        /// <param name="changeType">change type.</param>
-        /// <param name="arrayProperty">array property (optional).</param>
-        /// <param name="value">value to insert.</param>
-        /// <param name="resultProperty">output property to put Pop/Take into.</param>
-        public EditArray(ArrayChangeType changeType, string arrayProperty = null, string value = null, string resultProperty = null)
-            : base()
+        protected override string OnComputeId()
         {
-            this.ChangeType = changeType;
-
-            if (!string.IsNullOrEmpty(arrayProperty))
-            {
-                this.ArrayProperty = arrayProperty;
-            }
-
-            switch (changeType)
-            {
-                case ArrayChangeType.Clear:
-                case ArrayChangeType.Pop:
-                case ArrayChangeType.Take:
-                    this.ResultProperty = resultProperty;
-                    break;
-                case ArrayChangeType.Push:
-                case ArrayChangeType.Remove:
-                    this.Value = value;
-                    break;
-            }
+            return $"array[{ChangeType + ": " + ArrayProperty}]";
         }
 
         protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))

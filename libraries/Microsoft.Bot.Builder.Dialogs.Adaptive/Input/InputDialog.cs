@@ -15,10 +15,6 @@ using static Microsoft.Bot.Builder.Dialogs.DialogContext;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 {
-    public class InputDialogOptions
-    {
-    }
-
     public enum InputState
     {
         Missing,
@@ -110,7 +106,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         public string DefaultValue
         {
             get { return defaultValue?.ToString(); }
-            set { lock (this) defaultValue = (value != null) ? new ExpressionEngine().Parse(value) : null; }
+            set { lock (this)
+                {
+                    defaultValue = (value != null) ? new ExpressionEngine().Parse(value) : null;
+                }
+            }
         }
 
         /// <summary>
@@ -435,5 +435,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             await dc.Context.SendActivityAsync(prompt).ConfigureAwait(false);
             return Dialog.EndOfTurn;
         }
+    }
+
+    public class InputDialogOptions
+    {
     }
 }

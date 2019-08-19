@@ -40,11 +40,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
         [JsonProperty("type")]
         public string Type { get; set; }
 
+        public override string GetIdentity()
+        {
+            return $"{this.GetType().Name}({this.Type})[{this.Constraint}]";
+        }
+
         protected override Expression BuildExpression(IExpressionParser factory)
         {
             // add constraints for activity type
-            return Expression.AndExpression(factory.Parse($"turn.dialogEvent.value.type == '{this.Type}'"), 
-                base.BuildExpression(factory));
+            return Expression.AndExpression(factory.Parse($"turn.dialogEvent.value.type == '{this.Type}'"), base.BuildExpression(factory));
         }
 
         protected override ActionChangeList OnCreateChangeList(SequenceContext planning, object dialogOptions = null)
@@ -58,11 +62,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
                     Options = dialogOptions
                 }).ToList()
             };
-        }
-
-        public override string GetIdentity()
-        {
-            return $"{this.GetType().Name}({this.Type})[{this.Constraint}]";
         }
     }
 }
