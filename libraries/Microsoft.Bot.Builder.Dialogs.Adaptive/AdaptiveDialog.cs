@@ -37,7 +37,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         }
 
         public IStatePropertyAccessor<BotState> BotState { get; set; }
-        public IStatePropertyAccessor<BotState> BotState { get; set; }
 
         public IStatePropertyAccessor<Dictionary<string, object>> UserState { get; set; }
 
