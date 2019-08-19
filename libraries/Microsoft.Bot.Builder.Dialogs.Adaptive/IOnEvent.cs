@@ -13,14 +13,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// Get the expression for this rule.
         /// </summary>
         /// <param name="parser">Expression parser to use.</param>
+        /// <returns>The expression for the rule.</returns>
         Expression GetExpression(IExpressionParser parser);
 
         /// <summary>
         /// Execute the action for this rule.
         /// </summary>
         /// <param name="context"></param>
-        /// <param name="dialogEvent"></param>
-        /// <returns></returns>
+        /// <returns>Task with plan change list.</returns>
         Task<List<ActionChangeList>> ExecuteAsync(SequenceContext context);
 
         /// <summary>

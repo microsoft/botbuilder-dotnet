@@ -337,7 +337,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var options = new List<string> { "Hi", "Hello" };
             Assert.AreEqual(options.Contains(evaled), true);
 
-            evaled = engine.EvaluateTemplate("TemplateD", new { b = "morning"});
+            evaled = engine.EvaluateTemplate("TemplateD", new { b = "morning" });
             options = new List<string> { "Hi morning", "Hello morning" };
             Assert.AreEqual(options.Contains(evaled), true);
         }
@@ -473,7 +473,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var evaled = engine.EvaluateTemplate("wPhrase", "");
             Assert.AreEqual(evaled, "Hi");
 
-            evaled = engine.EvaluateTemplate("wPhrase", new { name = "jack"});
+            evaled = engine.EvaluateTemplate("wPhrase", new { name = "jack" });
             Assert.AreEqual(evaled, "Hi jack");
 
             evaled = engine.EvaluateTemplate("wPhrase", new { name = "morethanfive" });

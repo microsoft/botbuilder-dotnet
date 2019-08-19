@@ -7,27 +7,44 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 {
+    /// <summary>
+    /// Format to output text in.
+    /// </summary>
     public enum TextOutputFormat
     {
+        /// <summary>
+        /// No formatting.
+        /// </summary>
         None,
+
+        /// <summary>
+        /// Trim leading, trailing spaces.
+        /// </summary>
         Trim,
+
+        /// <summary>
+        /// All lower case.
+        /// </summary>
         Lowercase,
+
+        /// <summary>
+        /// All upper case.
+        /// </summary>
         UpperCase
     }
-;
 
     /// <summary>
     /// Declarative text input to gather text data from users.
     /// </summary>
     public class TextInput : InputDialog
     {
-        public TextOutputFormat OutputFormat { get; set; } = TextOutputFormat.None;
-
         public TextInput([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
             this.RegisterSourceLocation(callerPath, callerLine);
             this.AllowInterruptions = AllowInterruptions.Always;
         }
+
+        public TextOutputFormat OutputFormat { get; set; } = TextOutputFormat.None;
 
         protected override string OnComputeId()
         {

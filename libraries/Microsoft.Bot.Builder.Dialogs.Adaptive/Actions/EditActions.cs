@@ -17,8 +17,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <summary>
         /// Initializes a new instance of the <see cref="EditActions"/> class.
         /// </summary>
-        /// <param name="sourceFilePath"></param>
-        /// <param name="sourceLineNumber"></param>
+        /// <param name="sourceFilePath">Source file.</param>
+        /// <param name="sourceLineNumber">Line number.</param>
         [JsonConstructor]
         public EditActions([CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
             : base()

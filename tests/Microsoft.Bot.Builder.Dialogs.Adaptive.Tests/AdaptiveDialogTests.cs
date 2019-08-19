@@ -468,9 +468,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 {
                     Intents = new Dictionary<string, string>()
                     {
-                        { "JokeIntent", "joke"},
-                        { "GreetingIntemt", "hi|hello"},
-                        { "GoodbyeIntent", "bye|goodbye|seeya|see ya"},
+                        { "JokeIntent", "joke" },
+                        { "GreetingIntemt", "hi|hello" },
+                        { "GoodbyeIntent", "bye|goodbye|seeya|see ya" },
                     }
                 },
                 Events = new List<IOnEvent>()
@@ -548,9 +548,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 {
                     Intents = new Dictionary<string, string>()
                     {
-                        { "JokeIntent", "(?i)joke"},
-                        { "GreetingIntent", "(?i)hi|hello"},
-                        { "GoodbyeIntent", "(?i)bye|goodbye|seeya|see ya"}
+                        { "JokeIntent", "(?i)joke" },
+                        { "GreetingIntent", "(?i)hi|hello" },
+                        { "GoodbyeIntent", "(?i)bye|goodbye|seeya|see ya" }
                     }
                 },
                 Events = new List<IOnEvent>()

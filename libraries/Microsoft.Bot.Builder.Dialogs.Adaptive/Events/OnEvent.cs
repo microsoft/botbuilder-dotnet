@@ -99,7 +99,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
         /// <summary>
         /// Method called to execute the rule's actions.
         /// </summary>
-        /// <param name="planningContext"></param>
+        /// <param name="planningContext">Context.</param>
         /// <returns></returns>
         public async Task<List<ActionChangeList>> ExecuteAsync(SequenceContext planningContext)
         {

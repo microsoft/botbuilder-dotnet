@@ -24,17 +24,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
         private Expression condition;
 
+        /// <summary>
+        /// Cases.
+        /// </summary>
+        public List<Case> Cases = new List<Case>();
+
         [JsonConstructor]
         public SwitchCondition([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base()
         {
             this.RegisterSourceLocation(callerPath, callerLine);
         }
-
-        /// <summary>
-        /// Cases.
-        /// </summary>
-        public List<Case> Cases = new List<Case>();
 
         /// <summary>
         /// Gets or sets condition expression against memory Example: "user.age > 18".
@@ -187,7 +187,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         {
             Expression expression = null;
 
-            if (long.TryParse(Value, out Int64 i))
+            if (long.TryParse(Value, out long i))
             {
                 expression = Expression.ConstantExpression(i);
             }

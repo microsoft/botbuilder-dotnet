@@ -1297,7 +1297,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
                     new OnDialogEvent()
                     {
-                        Events = new List<string>() { "CustomEvent"},
+                        Events = new List<string>() { "CustomEvent" },
                         Actions = new List<IDialog>()
                         {
                             new SendActivity("CustomEventFired")

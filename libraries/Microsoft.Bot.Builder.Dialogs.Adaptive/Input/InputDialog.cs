@@ -15,11 +15,29 @@ using static Microsoft.Bot.Builder.Dialogs.DialogContext;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 {
+    /// <summary>
+    /// Condition of the input.
+    /// </summary>
     public enum InputState
     {
+        /// <summary>
+        /// Input missing.
+        /// </summary>
         Missing,
+
+        /// <summary>
+        /// Input not recognized.
+        /// </summary>
         Unrecognized,
+
+        /// <summary>
+        /// Input not valid.
+        /// </summary>
         Invalid,
+
+        /// <summary>
+        /// Input valid.
+        /// </summary>
         Valid
     }
 
@@ -43,8 +61,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
     public abstract class InputDialog : Dialog
     {
+        // This property can be set by user's code to indicate that the input should re-process incoming user utterance. 
+        // Designed to be a bool property. So user's code can set this to 'true' to signal the input to re-process incoming user utterance.
+        public const string PROCESS_INPUT_PROPERTY = "turn.processInput";
+        public const string TURN_COUNT_PROPERTY = "dialog.turnCount";
+        public const string INPUT_PROPERTY = "turn.value";
+
         private Expression value;
         private Expression defaultValue;
+
+        private const string PersistedOptions = "options";
+        private const string PersistedState = "state";
 
         public bool AlwaysPrompt { get; set; } = false;
 
@@ -105,8 +132,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// </value>
         public string DefaultValue
         {
-            get { return defaultValue?.ToString(); }
-            set { lock (this)
+            get
+            {
+                return defaultValue?.ToString();
+            }
+            set
+            { lock (this)
                 {
                     defaultValue = (value != null) ? new ExpressionEngine().Parse(value) : null;
                 }
@@ -132,16 +163,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 OutputBinding = value;
             }
         }
-
-        public const string TURN_COUNT_PROPERTY = "dialog.turnCount";
-        public const string INPUT_PROPERTY = "turn.value";
-
-        // This property can be set by user's code to indicate that the input should re-process incoming user utterance. 
-        // Designed to be a bool property. So user's code can set this to 'true' to signal the input to re-process incoming user utterance.
-
-        public const string PROCESS_INPUT_PROPERTY = "turn.processInput";
-        private const string PersistedOptions = "options";
-        private const string PersistedState = "state";
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options, CancellationToken cancellationToken = default(CancellationToken))
         {

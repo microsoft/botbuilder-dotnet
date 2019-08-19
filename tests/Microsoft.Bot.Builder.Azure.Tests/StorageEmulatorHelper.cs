@@ -93,7 +93,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 RedirectStandardOutput = true,
             };
 
-            using (var proc = new Process { StartInfo = startIInfo})
+            using (var proc = new Process { StartInfo = startIInfo })
             {
                 proc.OutputDataReceived += (sender, e) => sb.Append(e.Data);
                 proc.Start();

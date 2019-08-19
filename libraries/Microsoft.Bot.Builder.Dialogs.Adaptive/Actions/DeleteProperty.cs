@@ -21,14 +21,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             this.RegisterSourceLocation(callerPath, callerLine);
         }
 
-        /// <summary>
-        /// Gets or sets property to path to remove Example: user.age will remove "age" from "user".
-        /// </summary>
-        /// <value>
-        /// Property to path to remove Example: user.age will remove "age" from "user".
-        /// </value>
-        public string Property { get; set; }
-
         public DeleteProperty(string property, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base()
         {
@@ -38,6 +30,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 this.Property = property;
             }
         }
+
+        /// <summary>
+        /// Gets or sets property to path to remove Example: user.age will remove "age" from "user".
+        /// </summary>
+        /// <value>
+        /// Property to path to remove Example: user.age will remove "age" from "user".
+        /// </value>
+        public string Property { get; set; }
 
         protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {

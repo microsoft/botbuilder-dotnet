@@ -63,12 +63,34 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             Activities
         }
 
+        /// <summary>
+        /// Http methods.
+        /// </summary>
         public enum HttpMethod
         {
+            /// <summary>
+            /// Http GET.
+            /// </summary>
+            /// 
             GET,
+            /// <summary>
+            /// Http POST.
+            /// </summary>
             POST,
+
+            /// <summary>
+            /// Http PATCH.
+            /// </summary>
             PATCH,
+
+            /// <summary>
+            /// Http PUT.
+            /// </summary>
             PUT,
+
+            /// <summary>
+            /// Http DELETE.
+            /// </summary>
             DELETE
         }
 

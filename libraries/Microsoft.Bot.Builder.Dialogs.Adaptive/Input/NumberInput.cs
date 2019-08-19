@@ -10,9 +10,19 @@ using static Microsoft.Recognizers.Text.Culture;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 {
+    /// <summary>
+    /// What format to output the number in.
+    /// </summary>
     public enum NumberOutputFormat
     {
+        /// <summary>
+        /// Floating point.
+        /// </summary>
         Float,
+
+        /// <summary>
+        /// Long.
+        /// </summary>
         Integer
     }
 

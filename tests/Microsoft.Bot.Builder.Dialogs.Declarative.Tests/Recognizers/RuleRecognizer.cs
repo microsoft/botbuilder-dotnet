@@ -27,7 +27,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests.Recognizers
                 AlteredText = turnContext.Activity.Text,
                 Intents = new Dictionary<string, IntentScore>()
                 {
-                    { intent, new IntentScore() { Score = 1.0} }
+                    { intent, new IntentScore() { Score = 1.0 } }
                 }
             });
         }

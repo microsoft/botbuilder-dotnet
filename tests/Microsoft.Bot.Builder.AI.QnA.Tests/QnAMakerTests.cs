@@ -167,7 +167,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                     },
                     new Dialogs.Adaptive.Events.OnDialogEvent()
                     {
-                        Events = new List<string>() { "UnhandledUnknownIntent"},
+                        Events = new List<string>() { "UnhandledUnknownIntent" },
                         Actions = new List<IDialog>()
                         {
                             new EditArray(),

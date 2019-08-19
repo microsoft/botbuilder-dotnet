@@ -107,6 +107,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// </value>
         public FindChoicesOptions RecognizerOptions { get; set; } = null;
 
+        public override Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            FoundChoice foundChoice = result as FoundChoice;
+            if (foundChoice != null)
+            {
+                // return value insted of FoundChoice object
+                return base.ResumeDialogAsync(dc, reason, foundChoice.Value, cancellationToken);
+            }
+
+            return base.ResumeDialogAsync(dc, reason, result, cancellationToken);
+        }
+
         protected override object OnInitializeOptions(DialogContext dc, object options)
         {
             var op = options as ChoiceInputOptions;
@@ -122,18 +134,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             }
 
             return base.OnInitializeOptions(dc, op);
-        }
-
-        public override Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            FoundChoice foundChoice = result as FoundChoice;
-            if (foundChoice != null)
-            {
-                // return value insted of FoundChoice object
-                return base.ResumeDialogAsync(dc, reason, foundChoice.Value, cancellationToken);
-            }
-
-            return base.ResumeDialogAsync(dc, reason, result, cancellationToken);
         }
 
         protected override string OnComputeId()
@@ -235,9 +235,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             return choices;
         }
     }
+
     public class ChoiceInputOptions : InputDialogOptions
     {
         public List<Choice> Choices { get; set; }
     }
-
 }

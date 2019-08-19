@@ -9,9 +9,19 @@ using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 {
+    /// <summary>
+    /// Format specifier for outputs.
+    /// </summary>
     public enum AttachmentOutputFormat
     {
+        /// <summary>
+        /// Pass iputs in a List.
+        /// </summary>
         All,
+
+        /// <summary>
+        /// Pass input as a single element.
+        /// </summary>
         First
     }
 
