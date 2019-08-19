@@ -6,23 +6,28 @@ using System.Text;
 using System.Text.RegularExpressions;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
+using Microsoft.Bot.Builder.Expressions;
 using Microsoft.Bot.Builder.Expressions.Parser;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
     public class Evaluator : LGFileParserBaseVisitor<string>
     {
-        private readonly IGetMethod getMethodX;
+       
         private readonly Stack<EvaluationTarget> evaluationTargetStack = new Stack<EvaluationTarget>();
 
-        public Evaluator(List<LGTemplate> templates, IGetMethod getMethod)
+        public Evaluator(List<LGTemplate> templates, ExpressionEngine expressionEngine)
         {
             Templates = templates;
             TemplateMap = templates.ToDictionary(x => x.Name);
-            getMethodX = getMethod ?? new GetMethodExtensions(this);
+
+            // generate a new customzied expression engine by injecting the template as functions
+            ExpressionEngine = new ExpressionEngine(CustomizedEvaluatorLookup(expressionEngine.EvaluatorLookup));
         }
 
         public List<LGTemplate> Templates { get; }
+
+        public ExpressionEngine ExpressionEngine { get; }
 
         public Dictionary<string, LGTemplate> TemplateMap { get; }
 
@@ -255,8 +260,53 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         private (object value, string error) EvalByExpressionEngine(string exp, object scope)
         {
-            var parse = new ExpressionEngine(getMethodX.GetMethodX).Parse(exp);
+            var parse = this.ExpressionEngine.Parse(exp);
             return parse.TryEvaluate(scope);
+        }
+
+
+        // Genearte a new lookup function based on one lookup function
+        private EvaluatorLookup CustomizedEvaluatorLookup(EvaluatorLookup baseLookup)
+        => (string name) =>
+        {
+            var builtInPrefix = "builtin.";
+
+            if (name.StartsWith(builtInPrefix))
+            {
+                return baseLookup(name.Substring(builtInPrefix.Length));
+            }
+
+            if (this.TemplateMap.ContainsKey(name))
+            {
+                return new ExpressionEvaluator(name, BuiltInFunctions.Apply(this.TemplateEvaluator(name)), ReturnType.String, this.ValidTemplateReference);
+            }
+
+            return baseLookup(name);
+        };
+
+        private Func<IReadOnlyList<object>, object> TemplateEvaluator(string templateName)
+        => (IReadOnlyList<object> args) =>
+        {
+            var newScope = this.ConstructScope(templateName, args.ToList());
+            return this.EvaluateTemplate(templateName, newScope);
+        };
+
+        private void ValidTemplateReference(Expression expression)
+        {
+            var templateName = expression.Type;
+
+            if (!this.TemplateMap.ContainsKey(templateName))
+            {
+                throw new Exception($"no such template '{templateName}' to call in {expression}");
+            }
+
+            var expectedArgsCount = this.TemplateMap[templateName].Parameters.Count();
+            var actualArgsCount = expression.Children.Length;
+
+            if (expectedArgsCount != actualArgsCount)
+            {
+                throw new Exception($"arguments mismatch for template {templateName}, expect {expectedArgsCount} actual {actualArgsCount}");
+            }
         }
     }
 

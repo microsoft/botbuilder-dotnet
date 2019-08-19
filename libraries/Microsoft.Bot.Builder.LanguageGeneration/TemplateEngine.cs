@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
-using Antlr4.Runtime;
+using Microsoft.Bot.Builder.Expressions.Parser;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
@@ -12,15 +11,20 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     /// </summary>
     public class TemplateEngine
     {
+        private readonly ExpressionEngine expressionEngine;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="TemplateEngine"/> class.
         /// Return an empty engine, you can then use AddFile\AddFiles to add files to it,
         /// or you can just use this empty engine to evaluate inline template.
         /// </summary>
-        public TemplateEngine()
+        /// <param name="expressionEngine">The expression engine this template engine based on</param>
+        public TemplateEngine(ExpressionEngine expressionEngine = null)
         {
+            this.expressionEngine = expressionEngine ?? new ExpressionEngine();
         }
 
+        
         /// <summary>
         /// Gets or sets parsed LG templates.
         /// </summary>
@@ -92,7 +96,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         private void RunStaticCheck(List<LGTemplate> templates = null)
         {
             var teamplatesToCheck = templates ?? this.Templates;
-            var diagnostics = StaticChecker.CheckTemplates(teamplatesToCheck);
+            var diagnostics = new StaticChecker(this.expressionEngine).CheckTemplates(teamplatesToCheck);
 
             var errors = diagnostics.Where(u => u.Severity == DiagnosticSeverity.Error).ToList();
             if (errors.Count != 0)
@@ -106,11 +110,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </summary>
         /// <param name="templateName">Template name to be evaluated.</param>
         /// <param name="scope">The state visible in the evaluation.</param>
-        /// <param name="methodBinder">Optional methodBinder to extend or override functions.</param>
         /// <returns>Evaluate result.</returns>
-        public string EvaluateTemplate(string templateName, object scope = null, IGetMethod methodBinder = null)
+        public string EvaluateTemplate(string templateName, object scope = null)
         {
-            var evaluator = new Evaluator(Templates, methodBinder);
+            var evaluator = new Evaluator(Templates, this.expressionEngine);
             return evaluator.EvaluateTemplate(templateName, scope);
         }
 
@@ -122,15 +125,15 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <param name="scope">The state visible in the evaluation.</param>
         /// <param name="methodBinder">Optional methodBinder to extend or override functions.</param>
         /// <returns>Expand result.</returns>
-        public List<string> ExpandTemplate(string templateName, object scope = null, IGetMethod methodBinder = null)
+        public List<string> ExpandTemplate(string templateName, object scope = null)
         {
-            var expander = new Expander(Templates, methodBinder);
+            var expander = new Expander(Templates, this.expressionEngine);
             return expander.EvaluateTemplate(templateName, scope);
         }
 
         public AnalyzerResult AnalyzeTemplate(string templateName)
         {
-            var analyzer = new Analyzer(Templates);
+            var analyzer = new Analyzer(Templates, this.expressionEngine);
             return analyzer.AnalyzeTemplate(templateName);
         }
 
@@ -141,7 +144,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <param name="scope">scope object or JToken.</param>
         /// <param name="methodBinder">input method.</param>
         /// <returns>Evaluate result.</returns>
-        public string Evaluate(string inlineStr, object scope = null, IGetMethod methodBinder = null)
+        public string Evaluate(string inlineStr, object scope = null)
         {
             // wrap inline string with "# name and -" to align the evaluation process
             var fakeTemplateId = "__temp__";
@@ -153,7 +156,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var templates = Templates.Concat(lgSource.Templates).ToList();
             RunStaticCheck(templates);
 
-            var evaluator = new Evaluator(templates, methodBinder);
+            var evaluator = new Evaluator(templates, this.expressionEngine);
             return evaluator.EvaluateTemplate(fakeTemplateId, scope);
         }
 

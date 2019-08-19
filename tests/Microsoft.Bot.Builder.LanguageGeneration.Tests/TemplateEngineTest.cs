@@ -602,30 +602,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         }
 
         [TestMethod]
-        public void TestExpandTemplateWithRefInForeach()
-        {
-            var engine = new TemplateEngine().AddFile(GetExampleFilePath("Expand.lg"));
-
-            var alarms = new[]
-            {
-                new
-                {
-                    time = "7 am",
-                    date = "tomorrow"
-                },
-                new
-                {
-                    time = "8 pm",
-                    date = "tomorrow"
-                }
-            };
-
-            var evaled = engine.ExpandTemplate("ShowAlarmsWithForeach", new { alarms = alarms });
-            Assert.AreEqual(1, evaled.Count);
-            Assert.AreEqual("You have 2 alarms, 7 am at tomorrow and 8 pm at tomorrow", evaled[0]);
-        }
-
-        [TestMethod]
         public void TestExpandTemplateWithRefInMultiLine()
         {
             var engine = new TemplateEngine().AddFile(GetExampleFilePath("Expand.lg"));
