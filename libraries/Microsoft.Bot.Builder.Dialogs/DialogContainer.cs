@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 {
     public abstract class DialogContainer : Dialog
     {
-        private readonly DialogSet _dialogs = new DialogSet();
+        protected readonly DialogSet _dialogs = new DialogSet();
 
         public DialogContainer(string dialogId = null)
             : base(dialogId)
