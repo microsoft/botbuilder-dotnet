@@ -287,6 +287,31 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             evaled = engine.EvaluateTemplate("otherEscape", null);
             Assert.AreEqual(evaled, @"Hi \y \");
+
+            evaled = engine.EvaluateTemplate("escapeInExpression", null);
+            Assert.AreEqual(evaled, "Hi hello\\\\");
+
+            evaled = engine.EvaluateTemplate("escapeInExpression2", null);
+            Assert.AreEqual(evaled, "Hi hello'");
+
+            evaled = engine.EvaluateTemplate("escapeInExpression3", null);
+            Assert.AreEqual(evaled, "Hi hello\"");
+
+            evaled = engine.EvaluateTemplate("escapeInExpression4", null);
+            Assert.AreEqual(evaled, "Hi hello\"");
+
+            evaled = engine.EvaluateTemplate("escapeInExpression5", null);
+            Assert.AreEqual(evaled, "Hi hello\n");
+
+            evaled = engine.EvaluateTemplate("escapeInExpression6", null);
+            Assert.AreEqual(evaled, "Hi hello\n");
+
+            var todos = new[] { "A", "B", "C" };
+            evaled = engine.EvaluateTemplate("showTodo", new { todos });
+            Assert.AreEqual(evaled, Environment.NewLine + "    Your most recent 3 tasks are" + Environment.NewLine + "    * A\n* B\n* C" + Environment.NewLine + "    ");
+
+            evaled = engine.EvaluateTemplate("showTodo", null);
+            Assert.AreEqual(evaled, Environment.NewLine + "    You don't have any \"t\\\\odo'\"." + Environment.NewLine + "    ");
         }
 
         [TestMethod]
