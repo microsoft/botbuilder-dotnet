@@ -316,6 +316,84 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
+        public async Task AdaptiveDialog_TextInputDefaultValueResponse()
+        {
+            var ruleDialog = new AdaptiveDialog("planningTest")
+            {
+                Events = new List<IOnEvent>()
+                {
+                    new OnBeginDialog()
+                    {
+                        Actions = new List<IDialog>()
+                        {
+                            new NumberInput()
+                            {
+                                Prompt = new ActivityTemplate("Hello, what is your age?"),
+                                Property = "user.age",
+                                DefaultValue = "10",
+                                MaxTurnCount = 2,
+                                DefaultValueResponse = new ActivityTemplate("I am going to say you are 10.")
+                            },
+                            new SendActivity()
+                            {
+                                Activity = new ActivityTemplate("Your age is {user.age}.")
+                            }
+                        }
+                    }
+                }
+            };
+
+            await CreateFlow(ruleDialog)
+                .SendConversationUpdate()
+                    .AssertReply("Hello, what is your age?")
+                .Send("Why do you want to know")
+                    .AssertReply("Hello, what is your age?")
+                .Send("Why do you want to know")
+                    .AssertReply("I am going to say you are 10.")
+                    .AssertReply("Your age is 10.")
+                .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task AdaptiveDialog_TextInputNoMaxTurnCount()
+        {
+            var ruleDialog = new AdaptiveDialog("planningTest")
+            {
+                Events = new List<IOnEvent>()
+                {
+                    new OnBeginDialog()
+                    {
+                        Actions = new List<IDialog>()
+                        {
+                            new NumberInput()
+                            {
+                                Prompt = new ActivityTemplate("Hello, what is your age?"),
+                                Property = "user.age",
+                                DefaultValue = "10",
+                                DefaultValueResponse = new ActivityTemplate("I am going to say you are 10.")
+                            },
+                            new SendActivity()
+                            {
+                                Activity = new ActivityTemplate("Your age is {user.age}.")
+                            }
+                        }
+                    }
+                }
+            };
+
+            await CreateFlow(ruleDialog)
+                .SendConversationUpdate()
+                    .AssertReply("Hello, what is your age?")
+                .Send("Why do you want to know")
+                    .AssertReply("Hello, what is your age?")
+                .Send("Why do you want to know")
+                    .AssertReply("Hello, what is your age?")
+                .Send("Why do you want to know")
+                    .AssertReply("Hello, what is your age?")
+                .StartTestAsync();
+        }
+
+        [TestMethod]
         public async Task AdaptiveDialog_DoActions()
         {
             var ruleDialog = new AdaptiveDialog("planningTest")
