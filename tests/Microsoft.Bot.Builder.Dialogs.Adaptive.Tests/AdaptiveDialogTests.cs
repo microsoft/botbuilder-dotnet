@@ -17,6 +17,7 @@ using Microsoft.Bot.Builder.LanguageGeneration;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Schema.NET;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 {
@@ -983,7 +984,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             },
                             new BeginDialog("ageDialog")
                             {
-                                Options = new 
+                                Options = new
                                 {
                                     userAge = "$age"
                                 }
@@ -1841,5 +1842,44 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .AssertReply("Hello zoidberg, you are 77 years old!")
             .StartTestAsync();
         }
+
+        [TestMethod]
+        public async Task AdaptiveDialog_AdaptiveCardSubmit()
+        {
+            var ruleDialog = new AdaptiveDialog("planningTest")
+            {
+                AutoEndDialog = false,
+                Recognizer = new RegexRecognizer()
+                {
+                    Intents = new Dictionary<string, string>()
+                    {
+                        { "SubmitIntent", "123123123" }
+                    }
+                },
+                Events = new List<IOnEvent>()
+                {
+                    new OnIntent(intent: "SubmitIntent")
+                    {
+                        Actions = new List<IDialog>()
+                        {
+                            new SendActivity("The city is {@city}!")
+                        }
+                    },
+                },
+            };
+
+            var submitActivity = Activity.CreateMessageActivity();
+            submitActivity.Value = new
+            {
+                intent = "SubmitIntent",
+                city = "Seattle"
+            };
+
+            await CreateFlow(ruleDialog)
+               .Send(submitActivity)
+                   .AssertReply("The city is Seattle!")
+               .StartTestAsync();
+        }
+
     }
 }
