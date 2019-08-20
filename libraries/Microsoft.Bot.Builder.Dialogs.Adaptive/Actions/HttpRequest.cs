@@ -73,6 +73,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             /// </summary>
             /// 
             GET,
+
             /// <summary>
             /// Http POST.
             /// </summary>

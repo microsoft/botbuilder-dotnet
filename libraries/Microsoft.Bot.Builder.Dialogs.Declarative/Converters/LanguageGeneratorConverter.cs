@@ -17,7 +17,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
     {
         public LanguageGeneratorConverter(IRefResolver refResolver, Source.IRegistry registry, Stack<string> paths)
             : base(refResolver, registry, paths)
-        { }
+        {
+        }
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {

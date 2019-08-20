@@ -25,14 +25,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
     {
         private List<IResourceProvider> resourceProviders = new List<IResourceProvider>();
 
-        private CancellationTokenSource CancelReloadToken = new CancellationTokenSource();
+        private CancellationTokenSource cancelReloadToken = new CancellationTokenSource();
         private ConcurrentBag<IResource> changedResources = new ConcurrentBag<IResource>();
 
         public ResourceExplorer()
         {
         }
 
-        public IEnumerable<IResourceProvider> ResourceProviders { get { return this.resourceProviders; } }
+        public IEnumerable<IResourceProvider> ResourceProviders
+        {
+            get { return this.resourceProviders; }
+        }
 
         public event ResourceChangedEventHandler Changed;
 
@@ -58,11 +61,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                     changedResources.Add(resource);
                 }
 
-                lock (CancelReloadToken)
+                lock (cancelReloadToken)
                 {
-                    CancelReloadToken.Cancel();
-                    CancelReloadToken = new CancellationTokenSource();
-                    Task.Delay(1000, CancelReloadToken.Token)
+                    cancelReloadToken.Cancel();
+                    cancelReloadToken = new CancellationTokenSource();
+                    Task.Delay(1000, cancelReloadToken.Token)
                         .ContinueWith(t =>
                         {
                             if (t.IsCanceled)

@@ -7,7 +7,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition.Recognizers
 {
     public class DateTimeEntityRecognizer : BaseEntityRecognizer
     {
-        public DateTimeEntityRecognizer() { }
+        public DateTimeEntityRecognizer()
+        {
+        }
 
         protected override List<ModelResult> Recognize(string text, string culture)
         {

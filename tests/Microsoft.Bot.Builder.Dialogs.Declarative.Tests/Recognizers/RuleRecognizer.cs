@@ -32,7 +32,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests.Recognizers
             });
         }
 
-        public Task<T> RecognizeAsync<T>(ITurnContext turnContext, CancellationToken cancellationToken) where T : IRecognizerConvert, new()
+        public Task<T> RecognizeAsync<T>(ITurnContext turnContext, CancellationToken cancellationToken)
+            where T : IRecognizerConvert, new()
         {
             throw new NotImplementedException();
         }

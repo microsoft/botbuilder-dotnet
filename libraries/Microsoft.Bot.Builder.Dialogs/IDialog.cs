@@ -78,10 +78,10 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// dialog that was started by the current instance using `DialogSet.begin()`.
         /// If this method is NOT implemented then the dialog will be automatically ended with a call
         /// to `DialogSet.endDialogWithResult()`. Any result passed from the called dialog will be passed
-        /// to the current dialogs parent.
+        /// to the current dialog's parent.
         /// </summary>
         /// <param name="dc">The dialog context for the current turn of conversation.</param>
-        /// <param name="reason">Reason why the dialog resumed.</param>
+        /// <param name="reason">An enum indicating why the dialog resumed.</param>
         /// <param name="result">(Optional) value returned from the dialog that was called. The type of the value returned is dependant on the dialog that was called.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
@@ -93,7 +93,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="turnContext">Dialog turn context.</param>
         /// <param name="instance">Dialog instance.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns></returns>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         Task RepromptDialogAsync(ITurnContext turnContext, DialogInstance instance, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
@@ -101,9 +101,9 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         /// <param name="turnContext">Dialog turn context.</param>
         /// <param name="instance">Dialog instance.</param>
-        /// <param name="reason"></param>
+        /// <param name="reason">An enum indicating why the dialog ended.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns></returns>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         Task EndDialogAsync(ITurnContext turnContext, DialogInstance instance, DialogReason reason, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>

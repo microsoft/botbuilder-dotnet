@@ -66,7 +66,8 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
             public object Object = null;
 
             public SimpleValues()
-            { }
+            {
+            }
 
             public SimpleValues(int integer)
             {

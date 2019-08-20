@@ -9,7 +9,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition.Recognizers
 {
     public class HashtagEntityRecognizer : BaseEntityRecognizer
     {
-        public HashtagEntityRecognizer() { }
+        public HashtagEntityRecognizer()
+        {
+        }
 
         protected override List<ModelResult> Recognize(string text, string culture)
         {

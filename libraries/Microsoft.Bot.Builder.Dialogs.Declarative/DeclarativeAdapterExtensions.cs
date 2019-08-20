@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
         /// <param name="botAdapter">BotAdapter to add middleware to.</param>
         /// <param name="resourceExplorer">resourceExplorer to use.</param>
         /// <param name="registerCustomTypes">function to add custom types.</param>
-        /// <returns></returns>
+        /// <returns>The bot adapter.</returns>
         public static BotAdapter UseResourceExplorer(this BotAdapter botAdapter, ResourceExplorer resourceExplorer, Action registerCustomTypes = null)
         {
             TypeFactory.RegisterAdaptiveTypes();

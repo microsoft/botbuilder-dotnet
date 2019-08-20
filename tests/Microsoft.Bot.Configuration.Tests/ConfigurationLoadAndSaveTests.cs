@@ -10,7 +10,7 @@ namespace Microsoft.Bot.Configuration.Tests
     [TestClass]
     public class ConfigurationLoadAndSaveTests
     {
-        private string TestBotFileName = NormalizePath(@"..\..\..\test.bot");
+        private string testBotFileName = NormalizePath(@"..\..\..\test.bot");
         private const string OutputBotFileName = "save.bot";
 
         private static string NormalizePath(string path) => Path.Combine(path.TrimEnd('\\').Split('\\'));
@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Configuration.Tests
         [TestMethod]
         public async Task DeserializeBotFile()
         {
-            var config = await BotConfiguration.LoadAsync(TestBotFileName);
+            var config = await BotConfiguration.LoadAsync(testBotFileName);
             Assert.AreEqual("test", config.Name);
             Assert.AreEqual("test description", config.Description);
             Assert.AreEqual(string.Empty, config.Padlock);
@@ -73,7 +73,7 @@ namespace Microsoft.Bot.Configuration.Tests
         [TestMethod]
         public async Task LoadAndSaveUnencryptedBotFile()
         {
-            var config = await BotConfiguration.LoadAsync(TestBotFileName);
+            var config = await BotConfiguration.LoadAsync(testBotFileName);
             await config.SaveAsAsync(OutputBotFileName);
 
             var config2 = await BotConfiguration.LoadAsync(OutputBotFileName);
@@ -84,7 +84,7 @@ namespace Microsoft.Bot.Configuration.Tests
         [TestMethod]
         public void LoadAndSaveUnencryptedBotFileSync()
         {
-            var config = BotConfiguration.Load(TestBotFileName);
+            var config = BotConfiguration.Load(testBotFileName);
             config.SaveAs(OutputBotFileName);
 
             var config2 = BotConfiguration.Load(OutputBotFileName);
@@ -95,7 +95,7 @@ namespace Microsoft.Bot.Configuration.Tests
         public async Task CantLoadWithoutSecret()
         {
             string secret = BotConfiguration.GenerateKey();
-            var config = await BotConfiguration.LoadAsync(TestBotFileName);
+            var config = await BotConfiguration.LoadAsync(testBotFileName);
             await config.SaveAsAsync(OutputBotFileName, secret);
 
             try
@@ -112,7 +112,7 @@ namespace Microsoft.Bot.Configuration.Tests
         public async Task LoadFromFolderWithSecret()
         {
             string secret = BotConfiguration.GenerateKey();
-            var config = await BotConfiguration.LoadAsync(TestBotFileName);
+            var config = await BotConfiguration.LoadAsync(testBotFileName);
             await config.SaveAsAsync(OutputBotFileName, secret);
             await BotConfiguration.LoadFromFolderAsync(".", secret);
         }
@@ -121,7 +121,7 @@ namespace Microsoft.Bot.Configuration.Tests
         public void LoadFromFolderWithSecretSync()
         {
             string secret = BotConfiguration.GenerateKey();
-            var config = BotConfiguration.Load(TestBotFileName);
+            var config = BotConfiguration.Load(testBotFileName);
             config.SaveAs(OutputBotFileName, secret);
             BotConfiguration.LoadFromFolder(".", secret);
         }
@@ -131,7 +131,7 @@ namespace Microsoft.Bot.Configuration.Tests
         public async Task FailLoadFromFolderWithNoSecret()
         {
             string secret = BotConfiguration.GenerateKey();
-            var config = await BotConfiguration.LoadAsync(TestBotFileName);
+            var config = await BotConfiguration.LoadAsync(testBotFileName);
             await config.SaveAsAsync(OutputBotFileName, secret);
             await BotConfiguration.LoadFromFolderAsync(".");
         }
@@ -139,7 +139,7 @@ namespace Microsoft.Bot.Configuration.Tests
         [TestMethod]
         public async Task LoadFromFolderNoSecret()
         {
-            var config = await BotConfiguration.LoadAsync(TestBotFileName);
+            var config = await BotConfiguration.LoadAsync(testBotFileName);
             await config.SaveAsAsync(OutputBotFileName);
             await BotConfiguration.LoadFromFolderAsync(".");
         }
@@ -147,7 +147,7 @@ namespace Microsoft.Bot.Configuration.Tests
         [TestMethod]
         public void LoadFromFolderNoSecretSync()
         {
-            var config = BotConfiguration.Load(TestBotFileName);
+            var config = BotConfiguration.Load(testBotFileName);
             config.SaveAs(OutputBotFileName);
             BotConfiguration.LoadFromFolder(".");
         }
@@ -184,7 +184,7 @@ namespace Microsoft.Bot.Configuration.Tests
         public async Task CantSaveWithoutSecret()
         {
             string secret = BotConfiguration.GenerateKey();
-            var config = await BotConfiguration.LoadAsync(TestBotFileName);
+            var config = await BotConfiguration.LoadAsync(testBotFileName);
             await config.SaveAsAsync(OutputBotFileName, secret);
 
             var config2 = await BotConfiguration.LoadAsync(OutputBotFileName, secret);
@@ -205,7 +205,7 @@ namespace Microsoft.Bot.Configuration.Tests
         public async Task LoadAndSaveEncrypted()
         {
             string secret = BotConfiguration.GenerateKey();
-            var config = await BotConfiguration.LoadAsync(TestBotFileName);
+            var config = await BotConfiguration.LoadAsync(testBotFileName);
             Assert.AreEqual(string.Empty, config.Padlock, "There should be no padlock");
 
             // save with secret
@@ -434,7 +434,7 @@ namespace Microsoft.Bot.Configuration.Tests
         [TestMethod]
         public void LoadAndVerifyChannelServiceSync()
         {
-            var publicConfig = BotConfiguration.Load(TestBotFileName);
+            var publicConfig = BotConfiguration.Load(testBotFileName);
             var endpointSvc = publicConfig.Services.Single(x => x.Type == ServiceTypes.Endpoint) as EndpointService;
             Assert.IsNotNull(endpointSvc);
             Assert.IsNull(endpointSvc.ChannelService);

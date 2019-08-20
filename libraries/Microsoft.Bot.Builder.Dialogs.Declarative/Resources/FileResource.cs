@@ -24,7 +24,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
 
         public string Id { get; }
 
-        public string FullName { get { return this.path; } }
+        public string FullName
+        {
+            get { return this.path; }
+        }
 
         public async Task<Stream> OpenStreamAsync()
         {
@@ -57,9 +60,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         }
 
         /// <summary>
-        /// Get resource as atext.
+        /// Get resource as a text.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>A <see cref="Task"/> with the string.</returns>
         public Task<string> ReadTextAsync()
         {
             if (this.textTask == null)

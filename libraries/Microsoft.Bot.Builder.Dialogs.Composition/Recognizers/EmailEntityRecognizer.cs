@@ -9,7 +9,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition.Recognizers
 {
     public class EmailEntityRecognizer : BaseEntityRecognizer
     {
-        public EmailEntityRecognizer() { }
+        public EmailEntityRecognizer()
+        {
+        }
 
         protected override List<ModelResult> Recognize(string text, string culture)
         {

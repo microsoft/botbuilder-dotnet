@@ -32,7 +32,10 @@ namespace Microsoft.Bot.Builder.TestBot.Json
         /// memory path to bind to arg1 (ex: conversation.width).
         /// </value>
         [JsonProperty("arg1")]
-        public string Arg1 { get { return this.InputBindings["arg1"]; } set { this.InputBindings["arg1"] = value; } }
+        public string Arg1
+        {
+            get { return this.InputBindings["arg1"]; } set { this.InputBindings["arg1"] = value; }
+        }
 
         /// <summary>
         /// Gets or sets memory path to bind to arg2 (ex: conversation.height).
@@ -41,7 +44,10 @@ namespace Microsoft.Bot.Builder.TestBot.Json
         /// memory path to bind to arg2 (ex: conversation.height).
         /// </value>
         [JsonProperty("arg2")]
-        public string Arg2 { get { return this.InputBindings["arg2"]; } set { this.InputBindings["arg2"] = value; } }
+        public string Arg2
+        {
+            get { return this.InputBindings["arg2"]; } set { this.InputBindings["arg2"] = value; }
+        }
 
         /// <summary>
         /// Gets or sets caller's memory path to store the result of this step in (ex: conversation.area).
@@ -50,7 +56,10 @@ namespace Microsoft.Bot.Builder.TestBot.Json
         /// caller's memory path to store the result of this step in (ex: conversation.area).
         /// </value>
         [JsonProperty("result")]
-        public string Result { get { return this.OutputBinding; } set { this.OutputBinding = value; } }
+        public string Result
+        {
+            get { return this.OutputBinding; } set { this.OutputBinding = value; }
+        }
 
         protected override Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {

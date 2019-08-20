@@ -259,8 +259,8 @@ namespace Microsoft.Bot.Builder.Expressions
         /// Evaluate the expression.
         /// </summary>
         /// <param name="state">
-        /// Global state to evaluate accessor expressions against.  Can be <see cref="IDictionary{String, Object}"/>,
-        /// <see cref="IDictionary"/> otherwise reflection is used to access property and then indexer.
+        /// Global state to evaluate accessor expressions against.  Can be <see cref="System.Collections.Generic.IDictionary{String, Object}"/>,
+        /// <see cref="System.Collections.IDictionary"/> otherwise reflection is used to access property and then indexer.
         /// </param>
         /// <returns>Computed value and an error string.  If the string is non-null, then there was an evaluation error.</returns>
         public (object value, string error) TryEvaluate(object state)

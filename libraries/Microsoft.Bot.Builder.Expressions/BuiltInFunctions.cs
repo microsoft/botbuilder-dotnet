@@ -672,19 +672,20 @@ namespace Microsoft.Bot.Builder.Expressions
         }
 
         /// <summary>
-        /// walk dialog callstack looking for property.
+        /// Walk dialog callstack looking for property.
         /// </summary>
-        /// <param name="expression"></param>
-        /// <param name="state"></param>
-        /// <returns></returns>
+        /// <param name="expression">Filter expression.</param>
+        /// <param name="state">Object containing the dialog callstack to search.</param>
+        /// <returns>The property</returns>
         private static (object value, string error) CallstackScope(Expression expression, object state)
         {
-            // get collection
+            // get callstack collection?
             var (result, error) = AccessProperty(state, "callstack");
             if (result != null)
             {
                 var items = (IEnumerable<object>)result;
                 object property = null;
+                // Check for a match??
                 (property, error) = expression.Children[0].TryEvaluate(state);
                 if (property != null && error == null)
                 {
@@ -1096,9 +1097,9 @@ namespace Microsoft.Bot.Builder.Expressions
         }
 
         /// <summary>
-        /// return new object list replace jarray.ToArray&lt;object&gt;().
+        /// Return new object list replace jarray.ToArray&lt;object&gt;().
         /// </summary>
-        /// <param name="instance"></param>
+        /// <param name="instance">List to resolve.</param>
         /// <returns></returns>
         private static IList ResolveListValue(object instance)
         {

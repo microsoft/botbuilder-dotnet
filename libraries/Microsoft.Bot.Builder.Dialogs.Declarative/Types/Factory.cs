@@ -67,7 +67,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
             Register(plugin.SchemaUri, plugin.Type, plugin.Loader);
         }
 
-        public static T Build<T>(string name, JToken obj, JsonSerializer serializer) where T : class
+        public static T Build<T>(string name, JToken obj, JsonSerializer serializer)
+            where T : class
         {
             EnsureConfig();
             ICustomDeserializer builder;

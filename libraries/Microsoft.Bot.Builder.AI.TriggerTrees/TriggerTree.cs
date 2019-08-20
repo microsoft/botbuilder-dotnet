@@ -68,11 +68,6 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
         /// </remarks>
         public const string Optional = "optional";
 
-        public List<IOptimizer> Optimizers = new List<IOptimizer>();
-        public Dictionary<string, IPredicateComparer> Comparers = new Dictionary<string, IPredicateComparer>();
-        public Node Root;
-        public int TotalTriggers = 0;
-
         /// <summary>
         /// Any predicate expression wrapped in this will be ignored for specialization.
         /// </summary>
@@ -83,7 +78,20 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
         /// </remarks>
         public const string Ignore = "ignore";
 
+        public List<IOptimizer> Optimizers = new List<IOptimizer>();
+        public Dictionary<string, IPredicateComparer> Comparers = new Dictionary<string, IPredicateComparer>();
+        public Node Root;
+        public int TotalTriggers = 0;
+
         private static readonly IExpressionParser _parser = new ExpressionEngine(LookupFunction);
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TriggerTree"/> class.
+        /// </summary>
+        public TriggerTree()
+        {
+            Root = new Node(new Clause(), this);
+        }
 
         public static ExpressionEvaluator LookupFunction(string type)
         {
@@ -99,14 +107,6 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
             }
 
             return eval;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TriggerTree"/> class.
-        /// </summary>
-        public TriggerTree()
-        {
-            Root = new Node(new Clause(), this);
         }
 
         public static Expression Parse(string expr) => _parser.Parse(expr);

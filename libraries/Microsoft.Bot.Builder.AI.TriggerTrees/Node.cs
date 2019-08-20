@@ -24,15 +24,6 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
         private List<Trigger> _triggers = new List<Trigger>();
         private List<Node> _specializations = new List<Node>();
 
-        private enum Operation
-        {
-            None,
-            Found,
-            Added,
-            Removed,
-            Inserted
-        }
-
         internal Node(Clause clause, TriggerTree tree, Trigger trigger = null)
         {
             // In order to debug:
@@ -73,6 +64,15 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
             {
                 Expression = Expression.ConstantExpression(true);
             }
+        }
+
+        private enum Operation
+        {
+            None,
+            Found,
+            Added,
+            Removed,
+            Inserted
         }
 
 #if Count

@@ -28,14 +28,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
     public class NumberInput : InputDialog
     {
-        public string DefaultLocale { get; set; } = null;
-
-        public NumberOutputFormat OutputFormat { get; set; } = NumberOutputFormat.Float;
-
         public NumberInput([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
             this.RegisterSourceLocation(callerPath, callerLine);
         }
+
+        public string DefaultLocale { get; set; } = null;
+
+        public NumberOutputFormat OutputFormat { get; set; } = NumberOutputFormat.Float;
 
         protected override string OnComputeId()
         {

@@ -67,11 +67,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         public const string TURN_COUNT_PROPERTY = "dialog.turnCount";
         public const string INPUT_PROPERTY = "turn.value";
 
-        private Expression value;
-        private Expression defaultValue;
-
         private const string PersistedOptions = "options";
         private const string PersistedState = "state";
+
+        private Expression value;
+        private Expression defaultValue;
 
         public bool AlwaysPrompt { get; set; } = false;
 
@@ -136,8 +136,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             {
                 return defaultValue?.ToString();
             }
+
             set
-            { lock (this)
+            {
+                lock (this)
                 {
                     defaultValue = (value != null) ? new ExpressionEngine().Parse(value) : null;
                 }
@@ -267,7 +269,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                         //      InputState.Valid        -> Do not bubble up -> return true
                         //      InputState.Missing      -> bubble up        -> return false
                         //      InputState.Unrecognized -> bubble up        -> return false
-
                         return state == InputState.Valid || state == InputState.Invalid;
                 }
             }

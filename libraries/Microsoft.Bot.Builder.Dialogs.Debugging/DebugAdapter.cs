@@ -59,7 +59,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             public string LastMore { get; set; }
         }
 
-        public enum Phase { Started, Continue, Next, Step, Breakpoint, Pause, Exited };
+        public enum Phase
+        {
+            Started, Continue, Next, Step, Breakpoint, Pause, Exited
+        }
+;
 
         public sealed class RunModel
         {

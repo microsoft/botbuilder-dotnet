@@ -21,6 +21,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
     {
         private Dictionary<string, Regex> patterns = new Dictionary<string, Regex>();
 
+        public RegexRecognizer()
+        {
+        }
+
         /// <summary>
         /// Gets or sets dictionary of patterns -> Intent names.
         /// </summary>
@@ -29,10 +33,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         /// </value>
         [JsonProperty("intents")]
         public Dictionary<string, string> Intents { get; set; } = new Dictionary<string, string>();
-
-        public RegexRecognizer()
-        {
-        }
 
         public async Task<RecognizerResult> RecognizeAsync(ITurnContext turnContext, CancellationToken cancellationToken)
         {
@@ -105,7 +105,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
             return result;
         }
 
-        public Task<T> RecognizeAsync<T>(ITurnContext turnContext, CancellationToken cancellationToken) where T : IRecognizerConvert, new()
+        public Task<T> RecognizeAsync<T>(ITurnContext turnContext, CancellationToken cancellationToken) 
+            where T : IRecognizerConvert, new()
         {
             throw new NotImplementedException();
         }

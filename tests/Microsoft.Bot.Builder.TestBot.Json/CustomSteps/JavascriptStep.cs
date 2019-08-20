@@ -35,7 +35,10 @@ namespace Microsoft.Bot.Builder.TestBot.Json
         /// <value>
         /// Javascript bound to memory run function(user, conversation, dialog, turn).
         /// </value>
-        public string Script { get { return script; } set { LoadScript(value); } }
+        public string Script
+        {
+            get { return script; } set { LoadScript(value); }
+        }
 
         [JsonConstructor]
         public JavascriptAction([CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)

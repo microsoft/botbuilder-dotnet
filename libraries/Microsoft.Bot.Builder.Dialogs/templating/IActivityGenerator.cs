@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="turnContext">turn context.</param>
         /// <param name="template">template or [templateId].</param>
         /// <param name="data">data to bind to.</param>
-        /// <returns></returns>
+        /// <returns>A <see cref="Task{TResult}"/> representing the asynchronous operation.</returns>
         Task<T> Generate(ITurnContext turnContext, string template, object data);
     }
 }

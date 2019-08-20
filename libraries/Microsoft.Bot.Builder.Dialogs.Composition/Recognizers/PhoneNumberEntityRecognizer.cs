@@ -9,7 +9,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition.Recognizers
 {
     public class PhoneNumberEntityRecognizer : BaseEntityRecognizer
     {
-        public PhoneNumberEntityRecognizer() { }
+        public PhoneNumberEntityRecognizer()
+        {
+        }
 
         protected override List<ModelResult> Recognize(string text, string culture)
         {

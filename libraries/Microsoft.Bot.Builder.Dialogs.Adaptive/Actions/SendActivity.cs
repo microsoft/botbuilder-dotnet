@@ -60,7 +60,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
         private static string Ellipsis(string text, int length)
         {
-            if (text.Length <= length) { return text; }
+            if (text.Length <= length)
+            {
+                return text;
+            }
             int pos = text.IndexOf(" ", length);
 
             if (pos >= 0)

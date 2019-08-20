@@ -100,7 +100,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
         /// Method called to execute the rule's actions.
         /// </summary>
         /// <param name="planningContext">Context.</param>
-        /// <returns></returns>
+        /// <returns>A <see cref="Task"/> with plan change list.</returns>
         public async Task<List<ActionChangeList>> ExecuteAsync(SequenceContext planningContext)
         {
             return await OnExecuteAsync(planningContext).ConfigureAwait(false);
@@ -110,7 +110,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
         /// Method called to process the request to execute the actions.
         /// </summary>
         /// <param name="planning">Context.</param>
-        /// <returns></returns>
+        /// <returns>A <see cref="Task"/> with plan change list.</returns>
         public async virtual Task<List<ActionChangeList>> OnExecuteAsync(SequenceContext planning)
         {
             return new List<ActionChangeList>()

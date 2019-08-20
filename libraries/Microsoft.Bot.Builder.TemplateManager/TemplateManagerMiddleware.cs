@@ -34,7 +34,10 @@ namespace Microsoft.Bot.Builder.TemplateManager
         /// <value>
         /// Template Renderers.
         /// </value>
-        public List<ITemplateRenderer> Renderers { get { return this.TemplateManager.Renderers; } set { this.TemplateManager.Renderers = value; } }
+        public List<ITemplateRenderer> Renderers
+        {
+            get { return this.TemplateManager.Renderers; } set { this.TemplateManager.Renderers = value; }
+        }
 
         /// <summary>
         /// Gets or sets language fallback policy.
@@ -42,7 +45,10 @@ namespace Microsoft.Bot.Builder.TemplateManager
         /// <value>
         /// Language fallback policy.
         /// </value>
-        public List<string> LanguageFallback { get { return this.TemplateManager.LanguageFallback; } set { this.TemplateManager.LanguageFallback = value; } }
+        public List<string> LanguageFallback
+        {
+            get { return this.TemplateManager.LanguageFallback; } set { this.TemplateManager.LanguageFallback = value; }
+        }
 
         /// <summary>
         /// Records incoming and outgoing activities to the conversation store.

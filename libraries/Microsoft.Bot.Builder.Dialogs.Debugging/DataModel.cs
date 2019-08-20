@@ -103,7 +103,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
     public sealed class DictionaryDataModel<K, V> : DataModelBase<IDictionary<K, V>, K, V>
     {
         public DictionaryDataModel(ICoercion coercion)
-            : base(coercion) { }
+            : base(coercion)
+        {
+        }
 
         public override int Rank => 6;
 
@@ -119,7 +121,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
     public sealed class ReadOnlyDictionaryDataModel<K, V> : DataModelBase<IReadOnlyDictionary<K, V>, K, V>
     {
         public ReadOnlyDictionaryDataModel(ICoercion coercion)
-            : base(coercion) { }
+            : base(coercion)
+        {
+        }
 
         public override int Rank => 5;
 
@@ -135,7 +139,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
     public sealed class ListDataModel<T> : DataModelBase<IList<T>, int, T>
     {
         public ListDataModel(ICoercion coercion)
-            : base(coercion) { }
+            : base(coercion)
+        {
+        }
 
         public override int Rank => 4;
 
@@ -151,7 +157,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
     public sealed class EnumerableDataModel<T> : DataModelBase<IEnumerable<T>, int, T>
     {
         public EnumerableDataModel(ICoercion coercion)
-            : base(coercion) { }
+            : base(coercion)
+        {
+        }
 
         public override int Rank => 3;
 
@@ -167,7 +175,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
     public sealed class ReflectionDataModel<T> : DataModelBase<object, string, object>
     {
         public ReflectionDataModel(ICoercion coercion)
-            : base(coercion) { }
+            : base(coercion)
+        {
+        }
 
         public override int Rank => 2;
 

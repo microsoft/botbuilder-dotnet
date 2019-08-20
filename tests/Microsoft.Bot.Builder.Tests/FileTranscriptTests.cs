@@ -10,7 +10,10 @@ namespace Microsoft.Bot.Builder.Tests
     [TestClass]
     public class FileTranscriptTests : TranscriptBaseTests
     {
-        public static string Folder { get { return Path.Combine(Path.GetTempPath(), nameof(FileTranscriptTests)); } }
+        public static string Folder
+        {
+            get { return Path.Combine(Path.GetTempPath(), nameof(FileTranscriptTests)); }
+        }
 
         [ClassInitialize]
 

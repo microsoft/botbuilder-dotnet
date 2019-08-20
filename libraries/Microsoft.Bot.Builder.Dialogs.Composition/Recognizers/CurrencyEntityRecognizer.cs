@@ -6,7 +6,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition.Recognizers
 {
     public class CurrencyEntityRecognizer : BaseEntityRecognizer
     {
-        public CurrencyEntityRecognizer() { }
+        public CurrencyEntityRecognizer()
+        {
+        }
 
         protected override List<ModelResult> Recognize(string text, string culture)
         {

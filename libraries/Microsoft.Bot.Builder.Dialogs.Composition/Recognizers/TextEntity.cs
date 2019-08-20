@@ -7,7 +7,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition.Recognizers
         public const string TypeName = "Text";
 
         public TextEntity()
-            : base(TypeName) { }
+            : base(TypeName)
+        {
+        }
 
         public TextEntity(string text)
             : base(TypeName)

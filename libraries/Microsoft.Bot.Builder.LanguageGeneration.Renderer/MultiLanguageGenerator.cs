@@ -21,9 +21,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <summary>
         /// Implementation of lookup by locale.  This uses internal dictionary to lookup.
         /// </summary>
-        /// <param name="context">context.</param>
+        /// <param name="context">Context for the current turn of conversation with the user.</param>\
         /// <param name="locale">locale.</param>
-        /// <param name="generator">generator to return.</param>
+        /// <param name="languageGenerator">generator to return.</param>
         /// <returns>true if found.</returns>
         public override bool TryGetGenerator(ITurnContext context, string locale, out ILanguageGenerator languageGenerator)
         {

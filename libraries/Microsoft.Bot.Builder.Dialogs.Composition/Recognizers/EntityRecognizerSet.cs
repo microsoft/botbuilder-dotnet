@@ -11,7 +11,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition.Recognizers
     /// </summary>
     public class EntityRecognizerSet : IEntityRecognizer
     {
-        public EntityRecognizerSet() { }
+        public EntityRecognizerSet()
+        {
+        }
 
         /// <summary>
         /// Gets or sets recognizer pool. 

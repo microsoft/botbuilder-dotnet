@@ -26,7 +26,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
 
             var json = await resource.ReadTextAsync();
 
-            return _load<T>(registry, refResolver, paths, json);
+            return Load<T>(registry, refResolver, paths, json);
         }
 
         public static T Load<T>(IResource resource, ResourceExplorer resourceExplorer, Source.IRegistry registry)
@@ -41,10 +41,33 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
 
             var json = resource.ReadTextAsync().GetAwaiter().GetResult();
 
-            return _load<T>(registry, refResolver, paths, json);
+            return Load<T>(registry, refResolver, paths, json);
         }
 
-        private static T _load<T>(Source.IRegistry registry, IRefResolver refResolver, Stack<string> paths, string json)
+        /// <summary>
+        /// Load a settings style path settings.x.y.z -> x:y:z. 
+        /// </summary>
+        /// <param name="configuration">Configuration.</param>
+        /// <param name="value">Value to load.</param>
+        /// <returns>The value formatted to the configuration.</returns>
+        public static string LoadSetting(this IConfiguration configuration, string value)
+        {
+            if (value.StartsWith("{") && value.EndsWith("}"))
+            {
+                var path = value.Trim('{', '}').Replace(".", ":");
+                if (path.StartsWith("settings:"))
+                {
+                    path = path.Substring(9);
+                }
+
+                // just use configurations ability to query for x:y:z
+                value = ConfigurationBinder.GetValue<string>(configuration, path);
+            }
+
+            return value;
+        }
+
+        private static T Load<T>(Source.IRegistry registry, IRefResolver refResolver, Stack<string> paths, string json)
         {
             return JsonConvert.DeserializeObject<T>(
                 json, new JsonSerializerSettings()
@@ -71,29 +94,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
                         NamingStrategy = new CamelCaseNamingStrategy()
                     }
                 });
-        }
-
-        /// <summary>
-        /// Load a settings style path settings.x.y.z -> x:y:z. 
-        /// </summary>
-        /// <param name="configuration"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public static string LoadSetting(this IConfiguration configuration, string value)
-        {
-            if (value.StartsWith("{") && value.EndsWith("}"))
-            {
-                var path = value.Trim('{', '}').Replace(".", ":");
-                if (path.StartsWith("settings:"))
-                {
-                    path = path.Substring(9);
-                }
-
-                // just use configurations ability to query for x:y:z
-                value = ConfigurationBinder.GetValue<string>(configuration, path);
-            }
-
-            return value;
         }
     }
 }

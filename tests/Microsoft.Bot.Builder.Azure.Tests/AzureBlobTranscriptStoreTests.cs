@@ -50,11 +50,17 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             "21", "22", "23", "24", "25", "26", "27", "28", "29", "30",
         };
 
-        public string ContainerName { get { return TestContext.TestName.ToLower(); } }
+        public string ContainerName
+        {
+            get { return TestContext.TestName.ToLower(); }
+        }
 
         public TestContext TestContext { get; set; }
 
-        public AzureBlobTranscriptStore TranscriptStore { get { return new AzureBlobTranscriptStore(ConnectionString, ContainerName); } }
+        public AzureBlobTranscriptStore TranscriptStore
+        {
+            get { return new AzureBlobTranscriptStore(ConnectionString, ContainerName); }
+        }
 
         // These tests require Azure Storage Emulator v5.7
         [TestInitialize]

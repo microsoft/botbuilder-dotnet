@@ -13,6 +13,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
     /// </summary>
     public class MultiLanguageRecognizer : IRecognizer
     {
+        public MultiLanguageRecognizer()
+        {
+        }
+
         /// <summary>
         /// Gets or sets policy for languages fallback. 
         /// </summary>
@@ -30,10 +34,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         /// </value>
         [JsonProperty("recognizers")]
         public IDictionary<string, IRecognizer> Recognizers { get; set; } = new Dictionary<string, IRecognizer>();
-
-        public MultiLanguageRecognizer()
-        {
-        }
 
         public Task<RecognizerResult> RecognizeAsync(ITurnContext turnContext, CancellationToken cancellationToken)
         {
@@ -54,7 +54,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
             return Task.FromResult(new RecognizerResult() { });
         }
 
-        public Task<T> RecognizeAsync<T>(ITurnContext turnContext, CancellationToken cancellationToken) where T : IRecognizerConvert, new()
+        public Task<T> RecognizeAsync<T>(ITurnContext turnContext, CancellationToken cancellationToken) 
+            where T : IRecognizerConvert, new()
         {
             if (!LanguagePolicy.TryGetValue(turnContext.Activity.Locale ?? string.Empty, out string[] policy))
             {

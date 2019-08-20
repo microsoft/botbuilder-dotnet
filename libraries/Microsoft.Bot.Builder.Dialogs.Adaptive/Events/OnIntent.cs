@@ -81,7 +81,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
                 var (name, score) = recognizerResult.GetTopScoringIntent();
                 return new ActionChangeList()
                 {
-                    //ChangeType = this.ChangeType,
+                    // ChangeType = this.ChangeType,
 
                     // proposed turn state changes
                     Turn = new Dictionary<string, object>()

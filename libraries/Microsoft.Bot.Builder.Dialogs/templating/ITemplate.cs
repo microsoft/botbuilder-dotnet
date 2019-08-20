@@ -6,7 +6,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// <summary>
     /// Defines Template interface for binding data to T.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="T">Type to bind data to.</typeparam>
     public interface ITemplate<T>
     {
         /// <summary>

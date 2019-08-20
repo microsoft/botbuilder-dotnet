@@ -9,7 +9,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition.Recognizers
 {
     public class IpEntityRecognizer : BaseEntityRecognizer
     {
-        public IpEntityRecognizer() { }
+        public IpEntityRecognizer()
+        {
+        }
 
         protected override List<ModelResult> Recognize(string text, string culture)
         {

@@ -24,7 +24,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition.Tests
             return new RecognizerResult() { Text = this.Id };
         }
 
-        public async Task<T> RecognizeAsync<T>(ITurnContext turnContext, CancellationToken cancellationToken) where T : IRecognizerConvert, new()
+        public async Task<T> RecognizeAsync<T>(ITurnContext turnContext, CancellationToken cancellationToken)
+            where T : IRecognizerConvert, new()
         {
             return new T();
         }

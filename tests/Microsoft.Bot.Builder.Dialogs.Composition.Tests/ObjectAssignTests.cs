@@ -39,7 +39,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition
             };
             var overlay = new Options() { };
 
-            var result = ObjectPath.Merge(defaultOptions,overlay);
+            var result = ObjectPath.Merge(defaultOptions, overlay);
             Assert.AreEqual(result.LastName, defaultOptions.LastName);
             Assert.AreEqual(result.FirstName, defaultOptions.FirstName);
             Assert.AreEqual(result.Age, defaultOptions.Age);
@@ -62,7 +62,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition
             };
 
             var result = ObjectPath.Merge(defaultOptions, overlay);
-
             Assert.AreEqual(result.LastName, overlay.LastName);
             Assert.AreEqual(result.FirstName, overlay.FirstName);
             Assert.AreEqual(result.Age, overlay.Age);

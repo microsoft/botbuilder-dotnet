@@ -9,7 +9,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition.Recognizers
 {
     public class UrlEntityRecognizer: BaseEntityRecognizer
     {
-        public UrlEntityRecognizer() { }
+        public UrlEntityRecognizer()
+        {
+        }
 
         protected override List<ModelResult> Recognize(string text, string culture)
         {

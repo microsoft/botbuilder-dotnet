@@ -17,18 +17,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         Expression GetExpression(IExpressionParser parser);
 
         /// <summary>
-        /// Execute the action for this rule.
-        /// </summary>
-        /// <param name="context"></param>
-        /// <returns>Task with plan change list.</returns>
-        Task<List<ActionChangeList>> ExecuteAsync(SequenceContext context);
-
-        /// <summary>
         /// Gets actions to add to the plan when the rule is activated.
         /// </summary>
         /// <value>
         /// Actions to add to the plan when the rule is activated.
         /// </value>
         List<IDialog> Actions { get; }
+
+        /// <summary>
+        /// Execute the action for this rule.
+        /// </summary>
+        /// <param name="context">Dialog sequence context.</param>
+        /// <returns>Task with plan change list.</returns>
+        Task<List<ActionChangeList>> ExecuteAsync(SequenceContext context);
     }
 }

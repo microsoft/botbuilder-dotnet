@@ -6,7 +6,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition.Recognizers
 {
     public class NumberEntityRecognizer : BaseEntityRecognizer
     {
-        public NumberEntityRecognizer() { }
+        public NumberEntityRecognizer()
+        {
+        }
 
         protected override List<ModelResult> Recognize(string text, string culture)
         {

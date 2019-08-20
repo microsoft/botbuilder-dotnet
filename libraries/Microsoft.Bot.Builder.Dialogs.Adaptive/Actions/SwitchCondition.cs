@@ -20,14 +20,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// </summary>
     public class SwitchCondition : DialogAction, IDialogDependencies
     {
-        private Dictionary<string, Expression> caseExpressions = null;
-
-        private Expression condition;
-
         /// <summary>
         /// Cases.
         /// </summary>
         public List<Case> Cases = new List<Case>();
+
+        private Dictionary<string, Expression> caseExpressions = null;
+
+        private Expression condition;
 
         [JsonConstructor]
         public SwitchCondition([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
