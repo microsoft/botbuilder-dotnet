@@ -50,7 +50,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             State = new DialogContextState(this, settings: settings, userState: userState, conversationState: conversationState, turnState: turnState as Dictionary<string, object>);
-            State.SetValue(DialogContextState.TURN_ACTIVITY, Context.Activity);
+            State.SetValue(DialogContextState.TurnActivity, Context.Activity);
         }
 
         public DialogContext(DialogSet dialogs, ITurnContext turnContext, DialogState state, IDictionary<string, object> conversationState = null, IDictionary<string, object> userState = null, IDictionary<string, object> settings = null)
@@ -69,7 +69,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             State = new DialogContextState(this, settings: settings, userState: userState, conversationState: conversationState, turnState: turnState as Dictionary<string, object>);
-            State.SetValue(DialogContextState.TURN_ACTIVITY, Context.Activity);
+            State.SetValue(DialogContextState.TurnActivity, Context.Activity);
         }
 
         /// <summary>
@@ -332,11 +332,11 @@ namespace Microsoft.Bot.Builder.Dialogs
             // set dialog result
             if (ShouldInheritState(dialog))
             {
-                State.SetValue(DialogContextState.STEP_OPTIONS_PROPERTY, options);
+                State.SetValue(DialogContextState.StepOptionsProperty, options);
             }
             else
             {
-                State.SetValue(DialogContextState.DIALOG_OPTIONS, options);
+                State.SetValue(DialogContextState.DialogOptions, options);
             }
 
             // Call dialogs BeginAsync() method.

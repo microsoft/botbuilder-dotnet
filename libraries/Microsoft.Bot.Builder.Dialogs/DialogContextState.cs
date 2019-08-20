@@ -18,17 +18,17 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <summary>
         /// Common state properties paths.
         /// </summary>
-        public const string DIALOG_OPTIONS = "dialog.options";
-        public const string DIALOG_VALUE = "dialog.value";
+        public const string DialogOptions = "dialog.options";
+        public const string DialogNames = "dialog.value";
 
-        public const string TURN_ACTIVITY = "turn.activity";
-        public const string TURN_RECOGNIZED = "turn.recognized";
-        public const string TURN_TOPINTENT = "turn.recognized.intent";
-        public const string TURN_TOPSCORE = "turn.recognized.score";
-        public const string TURN_STEPCOUNT = "turn.stepCount";
-        public const string TURN_DIALOGEVENT = "turn.dialogEvent";
+        public const string TurnActivity = "turn.activity";
+        public const string TurnRecognized = "turn.recognized";
+        public const string TurnTopIntent = "turn.recognized.intent";
+        public const string TurnTopScore = "turn.recognized.score";
+        public const string TurnStepCount = "turn.stepCount";
+        public const string TurnDialogEvent = "turn.dialogEvent";
 
-        public const string STEP_OPTIONS_PROPERTY = "dialog.step.options";
+        public const string StepOptionsProperty = "dialog.step.options";
 
         private const string PrefixCallBack = "callstackScope('";
 

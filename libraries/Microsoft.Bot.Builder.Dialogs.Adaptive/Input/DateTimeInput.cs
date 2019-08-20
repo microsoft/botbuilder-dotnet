@@ -26,7 +26,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
         protected override Task<InputState> OnRecognizeInput(DialogContext dc)
         {
-            var input = dc.State.GetValue<object>(INPUT_PROPERTY);
+            var input = dc.State.GetValue<object>(InputProperty);
 
             var culture = GetCulture(dc);
             var results = DateTimeRecognizer.RecognizeDateTime(input.ToString(), culture);
@@ -40,7 +40,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                     result.Add(ReadResolution(value));
                 }
 
-                dc.State.SetValue(INPUT_PROPERTY, result);
+                dc.State.SetValue(InputProperty, result);
             }
             else
             {

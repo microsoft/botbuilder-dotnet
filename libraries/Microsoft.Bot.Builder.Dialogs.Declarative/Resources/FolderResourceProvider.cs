@@ -52,6 +52,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             }
         }
 
+        public event ResourceChangedEventHandler Changed;
+
         /// <summary>
         /// Gets or sets folder to enumerate.
         /// </summary>
@@ -66,8 +68,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         {
             get { return this.Directory.FullName; }
         }
-
-        public event ResourceChangedEventHandler Changed;
 
         public void Dispose()
         {
@@ -85,8 +85,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// <summary>
         /// GetResource by id.
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
+        /// <param name="id">Resource ID.</param>
+        /// <returns>Resource.</returns>
         public IResource GetResource(string id)
         {
             lock (this.resources)
@@ -103,6 +103,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// <summary>
         /// Get Resources by extension.
         /// </summary>
+        /// <param name="extension">Resource extension.</param>
+        /// <returns>Collection of resources.</returns>
         public IEnumerable<IResource> GetResources(string extension)
         {
             extension = $".{extension.TrimStart('.').ToLower()}";
@@ -176,7 +178,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// <summary>
         /// Add a folder resource.
         /// </summary>
-        /// <param name="explorer"></param>
+        /// <param name="explorer">File explorer delegate.</param>
         /// <param name="folder"></param>
         /// <param name="includeSubFolders"></param>
         /// <param name="monitorChanges"></param>

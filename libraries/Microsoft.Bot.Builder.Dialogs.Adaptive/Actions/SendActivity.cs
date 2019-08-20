@@ -64,6 +64,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             {
                 return text;
             }
+
             int pos = text.IndexOf(" ", length);
 
             if (pos >= 0)

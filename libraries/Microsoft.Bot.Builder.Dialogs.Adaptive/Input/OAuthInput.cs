@@ -63,7 +63,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
             set
             {
-                InputBindings[DialogContextState.DIALOG_VALUE] = value;
+                InputBindings[DialogContextState.DialogNames] = value;
                 OutputBinding = value;
             }
         }

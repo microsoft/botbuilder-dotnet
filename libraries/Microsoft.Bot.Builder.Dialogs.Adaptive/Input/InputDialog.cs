@@ -63,9 +63,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
     {
         // This property can be set by user's code to indicate that the input should re-process incoming user utterance. 
         // Designed to be a bool property. So user's code can set this to 'true' to signal the input to re-process incoming user utterance.
-        public const string PROCESS_INPUT_PROPERTY = "turn.processInput";
-        public const string TURN_COUNT_PROPERTY = "dialog.turnCount";
-        public const string INPUT_PROPERTY = "turn.value";
+        public const string ProcessInputProperty = "turn.processInput";
+        public const string TurnCountProperty = "dialog.turnCount";
+        public const string InputProperty = "turn.value";
 
         private const string PersistedOptions = "options";
         private const string PersistedState = "state";
@@ -161,7 +161,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
             set
             {
-                InputBindings[DialogContextState.DIALOG_VALUE] = value;
+                InputBindings[DialogContextState.DialogNames] = value;
                 OutputBinding = value;
             }
         }
@@ -174,14 +174,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             }
 
             var op = OnInitializeOptions(dc, options);
-            dc.State.SetValue(DialogContextState.DIALOG_OPTIONS, op);
-            dc.State.SetValue(TURN_COUNT_PROPERTY, 0);
-            dc.State.SetValue(INPUT_PROPERTY, null);
+            dc.State.SetValue(DialogContextState.DialogOptions, op);
+            dc.State.SetValue(TurnCountProperty, 0);
+            dc.State.SetValue(InputProperty, null);
 
             var state = this.AlwaysPrompt ? InputState.Missing : await this.RecognizeInput(dc);
             if (state == InputState.Valid)
             {
-                var input = dc.State.GetValue<object>(INPUT_PROPERTY);
+                var input = dc.State.GetValue<object>(InputProperty);
                 return await dc.EndDialogAsync(input);
             }
             else
@@ -189,7 +189,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 // turnCount should increase here, because you want when nextTurn comes in
                 // We will set the turn count to 1 so the input will not pick from "dialog.value"
                 // and instead go with "turn.activity.text"
-                dc.State.SetValue(TURN_COUNT_PROPERTY, 1);
+                dc.State.SetValue(TurnCountProperty, 1);
                 return await this.PromptUser(dc, state);
             }
         }
@@ -202,27 +202,27 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 return Dialog.EndOfTurn;
             }
 
-            var stepCount = dc.State.GetValue<int>(DialogContextState.TURN_STEPCOUNT, 0);
+            var stepCount = dc.State.GetValue<int>(DialogContextState.TurnStepCount, 0);
 
             if (stepCount > 0)
             {
                 return await this.PromptUser(dc, InputState.Missing);
             }
 
-            var turnCount = dc.State.GetValue<int>(TURN_COUNT_PROPERTY, 0);
+            var turnCount = dc.State.GetValue<int>(TurnCountProperty, 0);
 
             // Perform base recognition
             var state = await this.RecognizeInput(dc);
 
             if (state == InputState.Valid)
             {
-                var input = dc.State.GetValue<object>(INPUT_PROPERTY);
+                var input = dc.State.GetValue<object>(InputProperty);
                 return await dc.EndDialogAsync(input);
             }
             else if (this.MaxTurnCount == null || turnCount < this.MaxTurnCount)
             {
                 // increase the turnCount as last step
-                dc.State.SetValue(TURN_COUNT_PROPERTY, turnCount + 1);
+                dc.State.SetValue(TurnCountProperty, turnCount + 1);
                 return await this.PromptUser(dc, state);
             }
             else
@@ -398,13 +398,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
             if (input == null)
             {
-                var turnCount = dc.State.GetValue<int>(TURN_COUNT_PROPERTY);
-                var processInput = dc.State.GetValue<bool>(PROCESS_INPUT_PROPERTY, false);
+                var turnCount = dc.State.GetValue<int>(TurnCountProperty);
+                var processInput = dc.State.GetValue<bool>(ProcessInputProperty, false);
 
                 // Go down this path only if the user has not requested to re-process user input via turn.processInput = true.
                 if (turnCount == 0 && !processInput)
                 {
-                    input = dc.State.GetValue<object>(DialogContextState.DIALOG_VALUE, null);
+                    input = dc.State.GetValue<object>(DialogContextState.DialogNames, null);
                 }
                 else
                 {
@@ -419,10 +419,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 }
 
                 // reset turn.processInput so subsequent actions are not impacted. 
-                dc.State.SetValue(PROCESS_INPUT_PROPERTY, false);
+                dc.State.SetValue(ProcessInputProperty, false);
             }
 
-            dc.State.SetValue(INPUT_PROPERTY, input);
+            dc.State.SetValue(InputProperty, input);
             if (input != null)
             {
                 var state = await this.OnRecognizeInput(dc).ConfigureAwait(false);

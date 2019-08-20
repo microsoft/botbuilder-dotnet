@@ -14,12 +14,34 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 {
+    /// <summary>
+    /// How to modify an action sequence.
+    /// </summary>
     public enum ActionChangeType
     {
+        /// <summary>
+        /// Add the change actions to the head of the sequence.
+        /// </summary>
         InsertActions,
+
+        /// <summary>
+        /// Insert the change actions before named tags in the sequence.
+        /// </summary>
         InsertActionsBeforeTags,
+
+        /// <summary>
+        /// Add the changeactions to the tail of the sequence.
+        /// </summary>
         AppendActions,
+
+        /// <summary>
+        /// Terminate the action sequence.
+        /// </summary>
         EndSequence,
+
+        /// <summary>
+        /// Terminate the action sequence, then add the change actions.
+        /// </summary>
         ReplaceSequence,
     }
 

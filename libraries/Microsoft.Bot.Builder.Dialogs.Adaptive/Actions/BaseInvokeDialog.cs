@@ -61,12 +61,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         {
             get
             {
-                return InputBindings.TryGetValue(DialogContextState.DIALOG_VALUE, out string value) ? value : null;
+                return InputBindings.TryGetValue(DialogContextState.DialogNames, out string value) ? value : null;
             }
 
             set
             {
-                InputBindings[DialogContextState.DIALOG_VALUE] = value;
+                InputBindings[DialogContextState.DialogNames] = value;
                 OutputBinding = value;
             }
         }
