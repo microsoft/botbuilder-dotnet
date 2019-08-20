@@ -475,6 +475,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                             }
                         }
                     }
+
                     return recognized;
                 }
             }
