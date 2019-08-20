@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         string Secret { get; set; }
 
         /// <summary>
-        /// Gets or sets the root URL of your bot application.  Something like 'https://mybot.com/'.
+        /// Gets or sets the root URL of your bot application. Something like 'https://mybot.com/'.
         /// </summary>
         /// <value>the root URL of your bot application.</value>
         string PublicAddress { get; set; }

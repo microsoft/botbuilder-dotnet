@@ -30,6 +30,8 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <param name="config">An object containing API credentials, a webhook verification token and other options.</param>
         public WebexAdapter(IWebexAdapterOptions config)
         {
+            _config = config ?? throw new ArgumentNullException(nameof(config));
+
             if (string.IsNullOrWhiteSpace(_config.AccessToken))
             {
                 throw new Exception("AccessToken required to create controller");
@@ -40,7 +42,6 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                 throw new Exception("PublicAddress parameter required to receive webhooks");
             }
 
-            _config = config;
             _config.PublicAddress = new Uri(_config.PublicAddress).Host;
             _api = TeamsAPI.CreateVersion1Client(_config.AccessToken)
                    ?? throw new Exception("Could not create the Webex Teams API client");
@@ -58,7 +59,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task GetIdentityAsync()
         {
-            await _api.GetMeAsync().ContinueWith(task => { Identity = task.Result.Data; }).ConfigureAwait(false);
+            await _api.GetMeAsync().ContinueWith(task => { Identity = task.Result.Data; }, TaskScheduler.Current).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -67,13 +68,14 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task ResetWebhookSubscriptions()
         {
-            await _api.ListWebhooksAsync().ContinueWith(async task =>
+            await _api.ListWebhooksAsync().ContinueWith(
+                async task =>
             {
                 for (var i = 0; i < task.Result.Data.ItemCount; i++)
                 {
                     await _api.DeleteWebhookAsync(task.Result.Data.Items[i]).ConfigureAwait(false);
                 }
-            }).ConfigureAwait(false);
+            }, TaskScheduler.Current).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -85,7 +87,8 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         {
             var webHookName = _config.WebhookName ?? "Botkit Firehose";
 
-            await _api.ListWebhooksAsync().ContinueWith(async (task) =>
+            await _api.ListWebhooksAsync().ContinueWith(
+                async task =>
             {
                 string hookId = null;
 
@@ -107,7 +110,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                 {
                     await _api.CreateWebhookAsync(webHookName, new Uri(hookUrl), EventResource.All, EventType.All, null, _config.Secret).ConfigureAwait(false);
                 }
-            }).ConfigureAwait(false);
+            }, TaskScheduler.Current).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -128,7 +131,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                 }
 
                 // transform activity into the webex message format
-                var personIDorEmail = (activity.ChannelData as dynamic)?.toPersonEmail != null
+                var personIdOrEmail = (activity.ChannelData as dynamic)?.toPersonEmail != null
                                     ? (activity.ChannelData as dynamic).toPersonEmail
                                     : activity.Recipient.Id;
 
@@ -136,7 +139,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                             ? (activity.ChannelData as dynamic).markdown
                             : activity.Text;
 
-                TeamsResult<Message> webexResponse = await _api.CreateDirectMessageAsync(personIDorEmail, text);
+                TeamsResult<Message> webexResponse = await _api.CreateDirectMessageAsync(personIdOrEmail, text);
                 responses.Add(new ResourceResponse(webexResponse.Data.Id));
             }
 
@@ -180,6 +183,16 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task ContinueConversationAsync(ConversationReference reference, BotCallbackHandler logic, CancellationToken cancellationToken)
         {
+            if (reference == null)
+            {
+                throw new ArgumentNullException(nameof(reference));
+            }
+
+            if (logic == null)
+            {
+                throw new ArgumentNullException(nameof(logic));
+            }
+
             var request = reference.GetContinuationActivity().ApplyConversationReference(reference, true);
 
             using (var context = new TurnContext(this, request))
@@ -198,6 +211,21 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task ProcessAsync(HttpRequest request, HttpResponse response, IBot bot, CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (request == null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+
+            if (response == null)
+            {
+                throw new ArgumentNullException(nameof(response));
+            }
+
+            if (bot == null)
+            {
+                throw new ArgumentNullException(nameof(bot));
+            }
+
             response.StatusCode = 200;
             await response.WriteAsync(string.Empty, cancellationToken).ConfigureAwait(false);
 
@@ -240,6 +268,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                 ? request.Headers["x-spark-signature"].ToString().ToUpperInvariant()
                 : throw new Exception("HttpRequest is missing \"x-spark-signature\"");
 
+            #pragma warning disable CA5350 // Webex API uses SHA1 as cryptographic algorithm.
             using (var hmac = new HMACSHA1(Encoding.UTF8.GetBytes(secret)))
             {
                 var hashArray = hmac.ComputeHash(Encoding.UTF8.GetBytes(json));
@@ -247,6 +276,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
 
                 return signature == hash;
             }
+            #pragma warning restore CA5350 // Webex API uses SHA1 as cryptographic algorithm.
         }
 
         /// <summary>
