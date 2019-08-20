@@ -414,7 +414,7 @@ namespace Microsoft.Bot.Builder.Expressions
             var pos = 0;
             foreach (var child in expression.Children)
             {
-                (value, error) = child.TryEvaluate(state);
+                (value, error) = EvaluateExpression(child, state);
                 if (error != null)
                 {
                     break;
@@ -495,6 +495,20 @@ namespace Microsoft.Bot.Builder.Expressions
                 return (value, error);
             };
 
+        private static (object value, string error) EvaluateExpression(Expression expression, object state)
+        {
+            object value = null;
+            string error = null;
+            (value, error) = expression.TryEvaluate(state);
+
+            if (TryParseList(value, out var listValue) && !_functions.ContainsKey(expression.Type))
+            {
+                var rd = new Random();
+                value = listValue[rd.Next(listValue.Count)];
+            }
+
+            return (value, error);
+        }
 
         /// <summary>
         /// walk dialog callstack looking for property
@@ -510,7 +524,7 @@ namespace Microsoft.Bot.Builder.Expressions
             {
                 var items = (IEnumerable<object>)result;
                 object property = null;
-                (property, error) = expression.Children[0].TryEvaluate(state);
+                (property, error) = EvaluateExpression(expression.Children[0], state);
                 if (property != null && error == null)
                 {
                     foreach (var item in items)
@@ -719,7 +733,7 @@ namespace Microsoft.Bot.Builder.Expressions
             var children = expression.Children;
             if (children.Length == 2)
             {
-                (instance, error) = children[1].TryEvaluate(state);
+                (instance, error) = EvaluateExpression(children[1], state);
             }
             else
             {
@@ -740,10 +754,10 @@ namespace Microsoft.Bot.Builder.Expressions
             object property;
 
             var children = expression.Children;
-            (instance, error) = children[0].TryEvaluate(state);
+            (instance, error) = EvaluateExpression(children[0], state);
             if (error == null)
             {
-                (property, error) = children[1].TryEvaluate(state);
+                (property, error) = EvaluateExpression(children[1], state);
                 if (error == null)
                 {
                     (value, error) = AccessProperty(instance, (string)property);
@@ -893,11 +907,11 @@ namespace Microsoft.Bot.Builder.Expressions
             var instance = expression.Children[0];
             var index = expression.Children[1];
             object inst;
-            (inst, error) = instance.TryEvaluate(state);
+            (inst, error) = EvaluateExpression(instance, state);
             if (error == null)
             {
                 object idxValue;
-                (idxValue, error) = index.TryEvaluate(state);
+                (idxValue, error) = EvaluateExpression(index, state);
                 if (error == null)
                 {
                     if (idxValue is int idx)
@@ -952,7 +966,7 @@ namespace Microsoft.Bot.Builder.Expressions
             var children = path.Children;
             if (path.Type == ExpressionType.Accessor || path.Type == ExpressionType.Element)
             {
-                (index, error) = children[path.Type == ExpressionType.Accessor ? 0 : 1].TryEvaluate(state);
+                (index, error) = EvaluateExpression(children[path.Type == ExpressionType.Accessor ? 0 : 1], state);
                 if (error == null)
                 {
                     var iindex = index as int?;
@@ -1040,7 +1054,7 @@ namespace Microsoft.Bot.Builder.Expressions
         {
             var path = expr.Children[0];
             var valueExpr = expr.Children[1];
-            var (value, error) = valueExpr.TryEvaluate(state);
+            var (value, error) = EvaluateExpression(valueExpr, state);
             if (error == null)
             {
                 (_, error) = SetPathToValue(path, null, value, state);
@@ -1148,7 +1162,7 @@ namespace Microsoft.Bot.Builder.Expressions
             string error = null;
             foreach (var child in expression.Children)
             {
-                (result, error) = child.TryEvaluate(state);
+                (result, error) = EvaluateExpression(child, state);
                 if (error == null)
                 {
                     if (IsLogicTrue(result))
@@ -1178,7 +1192,7 @@ namespace Microsoft.Bot.Builder.Expressions
             string error = null;
             foreach (var child in expression.Children)
             {
-                (result, error) = child.TryEvaluate(state);
+                (result, error) = EvaluateExpression(child, state);
                 if (error == null)
                 {
                     if (IsLogicTrue(result))
@@ -1200,7 +1214,7 @@ namespace Microsoft.Bot.Builder.Expressions
         {
             object result;
             string error;
-            (result, error) = expression.Children[0].TryEvaluate(state);
+            (result, error) = EvaluateExpression(expression.Children[0], state);
             if (error == null)
             {
                 result = !IsLogicTrue(result);
@@ -1217,15 +1231,15 @@ namespace Microsoft.Bot.Builder.Expressions
         {
             object result;
             string error;
-            (result, error) = expression.Children[0].TryEvaluate(state);
+            (result, error) = EvaluateExpression(expression.Children[0], state);
             if (error == null && IsLogicTrue(result))
             {
-                (result, error) = expression.Children[1].TryEvaluate(state);
+                (result, error) = EvaluateExpression(expression.Children[1], state);
             }
             else
             {
                 // Swallow error and treat as false
-                (result, error) = expression.Children[2].TryEvaluate(state);
+                (result, error) = EvaluateExpression(expression.Children[2], state);
             }
             return (result, error);
         }
@@ -1235,14 +1249,14 @@ namespace Microsoft.Bot.Builder.Expressions
             object result = null;
             string error;
             dynamic str;
-            (str, error) = expression.Children[0].TryEvaluate(state);
+            (str, error) = EvaluateExpression(expression.Children[0], state);
             if (error == null)
             {
                 if (str is string)
                 {
                     dynamic start;
                     var startExpr = expression.Children[1];
-                    (start, error) = startExpr.TryEvaluate(state);
+                    (start, error) = EvaluateExpression(startExpr, state);
                     if (error == null && !(start is int))
                     {
                         error = $"{startExpr} is not an integer.";
@@ -1262,7 +1276,7 @@ namespace Microsoft.Bot.Builder.Expressions
                         else
                         {
                             var lengthExpr = expression.Children[2];
-                            (length, error) = lengthExpr.TryEvaluate(state);
+                            (length, error) = EvaluateExpression(lengthExpr, state);
                             if (error == null && !(length is int))
                             {
                                 error = $"{lengthExpr} is not an integer.";
@@ -1292,7 +1306,7 @@ namespace Microsoft.Bot.Builder.Expressions
             string error;
 
             dynamic collection;
-            (collection, error) = expression.Children[0].TryEvaluate(state);
+            (collection, error) = EvaluateExpression(expression.Children[0], state);
             if (error == null)
             {
                 // 2nd parameter has been rewrite to $local.item
@@ -1313,7 +1327,7 @@ namespace Microsoft.Bot.Builder.Expressions
                             { "$local", local },
                         };
 
-                        (var r, var e) = expression.Children[2].TryEvaluate(newScope);
+                        (var r, var e) = EvaluateExpression(expression.Children[2], newScope);
                         if (e != null)
                         {
                             return (null, e);
@@ -1336,7 +1350,7 @@ namespace Microsoft.Bot.Builder.Expressions
             string error;
 
             dynamic collection;
-            (collection, error) = expression.Children[0].TryEvaluate(state);
+            (collection, error) = EvaluateExpression(expression.Children[0], state);
             if (error == null)
             {
                 // 2nd parameter has been rewrite to $local.item
@@ -1357,7 +1371,7 @@ namespace Microsoft.Bot.Builder.Expressions
                             { "$local", local },
                         };
 
-                        (var r, var e) = expression.Children[2].TryEvaluate(newScope);
+                        (var r, var e) = EvaluateExpression(expression.Children[2], newScope);
                         if (e != null)
                         {
                             return (null, e);
@@ -2076,7 +2090,7 @@ namespace Microsoft.Bot.Builder.Expressions
             object result = null;
             string error;
             object arr;
-            (arr, error) = expression.Children[0].TryEvaluate(state);
+            (arr, error) = EvaluateExpression(expression.Children[0], state);
 
             if (error == null)
             {
@@ -2085,7 +2099,7 @@ namespace Microsoft.Bot.Builder.Expressions
                     object start;
                     var startInt = 0;
                     var startExpr = expression.Children[1];
-                    (start, error) = startExpr.TryEvaluate(state);
+                    (start, error) = EvaluateExpression(startExpr, state);
                     if (error == null)
                     {
                         if (start == null || !start.IsInteger())
@@ -2121,7 +2135,7 @@ namespace Microsoft.Bot.Builder.Expressions
             object result = null;
             string error;
             object arr;
-            (arr, error) = expression.Children[0].TryEvaluate(state);
+            (arr, error) = EvaluateExpression(expression.Children[0], state);
             if (error == null)
             {
                 var arrIsList = TryParseList(arr, out var list);
@@ -2130,7 +2144,7 @@ namespace Microsoft.Bot.Builder.Expressions
                 {
                     object countObj;
                     var countExpr = expression.Children[1];
-                    (countObj, error) = countExpr.TryEvaluate(state);
+                    (countObj, error) = EvaluateExpression(countExpr, state);
                     if (error == null)
                     {
                         if (countObj == null || !countObj.IsInteger())
@@ -2179,7 +2193,7 @@ namespace Microsoft.Bot.Builder.Expressions
             object result = null;
             string error;
             object arr;
-            (arr, error) = expression.Children[0].TryEvaluate(state);
+            (arr, error) = EvaluateExpression(expression.Children[0], state);
 
             if (error == null)
             {
@@ -2187,7 +2201,7 @@ namespace Microsoft.Bot.Builder.Expressions
                 {
                     var startExpr = expression.Children[1];
                     object startObj;
-                    (startObj, error) = startExpr.TryEvaluate(state);
+                    (startObj, error) = EvaluateExpression(startExpr, state);
                     var start = 0;
                     if (error == null)
                     {
@@ -2216,7 +2230,7 @@ namespace Microsoft.Bot.Builder.Expressions
                             {
                                 var endExpr = expression.Children[2];
                                 object endObj;
-                                (endObj, error) = endExpr.TryEvaluate(state);
+                                (endObj, error) = EvaluateExpression(endExpr, state);
                                 if (error == null)
                                 {
                                     if (endObj == null || !endObj.IsInteger())
