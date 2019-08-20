@@ -500,6 +500,15 @@
                     ],
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
+                "defaultValueResponse": {
+                    "$type": "Microsoft.IActivityTemplate",
+                    "title": "Default Value Response",
+                    "description": "The message to send to when max turn count has been exceeded and the default value is selected as the value.",
+                    "examples": [
+                        "I didn't understand your responses, so I will just use the default value of 10.  Let me know if you want to change it."
+                    ],
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                },
                 "maxTurnCount": {
                     "type": "integer",
                     "title": "Max Turn Count",
@@ -879,6 +888,15 @@
                     ],
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
+                "defaultValueResponse": {
+                    "$type": "Microsoft.IActivityTemplate",
+                    "title": "Default Value Response",
+                    "description": "The message to send to when max turn count has been exceeded and the default value is selected as the value.",
+                    "examples": [
+                        "I didn't understand your responses, so I will just use the default value of 10.  Let me know if you want to change it."
+                    ],
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                },
                 "maxTurnCount": {
                     "type": "integer",
                     "title": "Max Turn Count",
@@ -1247,6 +1265,15 @@
                     ],
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
+                "defaultValueResponse": {
+                    "$type": "Microsoft.IActivityTemplate",
+                    "title": "Default Value Response",
+                    "description": "The message to send to when max turn count has been exceeded and the default value is selected as the value.",
+                    "examples": [
+                        "I didn't understand your responses, so I will just use the default value of 10.  Let me know if you want to change it."
+                    ],
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                },
                 "maxTurnCount": {
                     "type": "integer",
                     "title": "Max Turn Count",
@@ -1483,6 +1510,15 @@
                     "description": "The message to send to when then input was not valid for the input type.",
                     "examples": [
                         "No date was recognized"
+                    ],
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                },
+                "defaultValueResponse": {
+                    "$type": "Microsoft.IActivityTemplate",
+                    "title": "Default Value Response",
+                    "description": "The message to send to when max turn count has been exceeded and the default value is selected as the value.",
+                    "examples": [
+                        "I didn't understand your responses, so I will just use the default value of 10.  Let me know if you want to change it."
                     ],
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
@@ -3544,6 +3580,15 @@
                     ],
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
+                "defaultValueResponse": {
+                    "$type": "Microsoft.IActivityTemplate",
+                    "title": "Default Value Response",
+                    "description": "The message to send to when max turn count has been exceeded and the default value is selected as the value.",
+                    "examples": [
+                        "I didn't understand your responses, so I will just use the default value of 10.  Let me know if you want to change it."
+                    ],
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                },
                 "maxTurnCount": {
                     "type": "integer",
                     "title": "Max Turn Count",
@@ -3719,6 +3764,15 @@
                     "description": "The message to send to when then input was not valid for the input type.",
                     "examples": [
                         "No date was recognized"
+                    ],
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                },
+                "defaultValueResponse": {
+                    "$type": "Microsoft.IActivityTemplate",
+                    "title": "Default Value Response",
+                    "description": "The message to send to when max turn count has been exceeded and the default value is selected as the value.",
+                    "examples": [
+                        "I didn't understand your responses, so I will just use the default value of 10.  Let me know if you want to change it."
                     ],
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
@@ -5730,6 +5784,15 @@
                     "description": "The message to send to when then input was not valid for the input type.",
                     "examples": [
                         "No date was recognized"
+                    ],
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                },
+                "defaultValueResponse": {
+                    "$type": "Microsoft.IActivityTemplate",
+                    "title": "Default Value Response",
+                    "description": "The message to send to when max turn count has been exceeded and the default value is selected as the value.",
+                    "examples": [
+                        "I didn't understand your responses, so I will just use the default value of 10.  Let me know if you want to change it."
                     ],
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
