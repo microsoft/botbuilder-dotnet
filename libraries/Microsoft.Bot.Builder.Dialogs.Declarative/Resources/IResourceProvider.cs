@@ -6,6 +6,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
 {
     public interface IResourceProvider
     {
+        event ResourceChangedEventHandler Changed;
+
         /// <summary>
         /// Gets id for the resource provider.
         /// </summary>
@@ -14,20 +16,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// </value>
         string Id { get; }
 
-        event ResourceChangedEventHandler Changed;
-
         /// <summary>
         /// Get resource by id.
         /// </summary>
-        /// <param name="id">resource id.</param>
-        /// <returns>resource.</returns>
+        /// <param name="id">Resource id.</param>
+        /// <returns>The resource.</returns>
         IResource GetResource(string id);
 
         /// <summary>
         /// enumerate resources.
         /// </summary>
-        /// <param name="extension"></param>
-        /// <returns></returns>
+        /// <param name="extension">Extension filter.</param>
+        /// <returns>The resources.</returns>
         IEnumerable<IResource> GetResources(string extension);
     }
 }

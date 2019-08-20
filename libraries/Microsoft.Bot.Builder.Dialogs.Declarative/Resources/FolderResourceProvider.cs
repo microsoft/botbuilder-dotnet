@@ -178,11 +178,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// <summary>
         /// Add a folder resource.
         /// </summary>
-        /// <param name="explorer">File explorer delegate.</param>
-        /// <param name="folder"></param>
-        /// <param name="includeSubFolders"></param>
-        /// <param name="monitorChanges"></param>
-        /// <returns></returns>
+        /// <param name="explorer">The <see cref="ResourceExplorer"/> for this extension method.</param>
+        /// <param name="folder">Folder to include as a resource.</param>
+        /// <param name="includeSubFolders">Whether to include subfolders.</param>
+        /// <param name="monitorChanges">Whether to track changes.</param>
+        /// <returns>The resource explorer.</returns>
         public static ResourceExplorer AddFolder(this ResourceExplorer explorer, string folder, bool includeSubFolders = true, bool monitorChanges = true)
         {
             explorer.AddResourceProvider(new FolderResourceProvider(folder, includeSubFolders: includeSubFolders, monitorChanges: monitorChanges));
@@ -192,11 +192,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// <summary>
         ///  Add folder resources.
         /// </summary>
-        /// <param name="explorer"></param>
-        /// <param name="folder"></param>
-        /// <param name="ignoreFolders"></param>
-        /// <param name="monitorChanges"></param>
-        /// <returns></returns>
+        /// <param name="explorer">The <see cref="ResourceExplorer"/> for this extension method.</param>
+        /// <param name="folder">Collection of folders to include as resources.</param>
+        /// <param name="ignoreFolders">Folders to ignore.</param>
+        /// <param name="monitorChanges">Whether to track changes.</param>
+        /// <returns>The resource explorer.</returns>
         public static ResourceExplorer AddFolders(this ResourceExplorer explorer, string folder, string[] ignoreFolders = null, bool monitorChanges = true)
         {
             if (ignoreFolders != null)

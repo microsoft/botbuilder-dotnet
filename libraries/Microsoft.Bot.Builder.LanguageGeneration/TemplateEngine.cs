@@ -45,8 +45,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 var fullPath = Path.GetFullPath(ImportResolver.NormalizePath(filePath));
                 var rootResource = LGParser.Parse(File.ReadAllText(fullPath), fullPath);
-                var lgResources = rootResource.DiscoverDependencies(importResolver);
-                totalLGResources.AddRange(lgResources);
+                var lgresources = rootResource.DiscoverDependencies(importResolver);
+                totalLGResources.AddRange(lgresources);
             }
 
             // Remove duplicated lg files by id

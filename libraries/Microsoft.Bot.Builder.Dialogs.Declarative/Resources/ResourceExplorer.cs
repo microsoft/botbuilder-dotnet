@@ -32,12 +32,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         {
         }
 
+        public event ResourceChangedEventHandler Changed;
+
         public IEnumerable<IResourceProvider> ResourceProviders
         {
             get { return this.resourceProviders; }
         }
-
-        public event ResourceChangedEventHandler Changed;
 
         public ResourceExplorer AddResourceProvider(IResourceProvider resourceProvider)
         {
@@ -84,8 +84,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// <summary>
         /// Add a .csproj as resource (adding the project, referenced projects and referenced packages).
         /// </summary>
-        /// <param name="manager"></param>
-        /// <param name="projectFile"></param>
+        /// <param name="projectFile">Project file.</param>
+        /// <param name="ignoreFolders">Folders to ignore.</param>
+        /// <param name="monitorChanges">Whether to track changes.</param>
         /// <returns></returns>
         public static ResourceExplorer LoadProject(string projectFile, string[] ignoreFolders = null, bool monitorChanges = true)
         {
@@ -163,10 +164,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         }
 
         /// <summary>
-        /// get resources of a given type.
+        /// Get resources of a given type.
         /// </summary>
-        /// <param name="fileExtension"></param>
-        /// <returns></returns>
+        /// <param name="fileExtension">File extension filter.</param>
+        /// <returns>The resources.</returns>
         public IEnumerable<IResource> GetResources(string fileExtension)
         {
             foreach (var resourceProvider in this.resourceProviders)
@@ -181,8 +182,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// <summary>
         /// Get resource by filename.
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
+        /// <param name="id">The file name.</param>
+        /// <returns>The resource.</returns>
         public IResource GetResource(string id)
         {
             foreach (var resourceProvider in this.resourceProviders)

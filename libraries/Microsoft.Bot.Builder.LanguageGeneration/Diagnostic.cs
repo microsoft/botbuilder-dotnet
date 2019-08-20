@@ -5,6 +5,33 @@ using System.Text;
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
     /// <summary>
+    /// Represents the severity of diagnostics.
+    /// </summary>
+    public enum DiagnosticSeverity
+    {
+        /// <summary>
+        /// Catch Error info.
+        /// </summary>
+        Error,
+
+        /// <summary>
+        /// Catch Warning info.
+        /// </summary>
+        Warning,
+
+        /// <summary>
+        /// Something to inform about but not a problem.
+        /// </summary>
+        Information,
+
+        /// <summary>
+        /// Something to hint to a better way of doing it, like proposing
+        /// a refactoring.
+        /// </summary>
+        Hint,
+    }
+
+    /// <summary>
     /// Error/Warning report when parsing/evaluating template/inlineText.
     /// </summary>
     public class Diagnostic
@@ -142,32 +169,5 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public int Character { get; set; }
 
         public override string ToString() => $"line {Line}:{Character}";
-    }
-
-    /// <summary>
-    /// Represents the severity of diagnostics.
-    /// </summary>
-    public enum DiagnosticSeverity
-    {
-        /// <summary>
-        /// Catch Error info.
-        /// </summary>
-        Error,
-
-        /// <summary>
-        /// Catch Warning info.
-        /// </summary>
-        Warning,
-
-        /// <summary>
-        /// Something to inform about but not a problem.
-        /// </summary>
-        Information,
-
-        /// <summary>
-        /// Something to hint to a better way of doing it, like proposing
-        /// a refactoring.
-        /// </summary>
-        Hint,
     }
 }

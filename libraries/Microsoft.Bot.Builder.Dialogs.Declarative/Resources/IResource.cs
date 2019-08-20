@@ -19,13 +19,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// <summary>
         /// Get resource as text async.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The resource as text.</returns>
         Task<string> ReadTextAsync();
 
         /// <summary>
         /// Get readonly stream. 
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The resource as a stream.</returns>
         Task<Stream> OpenStreamAsync();
     }
 }

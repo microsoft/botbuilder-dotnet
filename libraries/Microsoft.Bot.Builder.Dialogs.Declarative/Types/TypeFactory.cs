@@ -123,7 +123,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
         {
             EnsureConfig();
 
-            //TODO: we don't want this static initialization, leaving it here for convenience now
+            // TODO: we don't want this static initialization, leaving it here for convenience now
             // while things are changing rapidly still
 
             // Events
