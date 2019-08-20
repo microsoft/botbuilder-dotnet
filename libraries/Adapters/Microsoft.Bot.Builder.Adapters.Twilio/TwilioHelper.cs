@@ -90,11 +90,11 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
                 ChannelId = Channels.Twilio,
                 Conversation = new ConversationAccount()
                 {
-                    Id = twilioMessage.From,
+                    Id = twilioMessage.From ?? twilioMessage.Author,
                 },
                 From = new ChannelAccount()
                 {
-                    Id = twilioMessage.From,
+                    Id = twilioMessage.From ?? twilioMessage.Author,
                 },
                 Recipient = new ChannelAccount()
                 {
