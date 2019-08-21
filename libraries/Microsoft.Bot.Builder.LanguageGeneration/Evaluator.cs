@@ -269,11 +269,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         private EvaluatorLookup CustomizedEvaluatorLookup(EvaluatorLookup baseLookup)
         => (string name) =>
         {
-            var builtInPrefix = "builtin.";
+            var prebuiltPrefix = "prebuilt.";
 
-            if (name.StartsWith(builtInPrefix))
+            if (name.StartsWith(prebuiltPrefix))
             {
-                return baseLookup(name.Substring(builtInPrefix.Length));
+                return baseLookup(name.Substring(prebuiltPrefix.Length));
             }
 
             if (this.TemplateMap.ContainsKey(name))
