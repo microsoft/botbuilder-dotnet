@@ -32,34 +32,15 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("func(A,b,b,)"),
             Test("a.#title"),
             Test("\"hello'"),
+            Test("'hello'.length()"), // not supported currently
             Test("user.lists.{dialog.listName}")
         };
 
-        public static IEnumerable<object[]> ExceptionExpressions => new[]
-        {
-            Test("'hello'.length()"), // not supported currently
-        };
 
         [DataTestMethod]
         [DynamicData(nameof(SyntaxErrorExpressions))]
         [ExpectedException(typeof(SyntaxErrorException))]
         public void ParseSyntaxErrors(string exp)
-        {
-            try
-            {
-                new ExpressionEngine().Parse(exp);
-            }
-            catch (Exception e)
-            {
-                TestContext.WriteLine(e.Message);
-                throw;
-            }
-        }
-
-        [DataTestMethod]
-        [DynamicData(nameof(ExceptionExpressions))]
-        [ExpectedException(typeof(Exception))]
-        public void ParseExceptions(string exp)
         {
             try
             {
