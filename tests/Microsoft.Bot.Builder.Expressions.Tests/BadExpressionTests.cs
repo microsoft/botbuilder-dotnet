@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Diagnostics;
 using Microsoft.Bot.Builder.Expressions.Parser;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -23,7 +24,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
 
         public static object[] Test(string input) => new object[] { input };
 
-        public static IEnumerable<object[]> InvalidExpressions => new[]
+        public static IEnumerable<object[]> SyntaxErrorExpressions => new[]
         {
             Test("a+"),
             Test("a+b*"),
@@ -31,15 +32,18 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("func(A,b,b,)"),
             Test("a.#title"),
             Test("\"hello'"),
-            Test("'hello'.length()"), // not supported currently
             Test("user.lists.{dialog.listName}")
         };
 
+        public static IEnumerable<object[]> ExceptionExpressions => new[]
+        {
+            Test("'hello'.length()"), // not supported currently
+        };
 
         [DataTestMethod]
-        [DynamicData(nameof(InvalidExpressions))]
-        [ExpectedException(typeof(Exception))]
-        public void Parse(string exp)
+        [DynamicData(nameof(SyntaxErrorExpressions))]
+        [ExpectedException(typeof(SyntaxErrorException))]
+        public void ParseSyntaxErrors(string exp)
         {
             try
             {
@@ -48,10 +52,25 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             catch (Exception e)
             {
                 TestContext.WriteLine(e.Message);
-                throw e;
+                throw;
             }
         }
 
+        [DataTestMethod]
+        [DynamicData(nameof(ExceptionExpressions))]
+        [ExpectedException(typeof(Exception))]
+        public void ParseExceptions(string exp)
+        {
+            try
+            {
+                new ExpressionEngine().Parse(exp);
+            }
+            catch (Exception e)
+            {
+                TestContext.WriteLine(e.Message);
+                throw;
+            }
+        }
 
         public static IEnumerable<object[]> BadExpressions => new[]
         {
