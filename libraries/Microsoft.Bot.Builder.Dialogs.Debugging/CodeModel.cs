@@ -3,6 +3,26 @@ using System.Collections.Generic;
 
 namespace Microsoft.Bot.Builder.Dialogs.Debugging
 {
+    public interface ICodeModel
+    {
+        string NameFor(object item);
+
+        IReadOnlyList<ICodePoint> PointsFor(DialogContext dialogContext, object item, string more);
+    }
+
+    public interface ICodePoint
+    {
+        object Item { get; }
+
+        string More { get; }
+
+        string Name { get; }
+
+        object Data { get; }
+
+        object Evaluate(string expression);
+    }
+
     public sealed class CodeModel : ICodeModel
     {
         string ICodeModel.NameFor(object item)
@@ -45,26 +65,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
             return frames;
         }
-    }
-
-    public interface ICodeModel
-    {
-        string NameFor(object item);
-
-        IReadOnlyList<ICodePoint> PointsFor(DialogContext dialogContext, object item, string more);
-    }
-
-    public interface ICodePoint
-    {
-        object Item { get; }
-
-        string More { get; }
-
-        string Name { get; }
-
-        object Data { get; }
-
-        object Evaluate(string expression);
     }
 
     public sealed class CodePoint : ICodePoint

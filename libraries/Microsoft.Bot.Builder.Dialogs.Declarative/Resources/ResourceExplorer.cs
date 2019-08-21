@@ -38,19 +38,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             get { return this.resourceProviders; }
         }
 
-        public ResourceExplorer AddResourceProvider(IResourceProvider resourceProvider)
-        {
-            resourceProvider.Changed += ResourceProvider_Changed;
-
-            if (this.resourceProviders.Any(r => r.Id == resourceProvider.Id))
-            {
-                throw new ArgumentException($"{resourceProvider.Id} has already been added as a resource");
-            }
-
-            this.resourceProviders.Add(resourceProvider);
-            return this;
-        }
-
         /// <summary>
         /// Add a .csproj as resource (adding the project, referenced projects and referenced packages).
         /// </summary>
@@ -131,6 +118,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             }
 
             return explorer;
+        }
+
+        public ResourceExplorer AddResourceProvider(IResourceProvider resourceProvider)
+        {
+            resourceProvider.Changed += ResourceProvider_Changed;
+
+            if (this.resourceProviders.Any(r => r.Id == resourceProvider.Id))
+            {
+                throw new ArgumentException($"{resourceProvider.Id} has already been added as a resource");
+            }
+
+            this.resourceProviders.Add(resourceProvider);
+            return this;
         }
 
         /// <summary>

@@ -39,7 +39,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
             // Process only messages
             if (turnContext.Activity.Type != ActivityTypes.Message)
             {
-                return new RecognizerResult() { Text = turnContext.Activity.Text };
+                return await Task.FromResult(new RecognizerResult() { Text = turnContext.Activity.Text });
             }
 
             // Identify matched intents

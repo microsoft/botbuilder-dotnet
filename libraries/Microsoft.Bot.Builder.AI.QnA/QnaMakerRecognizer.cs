@@ -457,7 +457,8 @@ namespace Microsoft.Bot.Builder.AI.QnA
             throw new NotImplementedException();
         }
 
-        public Task<T> RecognizeAsync<T>(ITurnContext turnContext, CancellationToken cancellationToken) where T : IRecognizerConvert, new()
+        public Task<T> RecognizeAsync<T>(ITurnContext turnContext, CancellationToken cancellationToken)
+            where T : IRecognizerConvert, new()
         {
             throw new NotImplementedException();
         }

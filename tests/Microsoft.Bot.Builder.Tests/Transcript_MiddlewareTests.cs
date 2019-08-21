@@ -148,40 +148,6 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.AreEqual(0, pagedResult.Items.Length);
         }
 
-        private static async Task LogDeleteActivitesTest(ITranscriptStore transcriptStore)
-        {
-            var conversation = TestAdapter.CreateConversation(Guid.NewGuid().ToString("n"));
-            TestAdapter adapter = new TestAdapter(conversation)
-                .Use(new TranscriptLoggerMiddleware(transcriptStore));
-            string activityId = null;
-            await new TestFlow(adapter, async (context, cancellationToken) =>
-            {
-                if (context.Activity.Text == "deleteIt")
-                {
-                    await context.DeleteActivityAsync(activityId);
-                }
-                else
-                {
-                    var activity = context.Activity.CreateReply("response");
-                    var response = await context.SendActivityAsync(activity);
-                    activityId = response.Id;
-                }
-            })
-                .Send("foo")
-                    .AssertReply("response")
-                .Send("deleteIt")
-                .StartTestAsync();
-
-            await Task.Delay(1000);
-
-            var pagedResult = await transcriptStore.GetTranscriptActivitiesAsync(conversation.ChannelId, conversation.Conversation.Id);
-            Assert.AreEqual(3, pagedResult.Items.Length);
-            Assert.AreEqual("foo", pagedResult.Items[0].AsMessageActivity().Text);
-            Assert.IsNotNull(pagedResult.Items[1].AsMessageDeleteActivity());
-            Assert.AreEqual(ActivityTypes.MessageDelete, pagedResult.Items[1].Type);
-            Assert.AreEqual("deleteIt", pagedResult.Items[2].AsMessageActivity().Text);
-        }
-
         [TestMethod]
         [TestCategory("Middleware")]
         public async Task MemoryTranscript_LogActivities()
@@ -244,6 +210,40 @@ namespace Microsoft.Bot.Builder.Tests
         {
             var transcriptStore = GetFileTranscriptLogger();
             await TestDateLogUpdateActivitiesTest(transcriptStore);
+        }
+
+        private static async Task LogDeleteActivitesTest(ITranscriptStore transcriptStore)
+        {
+            var conversation = TestAdapter.CreateConversation(Guid.NewGuid().ToString("n"));
+            TestAdapter adapter = new TestAdapter(conversation)
+                .Use(new TranscriptLoggerMiddleware(transcriptStore));
+            string activityId = null;
+            await new TestFlow(adapter, async (context, cancellationToken) =>
+            {
+                if (context.Activity.Text == "deleteIt")
+                {
+                    await context.DeleteActivityAsync(activityId);
+                }
+                else
+                {
+                    var activity = context.Activity.CreateReply("response");
+                    var response = await context.SendActivityAsync(activity);
+                    activityId = response.Id;
+                }
+            })
+                .Send("foo")
+                    .AssertReply("response")
+                .Send("deleteIt")
+                .StartTestAsync();
+
+            await Task.Delay(1000);
+
+            var pagedResult = await transcriptStore.GetTranscriptActivitiesAsync(conversation.ChannelId, conversation.Conversation.Id);
+            Assert.AreEqual(3, pagedResult.Items.Length);
+            Assert.AreEqual("foo", pagedResult.Items[0].AsMessageActivity().Text);
+            Assert.IsNotNull(pagedResult.Items[1].AsMessageDeleteActivity());
+            Assert.AreEqual(ActivityTypes.MessageDelete, pagedResult.Items[1].Type);
+            Assert.AreEqual("deleteIt", pagedResult.Items[2].AsMessageActivity().Text);
         }
 
         private FileTranscriptLogger GetFileTranscriptLogger()

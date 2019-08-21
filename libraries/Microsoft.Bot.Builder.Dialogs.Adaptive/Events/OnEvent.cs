@@ -111,10 +111,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
         /// <returns>A <see cref="Task"/> with plan change list.</returns>
         public async virtual Task<List<ActionChangeList>> OnExecuteAsync(SequenceContext planning)
         {
-            return new List<ActionChangeList>()
+            return await Task.FromResult(new List<ActionChangeList>()
             {
                 this.OnCreateChangeList(planning)
-            };
+            });
         }
 
         public virtual string GetIdentity()

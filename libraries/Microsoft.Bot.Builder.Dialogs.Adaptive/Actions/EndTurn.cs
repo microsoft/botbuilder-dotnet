@@ -34,7 +34,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            return Dialog.EndOfTurn;
+            return await Task.FromResult(Dialog.EndOfTurn);
         }
     }
 }
