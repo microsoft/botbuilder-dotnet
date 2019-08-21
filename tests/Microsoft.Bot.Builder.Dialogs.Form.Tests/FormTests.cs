@@ -17,6 +17,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Form.Tests
     {
         private static readonly string SchemaFile = @"resources\sandwich-schema.json";
 
+        // Tests needed:
+        // Simple mapping
+        // Clarify
+        // SingletonChoice
+        // SlotChoice
+        // Pending changes with updated singleton slot in each category
         [Fact]
         public async Task TestGeneration()
         {

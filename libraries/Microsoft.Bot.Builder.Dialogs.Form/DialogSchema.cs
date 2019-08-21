@@ -28,7 +28,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
             var property = Property;
             var steps = path.Split('.', '[');
             var step = 0;
-            while (property != null)
+            while (property != null && step < steps.Length)
             {
                 var found = false;
                 foreach (var child in property.Children)

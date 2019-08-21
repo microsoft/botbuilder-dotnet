@@ -773,7 +773,7 @@ namespace Microsoft.Bot.Builder.Expressions
             // NOTE: what about other type of TKey, TValue?
             if (instance is IDictionary<string, object> idict)
             {
-                if (!idict.TryGetValue(property, out value))
+                if (!idict.TryGetValue(property, out value)) 
                 {
                     // fall back to case insensitive
                     var prop = idict.Keys.Where(k => k.ToLower() == property).SingleOrDefault();

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Dialogs.Form
+namespace Microsoft.Bot.Builder.Dialogs.Form.Actions
 {
     public class Ask : SendActivity
     {
