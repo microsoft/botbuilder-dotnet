@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using Microsoft.Rest;
@@ -21,6 +22,34 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
         public JObject Schema { get; }
 
         public PropertySchema Property { get; }
+
+        public PropertySchema PathToSchema(string path)
+        {
+            var property = Property;
+            var steps = path.Split('.', '[');
+            var step = 0;
+            while (property != null)
+            {
+                var found = false;
+                foreach (var child in property.Children)
+                {
+                    if (child.Name == steps[step])
+                    {
+                        property = child;
+                        while (++step < steps.Length && (steps[step] == "." || steps[step] == "[]")) ;
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (!found)
+                {
+                    property = null;
+                }
+            }
+
+            return property;
+        }
 
         public void Analyze(Func<string, JToken, bool> analyzer)
         {

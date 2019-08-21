@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Linq;
 
@@ -54,6 +55,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                 }
             }
         }
+
+        /// <summary>
+        /// Gets name for this property.
+        /// </summary>
+        /// <value>
+        /// Name for this property.
+        /// </value>
+        public string Name => Path.Split('.', '[').Last();
 
         /// <summary>
         /// Gets path to schema with [] for arrays and otherwise . for path accessors.

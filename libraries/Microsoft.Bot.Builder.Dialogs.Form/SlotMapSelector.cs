@@ -1,6 +1,8 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices.ComTypes;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
@@ -11,6 +13,7 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors;
 using Microsoft.Bot.Builder.Expressions;
 using Microsoft.Bot.Builder.Expressions.Parser;
+using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Dialogs.Form
 {
@@ -118,6 +121,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                 //
                 // Key assumptions:
                 // * A single entity type maps to a single slot.  Otherwise we have to figure out how to name different entity instances.
+                //
+                // Need to figure out how to handle operations.  They could be done in LUIS as composites which allow putting together multiples ones. 
+                // You can imagine doing add/remove, but another scenario would be to do "change seattle to dallas" where you are referring to where 
+                // a specific value is found independent of which slot has the value.
                 if (AnalyzeEntities(context, out var entityToInfo))
                 {
                     // There exist some entities
@@ -183,11 +190,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
             return matches;
         }
 
+        // Combine all the information we have about entities
         private Dictionary<string, List<EntityInfo>> NormalizeEntities(SequenceContext context)
         {
             var entityToInfo = new Dictionary<string, List<EntityInfo>>();
 
             // TODO: In a multiple event world, we only want to do this at the end of the RecognizedIntent round
+            var text = (string)context.State.GetValue(DialogContextState.TURN_RECOGNIZED + ".text");
             if (context.State.TryGetValue<dynamic>(DialogContextState.TURN_RECOGNIZED + ".entities", out var entities))
             {
                 // TODO: We should have RegexRecognizer return $instance or make this robust to it missing, i.e. assume no entities overlap
@@ -211,17 +220,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
 
                             var info = new EntityInfo
                             {
+                                Name = name,
                                 Entity = val,
                                 Start = (int)instance.startIndex,
                                 End = (int)instance.endIndex,
                                 Text = (string)instance.text,
                                 Type = (string)instance.type,
                                 Role = (string)instance.role,
-                                Score = (double)(instance.score ?? 0.0d)
+                                Score = (double)(instance.score ?? 0.0d),
                             };
-
                             // Eventually this could be passed in
                             info.Priority = info.Role == null ? 1 : 0;
+                            info.Coverage = (info.End - info.Start) / (double)text.Length;
                             infos.Add(info);
                         }
                     }
@@ -231,9 +241,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
             return entityToInfo;
         }
 
-        private Queues AssignEntities(Dictionary<string, List<EntityInfo>> entities)
+        // Generate possible entity to slot mappings
+        private IReadOnlyList<SlotEntityInfo> Candidates(Dictionary<string, List<EntityInfo>> entities)
         {
-            var queues = new Queues();
             var candidates = new List<SlotEntityInfo>();
             foreach (var slot in _schema.Property.Children)
             {
@@ -253,10 +263,39 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                 }
             }
 
-            // Group by specific entity order by priority then by slots across expected/unexpected
+            return candidates;
+        }
+
+        private void AddMappingToQueue(SlotMapping mapping, Queues queues)
+        {
+            if (mapping.Entity.Entity is Array arr && arr.Length > 1)
+            {
+                queues.Clarify.Add(mapping);
+            }
+            else
+            {
+                queues.Set.Add(mapping);
+            }
+        }
+
+        // Remove any entities that overlap a selected entity
+        private void RemoveOverlappingEntities(EntityInfo entity, Dictionary<string, List<EntityInfo>> entities)
+        {
+            foreach (var infos in entities.Values)
+            {
+                infos.RemoveAll(e => e.Overlaps(entity));
+            }
+        }
+
+        private void AddToQueues(Dictionary<string, List<EntityInfo>> entities, Queues queues)
+        {
+            var candidates = Candidates(entities);
+
+            // Group by specific entity order by priority + coverage then by slots across expected/unexpected
+            // Captures the intuition that more specific entities or larger entities are preferred
             var choices = from candidate in candidates
                           group candidate by candidate.Entity into entityGroup
-                          orderby entityGroup.Key.Priority
+                          orderby entityGroup.Key.Priority ascending, entityGroup.Key.Coverage descending
                           select new
                           {
                               entityGroup.Key,
@@ -265,97 +304,147 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                                       orderby expected.Key descending
                                       select expected
                           };
-            // TODO: need to identify multiple entities going to a singleton slot
-            // This involves being able to move from existing queues
-            var slotToEntities = new Dictionary<PropertySchema, List<EntityInfo>>();
+
             foreach (var entityChoices in choices)
             {
-                foreach (var entitySlots in entityChoices.slots)
+                var entity = entityChoices.Key;
+                if (entities.TryGetValue(entity.Name, out var entityInfos) && entityInfos.Contains(entity))
                 {
-                    if (entitySlots.Count() == 1)
+                    RemoveOverlappingEntities(entity, entities);
+                    foreach (var entitySlots in entityChoices.slots)
                     {
-                        // Only a single slot consumes entity
-                        var slotEntity = entitySlots.First();
-                        var entity = slotEntity.Entity;
-                        var slot = slotEntity.Slot;
-                        if (!slot.IsArray)
+                        var slotOps = from entitySlot in entitySlots
+                                      select new SlotOp
+                                      {
+                                          // TODO: Figure out operation from role?
+                                          // If composite do we have role:value, add{role:value}, remove{role:value}, add{type:value}, changeValue, ...
+                                          // Would be nice if extensible...
+                                          Operation = Operations.Add,
+                                          Slot = entitySlot.Slot.Path
+                                      };
+                        if (entitySlots.Count() == 1)
                         {
-                            if (!slotToEntities.TryGetValue(slot, out var slotEntities))
+                            // Only a single slot consumes entity
+                            var slotEntity = entitySlots.First();
+                            var slot = slotEntity.Slot;
+                            // Send to clarify or set
+                            var mapping = new SlotMapping
                             {
-                                slotEntities = new List<EntityInfo>();
-                                slotToEntities.Add(slot, slotEntities);
-                            }
-
-                            slotEntities.Add(entity);
-                        }
-
-                        // TODO: Figure out operation from role?
-                        // If composite do we have role:value, add{role:value}, remove{role:value}, add{type:value}, ...
-                        // Would be nice if extensible...
-
-                        // TODO: Figure out if entity needs clarification
-                        // Put in either clarify or set
-                    }
-                    else
-                    {
-                        // Multiple slots want the same entity
-                    }
-                }
-            }
-
-            // TODO: Need to go through and pull out singleton slots with multiple entities
-
-            // TODO: Any entity not in mapped goes to unknown
-
-            return queues;
-        }
-
-        private void AddActions(List<IDialog> actions, HandlerInfo info)
-        {
-            foreach (var action in info.Handler.Actions)
-            {
-                actions.Add(action);
-            }
-        }
-
-        private double ComputeCoverage(SequenceContext context, IEnumerable<string> entityNames)
-        {
-            var covered = 0;
-            var text = (string)context.State.GetValue(DialogContextState.TURN_RECOGNIZED + ".text");
-            foreach (var name in entityNames)
-            {
-                var path = DialogContextState.TURN_RECOGNIZED + ".entities." + name;
-                var entities = (object[])context.State.GetValue(path);
-                var last = name.LastIndexOf(".");
-                var instancePath = DialogContextState.TURN_RECOGNIZED + ".entities." + name.Substring(0, last) + "$instance." + name.Substring(last);
-                if (context.State.TryGetValue<InstanceData[]>(instancePath, out InstanceData[] instances))
-                {
-                    foreach (var instance in instances)
-                    {
-                        covered += instance.EndIndex - instance.StartIndex;
-                    }
-                }
-                else
-                {
-                    foreach (var entity in entities)
-                    {
-                        if (entity is string str)
-                        {
-                            // If string use the value length
-                            covered += str.Length;
+                                Entity = entity,
+                                Slot = slotOps.First()
+                            };
+                            AddMappingToQueue(mapping, queues);
                         }
                         else
                         {
-                            // If not string just count as 1
-                            ++covered;
+                            // Multiple slots want the same entity
+                            queues.SlotChoices.Add(new SlotChoices
+                            {
+                                Entity = entity,
+                                Slots = slotOps.ToList()
+                            });
                         }
                     }
                 }
             }
 
-            return (double)covered / text.Length;
+            // Collect unknown entities
+            foreach (var infos in entities.Values)
+            {
+                foreach (var info in infos)
+                {
+                    queues.Unknown.Add(info);
+                }
+            }
         }
 
+        private Queues SlotQueues(string path, Dictionary<PropertySchema, Queues> slotToQueues)
+        {
+            var prop = _schema.PathToSchema(path);
+            if (!slotToQueues.TryGetValue(prop, out var slotQueues))
+            {
+                slotQueues = new Queues();
+                slotToQueues[prop] = slotQueues;
+            }
+            return slotQueues;
+        }
+
+        // Create queues for each slot
+        private Dictionary<PropertySchema, Queues> PerSlotQueues(Queues queues)
+        {
+            var slotToQueues = new Dictionary<PropertySchema, Queues>();
+            foreach (var entry in queues.Set)
+            {
+                SlotQueues(entry.Slot.Slot, slotToQueues).Set.Add(entry);
+            }
+
+            foreach (var entry in queues.Clarify)
+            {
+                SlotQueues(entry.Slot.Slot, slotToQueues).Clarify.Add(entry);
+            }
+
+            foreach (var entry in queues.SingletonChoice)
+            {
+                SlotQueues(entry.Slot.Slot, slotToQueues).SingletonChoice.Add(entry);
+            }
+
+            foreach (var entry in queues.Clear)
+            {
+                SlotQueues(entry, slotToQueues).Clear.Add(entry);
+            }
+
+            foreach (var entry in queues.SlotChoices)
+            {
+                foreach (var slot in entry.Slots)
+                {
+                    SlotQueues(slot.Slot, slotToQueues).SlotChoices.Add(entry);
+                }
+            }
+
+            return slotToQueues;
+        }
+
+        private void AnalyzeQueues(Queues queues)
+        {
+            var slotToQueues = PerSlotQueues(queues);
+            foreach (var entry in slotToQueues)
+            {
+                var slot = entry.Key;
+                var slotQueues = entry.Value;
+                if (!slot.IsArray && slotQueues.Set.Count() + slotQueues.Clarify.Count() > 1)
+                {
+                    // Singleton with multiple operations
+                    var mappings = from mapping in slotQueues.Set.Union(slotQueues.Clarify) where mapping.Slot.Operation != Operations.Remove select mapping;
+                    switch (mappings.Count())
+                    {
+                        case 0:
+                            queues.Clear.Add(slot.Path);
+                            break;
+                        case 1:
+                            AddMappingToQueue(mappings.First(), queues);
+                            break;
+                        default:
+                            queues.SingletonChoice.Add(new SingletonChoices
+                            {
+                                Entities = (from mapping in mappings select mapping.Entity).ToList(),
+                                Slot = mappings.First().Slot
+                            });
+                            break;
+                    }
+                }
+            }
+
+            // TODO: There is a lot more we can do here
+        }
+
+        // Assign entities to queues
+        private void AssignEntities(Dictionary<string, List<EntityInfo>> entities, Queues queues)
+        {
+            AddToQueues(entities, queues);
+            AnalyzeQueues(queues);
+        }
+
+        // Proposed mapping
         private class SlotEntityInfo
         {
             public PropertySchema Slot { get; set; }
@@ -365,6 +454,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
             public bool Expected { get; set; }
         }
 
+        // Slot and operation
         private class SlotOp
         {
             public string Slot { get; set; }
@@ -372,37 +462,44 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
             public string Operation { get; set; }
         }
 
-        private class SlotAndEntity
+        // Simple mapping
+        private class SlotMapping
         {
             public SlotOp Slot { get; set; }
 
             public EntityInfo Entity { get; set; }
         }
 
+        // Select from multiple entities for singleton
         private class SingletonChoices
         {
             public List<EntityInfo> Entities { get; set; } = new List<EntityInfo>();
+
             public SlotOp Slot { get; set; }
         }
 
+        // Select which slot entity belongs to
         private class SlotChoices
         {
             public List<SlotOp> Slots { get; set; } = new List<SlotOp>();
 
-            public EntityInfo Entity;
+            public EntityInfo Entity { get; set; }
         }
 
         private class Queues
         {
             public List<EntityInfo> Unknown { get; } = new List<EntityInfo>();
 
-            public List<SlotAndEntity> Set { get; } = new List<SlotAndEntity>();
+            public List<SlotMapping> Set { get; } = new List<SlotMapping>();
 
-            public List<SlotAndEntity> Clarify { get; } = new List<SlotAndEntity>();
+            public List<SlotMapping> Clarify { get; } = new List<SlotMapping>();
 
             public List<SingletonChoices> SingletonChoice { get; } = new List<SingletonChoices>();
 
             public List<SlotChoices> SlotChoices { get; } = new List<SlotChoices>();
+
+            // Slots to clear
+            public List<string> Clear { get; } = new List<string>();
         }
 
         private class HandlerInfo
@@ -427,7 +524,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                         Slots.Add(prop.Property);
                     }
 
-                    if (action is FormInput)
+                    if (action is Ask)
                     {
                         FormInput = true;
                     }
@@ -455,6 +552,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
 
         private class EntityInfo
         {
+            public string Name { get; set; }
+
             public object Entity { get; set; }
 
             public int Start { get; set; }
@@ -470,6 +569,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
             public string Type { get; set; }
 
             public int Priority { get; set; }
+
+            public double Coverage { get; set; }
+
+            public bool Overlaps(EntityInfo entity)
+                => Start <= entity.End && End >= entity.Start;
         }
     }
 }

@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Events;
@@ -30,7 +32,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
 
         public DialogSchema OutputSchema { get; }
 
-        protected List<string> Entities { get; } = new List<string>();
+        protected override async Task<bool> ProcessEventAsync(SequenceContext sequenceContext, DialogEvent dialogEvent, bool preBubble, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            // TODO: Emit events based on memory information
+            return await base.ProcessEventAsync(sequenceContext, dialogEvent, preBubble, cancellationToken);
+        }
 
         // For simple singleton slot:
         //  Set values
@@ -144,7 +150,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                             constraint: $"count({entity}) > 1",
                             actions: new List<IDialog>
                             {
-                                new FormInput(
+                                new Ask(
                                     text: $"[disambiguate({entity}, {path})]",
                                     expectedSlots: new List<string> { path })
                             }));
@@ -220,7 +226,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                         {
                             // Ask which one
                             new SetProperty { Property = $"dialog.{slot}_choice", Value = entity },
-                            new FormInput($"which({name}, {entity})]", expectedSlots: new List<string>())
+                            new Ask($"which({name}, {entity})]", expectedSlots: new List<string>())
                             // TODO: Create new list of just selected value.
                         },
                         ElseActions = new List<IDialog>
@@ -241,7 +247,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                                 Actions = new List<IDialog>
                                 {
                                     // Clarify value
-                                    new FormInput($"[clarification({name})]", slots),
+                                    new Ask($"[clarification({name})]", slots),
                                     new IfCondition()
                                     {
                                         Condition = ""
@@ -280,7 +286,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                                  Condition = $"count(working[dialog.index]) > 1",
                                  Actions = new List<IDialog>
                                  {
-                                     new FormInput($"[clarify({slot}, dialog.value)]")
+                                     new Ask($"[clarify({slot}, dialog.value)]")
                                  }
                              }
                          }

@@ -150,7 +150,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             return await this.ProcessEventAsync(sequenceContext, dialogEvent, preBubble: false, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
-        protected async Task<bool> ProcessEventAsync(SequenceContext sequenceContext, DialogEvent dialogEvent, bool preBubble, CancellationToken cancellationToken = default(CancellationToken))
+        protected virtual async Task<bool> ProcessEventAsync(SequenceContext sequenceContext, DialogEvent dialogEvent, bool preBubble, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Save into turn
             sequenceContext.State.SetValue(DialogContextState.TURN_DIALOGEVENT, dialogEvent);

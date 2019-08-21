@@ -9,10 +9,10 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Form
 {
-    public class FormInput : SendActivity
+    public class Ask : SendActivity
     {
         [JsonConstructor]
-        public FormInput(
+        public Ask(
             string text = null, 
             IList<string> expectedSlots = null, 
             [CallerFilePath] string callerPath = "", 
