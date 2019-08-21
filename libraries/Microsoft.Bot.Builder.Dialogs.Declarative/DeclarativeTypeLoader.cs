@@ -1,7 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
@@ -21,27 +23,37 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
         {
             IRefResolver refResolver = new IdRefResolver(resourceExplorer, registry);
 
+            string id = resource.Id;
             var paths = new Stack<string>();
-            paths.Push(resource.Id);
+            if (resource is FileResource fileResource)
+            {
+                id = fileResource.FullName;
+                paths.Push(fileResource.FullName);
+            }
 
-            var json = await resource.ReadTextAsync();
+            try
+            {
+                var json = await resource.ReadTextAsync();
 
-            return _load<T>(registry, refResolver, paths, json);
+                return _load<T>(registry, refResolver, paths, json);
+            }
+            catch (Exception err)
+            {
+                if (err.InnerException is SyntaxErrorException)
+                {
+                    throw new SyntaxErrorException(err.InnerException.Message)
+                    {
+                        Source = $"{id}{err.InnerException.Source}"
+                    };
+                }
+
+                throw new Exception($"{id} error: {err.Message}\n{err.InnerException?.Message}");
+            }
         }
 
         public static T Load<T>(IResource resource, ResourceExplorer resourceExplorer, Source.IRegistry registry)
         {
-            IRefResolver refResolver = new IdRefResolver(resourceExplorer, registry);
-
-            var paths = new Stack<string>();
-            if (resource is FileResource fileResource)
-            {
-                paths.Push(fileResource.FullName);
-            }
-
-            var json = resource.ReadTextAsync().GetAwaiter().GetResult();
-
-            return _load<T>(registry, refResolver, paths, json);
+            return LoadAsync<T>(resource, resourceExplorer, registry).GetAwaiter().GetResult();
         }
 
         private static T _load<T>(Source.IRegistry registry, IRefResolver refResolver, Stack<string> paths, string json)
