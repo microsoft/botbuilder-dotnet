@@ -323,7 +323,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                 return null;
             }
 
-            Message decryptedMessage = (await _api.GetMessageAsync(payload.data.id.ToString()).ConfigureAwait(false)).GetData();
+            Message decryptedMessage = (await _api.GetMessageAsync(payload.MessageData.Id).ConfigureAwait(false)).GetData();
             var activity = new Activity
             {
                 Id = decryptedMessage.Id,
