@@ -1,42 +1,42 @@
 {
-  "$schema": "../../../../app.schema",
-  "$type": "Microsoft.AdaptiveDialog",
-  "events": [
-    {
-      "$type": "Microsoft.OnBeginDialog",
-      "actions": [
+    "$schema": "../../../../app.schema",
+    "$type": "Microsoft.AdaptiveDialog",
+    "events": [
         {
-          "$type": "Microsoft.IfCondition",
-          "condition": "dialog.token == null",
-          "actions": [
-            {
-              "$type": "Microsoft.OAuthPrompt",
-              "connectionName": "msgraph",
-              "title": "Log in",
-              "text": "Please log in to your Microsoft account",
-              "property": "dialog.token"
-            }
-          ]
-        },
-        {
-          "$type": "Microsoft.HttpRequest",
-          "url": "https://graph.microsoft.com/v1.0/me/contacts?$filter=startswith(displayName,'{user.email}')",
-          "method": "GET",
-          "headers": {
-            "Authorization": "Bearer {dialog.token.Token}"
-          },
-          "property": "dialog.getResponse"
-        },
-        {
-          "$type": "Microsoft.SendActivity",
-          "activity": "The contact you find is {dialog.getResponse.value[0].displayName}, email address is {dialog.getResponse.value[0].emailAddresses[0].address}."
-        },
-        {
-          "$type": "Microsoft.SetProperty",
-          "value": "dialog.getResponse.value[0].emailAddresses[0].address",
-          "property": "user.email"
+            "$type": "Microsoft.OnBeginDialog",
+            "actions": [
+                {
+                    "$type": "Microsoft.IfCondition",
+                    "condition": "dialog.token == null",
+                    "actions": [
+                        {
+                            "$type": "Microsoft.OAuthInput",
+                            "connectionName": "msgraph",
+                            "title": "Log in",
+                            "text": "Please log in to your Microsoft account",
+                            "property": "dialog.token"
+                        }
+                    ]
+                },
+                {
+                    "$type": "Microsoft.HttpRequest",
+                    "url": "https://graph.microsoft.com/v1.0/me/contacts?$filter=startswith(displayName,'{user.email}')",
+                    "method": "GET",
+                    "headers": {
+                        "Authorization": "Bearer {dialog.token.Token}"
+                    },
+                    "property": "dialog.getResponse"
+                },
+                {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "The contact you find is {dialog.getResponse.content.value[0].displayName}, email address is {dialog.getResponse.content.value[0].emailAddresses[0].address}."
+                },
+                {
+                    "$type": "Microsoft.SetProperty",
+                    "value": "dialog.getResponse.content.value[0].emailAddresses[0].address",
+                    "property": "user.email"
+                }
+            ]
         }
-      ]
-    }
-  ]
+    ]
 }

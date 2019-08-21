@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Diagnostics;
 using Microsoft.Bot.Builder.Expressions.Parser;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -23,7 +24,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
 
         public static object[] Test(string input) => new object[] { input };
 
-        public static IEnumerable<object[]> InvalidExpressions => new[]
+        public static IEnumerable<object[]> SyntaxErrorExpressions => new[]
         {
             Test("a+"),
             Test("a+b*"),
@@ -37,9 +38,9 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
 
 
         [DataTestMethod]
-        [DynamicData(nameof(InvalidExpressions))]
-        [ExpectedException(typeof(Exception))]
-        public void Parse(string exp)
+        [DynamicData(nameof(SyntaxErrorExpressions))]
+        [ExpectedException(typeof(SyntaxErrorException))]
+        public void ParseSyntaxErrors(string exp)
         {
             try
             {
@@ -48,10 +49,9 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             catch (Exception e)
             {
                 TestContext.WriteLine(e.Message);
-                throw e;
+                throw;
             }
         }
-
 
         public static IEnumerable<object[]> BadExpressions => new[]
         {

@@ -287,6 +287,31 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             evaled = engine.EvaluateTemplate("otherEscape", null);
             Assert.AreEqual(evaled, @"Hi \y \");
+
+            evaled = engine.EvaluateTemplate("escapeInExpression", null);
+            Assert.AreEqual(evaled, "Hi hello\\\\");
+
+            evaled = engine.EvaluateTemplate("escapeInExpression2", null);
+            Assert.AreEqual(evaled, "Hi hello'");
+
+            evaled = engine.EvaluateTemplate("escapeInExpression3", null);
+            Assert.AreEqual(evaled, "Hi hello\"");
+
+            evaled = engine.EvaluateTemplate("escapeInExpression4", null);
+            Assert.AreEqual(evaled, "Hi hello\"");
+
+            evaled = engine.EvaluateTemplate("escapeInExpression5", null);
+            Assert.AreEqual(evaled, "Hi hello\n");
+
+            evaled = engine.EvaluateTemplate("escapeInExpression6", null);
+            Assert.AreEqual(evaled, "Hi hello\n");
+
+            var todos = new[] { "A", "B", "C" };
+            evaled = engine.EvaluateTemplate("showTodo", new { todos });
+            Assert.AreEqual(evaled, Environment.NewLine + "    Your most recent 3 tasks are" + Environment.NewLine + "    * A\n* B\n* C" + Environment.NewLine + "    ");
+
+            evaled = engine.EvaluateTemplate("showTodo", null);
+            Assert.AreEqual(evaled, Environment.NewLine + "    You don't have any \"t\\\\odo'\"." + Environment.NewLine + "    ");
         }
 
         [TestMethod]
@@ -574,30 +599,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.AreEqual(2, evaled.Count);
             Assert.AreEqual("You have 2 alarms, they are 8 pm at tomorrow", evaled[0]);
             Assert.AreEqual("You have 2 alarms, they are 8 pm of tomorrow", evaled[1]);
-        }
-
-        [TestMethod]
-        public void TestExpandTemplateWithRefInForeach()
-        {
-            var engine = new TemplateEngine().AddFile(GetExampleFilePath("Expand.lg"));
-
-            var alarms = new[]
-            {
-                new
-                {
-                    time = "7 am",
-                    date = "tomorrow"
-                },
-                new
-                {
-                    time = "8 pm",
-                    date = "tomorrow"
-                }
-            };
-
-            var evaled = engine.ExpandTemplate("ShowAlarmsWithForeach", new { alarms = alarms });
-            Assert.AreEqual(1, evaled.Count);
-            Assert.AreEqual("You have 2 alarms, 7 am at tomorrow and 8 pm at tomorrow", evaled[0]);
         }
 
         [TestMethod]

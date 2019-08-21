@@ -37,11 +37,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         private Stack<EvaluationTarget> evaluationTargetStack = new Stack<EvaluationTarget>();
 
-        public Analyzer(List<LGTemplate> templates)
+        public Analyzer(List<LGTemplate> templates, ExpressionEngine expressionEngine)
         {
             Templates = templates;
             templateMap = templates.ToDictionary(t => t.Name);
-            _expressionParser = new ExpressionEngine(new GetMethodExtensions(new Evaluator(this.Templates, null)).GetMethodX);
+
+            // create an evaluator to leverage it's customized function look up for checking
+            var evaluator = new Evaluator(Templates, expressionEngine);
+            this._expressionParser = evaluator.ExpressionEngine;
         }
 
         public List<LGTemplate> Templates { get; }

@@ -55,7 +55,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         public AllowInterruptions AllowInterruptions { get; set; } = AllowInterruptions.NotRecognized;
 
         /// <summary>
-        /// Initial value for the prompt
+        /// Gets or sets the initial value for the prompt.
         /// </summary>
         [JsonProperty("value")]
         public string Value
@@ -65,29 +65,34 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         }
 
         /// <summary>
-        /// Activity to send to the user
+        /// Gets or sets the activity to send to the user.
         /// </summary>
         public ITemplate<Activity> Prompt { get; set; }
 
         /// <summary>
-        /// Activity template for retrying prompt
+        /// Gets or sets the activity template for retrying prompt.
         /// </summary>
         public ITemplate<Activity> UnrecognizedPrompt { get; set; }
 
         /// <summary>
-        /// Activity template to send to the user whenever the value provided is invalid
+        /// Gets or sets the activity template to send to the user whenever the value provided is invalid.
         /// </summary>
         public ITemplate<Activity> InvalidPrompt { get; set; }
+
+        /// <summary>
+        /// Gets or sets the activity template to send when MaxTurnCount has been reached and the default value is used.
+        /// </summary>
+        public ITemplate<Activity> DefaultValueResponse { get; set; }
 
         public List<string> Validations { get; set; } = new List<string>();
 
         /// <summary>
-        /// Maximum number of times to ask the user for this value before the dilog gives up.
+        /// Gets or sets maximum number of times to ask the user for this value before the dilog gives up.
         /// </summary>
         public int? MaxTurnCount { get; set; }
 
         /// <summary>
-        /// Default value for the input dialog
+        /// Gets or sets the default value for the input dialog when MaxTurnCount is exceeded.
         /// </summary>
         public string DefaultValue
         {
@@ -96,7 +101,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         }
 
         /// <summary>
-        /// The property from memory to pass to the calling dialog and to set the return value to.
+        /// Gets or sets the property from memory to pass to the calling dialog and to set the return value to.
         /// </summary>
         public string Property
         {
@@ -104,6 +109,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             {
                 return OutputBinding;
             }
+
             set
             {
                 InputBindings[DialogContextState.DIALOG_VALUE] = value;
@@ -161,7 +167,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
             if (stepCount > 0)
             {
-                return await this.PromptUser(dc, InputState.Missing);
+                return await this.PromptUser(dc, InputState.Missing).ConfigureAwait(false);
             }
 
             var turnCount = dc.State.GetValue<int>(TURN_COUNT_PROPERTY, 0);
@@ -172,29 +178,35 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             if (state == InputState.Valid)
             {
                 var input = dc.State.GetValue<object>(INPUT_PROPERTY);
-                return await dc.EndDialogAsync(input);
+                return await dc.EndDialogAsync(input).ConfigureAwait(false);
             }
             else if (this.MaxTurnCount == null || turnCount < this.MaxTurnCount)
             {
                 // increase the turnCount as last step
                 dc.State.SetValue(TURN_COUNT_PROPERTY, turnCount + 1);
-                return await this.PromptUser(dc, state);
+                return await this.PromptUser(dc, state).ConfigureAwait(false);
             }
             else
             {
                 if (this.defaultValue != null)
                 {
                     var (value, error) = this.defaultValue.TryEvaluate(dc.State);
-                    return await dc.EndDialogAsync(value);
+                    if (this.DefaultValueResponse != null)
+                    {
+                        var response = await this.DefaultValueResponse.BindToData(dc.Context, dc.State).ConfigureAwait(false);
+                        await dc.Context.SendActivityAsync(response).ConfigureAwait(false);
+                    }
+
+                    return await dc.EndDialogAsync(value).ConfigureAwait(false);
                 }
             }
 
-            return await dc.EndDialogAsync();
+            return await dc.EndDialogAsync().ConfigureAwait(false);
         }
 
         public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return await this.PromptUser(dc, InputState.Missing);
+            return await this.PromptUser(dc, InputState.Missing).ConfigureAwait(false);
         }
 
         protected abstract Task<InputState> OnRecognizeInput(DialogContext dc);
@@ -327,7 +339,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
             }
 
-            return await this.Prompt.BindToData(dc.Context, dc.State);
+            return await this.Prompt.BindToData(dc.Context, dc.State).ConfigureAwait(false);
         }
 
         private async Task<InputState> RecognizeInput(DialogContext dc)
@@ -392,6 +404,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                             return InputState.Invalid;
                         }
                     }
+
                     return InputState.Valid;
                 }
                 else
