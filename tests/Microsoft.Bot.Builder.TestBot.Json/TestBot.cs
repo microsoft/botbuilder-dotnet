@@ -20,6 +20,8 @@ using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Expressions.Parser;
 using Microsoft.Bot.Schema;
 using static Microsoft.Bot.Builder.Dialogs.Debugging.Source;
+using System.Diagnostics;
+using System.Data;
 
 namespace Microsoft.Bot.Builder.TestBot.Json
 {
@@ -70,11 +72,23 @@ namespace Microsoft.Bot.Builder.TestBot.Json
 
             foreach (var resource in this.resourceExplorer.GetResources(".dialog").Where(r => r.Id.EndsWith(".main.dialog")))
             {
-                var name = Path.GetFileNameWithoutExtension(Path.GetFileNameWithoutExtension(resource.Id));
-                choiceInput.Choices.Add(new Choice(name));
-                var dialog = DeclarativeTypeLoader.Load<IDialog>(resource, this.resourceExplorer, DebugSupport.SourceRegistry);
-                handleChoice.Cases.Add(new Case($"{name}", new List<IDialog>() { dialog }));
+                try
+                {
+                    var name = Path.GetFileNameWithoutExtension(Path.GetFileNameWithoutExtension(resource.Id));
+                    choiceInput.Choices.Add(new Choice(name));
+                    var dialog = DeclarativeTypeLoader.Load<IDialog>(resource, this.resourceExplorer, DebugSupport.SourceRegistry);
+                    handleChoice.Cases.Add(new Case($"{name}", new List<IDialog>() { dialog }));
+                }
+                catch (SyntaxErrorException err)
+                {
+                    Trace.TraceError($"{err.Source}: Error: {err.Message}");
+                }
+                catch (Exception err)
+                {
+                    Trace.TraceError(err.Message);
+                }
             }
+
             choiceInput.Style = ListStyle.Auto;
             rootDialog.Events.Add(new OnBeginDialog()
             {

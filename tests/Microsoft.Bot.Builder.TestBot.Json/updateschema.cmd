@@ -1,4 +1,4 @@
 @echo off
 
 erase app.schema
-dialogSchema ../../libraries/**/*.schema ./**/*.schema -o app.schema 
+dialogschema ../../libraries/**/*.schema ./**/*.schema -o app.schema 

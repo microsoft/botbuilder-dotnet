@@ -12,10 +12,11 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Bot.Builder.TraceExtensions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
+using System.Net.Cache;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
@@ -37,10 +38,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             public Result(HttpHeaders headers)
             {
-                foreach (var header in headers)
-                {
-                    this.Headers[header.Key] = header.Value.FirstOrDefault();
-                }
+                this.Headers = headers.ToDictionary(t => t.Key, t => t.Value.First());
             }
 
             /// <summary>
@@ -59,7 +57,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             /// Gets the headers from the response to the http operation.
             /// </summary>
             [JsonProperty("headers")]
-            public Dictionary<string, object> Headers { get; } = new Dictionary<string, object>();
+            public Dictionary<string, string> Headers { get; } = new Dictionary<string, string>();
 
             /// <summary>
             /// Gets or sets the content body from the response to the http operation.
@@ -240,6 +238,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 }
             }
 
+            dynamic traceInfo = new JObject();
+
+            traceInfo.request = new JObject();
+            traceInfo.request.method = this.Method.ToString();
+            traceInfo.request.url = instanceUrl;
+
             HttpResponseMessage response = null;
 
             switch (this.Method)
@@ -251,7 +255,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                     }
                     else
                     {
-                        response = await client.PostAsync(instanceUrl, new StringContent(instanceBody.ToString(), Encoding.UTF8, "application/json"));
+                        var postContent = new StringContent(instanceBody.ToString(), Encoding.UTF8, "application/json");
+                        traceInfo.request.content = instanceBody.ToString();
+                        traceInfo.request.headers = JObject.FromObject(postContent?.Headers.ToDictionary(t => t.Key, t => (object)t.Value?.FirstOrDefault()));
+                        response = await client.PostAsync(instanceUrl, postContent);
                     }
 
                     break;
@@ -266,6 +273,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                     {
                         var request = new HttpRequestMessage(new System.Net.Http.HttpMethod("PATCH"), instanceUrl);
                         request.Content = new StringContent(instanceBody.ToString(), Encoding.UTF8, "application/json");
+                        traceInfo.request.content = instanceBody.ToString();
+                        traceInfo.request.headers = JObject.FromObject(request.Content.Headers.ToDictionary(t => t.Key, t => (object)t.Value?.FirstOrDefault()));
                         response = await client.SendAsync(request);
                     }
 
@@ -278,7 +287,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                     }
                     else
                     {
-                        response = await client.PutAsync(instanceUrl, new StringContent(instanceBody.ToString(), Encoding.UTF8, "application/json"));
+                        var putContent = new StringContent(instanceBody.ToString(), Encoding.UTF8, "application/json");
+                        traceInfo.request.content = instanceBody.ToString();
+                        traceInfo.request.headers = JObject.FromObject(putContent.Headers.ToDictionary(t => t.Key, t => (object)t.Value?.FirstOrDefault()));
+                        response = await client.PutAsync(instanceUrl, putContent);
                     }
 
                     break;
@@ -304,13 +316,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             {
                 case ResponseTypes.Activity:
                     var activity = JsonConvert.DeserializeObject<Activity>((string)content);
-                    requestResult.Content = activity;
+                    requestResult.Content = JObject.FromObject(activity);
                     await dc.Context.SendActivityAsync(activity, cancellationToken: cancellationToken).ConfigureAwait(false);
                     break;
 
                 case ResponseTypes.Activities:
                     var activities = JsonConvert.DeserializeObject<Activity[]>((string)content);
-                    requestResult.Content = activities;
+                    requestResult.Content = JObject.FromObject(activities);
                     await dc.Context.SendActivitiesAsync(activities, cancellationToken: cancellationToken).ConfigureAwait(false);
                     break;
 
@@ -332,6 +344,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 default:
                     break;
             }
+
+            traceInfo.response = JObject.FromObject(requestResult);
+
+            // Write Trace Activity for the http request and response values
+            await dc.Context.TraceActivityAsync("HttpRequest", (object)traceInfo, valueType: "Microsoft.HttpRequest", label: this.Id).ConfigureAwait(false);
 
             // return the actionResult as the result of this operation
             return await dc.EndDialogAsync(result: requestResult, cancellationToken: cancellationToken);

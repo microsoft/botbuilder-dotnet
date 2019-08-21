@@ -10,7 +10,7 @@
                     "condition": "dialog.token == null",
                     "actions": [
                         {
-                            "$type": "Microsoft.OAuthPrompt",
+                            "$type": "Microsoft.OAuthInput",
                             "connectionName": "msgraph",
                             "title": "Log in",
                             "text": "Please log in to your Microsoft account",
