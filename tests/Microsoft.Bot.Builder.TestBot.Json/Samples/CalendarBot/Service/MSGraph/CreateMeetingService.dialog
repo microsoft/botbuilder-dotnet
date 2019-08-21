@@ -58,7 +58,7 @@
         }
         //{
         //  "$type": "Microsoft.SendActivity",
-        //  "activity": "response: {user.createResponse}"
+        //  "activity": "response: {user.createResponse.content}"
         //}
       ]
     }

@@ -30,7 +30,7 @@
         }
         //{
         //  "$type": "Microsoft.SendActivity",
-        //  "activity": "response: {user.acceptResponse}"
+        //  "activity": "response: {user.acceptResponse.content}"
         //}
       ]
     }

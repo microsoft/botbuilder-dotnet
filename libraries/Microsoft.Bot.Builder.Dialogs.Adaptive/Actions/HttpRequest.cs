@@ -2,8 +2,11 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
@@ -17,11 +20,53 @@ using Newtonsoft.Json.Linq;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
     /// <summary>
-    /// Action for HttpRequests
+    /// Action for performing an HttpRequest.
     /// </summary>
     public class HttpRequest : DialogAction
     {
         private static readonly HttpClient client = new HttpClient();
+
+        /// <summary>
+        /// Result data of the the http operation.
+        /// </summary>
+        public class Result
+        {
+            public Result()
+            {
+            }
+
+            public Result(HttpHeaders headers)
+            {
+                foreach (var header in headers)
+                {
+                    this.Headers[header.Key] = header.Value.FirstOrDefault();
+                }
+            }
+
+            /// <summary>
+            /// Gets or sets the status code from the response to the http operation.
+            /// </summary>
+            [JsonProperty("statusCode")]
+            public int StatusCode { get; set; }
+
+            /// <summary>
+            /// Gets or sets the reason phrase from the response to the http operation.
+            /// </summary>
+            [JsonProperty("reasonPhrase")]
+            public string ReasonPhrase { get; set; }
+
+            /// <summary>
+            /// Gets the headers from the response to the http operation.
+            /// </summary>
+            [JsonProperty("headers")]
+            public Dictionary<string, object> Headers { get; } = new Dictionary<string, object>();
+
+            /// <summary>
+            /// Gets or sets the content body from the response to the http operation.
+            /// </summary>
+            [JsonProperty("content")]
+            public object Content { get; set; }
+        }
 
         public enum ResponseTypes
         {
@@ -84,8 +129,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         public ResponseTypes ResponseType { get; set; } = ResponseTypes.Json;
 
         /// <summary>
-        /// Property which is bidirectional property for input and output.  Example: user.age will be passed in, and user.age will be set when the dialog completes
+        /// Gets or sets The property to store the result of the HTTP call in. 
         /// </summary>
+        /// <remarks>
+        /// The result will have 4 properties from the http response: 
+        /// [statusCode|reasonPhrase|content|headers]
+        /// If the content is json it will be an deserialized object, otherwise it will be a string.
+        /// </remarks>
         public string Property
         {
             get
@@ -95,17 +145,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             set
             {
-                InputBindings[DialogContextState.DIALOG_VALUE] = value;
                 OutputBinding = value;
             }
         }
 
-        public HttpRequest(HttpMethod method, string url, string property, Dictionary<string, string> headers = null, JObject body = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public HttpRequest(HttpMethod method, string url, string inputProperty, Dictionary<string, string> headers = null, JObject body = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
             this.RegisterSourceLocation(callerPath, callerLine);
             this.Method = method;
             this.Url = url ?? throw new ArgumentNullException(nameof(url));
-            this.Property = property;
             this.Headers = headers;
             this.Body = body;
         }
@@ -244,37 +292,49 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                     break;
             }
 
-            object result = (object)await response.Content.ReadAsStringAsync();
+            Result requestResult = new Result(response.Headers)
+            {
+                StatusCode = (int)response.StatusCode,
+                ReasonPhrase = response.ReasonPhrase,
+            };
+
+            object content = (object)await response.Content.ReadAsStringAsync();
 
             switch (this.ResponseType)
             {
                 case ResponseTypes.Activity:
-                    var activity = JsonConvert.DeserializeObject<Activity>((string)result);
+                    var activity = JsonConvert.DeserializeObject<Activity>((string)content);
+                    requestResult.Content = activity;
                     await dc.Context.SendActivityAsync(activity, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return await dc.EndDialogAsync(cancellationToken: cancellationToken);
+                    break;
 
                 case ResponseTypes.Activities:
-                    var activities = JsonConvert.DeserializeObject<Activity[]>((string)result);
+                    var activities = JsonConvert.DeserializeObject<Activity[]>((string)content);
+                    requestResult.Content = activities;
                     await dc.Context.SendActivitiesAsync(activities, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return await dc.EndDialogAsync(cancellationToken: cancellationToken);
+                    break;
 
                 case ResponseTypes.Json:
                     // Try set with JOjbect for further retreiving
                     try
                     {
-                        result = JToken.Parse((string)result);
+                        content = JToken.Parse((string)content);
                     }
                     catch
                     {
-                        result = result.ToString();
+                        content = content.ToString();
                     }
 
-                    return await dc.EndDialogAsync(result, cancellationToken: cancellationToken);
+                    requestResult.Content = content;
+                    break;
 
                 case ResponseTypes.None:
                 default:
-                    return await dc.EndDialogAsync(cancellationToken: cancellationToken);
+                    break;
             }
+
+            // return the actionResult as the result of this operation
+            return await dc.EndDialogAsync(result: requestResult, cancellationToken: cancellationToken);
         }
     }
 }
