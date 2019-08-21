@@ -19,10 +19,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         /// </value>
         public TestContext TestContext { get; set; }
 
-        public static object[] Test(string input) => new object[] { input };
-
-        public static object[] TestTemplate(string input, string templateName) => new object[] { input, templateName };
-
         public static IEnumerable<object[]> StaticCheckExceptionData => new[]
         {
             Test("EmptyTemplate.lg"),
@@ -63,6 +59,10 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             TestTemplate("LoopDetected.lg", "wPhrase"),
             TestTemplate("LoopDetected.lg", "NotExistTemplate"),
         };
+
+        public static object[] Test(string input) => new object[] { input };
+
+        public static object[] TestTemplate(string input, string templateName) => new object[] { input, templateName };
 
         [DataTestMethod]
         [DynamicData(nameof(StaticCheckExceptionData))]

@@ -12,11 +12,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
     {
         public TestContext TestContext { get; set; }
 
-        private string GetExampleFilePath(string fileName)
-        {
-            return Path.Combine(AppContext.BaseDirectory, "Examples", fileName);
-        }
-
         [TestMethod]
         public void TestBasic()
         {
@@ -215,26 +210,26 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.AreEqual(
                 emptyEngine.Evaluate(
                 "Hi {name.FirstName}{name.LastName} [RecentTasks]",
-                                                  new
-                                                  {
-                                                      name = new
-                                                      {
-                                                          FirstName = "D",
-                                                          LastName = "L"
-                                                      }
-                                                  }), "Hi DL You don't have any tasks.");
+                new
+                {
+                    name = new
+                    {
+                        FirstName = "D",
+                        LastName = "L"
+                    }
+                }), "Hi DL You don't have any tasks.");
             Assert.AreEqual(
                 emptyEngine.Evaluate(
                 "Hi {name.FirstName}{name.LastName} [RecentTasks]",
-                                                  new
-                                                  {
-                                                      name = new
-                                                      {
-                                                          FirstName = "D",
-                                                          LastName = "L"
-                                                      },
-                                                      recentTasks = new[] { "task1" }
-                                                  }), "Hi DL Your most recent task is task1. You can let me know if you want to add or complete a task.");
+                new
+                {
+                    name = new
+                    {
+                        FirstName = "D",
+                        LastName = "L"
+                    },
+                    recentTasks = new[] { "task1" }
+                }), "Hi DL Your most recent task is task1. You can let me know if you want to add or complete a task.");
         }
 
         [TestMethod]
@@ -645,6 +640,11 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             evaled = engine.EvaluateTemplate("template6", new { userName });
             Assert.AreEqual(evaled, "goodmorning");
+        }
+
+        private string GetExampleFilePath(string fileName)
+        {
+            return Path.Combine(AppContext.BaseDirectory, "Examples", fileName);
         }
     }
 }

@@ -22,9 +22,9 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
     {
         private readonly ImportResolverDelegate resourceResolver = LanguageGeneratorManager.ResourceResolver(resourceExplorer);
 
-        public TestContext TestContext { get; set; }
-
         private static ResourceExplorer resourceExplorer;
+
+        public TestContext TestContext { get; set; }
 
         [ClassInitialize]
         public static void ClassInitialize(TestContext context)
@@ -34,30 +34,10 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             resourceExplorer = ResourceExplorer.LoadProject(GetProjectFolder());
         }
 
-        private static string GetProjectFolder()
-        {
-            return AppContext.BaseDirectory.Substring(0, AppContext.BaseDirectory.IndexOf("bin"));
-        }
-
         [ClassCleanup]
         public static void ClassCleanup()
         {
             resourceExplorer.Dispose();
-        }
-
-        private ITurnContext GetTurnContext(string locale, ILanguageGenerator generator = null)
-        {
-            var context = new TurnContext(
-                new TestAdapter()
-                .UseResourceExplorer(resourceExplorer)
-                .UseLanguageGeneration(resourceExplorer, generator ?? new MockLanguageGenerator()), new Activity() { Locale = locale, Text = string.Empty });
-            context.TurnState.Add(new LanguageGeneratorManager(resourceExplorer));
-            if (generator != null)
-            {
-                context.TurnState.Add<ILanguageGenerator>(generator);
-            }
-
-            return context;
         }
 
         [TestMethod]
@@ -182,6 +162,26 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                 .AssertReply("root")
                 .AssertReply("overriden")
             .StartTestAsync();
+        }
+
+        private static string GetProjectFolder()
+        {
+            return AppContext.BaseDirectory.Substring(0, AppContext.BaseDirectory.IndexOf("bin"));
+        }
+
+        private ITurnContext GetTurnContext(string locale, ILanguageGenerator generator = null)
+        {
+            var context = new TurnContext(
+                new TestAdapter()
+                .UseResourceExplorer(resourceExplorer)
+                .UseLanguageGeneration(resourceExplorer, generator ?? new MockLanguageGenerator()), new Activity() { Locale = locale, Text = string.Empty });
+            context.TurnState.Add(new LanguageGeneratorManager(resourceExplorer));
+            if (generator != null)
+            {
+                context.TurnState.Add<ILanguageGenerator>(generator);
+            }
+
+            return context;
         }
 
         private TestFlow CreateFlow(string locale, BotCallbackHandler handler)

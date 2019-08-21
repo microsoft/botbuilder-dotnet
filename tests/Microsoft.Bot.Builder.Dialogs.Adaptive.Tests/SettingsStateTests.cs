@@ -15,9 +15,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
     [TestClass]
     public class SettingsStateTests
     {
-        public TestContext TestContext { get; set; }
-
         public IConfiguration Configuration;
+
+        public TestContext TestContext { get; set; }
 
         public SettingsStateTests()
         {

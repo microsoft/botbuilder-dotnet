@@ -22,30 +22,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
         public ExpressionEngine ExpressionEngine { get; set; } = new ExpressionEngine();
 
-        private TestFlow CreateFlow(AdaptiveDialog ruleDialog)
-        {
-            TypeFactory.Configuration = new ConfigurationBuilder().Build();
-
-            var explorer = new ResourceExplorer();
-            var storage = new MemoryStorage();
-            var convoState = new ConversationState(storage);
-            var userState = new UserState(storage);
-
-            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
-            adapter
-                .UseStorage(storage)
-                .UseState(userState, convoState)
-                .Use(new RegisterClassMiddleware<ResourceExplorer>(explorer))
-                .UseLanguageGeneration(explorer)
-                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
-
-            DialogManager dm = new DialogManager(ruleDialog);
-            return new TestFlow(adapter, async (turnContext, cancellationToken) =>
-            {
-                await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
-            });
-        }
-
         [TestMethod]
         public async Task EventTests_OnIntent()
         {
@@ -120,6 +96,30 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             .Send("fooo")
                 .AssertReply("pbtpbtpbt!")
             .StartTestAsync();
+        }
+
+        private TestFlow CreateFlow(AdaptiveDialog ruleDialog)
+        {
+            TypeFactory.Configuration = new ConfigurationBuilder().Build();
+
+            var explorer = new ResourceExplorer();
+            var storage = new MemoryStorage();
+            var convoState = new ConversationState(storage);
+            var userState = new UserState(storage);
+
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
+            adapter
+                .UseStorage(storage)
+                .UseState(userState, convoState)
+                .Use(new RegisterClassMiddleware<ResourceExplorer>(explorer))
+                .UseLanguageGeneration(explorer)
+                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+
+            DialogManager dm = new DialogManager(ruleDialog);
+            return new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
+            });
         }
     }
 }

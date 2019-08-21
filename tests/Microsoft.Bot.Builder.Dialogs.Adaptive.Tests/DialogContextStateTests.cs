@@ -15,8 +15,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
     [TestClass]
     public class DialogContextStateTests
     {
-        public TestContext TestContext { get; set; }
-
         private Foo foo = new Foo()
         {
             Name = "Tom",
@@ -29,6 +27,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 Cool = false
             }
         };
+
+        public TestContext TestContext { get; set; }
 
         [TestMethod]
         public async Task DialogContextState_SimpleValues()
@@ -198,26 +198,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             state.SetValue("TurN.fOo", foo);
             Assert.IsTrue(state.HasValue("turn.foo"), "should have the value");
             Assert.AreEqual(state.GetValue<Foo>("turn.foo").SubName.Name, "bob");
-        }
-
-        private TestFlow CreateFlow(AdaptiveDialog dialog, ConversationState convoState = null, UserState userState = null, bool sendTrace = false)
-        {
-            TypeFactory.Configuration = new ConfigurationBuilder().Build();
-            var resourceExplorer = new ResourceExplorer();
-
-            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName), sendTrace)
-                .Use(new RegisterClassMiddleware<ResourceExplorer>(resourceExplorer))
-                .UseLanguageGeneration(resourceExplorer)
-                .Use(new RegisterClassMiddleware<IStorage>(new MemoryStorage()))
-                .Use(new AutoSaveStateMiddleware(userState ?? new UserState(new MemoryStorage()), convoState ?? new ConversationState(new MemoryStorage())))
-                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
-
-            var dm = new DialogManager(dialog);
-
-            return new TestFlow((TestAdapter)adapter, async (turnContext, cancellationToken) =>
-            {
-                await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
-            });
         }
 
         [TestMethod]
@@ -564,6 +544,26 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         .AssertReply("bbb")
                         .AssertReply("xyz")
                     .StartTestAsync();
+        }
+
+        private TestFlow CreateFlow(AdaptiveDialog dialog, ConversationState convoState = null, UserState userState = null, bool sendTrace = false)
+        {
+            TypeFactory.Configuration = new ConfigurationBuilder().Build();
+            var resourceExplorer = new ResourceExplorer();
+
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName), sendTrace)
+                .Use(new RegisterClassMiddleware<ResourceExplorer>(resourceExplorer))
+                .UseLanguageGeneration(resourceExplorer)
+                .Use(new RegisterClassMiddleware<IStorage>(new MemoryStorage()))
+                .Use(new AutoSaveStateMiddleware(userState ?? new UserState(new MemoryStorage()), convoState ?? new ConversationState(new MemoryStorage())))
+                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+
+            var dm = new DialogManager(dialog);
+
+            return new TestFlow((TestAdapter)adapter, async (turnContext, cancellationToken) =>
+            {
+                await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
+            });
         }
     }
 

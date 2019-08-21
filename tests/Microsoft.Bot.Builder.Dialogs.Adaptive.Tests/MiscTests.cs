@@ -21,29 +21,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
     {
         public TestContext TestContext { get; set; }
 
-        private TestFlow CreateFlow(AdaptiveDialog dialog, bool sendTrace = false)
-        {
-            TypeFactory.Configuration = new ConfigurationBuilder().Build();
-            var resourceExplorer = new ResourceExplorer();
-            var storage = new MemoryStorage();
-            var convoState = new ConversationState(storage);
-            var userState = new UserState(storage);
-            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName), sendTrace);
-            adapter
-                .UseStorage(storage)
-                .UseState(userState, convoState)
-                .UseResourceExplorer(resourceExplorer)
-                .UseLanguageGeneration(resourceExplorer)
-                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
-
-            DialogManager dm = new DialogManager(dialog);
-
-            return new TestFlow(adapter, async (turnContext, cancellationToken) =>
-            {
-                await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
-            });
-        }
-
         [TestMethod]
         public async Task IfCondition_EndDialog()
         {
@@ -163,6 +140,29 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     .AssertReply("15 is a good age to be!")
                     .AssertReply("your name is Joe!")
                 .StartTestAsync();
+        }
+
+        private TestFlow CreateFlow(AdaptiveDialog dialog, bool sendTrace = false)
+        {
+            TypeFactory.Configuration = new ConfigurationBuilder().Build();
+            var resourceExplorer = new ResourceExplorer();
+            var storage = new MemoryStorage();
+            var convoState = new ConversationState(storage);
+            var userState = new UserState(storage);
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName), sendTrace);
+            adapter
+                .UseStorage(storage)
+                .UseState(userState, convoState)
+                .UseResourceExplorer(resourceExplorer)
+                .UseLanguageGeneration(resourceExplorer)
+                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+
+            DialogManager dm = new DialogManager(dialog);
+
+            return new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
+            });
         }
     }
 }

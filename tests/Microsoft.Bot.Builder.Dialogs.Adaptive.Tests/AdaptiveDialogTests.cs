@@ -42,30 +42,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             .StartTestAsync();
         }
 
-        private TestFlow CreateFlow(AdaptiveDialog ruleDialog)
-        {
-            TypeFactory.Configuration = new ConfigurationBuilder().Build();
-
-            var explorer = new ResourceExplorer();
-            var storage = new MemoryStorage();
-            var convoState = new ConversationState(storage);
-            var userState = new UserState(storage);
-
-            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
-            adapter
-                .UseStorage(storage)
-                .UseState(userState, convoState)
-                .Use(new RegisterClassMiddleware<ResourceExplorer>(explorer))
-                .UseLanguageGeneration(explorer)
-                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
-
-            DialogManager dm = new DialogManager(ruleDialog);
-            return new TestFlow(adapter, async (turnContext, cancellationToken) =>
-            {
-                await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
-            });
-        }
-
         [TestMethod]
         public async Task AdaptiveDialog_TopLevelFallbackMultipleActivities()
         {
@@ -778,7 +754,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 {
                     new OnIntent("StartOuterIntent", actions: new List<IDialog>() { outerDialog }),
                     new OnIntent("RootIntent", actions: new List<IDialog>() { new SendActivity("rootintent") }),
-                    new OnUnknownIntent( new List<IDialog>() { new SendActivity("rootunknown") })
+                    new OnUnknownIntent(new List<IDialog>() { new SendActivity("rootunknown") })
                 }
             };
 
@@ -1918,6 +1894,30 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             .Send("I'm 77")
                 .AssertReply("Hello zoidberg, you are 77 years old!")
             .StartTestAsync();
+        }
+
+        private TestFlow CreateFlow(AdaptiveDialog ruleDialog)
+        {
+            TypeFactory.Configuration = new ConfigurationBuilder().Build();
+
+            var explorer = new ResourceExplorer();
+            var storage = new MemoryStorage();
+            var convoState = new ConversationState(storage);
+            var userState = new UserState(storage);
+
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
+            adapter
+                .UseStorage(storage)
+                .UseState(userState, convoState)
+                .Use(new RegisterClassMiddleware<ResourceExplorer>(explorer))
+                .UseLanguageGeneration(explorer)
+                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+
+            DialogManager dm = new DialogManager(ruleDialog);
+            return new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
+            });
         }
 
         /// <summary>

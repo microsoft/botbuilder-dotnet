@@ -18,9 +18,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
     [TestClass]
     public class TextMessageGeneratorTests
     {
-        public TestContext TestContext { get; set; }
-
         private static ResourceExplorer resourceExplorer;
+
+        public TestContext TestContext { get; set; }
 
         [ClassInitialize]
         public static void ClassInitialize(TestContext context)
@@ -30,36 +30,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             resourceExplorer = ResourceExplorer.LoadProject(GetProjectFolder());
         }
 
-        private static string GetProjectFolder()
-        {
-            return AppContext.BaseDirectory.Substring(0, AppContext.BaseDirectory.IndexOf("bin"));
-        }
-
         [ClassCleanup]
         public static void ClassCleanup()
         {
             resourceExplorer.Dispose();
         }
 
-        private ITurnContext GetTurnContext(ILanguageGenerator lg)
-        {
-            var context = new TurnContext(new TestAdapter(), new Activity());
-            context.TurnState.Add<ILanguageGenerator>(lg);
-            return context;
-        }
-
-        private async Task<ITurnContext> GetTurnContext(string lgFile)
-        {
-            var context = new TurnContext(new TestAdapter(), new Activity());
-            var lgText = await resourceExplorer.GetResource(lgFile).ReadTextAsync();
-            context.TurnState.Add<ILanguageGenerator>(new TemplateEngineLanguageGenerator(lgText, "test", LanguageGeneratorManager.ResourceResolver(resourceExplorer)));
-            return context;
-        }
-
         [TestMethod]
         public async Task TestInline()
         {
-            var context = GetTurnContext(new MockLanguageGenator());
+            var context = GetTurnContext(new MockLanguageGenerator());
             var mg = new TextMessageActivityGenerator();
             var activity = await mg.Generate(context, "text", data: null);
             Assert.AreEqual(ActivityTypes.Message, activity.Type);
@@ -70,7 +50,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public async Task TestSpeak()
         {
-            var context = GetTurnContext(new MockLanguageGenator());
+            var context = GetTurnContext(new MockLanguageGenerator());
             var mg = new TextMessageActivityGenerator();
             var activity = await mg.Generate(context, "text||speak", data: null);
             Assert.AreEqual(ActivityTypes.Message, activity.Type);
@@ -308,9 +288,29 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.AreEqual("image/png", activity.Attachments[0].ContentType);
             Assert.AreEqual(data.url.ToString(), activity.Attachments[0].ContentUrl.ToString());
         }
+
+        private static string GetProjectFolder()
+        {
+            return AppContext.BaseDirectory.Substring(0, AppContext.BaseDirectory.IndexOf("bin"));
+        }
+
+        private ITurnContext GetTurnContext(ILanguageGenerator lg)
+        {
+            var context = new TurnContext(new TestAdapter(), new Activity());
+            context.TurnState.Add<ILanguageGenerator>(lg);
+            return context;
+        }
+
+        private async Task<ITurnContext> GetTurnContext(string lgFile)
+        {
+            var context = new TurnContext(new TestAdapter(), new Activity());
+            var lgText = await resourceExplorer.GetResource(lgFile).ReadTextAsync();
+            context.TurnState.Add<ILanguageGenerator>(new TemplateEngineLanguageGenerator(lgText, "test", LanguageGeneratorManager.ResourceResolver(resourceExplorer)));
+            return context;
+        }
     }
 
-    public class MockLanguageGenator : ILanguageGenerator
+    public class MockLanguageGenerator : ILanguageGenerator
     {
         public Task<string> Generate(ITurnContext turnContext, string template, object data)
         {
