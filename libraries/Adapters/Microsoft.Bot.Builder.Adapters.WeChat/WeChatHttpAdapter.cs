@@ -43,6 +43,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         private readonly string _token;
         private readonly IBackgroundTaskQueue _taskQueue;
         private readonly IHostedService _backgroundService;
+        private bool _passiveResponse;
 
         public WeChatHttpAdapter(
                     IConfiguration configuration,
@@ -63,7 +64,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
             _logger = logger ?? NullLogger.Instance;
             _taskQueue = backgroundTaskQueue;
             _backgroundService = backgroundService;
-
+            _passiveResponse = false;
             if (middleware != null)
             {
                 Use(middleware);
@@ -82,54 +83,41 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         {
             var activity = await _wechatMessageMapper.ToConnectorMessage(wechatRequest).ConfigureAwait(false);
             BotAssert.ActivityNotNull(activity);
-            using (var context = new TurnContext(this, activity as Activity))
-            {
-                try
-                {
-                    var responses = new Dictionary<string, List<Activity>>();
-                    context.TurnState.Add(TurnResponseKey, responses);
-                    await RunPipelineAsync(context, callback, cancellationToken).ConfigureAwait(false);
-                    var key = $"{activity.Conversation.Id}:{activity.Id}";
-                    try
-                    {
-                        var activities = responses.ContainsKey(key) ? responses[key] : new List<Activity>();
-                        var response = await ProcessBotResponse(activities, wechatRequest.FromUserName, passiveResponse).ConfigureAwait(false);
-                        return response;
-                    }
-                    catch (Exception e)
-                    {
-                        // TODO: exception handling when send message to wechat api failed.
-                        _logger.LogError(e, "Failed to process bot response.");
-                        throw;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    if (OnTurnError != null)
-                    {
-                        // exception handing when bot throw an exception.
-                        await OnTurnError(context, ex).ConfigureAwait(false);
-                        return null;
-                    }
-
-                    throw;
-                }
-            }
+            _passiveResponse = passiveResponse;
+            return await ProcessActivityAsync(activity as Activity, callback, cancellationToken).ConfigureAwait(false);
         }
 
-        // Does not support by WeChat.
+        /// <summary>
+        /// Standard BotBuilder adapter method to delete a previous message.
+        /// </summary>
+        /// <param name="turnContext">A TurnContext representing the current incoming message and environment.</param>
+        /// <param name="reference">An object in the form "{activityId: `id of message to delete`, conversation: { id: `id of channel`}}".</param>
+        /// <param name="cancellationToken">A cancellation token for the task.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public override Task DeleteActivityAsync(ITurnContext turnContext, ConversationReference reference, CancellationToken cancellationToken)
         {
             return Task.FromException<ResourceResponse>(new NotSupportedException("WeChat does not support deleting activities."));
         }
 
-        // Does not support by WeChat.
+        /// <summary>
+        /// Standard BotBuilder adapter method to update a previous message with new content.
+        /// </summary>
+        /// <param name="turnContext">A TurnContext representing the current incoming message and environment.</param>
+        /// <param name="activity">The updated activity in the form '{id: `id of activity to update`, ...}'.</param>
+        /// <param name="cancellationToken">A cancellation token for the task.</param>
+        /// <returns>A resource response with the Id of the updated activity.</returns>
         public override Task<ResourceResponse> UpdateActivityAsync(ITurnContext turnContext, Activity activity, CancellationToken cancellationToken)
         {
             return Task.FromException<ResourceResponse>(new NotSupportedException("WeChat does not support updating activities."));
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Standard BotBuilder adapter method to send a message from the bot to the messaging API.
+        /// </summary>
+        /// <param name="turnContext">A TurnContext representing the current incoming message and environment.</param>
+        /// <param name="activities">An array of outgoing activities to be sent back to the messaging API.</param>
+        /// <param name="cancellationToken">A cancellation token for the task.</param>
+        /// <returns>A resource response array with the message Sids.</returns>
         public override Task<ResourceResponse[]> SendActivitiesAsync(ITurnContext turnContext, Activity[] activities, CancellationToken cancellationToken)
         {
             var resourceResponses = new List<ResourceResponse>();
@@ -141,7 +129,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                     case ActivityTypes.Message:
                     case ActivityTypes.EndOfConversation:
                         var conversation = activity.Conversation ?? new ConversationAccount();
-                        var key = $"{conversation.Id}:{activity.ReplyToId}";
+                        var key = GetResponseKey(conversation.Id, activity.ReplyToId);
                         var responses = turnContext.TurnState.Get<Dictionary<string, List<Activity>>>(TurnResponseKey);
                         if (responses.ContainsKey(key))
                         {
@@ -163,6 +151,43 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
             }
 
             return Task.FromResult(resourceResponses.ToArray());
+        }
+
+        /// <summary>
+        /// Sends a proactive message to a conversation.
+        /// </summary>
+        /// <param name="botAppId">The application ID of the bot. This parameter is ignored in
+        /// single tenant the Adapters (Console, Test, etc) but is critical to the BotFrameworkAdapter
+        /// which is multi-tenant aware. </param>
+        /// <param name="reference">A reference to the conversation to continue.</param>
+        /// <param name="callback">The method to call for the resulting bot turn.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>Call this method to proactively send a message to a conversation.
+        /// Most _channels require a user to initiate a conversation with a bot
+        /// before the bot can send activities to the user.</remarks>
+        /// <seealso cref="RunPipelineAsync(ITurnContext, BotCallbackHandler, CancellationToken)"/>
+        public override async Task ContinueConversationAsync(string botAppId, ConversationReference reference, BotCallbackHandler callback, CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrWhiteSpace(botAppId))
+            {
+                throw new ArgumentNullException(nameof(botAppId));
+            }
+
+            if (reference == null)
+            {
+                throw new ArgumentNullException(nameof(reference));
+            }
+
+            if (callback == null)
+            {
+                throw new ArgumentNullException(nameof(callback));
+            }
+
+            _logger.LogInformation($"Sending proactive message.  botAppId: {botAppId}");
+
+            await ProcessActivityAsync(reference.GetContinuationActivity(), callback, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -233,6 +258,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                                         passiveResponse,
                                         ct).ConfigureAwait(false);
                     });
+                    await Task.Run(() => ProcessWeChatRequest(wechatRequest, bot.OnTurnAsync, passiveResponse, cancellationToken), cancellationToken).ConfigureAwait(false);
                 }
                 else
                 {
@@ -282,6 +308,59 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
             var requestMessage = WeChatMessageFactory.GetRequestEntity(decryptDoc, _logger);
 
             return requestMessage;
+        }
+
+        /// <summary>
+        /// Get response key of the specific conversation.
+        /// </summary>
+        /// <param name="conversationId">The activity instance.</param>
+        /// <param name="acitvityId">Reply to activity id.</param>
+        /// <returns>Key to get the response of the activity.</returns>
+        private static string GetResponseKey(string conversationId, string acitvityId) => $"{conversationId}:{acitvityId}";
+
+        /// <summary>
+        /// Process the activity, running bot logic and send responses to WeChat.
+        /// </summary>
+        /// <param name="activity">The updated activity in the form '{id: `id of activity to update`, ...}'.</param>
+        /// <param name="callback">The method to call for the resulting bot turn.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>WeChat response or ChannelData bot provided.</returns>
+        private async Task<object> ProcessActivityAsync(Activity activity, BotCallbackHandler callback, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            using (var context = new TurnContext(this, activity))
+            {
+                try
+                {
+                    var responses = new Dictionary<string, List<Activity>>();
+                    context.TurnState.Add(TurnResponseKey, responses);
+                    await RunPipelineAsync(context, callback, cancellationToken).ConfigureAwait(false);
+                    var key = GetResponseKey(activity.Conversation.Id, activity.Id);
+                    try
+                    {
+                        var activities = responses.ContainsKey(key) ? responses[key] : new List<Activity>();
+                        var response = await ProcessBotResponse(activities, activity.From.Id, _passiveResponse).ConfigureAwait(false);
+                        return response;
+                    }
+                    catch (Exception e)
+                    {
+                        // TODO: exception handling when send message to wechat api failed.
+                        _logger.LogError(e, "Failed to process bot response.");
+                        throw;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    if (OnTurnError != null)
+                    {
+                        // exception handing when bot throw an exception.
+                        await OnTurnError(context, ex).ConfigureAwait(false);
+                        return null;
+                    }
+
+                    throw;
+                }
+            }
         }
 
         /// <summary>
