@@ -10,10 +10,8 @@ namespace Microsoft.Bot.Configuration.Tests
     [TestClass]
     public class ConfigurationLoadAndSaveTests
     {
-        private string testBotFileName = NormalizePath(@"..\..\..\test.bot");
         private const string OutputBotFileName = "save.bot";
-
-        private static string NormalizePath(string path) => Path.Combine(path.TrimEnd('\\').Split('\\'));
+        private string testBotFileName = NormalizePath(@"..\..\..\test.bot");
 
         [TestMethod]
         public async Task DeserializeBotFile()
@@ -444,5 +442,7 @@ namespace Microsoft.Bot.Configuration.Tests
             Assert.IsNotNull(endpointSvc);
             Assert.AreEqual("https://botframework.azure.us", endpointSvc.ChannelService);
         }
+
+        private static string NormalizePath(string path) => Path.Combine(path.TrimEnd('\\').Split('\\'));
     }
 }

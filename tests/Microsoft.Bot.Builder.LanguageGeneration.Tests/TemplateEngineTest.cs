@@ -96,14 +96,14 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var engine = new TemplateEngine().AddFile(GetExampleFilePath("6.lg"));
 
             string evaled = engine.EvaluateTemplate("welcome", null);
-            Assert.IsTrue("Hi DongLei :)" == evaled ||
-                "Hey DongLei :)" == evaled ||
-                "Hello DongLei :)" == evaled);
+            Assert.IsTrue(evaled == "Hi DongLei :)" ||
+                evaled == "Hey DongLei :)" ||
+                evaled == "Hello DongLei :)");
 
             evaled = engine.EvaluateTemplate("welcome", new { userName = "DL" });
-            Assert.IsTrue("Hi DL :)" == evaled ||
-                "Hey DL :)" == evaled ||
-                "Hello DL :)" == evaled);
+            Assert.IsTrue(evaled == "Hi DL :)" ||
+                evaled == "Hey DL :)" ||
+                evaled == "Hello DL :)");
         }
 
         [TestMethod]
@@ -241,7 +241,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         public void TestMultiLine()
         {
             var engine = new TemplateEngine().AddFile(GetExampleFilePath("MultilineTextForAdaptiveCard.lg"));
-            var evaled1 = engine.EvaluateTemplate("wPhrase", "");
+            var evaled1 = engine.EvaluateTemplate("wPhrase", string.Empty);
             var options1 = new List<string> { "\r\ncardContent\r\n", "hello", "\ncardContent\n" };
             Assert.IsTrue(options1.Contains(evaled1), $"Evaled is {evaled1}");
 
@@ -249,9 +249,9 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var options2 = new List<string> { "\r\nN\r\n", "N", "\nN\n" };
             Assert.IsTrue(options2.Contains(evaled2), $"Evaled is {evaled2}");
 
-            var evaled3 = engine.EvaluateTemplate("adaptivecardsTemplate", "");
+            var evaled3 = engine.EvaluateTemplate("adaptivecardsTemplate", string.Empty);
 
-            var evaled4 = engine.EvaluateTemplate("refTemplate", "");
+            var evaled4 = engine.EvaluateTemplate("refTemplate", string.Empty);
             var options4 = new List<string> { "\r\nhi\r\n", "\nhi\n" };
             Assert.IsTrue(options4.Contains(evaled4), $"Evaled is {evaled4}");
         }
@@ -334,7 +334,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         public void TestlgTemplateFunction()
         {
             var engine = new TemplateEngine().AddFile(GetExampleFilePath("lgTemplate.lg"));
-            var evaled = engine.EvaluateTemplate("TemplateC", "");
+            var evaled = engine.EvaluateTemplate("TemplateC", string.Empty);
             var options = new List<string> { "Hi", "Hello" };
             Assert.AreEqual(options.Contains(evaled), true);
 
@@ -347,14 +347,14 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         public void TestTemplateAsFunction()
         {
             var engine = new TemplateEngine().AddFile(GetExampleFilePath("TemplateAsFunction.lg"));
-            string evaled = engine.EvaluateTemplate("Test2", "");
+            string evaled = engine.EvaluateTemplate("Test2", string.Empty);
 
             Assert.AreEqual(evaled, "hello world");
 
-            evaled = engine.EvaluateTemplate("Test3", "");
+            evaled = engine.EvaluateTemplate("Test3", string.Empty);
             Assert.AreEqual(evaled, "hello world");
 
-            evaled = engine.EvaluateTemplate("Test4", "");
+            evaled = engine.EvaluateTemplate("Test4", string.Empty);
             Assert.AreEqual(evaled.Trim(), "hello world");
 
             evaled = engine.EvaluateTemplate("dupNameWithTemplate");
@@ -430,23 +430,23 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.AreEqual(14, engine.Templates.Count());
 
             string evaled = engine.EvaluateTemplate("basicTemplate", null);
-            Assert.IsTrue("Hi" == evaled || "Hello" == evaled);
+            Assert.IsTrue(evaled == "Hi" || evaled == "Hello");
 
             evaled = engine.EvaluateTemplate("welcome", null);
-            Assert.IsTrue("Hi DongLei :)" == evaled ||
-                "Hey DongLei :)" == evaled ||
-                "Hello DongLei :)" == evaled);
+            Assert.IsTrue(evaled == "Hi DongLei :)" ||
+                evaled == "Hey DongLei :)" ||
+                evaled == "Hello DongLei :)");
 
             evaled = engine.EvaluateTemplate("template3", null);
-            Assert.IsTrue("Hi 2" == evaled || "Hello 2" == evaled);
+            Assert.IsTrue(evaled == "Hi 2" || evaled == "Hello 2");
 
             evaled = engine.EvaluateTemplate("welcome", new { userName = "DL" });
-            Assert.IsTrue("Hi DL :)" == evaled ||
-                "Hey DL :)" == evaled ||
-                "Hello DL :)" == evaled);
+            Assert.IsTrue(evaled == "Hi DL :)" ||
+                evaled == "Hey DL :)" ||
+                evaled == "Hello DL :)");
 
             evaled = engine.EvaluateTemplate("basicTemplate2", null);
-            Assert.IsTrue("Hi 2" == evaled || "Hello 2" == evaled);
+            Assert.IsTrue(evaled == "Hi 2" || evaled == "Hello 2");
 
             // Assert 6.lg of relative path is imported from text.
             engine = new TemplateEngine().AddText(content: "# basicTemplate\r\n- Hi\r\n- Hello\r\n[import](./6.lg)", id: GetExampleFilePath("xx.lg"));
@@ -454,24 +454,24 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.AreEqual(8, engine.Templates.Count());
 
             evaled = engine.EvaluateTemplate("basicTemplate", null);
-            Assert.IsTrue("Hi" == evaled || "Hello" == evaled);
+            Assert.IsTrue(evaled == "Hi" || evaled == "Hello");
 
             evaled = engine.EvaluateTemplate("welcome", null);
-            Assert.IsTrue("Hi DongLei :)" == evaled ||
-                "Hey DongLei :)" == evaled ||
-                "Hello DongLei :)" == evaled);
+            Assert.IsTrue(evaled == "Hi DongLei :)" ||
+                evaled == "Hey DongLei :)" ||
+                evaled == "Hello DongLei :)");
 
             evaled = engine.EvaluateTemplate("welcome", new { userName = "DL" });
-            Assert.IsTrue("Hi DL :)" == evaled ||
-                "Hey DL :)" == evaled ||
-                "Hello DL :)" == evaled);
+            Assert.IsTrue(evaled == "Hi DL :)" ||
+                evaled == "Hey DL :)" ||
+                evaled == "Hello DL :)");
         }
 
         [TestMethod]
         public void TestRegex()
         {
             var engine = new TemplateEngine().AddFile(GetExampleFilePath("Regex.lg"));
-            var evaled = engine.EvaluateTemplate("wPhrase", "");
+            var evaled = engine.EvaluateTemplate("wPhrase", string.Empty);
             Assert.AreEqual(evaled, "Hi");
 
             evaled = engine.EvaluateTemplate("wPhrase", new { name = "jack" });
@@ -490,26 +490,26 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.AreEqual(14, engine.Templates.Count());
 
             string evaled = engine.EvaluateTemplate("basicTemplate", null);
-            Assert.IsTrue("Hi" == evaled || "Hello" == evaled);
+            Assert.IsTrue(evaled == "Hi" || evaled == "Hello");
 
             evaled = engine.EvaluateTemplate("welcome", null);
-            Assert.IsTrue("Hi DongLei :)" == evaled ||
-                "Hey DongLei :)" == evaled ||
-                "Hello DongLei :)" == evaled);
+            Assert.IsTrue(evaled == "Hi DongLei :)" ||
+                evaled == "Hey DongLei :)" ||
+                evaled == "Hello DongLei :)");
 
             evaled = engine.EvaluateTemplate("welcome", new { userName = "DL" });
-            Assert.IsTrue("Hi DL :)" == evaled ||
-                "Hey DL :)" == evaled ||
-                "Hello DL :)" == evaled);
+            Assert.IsTrue(evaled == "Hi DL :)" ||
+                evaled == "Hey DL :)" ||
+                evaled == "Hello DL :)");
 
             evaled = engine.EvaluateTemplate("basicTemplate2", null);
-            Assert.IsTrue("Hi 2" == evaled || "Hello 2" == evaled);
+            Assert.IsTrue(evaled == "Hi 2" || evaled == "Hello 2");
 
             evaled = engine.EvaluateTemplate("basicTemplate3", null);
-            Assert.IsTrue("Hi" == evaled || "Hello" == evaled);
+            Assert.IsTrue(evaled == "Hi" || evaled == "Hello");
 
             evaled = engine.EvaluateTemplate("basicTemplate4", null);
-            Assert.IsTrue("Hi 2" == evaled || "Hello 2" == evaled);
+            Assert.IsTrue(evaled == "Hi 2" || evaled == "Hello 2");
 
             engine = new TemplateEngine().AddFile(GetExampleFilePath("import.lg"));
             var ex = Assert.ThrowsException<Exception>(() => engine.AddFile(GetExampleFilePath("import2.lg")));

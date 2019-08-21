@@ -17,11 +17,11 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 {
-    private readonly ImportResolverDelegate resourceResolver = LanguageGeneratorManager.ResourceResolver(resourceExplorer);
-
     [TestClass]
     public class LGGeneratorTests
     {
+        private readonly ImportResolverDelegate resourceResolver = LanguageGeneratorManager.ResourceResolver(resourceExplorer);
+
         public TestContext TestContext { get; set; }
 
         private static ResourceExplorer resourceExplorer;
@@ -50,7 +50,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var context = new TurnContext(
                 new TestAdapter()
                 .UseResourceExplorer(resourceExplorer)
-                .UseLanguageGeneration(resourceExplorer, generator ?? new MockLanguageGenator()), new Activity() { Locale = locale, Text = string.Empty });
+                .UseLanguageGeneration(resourceExplorer, generator ?? new MockLanguageGenerator()), new Activity() { Locale = locale, Text = string.Empty });
             context.TurnState.Add(new LanguageGeneratorManager(resourceExplorer));
             if (generator != null)
             {
@@ -203,7 +203,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         }
     }
 
-    public class MockLanguageGenator : ILanguageGenerator
+    public class MockLanguageGenerator : ILanguageGenerator
     {
         public Task<string> Generate(ITurnContext turnContext, string template, object data)
         {
