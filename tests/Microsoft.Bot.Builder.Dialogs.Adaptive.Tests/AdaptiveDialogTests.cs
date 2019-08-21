@@ -17,6 +17,7 @@ using Microsoft.Bot.Builder.LanguageGeneration;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Schema.NET;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 {
@@ -312,6 +313,84 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .AssertReply("Hello carlin")
                 .AssertReply("Hello Carlos, nice to meet you!")
             .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task AdaptiveDialog_TextInputDefaultValueResponse()
+        {
+            var ruleDialog = new AdaptiveDialog("planningTest")
+            {
+                Events = new List<IOnEvent>()
+                {
+                    new OnBeginDialog()
+                    {
+                        Actions = new List<IDialog>()
+                        {
+                            new NumberInput()
+                            {
+                                Prompt = new ActivityTemplate("Hello, what is your age?"),
+                                Property = "user.age",
+                                DefaultValue = "10",
+                                MaxTurnCount = 2,
+                                DefaultValueResponse = new ActivityTemplate("I am going to say you are 10.")
+                            },
+                            new SendActivity()
+                            {
+                                Activity = new ActivityTemplate("Your age is {user.age}.")
+                            }
+                        }
+                    }
+                }
+            };
+
+            await CreateFlow(ruleDialog)
+                .SendConversationUpdate()
+                    .AssertReply("Hello, what is your age?")
+                .Send("Why do you want to know")
+                    .AssertReply("Hello, what is your age?")
+                .Send("Why do you want to know")
+                    .AssertReply("I am going to say you are 10.")
+                    .AssertReply("Your age is 10.")
+                .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task AdaptiveDialog_TextInputNoMaxTurnCount()
+        {
+            var ruleDialog = new AdaptiveDialog("planningTest")
+            {
+                Events = new List<IOnEvent>()
+                {
+                    new OnBeginDialog()
+                    {
+                        Actions = new List<IDialog>()
+                        {
+                            new NumberInput()
+                            {
+                                Prompt = new ActivityTemplate("Hello, what is your age?"),
+                                Property = "user.age",
+                                DefaultValue = "10",
+                                DefaultValueResponse = new ActivityTemplate("I am going to say you are 10.")
+                            },
+                            new SendActivity()
+                            {
+                                Activity = new ActivityTemplate("Your age is {user.age}.")
+                            }
+                        }
+                    }
+                }
+            };
+
+            await CreateFlow(ruleDialog)
+                .SendConversationUpdate()
+                    .AssertReply("Hello, what is your age?")
+                .Send("Why do you want to know")
+                    .AssertReply("Hello, what is your age?")
+                .Send("Why do you want to know")
+                    .AssertReply("Hello, what is your age?")
+                .Send("Why do you want to know")
+                    .AssertReply("Hello, what is your age?")
+                .StartTestAsync();
         }
 
         [TestMethod]
@@ -983,7 +1062,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             },
                             new BeginDialog("ageDialog")
                             {
-                                Options = new 
+                                Options = new
                                 {
                                     userAge = "$age"
                                 }
@@ -1841,5 +1920,44 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .AssertReply("Hello zoidberg, you are 77 years old!")
             .StartTestAsync();
         }
+
+        [TestMethod]
+        public async Task AdaptiveDialog_AdaptiveCardSubmit()
+        {
+            var ruleDialog = new AdaptiveDialog("planningTest")
+            {
+                AutoEndDialog = false,
+                Recognizer = new RegexRecognizer()
+                {
+                    Intents = new Dictionary<string, string>()
+                    {
+                        { "SubmitIntent", "123123123" }
+                    }
+                },
+                Events = new List<IOnEvent>()
+                {
+                    new OnIntent(intent: "SubmitIntent")
+                    {
+                        Actions = new List<IDialog>()
+                        {
+                            new SendActivity("The city is {@city}!")
+                        }
+                    },
+                },
+            };
+
+            var submitActivity = Activity.CreateMessageActivity();
+            submitActivity.Value = new
+            {
+                intent = "SubmitIntent",
+                city = "Seattle"
+            };
+
+            await CreateFlow(ruleDialog)
+               .Send(submitActivity)
+                   .AssertReply("The city is Seattle!")
+               .StartTestAsync();
+        }
+
     }
 }
