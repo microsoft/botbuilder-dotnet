@@ -127,7 +127,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
             {
                 if (activity.Type != ActivityTypes.Message)
                 {
-                    continue;
+                    throw new Exception("Unknown message type");
                 }
 
                 // transform activity into the webex message format
@@ -149,10 +149,10 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <param name="activity">An activity to be sent back to the messaging API.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public override async Task<ResourceResponse> UpdateActivityAsync(ITurnContext turnContext, Activity activity, CancellationToken cancellationToken)
+        public override Task<ResourceResponse> UpdateActivityAsync(ITurnContext turnContext, Activity activity, CancellationToken cancellationToken)
         {
             // Webex adapter does not support updateActivity.
-            return await Task.FromException<ResourceResponse>(new NotImplementedException("Webex adapter does not support updateActivity.")).ConfigureAwait(false);
+            return Task.FromException<ResourceResponse>(new NotSupportedException("Webex adapter does not support updateActivity."));
         }
 
         /// <summary>
@@ -282,6 +282,11 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <returns>An <see cref="Activity"/> object.</returns>
         private Activity PayloadToActivity(WebhookEventData payload)
         {
+            if (payload == null)
+            {
+                return null;
+            }
+
             var activity = new Activity
             {
                 Id = payload.Id,
@@ -313,7 +318,12 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <returns>An <see cref="Activity"/> object.</returns>
         private async Task<Activity> DecryptedMessageToActivityAsync(WebhookEventData payload)
         {
-            Message decryptedMessage = (await _api.GetMessageAsync(payload.MessageData.Id).ConfigureAwait(false)).GetData();
+            if (payload == null)
+            {
+                return null;
+            }
+
+            Message decryptedMessage = (await _api.GetMessageAsync(payload.data.id.ToString()).ConfigureAwait(false)).GetData();
             var activity = new Activity
             {
                 Id = decryptedMessage.Id,
