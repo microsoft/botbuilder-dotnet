@@ -131,15 +131,11 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                 }
 
                 // transform activity into the webex message format
-                var personIdOrEmail = (activity.ChannelData as dynamic)?.toPersonEmail != null
-                                    ? (activity.ChannelData as dynamic).toPersonEmail
+                var personIdOrEmail = activity.GetChannelData<WebhookEventData>()?.MessageData.PersonEmail != null
+                                    ? activity.GetChannelData<WebhookEventData>()?.MessageData.PersonEmail
                                     : activity.Recipient.Id;
 
-                var text = activity.ChannelData != null
-                            ? (activity.ChannelData as dynamic).markdown
-                            : activity.Text;
-
-                TeamsResult<Message> webexResponse = await _api.CreateDirectMessageAsync(personIdOrEmail, text);
+                TeamsResult<Message> webexResponse = await _api.CreateDirectMessageAsync(personIdOrEmail, activity.Text).ConfigureAwait(false);
                 responses.Add(new ResourceResponse(webexResponse.Data.Id));
             }
 
@@ -229,10 +225,10 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
             response.StatusCode = 200;
             await response.WriteAsync(string.Empty, cancellationToken).ConfigureAwait(false);
 
-            dynamic payload;
+            WebhookEventData payload;
             using (var bodyStream = new StreamReader(request.Body))
             {
-                payload = JsonConvert.DeserializeObject(bodyStream.ReadToEnd());
+                payload = JsonConvert.DeserializeObject<WebhookEventData>(bodyStream.ReadToEnd());
             }
 
             if (!string.IsNullOrWhiteSpace(_config.Secret))
@@ -245,8 +241,8 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                 }
             }
 
-            var activity = payload.resource == "messages" && payload["event"] == "created"
-                ? await DecryptedMessageToActivityAsync(payload)
+            var activity = payload.Resource == EventResource.Message && payload.EventType == EventType.Created
+                ? await DecryptedMessageToActivityAsync(payload).ConfigureAwait(false)
                 : PayloadToActivity(payload);
 
             using (var context = new TurnContext(this, activity))
@@ -284,20 +280,20 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// </summary>
         /// <param name="payload">The payload obtained from the body of the request.</param>
         /// <returns>An <see cref="Activity"/> object.</returns>
-        private Activity PayloadToActivity(dynamic payload)
+        private Activity PayloadToActivity(WebhookEventData payload)
         {
             var activity = new Activity
             {
-                Id = payload.id,
+                Id = payload.Id,
                 Timestamp = new DateTime(),
                 ChannelId = "webex",
                 Conversation = new ConversationAccount
                 {
-                    Id = payload.data.roomId,
+                    Id = payload.MessageData.SpaceId,
                 },
                 From = new ChannelAccount
                 {
-                    Id = payload.actorId,
+                    Id = payload.ActorId,
                 },
                 Recipient = new ChannelAccount
                 {
@@ -307,8 +303,6 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                 Type = ActivityTypes.Event,
             };
 
-            (activity.ChannelData as dynamic).botkitEventType = payload.resource + "." + payload["event"];
-
             return activity;
         }
 
@@ -317,9 +311,9 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// </summary>
         /// <param name="payload">The payload obtained from the body of the request.</param>
         /// <returns>An <see cref="Activity"/> object.</returns>
-        private async Task<Activity> DecryptedMessageToActivityAsync(dynamic payload)
+        private async Task<Activity> DecryptedMessageToActivityAsync(WebhookEventData payload)
         {
-            Message decryptedMessage = (await _api.GetMessageAsync(payload.data.id.ToString())).GetData();
+            Message decryptedMessage = (await _api.GetMessageAsync(payload.MessageData.Id).ConfigureAwait(false)).GetData();
             var activity = new Activity
             {
                 Id = decryptedMessage.Id,
@@ -327,7 +321,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                 ChannelId = "webex",
                 Conversation = new ConversationAccount
                 {
-                    Id = (decryptedMessage as dynamic).SpaceId,
+                    Id = decryptedMessage.SpaceId,
                 },
                 From = new ChannelAccount
                 {
@@ -346,7 +340,6 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
             // this is the bot speaking
             if (activity.From.Id == Identity.Id)
             {
-                (activity.ChannelData as dynamic).botkitEventType = "self_message";
                 activity.Type = ActivityTypes.Event;
             }
 
