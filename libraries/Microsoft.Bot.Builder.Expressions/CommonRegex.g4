@@ -1,7 +1,13 @@
 ﻿grammar CommonRegex;
 
-@parser::header {#pragma warning disable 3021} // Disable StyleCop warning CS3021 re CLSCompliant attribute in generated files.
-@lexer::header {#pragma warning disable 3021} // Disable StyleCop warning CS3021 re CLSCompliant attribute in generated files.
+@parser::header {
+#pragma warning disable 3021 // Disable StyleCop warning CS3021 re CLSCompliant attribute in generated files.
+#pragma warning disable 0108 // Disable StyleCop warning CS0108, hides inherited member in generated files.
+}
+@lexer::header {
+#pragma warning disable 3021 // Disable StyleCop warning CS3021 re CLSCompliant attribute in generated files.
+#pragma warning disable 0108 // Disable StyleCop warning CS0108, hides inherited member in generated files.
+}
 
 parse
  : alternation EOF

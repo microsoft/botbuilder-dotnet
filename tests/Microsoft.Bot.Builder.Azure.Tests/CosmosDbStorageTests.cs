@@ -553,6 +553,30 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             return _hasEmulator.Value;
         }
 
+        private static async Task CreateCosmosDbWithPartitionedCollection(string partitionKey)
+        {
+            using (var client = new DocumentClient(new Uri(CosmosServiceEndpoint), CosmosAuthKey))
+            {
+                Database database = await client.CreateDatabaseIfNotExistsAsync(new Database { Id = CosmosDatabaseName });
+                var partitionKeyDefinition = new PartitionKeyDefinition { Paths = new Collection<string> { $"/{partitionKey}" } };
+                var collectionDefinition = new DocumentCollection { Id = CosmosCollectionName, PartitionKey = partitionKeyDefinition };
+
+                await client.CreateDocumentCollectionIfNotExistsAsync(database.SelfLink, collectionDefinition);
+            }
+        }
+
+        private static CosmosDbStorageOptions CreateCosmosDbStorageOptions(string partitionKey = "")
+        {
+            return new CosmosDbStorageOptions()
+            {
+                PartitionKey = partitionKey,
+                AuthKey = CosmosAuthKey,
+                CollectionId = CosmosCollectionName,
+                CosmosDBEndpoint = new Uri(CosmosServiceEndpoint),
+                DatabaseId = CosmosDatabaseName,
+            };
+        }
+
         private Mock<IDocumentClient> GetDocumentClient()
         {
             var mock = new Mock<IDocumentClient>();
@@ -576,30 +600,6 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             mock.Setup(client => client.ConnectionPolicy).Returns(new ConnectionPolicy());
 
             return mock;
-        }
-
-        private static async Task CreateCosmosDbWithPartitionedCollection(string partitionKey)
-        {
-            using (var client = new DocumentClient(new Uri(CosmosServiceEndpoint), CosmosAuthKey))
-            {
-                Database database = await client.CreateDatabaseIfNotExistsAsync(new Database { Id = CosmosDatabaseName });
-                var partitionKeyDefinition = new PartitionKeyDefinition { Paths = new Collection<string> { $"/{partitionKey}" } };
-                var collectionDefinition = new DocumentCollection { Id = CosmosCollectionName, PartitionKey = partitionKeyDefinition };
-
-                await client.CreateDocumentCollectionIfNotExistsAsync(database.SelfLink, collectionDefinition);
-            }
-        }
-
-        private static CosmosDbStorageOptions CreateCosmosDbStorageOptions(string partitionKey = "")
-        {
-            return new CosmosDbStorageOptions()
-            {
-                PartitionKey = partitionKey,
-                AuthKey = CosmosAuthKey,
-                CollectionId = CosmosCollectionName,
-                CosmosDBEndpoint = new Uri(CosmosServiceEndpoint),
-                DatabaseId = CosmosDatabaseName,
-            };
         }
 
         internal class StoreItem : IStoreItem

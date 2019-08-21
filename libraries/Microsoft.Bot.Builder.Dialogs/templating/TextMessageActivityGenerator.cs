@@ -155,7 +155,13 @@ namespace Microsoft.Bot.Builder.Dialogs
             return activity;
         }
 
-        protected async Task<object> ReadAttachmentFile(ITurnContext turnContext, ILanguageGenerator languageGenerator, string fileLocation, string contentType, bool isCard, object data)
+        protected async Task<object> ReadAttachmentFile(
+            ITurnContext turnContext, 
+            ILanguageGenerator languageGenerator, 
+            string fileLocation, 
+            string contentType, 
+            bool isCard, 
+            object data)
         {
             if (Uri.TryCreate(fileLocation, UriKind.Absolute, out Uri uri))
             {

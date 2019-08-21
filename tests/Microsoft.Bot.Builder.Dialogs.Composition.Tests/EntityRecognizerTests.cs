@@ -36,11 +36,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition.Recognizers.Tests
 
         public TestContext TestContext { get; set; }
 
-        private TurnContext GetTurnContext(string text, string locale = "en-us")
-        {
-            return new TurnContext(new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName)), new Schema.Activity(type: Schema.ActivityTypes.Message, text: text, locale: locale));
-        }
-
         [TestMethod]
         public void TestAge()
         {
@@ -210,6 +205,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition.Recognizers.Tests
 
             Assert.AreEqual(2, results.Count, "Should be 1 entities found");
             Assert.AreEqual(1, results.Where(entity => entity.Type == "url").Count(), "Should have 1 url");
+        }
+
+        private TurnContext GetTurnContext(string text, string locale = "en-us")
+        {
+            return new TurnContext(new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName)), new Schema.Activity(type: Schema.ActivityTypes.Message, text: text, locale: locale));
         }
     }
 }

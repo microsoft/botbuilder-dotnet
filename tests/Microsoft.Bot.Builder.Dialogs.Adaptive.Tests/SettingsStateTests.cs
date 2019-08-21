@@ -17,8 +17,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
     {
         public IConfiguration Configuration;
 
-        public TestContext TestContext { get; set; }
-
         public SettingsStateTests()
         {
             var builder = new ConfigurationBuilder()
@@ -26,6 +24,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             this.Configuration = builder.Build();
         }
+
+        public TestContext TestContext { get; set; }
 
         [TestMethod]
         public async Task DialogContextState_SettingsTest()

@@ -4,6 +4,9 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Dialogs.Debugging
 {
+    /// <summary>
+    /// Extension method implementing await for <see cref="SemaphoreSlim"/>.
+    /// </summary>
     public static partial class Extensions
     {
         public static async Task<Releaser> WithWaitAsync(this SemaphoreSlim semaphore, CancellationToken cancellationToken)

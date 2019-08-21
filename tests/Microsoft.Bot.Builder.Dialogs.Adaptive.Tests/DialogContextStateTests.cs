@@ -164,7 +164,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             Assert.AreEqual("joe", value);
 
             Assert.AreEqual("default", state.GetValue("user.xxx", "default"));
-            Assert.AreEqual("default", state.GetValue<String>("user.xxx", "default"));
+            Assert.AreEqual("default", state.GetValue<string>("user.xxx", "default"));
             Assert.IsFalse(state.TryGetValue<string>("user.xxx", out value));
             Assert.AreEqual(null, value);
         }

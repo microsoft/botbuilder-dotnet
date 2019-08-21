@@ -28,67 +28,61 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         private readonly ConcurrentDictionary<string, ThreadModel> threadByTurnId = new ConcurrentDictionary<string, ThreadModel>();
         private readonly Identifier<ThreadModel> threads = new Identifier<ThreadModel>();
 
+        private readonly Task task;
+
+        private int sequence = 0;
+
+        public DebugAdapter(int port, Source.IRegistry registry, IBreakpoints breakpoints, Action terminate, IEvents events = null, ICodeModel codeModel = null, IDataModel dataModel = null, ILogger logger = null, ICoercion coercion = null)
+            : base(logger)
+        {
+            this.events = events ?? new Events<DialogEvents>();
+            this.codeModel = codeModel ?? new CodeModel();
+            this.dataModel = dataModel ?? new DataModel(coercion ?? new Coercion());
+            this.registry = registry ?? throw new ArgumentNullException(nameof(registry));
+            this.breakpoints = breakpoints ?? throw new ArgumentNullException(nameof(breakpoints));
+            this.terminate = terminate ?? new Action(() => Environment.Exit(0));
+            this.task = ListenAsync(new IPEndPoint(IPAddress.Any, port), cancellationToken.Token);
+        }
+
+        /// <summary>
+        /// Thread debugging phases.
+        /// </summary>
         public enum Phase
         {
+            /// <summary>
+            /// "Started" signals Visual Studio Code that there is a new thread.
+            /// </summary>
             Started,
+
+            /// <summary>
+            /// Follows "Next".
+            /// </summary>
             Continue,
+
+            /// <summary>
+            /// Signal to "Step" or to "Ccontinue".
+            /// </summary>
             Next,
+
+            /// <summary>
+            /// Follows "Next".
+            /// </summary>
             Step,
+
+            /// <summary>
+            /// At breakpoint?
+            /// </summary>
             Breakpoint,
+
+            /// <summary>
+            /// Thread paused.
+            /// </summary>
             Pause,
+
+            /// <summary>
+            /// Thread exited.
+            /// </summary>
             Exited
-        }
-
-        private sealed class ThreadModel
-        {
-            public ThreadModel(ITurnContext turnContext, ICodeModel codeModel)
-            {
-                TurnContext = turnContext;
-                CodeModel = codeModel;
-            }
-
-            public ITurnContext TurnContext { get; }
-
-            public ICodeModel CodeModel { get; }
-
-            public string Name => TurnContext.Activity.Text;
-
-            public IReadOnlyList<ICodePoint> Frames => CodeModel.PointsFor(LastContext, LastItem, LastMore);
-
-            public RunModel Run { get; } = new RunModel();
-
-            public Identifier<ICodePoint> FrameCodes { get; } = new Identifier<ICodePoint>();
-
-            public Identifier<object> ValueCodes { get; } = new Identifier<object>();
-
-            public DialogContext LastContext { get; set; }
-
-            public object LastItem { get; set; }
-
-            public string LastMore { get; set; }
-        }
-
-        public sealed class RunModel
-        {
-            public Phase? PhaseSent { get; set; }
-
-            public Phase Phase { get; set; } = Phase.Started;
-
-            public object Gate { get; } = new object();
-
-            public void Post(Phase what)
-            {
-                Monitor.Enter(Gate);
-                try
-                {
-                    Phase = what;
-                    Monitor.Pulse(Gate);
-                }
-                finally
-                {
-                    Monitor.Exit(Gate);
-                }
-            }
         }
 
         private ulong EncodeValue(ThreadModel thread, object value)
@@ -124,18 +118,96 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             frame = thread.FrameCodes[valueCode];
         }
 
-        private readonly Task task;
-
-        public DebugAdapter(int port, Source.IRegistry registry, IBreakpoints breakpoints, Action terminate, IEvents events = null, ICodeModel codeModel = null, IDataModel dataModel = null, ILogger logger = null, ICoercion coercion = null)
-            : base(logger)
+        public static string Ellipsis(string text, int length)
         {
-            this.events = events ?? new Events<DialogEvents>();
-            this.codeModel = codeModel ?? new CodeModel();
-            this.dataModel = dataModel ?? new DataModel(coercion ?? new Coercion());
-            this.registry = registry ?? throw new ArgumentNullException(nameof(registry));
-            this.breakpoints = breakpoints ?? throw new ArgumentNullException(nameof(breakpoints));
-            this.terminate = terminate ?? new Action(() => Environment.Exit(0));
-            this.task = ListenAsync(new IPEndPoint(IPAddress.Any, port), cancellationToken.Token);
+            if (text == null)
+            {
+                return string.Empty;
+            }
+
+            if (text.Length <= length)
+            {
+                return text;
+            }
+
+            int pos = text.IndexOf(" ", length);
+            if (pos >= 0)
+            {
+                return text.Substring(0, pos) + "...";
+            }
+
+            return text;
+        }
+
+        async Task DebugSupport.IDebugger.StepAsync(DialogContext context, object item, string more, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var turnText = context.Context.Activity.Text?.Trim() ?? string.Empty;
+                if (turnText.Length == 0)
+                {
+                    turnText = context.Context.Activity.Type;
+                }
+
+                var threadText = $"'{Ellipsis(turnText, 18)}'";
+                await OutputAsync($"{threadText} ==> {more?.PadRight(16) ?? string.Empty} ==> {codeModel.NameFor(item)} ", item, cancellationToken).ConfigureAwait(false);
+
+                await UpdateBreakpointsAsync(cancellationToken).ConfigureAwait(false);
+
+                if (threadByTurnId.TryGetValue(TurnIdFor(context.Context), out ThreadModel thread))
+                {
+                    thread.LastContext = context;
+                    thread.LastItem = item;
+                    thread.LastMore = more;
+
+                    var run = thread.Run;
+                    if (breakpoints.IsBreakPoint(item) && events[more])
+                    {
+                        run.Post(Phase.Breakpoint);
+                    }
+
+                    // TODO: implement asynchronous condition variables
+                    Monitor.Enter(run.Gate);
+                    try
+                    {
+                        // TODO: remove synchronous waits
+                        UpdateThreadPhaseAsync(thread, item, cancellationToken).GetAwaiter().GetResult();
+
+                        // while the stopped condition is true, atomically release the mutex
+                        while (!(run.Phase == Phase.Started || run.Phase == Phase.Continue || run.Phase == Phase.Next))
+                        {
+                            Monitor.Wait(run.Gate);
+                        }
+
+                        // "Started" signals to Visual Studio Code that there is a new thread
+                        if (run.Phase == Phase.Started)
+                        {
+                            run.Phase = Phase.Continue;
+                        }
+
+                        // TODO: remove synchronous waits
+                        UpdateThreadPhaseAsync(thread, item, cancellationToken).GetAwaiter().GetResult();
+
+                        // allow one step to progress since next was requested
+                        if (run.Phase == Phase.Next)
+                        {
+                            run.Phase = Phase.Step;
+                        }
+                    }
+                    finally
+                    {
+                        Monitor.Exit(run.Gate);
+                    }
+                }
+                else
+                {
+                    this.logger.LogError($"thread context not found");
+                }
+            }
+            catch (Exception error)
+            {
+                this.logger.LogError(error, error.Message);
+            }
         }
 
         public async Task DisposeAsync()
@@ -172,101 +244,37 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             }
         }
 
+        protected override async Task AcceptAsync(CancellationToken cancellationToken)
+        {
+            while (!cancellationToken.IsCancellationRequested)
+            {
+                try
+                {
+                    var token = await ReadAsync(cancellationToken).ConfigureAwait(false);
+                    var request = Protocol.Parse(token);
+                    Protocol.Message message;
+                    try
+                    {
+                        message = await DispatchAsync(request, cancellationToken).ConfigureAwait(false);
+                    }
+                    catch (Exception error)
+                    {
+                        message = Protocol.Response.Fail(NextSeq, request, error.Message);
+                    }
+
+                    await SendAsync(message, cancellationToken).ConfigureAwait(false);
+                }
+                catch (Exception error)
+                {
+                    this.logger.LogError(error, error.Message);
+                    throw;
+                }
+            }
+        }
+
         private static string TurnIdFor(ITurnContext turnContext)
         {
             return $"{turnContext.Activity.ChannelId}-{turnContext.Activity.Id}";
-        }
-
-        static public string Ellipsis(string text, int length)
-        {
-            if (text == null)
-            {
-                return string.Empty;
-            }
-
-            if (text.Length <= length)
-            {
-                return text;
-            }
-
-            int pos = text.IndexOf(" ", length);
-            if (pos >= 0)
-            {
-                return text.Substring(0, pos) + "...";
-            }
-
-            return text;
-        }
-
-        async Task DebugSupport.IDebugger.StepAsync(DialogContext context, object item, string more, CancellationToken cancellationToken)
-        {
-            try
-            {
-                var turnText = context.Context.Activity.Text?.Trim() ?? string.Empty;
-                if (turnText.Length == 0)
-                {
-                    turnText = context.Context.Activity.Type;
-                }
-
-                var threadText = $"'{Ellipsis(turnText, 18)}'";
-                await OutputAsync($"{threadText} ==> {more?.PadRight(16) ?? ""} ==> {codeModel.NameFor(item)} ", item, cancellationToken).ConfigureAwait(false);
-
-                await UpdateBreakpointsAsync(cancellationToken).ConfigureAwait(false);
-
-                if (threadByTurnId.TryGetValue(TurnIdFor(context.Context), out ThreadModel thread))
-                {
-                    thread.LastContext = context;
-                    thread.LastItem = item;
-                    thread.LastMore = more;
-
-                    var run = thread.Run;
-                    if (breakpoints.IsBreakPoint(item) && events[more])
-                    {
-                        run.Post(Phase.Breakpoint);
-                    }
-
-                    // TODO: implement asynchronous condition variables
-                    Monitor.Enter(run.Gate);
-                    try
-                    {
-                        // TODO: remove synchronous waits
-                        UpdateThreadPhaseAsync(thread, item, cancellationToken).GetAwaiter().GetResult();
-
-                        // while the stopped condition is true, atomically release the mutex
-                        while (!(run.Phase == Phase.Started || run.Phase == Phase.Continue || run.Phase == Phase.Next))
-                        {
-                            Monitor.Wait(run.Gate);
-                        }
-
-                        // started is just use the signal to Visual Studio Code that there is a new thread
-                        if (run.Phase == Phase.Started)
-                        {
-                            run.Phase = Phase.Continue;
-                        }
-
-                        // TODO: remove synchronous waits
-                        UpdateThreadPhaseAsync(thread, item, cancellationToken).GetAwaiter().GetResult();
-
-                        // allow one step to progress since next was requested
-                        if (run.Phase == Phase.Next)
-                        {
-                            run.Phase = Phase.Step;
-                        }
-                    }
-                    finally
-                    {
-                        Monitor.Exit(run.Gate);
-                    }
-                }
-                else
-                {
-                    this.logger.LogError($"thread context not found");
-                }
-            }
-            catch (Exception error)
-            {
-                this.logger.LogError(error, error.Message);
-            }
         }
 
         private async Task UpdateBreakpointsAsync(CancellationToken cancellationToken)
@@ -359,8 +367,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
             await SendAsync(Protocol.Event.From(NextSeq, "output", body), cancellationToken).ConfigureAwait(false);
         }
-
-        private int sequence = 0;
 
         private int NextSeq => Interlocked.Increment(ref sequence);
 
@@ -605,32 +611,56 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             }
         }
 
-        protected override async Task AcceptAsync(CancellationToken cancellationToken)
+        public sealed class RunModel
         {
-            while (!cancellationToken.IsCancellationRequested)
+            public Phase? PhaseSent { get; set; }
+
+            public Phase Phase { get; set; } = Phase.Started;
+
+            public object Gate { get; } = new object();
+
+            public void Post(Phase what)
             {
+                Monitor.Enter(Gate);
                 try
                 {
-                    var token = await ReadAsync(cancellationToken).ConfigureAwait(false);
-                    var request = Protocol.Parse(token);
-                    Protocol.Message message;
-                    try
-                    {
-                        message = await DispatchAsync(request, cancellationToken).ConfigureAwait(false);
-                    }
-                    catch (Exception error)
-                    {
-                        message = Protocol.Response.Fail(NextSeq, request, error.Message);
-                    }
-
-                    await SendAsync(message, cancellationToken).ConfigureAwait(false);
+                    Phase = what;
+                    Monitor.Pulse(Gate);
                 }
-                catch (Exception error)
+                finally
                 {
-                    this.logger.LogError(error, error.Message);
-                    throw;
+                    Monitor.Exit(Gate);
                 }
             }
+        }
+
+        private sealed class ThreadModel
+        {
+            public ThreadModel(ITurnContext turnContext, ICodeModel codeModel)
+            {
+                TurnContext = turnContext;
+                CodeModel = codeModel;
+            }
+
+            public ITurnContext TurnContext { get; }
+
+            public ICodeModel CodeModel { get; }
+
+            public string Name => TurnContext.Activity.Text;
+
+            public IReadOnlyList<ICodePoint> Frames => CodeModel.PointsFor(LastContext, LastItem, LastMore);
+
+            public RunModel Run { get; } = new RunModel();
+
+            public Identifier<ICodePoint> FrameCodes { get; } = new Identifier<ICodePoint>();
+
+            public Identifier<object> ValueCodes { get; } = new Identifier<object>();
+
+            public DialogContext LastContext { get; set; }
+
+            public object LastItem { get; set; }
+
+            public string LastMore { get; set; }
         }
     }
 }

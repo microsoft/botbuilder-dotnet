@@ -12,9 +12,40 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         private readonly Dictionary<object, Source.Range> sourceByItem = new Dictionary<object, Source.Range>(ReferenceEquality<object>.Instance);
         private bool dirty = true;
 
+        private readonly Identifier<Row> rows = new Identifier<Row>();
+        private readonly HashSet<object> items = new HashSet<object>(ReferenceEquality<object>.Instance);
+
         public SourceMap(ICodeModel codeModel)
         {
             this.codeModel = codeModel ?? throw new ArgumentNullException(nameof(codeModel));
+        }
+
+        public static bool Equals(Protocol.Range target, Source.Range source) =>
+            (target.Source == null && source == null)
+            || (PathEquals(target.Source.Path, source.Path)
+                && target.Line == source.Start.LineIndex
+                && target.EndLine == source.After.LineIndex
+                && target.Column == source.Start.CharIndex
+                && target.EndColumn == source.After.CharIndex);
+
+        public static void Assign(Protocol.Range target, Source.Range source)
+        {
+            if (source != null)
+            {
+                target.Source = new Protocol.Source(source.Path);
+                target.Line = source.Start.LineIndex;
+                target.EndLine = source.After.LineIndex;
+                target.Column = source.Start.CharIndex;
+                target.EndColumn = source.After.CharIndex;
+            }
+            else
+            {
+                target.Source = null;
+                target.Line = null;
+                target.EndLine = null;
+                target.Column = null;
+                target.EndColumn = null;
+            }
         }
 
         void Source.IRegistry.Add(object item, Source.Range range)
@@ -47,58 +78,89 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             }
         }
 
-        public sealed class Row
+        IReadOnlyList<Protocol.Breakpoint> IBreakpoints.SetBreakpoints(Protocol.Source source, IReadOnlyList<Protocol.SourceBreakpoint> sourceBreakpoints)
         {
-            public Row(Protocol.Source source, Protocol.SourceBreakpoint sourceBreakpoint)
+            lock (gate)
             {
-                Source = source;
-                SourceBreakpoint = sourceBreakpoint;
+                var path = source.Path;
+                foreach (var row in rows.Items)
+                {
+                    if (row.FunctionBreakpoint == null && PathEquals(row.Source.Path, path))
+                    {
+                        rows.Remove(row);
+                    }
+                }
+
+                var breakpoints = new List<Protocol.Breakpoint>(sourceBreakpoints.Count);
+
+                foreach (var sourceBreakpoint in sourceBreakpoints)
+                {
+                    var row = new Row(source, sourceBreakpoint);
+                    TryUpdate(row);
+                    breakpoints.Add(row.Breakpoint);
+                }
+
+                RebuildItems();
+
+                return breakpoints;
             }
-
-            public Row(Protocol.FunctionBreakpoint functionBreakpoint)
-            {
-                FunctionBreakpoint = functionBreakpoint;
-            }
-
-            public Protocol.Source Source { get; }
-
-            public Protocol.SourceBreakpoint SourceBreakpoint { get; }
-
-            public Protocol.FunctionBreakpoint FunctionBreakpoint { get; }
-
-            public Protocol.Breakpoint Breakpoint { get; } = new Protocol.Breakpoint();
-
-            public object Item { get; set; }
         }
 
-        private readonly Identifier<Row> rows = new Identifier<Row>();
-        private readonly HashSet<object> items = new HashSet<object>(ReferenceEquality<object>.Instance);
-
-        public static bool Equals(Protocol.Range target, Source.Range source) =>
-            (target.Source == null && source == null)
-            || (PathEquals(target.Source.Path, source.Path)
-                && target.Line == source.Start.LineIndex
-                && target.EndLine == source.After.LineIndex
-                && target.Column == source.Start.CharIndex
-                && target.EndColumn == source.After.CharIndex);
-
-        public static void Assign(Protocol.Range target, Source.Range source)
+        IReadOnlyList<Protocol.Breakpoint> IBreakpoints.SetBreakpoints(IReadOnlyList<Protocol.FunctionBreakpoint> functionBreakpoints)
         {
-            if (source != null)
+            lock (gate)
             {
-                target.Source = new Protocol.Source(source.Path);
-                target.Line = source.Start.LineIndex;
-                target.EndLine = source.After.LineIndex;
-                target.Column = source.Start.CharIndex;
-                target.EndColumn = source.After.CharIndex;
+                foreach (var row in rows.Items)
+                {
+                    if (row.FunctionBreakpoint != null)
+                    {
+                        rows.Remove(row);
+                    }
+                }
+
+                var breakpoints = new List<Protocol.Breakpoint>(functionBreakpoints.Count);
+
+                foreach (var functionBreakpoint in functionBreakpoints)
+                {
+                    var row = new Row(functionBreakpoint);
+                    TryUpdate(row);
+                    breakpoints.Add(row.Breakpoint);
+                }
+
+                RebuildItems();
+
+                return breakpoints;
             }
-            else
+        }
+
+        IReadOnlyList<Protocol.Breakpoint> IBreakpoints.ApplyUpdates()
+        {
+            lock (gate)
             {
-                target.Source = null;
-                target.Line = null;
-                target.EndLine = null;
-                target.Column = null;
-                target.EndColumn = null;
+                IReadOnlyList<Protocol.Breakpoint> updates = Array.Empty<Protocol.Breakpoint>();
+                if (dirty)
+                {
+                    updates = Update();
+                    dirty = false;
+                }
+
+                return updates;
+            }
+        }
+
+        bool IBreakpoints.IsBreakPoint(object item)
+        {
+            lock (gate)
+            {
+                return this.items.Contains(item);
+            }
+        }
+
+        object IBreakpoints.ItemFor(Protocol.Breakpoint breakpoint)
+        {
+            lock (gate)
+            {
+                return this.rows[breakpoint.Id].Item;
             }
         }
 
@@ -198,90 +260,28 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             }
         }
 
-        IReadOnlyList<Protocol.Breakpoint> IBreakpoints.SetBreakpoints(Protocol.Source source, IReadOnlyList<Protocol.SourceBreakpoint> sourceBreakpoints)
+        public sealed class Row
         {
-            lock (gate)
+            public Row(Protocol.Source source, Protocol.SourceBreakpoint sourceBreakpoint)
             {
-                var path = source.Path;
-                foreach (var row in rows.Items)
-                {
-                    if (row.FunctionBreakpoint == null && PathEquals(row.Source.Path, path))
-                    {
-                        rows.Remove(row);
-                    }
-                }
-
-                var breakpoints = new List<Protocol.Breakpoint>(sourceBreakpoints.Count);
-
-                foreach (var sourceBreakpoint in sourceBreakpoints)
-                {
-                    var row = new Row(source, sourceBreakpoint);
-                    TryUpdate(row);
-                    breakpoints.Add(row.Breakpoint);
-                }
-
-                RebuildItems();
-
-                return breakpoints;
+                Source = source;
+                SourceBreakpoint = sourceBreakpoint;
             }
-        }
 
-        IReadOnlyList<Protocol.Breakpoint> IBreakpoints.SetBreakpoints(IReadOnlyList<Protocol.FunctionBreakpoint> functionBreakpoints)
-        {
-            lock (gate)
+            public Row(Protocol.FunctionBreakpoint functionBreakpoint)
             {
-                foreach (var row in rows.Items)
-                {
-                    if (row.FunctionBreakpoint != null)
-                    {
-                        rows.Remove(row);
-                    }
-                }
-
-                var breakpoints = new List<Protocol.Breakpoint>(functionBreakpoints.Count);
-
-                foreach (var functionBreakpoint in functionBreakpoints)
-                {
-                    var row = new Row(functionBreakpoint);
-                    TryUpdate(row);
-                    breakpoints.Add(row.Breakpoint);
-                }
-
-                RebuildItems();
-
-                return breakpoints;
+                FunctionBreakpoint = functionBreakpoint;
             }
-        }
 
-        IReadOnlyList<Protocol.Breakpoint> IBreakpoints.ApplyUpdates()
-        {
-            lock (gate)
-            {
-                IReadOnlyList<Protocol.Breakpoint> updates = Array.Empty<Protocol.Breakpoint>();
-                if (dirty)
-                {
-                    updates = Update();
-                    dirty = false;
-                }
+            public Protocol.Source Source { get; }
 
-                return updates;
-            }
-        }
+            public Protocol.SourceBreakpoint SourceBreakpoint { get; }
 
-        bool IBreakpoints.IsBreakPoint(object item)
-        {
-            lock (gate)
-            {
-                return this.items.Contains(item);
-            }
-        }
+            public Protocol.FunctionBreakpoint FunctionBreakpoint { get; }
 
-        object IBreakpoints.ItemFor(Protocol.Breakpoint breakpoint)
-        {
-            lock (gate)
-            {
-                return this.rows[breakpoint.Id].Item;
-            }
+            public Protocol.Breakpoint Breakpoint { get; } = new Protocol.Breakpoint();
+
+            public object Item { get; set; }
         }
     }
 

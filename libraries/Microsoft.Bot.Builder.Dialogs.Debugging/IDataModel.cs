@@ -64,14 +64,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
     {
         private readonly ICoercion coercion;
 
-        public abstract int Rank { get; }
-
         protected DataModelBase(ICoercion coercion)
         {
             this.coercion = coercion ?? throw new ArgumentNullException(nameof(coercion));
         }
 
-        protected T Coerce<T>(object item) => (T)this.coercion.Coerce(item, typeof(T));
+        public abstract int Rank { get; }
 
         public abstract TValue this[TContext context, TName name]
         {
@@ -79,15 +77,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             set;
         }
 
-        public virtual bool IsScalar(TContext context) => false;
-
-        public abstract IEnumerable<TName> Names(TContext context);
-
         object IDataModel.this[object context, object name]
         {
             get => this[(TContext)context, Coerce<TName>(name)];
             set => this[(TContext)context, Coerce<TName>(name)] = Coerce<TValue>(value);
         }
+
+        public virtual bool IsScalar(TContext context) => false;
+
+        public abstract IEnumerable<TName> Names(TContext context);
 
         public virtual string ToString(TContext context) => (context is ICollection collection)
             ? $"Count = {collection.Count}"
@@ -96,6 +94,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         bool IDataModel.IsScalar(object context) => IsScalar((TContext)context);
 
         string IDataModel.ToString(object context) => ToString((TContext)context);
+
+        protected T Coerce<T>(object item) => (T)this.coercion.Coerce(item, typeof(T));
 
         IEnumerable<object> IDataModel.Names(object context) => Names((TContext)context).Cast<object>();
     }
@@ -210,6 +210,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             set => ModelFor(context)[context, name] = value;
         }
 
+        bool IDataModel.IsScalar(object context) => ModelFor(context).IsScalar(context);
+
+        IEnumerable<object> IDataModel.Names(object context) => ModelFor(context).Names(context);
+
+        string IDataModel.ToString(object context) => ModelFor(context).ToString(context);
+
         private IDataModel Create(Type definition, params Type[] typeArguments) =>
             (IDataModel)Activator.CreateInstance(definition.MakeGenericType(typeArguments), this.coercion);
 
@@ -270,11 +276,5 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
             return model;
         }
-
-        bool IDataModel.IsScalar(object context) => ModelFor(context).IsScalar(context);
-
-        IEnumerable<object> IDataModel.Names(object context) => ModelFor(context).Names(context);
-
-        string IDataModel.ToString(object context) => ModelFor(context).ToString(context);
     }
 }

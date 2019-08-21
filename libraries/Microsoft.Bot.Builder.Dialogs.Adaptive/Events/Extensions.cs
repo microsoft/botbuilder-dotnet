@@ -7,6 +7,9 @@ using Microsoft.Bot.Builder.Dialogs.Debugging;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
 {
+    /// <summary>
+    /// Extension method for <see cref="DialogContext"/> provides <see cref="DebugSupport"/>.
+    /// </summary>
     public static partial class Extensions
     {
         public static async Task DebuggerStepAsync(this DialogContext context, IOnEvent rule, DialogEvent dialogEvent,  CancellationToken cancellationToken)

@@ -14,25 +14,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition.Tests
 
         public TestContext TestContext { get; set; }
 
-        public class RecognizerDialog : Dialog, IDialog
-        {
-            public IRecognizer Recognizer { get; set; }
-
-            public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
-            {
-                var result = await Recognizer.RecognizeAsync(dc.Context, cancellationToken);
-                await dc.Context.SendActivityAsync(dc.Context.Activity.CreateReply(result.Text));
-                return new DialogTurnResult(DialogTurnStatus.Waiting);
-            }
-
-            public override async Task<DialogTurnResult> ContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default(CancellationToken))
-            {
-                var result = await Recognizer.RecognizeAsync(dc.Context, cancellationToken);
-                await dc.Context.SendActivityAsync(dc.Context.Activity.CreateReply(result.Text));
-                return new DialogTurnResult(DialogTurnStatus.Waiting);
-            }
-        }
-
         private Activity CreateLocaleActivity(string locale)
         {
             var activity = Activity.CreateMessageActivity();
@@ -40,6 +21,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition.Tests
             activity.Locale = locale;
             return (Activity)activity;
         }
+ 
         /// <summary>
         /// Create test flow.
         /// </summary>
@@ -67,6 +49,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition.Tests
 
             return adapter;
         }
+
+        public class RecognizerDialog : Dialog, IDialog
+        {
+            public IRecognizer Recognizer { get; set; }
+
+            public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
+            {
+                var result = await Recognizer.RecognizeAsync(dc.Context, cancellationToken);
+                await dc.Context.SendActivityAsync(dc.Context.Activity.CreateReply(result.Text));
+                return new DialogTurnResult(DialogTurnStatus.Waiting);
+            }
+
+            public override async Task<DialogTurnResult> ContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default(CancellationToken))
+            {
+                var result = await Recognizer.RecognizeAsync(dc.Context, cancellationToken);
+                await dc.Context.SendActivityAsync(dc.Context.Activity.CreateReply(result.Text));
+                return new DialogTurnResult(DialogTurnStatus.Waiting);
+            }
+        }
     }
 
     public class TestRecognizer : IRecognizer
@@ -80,13 +81,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition.Tests
 
         public async Task<RecognizerResult> RecognizeAsync(ITurnContext turnContext, CancellationToken cancellationToken)
         {
-            return new RecognizerResult() { Text = this.Id };
+            return await Task.FromResult(new RecognizerResult() { Text = this.Id });
         }
 
         public async Task<T> RecognizeAsync<T>(ITurnContext turnContext, CancellationToken cancellationToken)
             where T : IRecognizerConvert, new()
         {
-            return new T();
+            return await Task.FromResult(new T());
         }
     }
 }

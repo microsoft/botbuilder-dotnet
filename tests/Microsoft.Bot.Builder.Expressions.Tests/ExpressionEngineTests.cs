@@ -10,10 +10,8 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
     [TestClass]
     public class ExpressionEngineTests
     {
-        public static object[] Test(string input, object value, HashSet<string> paths = null) => new object[] { input, value, paths };
-
-        public static HashSet<string> one = new HashSet<string> { "one" };
-        public static HashSet<string> oneTwo = new HashSet<string> { "one", "two" };
+        public static HashSet<string> One = new HashSet<string> { "one" };
+        public static HashSet<string> OneTwo = new HashSet<string> { "one", "two" };
         private static readonly string NullStr = null;
 
         private readonly object scope = new Dictionary<string, object>
@@ -97,7 +95,8 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
                               ]
                             }
                           ]
-                        }" },
+                        }"
+            },
             {
                 "turn", new
                 {
@@ -216,7 +215,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
         };
 
         public static IEnumerable<object[]> Data => new[]
-       {
+        {
             #region SetPathToProperty test
             // TODO: We should support this.
             // Test("@@['c' + 'ity']", "Seattle"),
@@ -262,7 +261,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("!!exists(one) == !!exists(one)", true),
             Test("!(one == 1.0)", false, new HashSet<string> { "one" }),
             Test("!!(one == 1.0)", true, new HashSet<string> { "one" }),
-            Test("!(one == 1.0) || !!(two == 2.0)", true, oneTwo),
+            Test("!(one == 1.0) || !!(two == 2.0)", true, OneTwo),
             Test("!true", false),
             Test("!!true", true),
             Test("!(one == 1.0) || !!(two == 2.0)", true),
@@ -282,7 +281,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("float(5.5) <= float(4 - 1)", false),
             Test("'string'&'builder'", "stringbuilder"),
             Test("\"string\"&\"builder\"", "stringbuilder"),
-            Test("one > 0.5 && two < 2.5", true, oneTwo),
+            Test("one > 0.5 && two < 2.5", true, OneTwo),
             Test("notThere > 4", false),
             Test("float(5.5) && float(0.0)", true),
             Test("hello && \"hello\"", true),
@@ -291,7 +290,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("!(hello)", false), // false
             Test("!(10)", false),
             Test("!(0)", false),
-            Test("one > 0.5 || two < 1.5", true, oneTwo),
+            Test("one > 0.5 || two < 1.5", true, OneTwo),
             Test("one / 0 || two", true),
             Test("0/3", 0),
             Test("True == true", true),
@@ -336,21 +335,21 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("addOrdinal(11 + 11)", "22nd"),
             Test("addOrdinal(11 + 12)", "23rd"),
             Test("addOrdinal(11 + 13)", "24th"),
-            Test("addOrdinal(-1)", "-1"), //original string value
+            Test("addOrdinal(-1)", "-1"), // original string value
             
-            # endregion
+            #endregion
 
-            # region  Logical comparison functions test
+            #region  Logical comparison functions test
             Test("and(1 == 1, 1 < 2, 1 > 2)", false),
-            Test("and(!true, !!true)", false), //false && true
-            Test("and(!!true, !!true)", true), //true && true
-            Test("and(hello != 'world', bool('true'))", true), //true && true
-            Test("and(hello == 'world', bool('true'))", false), //false && true
-            Test("or(!exists(one), !!exists(one))", true), //false && true
-            Test("or(!exists(one), !exists(one))", false), //false && false
-            Test("greater(one, two)", false, oneTwo),
+            Test("and(!true, !!true)", false), // false && true
+            Test("and(!!true, !!true)", true), // true && true
+            Test("and(hello != 'world', bool('true'))", true), // true && true
+            Test("and(hello == 'world', bool('true'))", false), // false && true
+            Test("or(!exists(one), !!exists(one))", true), // false && true
+            Test("or(!exists(one), !exists(one))", false), // false && false
+            Test("greater(one, two)", false, OneTwo),
             Test("greater(one , 0.5) && less(two , 2.5)", true), // true && true
-            Test("greater(one , 0.5) || less(two , 1.5)", true), //true || false
+            Test("greater(one , 0.5) || less(two , 1.5)", true), // true || false
             Test("greater(5, 2)", true),
             Test("greater(2, 2)", false),
             Test("greater(one, two)", false),
@@ -359,14 +358,14 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("greaterOrEquals(float(5.5) , float(4 - 1))", true),
             Test("greaterOrEquals(one, one)", true),
             Test("greaterOrEquals(one, two)", false),
-            Test("greaterOrEquals(one, one)", true, one),
-            Test("greaterOrEquals(one, two)", false, oneTwo),
+            Test("greaterOrEquals(one, one)", true, One),
+            Test("greaterOrEquals(one, two)", false, OneTwo),
             Test("less(5, 2)", false),
             Test("less(2, 2)", false),
             Test("less(one, two)", true),
-            Test("less(one, two)", true, oneTwo),
+            Test("less(one, two)", true, OneTwo),
             Test("lessOrEquals(one, one)", true, new HashSet<string> { "one" }),
-            Test("lessOrEquals(one, two)", true, oneTwo),
+            Test("lessOrEquals(one, two)", true, OneTwo),
             Test("lessOrEquals(one, one)", true),
             Test("lessOrEquals(one, two)", true),
             Test("lessOrEquals((1 + 2) , (4 - 1))", true),
@@ -377,13 +376,13 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("equals(hello, 'hello')", true),
             Test("equals(bag.index, 3)", true),
             Test("equals(bag.index, 2)", false),
-            Test("equals(hello == 'world', bool('true'))", false), //false, true
-            Test("equals(hello == 'world', bool(0))", false), //false, true
-            Test("if(!exists(one), 'r1', 'r2')", "r2"), //false
-            Test("if(!!exists(one), 'r1', 'r2')", "r1"), //true
-            Test("if(0, 'r1', 'r2')", "r1"), //true
-            Test("if(bool('true'), 'r1', 'r2')", "r1"), //true
-            Test("if(istrue, 'r1', 'r2')", "r1"), //true
+            Test("equals(hello == 'world', bool('true'))", false), // false, true
+            Test("equals(hello == 'world', bool(0))", false), // false, true
+            Test("if(!exists(one), 'r1', 'r2')", "r2"), // false
+            Test("if(!!exists(one), 'r1', 'r2')", "r1"), // true
+            Test("if(0, 'r1', 'r2')", "r1"), // true
+            Test("if(bool('true'), 'r1', 'r2')", "r1"), // true
+            Test("if(istrue, 'r1', 'r2')", "r1"), // true
             Test("exists(one)", true),
             Test("exists(xxx)", false),
             Test("exists(one.xxx)", false),
@@ -393,7 +392,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("not(one == 1.0)", false, new HashSet<string> { "one" }),
             Test("not(not(one == 1.0))", true, new HashSet<string> { "one" }),
             Test("not(false)", true),
-            Test("and(one > 0.5, two < 2.5)", true, oneTwo),
+            Test("and(one > 0.5, two < 2.5)", true, OneTwo),
             Test("and(float(5.5), float(0.0))", true),
             Test("and(hello, \"hello\")", true),
             Test("or(items, (2 + 2) <= (4 - 1))", true), // true || false
@@ -405,9 +404,9 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("if(null, 'r1', 'r2')", "r2"),
             Test("if(hello * 5, 'r1', 'r2')", "r2"),
             Test("if(10, 'r1', 'r2')", "r1"),
-            # endregion
+            #endregion
 
-            # region  Conversion functions test
+            #region  Conversion functions test
             Test("float('10.333')", 10.333f),
             Test("float('10')", 10.0f),
             Test("int('10')", 10),
@@ -448,7 +447,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("min(mul(1, 2), 5) ", 2),
             Test("min(4, 5) ", 4),
             Test("min(4) ", 4),
-            Test("min(1.0, two) + max(one, 2.0)", 3.0, oneTwo),
+            Test("min(1.0, two) + max(one, 2.0)", 3.0, OneTwo),
             Test("sub(2, 1)", 1),
             Test("sub(2, 1, 1)", 0),
             Test("sub(2.0, 0.5)", 1.5),
@@ -463,11 +462,11 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("rand(2, 3)", 2),
             Test("range(1,4)", new[] { 1, 2, 3, 4 }),
             Test("range(-1,6)", new[] { -1, 0, 1, 2, 3, 4 }),
-            # endregion
+            #endregion
 
-            # region  Date and time function test
+            #region  Date and time function test
 
-            //init dateTime: 2018-03-15T13:00:00Z
+            // init dateTime: 2018-03-15T13:00:00Z
             Test("addDays(timestamp, 1)", "2018-03-16T13:00:00.000Z"),
             Test("addDays(timestamp, 1,'MM-dd-yy')", "03-16-18"),
             Test("addHours(timestamp, 1)", "2018-03-15T14:00:00.000Z"),
@@ -477,10 +476,10 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("addSeconds(timestamp, 1)", "2018-03-15T13:00:01.000Z"),
             Test("addSeconds(timestamp, 1, 'MM-dd-yy hh-mm-ss')", "03-15-18 01-00-01"),
             Test("dayOfMonth(timestamp)", 15),
-            Test("dayOfWeek(timestamp)", 4), //Thursday
+            Test("dayOfWeek(timestamp)", 4), // Thursday
             Test("dayOfYear(timestamp)", 74),
             Test("month(timestamp)", 3),
-            Test("date(timestamp)", "3/15/2018"), //Default. TODO
+            Test("date(timestamp)", "3/15/2018"), // Default. TODO
             Test("year(timestamp)", 2018),
             Test("length(utcNow())", 24),
             Test("utcNow('MM-DD-YY')", DateTime.UtcNow.ToString("MM-DD-YY")),
@@ -584,9 +583,9 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("lastIndexOf(newGuid(), '-')", 23),
             Test("lastIndexOf(hello, '-')", -1),
             Test("length(newGuid())", 36),
-            # endregion
+            #endregion
 
-            # region  Object manipulation and construction functions
+            #region  Object manipulation and construction functions
             Test("string(addProperty(json('{\"key1\":\"value1\"}'), 'key2','value2'))", "{\"key1\":\"value1\",\"key2\":\"value2\"}"),
             Test("string(setProperty(json('{\"key1\":\"value1\"}'), 'key1','value2'))", "{\"key1\":\"value2\"}"),
             Test("string(removeProperty(json('{\"key1\":\"value1\",\"key2\":\"value2\"}'), 'key2'))", "{\"key1\":\"value1\"}"),
@@ -595,9 +594,9 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("xPath(xmlStr,'sum(/produce/item/count)')", 30),
             Test("jPath(jsonStr,'Manufacturers[0].Products[0].Price')", 50),
             Test("jPath(jsonStr,'$..Products[?(@.Price >= 50)].Name')", new[] { "Anvil", "Elbow Grease" }),
-            # endregion
+            #endregion
 
-            # region  Short Hand Expression
+            #region  Short Hand Expression
             Test("@city == 'Bellevue'", false, new HashSet<string> { "turn.recognized.entities.city" }),
             Test("@city", "Seattle", new HashSet<string> { "turn.recognized.entities.city" }),
             Test("@city == 'Seattle'", true, new HashSet<string> { "turn.recognized.entities.city" }),
@@ -644,7 +643,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("(getProperty(null, 'p'))[1]", null),
             #endregion
 
-            # region Dialog 
+            #region Dialog 
             Test("user.lists.todo[int(@@ordinal[0]) - 1] != null", true),
             Test("user.lists.todo[int(@@ordinal[0]) + 3] != null", false),
             Test("count(user.lists.todo) > int(@@ordinal[0]))", true),
@@ -653,7 +652,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("user.lists[user.listType][int(@@ordinal[0]) - 1]", "todo1"),
             #endregion
 
-            # region Regex
+            #region Regex
             Test("isMatch('abc', '^[ab]+$')", false), // simple character classes ([abc]), "+" (one or more)
             Test("isMatch('abb', '^[ab]+$')", true), // simple character classes ([abc])
             Test("isMatch('123', '^[^abc]+$')", true), // complemented character classes ([^abc])
@@ -678,10 +677,25 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("isMatch('12abc', '([0-9]+)([a-z]+)([0-9]+)')", false), // "(...)" (simple group)
             Test(@"isMatch('a', '\\w{1}')", true), // "\w" (match [a-zA-Z0-9_])
             Test(@"isMatch('1', '\\d{1}')", true), // "\d" (match [0-9])
-            # endregion
+            #endregion
         };
 
-        [DataTestMethod()]
+        public static object[] Test(string input, object value, HashSet<string> paths = null) => new object[] { input, value, paths };
+
+        public static bool IsNumber(object value) =>
+            value is sbyte
+            || value is byte
+            || value is short
+            || value is ushort
+            || value is int
+            || value is uint
+            || value is long
+            || value is ulong
+            || value is float
+            || value is double
+            || value is decimal;
+
+        [DataTestMethod]
         [DynamicData(nameof(Data))]
         public void Evaluate(string input, object expected, HashSet<string> expectedRefs)
         {
@@ -713,19 +727,6 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
                 Assert.IsTrue(expectedRefs.SetEquals(actualRefs), $"References do not match, expected: {string.Join(',', expectedRefs)} acutal: {string.Join(',', actualRefs)}");
             }
         }
-
-        public static bool IsNumber(object value) =>
-            value is sbyte
-            || value is byte
-            || value is short
-            || value is ushort
-            || value is int
-            || value is uint
-            || value is long
-            || value is ulong
-            || value is float
-            || value is double
-            || value is decimal;
 
         private void AssertObjectEquals(object expected, object actual)
         {

@@ -37,6 +37,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Plugins
                 this.Loader = Activator.CreateInstance(assembly.GetType(info.CustomLoaderClassName)) as ICustomDeserializer;
             }
 
+            await Task.FromResult<object>(null);
             return;
         }
     }

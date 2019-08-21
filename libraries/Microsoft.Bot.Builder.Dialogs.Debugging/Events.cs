@@ -6,6 +6,22 @@ using static Microsoft.Bot.Builder.Dialogs.DialogContext;
 
 namespace Microsoft.Bot.Builder.Dialogs.Debugging
 {
+    public interface IEvents
+    {
+        Protocol.ExceptionBreakpointFilter[] Filters
+        {
+            get;
+        }
+
+        bool this[string filter]
+        {
+            get;
+            set;
+        }
+
+        void Reset(IEnumerable<string> filters);
+    }
+
     public sealed class Events<TDialogEvents> : IEvents
         where TDialogEvents : DialogEvents
     {
@@ -31,6 +47,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             this.stateByFilter[DialogContext.DialogEvents.EndDialog] = false;
         }
 
+        Protocol.ExceptionBreakpointFilter[] IEvents.Filters =>
+            this.stateByFilter.Select(kv => new Protocol.ExceptionBreakpointFilter() { Label = kv.Key, Filter = kv.Key, Default = kv.Value }).ToArray();
+
         bool IEvents.this[string filter]
         {
             get => this.stateByFilter.TryGetValue(filter, out var state) ? state : false;
@@ -44,24 +63,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             {
                 stateByFilter[filter] = index.Contains(filter);
             }
-        }
-
-        Protocol.ExceptionBreakpointFilter[] IEvents.Filters => this.stateByFilter.Select(kv => new Protocol.ExceptionBreakpointFilter() { Label = kv.Key, Filter = kv.Key, Default = kv.Value }).ToArray();
-    }
-
-    public interface IEvents
-    {
-        Protocol.ExceptionBreakpointFilter[] Filters
-        {
-            get;
-        }
-
-        void Reset(IEnumerable<string> filters);
-
-        bool this[string filter]
-        {
-            get;
-            set;
         }
     }
 }

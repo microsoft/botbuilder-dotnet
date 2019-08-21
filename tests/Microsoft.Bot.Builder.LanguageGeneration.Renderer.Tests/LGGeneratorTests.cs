@@ -20,9 +20,9 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
     [TestClass]
     public class LGGeneratorTests
     {
-        private readonly ImportResolverDelegate resourceResolver = LanguageGeneratorManager.ResourceResolver(resourceExplorer);
-
         private static ResourceExplorer resourceExplorer;
+
+        private readonly ImportResolverDelegate resourceResolver = LanguageGeneratorManager.ResourceResolver(resourceExplorer);
 
         public TestContext TestContext { get; set; }
 

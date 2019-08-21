@@ -10,6 +10,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         private const ulong MORE = 0x80;
         private const ulong DATA = 0x7F;
 
+        public static ulong Encode(ulong one, ulong two)
+        {
+            ulong target = 0;
+            int offset = 0;
+            Encode(one, ref target, ref offset);
+            Encode(two, ref target, ref offset);
+            return target;
+        }
+
+        public static void Decode(ulong item, out ulong one, out ulong two)
+        {
+            Decode(ref item, out one);
+            Decode(ref item, out two);
+        }
+
         private static void Encode(ulong source, ref ulong target, ref int offset)
         {
             while (source > DATA)
@@ -45,21 +60,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 offset += 7;
             }
         }
-
-        public static ulong Encode(ulong one, ulong two)
-        {
-            ulong target = 0;
-            int offset = 0;
-            Encode(one, ref target, ref offset);
-            Encode(two, ref target, ref offset);
-            return target;
-        }
-
-        public static void Decode(ulong item, out ulong one, out ulong two)
-        {
-            Decode(ref item, out one);
-            Decode(ref item, out two);
-        }
     }
 
     /// <summary>
@@ -71,6 +71,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
     /// Some identifiers have a lifetime scoped to a thread (e.g. values or stack frames)
     /// For these combined identifiers, we use 7 bit encoding.
     /// </summary>
+    /// <typeparam name="T">Datatype of the stored items.</typeparam>
     public sealed class Identifier<T> : IEnumerable<KeyValuePair<ulong, T>>
     {
         private readonly Dictionary<T, ulong> codeByItem = new Dictionary<T, ulong>(ReferenceEquality<T>.Instance);

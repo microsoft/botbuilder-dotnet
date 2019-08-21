@@ -4,7 +4,10 @@ using static Microsoft.Bot.Builder.Dialogs.Debugging.Source;
 
 namespace Microsoft.Bot.Builder.Dialogs.Debugging
 {
-    public static partial class DebugSupport
+    /// <summary>
+    /// Debugger support for <see cref="ITurnContext"/>, <see cref="DialogContext"/>. 
+    /// </summary>
+    public static class DebugSupport
     {
         public interface IDebugger
         {

@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition.Tests
 {
     public class TestUtilities
     {
-        static Lazy<Dictionary<string, string>> environmentKeys = new Lazy<Dictionary<string, string>>(() =>
+        private static Lazy<Dictionary<string, string>> environmentKeys = new Lazy<Dictionary<string, string>>(() =>
         {
             try
             {

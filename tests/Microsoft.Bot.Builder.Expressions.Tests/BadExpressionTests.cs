@@ -10,22 +10,6 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
     {
         private TestContext testContextInstance;
 
-        /// <summary>
-        ///  Gets or sets the test context which provides
-        ///  information about and functionality for the current test run.
-        ///</summary>
-        /// <value>
-        /// The test context which provides
-        ///  information about and functionality for the current test run.
-        /// </value>
-        public TestContext TestContext
-        {
-            get { return testContextInstance; }
-            set { testContextInstance = value; }
-        }
-
-        public static object[] Test(string input) => new object[] { input };
-
         public static IEnumerable<object[]> InvalidExpressions => new[]
         {
             Test("a+"),
@@ -38,21 +22,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("user.lists.{dialog.listName}")
         };
 
-        [DataTestMethod]
-        [DynamicData(nameof(InvalidExpressions))]
-        [ExpectedException(typeof(Exception))]
-        public void Parse(string exp)
-        {
-            try
-            {
-                new ExpressionEngine().Parse(exp);
-            }
-            catch (Exception e)
-            {
-                TestContext.WriteLine(e.Message);
-                throw e;
-            }
-        }
+        public static object[] Test(string input) => new object[] { input };
 
         public static IEnumerable<object[]> BadExpressions => new[]
         {
@@ -292,12 +262,12 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             #endregion
 
             #region uri parsing function test
-            Test("uriHost(relatibeUri)"),
-            Test("uriPath(relatibeUri)"),
-            Test("uriPathAndQuery(relatibeUri)"),
-            Test("uriPort(relatibeUri)"),
-            Test("uriQuery(relatibeUri)"),
-            Test("uriScheme(relatibeUri)"),
+            Test("uriHost(relativeUri)"),
+            Test("uriPath(relativeUri)"),
+            Test("uriPathAndQuery(relativeUri)"),
+            Test("uriPort(relativeUri)"),
+            Test("uriQuery(relativeUri)"),
+            Test("uriScheme(relativeUri)"),
             #endregion
 
             #region collection functions test
@@ -398,6 +368,36 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("setPathToValue(a)") // Missing value
             #endregion
         };
+
+        /// <summary>
+        ///  Gets or sets the test context which provides
+        ///  information about and functionality for the current test run.
+        /// </summary>
+        /// <value>
+        /// The test context which provides
+        ///  information about and functionality for the current test run.
+        /// </value>
+        public TestContext TestContext
+        {
+            get { return testContextInstance; }
+            set { testContextInstance = value; }
+        }
+
+        [DataTestMethod]
+        [DynamicData(nameof(InvalidExpressions))]
+        [ExpectedException(typeof(Exception))]
+        public void Parse(string exp)
+        {
+            try
+            {
+                new ExpressionEngine().Parse(exp);
+            }
+            catch (Exception e)
+            {
+                TestContext.WriteLine(e.Message);
+                throw e;
+            }
+        }
 
         [DataTestMethod]
         [DynamicData(nameof(BadExpressions))]

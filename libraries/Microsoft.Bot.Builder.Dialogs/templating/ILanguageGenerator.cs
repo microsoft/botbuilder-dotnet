@@ -3,7 +3,7 @@
 namespace Microsoft.Bot.Builder.Dialogs
 {
     /// <summary>
-    /// Defines interface for a LG system to bind to text.
+    /// Defines interface for a Language Generator system to bind to text.
     /// </summary>
     public interface ILanguageGenerator
     {

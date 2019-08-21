@@ -1,5 +1,8 @@
 ﻿namespace Microsoft.Bot.Builder.AI.TriggerTrees
 {
+    /// <summary>
+    /// Extension method to swap between <see cref="RelationshipType"/> "Generalizes" and "Specializes".
+    /// </summary>
     public static partial class Extensions
     {
         public static RelationshipType Swap(this RelationshipType original)

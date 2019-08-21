@@ -5,6 +5,11 @@ using Microsoft.Bot.Builder.Expressions;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
+    public interface IGetMethod
+    {
+        ExpressionEvaluator GetMethodX(string name);
+    }
+
     internal class GetMethodExtensions : IGetMethod
     {
         // Hold an evaluator instance to make sure all functions have access
@@ -60,10 +65,5 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 throw new Exception($"arguments mismatch for template {templateName}, expect {expectedArgsCount} actual {actualArgsCount}");
             }
         }
-    }
-
-    public interface IGetMethod
-    {
-        ExpressionEvaluator GetMethodX(string name);
     }
 }

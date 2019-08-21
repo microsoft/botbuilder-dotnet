@@ -7,8 +7,6 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
     [TestClass]
     public class RewriteTests
     {
-        public static object[] Test(string input, string expected) => new object[] { input, expected };
-
         public static IEnumerable<object[]> Data => new[]
         {
             /*
@@ -38,6 +36,19 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("!(ignore(bark == 3))", "ignore(bark != 3)")
         };
 
+        public static object[] Test(string input, string expected) => new object[] { input, expected };
+
+        [DataTestMethod]
+        [DynamicData(nameof(Data))]
+        public void Evaluate(string input, string expected)
+        {
+            var parser = new ExpressionEngine(Lookup);
+            var original = parser.Parse(input);
+            var dnf = original.DisjunctiveNormalForm();
+            var expectedDnf = parser.Parse(expected);
+            Assert.IsTrue(dnf.DeepEquals(expectedDnf), $"{original} is {dnf}, not {expectedDnf}");
+        }
+
         private ExpressionEvaluator Lookup(string type)
         {
             ExpressionEvaluator eval;
@@ -52,17 +63,6 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             }
 
             return eval;
-        }
-
-        [DataTestMethod]
-        [DynamicData(nameof(Data))]
-        public void Evaluate(string input, string expected)
-        {
-            var parser = new ExpressionEngine(Lookup);
-            var original = parser.Parse(input);
-            var dnf = original.DisjunctiveNormalForm();
-            var expectedDnf = parser.Parse(expected);
-            Assert.IsTrue(dnf.DeepEquals(expectedDnf), $"{original} is {dnf}, not {expectedDnf}");
         }
     }
 }

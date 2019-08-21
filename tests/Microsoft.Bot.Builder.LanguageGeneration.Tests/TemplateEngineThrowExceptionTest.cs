@@ -9,16 +9,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
     [TestClass]
     public class TemplateEngineThrowExceptionTest
     {
-        /// <summary>
-        ///  Gets or sets the test context which provides
-        ///  information about and functionality for the current test run.
-        /// </summary>
-        /// <value>
-        /// The test context which provides
-        ///  information about and functionality for the current test run.
-        /// </value>
-        public TestContext TestContext { get; set; }
-
         public static IEnumerable<object[]> StaticCheckExceptionData => new[]
         {
             Test("EmptyTemplate.lg"),
@@ -59,6 +49,16 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             TestTemplate("LoopDetected.lg", "wPhrase"),
             TestTemplate("LoopDetected.lg", "NotExistTemplate"),
         };
+
+        /// <summary>
+        ///  Gets or sets the test context which provides
+        ///  information about and functionality for the current test run.
+        /// </summary>
+        /// <value>
+        /// The test context which provides
+        ///  information about and functionality for the current test run.
+        /// </value>
+        public TestContext TestContext { get; set; }
 
         public static object[] Test(string input) => new object[] { input };
 
