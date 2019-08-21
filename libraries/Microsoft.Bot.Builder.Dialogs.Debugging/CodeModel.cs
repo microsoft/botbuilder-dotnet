@@ -1,17 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Debugging
 {
-    public interface ICodeModel
-    {
-        string NameFor(object item);
-
-        IReadOnlyList<ICodePoint> PointsFor(DialogContext dialogContext, object item, string more);
-    }
-
     public sealed class CodeModel : ICodeModel
     {
         string ICodeModel.NameFor(object item)
@@ -56,6 +47,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         }
     }
 
+    public interface ICodeModel
+    {
+        string NameFor(object item);
+
+        IReadOnlyList<ICodePoint> PointsFor(DialogContext dialogContext, object item, string more);
+    }
+
     public interface ICodePoint
     {
         object Item { get; }
@@ -79,10 +77,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             More = more;
         }
 
-        private ICodeModel CodeModel { get; }
-
-        private DialogContext DialogContext { get; }
-
         public object Item { get; }
 
         public string More { get; }
@@ -104,6 +98,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 };
             }
         }
+
+        private ICodeModel CodeModel { get; }
+
+        private DialogContext DialogContext { get; }
 
         public override string ToString() => Name;
 

@@ -3,18 +3,15 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Runtime.InteropServices;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Tests;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Auth;
-using Newtonsoft.Json;
 using Microsoft.WindowsAzure.Storage.Blob;
+using Newtonsoft.Json;
 using Activity = Microsoft.Bot.Schema.Activity;
 
 // These tests require Azure Storage Emulator v5.7
@@ -253,7 +250,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                     await TranscriptStore.LogActivityAsync(a);
                     Assert.Fail("Should have thrown ");
                 }
-                catch (StorageException err)
+                catch (StorageException)
                 {
                     return;
                 }
@@ -398,7 +395,6 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 var conversation = TestAdapter.CreateConversation(Guid.NewGuid().ToString("n"));
                 TestAdapter adapter = new TestAdapter(conversation)
                     .Use(new TranscriptLoggerMiddleware(TranscriptStore));
-                string conversationId = null;
                 Activity activityToUpdate = null;
                 await new TestFlow(adapter, async (context, cancellationToken) =>
                 {

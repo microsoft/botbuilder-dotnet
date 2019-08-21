@@ -2,23 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 
 namespace Microsoft.Bot.Builder.Dialogs.Debugging
 {
-    public interface IBreakpoints
-    {
-        bool IsBreakPoint(object item);
-
-        object ItemFor(Protocol.Breakpoint breakpoint);
-
-        IReadOnlyList<Protocol.Breakpoint> SetBreakpoints(Protocol.Source source, IReadOnlyList<Protocol.SourceBreakpoint> sourceBreakpoints);
-
-        IReadOnlyList<Protocol.Breakpoint> SetBreakpoints(IReadOnlyList<Protocol.FunctionBreakpoint> functionBreakpoints);
-
-        IReadOnlyList<Protocol.Breakpoint> ApplyUpdates();
-    }
-
     public sealed class SourceMap : Source.IRegistry, IBreakpoints
     {
         private readonly ICodeModel codeModel;
@@ -82,56 +68,56 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
             public Protocol.Breakpoint Breakpoint { get; } = new Protocol.Breakpoint();
 
-            public object item { get; set; }
+            public object Item { get; set; }
         }
 
         private readonly Identifier<Row> rows = new Identifier<Row>();
         private readonly HashSet<object> items = new HashSet<object>(ReferenceEquality<object>.Instance);
+
+        public static bool Equals(Protocol.Range target, Source.Range source) =>
+            (target.Source == null && source == null)
+            || (PathEquals(target.Source.Path, source.Path)
+                && target.Line == source.Start.LineIndex
+                && target.EndLine == source.After.LineIndex
+                && target.Column == source.Start.CharIndex
+                && target.EndColumn == source.After.CharIndex);
+
+        public static void Assign(Protocol.Range target, Source.Range source)
+        {
+            if (source != null)
+            {
+                target.Source = new Protocol.Source(source.Path);
+                target.Line = source.Start.LineIndex;
+                target.EndLine = source.After.LineIndex;
+                target.Column = source.Start.CharIndex;
+                target.EndColumn = source.After.CharIndex;
+            }
+            else
+            {
+                target.Source = null;
+                target.Line = null;
+                target.EndLine = null;
+                target.Column = null;
+                target.EndColumn = null;
+            }
+        }
 
         // TODO: incorrect on unix, need to resolve through file system
         // on VSCode Insiders, drive letter casing changes
         private static bool PathEquals(string one, string two) =>
             string.Equals(one, two, StringComparison.CurrentCultureIgnoreCase);
 
-        public static bool Equals(Protocol.Range target, Source.Range source) =>
-            (target.source == null && source == null)
-            || (PathEquals(target.source.path, source.Path)
-                && target.line == source.Start.LineIndex
-                && target.endLine == source.After.LineIndex
-                && target.column == source.Start.CharIndex
-                && target.endColumn == source.After.CharIndex);
-
-        public static void Assign(Protocol.Range target, Source.Range source)
-        {
-            if (source != null)
-            {
-                target.source = new Protocol.Source(source.Path);
-                target.line = source.Start.LineIndex;
-                target.endLine = source.After.LineIndex;
-                target.column = source.Start.CharIndex;
-                target.endColumn = source.After.CharIndex;
-            }
-            else
-            {
-                target.source = null;
-                target.line = null;
-                target.endLine = null;
-                target.column = null;
-                target.endColumn = null;
-            }
-        }
-
         private bool TryUpdate(Row row, KeyValuePair<object, Source.Range> sourceItem)
         {
             var item = sourceItem.Key;
             var source = sourceItem.Value;
-            if (object.Equals(row.item, item) && Equals(row.Breakpoint, source))
+            if (object.Equals(row.Item, item) && Equals(row.Breakpoint, source))
             {
                 return false;
             }
 
-            row.item = item;
-            row.Breakpoint.verified = source != null;
+            row.Item = item;
+            row.Breakpoint.Verified = source != null;
             Assign(row.Breakpoint, source);
             return true;
         }
@@ -139,9 +125,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         private bool TryUpdate(Row row)
         {
             var breakpoint = row.Breakpoint;
-            if (breakpoint.id == 0)
+            if (breakpoint.Id == 0)
             {
-                breakpoint.id = this.rows.Add(row);
+                breakpoint.Id = this.rows.Add(row);
             }
 
             IEnumerable<KeyValuePair<object, Source.Range>> options;
@@ -152,7 +138,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 options = from sourceItem in sourceByItem
                           let item = sourceItem.Key
                           let name = codeModel.NameFor(item)
-                          where name.IndexOf(functionBreakpoint.name, StringComparison.CurrentCultureIgnoreCase) >= 0
+                          where name.IndexOf(functionBreakpoint.Name, StringComparison.CurrentCultureIgnoreCase) >= 0
                           orderby name.Length
                           select sourceItem;
             }
@@ -160,9 +146,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             {
                 options = from sourceItem in sourceByItem
                           let source = sourceItem.Value
-                          where PathEquals(source.Path, row.Source.path)
-                          where source.Start.LineIndex >= row.SourceBreakpoint.line
-                          let distance = Math.Abs(source.Start.LineIndex - row.SourceBreakpoint.line)
+                          where PathEquals(source.Path, row.Source.Path)
+                          where source.Start.LineIndex >= row.SourceBreakpoint.Line
+                          let distance = Math.Abs(source.Start.LineIndex - row.SourceBreakpoint.Line)
                           orderby distance
                           select sourceItem;
             }
@@ -180,7 +166,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 items.Clear();
                 foreach (var row in rows.Items)
                 {
-                    var item = row.item;
+                    var item = row.Item;
                     if (item != null)
                     {
                         items.Add(item);
@@ -216,10 +202,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         {
             lock (gate)
             {
-                var path = source.path;
+                var path = source.Path;
                 foreach (var row in rows.Items)
                 {
-                    if (row.FunctionBreakpoint == null && PathEquals(row.Source.path, path))
+                    if (row.FunctionBreakpoint == null && PathEquals(row.Source.Path, path))
                     {
                         rows.Remove(row);
                     }
@@ -294,8 +280,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         {
             lock (gate)
             {
-                return this.rows[breakpoint.id].item;
+                return this.rows[breakpoint.Id].Item;
             }
         }
+    }
+
+    public interface IBreakpoints
+    {
+        bool IsBreakPoint(object item);
+
+        object ItemFor(Protocol.Breakpoint breakpoint);
+
+        IReadOnlyList<Protocol.Breakpoint> SetBreakpoints(Protocol.Source source, IReadOnlyList<Protocol.SourceBreakpoint> sourceBreakpoints);
+
+        IReadOnlyList<Protocol.Breakpoint> SetBreakpoints(IReadOnlyList<Protocol.FunctionBreakpoint> functionBreakpoints);
+
+        IReadOnlyList<Protocol.Breakpoint> ApplyUpdates();
     }
 }

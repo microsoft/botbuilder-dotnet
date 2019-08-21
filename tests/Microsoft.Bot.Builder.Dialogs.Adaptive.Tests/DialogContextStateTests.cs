@@ -1,42 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Events;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Events;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
-using Microsoft.Bot.Builder.Expressions;
-using Microsoft.Bot.Builder.Expressions.Parser;
-using Microsoft.Bot.Builder.LanguageGeneration;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Diagnostics.Tracing;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 {
-    public class Bar
-    {
-        public string Name { get; set; }
-
-        public int Age { get; set; }
-
-        public bool cool { get; set; }
-    }
-
-    public class Foo
-    {
-        public string Name { get; set; }
-
-        public int Age { get; set; }
-
-        public bool cool { get; set; }
-
-        public Bar SubName { get; set; }
-    }
-
     [TestClass]
     public class DialogContextStateTests
     {
@@ -46,12 +21,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             Name = "Tom",
             Age = 15,
-            cool = true,
+            Cool = true,
             SubName = new Bar()
             {
                 Name = "bob",
                 Age = 122,
-                cool = false
+                Cool = false
             }
         };
 
@@ -63,7 +38,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             dialogs.Add(dialog);
             var dc = new DialogContext(dialogs, new TurnContext(new TestAdapter(), new Schema.Activity()), (DialogState)new DialogState());
             await dc.BeginDialogAsync(dialog.Id);
-            DialogContextState state = new DialogContextState(dc: dc,
+            DialogContextState state = new DialogContextState(
+                dc: dc,
                 settings: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase),
                 userState: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase),
                 conversationState: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase),
@@ -111,7 +87,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             dialogs.Add(dialog);
             var dc = new DialogContext(dialogs, new TurnContext(new TestAdapter(), new Schema.Activity()), (DialogState)new DialogState());
             await dc.BeginDialogAsync(dialog.Id);
-            DialogContextState state = new DialogContextState(dc: dc,
+            DialogContextState state = new DialogContextState(
+                dc: dc,
                 settings: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase),
                 userState: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase),
                 conversationState: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase),
@@ -144,7 +121,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             dialogs.Add(dialog);
             var dc = new DialogContext(dialogs, new TurnContext(new TestAdapter(), new Schema.Activity()), (DialogState)new DialogState());
             await dc.BeginDialogAsync(dialog.Id);
-            DialogContextState state = new DialogContextState(dc: dc,
+            DialogContextState state = new DialogContextState(
+                dc: dc,
                 settings: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase),
                 userState: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase),
                 conversationState: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase),
@@ -167,7 +145,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             dialogs.Add(dialog);
             var dc = new DialogContext(dialogs, new TurnContext(new TestAdapter(), new Schema.Activity()), (DialogState)new DialogState());
             await dc.BeginDialogAsync(dialog.Id);
-            DialogContextState state = new DialogContextState(dc: dc,
+            DialogContextState state = new DialogContextState(
+                dc: dc,
                 settings: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase),
                 userState: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase),
                 conversationState: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase),
@@ -198,7 +177,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             dialogs.Add(dialog);
             var dc = new DialogContext(dialogs, new TurnContext(new TestAdapter(), new Schema.Activity()), (DialogState)new DialogState());
             await dc.BeginDialogAsync(dialog.Id);
-            DialogContextState state = new DialogContextState(dc: dc,
+            DialogContextState state = new DialogContextState(
+                dc: dc,
                 settings: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase),
                 userState: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase),
                 conversationState: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase),
@@ -263,8 +243,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             new SendActivity("{turn.activity.text}"),
                         }
                     },
-                    new OnIntent(intent: "IntentNumber1",
-                        actions:new List<IDialog>()
+                    new OnIntent(
+                        intent: "IntentNumber1",
+                        actions: new List<IDialog>()
                         {
                             new SendActivity("{turn.activity.text}"),
                             new SendActivity("{turn.recognized.intent}"),
@@ -272,8 +253,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             new SendActivity("{turn.recognized.text}"),
                             new SendActivity("{turn.recognized.intents.intentnumber1.score}"),
                         }),
-                    new OnIntent(intent: "NameIntent",
-                        actions:new List<IDialog>()
+                    new OnIntent(
+                        intent: "NameIntent",
+                        actions: new List<IDialog>()
                         {
                             new SendActivity("{turn.recognized.entities.name[0]}"),
                         }),
@@ -583,5 +565,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         .AssertReply("xyz")
                     .StartTestAsync();
         }
+    }
+
+    public class Bar
+    {
+        public string Name { get; set; }
+
+        public int Age { get; set; }
+
+        public bool Cool { get; set; }
+    }
+
+    public class Foo
+    {
+        public string Name { get; set; }
+
+        public int Age { get; set; }
+
+        public bool Cool { get; set; }
+
+        public Bar SubName { get; set; }
     }
 }

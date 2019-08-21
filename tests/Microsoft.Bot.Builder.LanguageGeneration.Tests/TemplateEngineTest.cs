@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.Bot.Builder.LanguageGeneration;
-using System.Linq;
 using System.IO;
-using Microsoft.Bot.Builder.Expressions;
-using System.Diagnostics;
+using System.Linq;
+using Microsoft.Bot.Builder.LanguageGeneration;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 {
@@ -215,7 +212,9 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.AreEqual(emptyEngine.Evaluate("Hi", null), "Hi");
             Assert.AreEqual(emptyEngine.Evaluate("Hi {name}", new { name = "DL" }), "Hi DL");
             Assert.AreEqual(emptyEngine.Evaluate("Hi {name.FirstName}{name.LastName}", new { name = new { FirstName = "D", LastName = "L" } }), "Hi DL");
-            Assert.AreEqual(emptyEngine.Evaluate("Hi {name.FirstName}{name.LastName} [RecentTasks]",
+            Assert.AreEqual(
+                emptyEngine.Evaluate(
+                "Hi {name.FirstName}{name.LastName} [RecentTasks]",
                                                   new
                                                   {
                                                       name = new
@@ -224,7 +223,9 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                                                           LastName = "L"
                                                       }
                                                   }), "Hi DL You don't have any tasks.");
-            Assert.AreEqual(emptyEngine.Evaluate("Hi {name.FirstName}{name.LastName} [RecentTasks]",
+            Assert.AreEqual(
+                emptyEngine.Evaluate(
+                "Hi {name.FirstName}{name.LastName} [RecentTasks]",
                                                   new
                                                   {
                                                       name = new

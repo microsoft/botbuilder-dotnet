@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Microsoft.Bot.Builder.LanguageGeneration
+﻿namespace Microsoft.Bot.Builder.LanguageGeneration
 {
     /// <summary>
     /// Represents the severity of diagnostics.

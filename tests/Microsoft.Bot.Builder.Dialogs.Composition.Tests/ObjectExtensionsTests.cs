@@ -1,29 +1,8 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Composition
 {
-    public class Location
-    {
-        public float? Lat { get; set; }
-
-        public float? Long { get; set; }
-    }
-
-    public class Options
-    {
-        public string FirstName { get; set; }
-
-        public string LastName { get; set; }
-
-        public int? Age { get; set; }
-
-        public bool? Bool { get; set; }
-
-        public Location Location { get; set; }
-    }
-
     [TestClass]
     public class ObjectExtensionsTests
     {
@@ -368,5 +347,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition
             Assert.AreEqual(result.Location.Lat, defaultOptions.Location.Lat);
             Assert.AreEqual(result.Location.Long, defaultOptions.Location.Long);
         }
+    }
+
+    public class Location
+    {
+        public float? Lat { get; set; }
+
+        public float? Long { get; set; }
+    }
+
+    public class Options
+    {
+        public string FirstName { get; set; }
+
+        public string LastName { get; set; }
+
+        public int? Age { get; set; }
+
+        public bool? Bool { get; set; }
+
+        public Location Location { get; set; }
     }
 }

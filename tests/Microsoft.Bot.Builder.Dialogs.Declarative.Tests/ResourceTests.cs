@@ -4,9 +4,7 @@
 using System;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
@@ -16,7 +14,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
     [TestClass]
     public class ResourceTests
     {
-        private static JsonSerializerSettings jsonSerializerSettings = new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore, Formatting = Formatting.Indented };
+        private static JsonSerializerSettings jsonSerializerSettings = 
+            new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore, Formatting = Formatting.Indented };
 
         public TestContext TestContext { get; set; }
 

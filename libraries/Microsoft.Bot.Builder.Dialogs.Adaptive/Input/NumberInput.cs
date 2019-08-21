@@ -4,7 +4,6 @@
 using System;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text.Number;
 using static Microsoft.Recognizers.Text.Culture;
 

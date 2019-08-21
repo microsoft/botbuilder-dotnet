@@ -1,10 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using System.Runtime.InteropServices.ComTypes;
-using System.Security.Cryptography.X509Certificates;
-using System.Threading;
 using System.Threading.Tasks;
-using Antlr4.Runtime.Atn;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.Builder.Expressions.Tests
@@ -111,7 +106,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             var numOfOps = 1000;
             for (var i = 0; i < numOfThreads; i++)
             {
-                tasks.Add(Task.Run(() => storeElement(cache, numOfOps, i)));
+                tasks.Add(Task.Run(() => StoreElement(cache, numOfOps, i)));
             }
 
             await Task.WhenAll(tasks);
@@ -122,11 +117,11 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             }
         }
 
-        public void storeElement(LRUCache<int,int> cache, int numOfOps, int idx)
+        public void StoreElement(LRUCache<int, int> cache, int numOfOps, int idx)
         {
-            for(int i = 0; i < numOfOps; i++)
+            for (int i = 0; i < numOfOps; i++)
             {
-                var key =  i;
+                var key = i;
                 var value = i;
                 cache.Set(key, value);
             }

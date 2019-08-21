@@ -121,7 +121,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 {
                     Intents = new Dictionary<string, string>()
                     {
-                        {  "SetName", @"my name is (?<name>.*)" }
+                        { "SetName", @"my name is (?<name>.*)" }
                     }
                 },
                 Events = new List<IOnEvent>()

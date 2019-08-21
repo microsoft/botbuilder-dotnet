@@ -1,17 +1,15 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Events;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Events;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
-using Microsoft.Bot.Builder.Expressions;
 using Microsoft.Bot.Builder.Expressions.Parser;
 using Microsoft.Bot.Builder.LanguageGeneration;
 using Microsoft.Bot.Schema;
@@ -25,7 +23,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
     {
         public TestContext TestContext { get; set; }
 
-        public ExpressionEngine expressionEngine { get; set; } = new ExpressionEngine();
+        public ExpressionEngine ExpressionEngine { get; set; } = new ExpressionEngine();
+
+        [TestMethod]
+        public async Task AdaptiveDialog_TopLevelFallback()
+        {
+            var ruleDialog = new AdaptiveDialog("planningTest");
+
+            ruleDialog.AddEvent(new OnUnknownIntent(
+                    new List<IDialog>()
+                    {
+                        new SendActivity("Hello Planning!")
+                    }));
+
+            await CreateFlow(ruleDialog)
+            .Send("start")
+                .AssertReply("Hello Planning!")
+            .StartTestAsync();
+        }
 
         private TestFlow CreateFlow(AdaptiveDialog ruleDialog)
         {
@@ -49,23 +64,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             {
                 await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
             });
-        }
-
-        [TestMethod]
-        public async Task AdaptiveDialog_TopLevelFallback()
-        {
-            var ruleDialog = new AdaptiveDialog("planningTest");
-
-            ruleDialog.AddEvent(new OnUnknownIntent(
-                    new List<IDialog>()
-                    {
-                        new SendActivity("Hello Planning!")
-                    }));
-
-            await CreateFlow(ruleDialog)
-            .Send("start")
-                .AssertReply("Hello Planning!")
-            .StartTestAsync();
         }
 
         [TestMethod]
@@ -340,14 +338,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             new IfCondition()
                             {
                                 Condition = "user.name == null",
-                                    Actions = new List<IDialog>()
+                                Actions = new List<IDialog>()
+                                {
+                                    new TextInput()
                                     {
-                                        new TextInput()
-                                        {
-                                            Prompt = new ActivityTemplate("Hello, what is your name?"),
-                                            Property = "user.name"
-                                        }
+                                        Prompt = new ActivityTemplate("Hello, what is your name?"),
+                                        Property = "user.name"
                                     }
+                                }
                             },
                             new SendActivity("Hello {user.name}, nice to meet you!")
                         },
@@ -430,7 +428,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         new SendActivity("Hello {user.name}, nice to meet you!")
                     }
                 },
-                new OnIntent("JokeIntent",
+                new OnIntent(
+                    "JokeIntent",
                     actions: new List<IDialog>()
                     {
                         new SendActivity("Why did the chicken cross the road?"),
@@ -494,19 +493,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             new SendActivity("Hello {user.name}, nice to meet you!"),
                         },
                     },
-                    new OnIntent("GreetingIntemt",
+                    new OnIntent(
+                        "GreetingIntemt",
                         actions: new List<IDialog>()
                         {
                             new SendActivity("Hello {user.name}, nice to meet you!"),
                         }),
-                    new OnIntent("JokeIntent",
+                    new OnIntent(
+                        "JokeIntent",
                         actions: new List<IDialog>()
                         {
                             new SendActivity("Why did the chicken cross the road?"),
                             new EndTurn(),
                             new SendActivity("To get to the other side")
                         }),
-                    new OnIntent("GoodbyeIntent",
+                    new OnIntent(
+                        "GoodbyeIntent",
                         actions: new List<IDialog>()
                         {
                             new SendActivity("See you later aligator!"),
@@ -564,19 +566,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         },
                     },
 
-                    new OnIntent("JokeIntent",
+                    new OnIntent(
+                        "JokeIntent",
                         actions: new List<IDialog>()
                         {
                             new BeginDialog("TellJokeDialog"),
                         }),
 
-                    new OnIntent("GreetingIntent",
+                    new OnIntent(
+                        "GreetingIntent",
                         actions: new List<IDialog>()
                         {
                             new BeginDialog("Greeting"),
                         }),
 
-                    new OnIntent("GoodbyeIntent",
+                    new OnIntent(
+                        "GoodbyeIntent",
                         actions: new List<IDialog>()
                         {
                             new SendActivity("See you later aligator!"),
@@ -622,21 +627,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     }
                 },
                 new AdaptiveDialog("TellJokeDialog")
+                {
+                    Events = new List<IOnEvent>()
                     {
-                        Events = new List<IOnEvent>()
+                        new OnBeginDialog()
                         {
-                            new OnBeginDialog()
+                            Actions = new List<IDialog>()
                             {
-                                Actions = new List<IDialog>()
-                                {
-                                    new SendActivity("Why did the chicken cross the road?"),
-                                    new EndTurn(),
-                                    new SendActivity("To get to the other side")
-                                }
+                                new SendActivity("Why did the chicken cross the road?"),
+                                new EndTurn(),
+                                new SendActivity("To get to the other side")
                             }
                         }
                     }
-                });
+                }
+            });
 
             var outerDialog = new AdaptiveDialog("outer")
             {
@@ -1079,18 +1084,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             await TestBindingTwoWayAcrossAdaptiveDialogs(new Dictionary<string, string>() { { "userName", "$name" } });
         }
 
-        /// <summary>
-        /// Test class to test two way binding with strongly typed options objects.
-        /// </summary>
-        class Person
-        {
-            public string userName { get; set; }
-        }
-
         [TestMethod]
         public async Task AdaptiveDialog_BindingTwoWayAcrossAdaptiveDialogs_StronglyTypedOptions()
         {
-            await TestBindingTwoWayAcrossAdaptiveDialogs(new Person() { userName = "$name" });
+            await TestBindingTwoWayAcrossAdaptiveDialogs(new Person() { UserName = "$name" });
         }
 
         [TestMethod]
@@ -1921,6 +1918,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             .Send("I'm 77")
                 .AssertReply("Hello zoidberg, you are 77 years old!")
             .StartTestAsync();
+        }
+
+        /// <summary>
+        /// Test class to test two way binding with strongly typed options objects.
+        /// </summary>
+        private class Person
+        {
+            public string UserName { get; set; }
         }
     }
 }

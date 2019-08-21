@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Microsoft.Bot.Builder.Expressions;
+﻿using Microsoft.Bot.Builder.Expressions;
 
 namespace Microsoft.Bot.Builder.AI.TriggerTrees
 {

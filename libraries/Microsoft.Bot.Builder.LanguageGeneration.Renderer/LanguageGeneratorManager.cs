@@ -1,15 +1,9 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
-using Microsoft.Bot.Builder.LanguageGeneration;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
@@ -39,20 +33,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             this.resourceExplorer.Changed += ResourceExplorer_Changed;
         }
 
-        private void ResourceExplorer_Changed(IResource[] resources)
-        {
-            // reload changed LG files
-            foreach (var resource in resources.Where(r => Path.GetExtension(r.Id).ToLower() == ".lg"))
-            {
-                LanguageGenerators[resource.Id] = GetTemplateEngineLanguageGenerator(resource);
-            }
-        }
-
-        private TemplateEngineLanguageGenerator GetTemplateEngineLanguageGenerator(IResource resource)
-        {
-            return new TemplateEngineLanguageGenerator(resource.ReadTextAsync().GetAwaiter().GetResult(), resource.Id, ResourceResolver(resourceExplorer));
-        }
-
         /// <summary>
         /// Gets or sets generators.
         /// </summary>
@@ -71,5 +51,19 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
                 return (content, resourceName);
             };
+
+        private void ResourceExplorer_Changed(IResource[] resources)
+        {
+            // reload changed LG files
+            foreach (var resource in resources.Where(r => Path.GetExtension(r.Id).ToLower() == ".lg"))
+            {
+                LanguageGenerators[resource.Id] = GetTemplateEngineLanguageGenerator(resource);
+            }
+        }
+
+        private TemplateEngineLanguageGenerator GetTemplateEngineLanguageGenerator(IResource resource)
+        {
+            return new TemplateEngineLanguageGenerator(resource.ReadTextAsync().GetAwaiter().GetResult(), resource.Id, ResourceResolver(resourceExplorer));
+        }
     }
 }

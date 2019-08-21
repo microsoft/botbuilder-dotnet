@@ -7,13 +7,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 {
     public interface IDataModel
     {
+        int Rank { get; }
+
         object this[object context, object name]
         {
             get;
             set;
         }
-
-        int Rank { get; }
 
         bool IsScalar(object context);
 
@@ -30,9 +30,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         {
         }
 
-        object IDataModel.this[object context, object name] { get => throw new NotSupportedException(); set => throw new NotSupportedException(); }
-
         int IDataModel.Rank => 0;
+
+        object IDataModel.this[object context, object name] { get => throw new NotSupportedException(); set => throw new NotSupportedException(); }
 
         bool IDataModel.IsScalar(object context) => true;
 
@@ -49,9 +49,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         {
         }
 
-        object IDataModel.this[object context, object name] { get => throw new NotSupportedException(); set => throw new NotSupportedException(); }
-
         int IDataModel.Rank => 1;
+
+        object IDataModel.this[object context, object name] { get => throw new NotSupportedException(); set => throw new NotSupportedException(); }
 
         bool IDataModel.IsScalar(object context) => true;
 
@@ -60,7 +60,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         string IDataModel.ToString(object context) => context.ToString();
     }
 
-    public abstract class DataModelBase<Context, Name, Value> : IDataModel
+    public abstract class DataModelBase<TContext, TName, TValue> : IDataModel
     {
         private readonly ICoercion coercion;
 
@@ -73,34 +73,34 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
         public abstract int Rank { get; }
 
-        public abstract Value this[Context context, Name name]
+        public abstract TValue this[TContext context, TName name]
         {
             get;
             set;
         }
 
-        public virtual bool IsScalar(Context context) => false;
+        public virtual bool IsScalar(TContext context) => false;
 
-        public abstract IEnumerable<Name> Names(Context context);
+        public abstract IEnumerable<TName> Names(TContext context);
 
-        public virtual string ToString(Context context) => (context is ICollection collection)
+        public virtual string ToString(TContext context) => (context is ICollection collection)
             ? $"Count = {collection.Count}"
             : context.ToString();
 
         object IDataModel.this[object context, object name]
         {
-            get => this[(Context)context, Coerce<Name>(name)];
-            set => this[(Context)context, Coerce<Name>(name)] = Coerce<Value>(value);
+            get => this[(TContext)context, Coerce<TName>(name)];
+            set => this[(TContext)context, Coerce<TName>(name)] = Coerce<TValue>(value);
         }
 
-        bool IDataModel.IsScalar(object context) => IsScalar((Context)context);
+        bool IDataModel.IsScalar(object context) => IsScalar((TContext)context);
 
-        string IDataModel.ToString(object context) => ToString((Context)context);
+        string IDataModel.ToString(object context) => ToString((TContext)context);
 
-        IEnumerable<object> IDataModel.Names(object context) => Names((Context)context).Cast<object>();
+        IEnumerable<object> IDataModel.Names(object context) => Names((TContext)context).Cast<object>();
     }
 
-    public sealed class DictionaryDataModel<K, V> : DataModelBase<IDictionary<K, V>, K, V>
+    public sealed class DictionaryDataModel<TKey, TValue> : DataModelBase<IDictionary<TKey, TValue>, TKey, TValue>
     {
         public DictionaryDataModel(ICoercion coercion)
             : base(coercion)
@@ -109,16 +109,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
         public override int Rank => 6;
 
-        public override V this[IDictionary<K, V> context, K name]
+        public override TValue this[IDictionary<TKey, TValue> context, TKey name]
         {
             get => context[name];
             set => context[name] = value;
         }
 
-        public override IEnumerable<K> Names(IDictionary<K, V> context) => context.Keys;
+        public override IEnumerable<TKey> Names(IDictionary<TKey, TValue> context) => context.Keys;
     }
 
-    public sealed class ReadOnlyDictionaryDataModel<K, V> : DataModelBase<IReadOnlyDictionary<K, V>, K, V>
+    public sealed class ReadOnlyDictionaryDataModel<TKey, TValue> : DataModelBase<IReadOnlyDictionary<TKey, TValue>, TKey, TValue>
     {
         public ReadOnlyDictionaryDataModel(ICoercion coercion)
             : base(coercion)
@@ -127,13 +127,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
         public override int Rank => 5;
 
-        public override V this[IReadOnlyDictionary<K, V> context, K name]
+        public override TValue this[IReadOnlyDictionary<TKey, TValue> context, TKey name]
         {
             get => context[name];
             set => throw new NotSupportedException();
         }
 
-        public override IEnumerable<K> Names(IReadOnlyDictionary<K, V> context) => context.Keys;
+        public override IEnumerable<TKey> Names(IReadOnlyDictionary<TKey, TValue> context) => context.Keys;
     }
 
     public sealed class ListDataModel<T> : DataModelBase<IList<T>, int, T>
@@ -195,12 +195,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
     {
         private readonly ICoercion coercion;
 
+        private readonly Dictionary<Type, IDataModel> modelByType = new Dictionary<Type, IDataModel>();
+
+        int IDataModel.Rank => int.MaxValue;
+
         public DataModel(ICoercion coercion)
         {
             this.coercion = coercion ?? throw new ArgumentNullException(nameof(coercion));
         }
-
-        private readonly Dictionary<Type, IDataModel> modelByType = new Dictionary<Type, IDataModel>();
 
         private IDataModel Create(Type definition, params Type[] typeArguments) =>
             (IDataModel)Activator.CreateInstance(definition.MakeGenericType(typeArguments), this.coercion);
@@ -262,8 +264,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
             return model;
         }
-
-        int IDataModel.Rank => int.MaxValue;
 
         object IDataModel.this[object context, object name]
         {

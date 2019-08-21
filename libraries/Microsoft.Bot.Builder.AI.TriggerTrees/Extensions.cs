@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Microsoft.Bot.Builder.AI.TriggerTrees
+﻿namespace Microsoft.Bot.Builder.AI.TriggerTrees
 {
     public static partial class Extensions
     {

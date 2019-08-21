@@ -159,7 +159,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <summary>
         /// Sends activities to the conversation.
         /// </summary>
-        /// <param name="turnContext">The context object for the turn.</param>
+        /// <param name="turnContext">Context for the current turn of conversation.</param>
         /// <param name="activities">The activities to send.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
@@ -241,7 +241,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <summary>
         /// Replaces an existing activity in the <see cref="ActiveQueue"/>.
         /// </summary>
-        /// <param name="turnContext">The context object for the turn.</param>
+        /// <param name="turnContext">Context for the current turn of conversation.</param>
         /// <param name="activity">New replacement activity.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
@@ -279,7 +279,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <summary>
         /// Deletes an existing activity in the <see cref="ActiveQueue"/>.
         /// </summary>
-        /// <param name="turnContext">The context object for the turn.</param>
+        /// <param name="turnContext">Context for the current turn of conversation.</param>
         /// <param name="reference">Conversation reference for the activity to delete.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>

@@ -67,8 +67,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
             Register(plugin.SchemaUri, plugin.Type, plugin.Loader);
         }
 
-        public static T Build<T>(string name, JToken obj, JsonSerializer serializer)
-            where T : class
+        public static T Build<T>(string name, JToken obj, JsonSerializer serializer) where T : class
         {
             EnsureConfig();
             ICustomDeserializer builder;
@@ -123,7 +122,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
         {
             EnsureConfig();
 
-            // TODO: we don't want this static initialization, leaving it here for convenience now
+            //TODO: we don't want this static initialization, leaving it here for convenience now
             // while things are changing rapidly still
 
             // Events

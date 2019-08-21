@@ -146,7 +146,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 { "Greeting", "(?i)howdy" },
                                 { "Goodbye", "(?i)bye" },
                             }
-                         }
+                        }
                      },
                      {
                         "en-gb",
@@ -157,7 +157,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 { "Greeting", "(?i)hiya" },
                                 { "Goodbye", "(?i)cheerio" },
                             }
-                         }
+                        }
                      },
                      {
                         "en",
@@ -168,7 +168,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 { "Greeting", "(?i)hello" },
                                 { "Goodbye", "(?i)goodbye" },
                             }
-                         }
+                        }
                      },
                      {
                         "",
@@ -179,7 +179,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 { "Greeting", "(?i)salve" },
                                 { "Goodbye", "(?i)vale dicere" },
                             }
-                         }
+                        }
                      },
                 }
             };

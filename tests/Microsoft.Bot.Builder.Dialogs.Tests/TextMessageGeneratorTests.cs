@@ -2,30 +2,19 @@
 // Licensed under the MIT License.
 
 using System;
-using System.IO;
 using System.Threading.Tasks;
 using AdaptiveCards;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
 using Microsoft.Bot.Builder.LanguageGeneration;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Configuration.Memory;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Tests
 {
-    public class MockLanguageGenator : ILanguageGenerator
-    {
-        public Task<string> Generate(ITurnContext turnContext, string template, object data)
-        {
-            return Task.FromResult(template);
-        }
-    }
-
     [TestClass]
     public class TextMessageGeneratorTests
     {
@@ -318,6 +307,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.AreEqual(1, activity.Attachments.Count);
             Assert.AreEqual("image/png", activity.Attachments[0].ContentType);
             Assert.AreEqual(data.url.ToString(), activity.Attachments[0].ContentUrl.ToString());
+        }
+    }
+
+    public class MockLanguageGenator : ILanguageGenerator
+    {
+        public Task<string> Generate(ITurnContext turnContext, string template, object data)
+        {
+            return Task.FromResult(template);
         }
     }
 }

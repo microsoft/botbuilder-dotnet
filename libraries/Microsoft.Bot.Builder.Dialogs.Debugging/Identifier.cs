@@ -1,25 +1,10 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
 
 namespace Microsoft.Bot.Builder.Dialogs.Debugging
 {
-    public sealed class ReferenceEquality<T> : IEqualityComparer<T>
-    {
-        public static readonly IEqualityComparer<T> Instance = new ReferenceEquality<T>();
-
-        private ReferenceEquality()
-        {
-        }
-
-        bool IEqualityComparer<T>.Equals(T x, T y) => object.ReferenceEquals(x, y);
-
-        int IEqualityComparer<T>.GetHashCode(T obj) => RuntimeHelpers.GetHashCode(obj);
-    }
-
     public static class Identifier
     {
         private const ulong MORE = 0x80;
@@ -93,42 +78,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         private readonly object gate = new object();
         private ulong last = 0;
 
-        public ulong Add(T item)
-        {
-            lock (gate)
-            {
-                if (!this.codeByItem.TryGetValue(item, out var code))
-                {
-                    // avoid falsey values
-                    code = ++last;
-                    this.codeByItem.Add(item, code);
-                    this.itemByCode.Add(code, item);
-                }
-
-                return code;
-            }
-        }
-
-        public void Remove(T item)
-        {
-            lock (gate)
-            {
-                var code = this.codeByItem[item];
-                this.itemByCode.Remove(code);
-                this.codeByItem.Remove(item);
-            }
-        }
-
-        IEnumerator<KeyValuePair<ulong, T>> IEnumerable<KeyValuePair<ulong, T>>.GetEnumerator()
-        {
-            lock (gate)
-            {
-                return this.itemByCode.ToList().GetEnumerator();
-            }
-        }
-
-        IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable<KeyValuePair<ulong, T>>)this).GetEnumerator();
-
         public IEnumerable<T> Items
         {
             get
@@ -162,6 +111,42 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             }
         }
 
+        public ulong Add(T item)
+        {
+            lock (gate)
+            {
+                if (!this.codeByItem.TryGetValue(item, out var code))
+                {
+                    // avoid false values
+                    code = ++last;
+                    this.codeByItem.Add(item, code);
+                    this.itemByCode.Add(code, item);
+                }
+
+                return code;
+            }
+        }
+
+        public void Remove(T item)
+        {
+            lock (gate)
+            {
+                var code = this.codeByItem[item];
+                this.itemByCode.Remove(code);
+                this.codeByItem.Remove(item);
+            }
+        }
+
+        IEnumerator<KeyValuePair<ulong, T>> IEnumerable<KeyValuePair<ulong, T>>.GetEnumerator()
+        {
+            lock (gate)
+            {
+                return this.itemByCode.ToList().GetEnumerator();
+            }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable<KeyValuePair<ulong, T>>)this).GetEnumerator();
+
         public bool TryGetValue(ulong code, out T item)
         {
             lock (gate)
@@ -169,5 +154,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 return this.itemByCode.TryGetValue(code, out item);
             }
         }
+    }
+
+    public sealed class ReferenceEquality<T> : IEqualityComparer<T>
+    {
+        public static readonly IEqualityComparer<T> Instance = new ReferenceEquality<T>();
+
+        private ReferenceEquality()
+        {
+        }
+
+        bool IEqualityComparer<T>.Equals(T x, T y) => object.ReferenceEquals(x, y);
+
+        int IEqualityComparer<T>.GetHashCode(T obj) => RuntimeHelpers.GetHashCode(obj);
     }
 }

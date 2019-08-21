@@ -6,7 +6,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
@@ -52,42 +51,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             return this;
         }
 
-        private void ResourceProvider_Changed(IResource[] resources)
-        {
-            if (this.Changed != null)
-            {
-                foreach (var resource in resources)
-                {
-                    changedResources.Add(resource);
-                }
-
-                lock (cancelReloadToken)
-                {
-                    cancelReloadToken.Cancel();
-                    cancelReloadToken = new CancellationTokenSource();
-                    Task.Delay(1000, cancelReloadToken.Token)
-                        .ContinueWith(t =>
-                        {
-                            if (t.IsCanceled)
-                            {
-                                return;
-                            }
-
-                            var changed = changedResources.ToArray();
-                            changedResources = new ConcurrentBag<IResource>();
-                            this.Changed(changed);
-                        }).ContinueWith(t => t.Status);
-                }
-            }
-        }
-
         /// <summary>
         /// Add a .csproj as resource (adding the project, referenced projects and referenced packages).
         /// </summary>
         /// <param name="projectFile">Project file.</param>
         /// <param name="ignoreFolders">Folders to ignore.</param>
         /// <param name="monitorChanges">Whether to track changes.</param>
-        /// <returns></returns>
+        /// <returns>A new <see cref="ResourceExplorer"/>.</returns>
         public static ResourceExplorer LoadProject(string projectFile, string[] ignoreFolders = null, bool monitorChanges = true)
         {
             var explorer = new ResourceExplorer();
@@ -205,6 +175,35 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                 if (resource is IDisposable disposable)
                 {
                     disposable.Dispose();
+                }
+            }
+        }
+
+        private void ResourceProvider_Changed(IResource[] resources)
+        {
+            if (this.Changed != null)
+            {
+                foreach (var resource in resources)
+                {
+                    changedResources.Add(resource);
+                }
+
+                lock (cancelReloadToken)
+                {
+                    cancelReloadToken.Cancel();
+                    cancelReloadToken = new CancellationTokenSource();
+                    Task.Delay(1000, cancelReloadToken.Token)
+                        .ContinueWith(t =>
+                        {
+                            if (t.IsCanceled)
+                            {
+                                return;
+                            }
+
+                            var changed = changedResources.ToArray();
+                            changedResources = new ConcurrentBag<IResource>();
+                            this.Changed(changed);
+                        }).ContinueWith(t => t.Status);
                 }
             }
         }

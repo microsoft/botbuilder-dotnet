@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -29,6 +27,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         // lifetime scoped to IMiddleware.OnTurnAsync
         private readonly ConcurrentDictionary<string, ThreadModel> threadByTurnId = new ConcurrentDictionary<string, ThreadModel>();
         private readonly Identifier<ThreadModel> threads = new Identifier<ThreadModel>();
+
+        public enum Phase
+        {
+            Started,
+            Continue,
+            Next,
+            Step,
+            Breakpoint,
+            Pause,
+            Exited
+        }
 
         private sealed class ThreadModel
         {
@@ -58,12 +67,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
             public string LastMore { get; set; }
         }
-
-        public enum Phase
-        {
-            Started, Continue, Next, Step, Breakpoint, Pause, Exited
-        }
-;
 
         public sealed class RunModel
         {
@@ -271,7 +274,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             var breakpoints = this.breakpoints.ApplyUpdates();
             foreach (var breakpoint in breakpoints)
             {
-                if (breakpoint.verified)
+                if (breakpoint.Verified)
                 {
                     var item = this.breakpoints.ItemFor(breakpoint);
                     await OutputAsync($"Set breakpoint at {codeModel.NameFor(item)}", item, cancellationToken).ConfigureAwait(false);
@@ -366,13 +369,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             // TODO: there is a "capabilities" event for dynamic updates, but exceptionBreakpointFilters does not seem to be dynamically updateable
             return new Protocol.Capabilities()
             {
-                supportsConfigurationDoneRequest = true,
-                supportsSetVariable = true,
-                supportsEvaluateForHovers = true,
-                supportsFunctionBreakpoints = true,
-                exceptionBreakpointFilters = this.events.Filters,
-                supportTerminateDebuggee = this.terminate != null,
-                supportsTerminateRequest = this.terminate != null,
+                SupportsConfigurationDoneRequest = true,
+                SupportsSetVariable = true,
+                SupportsEvaluateForHovers = true,
+                SupportsFunctionBreakpoints = true,
+                ExceptionBreakpointFilters = this.events.Filters,
+                SupportTerminateDebuggee = this.terminate != null,
+                SupportsTerminateRequest = this.terminate != null,
             };
         }
 
@@ -395,14 +398,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             }
             else if (message is Protocol.Request<Protocol.SetBreakpoints> setBreakpoints)
             {
-                var arguments = setBreakpoints.arguments;
-                var file = Path.GetFileName(arguments.source.path);
+                var arguments = setBreakpoints.Arguments;
+                var file = Path.GetFileName(arguments.Source.Path);
                 await OutputAsync($"Set breakpoints for {file}", null, cancellationToken).ConfigureAwait(false);
 
-                var breakpoints = this.breakpoints.SetBreakpoints(arguments.source, arguments.breakpoints);
+                var breakpoints = this.breakpoints.SetBreakpoints(arguments.Source, arguments.Breakpoints);
                 foreach (var breakpoint in breakpoints)
                 {
-                    if (breakpoint.verified)
+                    if (breakpoint.Verified)
                     {
                         var item = this.breakpoints.ItemFor(breakpoint);
                         await OutputAsync($"Set breakpoint at {codeModel.NameFor(item)}", item, cancellationToken).ConfigureAwait(false);
@@ -413,12 +416,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             }
             else if (message is Protocol.Request<Protocol.SetFunctionBreakpoints> setFunctionBreakpoints)
             {
-                var arguments = setFunctionBreakpoints.arguments;
+                var arguments = setFunctionBreakpoints.Arguments;
                 await OutputAsync($"Set function breakpoints.", null, cancellationToken).ConfigureAwait(false);
-                var breakpoints = this.breakpoints.SetBreakpoints(arguments.breakpoints);
+                var breakpoints = this.breakpoints.SetBreakpoints(arguments.Breakpoints);
                 foreach (var breakpoint in breakpoints)
                 {
-                    if (breakpoint.verified)
+                    if (breakpoint.Verified)
                     {
                         var item = this.breakpoints.ItemFor(breakpoint);
                         await OutputAsync($"Set breakpoint at {codeModel.NameFor(item)}", item, cancellationToken).ConfigureAwait(false);
@@ -429,8 +432,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             }
             else if (message is Protocol.Request<Protocol.SetExceptionBreakpoints> setExceptionBreakpoints)
             {
-                var arguments = setExceptionBreakpoints.arguments;
-                this.events.Reset(arguments.filters);
+                var arguments = setExceptionBreakpoints.Arguments;
+                this.events.Reset(arguments.Filters);
 
                 return Protocol.Response.From(NextSeq, setExceptionBreakpoints, new { });
             }
@@ -445,8 +448,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             }
             else if (message is Protocol.Request<Protocol.StackTrace> stackTrace)
             {
-                var arguments = stackTrace.arguments;
-                var thread = this.threads[arguments.threadId];
+                var arguments = stackTrace.Arguments;
+                var thread = this.threads[arguments.ThreadId];
 
                 var frames = thread.Frames;
                 var stackFrames = new List<Protocol.StackFrame>();
@@ -454,8 +457,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 {
                     var stackFrame = new Protocol.StackFrame()
                     {
-                        id = EncodeFrame(thread, frame),
-                        name = frame.Name
+                        Id = EncodeFrame(thread, frame),
+                        Name = frame.Name
                     };
 
                     if (this.registry.TryGetValue(frame.Item, out var range))
@@ -470,8 +473,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             }
             else if (message is Protocol.Request<Protocol.Scopes> scopes)
             {
-                var arguments = scopes.arguments;
-                DecodeFrame(arguments.frameId, out var thread, out var frame);
+                var arguments = scopes.Arguments;
+                DecodeFrame(arguments.FrameId, out var thread, out var frame);
                 const bool expensive = false;
 
                 var body = new
@@ -486,8 +489,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             }
             else if (message is Protocol.Request<Protocol.Variables> vars)
             {
-                var arguments = vars.arguments;
-                DecodeValue(arguments.variablesReference, out var thread, out var context);
+                var arguments = vars.Arguments;
+                DecodeValue(arguments.VariablesReference, out var thread, out var context);
 
                 var names = this.dataModel.Names(context);
 
@@ -496,18 +499,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                     variables = (from name in names
                                  let value = dataModel[context, name]
                                  let variablesReference = EncodeValue(thread, value)
-                                 select new { name = dataModel.ToString(name), value = dataModel.ToString(value), variablesReference }
-                                ).ToArray()
+                                 select new { name = dataModel.ToString(name), value = dataModel.ToString(value), variablesReference })
+                                .ToArray()
                 };
 
                 return Protocol.Response.From(NextSeq, vars, body);
             }
             else if (message is Protocol.Request<Protocol.SetVariable> setVariable)
             {
-                var arguments = setVariable.arguments;
-                DecodeValue(arguments.variablesReference, out var thread, out var context);
+                var arguments = setVariable.Arguments;
+                DecodeValue(arguments.VariablesReference, out var thread, out var context);
 
-                var value = this.dataModel[context, arguments.name] = JToken.Parse(arguments.value);
+                var value = this.dataModel[context, arguments.Name] = JToken.Parse(arguments.Value);
 
                 var body = new
                 {
@@ -519,9 +522,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             }
             else if (message is Protocol.Request<Protocol.Evaluate> evaluate)
             {
-                var arguments = evaluate.arguments;
-                DecodeFrame(arguments.frameId, out var thread, out var frame);
-                var expression = arguments.expression.Trim('"');
+                var arguments = evaluate.Arguments;
+                DecodeFrame(arguments.FrameId, out var thread, out var frame);
+                var expression = arguments.Expression.Trim('"');
                 var result = frame.Evaluate(expression);
                 if (result != null)
                 {
@@ -540,7 +543,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             }
             else if (message is Protocol.Request<Protocol.Continue> cont)
             {
-                bool found = this.threads.TryGetValue(cont.arguments.threadId, out var thread);
+                bool found = this.threads.TryGetValue(cont.Arguments.ThreadId, out var thread);
                 if (found)
                 {
                     thread.Run.Post(Phase.Continue);
@@ -550,7 +553,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             }
             else if (message is Protocol.Request<Protocol.Pause> pause)
             {
-                bool found = this.threads.TryGetValue(pause.arguments.threadId, out var thread);
+                bool found = this.threads.TryGetValue(pause.Arguments.ThreadId, out var thread);
                 if (found)
                 {
                     thread.Run.Post(Phase.Pause);
@@ -560,7 +563,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             }
             else if (message is Protocol.Request<Protocol.Next> next)
             {
-                bool found = this.threads.TryGetValue(next.arguments.threadId, out var thread);
+                bool found = this.threads.TryGetValue(next.Arguments.ThreadId, out var thread);
                 if (found)
                 {
                     thread.Run.Post(Phase.Next);
@@ -579,8 +582,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             }
             else if (message is Protocol.Request<Protocol.Disconnect> disconnect)
             {
-                var arguments = disconnect.arguments;
-                if (arguments.terminateDebuggee && this.terminate != null)
+                var arguments = disconnect.Arguments;
+                if (arguments.TerminateDebuggee && this.terminate != null)
                 {
                     this.terminate();
                 }

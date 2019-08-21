@@ -58,53 +58,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
     {
         public Random Rand;
 
-        public class SimpleValues
-        {
-            public int Int = 1;
-            public double Double = 2.0;
-            public string String = "3";
-            public object Object = null;
-
-            public SimpleValues()
-            {
-            }
-
-            public SimpleValues(int integer)
-            {
-                Int = integer;
-            }
-
-            public SimpleValues(double number)
-            {
-                Double = number;
-            }
-
-            public SimpleValues(object obj)
-            {
-                Object = obj;
-            }
-
-            public bool Test(int? value) => value.HasValue && Int == value;
-
-            public bool Test(double? value) => value.HasValue && Double == value;
-
-            public bool Test(string value) => value != null && String == value;
-
-            public bool Test(SimpleValues value) => Int == value.Int && Double == value.Double && String == value.String && Object.Equals(value.Object);
-
-            public static bool Test(SimpleValues obj, int? value) => value.HasValue && obj.Int == value;
-
-            public static bool Test(SimpleValues obj, double? value) => value.HasValue && obj.Double == value;
-
-            public static bool Test(SimpleValues obj, string value) => value != null && obj.String == value;
-
-            public static bool Test(SimpleValues obj, object other) => other != null && obj.Object.Equals(other);
-        }
-
-        public Generator(int seed = 0)
-        {
-            Rand = new Random(seed);
-        }
+        private const double DoubleEpsilon = 0.000001;
 
         private static readonly string[] Comparisons = new string[]
         {
@@ -116,6 +70,11 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
             ExpressionType.GreaterThanOrEqual,
             ExpressionType.GreaterThan
         };
+
+        public Generator(int seed = 0)
+        {
+            Rand = new Random(seed);
+        }
 
         /* Predicates */
 
@@ -131,8 +90,6 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
 
             return builder.ToString();
         }
-
-        private const double DoubleEpsilon = 0.000001;
 
         private int AdjustValue(int value, string type)
         {
@@ -331,7 +288,8 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
             return optionals;
         }
 
-        public Expression Binary(string type,
+        public Expression Binary(
+            string type,
                                  IEnumerable<ExpressionInfo> expressions,
                                  out Dictionary<string, Comparison> bindings)
         {
@@ -636,6 +594,49 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
             }
 
             return result;
+        }
+
+        public class SimpleValues
+        {
+            public int Int = 1;
+            public double Double = 2.0;
+            public string String = "3";
+            public object Object = null;
+
+            public SimpleValues()
+            {
+            }
+
+            public SimpleValues(int integer)
+            {
+                Int = integer;
+            }
+
+            public SimpleValues(double number)
+            {
+                Double = number;
+            }
+
+            public SimpleValues(object obj)
+            {
+                Object = obj;
+            }
+
+            public bool Test(int? value) => value.HasValue && Int == value;
+
+            public bool Test(double? value) => value.HasValue && Double == value;
+
+            public bool Test(string value) => value != null && String == value;
+
+            public bool Test(SimpleValues value) => Int == value.Int && Double == value.Double && String == value.String && Object.Equals(value.Object);
+
+            public static bool Test(SimpleValues obj, int? value) => value.HasValue && obj.Int == value;
+
+            public static bool Test(SimpleValues obj, double? value) => value.HasValue && obj.Double == value;
+
+            public static bool Test(SimpleValues obj, string value) => value != null && obj.String == value;
+
+            public static bool Test(SimpleValues obj, object other) => other != null && obj.Object.Equals(other);
         }
     }
 }

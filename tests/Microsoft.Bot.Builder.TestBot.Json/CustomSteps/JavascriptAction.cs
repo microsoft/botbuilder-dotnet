@@ -1,14 +1,12 @@
-﻿using Jurassic;
-using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Builder.Dialogs.Adaptive;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
-using System.IO;
+﻿using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Jurassic;
+using Microsoft.Bot.Builder.Dialogs;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.TestBot.Json
 {
@@ -16,6 +14,16 @@ namespace Microsoft.Bot.Builder.TestBot.Json
     {
         private ScriptEngine scriptEngine;
         private string script;
+
+        [JsonConstructor]
+        public JavascriptAction([CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
+            : base()
+        {
+            this.scriptEngine = new ScriptEngine();
+
+            // enable instances of this command as debug break point
+            this.RegisterSourceLocation(sourceFilePath, sourceLineNumber);
+        }
 
         /// <summary>
         /// Gets or sets javascript bound to memory run function(user, conversation, dialog, turn).
@@ -38,16 +46,6 @@ namespace Microsoft.Bot.Builder.TestBot.Json
         public string Script
         {
             get { return script; } set { LoadScript(value); }
-        }
-
-        [JsonConstructor]
-        public JavascriptAction([CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
-            : base()
-        {
-            this.scriptEngine = new ScriptEngine();
-
-            // enable instances of this command as debug break point
-            this.RegisterSourceLocation(sourceFilePath, sourceLineNumber);
         }
 
         protected override Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))

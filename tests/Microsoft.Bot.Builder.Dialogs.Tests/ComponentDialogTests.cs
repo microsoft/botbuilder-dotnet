@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
@@ -35,7 +34,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 var dialogs = new DialogSet(dialogState);
 
                 var childComponent = new ComponentDialog("childComponent");
-                childComponent.AddDialog(new WaterfallDialog("childDialog", new WaterfallStep[]
+                childComponent.AddDialog(new WaterfallDialog(
+                    "childDialog", 
+                    new WaterfallStep[]
                     {
                         async (step, token) => 
                         {

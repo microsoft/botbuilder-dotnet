@@ -18,8 +18,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
         }
 
+        public ILanguagePolicy LanguagePolicy { get; set; } = new LanguagePolicy();
+
         /// <summary>
-        /// abstract method to lookup a ILanguageGeneartor by locale.
+        /// abstract method to lookup a ILanguageGenerator by locale.
         /// </summary>
         /// <param name="context">context.</param>
         /// <param name="locale">locale.</param>
@@ -28,13 +30,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public abstract bool TryGetGenerator(ITurnContext context, string locale, out ILanguageGenerator generator);
 
         /// <summary>
-        /// Gets or sets language Policy which defines per language fallback policies.
+        /// Find language generators that match the current context locale??
         /// </summary>
-        /// <value>
-        /// Language Policy which defines per language fallback policies.
-        /// </value>
-        public ILanguagePolicy LanguagePolicy { get; set; } = new LanguagePolicy();
-
+        /// <param name="turnContext">Context for the current turn of conversation.</param>
+        /// <param name="template">The template.</param>
+        /// <param name="data"></param>
+        /// <returns></returns>
         public async Task<string> Generate(ITurnContext turnContext, string template, object data)
         {
             // see if we have any locales that match

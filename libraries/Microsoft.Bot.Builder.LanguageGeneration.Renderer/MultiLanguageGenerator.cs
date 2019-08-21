@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.IO;
-using System.Text;
 using Microsoft.Bot.Builder.Dialogs;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
@@ -11,6 +9,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     /// </summary>
     public class MultiLanguageGenerator : MultiLanguageGeneratorBase
     {
+        public ConcurrentDictionary<string, ILanguageGenerator> LanguageGenerators = new ConcurrentDictionary<string, ILanguageGenerator>(StringComparer.OrdinalIgnoreCase);
+
         /// <summary>
         /// Initializes a new instance of the <see cref="MultiLanguageGenerator"/> class.
         /// </summary>
@@ -29,7 +29,5 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             return this.LanguageGenerators.TryGetValue(locale, out languageGenerator);
         }
-
-        public ConcurrentDictionary<string, ILanguageGenerator> LanguageGenerators = new ConcurrentDictionary<string, ILanguageGenerator>(StringComparer.OrdinalIgnoreCase);
     }
 }

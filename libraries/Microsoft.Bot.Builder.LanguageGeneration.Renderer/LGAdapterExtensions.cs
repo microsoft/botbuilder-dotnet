@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Loaders;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
@@ -12,23 +10,19 @@ namespace Microsoft.Bot.Builder.Dialogs
 {
     public static class LGAdapterExtensions
     {
-        internal class CustomLGLoader : ICustomDeserializer
-        {
-            public object Load(JToken obj, JsonSerializer serializer, Type type)
-            {
-                return new ResourceMultiLanguageGenerator(obj.Value<string>());
-            }
-        }
-
         /// <summary>
         /// Register default LG file as language generation.
         /// </summary>
-        /// <param name="botAdapter">botAdapter to add services to.</param>
+        /// <param name="botAdapter">The <see cref="BotAdapter"/> to add services to.</param>
         /// <param name="resourceExplorer">resource explorer.</param>
         /// <param name="defaultLg">Default LG Resource Id (default: main.lg).</param>
-        /// <param name="messageGenerator"></param>
-        /// <returns></returns>
-        public static BotAdapter UseLanguageGeneration(this BotAdapter botAdapter, ResourceExplorer resourceExplorer, string defaultLg = null, IMessageActivityGenerator messageGenerator = null)
+        /// <param name="messageGenerator">Optional message generator.</param>
+        /// <returns>The BotAdapter.</returns>
+        public static BotAdapter UseLanguageGeneration(
+            this BotAdapter botAdapter, 
+            ResourceExplorer resourceExplorer, 
+            string defaultLg = null, 
+            IMessageActivityGenerator messageGenerator = null)
         {
             if (defaultLg == null)
             {
@@ -38,7 +32,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             // if there is no main.lg, then provide default engine (for inline expression evaluation only)
             if (resourceExplorer.GetResource(defaultLg) == null)
             {
-                botAdapter.UseLanguageGeneration(resourceExplorer, new TemplateEngineLanguageGenerator("", defaultLg, LanguageGeneratorManager.ResourceResolver(resourceExplorer)));
+                botAdapter.UseLanguageGeneration(resourceExplorer, new TemplateEngineLanguageGenerator(string.Empty, defaultLg, LanguageGeneratorManager.ResourceResolver(resourceExplorer)));
             }
             else
             {
@@ -75,6 +69,14 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             botAdapter.Use(new RegisterClassMiddleware<IMessageActivityGenerator>(messageGenerator ?? new TextMessageActivityGenerator()));
             return botAdapter;
+        }
+
+        internal class CustomLGLoader : ICustomDeserializer
+        {
+            public object Load(JToken obj, JsonSerializer serializer, Type type)
+            {
+                return new ResourceMultiLanguageGenerator(obj.Value<string>());
+            }
         }
     }
 }

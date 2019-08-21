@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Newtonsoft.Json;
-
-namespace Microsoft.Bot.Builder.Dialogs
+﻿namespace Microsoft.Bot.Builder.Dialogs
 {
     public class DialogEvent
     {

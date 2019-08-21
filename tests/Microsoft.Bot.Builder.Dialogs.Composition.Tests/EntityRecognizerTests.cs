@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.Dialogs.Composition.Recognizers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 
@@ -37,12 +34,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition.Recognizers.Tests
             return set;
         });
 
+        public TestContext TestContext { get; set; }
+
         private TurnContext GetTurnContext(string text, string locale = "en-us")
         {
             return new TurnContext(new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName)), new Schema.Activity(type: Schema.ActivityTypes.Message, text: text, locale: locale));
         }
-
-        public TestContext TestContext { get; set; }
 
         [TestMethod]
         public void TestAge()

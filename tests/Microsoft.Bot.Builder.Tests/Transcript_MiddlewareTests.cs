@@ -16,88 +16,7 @@ namespace Microsoft.Bot.Builder.Tests
     {
         public TestContext TestContext { get; set; }
 
-        [TestMethod]
-        [TestCategory("Middleware")]
-        public async Task MemoryTranscript_LogActivities()
-        {
-            var transcriptStore = new MemoryTranscriptStore();
-            await _LogActivitiesTest(transcriptStore);
-        }
-
-        [TestMethod]
-        [TestCategory("Middleware")]
-        public async Task MemoryTranscript_LogDeleteActivities()
-        {
-            var transcriptStore = new MemoryTranscriptStore();
-            await _LogDeleteActivitesTest(transcriptStore);
-        }
-
-        [TestMethod]
-        [TestCategory("Middleware")]
-        public async Task MemoryTranscript_LogUpdateActivities()
-        {
-            var transcriptStore = new MemoryTranscriptStore();
-            await _LogUpdateActivitiesTest(transcriptStore);
-        }
-
-        [TestMethod]
-        [TestCategory("Middleware")]
-        public async Task MemoryTranscript_TestDateLogUpdateActivities()
-        {
-            var transcriptStore = new MemoryTranscriptStore();
-            await _TestDateLogUpdateActivitiesTest(transcriptStore);
-        }
-
-        [TestMethod]
-        [TestCategory("Middleware")]
-        public async Task FileTranscript_LogActivities()
-        {
-            var transcriptStore = GetFileTranscriptLogger();
-            await _LogActivitiesTest(transcriptStore);
-        }
-
-        [TestMethod]
-        [TestCategory("Middleware")]
-        public async Task FileTranscript_LogDeleteActivities()
-        {
-            var transcriptStore = GetFileTranscriptLogger();
-            await _LogDeleteActivitesTest(transcriptStore);
-        }
-
-        [TestMethod]
-        [TestCategory("Middleware")]
-        public async Task FileTranscript_LogUpdateActivities()
-        {
-            var transcriptStore = GetFileTranscriptLogger();
-            await _LogUpdateActivitiesTest(transcriptStore);
-        }
-
-        [TestMethod]
-        [TestCategory("Middleware")]
-        public async Task FileTranscript_TestDateLogUpdateActivities()
-        {
-            var transcriptStore = GetFileTranscriptLogger();
-            await _TestDateLogUpdateActivitiesTest(transcriptStore);
-        }
-
-        private FileTranscriptLogger GetFileTranscriptLogger()
-        {
-            var path = Path.Combine(Path.GetTempPath(), TestContext.TestName);
-            if (!Directory.Exists(path))
-                Directory.CreateDirectory(path);
-            else
-            {
-                foreach (var file in Directory.GetFiles(path, "*.transcript", new EnumerationOptions() { RecurseSubdirectories = true }))
-                {
-                    File.Delete(file);
-                }
-            }
-
-            var transcriptStore = new FileTranscriptLogger(path);
-            return transcriptStore;
-        }
-
-        public static async Task _LogActivitiesTest(ITranscriptStore transcriptStore)
+        public static async Task LogActivitiesTest(ITranscriptStore transcriptStore)
         {
             var conversation = TestAdapter.CreateConversation(Guid.NewGuid().ToString("n"));
             TestAdapter adapter = new TestAdapter(conversation)
@@ -139,7 +58,7 @@ namespace Microsoft.Bot.Builder.Tests
             }
         }
 
-        public static async Task _LogUpdateActivitiesTest(ITranscriptStore transcriptStore)
+        public static async Task LogUpdateActivitiesTest(ITranscriptStore transcriptStore)
         {
             var conversation = TestAdapter.CreateConversation(Guid.NewGuid().ToString("n"));
             TestAdapter adapter = new TestAdapter(conversation)
@@ -176,7 +95,7 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.AreEqual("update", pagedResult.Items[2].AsMessageActivity().Text);
         }
 
-        public static async Task _TestDateLogUpdateActivitiesTest(ITranscriptStore transcriptStore)
+        public static async Task TestDateLogUpdateActivitiesTest(ITranscriptStore transcriptStore)
         {
             var dateTimeStartOffset1 = new DateTimeOffset(DateTime.Now);
             var dateTimeStartOffset2 = new DateTimeOffset(DateTime.UtcNow);
@@ -229,7 +148,7 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.AreEqual(0, pagedResult.Items.Length);
         }
 
-        private static async Task _LogDeleteActivitesTest(ITranscriptStore transcriptStore)
+        private static async Task LogDeleteActivitesTest(ITranscriptStore transcriptStore)
         {
             var conversation = TestAdapter.CreateConversation(Guid.NewGuid().ToString("n"));
             TestAdapter adapter = new TestAdapter(conversation)
@@ -261,6 +180,89 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.IsNotNull(pagedResult.Items[1].AsMessageDeleteActivity());
             Assert.AreEqual(ActivityTypes.MessageDelete, pagedResult.Items[1].Type);
             Assert.AreEqual("deleteIt", pagedResult.Items[2].AsMessageActivity().Text);
+        }
+
+        [TestMethod]
+        [TestCategory("Middleware")]
+        public async Task MemoryTranscript_LogActivities()
+        {
+            var transcriptStore = new MemoryTranscriptStore();
+            await LogActivitiesTest(transcriptStore);
+        }
+
+        [TestMethod]
+        [TestCategory("Middleware")]
+        public async Task MemoryTranscript_LogDeleteActivities()
+        {
+            var transcriptStore = new MemoryTranscriptStore();
+            await LogDeleteActivitesTest(transcriptStore);
+        }
+
+        [TestMethod]
+        [TestCategory("Middleware")]
+        public async Task MemoryTranscript_LogUpdateActivities()
+        {
+            var transcriptStore = new MemoryTranscriptStore();
+            await LogUpdateActivitiesTest(transcriptStore);
+        }
+
+        [TestMethod]
+        [TestCategory("Middleware")]
+        public async Task MemoryTranscript_TestDateLogUpdateActivities()
+        {
+            var transcriptStore = new MemoryTranscriptStore();
+            await TestDateLogUpdateActivitiesTest(transcriptStore);
+        }
+
+        [TestMethod]
+        [TestCategory("Middleware")]
+        public async Task FileTranscript_LogActivities()
+        {
+            var transcriptStore = GetFileTranscriptLogger();
+            await LogActivitiesTest(transcriptStore);
+        }
+
+        [TestMethod]
+        [TestCategory("Middleware")]
+        public async Task FileTranscript_LogDeleteActivities()
+        {
+            var transcriptStore = GetFileTranscriptLogger();
+            await LogDeleteActivitesTest(transcriptStore);
+        }
+
+        [TestMethod]
+        [TestCategory("Middleware")]
+        public async Task FileTranscript_LogUpdateActivities()
+        {
+            var transcriptStore = GetFileTranscriptLogger();
+            await LogUpdateActivitiesTest(transcriptStore);
+        }
+
+        [TestMethod]
+        [TestCategory("Middleware")]
+        public async Task FileTranscript_TestDateLogUpdateActivities()
+        {
+            var transcriptStore = GetFileTranscriptLogger();
+            await TestDateLogUpdateActivitiesTest(transcriptStore);
+        }
+
+        private FileTranscriptLogger GetFileTranscriptLogger()
+        {
+            var path = Path.Combine(Path.GetTempPath(), TestContext.TestName);
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+            else
+            {
+                foreach (var file in Directory.GetFiles(path, "*.transcript", new EnumerationOptions() { RecurseSubdirectories = true }))
+                {
+                    File.Delete(file);
+                }
+            }
+
+            var transcriptStore = new FileTranscriptLogger(path);
+            return transcriptStore;
         }
     }
 }

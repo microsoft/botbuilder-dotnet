@@ -36,7 +36,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// Initializes a new instance of the <see cref="TemplateEngineLanguageGenerator"/> class.
         /// </summary>
         /// <param name="engine">template engine.</param>
-        /// <param name="name">optional label for the source of the templates (used for labeling source of template errors).</param>
         public TemplateEngineLanguageGenerator(TemplateEngine engine)
         {
             this.engine = engine;
@@ -53,7 +52,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <summary>
         /// Method to generate text from given template and data.
         /// </summary>
-        /// <param name="turnContext">context.</param>
+        /// <param name="turnContext">Context for the current turn of conversation.</param>
         /// <param name="template">template to evaluate.</param>
         /// <param name="data">data to bind to.</param>
         /// <returns>generated text.</returns>
@@ -61,7 +60,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             try
             {
-                return engine.Evaluate(template, data);
+                return await Task.FromResult(engine.Evaluate(template, data));
             }
             catch (Exception err)
             {

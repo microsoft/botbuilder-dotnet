@@ -35,6 +35,19 @@ namespace Microsoft.Bot.Builder.TemplateManager
         /// </value>
         public List<string> LanguageFallback { get; set; } = new List<string>();
 
+        public static Activity CreateTemplateActivity(string templateId, object data)
+        {
+            return new Activity()
+            {
+                Type = "Template",
+                Value = new TemplateOptions()
+                {
+                    TemplateId = templateId,
+                    Data = data,
+                },
+            };
+        }
+
         /// <summary>
         /// Add a template engine for binding templates.
         /// </summary>
@@ -48,19 +61,6 @@ namespace Microsoft.Bot.Builder.TemplateManager
             }
 
             return this;
-        }
-
-        public static Activity CreateTemplateActivity(string templateId, object data)
-        {
-            return new Activity()
-            {
-                Type = "Template",
-                Value = new TemplateOptions()
-                {
-                    TemplateId = templateId,
-                    Data = data,
-                },
-            };
         }
 
         /// <summary>
@@ -85,7 +85,7 @@ namespace Microsoft.Bot.Builder.TemplateManager
         /// <summary>
         /// Send a reply with the template.
         /// </summary>
-        /// <param name="turnContext">The context of the turn.</param>
+        /// <param name="turnContext">Context for the current turn of conversation.</param>
         /// <param name="templateId">Id of the template.</param>
         /// <param name="data">Data to render the template.</param>
         /// <returns>Task.</returns>
@@ -107,7 +107,7 @@ namespace Microsoft.Bot.Builder.TemplateManager
         /// <summary>
         /// Render the template.
         /// </summary>
-        /// <param name="turnContext">Context turn.</param>
+        /// <param name="turnContext">Context for the current turn of conversation.</param>
         /// <param name="language">Template language.</param>
         /// <param name="templateId">The id of the template.</param>
         /// <param name="data">Data to render the tempplate with.</param>

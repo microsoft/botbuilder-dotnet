@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs;
@@ -19,13 +17,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 {
-    public class MockLanguageGenator : ILanguageGenerator
-    {
-        public Task<string> Generate(ITurnContext turnContext, string template, object data)
-        {
-            return Task.FromResult(template);
-        }
-    }
+    private readonly ImportResolverDelegate resourceResolver = LanguageGeneratorManager.ResourceResolver(resourceExplorer);
 
     [TestClass]
     public class LGGeneratorTests
@@ -55,9 +47,10 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
         private ITurnContext GetTurnContext(string locale, ILanguageGenerator generator = null)
         {
-            var context = new TurnContext(new TestAdapter()
+            var context = new TurnContext(
+                new TestAdapter()
                 .UseResourceExplorer(resourceExplorer)
-                .UseLanguageGeneration(resourceExplorer, generator ?? new MockLanguageGenator()), new Activity() { Locale = locale, Text = "" });
+                .UseLanguageGeneration(resourceExplorer, generator ?? new MockLanguageGenator()), new Activity() { Locale = locale, Text = string.Empty });
             context.TurnState.Add(new LanguageGeneratorManager(resourceExplorer));
             if (generator != null)
             {
@@ -71,8 +64,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         [ExpectedException(typeof(Exception))]
         public async Task TestNotFoundTemplate()
         {
-            var context = GetTurnContext("");
-            var lg = new TemplateEngineLanguageGenerator("", "test", resourceResolver);
+            var context = GetTurnContext(string.Empty);
+            var lg = new TemplateEngineLanguageGenerator(string.Empty, "test", resourceResolver);
             await lg.Generate(context, "[tesdfdfsst]", null);
         }
 
@@ -81,7 +74,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         {
             var languageGeneratorManager = new LanguageGeneratorManager(resourceExplorer);
             var generator = languageGeneratorManager.LanguageGenerators["import.lg"];
-            var result = await generator.Generate(GetTurnContext(""), "[test2]", null);
+            var result = await generator.Generate(GetTurnContext(string.Empty), "[test2]", null);
             Assert.AreEqual("default2", result);
         }
 
@@ -89,7 +82,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         public async Task TestMultiLanguageGenerator()
         {
             var lg = new MultiLanguageGenerator();
-            lg.LanguageGenerators[""] = new TemplateEngineLanguageGenerator(resourceExplorer.GetResource("test.lg").ReadTextAsync().Result, "test.lg", resourceResolver);
+            lg.LanguageGenerators[string.Empty] = new TemplateEngineLanguageGenerator(resourceExplorer.GetResource("test.lg").ReadTextAsync().Result, "test.lg", resourceResolver);
             lg.LanguageGenerators["de"] = new TemplateEngineLanguageGenerator(resourceExplorer.GetResource("test.de.lg").ReadTextAsync().Result, "test.de.lg", resourceResolver);
             lg.LanguageGenerators["en"] = new TemplateEngineLanguageGenerator(resourceExplorer.GetResource("test.en.lg").ReadTextAsync().Result, "test.en.lg", resourceResolver);
             lg.LanguageGenerators["en-US"] = new TemplateEngineLanguageGenerator(resourceExplorer.GetResource("test.en-US.lg").ReadTextAsync().Result, "test.en-US.lg", resourceResolver);
@@ -100,14 +93,14 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.AreEqual("english-us", await lg.Generate(GetTurnContext(locale: "en-us"), "[test]", null));
             Assert.AreEqual("english-gb", await lg.Generate(GetTurnContext(locale: "en-gb"), "[test]", null));
             Assert.AreEqual("english", await lg.Generate(GetTurnContext(locale: "en"), "[test]", null));
-            Assert.AreEqual("default", await lg.Generate(GetTurnContext(locale: ""), "[test]", null));
+            Assert.AreEqual("default", await lg.Generate(GetTurnContext(locale: string.Empty), "[test]", null));
             Assert.AreEqual("default", await lg.Generate(GetTurnContext(locale: "foo"), "[test]", null));
 
             // test fallback for en-us -> en -> default
             Assert.AreEqual("default2", await lg.Generate(GetTurnContext(locale: "en-us"), "[test2]", null));
             Assert.AreEqual("default2", await lg.Generate(GetTurnContext(locale: "en-gb"), "[test2]", null));
             Assert.AreEqual("default2", await lg.Generate(GetTurnContext(locale: "en"), "[test2]", null));
-            Assert.AreEqual("default2", await lg.Generate(GetTurnContext(locale: ""), "[test2]", null));
+            Assert.AreEqual("default2", await lg.Generate(GetTurnContext(locale: string.Empty), "[test2]", null));
             Assert.AreEqual("default2", await lg.Generate(GetTurnContext(locale: "foo"), "[test2]", null));
         }
 
@@ -121,14 +114,14 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.AreEqual("english-us", await lg.Generate(GetTurnContext("en-us", lg), "[test2]", new { country = "us" }));
             Assert.AreEqual("english-gb", await lg.Generate(GetTurnContext("en-gb", lg), "[test]", null));
             Assert.AreEqual("english", await lg.Generate(GetTurnContext("en", lg), "[test]", null));
-            Assert.AreEqual("default", await lg.Generate(GetTurnContext("", lg), "[test]", null));
+            Assert.AreEqual("default", await lg.Generate(GetTurnContext(string.Empty, lg), "[test]", null));
             Assert.AreEqual("default", await lg.Generate(GetTurnContext("foo", lg), "[test]", null));
 
             // test fallback for en-us -> en -> default
             Assert.AreEqual("default2", await lg.Generate(GetTurnContext("en-us", lg), "[test2]", null));
             Assert.AreEqual("default2", await lg.Generate(GetTurnContext("en-gb", lg), "[test2]", null));
             Assert.AreEqual("default2", await lg.Generate(GetTurnContext("en", lg), "[test2]", null));
-            Assert.AreEqual("default2", await lg.Generate(GetTurnContext("", lg), "[test2]", null));
+            Assert.AreEqual("default2", await lg.Generate(GetTurnContext(string.Empty, lg), "[test2]", null));
             Assert.AreEqual("default2", await lg.Generate(GetTurnContext("foo", lg), "[test2]", null));
         }
 
@@ -208,7 +201,13 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             return new TestFlow(adapter, handler);
         }
+    }
 
-        private readonly ImportResolverDelegate resourceResolver = LanguageGeneratorManager.ResourceResolver(resourceExplorer);
+    public class MockLanguageGenator : ILanguageGenerator
+    {
+        public Task<string> Generate(ITurnContext turnContext, string template, object data)
+        {
+            return Task.FromResult(template);
+        }
     }
 }
