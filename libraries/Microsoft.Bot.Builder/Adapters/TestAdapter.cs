@@ -536,7 +536,7 @@ namespace Microsoft.Bot.Builder.Adapters
         {
             return Task.FromResult(new Dictionary<string, TokenResponse>());
         }
-        
+
         private class UserTokenKey
         {
             public string ConnectionName { get; set; }

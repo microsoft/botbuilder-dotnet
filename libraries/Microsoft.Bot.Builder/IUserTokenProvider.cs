@@ -79,22 +79,25 @@ namespace Microsoft.Bot.Builder
         Task<Dictionary<string, TokenResponse>> GetAadTokensAsync(ITurnContext context, string connectionName, string[] resourceUrls, string userId = null, CancellationToken cancellationToken = default(CancellationToken));
     }
 
-    public class LoginTimeout {
-
-        private readonly int _value = 900000;
-
+    /// <summary>
+    ///  Used to add login timeout values to the conversation turn context state.
+    ///  In case the login flow is not using the OAuthPrompt, this can be used to set and get the login timeout value for the login flow.
+    /// </summary>
+    public class LoginTimeout
+    {
         /// <summary>
         /// Gets Azure Active Directory tokens for particular resources on a configured connection.
         /// </summary>
-        public static string Key = "LoginTimeout";
+        public static readonly string Key = "LoginTimeout";
 
+        private readonly int defaultTimeout = 900000;
 
         /// <summary>
-        /// Gets Azure Active Directory tokens for particular resources on a configured connection.
+        /// Gets or sets polling for token timeout. This is equivalent to the OAuthPrompt timeout.
         /// </summary>
-        public int Value
+        public int? Value
         {
-            get { return this.Value == null ? _value : this.Value; }
+            get { return this.Value == null ? this.defaultTimeout : this.Value; }
 
             set { this.Value = value; }
         }

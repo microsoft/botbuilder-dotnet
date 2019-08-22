@@ -66,7 +66,7 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
         // _connectorClients is a cache using [serviceUrl + appId].
         private readonly ConcurrentDictionary<string, ConnectorClient> _connectorClients = new ConcurrentDictionary<string, ConnectorClient>();
         private readonly ConcurrentDictionary<string, List<TokenResponse>> _responseTokens = new ConcurrentDictionary<string, List<TokenResponse>>();
-        private int PollingTimeoutMs = 900000; // Default is 900,000 ms or 15 minutes in the OAuthPrompt
+        private int PollingTimeoutMs = 900000; // Default is 900,000 milliseconds (15 minutes) as in the OAuthPrompt
 
 
 
@@ -76,7 +76,7 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
         private readonly ILogger _logger;
         private readonly IStreamingTransportServer _server;
 
-        private readonly int SendWaitTimeMs = 1000;
+        private readonly int SendWaitTimeMs = 1000; // Poll for token every 1 second.
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BotFrameworkStreamingExtensionsAdapter"/> class.
@@ -1018,7 +1018,7 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            while (stopwatch.Elapsed < TimeSpan.FromMilliseconds(PollingTimeoutMs) && !shouldEndPolling)
+            while (stopwatch.Elapsed < TimeSpan.FromMilliseconds(this.PollingTimeoutMs) && !shouldEndPolling)
             {
                 tokenResponse = await client.UserToken.GetTokenAsync(turnContext.Activity.From.Id, connectionName, activity.ChannelId, magicCode, cancellationToken).ConfigureAwait(false);
 
