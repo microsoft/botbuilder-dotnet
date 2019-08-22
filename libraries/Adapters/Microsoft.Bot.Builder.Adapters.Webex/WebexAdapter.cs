@@ -21,6 +21,8 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
     {
         private readonly IWebexAdapterOptions _config;
 
+        private readonly IWebexClient _webexApi;
+
         private readonly TeamsAPIClient _api;
 
         /// <summary>
@@ -28,7 +30,8 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// Creates a Webex adapter. See <see cref="IWebexAdapterOptions"/> for a full definition of the allowed parameters.
         /// </summary>
         /// <param name="config">An object containing API credentials, a webhook verification token and other options.</param>
-        public WebexAdapter(IWebexAdapterOptions config)
+        /// <param name="webexApi">A Webex API interface.</param>
+        public WebexAdapter(IWebexAdapterOptions config, IWebexClient webexApi)
         {
             _config = config ?? throw new ArgumentNullException(nameof(config));
 
@@ -43,8 +46,10 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
             }
 
             _config.PublicAddress = new Uri(_config.PublicAddress).Host;
-            _api = TeamsAPI.CreateVersion1Client(_config.AccessToken)
-                   ?? throw new Exception("Could not create the Webex Teams API client");
+
+            _webexApi = webexApi ?? throw new Exception("Could not create the Webex Teams API client");
+
+            _webexApi.CreateClient(_config.AccessToken);
         }
 
         /// <summary>
@@ -135,8 +140,8 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                                     ? activity.GetChannelData<WebhookEventData>()?.MessageData.PersonEmail
                                     : activity.Recipient.Id;
 
-                TeamsResult<Message> webexResponse = await _api.CreateDirectMessageAsync(personIdOrEmail, activity.Text).ConfigureAwait(false);
-                responses.Add(new ResourceResponse(webexResponse.Data.Id));
+                var responseId = await _webexApi.CreateMessageAsync(personIdOrEmail, activity.Text).ConfigureAwait(false);
+                responses.Add(new ResourceResponse(responseId));
             }
 
             return responses.ToArray();
