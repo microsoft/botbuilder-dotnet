@@ -14,6 +14,8 @@ namespace Microsoft.Bot.Builder.Dialogs
 {
     public static class ObjectPath
     {
+        private static JsonSerializerSettings cloneSettings = new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.All };
+
         private static JsonSerializerSettings expressionCaseSettings = new JsonSerializerSettings
         {
             ContractResolver = new DefaultContractResolver { NamingStrategy = new CamelCaseNamingStrategy() },
@@ -231,6 +233,17 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             // TODO-- use expression library to resolve pathexpression.
             RemoveProperty(o, pathExpression.ToString());
+        }
+
+        /// <summary>
+        /// Clone an object.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public static T Clone<T>(T obj)
+        {
+            return JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(obj, ObjectPath.cloneSettings), ObjectPath.cloneSettings);
         }
 
         /// <summary>

@@ -32,8 +32,8 @@ namespace Microsoft.Bot.Builder.Dialogs
             Context = Parent.Context;
             Stack = state.DialogStack;
             settings = settings ?? Configuration.LoadSettings(Context.TurnState.Get<IConfiguration>());
-            conversationState = conversationState ?? state?.ConversationState ?? new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
-            userState = userState ?? state?.UserState ?? new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
+            conversationState = conversationState ?? new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
+            userState = userState ?? new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
             if (!Context.TurnState.TryGetValue("TurnStateMap", out object turnState))
             {
                 turnState = new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
@@ -51,8 +51,8 @@ namespace Microsoft.Bot.Builder.Dialogs
             Context = turnContext ?? throw new ArgumentNullException(nameof(turnContext));
             Stack = state.DialogStack;
             settings = settings ?? Configuration.LoadSettings(Context.TurnState.Get<IConfiguration>());
-            conversationState = conversationState ?? state?.ConversationState ?? new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
-            userState = userState ?? state?.UserState ?? new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
+            conversationState = conversationState ?? new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
+            userState = userState ?? new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
             if (!Context.TurnState.TryGetValue("TurnStateMap", out object turnState))
             {
                 turnState = new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
