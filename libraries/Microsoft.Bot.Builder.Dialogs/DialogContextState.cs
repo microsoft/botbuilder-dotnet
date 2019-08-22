@@ -1,31 +1,51 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Expressions;
 using Microsoft.Bot.Builder.Expressions.Parser;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
+    /// <summary>
+    /// Defines the shape of the state object returned by calling DialogContext.State.ToJson().
+    /// </summary>
+    public class DialogContextVisibleState
+    {
+        [JsonProperty(PropertyName = "user")]
+        public IDictionary<string, object> User { get; set; }
+
+        [JsonProperty(PropertyName = "conversation")]
+        public IDictionary<string, object> Conversation { get; set; }
+
+        [JsonProperty(PropertyName = "dialog")]
+        public IDictionary<string, object> Dialog { get; set; }
+    }
+
     public class DialogContextState : IDictionary<string, object>
     {
         /// <summary>
         /// Common state properties paths.
         /// </summary>
-        public const string DialogOptions = "dialog.options";
-        public const string DialogNames = "dialog.value";
+#pragma warning disable SA1310 // Field should not contain underscore.
+        public const string DIALOG_OPTIONS = "dialog.options";
+        public const string DIALOG_VALUE = "dialog.value";
 
-        public const string TurnActivity = "turn.activity";
-        public const string TurnRecognized = "turn.recognized";
-        public const string TurnTopIntent = "turn.recognized.intent";
-        public const string TurnTopScore = "turn.recognized.score";
-        public const string TurnStepCount = "turn.stepCount";
-        public const string TurnDialogEvent = "turn.dialogEvent";
+        public const string TURN_ACTIVITY = "turn.activity";
+        public const string TURN_RECOGNIZED = "turn.recognized";
+        public const string TURN_TOPINTENT = "turn.recognized.intent";
+        public const string TURN_TOPSCORE = "turn.recognized.score";
+        public const string TURN_STEPCOUNT = "turn.stepCount";
+        public const string TURN_DIALOGEVENT = "turn.dialogEvent";
 
-        public const string StepOptionsProperty = "dialog.step.options";
+        public const string STEP_OPTIONS_PROPERTY = "dialog.step.options";
+#pragma warning restore SA1310 // Field should not contain underscore.
 
         private const string PrefixCallBack = "callstackScope('";
 
@@ -423,20 +443,5 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             throw new NotImplementedException();
         }
-    }
-
-    /// <summary>
-    /// Defines the shape of the state object returned by calling DialogContext.State.ToJson().
-    /// </summary>
-    public class DialogContextVisibleState
-    {
-        [JsonProperty(PropertyName = "user")]
-        public IDictionary<string, object> User { get; set; }
-
-        [JsonProperty(PropertyName = "conversation")]
-        public IDictionary<string, object> Conversation { get; set; }
-
-        [JsonProperty(PropertyName = "dialog")]
-        public IDictionary<string, object> Dialog { get; set; }
     }
 }

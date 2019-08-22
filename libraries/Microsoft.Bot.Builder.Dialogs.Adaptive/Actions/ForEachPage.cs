@@ -41,7 +41,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
         // In-memory property that will contain the current items value. Defaults to `dialog.value`.
         [JsonProperty("valueProperty")]
-        public string ValueProperty { get; set; } = DialogContextState.DialogNames;
+        public string ValueProperty { get; set; } = DialogContextState.DIALOG_VALUE;
 
         // Actions to be run for each of items.
         [JsonProperty("actions")]

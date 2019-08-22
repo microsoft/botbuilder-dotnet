@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Microsoft.Bot.Builder.Expressions.Parser;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Expressions.Tests
@@ -308,6 +309,12 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("count(concat(hello,world))", 10),
             Test("replace('hello', 'l', 'k')", "hekko"),
             Test("replace('hello', 'L', 'k')", "hello"),
+            Test("replace(\"hello'\", \"'\", '\"')", "hello\""),
+            Test("replace('hello\"', '\"', \"'\")", "hello'"),
+            Test("replace('hello\"', '\"', '\n')", "hello\n"),
+            Test("replace('hello\n', '\n', '\\\\')", "hello\\"),
+            Test(@"replace('hello\\', '\\', '\\\\')", @"hello\\"),
+            Test(@"replace('hello\n', '\n', '\\\\')", @"hello\\"),
             Test("replaceIgnoreCase('hello', 'L', 'k')", "hekko"),
             Test("split('hello','e')", new string[] { "h", "llo" }),
             Test("substring('hello', 0, 5)", "hello"),
@@ -335,21 +342,21 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("addOrdinal(11 + 11)", "22nd"),
             Test("addOrdinal(11 + 12)", "23rd"),
             Test("addOrdinal(11 + 13)", "24th"),
-            Test("addOrdinal(-1)", "-1"), // original string value
+            Test("addOrdinal(-1)", "-1"), //original string value
             
             #endregion
 
             #region  Logical comparison functions test
             Test("and(1 == 1, 1 < 2, 1 > 2)", false),
-            Test("and(!true, !!true)", false), // false && true
-            Test("and(!!true, !!true)", true), // true && true
-            Test("and(hello != 'world', bool('true'))", true), // true && true
-            Test("and(hello == 'world', bool('true'))", false), // false && true
-            Test("or(!exists(one), !!exists(one))", true), // false && true
-            Test("or(!exists(one), !exists(one))", false), // false && false
+            Test("and(!true, !!true)", false), //false && true
+            Test("and(!!true, !!true)", true), //true && true
+            Test("and(hello != 'world', bool('true'))", true), //true && true
+            Test("and(hello == 'world', bool('true'))", false), //false && true
+            Test("or(!exists(one), !!exists(one))", true), //false && true
+            Test("or(!exists(one), !exists(one))", false), //false && false
             Test("greater(one, two)", false, OneTwo),
             Test("greater(one , 0.5) && less(two , 2.5)", true), // true && true
-            Test("greater(one , 0.5) || less(two , 1.5)", true), // true || false
+            Test("greater(one , 0.5) || less(two , 1.5)", true), //true || false
             Test("greater(5, 2)", true),
             Test("greater(2, 2)", false),
             Test("greater(one, two)", false),
@@ -376,13 +383,18 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("equals(hello, 'hello')", true),
             Test("equals(bag.index, 3)", true),
             Test("equals(bag.index, 2)", false),
-            Test("equals(hello == 'world', bool('true'))", false), // false, true
-            Test("equals(hello == 'world', bool(0))", false), // false, true
-            Test("if(!exists(one), 'r1', 'r2')", "r2"), // false
-            Test("if(!!exists(one), 'r1', 'r2')", "r1"), // true
-            Test("if(0, 'r1', 'r2')", "r1"), // true
-            Test("if(bool('true'), 'r1', 'r2')", "r1"), // true
-            Test("if(istrue, 'r1', 'r2')", "r1"), // true
+            Test("equals(hello == 'world', bool('true'))", false), //false, true
+            Test("equals(hello == 'world', bool(0))", false), //false, true
+            Test("if(!exists(one), 'r1', 'r2')", "r2"), //false
+            Test("if(!!exists(one), 'r1', 'r2')", "r1"), //true
+            Test("if(0, 'r1', 'r2')", "r1"), //true
+            Test("if(bool('true'), 'r1', 'r2')", "r1"), //true
+            Test("if(istrue, 'r1', 'r2')", "r1"), //true
+            Test("if(bag.name == null, \"hello\",  bag.name)", "mybag"),
+            Test("if(user.name == null, \"hello\",  user.name)", "hello"), // user.name don't exist
+            Test("if(user.name == null, '',  user.name)", string.Empty), // user.name don't exist
+            Test("if(one > 0, one, two)", 1),
+            Test("if(one < 0, one, two)", 2),
             Test("exists(one)", true),
             Test("exists(xxx)", false),
             Test("exists(one.xxx)", false),
@@ -465,8 +477,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             #endregion
 
             #region  Date and time function test
-
-            // init dateTime: 2018-03-15T13:00:00Z
+            //init dateTime: 2018-03-15T13:00:00Z
             Test("addDays(timestamp, 1)", "2018-03-16T13:00:00.000Z"),
             Test("addDays(timestamp, 1,'MM-dd-yy')", "03-16-18"),
             Test("addHours(timestamp, 1)", "2018-03-15T14:00:00.000Z"),
@@ -476,10 +487,10 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("addSeconds(timestamp, 1)", "2018-03-15T13:00:01.000Z"),
             Test("addSeconds(timestamp, 1, 'MM-dd-yy hh-mm-ss')", "03-15-18 01-00-01"),
             Test("dayOfMonth(timestamp)", 15),
-            Test("dayOfWeek(timestamp)", 4), // Thursday
+            Test("dayOfWeek(timestamp)", 4), //Thursday
             Test("dayOfYear(timestamp)", 74),
             Test("month(timestamp)", 3),
-            Test("date(timestamp)", "3/15/2018"), // Default. TODO
+            Test("date(timestamp)", "3/15/2018"), //Default. TODO
             Test("year(timestamp)", 2018),
             Test("length(utcNow())", 24),
             Test("utcNow('MM-DD-YY')", DateTime.UtcNow.ToString("MM-DD-YY")),
@@ -624,7 +635,6 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("$x", 3),
             Test("$y", 2),
             Test("$z", 1),
-
             // Test("^x", 3),
             // Test("^y", 2),
             // Test("^z", 1),
@@ -683,17 +693,17 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
         public static object[] Test(string input, object value, HashSet<string> paths = null) => new object[] { input, value, paths };
 
         public static bool IsNumber(object value) =>
-            value is sbyte
-            || value is byte
-            || value is short
-            || value is ushort
-            || value is int
-            || value is uint
-            || value is long
-            || value is ulong
-            || value is float
-            || value is double
-            || value is decimal;
+           value is sbyte
+           || value is byte
+           || value is short
+           || value is ushort
+           || value is int
+           || value is uint
+           || value is long
+           || value is ulong
+           || value is float
+           || value is double
+           || value is decimal;
 
         [DataTestMethod]
         [DynamicData(nameof(Data))]

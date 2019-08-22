@@ -141,8 +141,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
         protected override Task<InputState> OnRecognizeInput(DialogContext dc)
         {
-            var input = dc.State.GetValue<object>(InputProperty);
-            var options = dc.State.GetValue<ChoiceInputOptions>(DialogContextState.DialogOptions);
+            var input = dc.State.GetValue<object>(INPUT_PROPERTY);
+            var options = dc.State.GetValue<ChoiceInputOptions>(DialogContextState.DIALOG_OPTIONS);
 
             var choices = options.Choices;
 
@@ -162,10 +162,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 {
                     case ChoiceOutputFormat.Value:
                     default:
-                        dc.State.SetValue(InputProperty, foundChoice.Value);
+                        dc.State.SetValue(INPUT_PROPERTY, foundChoice.Value);
                         break;
                     case ChoiceOutputFormat.Index:
-                        dc.State.SetValue(InputProperty, foundChoice.Index);
+                        dc.State.SetValue(INPUT_PROPERTY, foundChoice.Index);
                         break;
                 }
             }

@@ -541,6 +541,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
 
             return result;
         }
+
         public class WeightedChoice<T>
         {
             public double Weight = 0.0;

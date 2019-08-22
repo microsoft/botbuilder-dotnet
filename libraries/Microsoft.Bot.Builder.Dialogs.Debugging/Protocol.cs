@@ -212,6 +212,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
         public class Event : Message
         {
+#pragma warning disable SA1300 // Should begin with an uppercase letter.
             public Event(int seq, string @event)
             {
                 this.Seq = seq;
@@ -220,6 +221,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             }
 
             public string @event { get; set; }
+#pragma warning restore SA1300 // Should begin with an uppercase letter.
 
             public static Event<TBody> From<TBody>(int seq, string @event, TBody body) => new Event<TBody>(seq, @event) { Body = body };
         }

@@ -85,38 +85,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             Exited
         }
 
-        private ulong EncodeValue(ThreadModel thread, object value)
-        {
-            if (dataModel.IsScalar(value))
-            {
-                return 0;
-            }
-
-            var threadCode = threads[thread];
-            var valueCode = thread.ValueCodes.Add(value);
-            return Identifier.Encode(threadCode, valueCode);
-        }
-
-        private void DecodeValue(ulong variablesReference, out ThreadModel thread, out object value)
-        {
-            Identifier.Decode(variablesReference, out var threadCode, out var valueCode);
-            thread = this.threads[threadCode];
-            value = thread.ValueCodes[valueCode];
-        }
-
-        private ulong EncodeFrame(ThreadModel thread, ICodePoint frame)
-        {
-            var threadCode = threads[thread];
-            var valueCode = thread.FrameCodes.Add(frame);
-            return Identifier.Encode(threadCode, valueCode);
-        }
-
-        private void DecodeFrame(ulong frameCode, out ThreadModel thread, out ICodePoint frame)
-        {
-            Identifier.Decode(frameCode, out var threadCode, out var valueCode);
-            thread = this.threads[threadCode];
-            frame = thread.FrameCodes[valueCode];
-        }
+        private int NextSeq => Interlocked.Increment(ref sequence);
 
         public static string Ellipsis(string text, int length)
         {
@@ -277,6 +246,39 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             return $"{turnContext.Activity.ChannelId}-{turnContext.Activity.Id}";
         }
 
+        private ulong EncodeValue(ThreadModel thread, object value)
+        {
+            if (dataModel.IsScalar(value))
+            {
+                return 0;
+            }
+
+            var threadCode = threads[thread];
+            var valueCode = thread.ValueCodes.Add(value);
+            return Identifier.Encode(threadCode, valueCode);
+        }
+
+        private void DecodeValue(ulong variablesReference, out ThreadModel thread, out object value)
+        {
+            Identifier.Decode(variablesReference, out var threadCode, out var valueCode);
+            thread = this.threads[threadCode];
+            value = thread.ValueCodes[valueCode];
+        }
+
+        private ulong EncodeFrame(ThreadModel thread, ICodePoint frame)
+        {
+            var threadCode = threads[thread];
+            var valueCode = thread.FrameCodes.Add(frame);
+            return Identifier.Encode(threadCode, valueCode);
+        }
+
+        private void DecodeFrame(ulong frameCode, out ThreadModel thread, out ICodePoint frame)
+        {
+            Identifier.Decode(frameCode, out var threadCode, out var valueCode);
+            thread = this.threads[threadCode];
+            frame = thread.FrameCodes[valueCode];
+        }
+
         private async Task UpdateBreakpointsAsync(CancellationToken cancellationToken)
         {
             var breakpoints = this.breakpoints.ApplyUpdates();
@@ -367,8 +369,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
             await SendAsync(Protocol.Event.From(NextSeq, "output", body), cancellationToken).ConfigureAwait(false);
         }
-
-        private int NextSeq => Interlocked.Increment(ref sequence);
 
         private Protocol.Capabilities MakeCapabilities()
         {

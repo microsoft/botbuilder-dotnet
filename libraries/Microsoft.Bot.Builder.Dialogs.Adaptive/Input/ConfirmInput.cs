@@ -49,7 +49,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
         protected override Task<InputState> OnRecognizeInput(DialogContext dc)
         {
-            var input = dc.State.GetValue<object>(InputProperty);
+            var input = dc.State.GetValue<object>(INPUT_PROPERTY);
             if (dc.Context.Activity.Type == ActivityTypes.Message)
             {
                 // Recognize utterance
@@ -60,7 +60,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                     var first = results[0];
                     if (bool.TryParse(first.Resolution["value"].ToString(), out var value))
                     {
-                        dc.State.SetValue(InputProperty, value);
+                        dc.State.SetValue(INPUT_PROPERTY, value);
                         return Task.FromResult(InputState.Valid);
                     }
                     else
@@ -83,7 +83,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                         if (secondAttemptResults.Count > 0)
                         {
                             input = secondAttemptResults[0].Resolution.Index == 0;
-                            dc.State.SetValue(InputProperty, input);
+                            dc.State.SetValue(INPUT_PROPERTY, input);
                         }
                         else
                         {

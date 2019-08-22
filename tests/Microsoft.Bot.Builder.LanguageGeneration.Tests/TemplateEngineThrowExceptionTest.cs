@@ -91,7 +91,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         {
             var engine = new TemplateEngine().AddFile(GetExampleFilePath(input));
 
-            var report = StaticChecker.CheckTemplates(engine.Templates);
+            var report = new StaticChecker().CheckTemplates(engine.Templates);
 
             TestContext.WriteLine(string.Join("\n", report));
         }

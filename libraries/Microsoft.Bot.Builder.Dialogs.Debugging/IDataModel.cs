@@ -95,9 +95,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
         string IDataModel.ToString(object context) => ToString((TContext)context);
 
-        protected T Coerce<T>(object item) => (T)this.coercion.Coerce(item, typeof(T));
-
         IEnumerable<object> IDataModel.Names(object context) => Names((TContext)context).Cast<object>();
+
+        protected T Coerce<T>(object item) => (T)this.coercion.Coerce(item, typeof(T));
     }
 
     public sealed class DictionaryDataModel<TKey, TValue> : DataModelBase<IDictionary<TKey, TValue>, TKey, TValue>

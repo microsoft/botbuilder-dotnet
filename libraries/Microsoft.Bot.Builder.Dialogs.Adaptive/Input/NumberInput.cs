@@ -43,7 +43,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
         protected override Task<InputState> OnRecognizeInput(DialogContext dc)
         {
-            var input = dc.State.GetValue<object>(InputProperty);
+            var input = dc.State.GetValue<object>(INPUT_PROPERTY);
 
             var culture = GetCulture(dc);
             var results = NumberRecognizer.RecognizeNumber(input.ToString(), culture);
@@ -70,10 +70,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             {
                 case NumberOutputFormat.Float:
                 default:
-                    dc.State.SetValue(InputProperty, input);
+                    dc.State.SetValue(INPUT_PROPERTY, input);
                     break;
                 case NumberOutputFormat.Integer:
-                    dc.State.SetValue(InputProperty, Math.Floor((float)input));
+                    dc.State.SetValue(INPUT_PROPERTY, Math.Floor((float)input));
                     break;
             }
 

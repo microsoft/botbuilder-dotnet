@@ -11,6 +11,8 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Events;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
+using Microsoft.Bot.Builder.Expressions;
+using Microsoft.Bot.Builder.Expressions.Parser;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json.Linq;
 using static Microsoft.Bot.Builder.Dialogs.Debugging.DebugSupport;
@@ -22,7 +24,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
     /// </summary>
     public class AdaptiveDialog : DialogContainer
     {
-        private const string AdaptiveKey = "adaptiveDialogState";
+#pragma warning disable SA1310 // Field should not contain underscore.
+        private const string ADAPTIVE_KEY = "adaptiveDialogState";
+#pragma warning restore SA1310 // Field should not contain underscore.
 
         private readonly string changeKey = Guid.NewGuid().ToString();
 
@@ -63,14 +67,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         public virtual List<IOnEvent> Events { get; set; } = new List<IOnEvent>();
 
         /// <summary>
-        /// Gets or sets a value indicating whether gets or sets the policty to Automatically end the dialog when there are no actions to execute.
+        /// Gets or sets a value indicating whether to end the dialog when there are no actions to execute.
         /// </summary>
         /// <remarks>
-        /// If true, when there are no actions to execute the current dialog will end
-        /// If false, when there are no actions to execute the current dialog will simply end the turn and still be active.
+        /// If true, when there are no actions to execute, the current dialog will end
+        /// If false, when there are no actions to execute, the current dialog will simply end the turn and still be active.
         /// </remarks>
         /// <value>
-        /// The policty to Automatically end the dialog when there are no actions to execute.
+        /// Whether to end the dialog when there are no actions to execute.
         /// </value>
         public bool AutoEndDialog { get; set; } = true;
 
@@ -115,8 +119,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             EnsureDependenciesInstalled();
 
             var activeDialogState = dc.ActiveDialog.State as Dictionary<string, object>;
-            activeDialogState[AdaptiveKey] = new AdaptiveDialogState();
-            var state = activeDialogState[AdaptiveKey] as AdaptiveDialogState;
+            activeDialogState[ADAPTIVE_KEY] = new AdaptiveDialogState();
+            var state = activeDialogState[ADAPTIVE_KEY] as AdaptiveDialogState;
 
             // Persist options to dialog state
             state.Options = options ?? new Dictionary<string, object>();
@@ -169,7 +173,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         public override async Task RepromptDialogAsync(ITurnContext turnContext, DialogInstance instance, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Forward to current sequence step
-            var state = (instance.State as Dictionary<string, object>)[AdaptiveKey] as AdaptiveDialogState;
+            var state = (instance.State as Dictionary<string, object>)[ADAPTIVE_KEY] as AdaptiveDialogState;
 
             if (state.Actions.Any())
             {
@@ -205,12 +209,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         public override DialogContext CreateChildContext(DialogContext dc)
         {
             var activeDialogState = dc.ActiveDialog.State as Dictionary<string, object>;
-            var state = activeDialogState[AdaptiveKey] as AdaptiveDialogState;
+            var state = activeDialogState[ADAPTIVE_KEY] as AdaptiveDialogState;
 
             if (state == null)
             {
                 state = new AdaptiveDialogState();
-                activeDialogState[AdaptiveKey] = state;
+                activeDialogState[ADAPTIVE_KEY] = state;
             }
 
             if (state.Actions != null && state.Actions.Any())
@@ -242,7 +246,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         protected async Task<bool> ProcessEventAsync(SequenceContext sequenceContext, DialogEvent dialogEvent, bool preBubble, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Save into turn
-            sequenceContext.State.SetValue(DialogContextState.TurnDialogEvent, dialogEvent);
+            sequenceContext.State.SetValue(DialogContextState.TURN_DIALOGEVENT, dialogEvent);
 
             // Look for triggered evt
             var handled = await this.QueueFirstMatchAsync(sequenceContext, dialogEvent, preBubble, cancellationToken).ConfigureAwait(false);
@@ -272,11 +276,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                             // Recognize utterance
                             var recognized = await this.OnRecognize(sequenceContext, cancellationToken).ConfigureAwait(false);
 
-                            sequenceContext.State.SetValue(DialogContextState.TurnRecognized, recognized);
+                            sequenceContext.State.SetValue(DialogContextState.TURN_RECOGNIZED, recognized);
 
                             var (name, score) = recognized.GetTopScoringIntent();
-                            sequenceContext.State.SetValue(DialogContextState.TurnTopIntent, name);
-                            sequenceContext.State.SetValue(DialogContextState.TurnTopScore, score);
+                            sequenceContext.State.SetValue(DialogContextState.TURN_TOPINTENT, name);
+                            sequenceContext.State.SetValue(DialogContextState.TURN_TOPSCORE, score);
 
                             if (this.Recognizer != null)
                             {
@@ -380,8 +384,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 // Increment turns step count
                 // This helps dialogs being resumed from an interruption to determine if they
                 // should re-prompt or not.
-                var stepCount = sequenceContext.State.GetValue<int>(DialogContextState.TurnStepCount, 0);
-                sequenceContext.State.SetValue(DialogContextState.TurnStepCount, stepCount + 1);
+                var stepCount = sequenceContext.State.GetValue<int>(DialogContextState.TURN_STEPCOUNT, 0);
+                sequenceContext.State.SetValue(DialogContextState.TURN_STEPCOUNT, stepCount + 1);
 
                 // Is the step waiting for input or were we cancelled?
                 if (result.Status == DialogTurnStatus.Waiting || this.GetUniqueInstanceId(sequenceContext) != instanceId)
@@ -448,10 +452,53 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         protected async Task<RecognizerResult> OnRecognize(SequenceContext sequenceContext, CancellationToken cancellationToken = default(CancellationToken))
         {
             var context = sequenceContext.Context;
+            var noneIntent = new RecognizerResult()
+            {
+                Text = context.Activity.Text ?? string.Empty,
+                Intents = new Dictionary<string, IntentScore>()
+                    {
+                        { "None", new IntentScore() { Score = 0.0 } }
+                    },
+                Entities = JObject.Parse("{}")
+            };
+            var text = context.Activity.Text;
+            if (context.Activity.Value != null)
+            {
+                var value = JObject.FromObject(context.Activity.Value);
+
+                // Check for submission of an adaptive card
+                if (string.IsNullOrEmpty(text) && value.Property("intent") != null)
+                {
+                    // Map submitted values to a recognizer result
+                    var recognized = new RecognizerResult() { Text = string.Empty };
+
+                    foreach (var property in value.Properties())
+                    {
+                        if (property.Name.ToLower() == "intent")
+                        {
+                            recognized.Intents[property.Value.ToString()] = new IntentScore() { Score = 1.0 };
+                        }
+                        else
+                        {
+                            if (recognized.Entities.Property(property.Name) == null)
+                            {
+                                recognized.Entities[property.Name] = new JArray(property.Value);
+                            }
+                            else
+                            {
+                                ((JArray)recognized.Entities[property.Name]).Add(property.Value);
+                            }
+                        }
+                    }
+
+                    return recognized;
+                }
+            }
+
             if (Recognizer != null)
             {
                 var result = await Recognizer.RecognizeAsync(context, cancellationToken).ConfigureAwait(false);
-
+                
                 // only allow one intent
                 var topIntent = result.GetTopScoringIntent();
                 result.Intents.Clear();
@@ -460,15 +507,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
             else
             {
-                return new RecognizerResult()
-                {
-                    Text = context.Activity.Text ?? string.Empty,
-                    Intents = new Dictionary<string, IntentScore>()
-                    {
-                        { "None", new IntentScore() { Score = 0.0 } }
-                    },
-                    Entities = JObject.Parse("{}")
-                };
+                return noneIntent;
             }
         }
 
@@ -552,12 +591,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         private SequenceContext ToSequenceContext(DialogContext dc)
         {
             var activeDialogState = dc.ActiveDialog.State as Dictionary<string, object>;
-            var state = activeDialogState[AdaptiveKey] as AdaptiveDialogState;
+            var state = activeDialogState[ADAPTIVE_KEY] as AdaptiveDialogState;
 
             if (state == null)
             {
                 state = new AdaptiveDialogState();
-                activeDialogState[AdaptiveKey] = state;
+                activeDialogState[ADAPTIVE_KEY] = state;
             }
 
             if (state.Actions == null)

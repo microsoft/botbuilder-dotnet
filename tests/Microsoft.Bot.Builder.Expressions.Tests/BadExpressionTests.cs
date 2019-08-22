@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Diagnostics;
 using Microsoft.Bot.Builder.Expressions.Parser;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -10,7 +12,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
     {
         private TestContext testContextInstance;
 
-        public static IEnumerable<object[]> InvalidExpressions => new[]
+        public static IEnumerable<object[]> SyntaxErrorExpressions => new[]
         {
             Test("a+"),
             Test("a+b*"),
@@ -22,7 +24,16 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("user.lists.{dialog.listName}")
         };
 
-        public static object[] Test(string input) => new object[] { input };
+        /// <summary>
+        ///  Gets or sets the test context which provides
+        ///  information about and functionality for the current test run.
+        /// </summary>
+        /// <value>The TestContext.</value>
+        public TestContext TestContext
+        {
+            get { return testContextInstance; }
+            set { testContextInstance = value; }
+        }
 
         public static IEnumerable<object[]> BadExpressions => new[]
         {
@@ -106,8 +117,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("lessOrEquals(one)"), // function need two parameters
             Test("equals(one)"), // equals must accept two parameters
             Test("exists(1, 2)"), // function need one parameter
-
-            // Test("if(!exists(one), one, hello)"), // the second and third parameters of if must the same type
+            //Test("if(!exists(one), one, hello)"), // the second and third parameters of if must the same type
             Test("not(false, one)"), // function need one parameter
             #endregion
 
@@ -121,23 +131,23 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("array(hello,world)"), // shold have 1 param
             Test("array(one)"), // shold have 1 param
             Test("DataUri(hello, world)"), // shoule have 1 param
-            Test("DataUri(false)"), // should have string param
+            Test("DataUri(false)"), //should have string param
             Test("uriComponent(hello, world)"), // shoule have 1 param
-            Test("uriComponent(false)"), // should have string param
+            Test("uriComponent(false)"), //should have string param
             Test("uriComponentToString(hello, world)"), // shoule have 1 param
-            Test("uriComponentToString(false)"), // should have string param
+            Test("uriComponentToString(false)"), //should have string param
             Test("dataUriToBinary(hello, world)"), // shoule have 1 param
-            Test("dataUriToBinary(false)"), // should have string param
+            Test("dataUriToBinary(false)"), //should have string param
             Test("dataUriToString(hello, world)"), // shoule have 1 param
-            Test("dataUriToString(false)"), // should have string param
+            Test("dataUriToString(false)"), //should have string param
             Test("binary(hello, world)"),      // shoule have 1 param
-            Test("binary(one)"), // should have string param
+            Test("binary(one)"), //should have string param
             Test("base64(hello, world)"),      // shoule have 1 param
-            Test("base64(one)"), // should have string param
+            Test("base64(one)"), //should have string param
             Test("base64ToBinary(hello, world)"), // shoule have 1 param
-            Test("base64ToBinary(one)"), // should have string param
+            Test("base64ToBinary(one)"), //should have string param
             Test("base64ToString(hello, world)"), // shoule have 1 param
-            Test("base64ToString(false)"), // should have string param
+            Test("base64ToString(false)"), //should have string param
             #endregion
 
             #region Math functions test
@@ -168,7 +178,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("rand(7, 6)"), //  minvalue cannot be greater than maxValue
             Test("sum(items)"), //  should have number parameters
             Test("range(hello,one)"), // params should be integer
-            Test("range(one,0)"), // the second param should be more than 0
+            Test("range(one,0)"), //the second param should be more than 0
             #endregion
             
             #region Date and time function test
@@ -193,19 +203,19 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("addSeconds(timestamp, 1,'yyyy', 2)"), // should have 2 or 3 params
             Test("addSeconds(notISOTimestamp, 1)"), // not ISO datetime format
             Test("dayOfMonth('errortime')"), // error datetime format
-            Test("dayOfMonth(timestamp, 1)"), // should have 1 param
+            Test("dayOfMonth(timestamp, 1)"), //should have 1 param
             Test("dayOfMonth(notISOTimestamp)"), // not ISO datetime format
             Test("dayOfWeek('errortime')"), // error datetime format
-            Test("dayOfWeek(timestamp, 1)"), // should have 1 param
+            Test("dayOfWeek(timestamp, 1)"), //should have 1 param
             Test("dayOfWeek(notISOTimestamp)"), // not ISO datetime format
             Test("dayOfYear('errortime')"), // error datetime format
-            Test("dayOfYear(timestamp, 1)"), // should have 1 param
+            Test("dayOfYear(timestamp, 1)"), //should have 1 param
             Test("dayOfYear(notISOTimestamp)"), // not ISO datetime format
             Test("month('errortime')"), // error datetime format
-            Test("month(timestamp, 1)"), // should have 1 param
+            Test("month(timestamp, 1)"), //should have 1 param
             Test("month(notISOTimestamp)"), // not ISO datetime format
             Test("date('errortime')"), // error datetime format
-            Test("date(timestamp, 1)"), // should have 1 param
+            Test("date(timestamp, 1)"), //should have 1 param
             Test("date(notISOTimestamp)"), // not ISO datetime format
             Test("year('errortime')"), // error datetime format
             Test("year(timestamp, 1)"), // should have 1 param
@@ -245,9 +255,9 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("convertToUTC(timestamp, timezone, 'D', hello)"),  // should have 2 or 3 params
             Test("addToTime(notValidTimeStamp, one, 'day')"), // not valid timestamp
             Test("addToTime(timeStamp, hello, 'day')"), // interval should be integer
-            Test("addToTime(timeStamp, one, 'decade', 'D')"), // not valid time unit 
-            Test("addToTime(timeStamp, one, 'week', 'A')"), // not valid format
-            Test("addToTime(timeStamp, one, 'week', 'A', one)"), // should have 3 or 4 params
+            Test("addToTime(timeStamp, one, 'decade', 'D')"), //not valid time unit 
+            Test("addToTime(timeStamp, one, 'week', 'A')"), //not valid format
+            Test("addToTime(timeStamp, one, 'week', 'A', one)"), //should have 3 or 4 params
             Test("convertTimeZone(notValidTimeStamp, 'UTC', timezone)"), // not valid timestamp
             Test("convertTimeZone(timestamp2, invalidTimezone, timezone, 'D')"), // not valid source timezone
             Test("convertTimeZone(timestamp2, timezone, invalidTimezone, 'D')"), // not valid destination timezone
@@ -262,72 +272,72 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             #endregion
 
             #region uri parsing function test
-            Test("uriHost(relativeUri)"),
-            Test("uriPath(relativeUri)"),
-            Test("uriPathAndQuery(relativeUri)"),
-            Test("uriPort(relativeUri)"),
-            Test("uriQuery(relativeUri)"),
-            Test("uriScheme(relativeUri)"),
+            Test("uriHost(relatibeUri)"),
+            Test("uriPath(relatibeUri)"),
+            Test("uriPathAndQuery(relatibeUri)"),
+            Test("uriPort(relatibeUri)"),
+            Test("uriQuery(relatibeUri)"),
+            Test("uriScheme(relatibeUri)"),
             #endregion
 
             #region collection functions test
-            Test("sum(items, 'hello')"), // should have 1 parameter
-            Test("sum('hello')"), // first param should be list
-            Test("average(items, 'hello')"), // should have 1 parameter
-            Test("average('hello')"), // first param should be list
-            Test("average(hello)"), // first param should be list
-            Test("contains('hello world', 'hello', 'new')"), // should have 2 parameter
-            Test("count(items, 1)"), // should have 1 parameter
-            Test("count(1)"), // first param should be list or string
-            Test("empty(1,2)"), // should have two params
-            Test("first(items,2)"), // should have 1 param
-            Test("last(items,2)"), // should have 1 param
-            Test("join(items, 'p1', 'p2','p3')"), // builtin function should have 2-3 params, 
+            Test("sum(items, 'hello')"), //should have 1 parameter
+            Test("sum('hello')"), //first param should be list
+            Test("average(items, 'hello')"), //should have 1 parameter
+            Test("average('hello')"), //first param should be list
+            Test("average(hello)"), //first param should be list
+            Test("contains('hello world', 'hello', 'new')"), //should have 2 parameter
+            Test("count(items, 1)"), //should have 1 parameter
+            Test("count(1)"), //first param should be list or string
+            Test("empty(1,2)"), //should have two params
+            Test("first(items,2)"), //should have 1 param
+            Test("last(items,2)"), //should have 1 param
+            Test("join(items, 'p1', 'p2','p3')"), //builtin function should have 2-3 params, 
             Test("join(hello, 'hi')"), // first param must list
             Test("join(items, 1)"), // second param must string 
             Test("join(items, '1', 2)"), // third param must string 
             Test("foreach(hello, item, item)"), // first arg is not list
-            Test("foreach(items, item)"), // should have three parameters
-            Test("foreach(items, item, item2, item3)"), // should have three parameters
+            Test("foreach(items, item)"), //should have three parameters
+            Test("foreach(items, item, item2, item3)"), //should have three parameters
             Test("foreach(items, add(1), item)"), // Second paramter of foreach is not an identifier
             Test("foreach(items, 1, item)"), // Second paramter error
             Test("foreach(items, x, sum(x))"), // third paramter error
             Test("select(hello, item, item)"), // first arg is not list
-            Test("select(items, item)"), // should have three parameters
-            Test("select(items, item, item2, item3)"), // should have three parameters
+            Test("select(items, item)"), //should have three parameters
+            Test("select(items, item, item2, item3)"), //should have three parameters
             Test("select(items, add(1), item)"), // Second paramter of foreach is not an identifier
             Test("select(items, 1, item)"), // Second paramter error
             Test("select(items, x, sum(x))"), // third paramter error
             Test("where(hello, item, item)"), // first arg is not list
-            Test("where(items, item)"), // should have three parameters
-            Test("where(items, item, item2, item3)"), // should have three parameters
+            Test("where(items, item)"), //should have three parameters
+            Test("where(items, item, item2, item3)"), //should have three parameters
             Test("where(items, add(1), item)"), // Second paramter of where is not an identifier
             Test("where(items, 1, item)"), // Second paramter error
             Test("where(items, x, sum(x))"), // third paramter error
             Test("union(one, two)"), // should have collection param
             Test("intersection(one, two)"), // should have collection param
-            Test("skip(one, two)"), // should have collection param
-            Test("skip(items,-1)"), // the second parameter shoule not less than zero
-            Test("skip(items,3)"), // the second parameter shoule  less than the length of the collection
-            Test("take(one, two)"), // should have collection param
+            Test("skip(one, two)"), //should have collection param
+            Test("skip(items,-1)"), //the second parameter shoule not less than zero
+            Test("skip(items,3)"), //the second parameter shoule  less than the length of the collection
+            Test("take(one, two)"), //should have collection param
             Test("take(createArray('H','e','l','l','0'),items[5])"), // the second param expr is wrong
-            Test("take(items,-1)"), // the second parameter shoule not less than zero
-            Test("take(items,4)"), // the second parameter shoule  less than the length of the collection
-            Test("subArray(one,1,4)"), // should have collection param
-            Test("subArray(items,-1,4)"), // the second parameter shoule not less than zero
-            Test("subArray(items,1,4)"), // the second parameter shoule  less than the length of the collection
-            Test("subArray(createArray('H','e','l','l','o'),items[5],5)"), // the second parameter expression is invalid
-            Test("subArray(createArray('H','e','l','l','o'),2,items[5])"), // the second parameter expression is invalid
+            Test("take(items,-1)"), //the second parameter shoule not less than zero
+            Test("take(items,4)"), //the second parameter shoule  less than the length of the collection
+            Test("subArray(one,1,4)"), //should have collection param
+            Test("subArray(items,-1,4)"), //the second parameter shoule not less than zero
+            Test("subArray(items,1,4)"), //the second parameter shoule  less than the length of the collection
+            Test("subArray(createArray('H','e','l','l','o'),items[5],5)"), //the second parameter expression is invalid
+            Test("subArray(createArray('H','e','l','l','o'),2,items[5])"), //the second parameter expression is invalid
             #endregion
 
             #region Object manipulation and construction functions test
-            Test("json(1,2)"), // should have 1 parameter
-            Test("json(1)"), // should be string parameter
+            Test("json(1,2)"), //should have 1 parameter
+            Test("json(1)"), //should be string parameter
             Test("json('{\"key1\":value1\"}')"), // invalid json format string 
-            Test("addProperty(json('{\"key1\":\"value1\"}'), 'key2','value2','key3')"), // should have 3 parameter
+            Test("addProperty(json('{\"key1\":\"value1\"}'), 'key2','value2','key3')"), //should have 3 parameter
             Test("addProperty(json('{\"key1\":\"value1\"}'), 1,'value2')"), // second param should be string
             Test("addProperty(json('{\"key1\":\"value1\"}'), 'key1', 3)"), // cannot add existing property
-            Test("setProperty(json('{\"key1\":\"value1\"}'), 'key2','value2','key3')"), // should have 3 parameter
+            Test("setProperty(json('{\"key1\":\"value1\"}'), 'key2','value2','key3')"), //should have 3 parameter
             Test("setProperty(json('{\"key1\":\"value1\"}'), 1,'value2')"), // second param should be string
             Test("removeProperty(json('{\"key1\":\"value1\",\"key2\":\"value2\"}'), 1))"), // second param should be string
             Test("removeProperty(json('{\"key1\":\"value1\",\"key2\":\"value2\"}'), '1', '2'))"), // should have 2 parameters
@@ -369,24 +379,12 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             #endregion
         };
 
-        /// <summary>
-        ///  Gets or sets the test context which provides
-        ///  information about and functionality for the current test run.
-        /// </summary>
-        /// <value>
-        /// The test context which provides
-        ///  information about and functionality for the current test run.
-        /// </value>
-        public TestContext TestContext
-        {
-            get { return testContextInstance; }
-            set { testContextInstance = value; }
-        }
+        public static object[] Test(string input) => new object[] { input };
 
         [DataTestMethod]
-        [DynamicData(nameof(InvalidExpressions))]
-        [ExpectedException(typeof(Exception))]
-        public void Parse(string exp)
+        [DynamicData(nameof(SyntaxErrorExpressions))]
+        [ExpectedException(typeof(SyntaxErrorException))]
+        public void ParseSyntaxErrors(string exp)
         {
             try
             {
@@ -395,7 +393,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             catch (Exception e)
             {
                 TestContext.WriteLine(e.Message);
-                throw e;
+                throw;
             }
         }
 
