@@ -50,6 +50,8 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
             _webexApi = webexApi ?? throw new Exception("Could not create the Webex Teams API client");
 
             _webexApi.CreateClient(_config.AccessToken);
+
+            _api = TeamsAPI.CreateVersion1Client(_config.AccessToken); // remove after all methods are wrapped in WebexApi class.
         }
 
         /// <summary>
