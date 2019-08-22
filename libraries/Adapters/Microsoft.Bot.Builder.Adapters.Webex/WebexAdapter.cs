@@ -53,13 +53,15 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
 
             _api = TeamsAPI.CreateVersion1Client(_config.AccessToken); // remove after all methods are wrapped in WebexApi class.
         }
+
+        /// <summary>
         /// Load the bot's identity via the WebEx API.
         /// MUST be called by BotBuilder bots in order to filter messages sent by the bot.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task GetIdentityAsync()
         {
-            await _api.GetMeAsync().ContinueWith(task => { WebexHelper.Identity = task.Result.Data; }, TaskScheduler.Current).ConfigureAwait(false);
+            await _webexApi.GetMeAsync().ContinueWith(task => { WebexHelper.Identity = task.Result.Data; }, TaskScheduler.Current).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -68,12 +70,12 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task ResetWebhookSubscriptions()
         {
-            await _api.ListWebhooksAsync().ContinueWith(
+            await _webexApi.ListWebhooksAsync().ContinueWith(
                 async task =>
             {
                 for (var i = 0; i < task.Result.Data.ItemCount; i++)
                 {
-                    await _api.DeleteWebhookAsync(task.Result.Data.Items[i]).ConfigureAwait(false);
+                    await _webexApi.DeleteWebhookAsync(task.Result.Data.Items[i]).ConfigureAwait(false);
                 }
             }, TaskScheduler.Current).ConfigureAwait(false);
         }
@@ -87,7 +89,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         {
             var webHookName = _config.WebhookName ?? "Botkit Firehose";
 
-            await _api.ListWebhooksAsync().ContinueWith(
+            await _webexApi.ListWebhooksAsync().ContinueWith(
                 async task =>
             {
                 string hookId = null;
@@ -104,11 +106,11 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
 
                 if (hookId != null)
                 {
-                    await _api.UpdateWebhookAsync(hookId, webHookName, new Uri(hookUrl), _config.Secret).ConfigureAwait(false);
+                    await _webexApi.UpdateWebhookAsync(hookId, webHookName, new Uri(hookUrl), _config.Secret).ConfigureAwait(false);
                 }
                 else
                 {
-                    await _api.CreateWebhookAsync(webHookName, new Uri(hookUrl), EventResource.All, EventType.All, null, _config.Secret).ConfigureAwait(false);
+                    await _webexApi.CreateWebhookAsync(webHookName, new Uri(hookUrl), EventResource.All, EventType.All, null, _config.Secret).ConfigureAwait(false);
                 }
             }, TaskScheduler.Current).ConfigureAwait(false);
         }
@@ -256,7 +258,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
             }
 
             var activity = payload.Resource == EventResource.Message && payload.EventType == EventType.Created
-                ? await WebexHelper.DecryptedMessageToActivityAsync(payload, _api.GetMessageAsync).ConfigureAwait(false)
+                ? await WebexHelper.DecryptedMessageToActivityAsync(payload, _webexApi.GetMessageAsync).ConfigureAwait(false)
                 : WebexHelper.PayloadToActivity(payload);
 
             using (var context = new TurnContext(this, activity))
