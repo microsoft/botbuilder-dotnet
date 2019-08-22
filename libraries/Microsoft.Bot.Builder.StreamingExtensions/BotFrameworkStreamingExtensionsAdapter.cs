@@ -51,32 +51,29 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
     {
         private const string InvokeResponseKey = "BotFrameworkAdapter.InvokeResponse";
         private const string BotIdentityKey = "BotIdentity";
+        private const string InvokeReponseKey = "BotFrameworkStreamingExtensionsAdapter.InvokeResponse";
+        private const string StreamingChannelPrefix = "/v3/conversations/";
 
-        private static readonly HttpClient _defaultHttpClient = new HttpClient();
+        private static readonly string PollingTimeoutTimeKey = "pollingTimeout";
+        private static readonly string PollingRequestsIntervalKey = "pollingRequestsInterval";
+        private static readonly HttpClient DefaultHttpClient = new HttpClient();
+
         private readonly ICredentialProvider _credentialProvider;
         private readonly IChannelProvider _channelProvider;
         private readonly HttpClient _httpClient;
         private readonly RetryPolicy _connectorClientRetryPolicy;
         private readonly IBot _bot;
-        //private readonly ILogger _logger;
         private readonly ConcurrentDictionary<string, MicrosoftAppCredentials> _appCredentialMap = new ConcurrentDictionary<string, MicrosoftAppCredentials>();
-        private readonly AuthenticationConfiguration _authConfiguration;
 
         // There is a significant boost in throughput if we reuse a connectorClient
         // _connectorClients is a cache using [serviceUrl + appId].
         private readonly ConcurrentDictionary<string, ConnectorClient> _connectorClients = new ConcurrentDictionary<string, ConnectorClient>();
         private readonly ConcurrentDictionary<string, List<TokenResponse>> _responseTokens = new ConcurrentDictionary<string, List<TokenResponse>>();
-        private int PollingTimeoutMs = 900000; // Default is 900,000 milliseconds (15 minutes) as in the OAuthPrompt
-
-
-
-
-        private const string InvokeReponseKey = "BotFrameworkStreamingExtensionsAdapter.InvokeResponse";
-        private const string StreamingChannelPrefix = "/v3/conversations/";
+        private readonly int _pollingTimeoutValue = 900000; // Default is 900,000 milliseconds (15 minutes) as in the OAuthPrompt
+        private readonly int _pollingRequestsIntervalValue = 1000; // Poll for token every 1 second.
         private readonly ILogger _logger;
         private readonly IStreamingTransportServer _server;
 
-        private readonly int SendWaitTimeMs = 1000; // Poll for token every 1 second.
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BotFrameworkStreamingExtensionsAdapter"/> class.
@@ -91,7 +88,6 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
         /// </remarks>
         public BotFrameworkStreamingExtensionsAdapter(
             ICredentialProvider credentialProvider,
-            AuthenticationConfiguration authConfig,
             IStreamingTransportServer streamingTransportServer,
             IBot bot,
 
@@ -103,7 +99,6 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
         {
             _credentialProvider = credentialProvider;
             _bot = bot;
-            _authConfiguration = authConfig;
             _server = streamingTransportServer ?? throw new ArgumentNullException(nameof(streamingTransportServer));
             middlewares = middlewares ?? new List<IMiddleware>();
             _logger = logger ?? NullLogger.Instance;
@@ -986,11 +981,16 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
 
         private async Task StartPollingForToken(ITurnContext turnContext, Activity activity, string connectionName, string magicCode, CancellationToken cancellationToken)
         {
+            TokenResponse tokenResponse = null;
+            bool shouldEndPolling = false;
+            int pollingTimeout = this._pollingTimeoutValue;
+            int pollingRequestsInterval = this._pollingRequestsIntervalValue;
             var loginTimeout = turnContext?.TurnState?.Get<object>(LoginTimeout.Key);
 
+            // Override login timeout with value set from the OAuthPrompt or by the developer
             if (loginTimeout != null)
             {
-                this.PollingTimeoutMs = (int)loginTimeout;
+                pollingTimeout = (int)loginTimeout;
             }
 
             BotAssert.ContextNotNull(turnContext);
@@ -1012,33 +1012,50 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
 
             var client = await this.CreateOAuthApiClientAsync(turnContext).ConfigureAwait(false);
 
-            TokenResponse tokenResponse = null;
-            bool shouldEndPolling = false;
-
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            while (stopwatch.Elapsed < TimeSpan.FromMilliseconds(this.PollingTimeoutMs) && !shouldEndPolling)
+            while (stopwatch.Elapsed < TimeSpan.FromMilliseconds(pollingTimeout) && !shouldEndPolling)
             {
                 tokenResponse = await client.UserToken.GetTokenAsync(turnContext.Activity.From.Id, connectionName, activity.ChannelId, magicCode, cancellationToken).ConfigureAwait(false);
 
                 if (tokenResponse != null)
                 {
-                    // if there is token, send it to the bot
-                    // Incase GetToken was successful but no token in the response then do nothing but stop polling.
                     // This can be used to short-circuit the polling loop.
+                    if (tokenResponse.Properties != null)
+                    {
+                        JToken pollingTimeoutToken = null;
+                        tokenResponse.Properties.TryGetValue(PollingTimeoutTimeKey, out pollingTimeoutToken);
+                        if (pollingTimeoutToken != null)
+                        {
+                            pollingTimeout = pollingTimeoutToken.ToObject<int>();
+                            if (pollingTimeout <= 0)
+                            {
+                                shouldEndPolling = true; // TImeout now and stop polling
+                            }
+                        }
+
+                        // This is helpful in regulating polling requests interval from api service
+                        JToken pollingRequestsIntervalToken = null;
+                        tokenResponse.Properties.TryGetValue(PollingRequestsIntervalKey, out pollingRequestsIntervalToken);
+                        if (pollingRequestsIntervalToken != null)
+                        {
+                            pollingRequestsInterval = pollingRequestsIntervalToken.ToObject<int>();
+                        }
+                    }
+
+                    // if there is token, send it to the bot
                     if (tokenResponse.Token != null)
                     {
                         var tokenResponseActivityEvent = CreateTokenResponse(GetConversationReference(turnContext), tokenResponse.Token, connectionName);
                         await ContinueConversationAsync(turnContext.Activity.Recipient.Id, GetConversationReference(turnContext), new BotCallbackHandler(_bot.OnTurnAsync), cancellationToken);
+                        shouldEndPolling = true;
                     }
-
-                    shouldEndPolling = true;
                 }
 
                 if (!shouldEndPolling)
                 {
-                    await Task.Delay(this.SendWaitTimeMs);
+                    await Task.Delay(pollingRequestsInterval);
                 }
             }
 

@@ -7,7 +7,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.StreamingExtensions;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json.Linq;
@@ -150,17 +149,6 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 // Prompt user to login
                 await this.SendOAuthCardAsync(dc.Context, opt?.Prompt, cancellationToken).ConfigureAwait(false);
-
-                // Begin polling for token
-                if (dc.Context.Adapter is BotFrameworkStreamingExtensionsAdapter botFrameworkStreamingExtensionsAdapter)
-                {
-                  /*  var tokenResponse = await botFrameworkStreamingExtensionsAdapter.StartPollingForToken(dc.Context, _settings.ConnectionName, null, (int)_settings.Timeout, cancellationToken).ConfigureAwait(false);
-                    {
-                        // Return token
-                        return await dc.EndDialogAsync(tokenResponse, cancellationToken).ConfigureAwait(false);
-                    }*/
-                }
-
                 return Dialog.EndOfTurn;
             }
         }
@@ -339,8 +327,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 });
             }
 
-            // Add login timeout to the conversation state
-            turnContext?.TurnState.Add<object>(LoginTimeout.Key, _settings.Timeout);
+            turnContext?.TurnState?.Add<object>(LoginTimeout.Key, _settings.Timeout);
 
             // Set input hint
             if (string.IsNullOrEmpty(prompt.InputHint))

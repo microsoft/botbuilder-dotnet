@@ -217,7 +217,6 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
 
             try
             {
-                AuthenticationConfiguration authConfig = new AuthenticationConfiguration();
                 IBot bot = null;
 
                 // First check if an IBot type definition is available from the service provider.
@@ -241,7 +240,7 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
                     throw new Exception("Unable to find bot when processing request.");
                 }
 
-                var adapter = new BotFrameworkStreamingExtensionsAdapter(_credentialProvider, authConfig, _transportServer, bot, _middlewareSet, logger);
+                var adapter = new BotFrameworkStreamingExtensionsAdapter(_credentialProvider, _transportServer, bot, _middlewareSet, logger);
                 adapter.OnTurnError = _onTurnError;
                 var invokeResponse = await adapter.ProcessActivityAsync(body, request.Streams, new BotCallbackHandler(bot.OnTurnAsync), cancellationToken).ConfigureAwait(false);
 
