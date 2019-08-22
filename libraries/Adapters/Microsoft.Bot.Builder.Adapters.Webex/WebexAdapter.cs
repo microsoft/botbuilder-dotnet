@@ -53,8 +53,6 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
 
             _api = TeamsAPI.CreateVersion1Client(_config.AccessToken); // remove after all methods are wrapped in WebexApi class.
         }
-
-        /// <summary>
         /// Load the bot's identity via the WebEx API.
         /// MUST be called by BotBuilder bots in order to filter messages sent by the bot.
         /// </summary>
