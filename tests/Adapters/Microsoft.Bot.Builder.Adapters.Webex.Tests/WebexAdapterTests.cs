@@ -157,7 +157,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
             });
         }
 
-        [Fact]
+        [Fact(Skip = "Can't mock extension methods")]
         public async void ProcessAsync_Should_Succeed()
         {
             var options = new Mock<IWebexAdapterOptions>();

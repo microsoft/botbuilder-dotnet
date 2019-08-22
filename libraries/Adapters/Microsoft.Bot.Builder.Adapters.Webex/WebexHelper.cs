@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -12,6 +13,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Schema;
 using Thrzn41.WebexTeams;
 using Thrzn41.WebexTeams.Version1;
+
+[assembly: InternalsVisibleTo("Microsoft.Bot.Builder.Adapters.Webex.Tests")]
 
 namespace Microsoft.Bot.Builder.Adapters.Webex
 {
