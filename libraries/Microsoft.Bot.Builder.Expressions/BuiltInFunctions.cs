@@ -1984,7 +1984,7 @@ namespace Microsoft.Bot.Builder.Expressions
                     error = $"{jsonStr} is not a valid JSON string";
                 }
             }
-            else if (jsonEntity is JObject parsed )
+            else if (jsonEntity is JObject parsed)
             {
                 jsonObj = parsed;
             }
@@ -1994,16 +1994,16 @@ namespace Microsoft.Bot.Builder.Expressions
             }
 
             if (error == null)
+            {
+                try
                 {
-                    try
-                    {
-                        value = jsonObj.SelectTokens(jpath);
-                    }
-                    catch
-                    {
-                        error = $"{jpath} is not a valid path";
-                    }
+                    value = jsonObj.SelectTokens(jpath);
                 }
+                catch
+                {
+                    error = $"{jpath} is not a valid path";
+                }
+            }
 
             if (error == null)
             {
