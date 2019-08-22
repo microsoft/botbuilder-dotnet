@@ -49,7 +49,6 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
     /// <seealso cref="IMiddleware"/>
     public class BotFrameworkStreamingExtensionsAdapter : BotAdapter, IBotFrameworkStreamingChannelConnector, IUserTokenProvider
     {
-
         private const string InvokeResponseKey = "BotFrameworkAdapter.InvokeResponse";
         private const string BotIdentityKey = "BotIdentity";
 
@@ -58,6 +57,7 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
         private readonly IChannelProvider _channelProvider;
         private readonly HttpClient _httpClient;
         private readonly RetryPolicy _connectorClientRetryPolicy;
+        private readonly IBot _bot;
         //private readonly ILogger _logger;
         private readonly ConcurrentDictionary<string, MicrosoftAppCredentials> _appCredentialMap = new ConcurrentDictionary<string, MicrosoftAppCredentials>();
         private readonly AuthenticationConfiguration _authConfiguration;
@@ -66,7 +66,7 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
         // _connectorClients is a cache using [serviceUrl + appId].
         private readonly ConcurrentDictionary<string, ConnectorClient> _connectorClients = new ConcurrentDictionary<string, ConnectorClient>();
         private readonly ConcurrentDictionary<string, List<TokenResponse>> _responseTokens = new ConcurrentDictionary<string, List<TokenResponse>>();
-
+        private int PollingTimeoutMs = 900000; // Default is 900,000 ms or 15 minutes in the OAuthPrompt
 
 
 
@@ -76,7 +76,7 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
         private readonly ILogger _logger;
         private readonly IStreamingTransportServer _server;
 
-        private readonly int SendWaitTimeMs = 2000;
+        private readonly int SendWaitTimeMs = 1000;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BotFrameworkStreamingExtensionsAdapter"/> class.
@@ -93,6 +93,8 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
             ICredentialProvider credentialProvider,
             AuthenticationConfiguration authConfig,
             IStreamingTransportServer streamingTransportServer,
+            IBot bot,
+
             IList<IMiddleware> middlewares = null,
             ILogger logger = null,
             IChannelProvider channelProvider = null,
@@ -100,6 +102,7 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
             HttpClient customHttpClient = null)
         {
             _credentialProvider = credentialProvider;
+            _bot = bot;
             _authConfiguration = authConfig;
             _server = streamingTransportServer ?? throw new ArgumentNullException(nameof(streamingTransportServer));
             middlewares = middlewares ?? new List<IMiddleware>();
@@ -248,6 +251,31 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
             }
         }
 
+        private async Task CheckForOAuthCard(ITurnContext turnContext, Activity activity, CancellationToken cancellationToken)
+        {
+            if (activity?.Attachments != null)
+            {
+                foreach (var attachment in activity.Attachments.Where(a => a.ContentType == OAuthCard.ContentType))
+                {
+                    var oAuthCard = this.GetOAuthCard(attachment);
+                    var firstSignInButton = oAuthCard?.Buttons?.FirstOrDefault(b => b.Type == ActionTypes.Signin);
+                    firstSignInButton.Value = await GetOauthSignInLinkAsync(turnContext, oAuthCard.ConnectionName, cancellationToken);
+
+                    StartPollingForToken(turnContext, activity, oAuthCard.ConnectionName, null, cancellationToken); ;
+                }
+            }
+        }
+
+        private OAuthCard GetOAuthCard(Attachment attachment)
+        {
+            if (attachment.Content is OAuthCard)
+            {
+                return (OAuthCard)attachment.Content;
+            }
+
+            throw new ArgumentException("Invalid OAuthCard in activity attachment.");
+        }
+
         /// <summary>
         /// Sends activities to the conversation.
         /// Throws <see cref="ArgumentNullException"/> on null arguments.
@@ -315,6 +343,8 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
                 {
                     requestPath = $"/v3/conversations/{activity.Conversation?.Id}/activities";
                 }
+
+                await CheckForOAuthCard(turnContext, activity, cancellationToken);
 
                 var streamAttachments = UpdateAttachmentStreams(activity);
                 var request = StreamingRequest.CreatePost(requestPath);
@@ -761,16 +791,9 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
             var tokenExchangeState = new TokenExchangeState()
             {
                 ConnectionName = connectionName,
-                Conversation = new ConversationReference()
-                {
-                    ActivityId = activity.Id,
-                    Bot = activity.Recipient,       // Activity is from the user to the bot
-                    ChannelId = activity.ChannelId,
-                    Conversation = activity.Conversation,
-                    ServiceUrl = activity.ServiceUrl,
-                    User = activity.From,
-                },
-                MsAppId = (_credentialProvider as MicrosoftAppCredentials)?.MicrosoftAppId,
+                Conversation = GetConversationReference(turnContext),
+                MsAppId = (this._credentialProvider as MicrosoftAppCredentials)?.MicrosoftAppId,
+                IsFromExtension = true,
             };
 
             var serializedState = JsonConvert.SerializeObject(tokenExchangeState);
@@ -779,6 +802,29 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
 
             var client = await CreateOAuthApiClientAsync(turnContext).ConfigureAwait(false);
             return await client.BotSignIn.GetSignInUrlAsync(state, null, null, null, cancellationToken).ConfigureAwait(false);
+        }
+
+        private ConversationReference GetConversationReference(ITurnContext turnContext)
+        {
+            var activity = turnContext.Activity;
+
+            return new ConversationReference()
+            {
+                ActivityId = activity.Id,
+                Bot = new ChannelAccount
+                {
+                    Id = turnContext.Activity.Recipient.Id,
+                    Name = turnContext.Activity.Recipient.Name
+                },
+                ChannelId = activity.ChannelId,
+                Conversation = activity.Conversation,
+                ServiceUrl = activity.ServiceUrl,
+                User = new ChannelAccount
+                {
+                    Id = turnContext.Activity.From.Id,
+                    Name = turnContext.Activity.From.Name
+                },
+            };
         }
 
         /// <summary>
@@ -912,8 +958,10 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
         /// <returns>An OAuth client for the bot.</returns>
         protected virtual async Task<OAuthClient> CreateOAuthApiClientAsync(ITurnContext turnContext)
         {
+            var activity = turnContext.TurnState.Get<Activity>(InvokeReponseKey) ?? turnContext.Activity;
+
             if (!OAuthClientConfig.EmulateOAuthCards &&
-                string.Equals(turnContext.Activity.ChannelId, "emulator", StringComparison.InvariantCultureIgnoreCase) &&
+                string.Equals(activity.ChannelId, "emulator", StringComparison.InvariantCultureIgnoreCase) &&
                 (await _credentialProvider.IsAuthenticationDisabledAsync().ConfigureAwait(false)))
             {
                 OAuthClientConfig.EmulateOAuthCards = true;
@@ -928,7 +976,7 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
             if (OAuthClientConfig.EmulateOAuthCards)
             {
                 // do not await task - we want this to run in the background
-                var oauthClient = new OAuthClient(new Uri(turnContext.Activity.ServiceUrl), connectorClient.Credentials);
+                var oauthClient = new OAuthClient(new Uri(activity.ServiceUrl), connectorClient.Credentials);
                 var task = Task.Run(() => OAuthClientConfig.SendEmulateOAuthCardsAsync(oauthClient, OAuthClientConfig.EmulateOAuthCards));
                 return oauthClient;
             }
@@ -936,18 +984,23 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
             return new OAuthClient(new Uri(OAuthClientConfig.OAuthEndpoint), connectorClient.Credentials);
         }
 
-        /// <summary>
-        /// Polls for token token for a user that's in a login flow if using Direct Line ASE.
-        /// </summary>
-        /// <param name="turnContext">Context for the current turn of conversation with the user.</param>
-        /// <param name="connectionName">Name of the auth connection to use.</param>
-        /// <param name="magicCode">(Optional) Optional user entered code to validate.</param>
-        /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns>Token Response.</returns>
-        public async Task<TokenResponse> StartPollingForToken(ITurnContext turnContext, string connectionName, string magicCode, int timeoutMilliseconds, CancellationToken cancellationToken)
+        private async Task StartPollingForToken(ITurnContext turnContext, Activity activity, string connectionName, string magicCode, CancellationToken cancellationToken)
         {
+            var loginTimeout = turnContext?.TurnState?.Get<object>(LoginTimeout.Key);
+
+            if (loginTimeout != null)
+            {
+                this.PollingTimeoutMs = (int)loginTimeout;
+            }
+
             BotAssert.ContextNotNull(turnContext);
-            if (turnContext.Activity.From == null || string.IsNullOrWhiteSpace(turnContext.Activity.From.Id))
+
+            if (activity == null)
+            {
+                throw new ArgumentNullException($"BotFrameworkAdapter.StartPollingForToken(): getting response activity by {InvokeResponseKey} not found.");
+            }
+
+            if (activity.From == null || string.IsNullOrWhiteSpace(activity.From.Id))
             {
                 throw new ArgumentNullException("BotFrameworkAdapter.GetUserTokenAsync(): missing from or from.id");
             }
@@ -960,43 +1013,36 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
             var client = await this.CreateOAuthApiClientAsync(turnContext).ConfigureAwait(false);
 
             TokenResponse tokenResponse = null;
+            bool shouldEndPolling = false;
 
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            while (stopwatch.Elapsed < TimeSpan.FromMilliseconds(timeoutMilliseconds))
+            while (stopwatch.Elapsed < TimeSpan.FromMilliseconds(PollingTimeoutMs) && !shouldEndPolling)
             {
-                bool processed = false;
-                tokenResponse = await client.UserToken.GetTokenAsync(turnContext.Activity.From.Id, connectionName, turnContext.Activity.ChannelId, magicCode, cancellationToken).ConfigureAwait(false);
+                tokenResponse = await client.UserToken.GetTokenAsync(turnContext.Activity.From.Id, connectionName, activity.ChannelId, magicCode, cancellationToken).ConfigureAwait(false);
 
-                if (tokenResponse?.Token != null)
+                if (tokenResponse != null)
                 {
-                    stopwatch.Stop();
-                    processed = true;
-                    return tokenResponse;
+                    // if there is token, send it to the bot
+                    // Incase GetToken was successful but no token in the response then do nothing but stop polling.
+                    // This can be used to short-circuit the polling loop.
+                    if (tokenResponse.Token != null)
+                    {
+                        var tokenResponseActivityEvent = CreateTokenResponse(GetConversationReference(turnContext), tokenResponse.Token, connectionName);
+                        await ContinueConversationAsync(turnContext.Activity.Recipient.Id, GetConversationReference(turnContext), new BotCallbackHandler(_bot.OnTurnAsync), cancellationToken);
+                    }
+
+                    shouldEndPolling = true;
                 }
 
-                if (!processed)
+                if (!shouldEndPolling)
                 {
                     await Task.Delay(this.SendWaitTimeMs);
                 }
             }
 
             stopwatch.Stop();
-
-            return tokenResponse;
-        }
-
-        private TokenResponse GetTokenResponse(string userId, string connectionName)
-        {
-            List<TokenResponse> tokenResponses = null;
-
-            if (this._responseTokens.TryGetValue(userId, out tokenResponses))
-            {
-                return tokenResponses.FirstOrDefault(tr => tr?.ConnectionName == connectionName);
-            }
-
-            return null;
         }
 
         /// <summary>
@@ -1069,6 +1115,34 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
             }
 
             return null;
+        }
+
+        public static IEventActivity CreateTokenResponse(ConversationReference relatesTo, string token, string connectionName)
+        {
+            var tokenResponse = Activity.CreateEventActivity() as Activity;
+
+            // IActivity properties
+            tokenResponse.Id = Guid.NewGuid().ToString();
+            tokenResponse.Timestamp = DateTime.UtcNow;
+            tokenResponse.From = relatesTo.User;
+            tokenResponse.Recipient = relatesTo.Bot;
+            tokenResponse.ReplyToId = relatesTo.ActivityId;
+            tokenResponse.ServiceUrl = relatesTo.ServiceUrl;
+            tokenResponse.ChannelId = relatesTo.ChannelId;
+            tokenResponse.Conversation = relatesTo.Conversation;
+            tokenResponse.Attachments = new List<Attachment>().ToArray();
+            tokenResponse.Entities = new List<Entity>().ToArray();
+
+            // IEventActivity properties
+            tokenResponse.Name = "tokens/response";
+            tokenResponse.RelatesTo = relatesTo;
+            tokenResponse.Value = new TokenResponse()
+            {
+                Token = token,
+                ConnectionName = connectionName
+            };
+
+            return tokenResponse;
         }
     }
 }

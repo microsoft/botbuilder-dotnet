@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -76,5 +77,26 @@ namespace Microsoft.Bot.Builder
         /// or threads to receive notice of cancellation.</param>
         /// <returns>Dictionary of resourceUrl to the corresponding TokenResponse.</returns>
         Task<Dictionary<string, TokenResponse>> GetAadTokensAsync(ITurnContext context, string connectionName, string[] resourceUrls, string userId = null, CancellationToken cancellationToken = default(CancellationToken));
+    }
+
+    public class LoginTimeout {
+
+        private readonly int _value = 900000;
+
+        /// <summary>
+        /// Gets Azure Active Directory tokens for particular resources on a configured connection.
+        /// </summary>
+        public static string Key = "LoginTimeout";
+
+
+        /// <summary>
+        /// Gets Azure Active Directory tokens for particular resources on a configured connection.
+        /// </summary>
+        public int Value
+        {
+            get { return this.Value == null ? _value : this.Value; }
+
+            set { this.Value = value; }
+        }
     }
 }

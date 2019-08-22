@@ -154,11 +154,11 @@ namespace Microsoft.Bot.Builder.Dialogs
                 // Begin polling for token
                 if (dc.Context.Adapter is BotFrameworkStreamingExtensionsAdapter botFrameworkStreamingExtensionsAdapter)
                 {
-                    var tokenResponse = await botFrameworkStreamingExtensionsAdapter.StartPollingForToken(dc.Context, _settings.ConnectionName, null, (int)_settings.Timeout, cancellationToken).ConfigureAwait(false);
+                  /*  var tokenResponse = await botFrameworkStreamingExtensionsAdapter.StartPollingForToken(dc.Context, _settings.ConnectionName, null, (int)_settings.Timeout, cancellationToken).ConfigureAwait(false);
                     {
                         // Return token
                         return await dc.EndDialogAsync(tokenResponse, cancellationToken).ConfigureAwait(false);
-                    }
+                    }*/
                 }
 
                 return Dialog.EndOfTurn;
@@ -338,6 +338,9 @@ namespace Microsoft.Bot.Builder.Dialogs
                     },
                 });
             }
+
+            // Add login timeout to the conversation state
+            turnContext?.TurnState.Add<object>(LoginTimeout.Key, _settings.Timeout);
 
             // Set input hint
             if (string.IsNullOrEmpty(prompt.InputHint))

@@ -45,5 +45,19 @@ namespace Microsoft.Bot.Schema
         /// </value>
         [JsonProperty("msAppId")]
         public string MsAppId { get; set; }
+
+        /// <summary>
+        /// Gets or sets value to helps determine if using Direct Line ASE.
+        /// </summary>
+        [JsonProperty("isFromExtension")]
+        public bool IsFromExtension { get; set; }
+
+        /// <summary>
+        /// Gets or sets the number of milliseconds the login prompt waits for the user to authenticate.
+        /// Default is 900,000 (15 minutes) as it is in the OAuthPrompt.
+        /// </summary>
+        /// <value>The number of milliseconds the prompt waits for the user to authenticate.</value>
+        [JsonProperty("timeout")]
+        public int Timeout { get; set; }
     }
 }
