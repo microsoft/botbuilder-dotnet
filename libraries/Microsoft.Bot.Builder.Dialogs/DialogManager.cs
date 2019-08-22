@@ -170,14 +170,10 @@ namespace Microsoft.Bot.Builder.Dialogs
 
                 if (turnResult.Status == DialogTurnStatus.Empty)
                 {
-                    // start root dialog
+                    // restart root dialog
                     turnResult = await dc.BeginDialogAsync(this.rootDialogId, cancellationToken: cancellationToken).ConfigureAwait(false);
                 }
             }
-
-            // ORPHANED CODE? https://github.com/microsoft/botbuilder-dotnet/issues/2194 
-            // Save snapshot of final state for the turn
-            // context.TurnState.Set(PersistedStateSnapshotKey, newState);
 
             // Save state if loaded from storage
             if (saveState)
