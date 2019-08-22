@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <param name="accessToken">The access token of the Webex account.</param>
         public void CreateClient(string accessToken)
         {
-            TeamsAPI.CreateVersion1Client(accessToken);
+            _api = TeamsAPI.CreateVersion1Client(accessToken);
         }
 
         public async Task<string> CreateMessageAsync(string toPersonOrEmail, string text)
