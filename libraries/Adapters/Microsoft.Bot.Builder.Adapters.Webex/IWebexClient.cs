@@ -10,5 +10,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         void CreateClient(string accessToken);
 
         Task<string> CreateMessageAsync(string toPersonOrEmail, string text);
+
+        Task DeleteMessageAsync(string activityId);
     }
 }

@@ -25,5 +25,10 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
             var webexResponse = await _api.CreateDirectMessageAsync(toPersonOrEmail, text).ConfigureAwait(false);
             return webexResponse.Data.Id;
         }
+
+        public async Task DeleteMessageAsync(string activityId)
+        {
+            await _api.DeleteMessageAsync(activityId, default).ConfigureAwait(false);
+        }
     }
 }

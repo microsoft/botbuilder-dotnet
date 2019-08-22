@@ -237,5 +237,56 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
             // Assert the result
             Assert.True(resourceResponse[0].Id == expectedResponseId);
         }
+
+        [Fact]
+        public async void SendActivitiesAsync_Should_Fail_With_Null_toPersonEmail()
+        {
+            var options = new Mock<IWebexAdapterOptions>();
+            options.SetupAllProperties();
+            options.Object.AccessToken = "Test";
+            options.Object.PublicAddress = "http://contoso.com/api/messages";
+
+            // Setup mocked Webex API client
+            const string expectedResponseId = "Mocked Response Id";
+            var webexApi = new Mock<IWebexClient>();
+            webexApi.Setup(x => x.CreateMessageAsync(It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(expectedResponseId));
+
+            // Create a new Webex Adapter with the mocked classes and get the responses
+            var webexAdapter = new WebexAdapter(options.Object, webexApi.Object);
+            var activity = new Mock<Activity>().SetupAllProperties();
+            activity.Object.Type = "message";
+            activity.Object.Text = "Hello, Bot!";
+
+            var turnContext = new TurnContext(webexAdapter, activity.Object);
+
+            await Assert.ThrowsAsync<Exception>(async () =>
+            {
+                await webexAdapter.SendActivitiesAsync(turnContext, new Activity[] { activity.Object }, default(CancellationToken));
+            });
+        }
+
+        [Fact]
+        public async void DeleteActivityAsync_With_ActivityId_Should_Succeed()
+        {
+            var options = new Mock<IWebexAdapterOptions>();
+            options.SetupAllProperties();
+            options.Object.AccessToken = "Test";
+            options.Object.PublicAddress = "http://contoso.com/api/messages";
+
+            var webexApi = new Mock<IWebexClient>();
+            webexApi.Setup(x => x.DeleteMessageAsync(It.IsAny<string>()));
+
+            var webexAdapter = new WebexAdapter(options.Object, webexApi.Object);
+
+            var activity = new Activity();
+
+            var turnContext = new TurnContext(webexAdapter, activity);
+            var conversationReference = new ConversationReference
+            {
+                ActivityId = "MockId",
+            };
+
+            await webexAdapter.DeleteActivityAsync(turnContext, conversationReference, default);
+        }
     }
 }

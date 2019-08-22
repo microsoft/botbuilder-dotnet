@@ -136,9 +136,23 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                 }
 
                 // transform activity into the webex message format
-                var personIdOrEmail = activity.GetChannelData<WebhookEventData>()?.MessageData.PersonEmail != null
-                                    ? activity.GetChannelData<WebhookEventData>()?.MessageData.PersonEmail
-                                    : activity.Recipient.Id;
+                var personIdOrEmail = string.Empty;
+
+                if (activity.GetChannelData<WebhookEventData>()?.MessageData.PersonEmail != null)
+                {
+                    personIdOrEmail = activity.GetChannelData<WebhookEventData>()?.MessageData.PersonEmail;
+                }
+                else
+                {
+                    if (activity.Recipient?.Id != null)
+                    {
+                        personIdOrEmail = activity.Recipient.Id;
+                    }
+                    else
+                    {
+                        throw new Exception("No Person or Email to send the message");
+                    }
+                }
 
                 var responseId = await _webexApi.CreateMessageAsync(personIdOrEmail, activity.Text).ConfigureAwait(false);
                 responses.Add(new ResourceResponse(responseId));
@@ -171,7 +185,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         {
             if (!string.IsNullOrWhiteSpace(reference.ActivityId))
             {
-                await _api.DeleteMessageAsync(reference.ActivityId, cancellationToken).ConfigureAwait(false);
+                await _webexApi.DeleteMessageAsync(reference.ActivityId).ConfigureAwait(false);
             }
         }
 
