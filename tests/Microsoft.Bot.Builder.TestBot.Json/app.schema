@@ -281,9 +281,9 @@
             "$ref": "#/definitions/Microsoft.TrueSelector"
         },
         {
-            "title": "Testbot.JavascriptStep",
+            "title": "Testbot.JavascriptAction",
             "description": "This gives you the ability to execute javascript to manipulate memory",
-            "$ref": "#/definitions/Testbot.JavascriptStep"
+            "$ref": "#/definitions/Testbot.JavascriptAction"
         },
         {
             "title": "Testbot.Multiply",
@@ -2570,7 +2570,7 @@
                 "property": {
                     "$role": "expression",
                     "title": "Property",
-                    "description": "The property to store the result of the HTTP call in (as object or string)",
+                    "description": "The property to store the result of the HTTP call in. The result will have 4 properties from the http response: statusCode|reasonPhrase|content|headers.  If the content is json it will be an deserialized object, otherwise it will be a string",
                     "examples": [
                         "dialog.contosodata"
                     ],
@@ -2791,9 +2791,9 @@
                     "title": "string"
                 },
                 {
-                    "title": "Testbot.JavascriptStep",
+                    "title": "Testbot.JavascriptAction",
                     "description": "This gives you the ability to execute javascript to manipulate memory",
-                    "$ref": "#/definitions/Testbot.JavascriptStep"
+                    "$ref": "#/definitions/Testbot.JavascriptAction"
                 },
                 {
                     "title": "Testbot.Multiply",
@@ -6033,7 +6033,7 @@
                 }
             ]
         },
-        "Testbot.JavascriptStep": {
+        "Testbot.JavascriptAction": {
             "$role": "unionType(Microsoft.IDialog)",
             "title": "Javascript Action",
             "description": "This gives you the ability to execute javascript to manipulate memory",
@@ -6045,7 +6045,7 @@
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Testbot.JavascriptStep"
+                    "const": "Testbot.JavascriptAction"
                 },
                 "$copy": {
                     "title": "$copy",

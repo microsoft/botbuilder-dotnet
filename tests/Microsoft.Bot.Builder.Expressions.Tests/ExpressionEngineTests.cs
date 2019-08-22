@@ -618,8 +618,6 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("exists(#BookFlight)", true, new HashSet<string> {"turn.recognized.intents.BookFlight"}),
             Test("dialog.title", "Dialog Title"),
             Test("dialog.subTitle", "Dialog Sub Title"),
-            Test("~xxx", "instance", new HashSet<string> {"dialog.instance.xxx"}),
-            Test("~['yyy'].instanceY", "instanceY", new HashSet<string> {"dialog.instance.yyy.instanceY"}),
             Test("%xxx", "options", new HashSet<string> {"dialog.options.xxx"}),
             Test("%['xxx']", "options", new HashSet<string> {"dialog.options.xxx"}),
             Test("%yyy[1]", "optionY2", new HashSet<string> {"dialog.options.yyy[1]"}),
@@ -629,9 +627,6 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("$x", 3),
             Test("$y", 2),
             Test("$z", 1),
-            // Test("^x", 3),
-            // Test("^y", 2),
-            // Test("^z", 1),
             Test("count(@@CompositeList1) == 1 && count(@@CompositeList1[0]) == 1", true),
             #endregion
 
