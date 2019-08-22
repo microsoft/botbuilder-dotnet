@@ -23,7 +23,9 @@ namespace Microsoft.Bot.Builder.Webex.Sample
             Configuration = configuration;
 
             var options = new SimpleWebexAdapterOptions(configuration["AccessToken"], configuration["PublicAddress"], configuration["Secret"], configuration["WebhookName"]);
-            adapter = new WebexAdapter(options);
+            var webexApi = new WebexApi();
+            webexApi.CreateClient(options.AccessToken);
+            adapter = new WebexAdapter(options, webexApi);
             adapter.RegisterWebhookSubscriptionAsync("/api/messages").Wait();
         }
 

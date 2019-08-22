@@ -53,18 +53,13 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         }
 
         /// <summary>
-        /// Gets or sets the identity of the bot.
-        /// </summary>
-        private Person Identity { get; set; }
-
-        /// <summary>
         /// Load the bot's identity via the WebEx API.
         /// MUST be called by BotBuilder bots in order to filter messages sent by the bot.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task GetIdentityAsync()
         {
-            await _api.GetMeAsync().ContinueWith(task => { Identity = task.Result.Data; }, TaskScheduler.Current).ConfigureAwait(false);
+            await _api.GetMeAsync().ContinueWith(task => { WebexHelper.Identity = task.Result.Data; }, TaskScheduler.Current).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -241,7 +236,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                 throw new ArgumentNullException(nameof(bot));
             }
 
-            response.StatusCode = 200;
+            response.StatusCode = StatusCodes.Status200OK;
             await response.WriteAsync(string.Empty, cancellationToken).ConfigureAwait(false);
 
             WebhookEventData payload;
@@ -254,146 +249,20 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
             {
                 var json = JsonConvert.SerializeObject(payload);
 
-                if (!ValidateSignature(_config.Secret, request, json))
+                if (!WebexHelper.ValidateSignature(_config.Secret, request, json))
                 {
                     throw new Exception("WARNING: Webhook received message with invalid signature. Potential malicious behavior!");
                 }
             }
 
             var activity = payload.Resource == EventResource.Message && payload.EventType == EventType.Created
-                ? await DecryptedMessageToActivityAsync(payload).ConfigureAwait(false)
-                : PayloadToActivity(payload);
+                ? await WebexHelper.DecryptedMessageToActivityAsync(payload, _api.GetMessageAsync).ConfigureAwait(false)
+                : WebexHelper.PayloadToActivity(payload);
 
             using (var context = new TurnContext(this, activity))
             {
                 await RunPipelineAsync(context, bot.OnTurnAsync, cancellationToken).ConfigureAwait(false);
             }
-        }
-
-        /// <summary>
-        /// Validates the local secret against the one obtained from the request header.
-        /// </summary>
-        /// <param name="secret">The local stored secret.</param>
-        /// <param name="request">The <see cref="HttpRequest"/> with the signature.</param>
-        /// <param name="json">The serialized payload to be use for comparison.</param>
-        /// <returns>The result of the comparison between the signature in the request and hashed json.</returns>
-        private static bool ValidateSignature(string secret, HttpRequest request, string json)
-        {
-            var signature = request.Headers.ContainsKey("x-spark-signature")
-                ? request.Headers["x-spark-signature"].ToString().ToUpperInvariant()
-                : throw new Exception("HttpRequest is missing \"x-spark-signature\"");
-
-            #pragma warning disable CA5350 // Webex API uses SHA1 as cryptographic algorithm.
-            using (var hmac = new HMACSHA1(Encoding.UTF8.GetBytes(secret)))
-            {
-                var hashArray = hmac.ComputeHash(Encoding.UTF8.GetBytes(json));
-                var hash = BitConverter.ToString(hashArray).Replace("-", string.Empty).ToUpperInvariant();
-
-                return signature == hash;
-            }
-            #pragma warning restore CA5350 // Webex API uses SHA1 as cryptographic algorithm.
-        }
-
-        /// <summary>
-        /// Creates a <see cref="Activity"/> using the body of a request.
-        /// </summary>
-        /// <param name="payload">The payload obtained from the body of the request.</param>
-        /// <returns>An <see cref="Activity"/> object.</returns>
-        private Activity PayloadToActivity(WebhookEventData payload)
-        {
-            if (payload == null)
-            {
-                return null;
-            }
-
-            var activity = new Activity
-            {
-                Id = payload.Id,
-                Timestamp = new DateTime(),
-                ChannelId = "webex",
-                Conversation = new ConversationAccount
-                {
-                    Id = payload.MessageData.SpaceId,
-                },
-                From = new ChannelAccount
-                {
-                    Id = payload.ActorId,
-                },
-                Recipient = new ChannelAccount
-                {
-                    Id = Identity.Id,
-                },
-                ChannelData = payload,
-                Type = ActivityTypes.Event,
-            };
-
-            return activity;
-        }
-
-        /// <summary>
-        /// Converts a decrypted <see cref="Message"/> into an <see cref="Activity"/>.
-        /// </summary>
-        /// <param name="payload">The payload obtained from the body of the request.</param>
-        /// <returns>An <see cref="Activity"/> object.</returns>
-        private async Task<Activity> DecryptedMessageToActivityAsync(WebhookEventData payload)
-        {
-            if (payload == null)
-            {
-                return null;
-            }
-
-            Message decryptedMessage = (await _api.GetMessageAsync(payload.MessageData.Id).ConfigureAwait(false)).GetData();
-            var activity = new Activity
-            {
-                Id = decryptedMessage.Id,
-                Timestamp = new DateTime(),
-                ChannelId = "webex",
-                Conversation = new ConversationAccount
-                {
-                    Id = decryptedMessage.SpaceId,
-                },
-                From = new ChannelAccount
-                {
-                    Id = decryptedMessage.PersonId,
-                    Name = decryptedMessage.PersonEmail,
-                },
-                Recipient = new ChannelAccount
-                {
-                    Id = Identity.Id,
-                },
-                Text = decryptedMessage.Text,
-                ChannelData = decryptedMessage,
-                Type = ActivityTypes.Message,
-            };
-
-            // this is the bot speaking
-            if (activity.From.Id == Identity.Id)
-            {
-                activity.Type = ActivityTypes.Event;
-            }
-
-            if (decryptedMessage.HasHtml)
-            {
-                var pattern = new Regex($"^(<p>)?<spark-mention .*?data-object-id=\"{Identity.Id}\".*?>.*?</spark-mention>");
-                if (!decryptedMessage.Html.Equals(pattern))
-                {
-                    // this should look like ciscospark://us/PEOPLE/<id string>
-                    var match = Regex.Match(Identity.Id, "/ciscospark://.*/(.*)/im");
-                    pattern = new Regex($"^(<p>)?<spark-mention .*?data-object-id=\"{match.Captures[1]}\".*?>.*?</spark-mention>");
-                }
-
-                var action = decryptedMessage.Html.Replace(pattern.ToString(), string.Empty);
-
-                // Strip the remaining HTML tags and replace the message text with the the HTML version
-                activity.Text = action.Replace("/<.*?>/img", string.Empty).Trim();
-            }
-            else
-            {
-                var pattern = new Regex("^" + Identity.DisplayName + "\\s+");
-                activity.Text = activity.Text.Replace(pattern.ToString(), string.Empty);
-            }
-
-            return activity;
         }
     }
 }

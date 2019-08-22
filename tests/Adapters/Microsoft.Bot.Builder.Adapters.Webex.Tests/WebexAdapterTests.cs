@@ -40,6 +40,17 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         }
 
         [Fact]
+        public void Constructor_WithArguments_Should_Succeed()
+        {
+            var options = new Mock<IWebexAdapterOptions>();
+            options.SetupAllProperties();
+            options.Object.AccessToken = "Test";
+            options.Object.PublicAddress = "http://contoso.com/api/messages";
+
+            Assert.NotNull(new WebexAdapter(options.Object, new Mock<IWebexClient>().Object));
+        }
+
+        [Fact]
         public async void ContinueConversationAsync_Should_Fail_With_Null_ConversationReference()
         {
             var options = new Mock<IWebexAdapterOptions>();
@@ -74,6 +85,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         [Fact]
         public async void ContinueConversationAsync_Should_Succeed()
         {
+            bool callbackInvoked = false;
             var options = new Mock<IWebexAdapterOptions>();
             options.SetupAllProperties();
             options.Object.AccessToken = "Test";
@@ -83,10 +95,12 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
             var conversationReference = new ConversationReference();
             Task BotsLogic(ITurnContext turnContext, CancellationToken cancellationToken)
             {
+                callbackInvoked = true;
                 return Task.CompletedTask;
             }
 
             await webexAdapter.ContinueConversationAsync(conversationReference, BotsLogic, default);
+            Assert.True(callbackInvoked);
         }
 
         [Fact]
