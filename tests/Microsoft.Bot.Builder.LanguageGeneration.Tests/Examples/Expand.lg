@@ -63,3 +63,16 @@ They are @{ShowAlarm(alarms[1])}
     - Train ticket booked
 - DEFAULT:
    - Shuttle ticket booked
+
+# T1
+- Hey
+- Hello
+
+# T2
+- {prebuilt.length(T1())}
+
+# T3
+- {count(T1())}
+
+# T4
+- {substring(T1(), 1, 2)}

@@ -11,6 +11,6 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         public Activity[] Activities { get; set; }
 
-        public StoredBotState NewState { get; set; }
+        public PersistedState NewState { get; set; }
     }
 }
