@@ -18,7 +18,7 @@ primaryExpression
     | NUMBER                                  #numericAtom
     | STRING                                  #stringAtom
     | IDENTIFIER                              #idAtom
-    | ('#'|'@'|'@@'|'$'|'%'|'^'|'~')          #shorthandAtom
+    | ('#'|'@'|'@@'|'$'|'%')          #shorthandAtom
     | primaryExpression IDENTIFIER            #shorthandAccessorExp
     | primaryExpression '.' IDENTIFIER        #memberAccessExp
     | primaryExpression '(' argsList? ')'     #funcInvokeExp

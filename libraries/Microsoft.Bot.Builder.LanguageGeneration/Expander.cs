@@ -14,7 +14,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 {
     public class Expander : LGFileParserBaseVisitor<List<string>>
     {
-        private readonly ExpressionEngine expressionEngine;
+        private readonly ExpressionEngine expanderExpressionEngine;
+        private readonly ExpressionEngine evaluatorExpressionEngine;
         private readonly Stack<EvaluationTarget> evaluationTargetStack = new Stack<EvaluationTarget>();
 
         public Expander(List<LGTemplate> templates, ExpressionEngine expressionEngine)
@@ -22,9 +23,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             Templates = templates;
             TemplateMap = templates.ToDictionary(x => x.Name);
 
-
             // generate a new customzied expression engine by injecting the template as functions
-            this.expressionEngine = new ExpressionEngine(CustomizedEvaluatorLookup(expressionEngine.EvaluatorLookup));
+            this.expanderExpressionEngine = new ExpressionEngine(CustomizedEvaluatorLookup(expressionEngine.EvaluatorLookup, true));
+            this.evaluatorExpressionEngine = new ExpressionEngine(CustomizedEvaluatorLookup(expressionEngine.EvaluatorLookup, false));
         }
 
         public List<LGTemplate> Templates { get; }
@@ -295,8 +296,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         private (object value, string error) EvalByExpressionEngine(string exp, object scope)
         {
-            var parse = this.expressionEngine.Parse(exp);
-            return parse.TryEvaluate(scope);
+            object value = null;
+            string error = null;
+            var expanderExpression = this.expanderExpressionEngine.Parse(exp);
+            var evaluatorExpression = this.evaluatorExpressionEngine.Parse(exp);
+            var parse = ReconstructExpression(expanderExpression, evaluatorExpression);
+            (value, error) = parse.TryEvaluate(scope);
+
+            return (value, error);
         }
 
         private List<string> StringListConcat(List<string> list1, List<string> list2)
@@ -314,29 +321,46 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         }
 
         // Genearte a new lookup function based on one lookup function
-        private EvaluatorLookup CustomizedEvaluatorLookup(EvaluatorLookup baseLookup)
+        private EvaluatorLookup CustomizedEvaluatorLookup(EvaluatorLookup baseLookup, bool isExpander)
         => (string name) =>
         {
-            var builtInPrefix = "builtin.";
+            var prebuiltPrefix = "prebuilt.";
 
-            if (name.StartsWith(builtInPrefix))
+            if (name.StartsWith(prebuiltPrefix))
             {
-                return baseLookup(name.Substring(builtInPrefix.Length));
+                return baseLookup(name.Substring(prebuiltPrefix.Length));
             }
 
             if (this.TemplateMap.ContainsKey(name))
             {
-                return new ExpressionEvaluator(name, BuiltInFunctions.Apply(this.TemplateEvaluator(name)), ReturnType.String, this.ValidTemplateReference);
+                if (isExpander)
+                {
+                    return new ExpressionEvaluator(name, BuiltInFunctions.Apply(this.TemplateExpander(name)), ReturnType.String, this.ValidTemplateReference);
+                }
+                else
+                {
+                    return new ExpressionEvaluator(name, BuiltInFunctions.Apply(this.TemplateEvaluator(name)), ReturnType.String, this.ValidTemplateReference);
+                }
             }
 
             return baseLookup(name);
         };
 
-        private Func<IReadOnlyList<object>, object> TemplateEvaluator(string templateName) =>
+        private Func<IReadOnlyList<object>, object> TemplateExpander(string templateName) =>
             (IReadOnlyList<object> args) =>
             {
                 var newScope = this.ConstructScope(templateName, args.ToList());
                 return this.EvaluateTemplate(templateName, newScope);
+            };
+
+        private Func<IReadOnlyList<object>, object> TemplateEvaluator(string templateName) =>
+            (IReadOnlyList<object> args) =>
+            {
+                var newScope = this.ConstructScope(templateName, args.ToList());
+
+                var value = this.EvaluateTemplate(templateName, newScope);
+                var rd = new Random();
+                return value[rd.Next(value.Count)];
             };
 
         private void ValidTemplateReference(Expression expression)
@@ -355,6 +379,28 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 throw new Exception($"arguments mismatch for template {templateName}, expect {expectedArgsCount} actual {actualArgsCount}");
             }
+        }
+
+        private Expression ReconstructExpression(Expression expanderExpression, Expression evaluatorExpression, bool foundPrebuiltFunction = false)
+        {
+            if (this.TemplateMap.ContainsKey(expanderExpression.Type))
+            {
+                if (foundPrebuiltFunction)
+                {
+                    return evaluatorExpression;
+                }
+            }
+            else
+            {
+                foundPrebuiltFunction = true;
+            }
+
+            for (var i = 0; i < expanderExpression.Children.Count(); i++)
+            {
+                expanderExpression.Children[i] = ReconstructExpression(expanderExpression.Children[i], evaluatorExpression.Children[i], foundPrebuiltFunction);
+            }
+
+            return expanderExpression;
         }
     }
 }
