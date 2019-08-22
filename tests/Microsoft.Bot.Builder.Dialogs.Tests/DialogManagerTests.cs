@@ -67,12 +67,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         }
 
         [TestMethod]
-        public void DialogManager_UserState_PersistedAcrossTurns()
-        {
-
-        }
-
-        [TestMethod]
         public async Task DialogManager_UserState_PersistedAcrossConversations()
         {
             var firstConversationId = Guid.NewGuid().ToString();
