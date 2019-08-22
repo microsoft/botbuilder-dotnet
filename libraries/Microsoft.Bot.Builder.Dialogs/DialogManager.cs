@@ -36,6 +36,112 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
+        public static async Task<PersistedState> LoadState(IStorage storage, PersistedStateKeys keys)
+        {
+            var data = await storage.ReadAsync(keys.ToArray()).ConfigureAwait(false);
+
+            return new PersistedState(keys, data);
+        }
+
+        public static async Task SaveState(IStorage storage, PersistedStateKeys keys, PersistedState newState, PersistedState oldState = null, string eTag = null)
+        {
+            // Check for state changes
+            var save = false;
+            Dictionary<string, object> changes = new Dictionary<string, object>();
+            if (oldState != null)
+            {
+                if (JsonConvert.SerializeObject(newState.UserState) != JsonConvert.SerializeObject(oldState.UserState))
+                {
+                    if (eTag != null)
+                    {
+                        newState.UserState[ETAG] = eTag;
+                    }
+
+                    changes[keys.UserState] = newState.UserState;
+                    save = true;
+                }
+
+                if (JsonConvert.SerializeObject(newState.ConversationState) != JsonConvert.SerializeObject(oldState.ConversationState))
+                {
+                    if (eTag != null)
+                    {
+                        newState.ConversationState[ETAG] = eTag;
+                    }
+
+                    changes[keys.ConversationState] = newState.ConversationState;
+                    save = true;
+                }
+            }
+            else
+            {
+                if (eTag != null)
+                {
+                    newState.UserState[ETAG] = eTag;
+                    newState.ConversationState[ETAG] = eTag;
+                }
+
+                changes[keys.UserState] = newState.UserState;
+                changes[keys.ConversationState] = newState.ConversationState;
+                save = true;
+            }
+
+            // Save changes
+            if (save)
+            {
+                await storage.WriteAsync(changes).ConfigureAwait(false);
+            }
+        }
+
+        public static PersistedStateKeys GetKeys(ITurnContext context)
+        {
+            // Get channel, user and conversation ids
+            var activity = context.Activity;
+            var reference = context.Activity.GetConversationReference();
+            if (reference.User == null)
+            {
+                reference.User = new ChannelAccount();
+            }
+
+            if (activity.Type == ActivityTypes.ConversationUpdate)
+            {
+                var users = (activity.MembersAdded ?? activity.MembersRemoved ?? new List<ChannelAccount>()).Where((u) => u.Id != activity.Recipient.Id).ToList();
+                var found = string.IsNullOrEmpty(reference.User?.Id) ? users.Where((u) => u.Id == reference.User.Id).ToList() : new List<ChannelAccount>();
+
+                if (found.Any())
+                {
+                    reference.User.Id = users[0].Id;
+                }
+            }
+
+            // Return keys
+            return GetKeysForReference(reference);
+        }
+
+        public static PersistedStateKeys GetKeysForReference(ConversationReference reference, string @namespace = null)
+        {
+            // Get channel, user, and conversation ID's
+            string channelId = reference.ChannelId;
+            string userId = reference.User?.Id;
+            string conversationId = reference.Conversation?.Id;
+
+            // Verify ID's found
+            if (string.IsNullOrEmpty(userId))
+            {
+                throw new Exception("DialogManager: unable to load/save the bots state. The users ID couldn't be found.");
+            }
+
+            if (string.IsNullOrEmpty(conversationId))
+            {
+                throw new Exception("DialogManager: unable to load / save the bots state.The conversations ID couldn't be found.");
+            }
+
+            // Return storage keys
+            return new PersistedStateKeys()
+            {
+                UserState = $"{channelId}/users/{userId}",
+                ConversationState = $"{channelId}/conversations/{conversationId}/{@namespace}"
+            };
+        }
         /// <summary>
         /// Gets or sets root dialog to use to start conversation.
         /// </summary>
@@ -63,13 +169,19 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// (Optional) number of milliseconds to expire the bots state after.
+        /// Gets or sets (optional) number of milliseconds to expire the bot's state after.
         /// </summary>
+        /// <value>
+        /// Number of milliseconds.
+        /// </value>
         public int? ExpireAfter { get; set; }
 
         /// <summary>
-        /// (Optional) storage provider that will be used to read and write the bots state..
+        /// Gets or sets (optional) storage provider that will be used to read and write the bot's state.
         /// </summary>
+        /// <value>
+        /// Storage provider.
+        /// </value>
         public IStorage Storage { get; set; }
 
         /// <summary>
@@ -192,113 +304,6 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 return new DialogManagerResult() { TurnResult = turnResult, NewState = newState };
             }
-        }
-
-        public static async Task<PersistedState> LoadState(IStorage storage, PersistedStateKeys keys)
-        {
-            var data = await storage.ReadAsync(keys.ToArray()).ConfigureAwait(false);
-
-            return new PersistedState(keys, data);
-        }
-
-        public static async Task SaveState(IStorage storage, PersistedStateKeys keys, PersistedState newState, PersistedState oldState = null, string eTag = null)
-        {
-            // Check for state changes
-            var save = false;
-            Dictionary<string, object> changes = new Dictionary<string, object>();
-            if (oldState != null)
-            {
-                if (JsonConvert.SerializeObject(newState.UserState) != JsonConvert.SerializeObject(oldState.UserState))
-                {
-                    if (eTag != null)
-                    {
-                        newState.UserState[ETAG] = eTag;
-                    }
-
-                    changes[keys.UserState] = newState.UserState;
-                    save = true;
-                }
-
-                if (JsonConvert.SerializeObject(newState.ConversationState) != JsonConvert.SerializeObject(oldState.ConversationState))
-                {
-                    if (eTag != null)
-                    {
-                        newState.ConversationState[ETAG] = eTag;
-                    }
-
-                    changes[keys.ConversationState] = newState.ConversationState;
-                    save = true;
-                }
-            }
-            else
-            {
-                if (eTag != null)
-                {
-                    newState.UserState[ETAG] = eTag;
-                    newState.ConversationState[ETAG] = eTag;
-                }
-
-                changes[keys.UserState] = newState.UserState;
-                changes[keys.ConversationState] = newState.ConversationState;
-                save = true;
-            }
-
-            // Save changes
-            if (save)
-            {
-                await storage.WriteAsync(changes).ConfigureAwait(false);
-            }
-        }
-
-        public static PersistedStateKeys GetKeys(ITurnContext context)
-        {
-            // Get channel, user and conversation ids
-            var activity = context.Activity;
-            var reference = context.Activity.GetConversationReference();
-            if (reference.User == null)
-            {
-                reference.User = new ChannelAccount();
-            }
-
-            if (activity.Type == ActivityTypes.ConversationUpdate)
-            {
-                var users = (activity.MembersAdded ?? activity.MembersRemoved ?? new List<ChannelAccount>()).Where((u) => u.Id != activity.Recipient.Id).ToList();
-                var found = string.IsNullOrEmpty(reference.User?.Id) ? users.Where((u) => u.Id == reference.User.Id).ToList() : new List<ChannelAccount>();
-
-                if (found.Any())
-                {
-                    reference.User.Id = users[0].Id;
-                }
-            }
-
-            // Return keys
-            return GetKeysForReference(reference);
-        }
-
-        public static PersistedStateKeys GetKeysForReference(ConversationReference reference, string @namespace = null)
-        {
-            // Get channel, user, and conversation ID's
-            string channelId = reference.ChannelId;
-            string userId = reference.User?.Id;
-            string conversationId = reference.Conversation?.Id;
-
-            // Verify ID's found
-            if (string.IsNullOrEmpty(userId))
-            {
-                throw new Exception("DialogManager: unable to load/save the bots state. The users ID couldn't be found.");
-            }
-
-            if (string.IsNullOrEmpty(conversationId))
-            {
-                throw new Exception("DialogManager: unable to load / save the bots state.The conversations ID couldn't be found.");
-            }
-
-            // Return storage keys
-            return new PersistedStateKeys()
-            {
-                UserState = $"{channelId}/users/{userId}",
-                ConversationState = $"{channelId}/conversations/{conversationId}/{@namespace}"
-            };
         }
     }
 }

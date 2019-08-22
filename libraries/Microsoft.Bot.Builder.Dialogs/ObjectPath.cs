@@ -235,9 +235,9 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <summary>
         /// Clone an object.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="obj"></param>
-        /// <returns></returns>
+        /// <typeparam name="T">Type to clone.</typeparam>
+        /// <param name="obj">The object.</param>
+        /// <returns>The object as Json.</returns>
         public static T Clone<T>(T obj)
         {
             return JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(obj, ObjectPath.cloneSettings), ObjectPath.cloneSettings);

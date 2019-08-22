@@ -37,6 +37,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
         [JsonProperty("type")]
         public string Type { get; set; }
 
+        public override string GetIdentity()
+        {
+            return $"{this.GetType().Name}({this.Type})[{this.Constraint}]";
+        }
+
         protected override Expression BuildExpression(IExpressionParser factory)
         {
             // add constraints for activity type
@@ -56,11 +61,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
                     Options = dialogOptions
                 }).ToList()
             };
-        }
-
-        public override string GetIdentity()
-        {
-            return $"{this.GetType().Name}({this.Type})[{this.Constraint}]";
         }
     }
 }
