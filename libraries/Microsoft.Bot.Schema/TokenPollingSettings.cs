@@ -11,7 +11,7 @@ namespace Microsoft.Bot.Schema
         /// Gets or sets polling timeout time in milliseconds. This is equivalent to login flow timeout.
         /// </summary>
         [JsonProperty("timeout")]
-        public int Timeout { set; get; }
+        public int Timeout { get; set; }
 
         /// <summary>
         /// Gets or sets time Interval in milliseconds between token polling requests.
