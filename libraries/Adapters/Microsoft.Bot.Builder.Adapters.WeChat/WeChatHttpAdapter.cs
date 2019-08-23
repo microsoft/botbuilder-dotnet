@@ -185,7 +185,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 throw new ArgumentNullException(nameof(callback));
             }
 
-            _logger.LogInformation($"Sending proactive message.  botAppId: {botAppId}");
+            _logger.LogInformation($"Sending proactive message. botAppId: {botAppId}");
 
             await ProcessActivityAsync(reference.GetContinuationActivity(), callback, cancellationToken).ConfigureAwait(false);
         }
@@ -258,7 +258,6 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                                         passiveResponse,
                                         ct).ConfigureAwait(false);
                     });
-                    await Task.Run(() => ProcessWeChatRequest(wechatRequest, bot.OnTurnAsync, passiveResponse, cancellationToken), cancellationToken).ConfigureAwait(false);
                 }
                 else
                 {
@@ -498,7 +497,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                         case ResponseMessageTypes.Unknown:
                         case ResponseMessageTypes.NoResponse:
                         default:
-                            _logger.LogInformation($"Unsupported message type: {response.MsgType}");
+                            await _wechatClient.SendMessageToUser(response).ConfigureAwait(false);
                             break;
                     }
                 }

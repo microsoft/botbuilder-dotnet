@@ -34,10 +34,5 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema
         /// News type.
         /// </summary>
         public const string News = "news";
-
-        /// <summary>
-        /// Image type 'gif'.
-        /// </summary>
-        public const string Gif = "image/gif";
     }
 }

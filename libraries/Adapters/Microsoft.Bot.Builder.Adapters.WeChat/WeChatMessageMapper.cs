@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using AdaptiveCards;
 using AdaptiveCards.Rendering.Html;
@@ -33,12 +32,6 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
     /// </remarks>
     public class WeChatMessageMapper
     {
-        /// <summary>
-        /// Max length for a single WeChat response message.
-        /// Must less then 2048.
-        /// </summary>
-        private const int MaxSingleMessageLength = 2047;
-
         /// <summary>
         /// Key of content source url.
         /// </summary>
@@ -161,7 +154,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
 
                 if (activity is IMessageActivity messageActivity)
                 {
-                    responseMessageList.AddRange(GetChunkedMessages(messageActivity, messageActivity.Text));
+                    responseMessageList.AddRange(GetFixedMessages(messageActivity, messageActivity.Text));
 
                     // Chunk message into pieces as necessary
                     if (messageActivity.SuggestedActions?.Actions != null)
@@ -171,69 +164,65 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
 
                     foreach (var attachment in messageActivity.Attachments ?? new List<Attachment>())
                     {
+                        IList<IResponseMessageBase> attachmentResponses = new List<IResponseMessageBase>();
                         if (attachment.ContentType == AdaptiveCard.ContentType ||
                             attachment.ContentType == "application/adaptive-card" ||
                             attachment.ContentType == "application/vnd.microsoft.card.adaptive")
                         {
-                            var adaptiveCard = attachment.ContentAs<AdaptiveCard>();
-                            responseMessageList.AddRange(await ProcessAdaptiveCardAsync(messageActivity, adaptiveCard, attachment.Name).ConfigureAwait(false));
+                            attachmentResponses = await ProcessAdaptiveCardAsync(messageActivity, attachment).ConfigureAwait(false);
                         }
                         else if (attachment.ContentType == AudioCard.ContentType)
                         {
-                            var audioCard = attachment.ContentAs<AudioCard>();
-                            responseMessageList.AddRange(await ProcessAudioCardAsync(messageActivity, audioCard).ConfigureAwait(false));
+                            attachmentResponses = await ProcessAudioCardAsync(messageActivity, attachment).ConfigureAwait(false);
                         }
                         else if (attachment.ContentType == AnimationCard.ContentType)
                         {
-                            var animationCard = attachment.ContentAs<AnimationCard>();
-                            responseMessageList.AddRange(await ProcessAnimationCardAsync(messageActivity, animationCard).ConfigureAwait(false));
+                            attachmentResponses = await ProcessAnimationCardAsync(messageActivity, attachment).ConfigureAwait(false);
                         }
                         else if (attachment.ContentType == HeroCard.ContentType)
                         {
-                            var heroCard = attachment.ContentAs<HeroCard>();
-                            responseMessageList.AddRange(await ProcessHeroCardAsync(messageActivity, heroCard).ConfigureAwait(false));
+                            attachmentResponses = await ProcessHeroCardAsync(messageActivity, attachment).ConfigureAwait(false);
                         }
                         else if (attachment.ContentType == ThumbnailCard.ContentType)
                         {
-                            var thumbnailCard = attachment.ContentAs<ThumbnailCard>();
-                            responseMessageList.AddRange(ProcessThumbnailCard(messageActivity, thumbnailCard));
+                            attachmentResponses = ProcessThumbnailCard(messageActivity, attachment);
                         }
                         else if (attachment.ContentType == ReceiptCard.ContentType)
                         {
-                            var receiptCard = attachment.ContentAs<ReceiptCard>();
-                            responseMessageList.AddRange(ProcessReceiptCard(messageActivity, receiptCard));
+                            attachmentResponses = ProcessReceiptCard(messageActivity, attachment);
                         }
                         else if (attachment.ContentType == SigninCard.ContentType)
                         {
-                            var signinCard = attachment.ContentAs<SigninCard>();
-                            responseMessageList.AddRange(ProcessSigninCard(messageActivity, signinCard));
+                            attachmentResponses = ProcessSigninCard(messageActivity, attachment);
                         }
                         else if (attachment.ContentType == OAuthCard.ContentType)
                         {
-                            var oauthCard = attachment.ContentAs<OAuthCard>();
-                            responseMessageList.AddRange(ProcessOAuthCard(messageActivity, oauthCard));
+                            attachmentResponses = ProcessOAuthCard(messageActivity, attachment);
                         }
                         else if (attachment.ContentType == VideoCard.ContentType)
                         {
-                            var videoCard = attachment.ContentAs<VideoCard>();
-                            responseMessageList.AddRange(await ProcessVideoCardAsync(messageActivity, videoCard).ConfigureAwait(false));
+                            attachmentResponses = await ProcessVideoCardAsync(messageActivity, attachment).ConfigureAwait(false);
                         }
                         else if (attachment != null &&
                                     (!string.IsNullOrEmpty(attachment.ContentUrl) ||
                                      attachment.Content != null ||
                                      !string.IsNullOrEmpty(attachment.ThumbnailUrl)))
                         {
-                            responseMessageList.AddRange(await ProcessAttachmentAsync(messageActivity, attachment).ConfigureAwait(false));
+                            attachmentResponses = await ProcessAttachmentAsync(messageActivity, attachment).ConfigureAwait(false);
                         }
                         else
                         {
-                            _logger.LogInformation($"Unsupported content type {attachment.ContentType}");
+                            // Log unsupported attachment.
+                            _logger.LogInformation($"Unsupported attachment type: {attachment.ContentType}");
                         }
+
+                        responseMessageList.AddRange(attachmentResponses);
                     }
                 }
                 else if (activity is IEventActivity eventActivity)
                 {
-                    // WeChat won't accept event type, just bypass.
+                    // WeChat won't accept event type, just log and bypass.
+                    _logger.LogInformation("Receive an event activity which WeChat is not supported.", eventActivity);
                 }
 
                 return responseMessageList;
@@ -243,46 +232,6 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 _logger.LogError(e, "Parse to WeChat message failed.");
                 throw;
             }
-        }
-
-        /// <summary>
-        /// Process all types of general attachment.
-        /// </summary>
-        /// <param name="activity">The message activity.</param>
-        /// <param name="attachment">The attachment object need to be processed.</param>
-        /// <returns>List of WeChat response message.</returns>
-        public async Task<IList<IResponseMessageBase>> ProcessAttachmentAsync(IMessageActivity activity, Attachment attachment)
-        {
-            var responseList = new List<IResponseMessageBase>();
-
-            // Create media response directly if mediaId provide by user.
-            attachment.Properties.TryGetValue("MediaId", StringComparison.InvariantCultureIgnoreCase, out var mediaId);
-            if (mediaId != null)
-            {
-                responseList.Add(CreateMediaResponse(activity, mediaId.ToString(), attachment.ContentType));
-                return responseList;
-            }
-
-            if (!string.IsNullOrEmpty(attachment.ThumbnailUrl))
-            {
-                responseList.Add(await MediaContentToWeChatResponse(activity, attachment.Name, attachment.ThumbnailUrl, attachment.ContentType).ConfigureAwait(false));
-            }
-
-            if (!string.IsNullOrEmpty(attachment.ContentUrl))
-            {
-                responseList.Add(await MediaContentToWeChatResponse(activity, attachment.Name, attachment.ContentUrl, attachment.ContentType).ConfigureAwait(false));
-            }
-
-            if (AttachmentHelper.IsUrl(attachment.Content))
-            {
-                responseList.Add(await MediaContentToWeChatResponse(activity, attachment.Name, attachment.ContentUrl, attachment.ContentType).ConfigureAwait(false));
-            }
-            else if (attachment.Content != null)
-            {
-                responseList.AddRange(GetChunkedMessages(activity, attachment.Content as string));
-            }
-
-            return responseList;
         }
 
         /// <summary>
@@ -297,48 +246,20 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
             ResponseMessage response = null;
             if (type.Contains(MediaTypes.Image))
             {
-                response = new ImageResponse(mediaId);
+                response = new ImageResponse(activity.From.Id, activity.Recipient.Id, mediaId);
             }
 
             if (type.Contains(MediaTypes.Video))
             {
-                response = new VideoResponse(mediaId);
+                response = new VideoResponse(activity.From.Id, activity.Recipient.Id, new Video(mediaId));
             }
 
             if (type.Contains(MediaTypes.Audio))
             {
-                response = new VoiceResponse(mediaId);
+                response = new VoiceResponse(activity.From.Id, activity.Recipient.Id, mediaId);
             }
 
-            SetCommenField(response, activity);
             return response;
-        }
-
-        /// <summary>
-        /// Convert Text To WeChat Message.
-        /// </summary>
-        /// <param name="activity">Message activity from bot.</param>
-        /// <returns>Response message to WeChat.</returns>
-        private static TextResponse CreateTextResponseFromMessageActivity(IMessageActivity activity)
-        {
-            var response = new TextResponse
-            {
-                Content = activity.Text,
-            };
-            SetCommenField(response, activity);
-            return response;
-        }
-
-        /// <summary>
-        /// Set commen field in response message.
-        /// </summary>
-        /// <param name="responseMessage">Response message need to be set.</param>
-        /// <param name="activity">Activity instance from bot.</param>
-        private static void SetCommenField(ResponseMessage responseMessage, IActivity activity)
-        {
-            responseMessage.FromUserName = activity.From.Id;
-            responseMessage.ToUserName = activity.Recipient.Id;
-            responseMessage.CreateTime = activity.Timestamp.HasValue ? activity.Timestamp.Value.ToUnixTimeSeconds() : DateTimeOffset.UtcNow.ToUnixTimeSeconds();
         }
 
         /// <summary>
@@ -389,11 +310,12 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// <param name="activity">Message activity from bot.</param>
         /// <param name="text">Text content need to be chunked.</param>
         /// <returns>Response message list.</returns>
-        private static IList<IResponseMessageBase> GetChunkedMessages(IMessageActivity activity, string text)
+        private static IList<IResponseMessageBase> GetFixedMessages(IMessageActivity activity, string text)
         {
+            var responses = new List<IResponseMessageBase>();
             if (string.IsNullOrEmpty(text))
             {
-                return new List<IResponseMessageBase>();
+                return responses;
             }
 
             if (activity.TextFormat == TextFormatTypes.Markdown)
@@ -412,49 +334,8 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 text = marked.Parse(text).Trim();
             }
 
-            // If message doesn't need to be chunked just return it
-            if (text.Length <= MaxSingleMessageLength)
-            {
-                var textResponse = CreateTextResponseFromMessageActivity(activity);
-                textResponse.Content = text;
-                return new List<IResponseMessageBase>
-                {
-                    textResponse,
-                };
-            }
-
-            // Split text into chunks
-            var messages = new List<IResponseMessageBase>();
-            var chunkLength = MaxSingleMessageLength - 20;  // leave 20 chars for footer
-            var chunkNum = 0;
-            var chunkCount = text.Length / chunkLength;
-
-            if (text.Length % chunkLength > 0)
-            {
-                chunkCount++;
-            }
-
-            for (var i = 0; i < text.Length; i += chunkLength)
-            {
-                if (chunkLength + i > text.Length)
-                {
-                    chunkLength = text.Length - i;
-                }
-
-                var chunk = text.Substring(i, chunkLength);
-
-                if (chunkCount > 1)
-                {
-                    chunk += $"{NewLine}({++chunkNum} of {chunkCount})";
-                }
-
-                // Create chunked message and add to list of messages
-                var textResponse = CreateTextResponseFromMessageActivity(activity);
-                textResponse.Content = chunk;
-                messages.Add(textResponse);
-            }
-
-            return messages;
+            responses.Add(new TextResponse(activity.From.Id, activity.Recipient.Id, text));
+            return responses;
         }
 
         /// <summary>
@@ -498,45 +379,6 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         }
 
         /// <summary>
-        /// Convert buttons to text string for channels that can't display button.
-        /// </summary>
-        /// <param name="button">The Card Action.</param>
-        /// <param name="index">Index of current action in action list.</param>
-        /// <returns>Card action as string.</returns>
-        private static string ButtonToText(CardAction button, int index = -1)
-        {
-            switch (button.Type)
-            {
-                case ActionTypes.OpenUrl:
-                case ActionTypes.PlayAudio:
-                case ActionTypes.PlayVideo:
-                case ActionTypes.ShowImage:
-                case ActionTypes.Signin:
-                case ActionTypes.DownloadFile:
-                    if (index != -1)
-                    {
-                        return $"{index}. <a href='{button.Value}'>{button.Title}</a>";
-                    }
-
-                    return $"<a href='{button.Value}'>{button.Title}</a>";
-                case ActionTypes.MessageBack:
-                    if (index != -1)
-                    {
-                        return $"{index}. {button.Title ?? button.Text}";
-                    }
-
-                    return $"{button.Title ?? button.Text}";
-                default:
-                    if (index != -1)
-                    {
-                        return $"{index}. {button.Title ?? button.Value}";
-                    }
-
-                    return $"{button.Title ?? button.Value}";
-            }
-        }
-
-        /// <summary>
         /// Convert all buttons in a message to text string for channels that can't display button.
         /// </summary>
         /// <param name="actions">CardAction list.</param>
@@ -545,25 +387,25 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         {
             var messages = new List<IResponseMessageBase>();
 
-            // Convert any options to text
             actions = actions ?? new List<CardAction>();
             var menuItems = new List<MenuItem>();
             var text = string.Empty;
             foreach (var action in actions)
             {
-                var actionContent = action.Title ?? action.DisplayText ?? action.Text;
-                if (!AttachmentHelper.IsUrl(action.Value))
+                // Convert action to a tag if its a url other wise convert it to message menu.
+                var actionContent = action.DisplayText ?? action.Title ?? action.Text;
+                if (AttachmentHelper.IsUrl(action.Value))
                 {
-                    var menuItem = new MenuItem
-                    {
-                        Id = actionContent,
-                        Content = action.Value.ToString(),
-                    };
-                    menuItems.Add(menuItem);
+                    text = AddLine(text, $"<a href=\"{action.Value}\">{actionContent}</a>");
                 }
                 else
                 {
-                    text += $"<a href=\"{action.Value}\">{actionContent}</a>";
+                    var menuItem = new MenuItem
+                    {
+                        Id = action.Value == null ? actionContent : action.Value.ToString(),
+                        Content = actionContent,
+                    };
+                    menuItems.Add(menuItem);
                 }
             }
 
@@ -571,6 +413,8 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
             {
                 var menuResponse = new MessageMenuResponse()
                 {
+                    FromUserName = activity.From.Id,
+                    ToUserName = activity.Recipient.Id,
                     MessageMenu = new MessageMenu()
                     {
                         HeaderContent = string.Empty,
@@ -578,14 +422,12 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                         TailContent = string.Empty,
                     },
                 };
-                SetCommenField(menuResponse, activity);
                 messages.Add(menuResponse);
             }
 
             if (!string.IsNullOrEmpty(text))
             {
-                var textResponse = CreateTextResponseFromMessageActivity(activity);
-                textResponse.Content = text;
+                var textResponse = new TextResponse(activity.From.Id, activity.Recipient.Id, text);
                 messages.Add(textResponse);
             }
 
@@ -596,11 +438,12 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// Process thumbnail card and return the WeChat response message.
         /// </summary>
         /// <param name="activity">Message activity from bot.</param>
-        /// <param name="thumbnailCard">Thumbnail card instance need to be converted.</param>
-        /// <returns>WeChat response message.</returns>
-        private static IList<IResponseMessageBase> ProcessThumbnailCard(IMessageActivity activity, ThumbnailCard thumbnailCard)
+        /// <param name="attachment">An <see cref="Attachment"/> contains animation card content.</param>
+        /// <returns>List of WeChat response message.</returns>
+        private static IList<IResponseMessageBase> ProcessThumbnailCard(IMessageActivity activity, Attachment attachment)
         {
             var messages = new List<IResponseMessageBase>();
+            var thumbnailCard = attachment.ContentAs<ThumbnailCard>();
 
             // Add text
             var body = thumbnailCard.Subtitle;
@@ -612,10 +455,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 Url = thumbnailCard.Tap?.Value.ToString(),
                 PicUrl = thumbnailCard.Images.FirstOrDefault().Url,
             };
-            var newsResponse = new NewsResponse()
-            {
-                Articles = new List<Article>() { article },
-            };
+            var newsResponse = new NewsResponse(activity.From.Id, activity.Recipient.Id, new List<Article>() { article });
             messages.Add(newsResponse);
             messages.AddRange(ProcessCardActions(activity, thumbnailCard.Buttons));
 
@@ -625,10 +465,13 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// <summary>
         /// Downgrade ReceiptCard into text replies for low-fi channels.
         /// </summary>
-        /// <returns>List of response message to WeChat.</returns>
-        private static IList<IResponseMessageBase> ProcessReceiptCard(IMessageActivity activity, ReceiptCard receiptCard)
+        /// <param name="activity">Message activity from bot.</param>
+        /// <param name="attachment">An <see cref="Attachment"/> contains animation card content.</param>
+        /// <returns>List of WeChat response message.</returns>
+        private static IList<IResponseMessageBase> ProcessReceiptCard(IMessageActivity activity, Attachment attachment)
         {
             var messages = new List<IResponseMessageBase>();
+            var receiptCard = attachment.ContentAs<ReceiptCard>();
 
             // Build text portion of receipt
             var body = receiptCard.Title;
@@ -643,14 +486,14 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 body = AddText(item.Title, item.Price);
                 body = AddLine(body, item.Subtitle);
                 body = AddLine(body, item.Text);
-                messages.AddRange(GetChunkedMessages(activity, body));
+                messages.AddRange(GetFixedMessages(activity, body));
             }
 
             // Add totals
             body = $"Tax:  {receiptCard.Tax}";
             body = AddLine(body, $"Total:  {receiptCard.Total}");
             messages.AddRange(ProcessCardActions(activity, receiptCard.Buttons));
-            messages.AddRange(GetChunkedMessages(activity, body));
+            messages.AddRange(GetFixedMessages(activity, body));
 
             return messages;
         }
@@ -658,17 +501,15 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// <summary>
         /// Downgrade SigninCard into text replies for low-fi channels.
         /// </summary>
-        private static IList<IResponseMessageBase> ProcessSigninCard(IMessageActivity activity, SigninCard signinCard)
+        /// <param name="activity">Message activity from bot.</param>
+        /// <param name="attachment">An <see cref="Attachment"/> contains animation card content.</param>
+        /// <returns>List of WeChat response message.</returns>
+        private static IList<IResponseMessageBase> ProcessSigninCard(IMessageActivity activity, Attachment attachment)
         {
             var messages = new List<IResponseMessageBase>();
-
-            if (signinCard.Buttons != null)
-            {
-                var buttonText = ButtonToText(signinCard.Buttons.First());
-                var messageContent = AddLine(signinCard.Text, buttonText);
-
-                messages.AddRange(GetChunkedMessages(activity, messageContent));
-            }
+            var signinCard = attachment.ContentAs<SigninCard>();
+            messages.AddRange(GetFixedMessages(activity, signinCard.Text));
+            messages.AddRange(ProcessCardActions(activity, signinCard.Buttons));
 
             return messages;
         }
@@ -676,12 +517,16 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// <summary>
         /// Downgrade OAuthCard into text replies for low-fi channels.
         /// </summary>
-        private static List<IResponseMessageBase> ProcessOAuthCard(IMessageActivity activity, OAuthCard oauthCard)
+        /// <param name="activity">Message activity from bot.</param>
+        /// <param name="attachment">An <see cref="Attachment"/> contains animation card content.</param>
+        /// <returns>List of WeChat response message.</returns>
+        private static List<IResponseMessageBase> ProcessOAuthCard(IMessageActivity activity, Attachment attachment)
         {
             var messages = new List<IResponseMessageBase>();
+            var oauthCard = attachment.ContentAs<OAuthCard>();
 
             // Add text
-            messages.AddRange(GetChunkedMessages(activity, oauthCard.Text));
+            messages.AddRange(GetFixedMessages(activity, oauthCard.Text));
             messages.AddRange(ProcessCardActions(activity, oauthCard.Buttons));
             return messages;
         }
@@ -710,6 +555,46 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
             }
 
             return fixedType;
+        }
+
+        /// <summary>
+        /// Process all types of general attachment.
+        /// </summary>
+        /// <param name="activity">The message activity.</param>
+        /// <param name="attachment">The attachment object need to be processed.</param>
+        /// <returns>List of WeChat response message.</returns>
+        private async Task<IList<IResponseMessageBase>> ProcessAttachmentAsync(IMessageActivity activity, Attachment attachment)
+        {
+            var responseList = new List<IResponseMessageBase>();
+
+            // Create media response directly if mediaId provide by user.
+            attachment.Properties.TryGetValue("MediaId", StringComparison.InvariantCultureIgnoreCase, out var mediaId);
+            if (mediaId != null)
+            {
+                responseList.Add(CreateMediaResponse(activity, mediaId.ToString(), attachment.ContentType));
+                return responseList;
+            }
+
+            if (!string.IsNullOrEmpty(attachment.ThumbnailUrl))
+            {
+                responseList.Add(await MediaContentToWeChatResponse(activity, attachment.Name, attachment.ThumbnailUrl, attachment.ContentType).ConfigureAwait(false));
+            }
+
+            if (!string.IsNullOrEmpty(attachment.ContentUrl))
+            {
+                responseList.Add(await MediaContentToWeChatResponse(activity, attachment.Name, attachment.ContentUrl, attachment.ContentType).ConfigureAwait(false));
+            }
+
+            if (AttachmentHelper.IsUrl(attachment.Content))
+            {
+                responseList.Add(await MediaContentToWeChatResponse(activity, attachment.Name, attachment.ContentUrl, attachment.ContentType).ConfigureAwait(false));
+            }
+            else if (attachment.Content != null)
+            {
+                responseList.AddRange(GetFixedMessages(activity, attachment.Content.ToString()));
+            }
+
+            return responseList;
         }
 
         /// <summary>
@@ -854,17 +739,18 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// Process animation card and convert it to WeChat response messages.
         /// </summary>
         /// <param name="activity">Message activity from bot.</param>
-        /// <param name="animationCard">Animation card instance need to be converted.</param>
+        /// <param name="attachment">An <see cref="Attachment"/> contains animation card content.</param>
         /// <returns>List of WeChat response message.</returns>
-        private async Task<IList<IResponseMessageBase>> ProcessAnimationCardAsync(IMessageActivity activity, AnimationCard animationCard)
+        private async Task<IList<IResponseMessageBase>> ProcessAnimationCardAsync(IMessageActivity activity, Attachment attachment)
         {
             var messages = new List<IResponseMessageBase>();
+            var animationCard = attachment.ContentAs<AnimationCard>();
 
             // Add text body
             var body = animationCard.Title;
             body = AddLine(body, animationCard.Subtitle);
             body = AddLine(body, animationCard.Text);
-            messages.AddRange(GetChunkedMessages(activity, body));
+            messages.AddRange(GetFixedMessages(activity, body));
 
             // Add image
             if (!string.IsNullOrEmpty(animationCard.Image?.Url))
@@ -875,7 +761,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
             // Add mediaUrls
             foreach (var mediaUrl in animationCard.Media ?? new List<MediaUrl>())
             {
-                messages.Add(await MediaContentToWeChatResponse(activity, mediaUrl.Profile, mediaUrl.Url, MediaTypes.Gif).ConfigureAwait(false));
+                messages.Add(await MediaContentToWeChatResponse(activity, mediaUrl.Profile, mediaUrl.Url, MediaTypes.Image).ConfigureAwait(false));
             }
 
             // Add buttons
@@ -888,20 +774,19 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// Process adaptive card and convert it into WeChat response messages.
         /// </summary>
         /// <param name="activity">Message activity from bot.</param>
-        /// <param name="adaptiveCard">Adaptive card instance need to be converted.</param>
-        /// <param name="name">Name of the adaptive card attachment.</param>
+        /// <param name="attachment">An <see cref="Attachment"/> contains adaptive card content.</param>
         /// <returns>List of WeChat response message.</returns>
-        private async Task<IList<IResponseMessageBase>> ProcessAdaptiveCardAsync(IMessageActivity activity, AdaptiveCard adaptiveCard, string name)
+        private async Task<IList<IResponseMessageBase>> ProcessAdaptiveCardAsync(IMessageActivity activity, Attachment attachment)
         {
             var messages = new List<IResponseMessageBase>();
-
+            var adaptiveCard = attachment.ContentAs<AdaptiveCard>();
             try
             {
-                var news = await CreateNewsFromAdaptiveCard(activity, adaptiveCard, name).ConfigureAwait(false);
+                var news = await CreateNewsFromAdaptiveCard(activity, adaptiveCard, attachment.Name).ConfigureAwait(false);
 
                 // TODO: Upload news image must be persistent media.
                 var uploadResult = await _wechatClient.UploadNewsAsync(new News[] { news }, false).ConfigureAwait(false);
-                var mpnews = new MPNewsResponse(uploadResult.MediaId);
+                var mpnews = new MPNewsResponse(activity.From.Id, activity.Recipient.Id, uploadResult.MediaId);
                 messages.Add(mpnews);
             }
 #pragma warning disable CA1031 // Do not catch general exception types, use fallback text instead.
@@ -909,7 +794,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
 #pragma warning disable CA1031 // Do not catch general exception types, use fallback text instead.
             {
                 _logger.LogInformation("Convert adaptive card failed.");
-                messages.AddRange(GetChunkedMessages(activity, adaptiveCard.FallbackText));
+                messages.AddRange(GetFixedMessages(activity, adaptiveCard.FallbackText));
             }
 
             return messages;
@@ -919,14 +804,15 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// Convert hero card to WeChat response message.
         /// </summary>
         /// <param name="activity">Message activity from bot.</param>
-        /// <param name="heroCard">Hero card instance need to be converted.</param>
+        /// <param name="attachment">An <see cref="Attachment"/> contains hero card content.</param>
         /// <returns>List of WeChat response message.</returns>
-        private async Task<IList<IResponseMessageBase>> ProcessHeroCardAsync(IMessageActivity activity, HeroCard heroCard)
+        private async Task<IList<IResponseMessageBase>> ProcessHeroCardAsync(IMessageActivity activity, Attachment attachment)
         {
             var messages = new List<IResponseMessageBase>();
+            var heroCard = attachment.ContentAs<HeroCard>();
             var news = await CreateNewsFromHeroCard(activity, heroCard).ConfigureAwait(false);
             var uploadResult = await _wechatClient.UploadNewsAsync(new News[] { news }, _uploadTemporaryMedia).ConfigureAwait(false);
-            var mpnews = new MPNewsResponse(uploadResult.MediaId);
+            var mpnews = new MPNewsResponse(activity.From.Id, activity.Recipient.Id, uploadResult.MediaId);
             messages.Add(mpnews);
             messages.AddRange(ProcessCardActions(activity, heroCard.Buttons));
 
@@ -937,11 +823,12 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// Convert video card to WeChat response message.
         /// </summary>
         /// <param name="activity">Message activity from bot.</param>
-        /// <param name="videoCard">Video card instance need to be converted.</param>
+        /// <param name="attachment">An <see cref="Attachment"/> contains video card content.</param>
         /// <returns>List of WeChat response message.</returns>
-        private async Task<IList<IResponseMessageBase>> ProcessVideoCardAsync(IMessageActivity activity, VideoCard videoCard)
+        private async Task<IList<IResponseMessageBase>> ProcessVideoCardAsync(IMessageActivity activity, Attachment attachment)
         {
             var messages = new List<IResponseMessageBase>();
+            var videoCard = attachment.ContentAs<VideoCard>();
 
             var body = videoCard.Subtitle;
             body = AddLine(body, videoCard.Text);
@@ -958,13 +845,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 }
             }
 
-            messages.Add(new VideoResponse
-            {
-                CreateTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
-                FromUserName = activity.From.Id,
-                ToUserName = activity.Recipient.Id,
-                Video = video,
-            });
+            messages.Add(new VideoResponse(activity.From.Id, activity.Recipient.Id, video));
             messages.AddRange(ProcessCardActions(activity, videoCard.Buttons));
 
             return messages;
@@ -974,10 +855,13 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// Convert audio card as music resposne.
         /// Thumbnail image size limitation is not clear.
         /// </summary>
+        /// <param name="activity">Message activity from bot.</param>
+        /// <param name="attachment">An <see cref="Attachment"/> contains audio card content.</param>
         /// <returns>List of WeChat response message.</returns>
-        private async Task<IList<IResponseMessageBase>> ProcessAudioCardAsync(IMessageActivity activity, AudioCard audioCard)
+        private async Task<IList<IResponseMessageBase>> ProcessAudioCardAsync(IMessageActivity activity, Attachment attachment)
         {
             var messages = new List<IResponseMessageBase>();
+            var audioCard = attachment.ContentAs<AudioCard>();
 
             var body = audioCard.Subtitle;
             body = AddLine(body, audioCard.Text);
@@ -999,13 +883,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 }
             }
 
-            var musicResponse = new MusicResponse
-            {
-                CreateTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
-                FromUserName = activity.From.Id,
-                ToUserName = activity.Recipient.Id,
-                Music = music,
-            };
+            var musicResponse = new MusicResponse(activity.From.Id, activity.Recipient.Id, music);
             messages.Add(musicResponse);
             messages.AddRange(ProcessCardActions(activity, audioCard.Buttons));
 

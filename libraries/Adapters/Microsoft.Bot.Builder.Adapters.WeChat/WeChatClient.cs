@@ -10,6 +10,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema;
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema.JsonResults;
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Responses;
@@ -155,7 +156,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
             var url = GetUploadMediaEndPoint(accessToken, attachmentData.Type, isTemporary);
             if (cachedResult == null || cachedResult.Expired())
             {
-                var uploadResult = await UploadMediaAsync(attachmentData, url, attachmentData.Type, mediaHash, isTemporary, timeout).ConfigureAwait(false);
+                var uploadResult = await UploadMediaAsync(attachmentData, url, mediaHash, isTemporary, timeout).ConfigureAwait(false);
                 await CheckAndUpdateAttachmentStorage(mediaHash, uploadResult).ConfigureAwait(false);
                 return uploadResult;
             }
@@ -177,7 +178,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
             {
                 var accessToken = await GetAccessTokenAsync().ConfigureAwait(false);
                 var url = GetAcquireMediaUrlEndPoint(accessToken);
-                var uploadResult = await UploadMediaAsync(attachmentData, url, attachmentData.Type, mediaHash, false, timeout).ConfigureAwait(false);
+                var uploadResult = await UploadMediaAsync(attachmentData, url, mediaHash, false, timeout).ConfigureAwait(false);
                 await CheckAndUpdateAttachmentStorage(mediaHash, uploadResult).ConfigureAwait(false);
                 return uploadResult;
             }
@@ -676,32 +677,32 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// Get media's extension.
         /// </summary>
         /// <param name="link">The original link of the media.</param>
-        /// <param name="mimeType">The media's mimeType.</param>
         /// <param name="type">The media's fallback type.</param>
         /// <returns>Media file extension.</returns>
-        private static string GetMediaExtension(string link, string mimeType, string type)
+        private static string GetMediaExtension(string link, string type)
         {
-            var ext = MimeTypesMap.GetExtension(mimeType);
+            var ext = MimeTypesMap.GetExtension(type);
             if (string.IsNullOrEmpty(ext))
             {
-                mimeType = MimeTypesMap.GetMimeType(link);
-                ext = MimeTypesMap.GetExtension(mimeType);
+                type = MimeTypesMap.GetMimeType(link);
+                ext = MimeTypesMap.GetExtension(type);
             }
 
             if (string.IsNullOrEmpty(ext))
             {
-                switch (type)
+                if (type.Contains(MediaTypes.Image) || type.Contains(MediaTypes.Thumb))
                 {
-                    case MediaTypes.Image:
-                    case MediaTypes.Thumb:
-                        ext = "jpg";
-                        break;
-                    case MediaTypes.Video:
-                        ext = "mp4";
-                        break;
-                    case MediaTypes.Voice:
-                        ext = "mp3";
-                        break;
+                    return ".jpg";
+                }
+
+                if (type.Contains(MediaTypes.Video))
+                {
+                    return ".mp4";
+                }
+
+                if (type.Contains(MediaTypes.Voice))
+                {
+                    return ".mp3";
                 }
             }
 
@@ -746,12 +747,11 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// <typeparam name="T">The upload result type.</typeparam>
         /// <param name="attachmentData">The attachment data need to be uploaded.</param>
         /// <param name="url">The endpoint when upload the data.</param>
-        /// <param name="type">The upload media type.</param>
         /// <param name="mediaHash">The media content hash result.</param>
         /// <param name="isTemporaryMedia">If upload media as a temporary media.</param>
         /// <param name="timeout">Upload media timeout.</param>
         /// <returns>Uploaded result from WeChat.</returns>
-        private async Task<UploadMediaResult> UploadMediaAsync(AttachmentData attachmentData, string url, string type, string mediaHash, bool isTemporaryMedia, int timeout = 30000)
+        private async Task<UploadMediaResult> UploadMediaAsync(AttachmentData attachmentData, string url, string mediaHash, bool isTemporaryMedia, int timeout = 30000)
         {
             try
             {
@@ -765,7 +765,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                     // Add attachment content.
                     var contentByte = new ByteArrayContent(attachmentData.OriginalBase64);
                     contentByte.Headers.Remove("Content-Disposition");
-                    var ext = GetMediaExtension(attachmentData.Name, attachmentData.Type, type);
+                    var ext = GetMediaExtension(attachmentData.Name, attachmentData.Type);
                     contentByte.Headers.TryAddWithoutValidation("Content-Disposition", $"form-data; name=\"media\";filename=\"{mediaHash + ext}\"" + string.Empty);
                     contentByte.Headers.Remove("Content-Type");
                     contentByte.Headers.TryAddWithoutValidation("Content-Type", attachmentData.Type);
@@ -773,7 +773,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
 
                     // Additional form is required when upload a forever video.
                     StringContent stringContent = null;
-                    if (isTemporaryMedia == false && type == MediaTypes.Video)
+                    if (isTemporaryMedia == false && attachmentData.Type.Contains(MediaTypes.Video))
                     {
                         var additionalForm = string.Format(CultureInfo.InvariantCulture, "{{\"title\":\"{0}\", \"introduction\":\"introduction\"}}", attachmentData.Name);
 
@@ -782,7 +782,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                         mutipartDataContent.Add(stringContent, "\"" + "description" + "\"");
                     }
 
-                    _logger.LogInformation($"Upload {type} to WeChat", Severity.Information);
+                    _logger.LogInformation($"Upload {attachmentData.Type} to WeChat", Severity.Information);
                     var response = await SendHttpRequestAsync(HttpMethod.Post, url, mutipartDataContent, null, timeout).ConfigureAwait(false);
 
                     // Disponse all http content in mutipart form data content before return.
@@ -802,7 +802,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Failed To Upload Media, Type: {type}");
+                _logger.LogError(ex, $"Failed To Upload Media, Type: {attachmentData.Type}");
                 throw;
             }
         }

@@ -10,6 +10,27 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Responses
     [XmlRoot("xml")]
     public class NewsResponse : ResponseMessage
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NewsResponse"/> class.
+        /// </summary>
+        public NewsResponse()
+            : base()
+        {
+            Articles = new List<Article>();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NewsResponse"/> class.
+        /// </summary>
+        /// <param name="senderId">The sender's id.</param>
+        /// <param name="recipientId">The recipient id.</param>
+        /// <param name="articles">The article list in news response.</param>
+        public NewsResponse(string senderId, string recipientId, List<Article> articles)
+            : base(senderId, recipientId)
+        {
+            Articles = articles;
+        }
+
         [XmlIgnore]
         public override string MsgType => ResponseMessageTypes.News;
 

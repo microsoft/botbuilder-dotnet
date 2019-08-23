@@ -366,11 +366,12 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests.TestUtilities
             MediaId = "media_id",
         };
 
-        public static readonly ImageResponse ImageResponse = new ImageResponse(Image)
+        public static readonly ImageResponse ImageResponse = new ImageResponse()
         {
             ToUserName = "toUser",
             FromUserName = "fromUser",
             CreateTime = 12345678,
+            Image = Image,
         };
 
         public static readonly Voice Voice = new Voice()
@@ -378,11 +379,12 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests.TestUtilities
             MediaId = "media_id",
         };
 
-        public static readonly VoiceResponse VoiceResponse = new VoiceResponse(Voice)
+        public static readonly VoiceResponse VoiceResponse = new VoiceResponse()
         {
             ToUserName = "toUser",
             FromUserName = "fromUser",
             CreateTime = 12345678,
+            Voice = Voice,
         };
 
         public static readonly Video Video = new Video()
@@ -409,11 +411,12 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests.TestUtilities
             ThumbMediaId = "media_id",
         };
 
-        public static readonly MusicResponse MusicResponse = new MusicResponse(Music)
+        public static readonly MusicResponse MusicResponse = new MusicResponse()
         {
             ToUserName = "toUser",
             FromUserName = "fromUser",
             CreateTime = 12345678,
+            Music = Music,
         };
 
         public static readonly Article Article1 = new Article()

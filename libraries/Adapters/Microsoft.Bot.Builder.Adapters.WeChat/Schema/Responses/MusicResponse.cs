@@ -9,11 +9,22 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Responses
     [XmlRoot("xml")]
     public class MusicResponse : ResponseMessage
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MusicResponse"/> class.
+        /// </summary>
         public MusicResponse()
+            : base()
         {
         }
 
-        public MusicResponse(Music music)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MusicResponse"/> class.
+        /// </summary>
+        /// <param name="senderId">The sender's id.</param>
+        /// <param name="recipientId">The recipient id.</param>
+        /// <param name="music">The <see cref="Music"/> of the music resposne.</param>
+        public MusicResponse(string senderId, string recipientId, Music music)
+            : base(senderId, recipientId)
         {
             Music = music;
         }

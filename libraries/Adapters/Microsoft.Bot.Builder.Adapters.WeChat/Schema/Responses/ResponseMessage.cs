@@ -1,13 +1,37 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Xml;
 using System.Xml.Serialization;
 
 namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema.Responses
 {
+    /// <summary>
+    /// Base class for all WeChat response message.
+    /// </summary>
     public abstract class ResponseMessage : IResponseMessageBase
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ResponseMessage"/> class.
+        /// </summary>
+        public ResponseMessage()
+        {
+            CreateTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ResponseMessage"/> class.
+        /// </summary>
+        /// <param name="senderId">The sender's id.</param>
+        /// <param name="recipientId">The recipient id.</param>
+        public ResponseMessage(string senderId, string recipientId)
+        {
+            ToUserName = senderId;
+            FromUserName = recipientId;
+            CreateTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        }
+
         /// <summary>
         /// Gets or sets ToUserName.
         /// </summary>
