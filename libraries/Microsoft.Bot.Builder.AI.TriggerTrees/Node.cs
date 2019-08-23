@@ -8,6 +8,7 @@
 // This will verify the tree as it is built by checking invariants
 // #define VerifyTree
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using Microsoft.Bot.Builder.Expressions;
