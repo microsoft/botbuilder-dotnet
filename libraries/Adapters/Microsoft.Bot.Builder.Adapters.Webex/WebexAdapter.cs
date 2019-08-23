@@ -242,15 +242,15 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
             await response.WriteAsync(string.Empty, cancellationToken).ConfigureAwait(false);
 
             WebhookEventData payload;
+            string json = null;
             using (var bodyStream = new StreamReader(request.Body))
             {
-                payload = JsonConvert.DeserializeObject<WebhookEventData>(bodyStream.ReadToEnd());
+                json = bodyStream.ReadToEnd();
+                payload = JsonConvert.DeserializeObject<WebhookEventData>(json);
             }
 
             if (!string.IsNullOrWhiteSpace(_config.Secret))
             {
-                var json = JsonConvert.SerializeObject(payload);
-
                 if (!WebexHelper.ValidateSignature(_config.Secret, request, json))
                 {
                     throw new Exception("WARNING: Webhook received message with invalid signature. Potential malicious behavior!");
