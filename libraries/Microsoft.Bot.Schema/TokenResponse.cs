@@ -60,10 +60,11 @@ namespace Microsoft.Bot.Schema
         /// </summary>
         [JsonProperty(PropertyName = "expiration")]
         public string Expiration { get; set; }
-                
+
         /// <summary>
         /// Extension data for overflow of properties
         /// </summary>
+        [JsonProperty(PropertyName = "properties")]
         [JsonExtensionData(ReadData = true, WriteData = true)]
         public JObject Properties { get; set; } = new JObject();
     }
