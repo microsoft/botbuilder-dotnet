@@ -1,10 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Newtonsoft.Json;
-
 namespace Microsoft.Bot.Schema
 {
+    using Newtonsoft.Json;
+
     /// <summary>
     /// State object passed to the bot token service.
     /// </summary>
@@ -49,6 +49,9 @@ namespace Microsoft.Bot.Schema
         /// <summary>
         /// Gets or sets a value indicating whether request is from a bot using Streaming.
         /// </summary>
+        /// /// <value>
+        /// Helps determine if using streaming or not.
+        /// </value>
         [JsonProperty("isFromStreaming")]
         public bool IsFromStreaming { get; set; }
     }
