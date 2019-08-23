@@ -54,8 +54,6 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
         private const string InvokeReponseKey = "BotFrameworkStreamingExtensionsAdapter.InvokeResponse";
         private const string StreamingChannelPrefix = "/v3/conversations/";
 
-        private static readonly string PollingTimeoutTimeKey = "pollingTimeout";
-        private static readonly string PollingRequestsIntervalKey = "pollingRequestsInterval";
         private static readonly HttpClient DefaultHttpClient = new HttpClient();
 
         private readonly ICredentialProvider _credentialProvider;
@@ -69,8 +67,8 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
         // _connectorClients is a cache using [serviceUrl + appId].
         private readonly ConcurrentDictionary<string, ConnectorClient> _connectorClients = new ConcurrentDictionary<string, ConnectorClient>();
         private readonly ConcurrentDictionary<string, List<TokenResponse>> _responseTokens = new ConcurrentDictionary<string, List<TokenResponse>>();
-        private readonly int _pollingTimeoutValue = 900000; // Default is 900,000 milliseconds (15 minutes) as in the OAuthPrompt
-        private readonly int _pollingRequestsIntervalValue = 1000; // Poll for token every 1 second.
+        private readonly int _pollingTimeout = 900000; // Default is 900,000 milliseconds (15 minutes) as in the OAuthPrompt
+        private readonly int _pollingRequestsInterval = 1000; // Poll for token every 1 second.
         private readonly ILogger _logger;
         private readonly IStreamingTransportServer _server;
 
@@ -983,8 +981,8 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
         {
             TokenResponse tokenResponse = null;
             bool shouldEndPolling = false;
-            int pollingTimeout = this._pollingTimeoutValue;
-            int pollingRequestsInterval = this._pollingRequestsIntervalValue;
+            int pollingTimeout = this._pollingTimeout;
+            int pollingRequestsInterval = this._pollingRequestsInterval;
             var loginTimeout = turnContext?.TurnState?.Get<object>(LoginTimeout.Key);
 
             // Override login timeout with value set from the OAuthPrompt or by the developer
@@ -1024,23 +1022,21 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
                     // This can be used to short-circuit the polling loop.
                     if (tokenResponse.Properties != null)
                     {
-                        JToken pollingTimeoutToken = null;
-                        tokenResponse.Properties.TryGetValue(PollingTimeoutTimeKey, out pollingTimeoutToken);
-                        if (pollingTimeoutToken != null)
-                        {
-                            pollingTimeout = pollingTimeoutToken.ToObject<int>();
-                            if (pollingTimeout <= 0)
-                            {
-                                shouldEndPolling = true; // TImeout now and stop polling
-                            }
-                        }
+                        JToken tokenPollingSettingsToken = null;
+                        TokenPollingSettings tokenPollingSettings = null;
+                        var tokenPollingSettingsKey = nameof(TokenPollingSettings);
+                        tokenPollingSettingsKey = char.ToLower(tokenPollingSettingsKey[0]) + tokenPollingSettingsKey.Substring(1);
+                        tokenResponse.Properties.TryGetValue(tokenPollingSettingsKey, out tokenPollingSettingsToken);
 
-                        // This is helpful in regulating polling requests interval from api service
-                        JToken pollingRequestsIntervalToken = null;
-                        tokenResponse.Properties.TryGetValue(PollingRequestsIntervalKey, out pollingRequestsIntervalToken);
-                        if (pollingRequestsIntervalToken != null)
+                        if (tokenPollingSettingsToken != null)
                         {
-                            pollingRequestsInterval = pollingRequestsIntervalToken.ToObject<int>();
+                            tokenPollingSettings = tokenPollingSettingsToken.ToObject<TokenPollingSettings>();
+
+                            if (tokenPollingSettings != null)
+                            {
+                                shouldEndPolling = tokenPollingSettings.Timeout <= 0 ? true : shouldEndPolling; // Timeout now and stop polling
+                                pollingRequestsInterval = tokenPollingSettings.Interval > 0 ? tokenPollingSettings.Interval : pollingRequestsInterval; // Only overrides if it is set.
+                            }
                         }
                     }
 
