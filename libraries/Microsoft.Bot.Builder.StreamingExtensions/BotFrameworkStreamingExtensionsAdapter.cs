@@ -786,7 +786,7 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
                 ConnectionName = connectionName,
                 Conversation = GetConversationReference(turnContext),
                 MsAppId = (this._credentialProvider as MicrosoftAppCredentials)?.MicrosoftAppId,
-                IsFromExtension = true,
+                IsFromStreaming = true,
             };
 
             var serializedState = JsonConvert.SerializeObject(tokenExchangeState);

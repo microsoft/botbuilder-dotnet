@@ -47,9 +47,9 @@ namespace Microsoft.Bot.Schema
         public string MsAppId { get; set; }
 
         /// <summary>
-        /// Gets or sets value to helps determine if using Direct Line ASE.
+        /// Gets or sets a value indicating whether request is from a bot using Streaming.
         /// </summary>
-        [JsonProperty("isFromExtension")]
-        public bool IsFromExtension { get; set; }
+        [JsonProperty("isFromStreaming")]
+        public bool IsFromStreaming { get; set; }
     }
 }
