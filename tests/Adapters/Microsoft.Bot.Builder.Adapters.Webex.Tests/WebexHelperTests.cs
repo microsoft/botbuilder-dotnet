@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.IO;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Internal;
-using Microsoft.Bot.Builder.Adapters.Webex;
-using Microsoft.Bot.Schema;
 using Moq;
-using Thrzn41.WebexTeams;
+using Newtonsoft.Json;
 using Thrzn41.WebexTeams.Version1;
 using Xunit;
 
@@ -23,10 +19,13 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
             Assert.Null(WebexHelper.PayloadToActivity(null));
         }
 
-        [Fact(Skip = "just nope")]
+        [Fact]
         public void PayloadToActivity_Should_Return_Activity()
         {
-            var payload = new WebhookEventData(); // TODO: create payload
+            var seralizedPayload = "{\"id\":\"id\",\"name\":\"name\",\"resource\":\"messages\",\"event\":\"created\",\"filter\":null,\"orgId\":\"orgId\",\"createdBy\":\"creator_id\",\"appId\":\"app_id\",\"ownedBy\":\"creator\",\"status\":\"active\",\"actorId\":\"actor_id\",\"targetUrl\":\"https://contoso.com/api/messages\",\"created\":\"2019-01-01T00:00:00.096Z\",\"data\":{\"id\":\"id\",\"roomId\":\"room_id\",\"roomType\":\"direct\",\"personId\":\"person_id\",\"personEmail\":\"person@email.com\",\"created\":\"2019-01-01T00:00:00.534Z\"}}";
+            var payload = JsonConvert.DeserializeObject<WebhookEventData>(seralizedPayload);
+            var serializedPerson = "{\"id\":\"person_id\"}";
+            WebexHelper.Identity = JsonConvert.DeserializeObject<Person>(serializedPerson);
 
             Assert.NotNull(WebexHelper.PayloadToActivity(payload));
         }
@@ -57,10 +56,9 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         }
 
         [Fact]
-        public void DecryptedMessageToActivityAsync_Should_Return_Null_With_Null_Payload()
+        public async void DecryptedMessageToActivityAsync_Should_Return_Null_With_Null_Payload()
         {
-            Func<string, CancellationToken?, Task<TeamsResult<Message>>> callback = default;
-            Assert.Null(WebexHelper.DecryptedMessageToActivityAsync(null, callback).Result);
+            Assert.Null(await WebexHelper.DecryptedMessageToActivityAsync(null, null));
         }
     }
 }

@@ -28,12 +28,6 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// </value>
         public static Person Identity { get; set; }
 
-        public static async void SendResponseStatusCode(HttpResponse response, int statusCode, CancellationToken cancellationToken)
-        {
-            response.StatusCode = statusCode;
-            await response.WriteAsync(string.Empty, cancellationToken).ConfigureAwait(false);
-        }
-
         /// <summary>
         /// Validates the local secret against the one obtained from the request header.
         /// </summary>

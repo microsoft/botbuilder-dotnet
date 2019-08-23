@@ -1,10 +1,15 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Schema;
 using Moq;
+using Thrzn41.WebexTeams;
+using Thrzn41.WebexTeams.Version1;
 using Xunit;
 
 namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
@@ -104,6 +109,22 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         }
 
         [Fact]
+        public async void GetIdentityAsync_Should_Succeed()
+        {
+            var options = new Mock<IWebexAdapterOptions>();
+            options.SetupAllProperties();
+            options.Object.AccessToken = "Test";
+            options.Object.PublicAddress = "http://contoso.com/api/messages";
+
+            var webexApi = new Mock<IWebexClient>();
+            webexApi.SetupAllProperties();
+            webexApi.Setup(x => x.GetMeAsync()).Returns(Task.FromResult(new TeamsResult<Person>()));
+
+            var webexAdapter = new WebexAdapter(options.Object, webexApi.Object);
+            await webexAdapter.GetIdentityAsync();
+        }
+
+        [Fact]
         public async void ProcessAsync_Should_Fail_With_Null_HttpRequest()
         {
             var options = new Mock<IWebexAdapterOptions>();
@@ -177,6 +198,50 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         }
 
         [Fact]
+        public async void ResetWebhookSubscriptions_Should_Succeed()
+        {
+            var options = new Mock<IWebexAdapterOptions>();
+            options.SetupAllProperties();
+            options.Object.AccessToken = "Test";
+            options.Object.PublicAddress = "http://contoso.com/api/messages";
+
+            var webexApi = new Mock<IWebexClient>();
+            webexApi.SetupAllProperties();
+
+            var result = new TeamsListResult<WebhookList>();
+            webexApi.Setup(x => x.ListWebhooksAsync()).Returns(Task.FromResult(result));
+
+            // TODO: be able to mock result.Data, which is internally settable only
+            /*webexApi.Setup(x => x.DeleteWebhookAsync(It.IsAny<Webhook>())).Returns(Task.FromResult(new TeamsResult<NoContent>()));*/
+
+            var webexAdapter = new WebexAdapter(options.Object, webexApi.Object);
+
+            await webexAdapter.ResetWebhookSubscriptions();
+        }
+
+        [Fact]
+        public async void RegisterWebhookSubscriptionAsync_UpdateWebhook_Should_Succeed()
+        {
+            var options = new Mock<IWebexAdapterOptions>();
+            options.SetupAllProperties();
+            options.Object.AccessToken = "Test";
+            options.Object.PublicAddress = "http://contoso.com/api/messages";
+
+            var webexApi = new Mock<IWebexClient>();
+            webexApi.SetupAllProperties();
+
+            var result = new TeamsListResult<WebhookList>();
+            webexApi.Setup(x => x.ListWebhooksAsync()).Returns(Task.FromResult(result));
+
+            // TODO: be able to mock result.Data, which is internally settable only
+            webexApi.Setup(x => x.CreateWebhookAsync(It.IsAny<string>(), It.IsAny<Uri>(), It.IsAny<EventResource>(), It.IsAny<EventType>(), It.IsAny<IEnumerable<EventFilter>>(), It.IsAny<string>()));
+
+            var webexAdapter = new WebexAdapter(options.Object, webexApi.Object);
+
+            await webexAdapter.RegisterWebhookSubscriptionAsync("webhook_path");
+        }
+
+        [Fact]
         public async void UpdateActivityAsync_Should_Throw_NotSupportedException()
         {
             var options = new Mock<IWebexAdapterOptions>();
@@ -186,16 +251,13 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
 
             var webexAdapter = new WebexAdapter(options.Object, new Mock<IWebexClient>().Object);
 
-            var activity = new Activity
-            {
-                Type = ActivityTypes.Event,
-            };
+            var activity = new Activity();
 
-            Activity[] activities = { activity };
+            var turnContext = new TurnContext(webexAdapter, activity);
 
-            await Assert.ThrowsAsync<Exception>(async () =>
+            await Assert.ThrowsAsync<NotSupportedException>(async () =>
             {
-                await webexAdapter.SendActivitiesAsync(new TurnContext(webexAdapter, activity), activities, default(CancellationToken));
+                await webexAdapter.UpdateActivityAsync(turnContext, activity, default);
             });
         }
 

@@ -4,15 +4,11 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Security.Cryptography;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
-using Thrzn41.WebexTeams;
 using Thrzn41.WebexTeams.Version1;
 
 namespace Microsoft.Bot.Builder.Adapters.Webex
@@ -22,8 +18,6 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         private readonly IWebexAdapterOptions _config;
 
         private readonly IWebexClient _webexApi;
-
-        private readonly TeamsAPIClient _api;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WebexAdapter"/> class.
@@ -50,8 +44,6 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
             _webexApi = webexApi ?? throw new Exception("Could not create the Webex Teams API client");
 
             _webexApi.CreateClient(_config.AccessToken);
-
-            _api = TeamsAPI.CreateVersion1Client(_config.AccessToken); // remove after all methods are wrapped in WebexApi class.
         }
 
         /// <summary>
