@@ -6,27 +6,28 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
+using Microsoft.Bot.Schema;
 using Microsoft.Bot.StreamingExtensions;
+using Microsoft.Bot.StreamingExtensions.Payloads;
 using Microsoft.Bot.StreamingExtensions.Transport;
 using Microsoft.Bot.StreamingExtensions.Transport.NamedPipes;
 using Microsoft.Bot.StreamingExtensions.Transport.WebSockets;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.StreamingExtensions
 {
     /// <summary>
     /// Used to process incoming requests sent over an <see cref="IStreamingTransport"/> and adhering to the Bot Framework Protocol v3 with Streaming Extensions.
     /// </summary>
-    public class DirectLineAdapter : BotFrameworkHttpAdapter, IRequestHandler
+    public class DirectLineAdapter : BotFrameworkAdapter, IRequestHandler
     {
         /*  The default named pipe all instances of DL ASE listen on is named bfv4.pipes
         Unfortunately this name is no longer very discriptive, but for the time being
@@ -36,15 +37,16 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
         private const string DefaultPipeName = "bfv4.pipes";
         private const string AuthHeaderName = "authorization";
         private const string ChannelIdHeaderName = "channelid";
+        private const string InvokeResponseKey = "DirectLineAdapter.InvokeResponse";
         private IStreamingTransportServer _transportServer;
         private string _userAgent;
         private readonly IBot _bot;
         private readonly IChannelProvider _channelProvider;
         private readonly ICredentialProvider _credentialProvider;
         private readonly IList<IMiddleware> _middlewareSet;
-        private readonly Func<ITurnContext, Exception, Task> _onTurnError;
         private readonly IServiceProvider _services;
         private readonly ILogger _logger;
+        private HttpClient _httpClient;
 
         public DirectLineAdapter(ICredentialProvider credentialProvider, IChannelProvider channelProvider = null, ILogger logger = null)
             : base(credentialProvider, channelProvider)
@@ -67,7 +69,7 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
         public DirectLineAdapter(Func<ITurnContext, Exception, Task> onTurnError, IBot bot, IList<IMiddleware> middlewareSet = null)
             : base(new SimpleCredentialProvider())
         {
-            _onTurnError = onTurnError;
+            this.OnTurnError = onTurnError;
             _bot = bot ?? throw new ArgumentNullException(nameof(bot));
             _middlewareSet = middlewareSet ?? new List<IMiddleware>();
             _userAgent = GetUserAgent();
@@ -85,7 +87,7 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
         public DirectLineAdapter(Func<ITurnContext, Exception, Task> onTurnError, IServiceProvider serviceProvider, IList<IMiddleware> middlewareSet = null)
              : base(new SimpleCredentialProvider())
         {
-                _onTurnError = onTurnError;
+                this.OnTurnError = onTurnError;
                 _services = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
                 _middlewareSet = middlewareSet ?? new List<IMiddleware>();
                 _userAgent = GetUserAgent();
@@ -162,6 +164,8 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
             {
                 var socket = await httpRequest.HttpContext.WebSockets.AcceptWebSocketAsync().ConfigureAwait(false);
                 _transportServer = new WebSocketServer(socket, this);
+                _httpClient = new StreamingHttpClient(_transportServer, _logger);
+
                 await _transportServer.StartAsync().ConfigureAwait(false);
             }
             catch (Exception ex)
@@ -181,6 +185,7 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
         public Task ConnectNamedPipe(string pipeName = DefaultPipeName)
         {
             _transportServer = new NamedPipeServer(pipeName, this);
+            _httpClient = new StreamingHttpClient(_transportServer, _logger);
 
             return _transportServer.StartAsync();
         }
@@ -226,6 +231,124 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
             logger.LogError($"Unknown verb and path: {request.Verb} {request.Path}");
 
             return response;
+        }
+
+        /// <summary>
+        /// Overload for processing activities when given the activity a json string representation of a request body.
+        /// Creates a turn context and runs the middleware pipeline for an incoming activity.
+        /// Throws <see cref="ArgumentNullException"/> on null arguments.
+        /// </summary>
+        /// <param name="body">The json string to deserialize into an <see cref="Activity"/>.</param>
+        /// <param name="streams">A set of streams associated with but not attached to the <see cref="Activity"/>.</param>
+        /// <param name="callback">The code to run at the end of the adapter's middleware pipeline.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute. If the activity type
+        /// was 'Invoke' and the corresponding key (channelId + activityId) was found
+        /// then an InvokeResponse is returned, otherwise null is returned.</returns>
+        /// <remarks>Call this method to reactively send a message to a conversation.
+        /// If the task completes successfully, then if the activity's <see cref="Activity.Type"/>
+        /// is <see cref="ActivityTypes.Invoke"/> and the corresponding key
+        /// (<see cref="Activity.ChannelId"/> + <see cref="Activity.Id"/>) is found
+        /// then an <see cref="InvokeResponse"/> is returned, otherwise null is returned.
+        /// <para>This method registers the following services for the turn.<list type="bullet"/></para>
+        /// </remarks>
+        public async Task<InvokeResponse> ProcessActivityAsync(string body, List<IContentStream> streams, BotCallbackHandler callback, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (string.IsNullOrWhiteSpace(body))
+            {
+                throw new ArgumentNullException(nameof(body));
+            }
+
+            if (streams == null)
+            {
+                throw new ArgumentNullException(nameof(streams));
+            }
+
+            if (callback == null)
+            {
+                throw new ArgumentNullException(nameof(callback));
+            }
+
+            var activity = JsonConvert.DeserializeObject<Activity>(body, SerializationSettings.DefaultDeserializationSettings);
+
+            /*
+             * Any content sent as part of a StreamingRequest, including the request body
+             * and inline attachments, appear as streams added to the same collection. The first
+             * stream of any request will be the body, which is parsed and passed into this method
+             * as the first argument, 'body'. Any additional streams are inline attachents that need
+             * to be iterated over and added to the Activity as attachments to be sent to the Bot.
+             */
+            if (streams.Count > 1)
+            {
+                var streamAttachments = new List<Attachment>();
+                for (var i = 1; i < streams.Count; i++)
+                {
+                    streamAttachments.Add(new Attachment() { ContentType = streams[i].ContentType, Content = streams[i].Stream });
+                }
+
+                if (activity.Attachments != null)
+                {
+                    activity.Attachments = activity.Attachments.Concat(streamAttachments).ToArray();
+                }
+                else
+                {
+                    activity.Attachments = streamAttachments.ToArray();
+                }
+            }
+
+            return await ProcessActivityAsync(activity, callback, cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Primary adapter method for processing activities sent from channel.
+        /// Creates a turn context and runs the middleware pipeline for an incoming activity.
+        /// Throws <see cref="ArgumentNullException"/> on null arguments.
+        /// </summary>
+        /// <param name="activity">The <see cref="Activity"/> to process.</param>
+        /// <param name="callback">The code to run at the end of the adapter's middleware pipeline.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute. If the activity type
+        /// was 'Invoke' and the corresponding key (channelId + activityId) was found
+        /// then an InvokeResponse is returned, otherwise null is returned.</returns>
+        /// <remarks>Call this method to reactively send a message to a conversation.
+        /// If the task completes successfully, then if the activity's <see cref="Activity.Type"/>
+        /// is <see cref="ActivityTypes.Invoke"/> and the corresponding key
+        /// (<see cref="Activity.ChannelId"/> + <see cref="Activity.Id"/>) is found
+        /// then an <see cref="InvokeResponse"/> is returned, otherwise null is returned.
+        /// <para>This method registers the following services for the turn.<list type="bullet"/></para>
+        /// </remarks>
+        public async Task<InvokeResponse> ProcessActivityAsync(Activity activity, BotCallbackHandler callback, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            BotAssert.ActivityNotNull(activity);
+
+            if (callback == null)
+            {
+                throw new ArgumentNullException(nameof(callback));
+            }
+
+            _logger.LogInformation($"Received an incoming activity.  ActivityId: {activity.Id}");
+
+            using (var context = new TurnContext(this, activity))
+            {
+                await RunPipelineAsync(context, callback, cancellationToken).ConfigureAwait(false);
+
+                if (activity.Type == ActivityTypes.Invoke)
+                {
+                    var activityInvokeResponse = context.TurnState.Get<Activity>(InvokeResponseKey);
+                    if (activityInvokeResponse == null)
+                    {
+                        return new InvokeResponse { Status = (int)HttpStatusCode.NotImplemented };
+                    }
+                    else
+                    {
+                        return (InvokeResponse)activityInvokeResponse.Value;
+                    }
+                }
+
+                return null;
+            }
         }
 
         /// <summary>
@@ -278,7 +401,7 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
 
             try
             {
-                var adapter = new BotFrameworkStreamingExtensionsAdapter(_transportServer, _middlewareSet, logger);
+                // var adapter = new BotFrameworkStreamingExtensionsAdapter(_transportServer, _middlewareSet, logger);
                 IBot bot = null;
 
                 // First check if an IBot type definition is available from the service provider.
@@ -302,8 +425,7 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
                     throw new Exception("Unable to find bot when processing request.");
                 }
 
-                adapter.OnTurnError = _onTurnError;
-                var invokeResponse = await adapter.ProcessActivityAsync(body, request.Streams, new BotCallbackHandler(bot.OnTurnAsync), cancellationToken).ConfigureAwait(false);
+                var invokeResponse = await ProcessActivityAsync(body, request.Streams, new BotCallbackHandler(bot.OnTurnAsync), cancellationToken).ConfigureAwait(false);
 
                 if (invokeResponse == null)
                 {
