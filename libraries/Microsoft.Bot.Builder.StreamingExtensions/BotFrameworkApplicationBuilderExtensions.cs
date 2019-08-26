@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Microsoft.Bot.Builder.StreamingExtensions
 {
@@ -29,8 +28,8 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
                 throw new ArgumentNullException(nameof(applicationBuilder));
             }
 
-            var connector = new NamedPipeConnector();
-            connector.InitializeNamedPipeServer(applicationBuilder.ApplicationServices, middlewareSet, onTurnError);
+            var adapter = new StreamingRequestHandler(onTurnError, applicationBuilder.ApplicationServices, middlewareSet);
+            adapter.ConnectNamedPipe();
 
             return applicationBuilder;
         }

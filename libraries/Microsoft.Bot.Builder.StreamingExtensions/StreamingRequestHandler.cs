@@ -27,6 +27,12 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
     /// </summary>
     public class StreamingRequestHandler : BotFrameworkAdapter, IRequestHandler
     {
+        /*  The default named pipe all instances of DL ASE listen on is named bfv4.pipes
+        Unfortunately this name is no longer very discriptive, but for the time being
+        we're unable to change it without coordinated updates to DL ASE, which we
+        currently are unable to perform.
+        */
+        private const string DefaultPipeName = "bfv4.pipes";
         private const string AuthHeaderName = "authorization";
         private const string ChannelIdHeaderName = "channelid";
         private IStreamingTransportServer _transportServer;
@@ -167,7 +173,7 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
         /// </summary>
         /// <param name="pipeName">The name of the named pipe to use when creating the server.</param>
         /// <returns>A task that runs until the server is disconnected.</returns>
-        public Task StartAsync(string pipeName)
+        public Task ConnectNamedPipe(string pipeName = DefaultPipeName)
         {
             _transportServer = new NamedPipeServer(pipeName, this);
 
