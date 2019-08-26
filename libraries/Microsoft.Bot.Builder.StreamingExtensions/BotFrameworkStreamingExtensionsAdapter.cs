@@ -28,7 +28,7 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
     /// bot receives an activity, the adapter creates a context object, passes it to your
     /// bot's application logic, and sends responses back to the user's channel.
     /// <para>Use <see cref="Use(IMiddleware)"/> to add <see cref="IMiddleware"/> objects
-    /// to your adapter’s middleware collection. In conjunction with the <see cref="StreamingRequestHandler"/>
+    /// to your adapter’s middleware collection. In conjunction with the <see cref="DirectLineAdapter"/>
     /// the adapter processes and directs incoming activities in through the bot middleware
     /// pipeline to your bot’s logic and then back out again. As each activity flows in and
     /// out of the bot, each piece of middleware can inspect or act upon the activity,

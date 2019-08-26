@@ -28,7 +28,7 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
                 throw new ArgumentNullException(nameof(applicationBuilder));
             }
 
-            var adapter = new StreamingRequestHandler(onTurnError, applicationBuilder.ApplicationServices, middlewareSet);
+            var adapter = new DirectLineAdapter(onTurnError, applicationBuilder.ApplicationServices, middlewareSet);
             adapter.ConnectNamedPipe();
 
             return applicationBuilder;

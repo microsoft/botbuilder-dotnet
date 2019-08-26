@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
     /// </summary>
     public class WebSocketEnabledHttpAdapter : BotAdapter, IBotFrameworkHttpAdapter
     {
-        private readonly StreamingRequestHandler _directLineAdapter;
+        private readonly DirectLineAdapter _directLineAdapter;
         private readonly object initLock = new object();
         private readonly List<Builder.IMiddleware> middlewares = new List<Builder.IMiddleware>();
         private Lazy<bool> _ensureMiddlewareSet;
@@ -67,7 +67,7 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
 
             credentialProvider = credentialProvider ?? new ConfigurationCredentialProvider(configuration);
             channelProvider = channelProvider ?? new ConfigurationChannelProvider(configuration);
-            _directLineAdapter = _directLineAdapter ?? new StreamingRequestHandler(credentialProvider, channelProvider, loggerFactory?.CreateLogger<StreamingRequestHandler>());
+            _directLineAdapter = _directLineAdapter ?? new DirectLineAdapter(credentialProvider, channelProvider, loggerFactory?.CreateLogger<DirectLineAdapter>());
 
             _ensureMiddlewareSet = new Lazy<bool>(() =>
             {
