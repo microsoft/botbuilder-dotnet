@@ -19,39 +19,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackageId>Microsoft.Bot.Builder</PackageId>
-    <Description>
-	Library for building bots using Microsoft Bot Framework Connector
-	
-Recognizers-Text Version Upgrade: from v1.1.3 to v1.2.6
-      
-      DateTime - Recognize      
-      New recognized inputs:
-        - ash wednesday
-        - halloween
-     
-      Changed results:        
-          - black friday
-          - easter
-          - maundy thursday
-          - palm sunday
-    
-      DateTime - Prompt    
-      New recognized inputs:        
-          - untill friday
-          - monday untill friday
-          - this past friday
-          - past friday
-
-      Ordinal   
-      Removed inputs:        
-          - the second to last
-
-      Number     
-      Changed inputs:         
-          - half
-          - half nelson
-          - half seas over
-	</Description>
+    <Description>Library for building bots using Microsoft Bot Framework Connector</Description>
     <Summary>Library for building bots using Microsoft Bot Framework Connector</Summary>
   </PropertyGroup>
 
