@@ -20,8 +20,7 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
     /// </summary>
     public class WebSocketEnabledHttpAdapter : BotAdapter, IBotFrameworkHttpAdapter
     {
-        private readonly BotFrameworkHttpAdapter _botFrameworkHttpAdapter;
-        private readonly WebSocketConnector _webSocketConnector;
+        private readonly StreamingRequestHandler _directLineAdapter;
         private readonly object initLock = new object();
         private readonly List<Builder.IMiddleware> middlewares = new List<Builder.IMiddleware>();
         private Lazy<bool> _ensureMiddlewareSet;
@@ -68,14 +67,12 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
 
             credentialProvider = credentialProvider ?? new ConfigurationCredentialProvider(configuration);
             channelProvider = channelProvider ?? new ConfigurationChannelProvider(configuration);
-
-            _botFrameworkHttpAdapter = _botFrameworkHttpAdapter ?? new BotFrameworkHttpAdapter(credentialProvider, channelProvider, loggerFactory?.CreateLogger<BotFrameworkHttpAdapter>());
-            _webSocketConnector = new WebSocketConnector(credentialProvider, channelProvider);
+            _directLineAdapter = _directLineAdapter ?? new StreamingRequestHandler(credentialProvider, channelProvider, loggerFactory?.CreateLogger<StreamingRequestHandler>());
 
             _ensureMiddlewareSet = new Lazy<bool>(() =>
             {
-                middlewares.ForEach(mw => _botFrameworkHttpAdapter.Use(mw));
-                _botFrameworkHttpAdapter.OnTurnError = OnTurnError;
+                middlewares.ForEach(mw => _directLineAdapter.Use(mw));
+                _directLineAdapter.OnTurnError = OnTurnError;
                 return true;
             });
         }
@@ -117,12 +114,12 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
 
             if (HttpMethods.IsGet(httpRequest.Method) && httpRequest.HttpContext.WebSockets.IsWebSocketRequest)
             {
-                await _webSocketConnector.ProcessAsync(OnTurnError, middlewares, httpRequest, httpResponse, cancellationToken).ConfigureAwait(false);
+                await _directLineAdapter.ConnectWebSocket(OnTurnError, middlewares, httpRequest, httpResponse, cancellationToken).ConfigureAwait(false);
             }
             else
             {
                 bool check = _ensureMiddlewareSet.Value;
-                await _botFrameworkHttpAdapter.ProcessAsync(httpRequest, httpResponse, bot, cancellationToken).ConfigureAwait(false);
+                await _directLineAdapter.ProcessAsync(httpRequest, httpResponse, bot, cancellationToken).ConfigureAwait(false);
             }
         }
 

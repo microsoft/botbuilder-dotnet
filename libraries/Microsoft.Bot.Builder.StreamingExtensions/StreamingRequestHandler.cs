@@ -10,6 +10,7 @@ using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.StreamingExtensions;
@@ -25,7 +26,7 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
     /// <summary>
     /// Used to process incoming requests sent over an <see cref="IStreamingTransport"/> and adhering to the Bot Framework Protocol v3 with Streaming Extensions.
     /// </summary>
-    public class StreamingRequestHandler : BotFrameworkAdapter, IRequestHandler
+    public class StreamingRequestHandler : BotFrameworkHttpAdapter, IRequestHandler
     {
         /*  The default named pipe all instances of DL ASE listen on is named bfv4.pipes
         Unfortunately this name is no longer very discriptive, but for the time being
@@ -43,12 +44,14 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
         private readonly IList<IMiddleware> _middlewareSet;
         private readonly Func<ITurnContext, Exception, Task> _onTurnError;
         private readonly IServiceProvider _services;
+        private readonly ILogger _logger;
 
-        public StreamingRequestHandler(ICredentialProvider credentialProvider, IChannelProvider channelProvider = null)
+        public StreamingRequestHandler(ICredentialProvider credentialProvider, IChannelProvider channelProvider = null, ILogger logger = null)
             : base(credentialProvider, channelProvider)
         {
             _credentialProvider = credentialProvider;
             _channelProvider = channelProvider;
+            _logger = logger ?? NullLogger.Instance;
         }
 
         /// <summary>
@@ -62,6 +65,7 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
         /// <param name="bot">The <see cref="IBot"/> to be used for all requests to this handler.</param>
         /// <param name="middlewareSet">An optional set of middleware to register with the bot.</param>
         public StreamingRequestHandler(Func<ITurnContext, Exception, Task> onTurnError, IBot bot, IList<IMiddleware> middlewareSet = null)
+            : base(new SimpleCredentialProvider())
         {
             _onTurnError = onTurnError;
             _bot = bot ?? throw new ArgumentNullException(nameof(bot));
@@ -79,7 +83,8 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
         /// <param name="serviceProvider">The service collection containing the registered IBot type.</param>
         /// <param name="middlewareSet">An optional set of middleware to register with the bot.</param>
         public StreamingRequestHandler(Func<ITurnContext, Exception, Task> onTurnError, IServiceProvider serviceProvider, IList<IMiddleware> middlewareSet = null)
-            {
+             : base(new SimpleCredentialProvider())
+        {
                 _onTurnError = onTurnError;
                 _services = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
                 _middlewareSet = middlewareSet ?? new List<IMiddleware>();
@@ -189,7 +194,7 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
         /// <param name="context">Optional context to operate within. Unused in bot implementation.</param>
         /// /// <param name="cancellationToken">Optional cancellation token.</param>
         /// <returns>A response created by the BotAdapter to be sent to the client that originated the request.</returns>
-        public override async Task<StreamingResponse> ProcessRequestAsync(ReceiveRequest request, ILogger<IRequestHandler> logger, object context = null, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<StreamingResponse> ProcessRequestAsync(ReceiveRequest request, ILogger<IRequestHandler> logger, object context = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             logger = logger ?? NullLogger<IRequestHandler>.Instance;
             var response = new StreamingResponse();

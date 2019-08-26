@@ -38,7 +38,7 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
     /// <seealso cref="IActivity"/>
     /// <seealso cref="IBot"/>
     /// <seealso cref="IMiddleware"/>
-    public class BotFrameworkStreamingExtensionsAdapter : BotAdapter, IBotFrameworkStreamingChannelConnector
+    public class BotFrameworkStreamingExtensionsAdapter : BotAdapter
     {
         private const string InvokeReponseKey = "BotFrameworkStreamingExtensionsAdapter.InvokeResponse";
         private const string StreamingChannelPrefix = "/v3/conversations/";
