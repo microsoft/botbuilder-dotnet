@@ -58,19 +58,25 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         }
 
         /// <summary>
-        /// Clears out and resets all the webhook subscriptions currently associated with this application.
+        /// Lists all webhook subscriptions currently associated with this application.
         /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public async Task ResetWebhookSubscriptions()
+        /// <returns>A list of webhook subscriptions.</returns>
+        public async Task<WebhookList> ListWebhookSubscriptionsAsync()
         {
-            await _webexApi.ListWebhooksAsync().ContinueWith(
-                async task =>
+           return await _webexApi.ListWebhooksAsync().ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Clears out and resets the list of webhook subscriptions.
+        /// </summary>
+        /// <param name="webhookList">List of webhook subscriptions to be deleted.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        public async Task ResetWebhookSubscriptionsAsync(WebhookList webhookList)
+        {
+            for (var i = 0; i < webhookList.ItemCount; i++)
             {
-                for (var i = 0; i < task.Result.Data.ItemCount; i++)
-                {
-                    await _webexApi.DeleteWebhookAsync(task.Result.Data.Items[i]).ConfigureAwait(false);
-                }
-            }, TaskScheduler.Current).ConfigureAwait(false);
+                await _webexApi.DeleteWebhookAsync(webhookList.Items[i]).ConfigureAwait(false);
+            }
         }
 
         /// <summary>
@@ -87,11 +93,11 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
             {
                 string hookId = null;
 
-                for (var i = 0; i < task.Result.Data.ItemCount; i++)
+                for (var i = 0; i < task.Result.ItemCount; i++)
                 {
-                    if (task.Result.Data.Items[i].Name == webHookName)
+                    if (task.Result.Items[i].Name == webHookName)
                     {
-                        hookId = task.Result.Data.Items[i].Id;
+                        hookId = task.Result.Items[i].Id;
                     }
                 }
 

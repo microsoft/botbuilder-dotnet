@@ -49,9 +49,11 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
             return message.GetData(false);
         }
 
-        public async Task<TeamsListResult<WebhookList>> ListWebhooksAsync()
+        public async Task<WebhookList> ListWebhooksAsync()
         {
-            return await _api.ListWebhooksAsync().ConfigureAwait(false);
+            var webhookList = await _api.ListWebhooksAsync().ConfigureAwait(false);
+
+            return webhookList.GetData(false);
         }
 
         public async Task<TeamsResult<Webhook>> CreateWebhookAsync(string name, Uri targetUri, EventResource resource, EventType type, IEnumerable<EventFilter> filters, string secret)

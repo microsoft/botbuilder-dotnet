@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
 
         Task<Message> GetMessageAsync(string messageId, CancellationToken? cancellationToken = null);
 
-        Task<TeamsListResult<WebhookList>> ListWebhooksAsync();
+        Task<WebhookList> ListWebhooksAsync();
 
         Task<TeamsResult<NoContent>> DeleteWebhookAsync(Webhook id);
 

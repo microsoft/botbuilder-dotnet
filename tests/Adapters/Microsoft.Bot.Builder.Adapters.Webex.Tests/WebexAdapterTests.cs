@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Schema;
 using Moq;
 using Newtonsoft.Json;
-using Thrzn41.WebexTeams;
 using Thrzn41.WebexTeams.Version1;
 using Xunit;
 
@@ -204,25 +203,50 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         }
 
         [Fact]
-        public async void ResetWebhookSubscriptions_Should_Succeed()
+        public async void ListWebhookSubscriptionsAsync_Should_Succeed()
         {
             var options = new Mock<IWebexAdapterOptions>();
             options.SetupAllProperties();
             options.Object.AccessToken = "Test";
             options.Object.PublicAddress = "http://contoso.com/api/messages";
 
+            var webhookList = JsonConvert.DeserializeObject<WebhookList>(File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\WebhookList.json"));
+
             var webexApi = new Mock<IWebexClient>();
             webexApi.SetupAllProperties();
-
-            var result = new TeamsListResult<WebhookList>();
-            webexApi.Setup(x => x.ListWebhooksAsync()).Returns(Task.FromResult(result));
-
-            // TODO: be able to mock result.Data, which is internally settable only
-            /*webexApi.Setup(x => x.DeleteWebhookAsync(It.IsAny<Webhook>())).Returns(Task.FromResult(new TeamsResult<NoContent>()));*/
+            webexApi.Setup(x => x.ListWebhooksAsync()).Returns(Task.FromResult(webhookList));
 
             var webexAdapter = new WebexAdapter(options.Object, webexApi.Object);
 
-            await webexAdapter.ResetWebhookSubscriptions();
+            var actualList = await webexAdapter.ListWebhookSubscriptionsAsync();
+
+            Assert.Equal(webhookList.Items[0].Id, actualList.Items[0].Id);
+            Assert.Equal(webhookList.Items[1].Id, actualList.Items[1].Id);
+        }
+
+        [Fact]
+        public async void ResetWebhookSubscriptionsAsync_Should_Succeed()
+        {
+            var options = new Mock<IWebexAdapterOptions>();
+            options.SetupAllProperties();
+            options.Object.AccessToken = "Test";
+            options.Object.PublicAddress = "http://contoso.com/api/messages";
+
+            var webhookList = JsonConvert.DeserializeObject<WebhookList>(File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\WebhookList.json"));
+            var deletedItems = 0;
+
+            var webexApi = new Mock<IWebexClient>();
+            webexApi.SetupAllProperties();
+            webexApi.Setup(x => x.DeleteWebhookAsync(It.IsAny<Webhook>())).Callback(() =>
+            {
+                deletedItems++;
+            });
+
+            var webexAdapter = new WebexAdapter(options.Object, webexApi.Object);
+
+            await webexAdapter.ResetWebhookSubscriptionsAsync(webhookList);
+
+            Assert.Equal(webhookList.ItemCount, deletedItems);
         }
 
         [Fact]
@@ -233,11 +257,11 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
             options.Object.AccessToken = "Test";
             options.Object.PublicAddress = "http://contoso.com/api/messages";
 
+            var webhookList = JsonConvert.DeserializeObject<WebhookList>(File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\WebhookList.json"));
+
             var webexApi = new Mock<IWebexClient>();
             webexApi.SetupAllProperties();
-
-            var result = new TeamsListResult<WebhookList>();
-            webexApi.Setup(x => x.ListWebhooksAsync()).Returns(Task.FromResult(result));
+            webexApi.Setup(x => x.ListWebhooksAsync()).Returns(Task.FromResult(webhookList));
 
             // TODO: be able to mock result.Data, which is internally settable only
             webexApi.Setup(x => x.CreateWebhookAsync(It.IsAny<string>(), It.IsAny<Uri>(), It.IsAny<EventResource>(), It.IsAny<EventType>(), It.IsAny<IEnumerable<EventFilter>>(), It.IsAny<string>()));
