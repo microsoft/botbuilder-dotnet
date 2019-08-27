@@ -1,0 +1,47 @@
+[
+    {
+       "input":"half",
+       "was":[
+          {
+             "Succeeded":false,
+             "Value":0.0
+          }
+       ],
+       "now":[
+          {
+             "Succeeded":true,
+             "Value":0.5
+          }
+       ]
+    },
+    {
+       "input":"half nelson",
+       "was":[
+          {
+             "Succeeded":false,
+             "Value":0.0
+          }
+       ],
+       "now":[
+          {
+             "Succeeded":true,
+             "Value":0.5
+          }
+       ]
+    },
+    {
+       "input":"half seas over",
+       "was":[
+          {
+             "Succeeded":false,
+             "Value":0.0
+          }
+       ],
+       "now":[
+          {
+             "Succeeded":true,
+             "Value":0.5
+          }
+       ]
+    }
+ ]
