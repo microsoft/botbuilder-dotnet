@@ -7,8 +7,9 @@ using System.Collections.Generic;
 namespace Microsoft.Bot.Builder.Adapters.Twilio
 {
     /// <summary>
-    /// A class wrapping all the Twilio SMS event properties.
+    /// A class wrapping Twilio request parameters.
     /// </summary>
+    /// <remarks>These parameters can be included in an HTTP request that contains a Twilio message.</remarks>
     public class TwilioMessage
     {
         /// <summary>
@@ -20,79 +21,83 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// <summary>
         /// Gets or sets the receiver's country.
         /// </summary>
-        /// <value>The receiver's country. E.g. "US".</value>
+        /// <value>The receiver's country, such as "US".</value>
         public string ToCountry { get; set; }
 
         /// <summary>
         /// Gets or sets the sender's country.
         /// </summary>
-        /// <value>The sender's country. E.g. "US".</value>
+        /// <value>The sender's country, such as "US".</value>
         public string FromCountry { get; set; }
 
         /// <summary>
-        /// Gets or sets the receiver's geographical State.
+        /// Gets or sets the receiver's state or province.
         /// </summary>
-        /// <value>The receiver's geographical State. E.g. "NY".</value>
+        /// <value>The receiver's state or province, such as "NY".</value>
         public string ToState { get; set; }
 
         /// <summary>
-        /// Gets or sets a SMS message Sid.
+        /// Gets or sets the `sms_id` found in the response of a phone verification start.
         /// </summary>
-        /// <value>The SMS message security identifier.</value>
+        /// <value>The`sms_id` found in the response of a phone verification start.</value>
         public string SmsMessageSid { get; set; }
 
         /// <summary>
         /// Gets or sets the number of media files associated with the message.
         /// </summary>
-        /// <value>The number of media files associated with the message. A message can send up to 10 media files.</value>
+        /// <value>The number of media files associated with the message.</value>
+        /// <remarks>A message can include up to 10 media files.</remarks>
         public string NumMedia { get; set; }
 
         /// <summary>
-        /// Gets or sets the URL when there's media such as images, associated with the message.
+        /// Gets or sets the URLs referencing the media content included with the message, if any.
         /// </summary>
-        /// <value>URL of any media if present.</value>
+        /// <value>URLs referencing the media content included with the message.</value>
         public List<Uri> MediaUrls { get; set; }
 
         /// <summary>
-        /// Gets or sets the content type of the attached media.
+        /// Gets or sets the content types for the media included with the message, if any.
         /// </summary>
-        /// <value>The content type of the attached media.</value>
+        /// <value>The content types for the media included with the message.</value>
         public List<string> MediaContentTypes { get; set; }
 
         /// <summary>
         /// Gets or sets the receiver's city.
         /// </summary>
-        /// <value>The receiver's city. E.g. "FARMINGDALE".</value>
+        /// <value>The receiver's city, such as "FARMINGDALE".</value>
         public string ToCity { get; set; }
 
         /// <summary>
-        /// Gets or sets the sender's ZIP postal code.
+        /// Gets or sets the sender's postal code.
         /// </summary>
-        /// <value>The sender's ZIP postal code. </value>
+        /// <value>The sender's postal code. </value>
         public string FromZip { get; set; }
 
         /// <summary>
-        /// Gets or sets the sms security identifier.
+        /// Gets or sets the SMS security identifier.
         /// </summary>
-        /// <value>The security identifier of the sms (see https://www.twilio.com/docs/glossary/what-is-a-sid).</value>
+        /// <value>The SMS message security identifier.</value>
+        /// <remarks>Same as the <see cref="MessageSid"/>.</remarks>
         public string SmsSid { get; set; }
 
         /// <summary>
-        /// Gets or sets the sender's geographical State.
+        /// Gets or sets the sender's state or province.
         /// </summary>
-        /// <value>The sender's geographical State. E.g. "NY".</value>
+        /// <value>The sender's state or province, such as "NY".</value>
         public string FromState { get; set; }
 
         /// <summary>
         /// Gets or sets the status of the message.
         /// </summary>
-        /// <value>The status of the message. E.g. "received".</value>
+        /// <value>The status of the message, such as "received".</value>
+        /// <remarks>See [message status values](https://aka.ms/twilio-message-status-values)
+        /// for a list of the possible values.</remarks>
         public string SmsStatus { get; set; }
 
         /// <summary>
         /// Gets or sets the sender's city.
         /// </summary>
-        /// <value>The sender's city. E.g. "FARMINGDALE".</value>
+        /// <value>The sender's city, such as "FARMINGDALE".</value>
         public string FromCity { get; set; }
 
         /// <summary>
@@ -108,9 +113,9 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         public string To { get; set; }
 
         /// <summary>
-        /// Gets or sets the recipient's zip code.
+        /// Gets or sets the recipient's postal code.
         /// </summary>
-        /// <value>The recipient's zip code.</value>
+        /// <value>The recipient's postal code.</value>
         public string ToZip { get; set; }
 
         /// <summary>
@@ -122,7 +127,9 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// <summary>
         /// Gets or sets the security identifier of the message.
         /// </summary>
-        /// <value>The security identifier of the message (see https://www.twilio.com/docs/glossary/what-is-a-sid).</value>
+        /// <value>The security identifier of the message.</value>
+        /// <remarks>For more information, see [Security Identifier (SID)](https://aka.ms/twilio-sid).
+        /// </remarks>
         public string MessageSid { get; set; }
 
         /// <summary>

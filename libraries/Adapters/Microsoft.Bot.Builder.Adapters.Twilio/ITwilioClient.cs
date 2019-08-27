@@ -6,20 +6,23 @@ using Twilio.Rest.Api.V2010.Account;
 
 namespace Microsoft.Bot.Builder.Adapters.Twilio
 {
+    /// <summary>
+    /// Represents a Twilio client.
+    /// </summary>
     public interface ITwilioClient
     {
         /// <summary>
-        /// Logs into the Twilio API service.
+        /// Initializes the Twilio client with a user name and password.
         /// </summary>
-        /// <param name="username">The username for the Twilio API.</param>
+        /// <param name="username">The user name for the Twilio API.</param>
         /// <param name="password">The password for the Twilio API.</param>
         void LogIn(string username, string password);
 
         /// <summary>
-        /// Returns the resource ID from a message.
+        /// Sends a Twilio SMS message.
         /// </summary>
-        /// <param name="messageOptions">Object that represents the Twilio message options.</param>
-        /// <returns>ID from Twilio message.</returns>
+        /// <param name="messageOptions">An object containing the parameters for the message to send.</param>
+        /// <returns>The SID of the Twilio message sent.</returns>
         Task<string> SendMessage(CreateMessageOptions messageOptions);
     }
 }

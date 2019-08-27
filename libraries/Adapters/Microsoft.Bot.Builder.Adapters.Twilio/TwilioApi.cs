@@ -7,23 +7,26 @@ using Twilio.Rest.Api.V2010.Account;
 
 namespace Microsoft.Bot.Builder.Adapters.Twilio
 {
+    /// <summary>
+    /// Wrapper class for the Twilio API.
+    /// </summary>
     public class TwilioApi : ITwilioClient
     {
         /// <summary>
-        /// Initialize the Twilio client by supplying the username and password.
+        /// Initializes the Twilio client with a user name and password.
         /// </summary>
-        /// <param name="username">The username.</param>
-        /// <param name="password">The password.</param>
+        /// <param name="username">The user name for the Twilio API.</param>
+        /// <param name="password">The password for the Twilio API.</param>
         public void LogIn(string username, string password)
         {
             TwilioClient.Init(username, password);
         }
 
-        /// <summary>
-        /// Sends a message and returns its resource ID.
+        /// <summary>        
+        /// Sends a Twilio SMS message.
         /// </summary>
-        /// <param name="messageOptions">Object that represents the Twilio message options.</param>
-        /// <returns>ID from the created Twilio message.</returns>
+        /// <param name="messageOptions">An object containing the parameters for the message to send.</param>
+        /// <returns>The SID of the Twilio message sent.</returns>
         public async Task<string> SendMessage(CreateMessageOptions messageOptions)
         {
             var messageResource = await MessageResource.CreateAsync((CreateMessageOptions)messageOptions).ConfigureAwait(false);
