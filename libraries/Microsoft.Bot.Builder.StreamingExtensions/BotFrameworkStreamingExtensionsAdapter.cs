@@ -49,7 +49,6 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
     /// <seealso cref="IMiddleware"/>
     public class BotFrameworkStreamingExtensionsAdapter : BotAdapter, IBotFrameworkStreamingChannelConnector, IUserTokenProvider
     {
-        private const string InvokeResponseKey = "BotFrameworkAdapter.InvokeResponse";
         private const string BotIdentityKey = "BotIdentity";
         private const string InvokeReponseKey = "BotFrameworkStreamingExtensionsAdapter.InvokeResponse";
         private const string StreamingChannelPrefix = "/v3/conversations/";
@@ -62,13 +61,12 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
         private readonly RetryPolicy _connectorClientRetryPolicy;
         private readonly IBot _bot;
         private readonly ConcurrentDictionary<string, MicrosoftAppCredentials> _appCredentialMap = new ConcurrentDictionary<string, MicrosoftAppCredentials>();
+        private readonly ITokenResolver _extensionTokenResolver;
 
         // There is a significant boost in throughput if we reuse a connectorClient
         // _connectorClients is a cache using [serviceUrl + appId].
         private readonly ConcurrentDictionary<string, ConnectorClient> _connectorClients = new ConcurrentDictionary<string, ConnectorClient>();
         private readonly ConcurrentDictionary<string, List<TokenResponse>> _responseTokens = new ConcurrentDictionary<string, List<TokenResponse>>();
-        private readonly int _pollingTimeout = 900000; // Default is 900,000 milliseconds (15 minutes) as in the OAuthPrompt
-        private readonly int _pollingRequestsInterval = 1000; // Poll for token every 1 second.
         private readonly ILogger _logger;
         private readonly IStreamingTransportServer _server;
 
@@ -100,6 +98,7 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
             _server = streamingTransportServer ?? throw new ArgumentNullException(nameof(streamingTransportServer));
             middlewares = middlewares ?? new List<IMiddleware>();
             _logger = logger ?? NullLogger.Instance;
+            _extensionTokenResolver = new ExtensionTokenResolver(this, bot);
 
             foreach (var item in middlewares)
             {
@@ -244,31 +243,6 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
             }
         }
 
-        private async Task CheckForOAuthCard(ITurnContext turnContext, Activity activity, CancellationToken cancellationToken)
-        {
-            if (activity?.Attachments != null)
-            {
-                foreach (var attachment in activity.Attachments.Where(a => a.ContentType == OAuthCard.ContentType))
-                {
-                    var oAuthCard = this.GetOAuthCard(attachment);
-                    var firstSignInButton = oAuthCard?.Buttons?.FirstOrDefault(b => b.Type == ActionTypes.Signin);
-                    firstSignInButton.Value = await GetOauthSignInLinkAsync(turnContext, oAuthCard.ConnectionName, cancellationToken);
-
-                    StartPollingForToken(turnContext, activity, oAuthCard.ConnectionName, null, cancellationToken); ;
-                }
-            }
-        }
-
-        private OAuthCard GetOAuthCard(Attachment attachment)
-        {
-            if (attachment.Content is OAuthCard)
-            {
-                return (OAuthCard)attachment.Content;
-            }
-
-            throw new ArgumentException("Invalid OAuthCard in activity attachment.");
-        }
-
         /// <summary>
         /// Sends activities to the conversation.
         /// Throws <see cref="ArgumentNullException"/> on null arguments.
@@ -337,7 +311,7 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
                     requestPath = $"/v3/conversations/{activity.Conversation?.Id}/activities";
                 }
 
-                await CheckForOAuthCard(turnContext, activity, cancellationToken);
+                await _extensionTokenResolver.CheckForOAuthCard(turnContext, activity, cancellationToken);
 
                 var streamAttachments = UpdateAttachmentStreams(activity);
                 var request = StreamingRequest.CreatePost(requestPath);
@@ -566,7 +540,7 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
             {
                 throw new ArgumentNullException(nameof(activity));
             }
-            
+
             var route = $"{StreamingChannelPrefix}{activity.Conversation.Id}/activities/{activity.Id}";
             var request = StreamingRequest.CreatePost(route);
             request.SetBody(activity);
@@ -784,7 +758,7 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
             var tokenExchangeState = new TokenExchangeState()
             {
                 ConnectionName = connectionName,
-                Conversation = GetConversationReference(turnContext),
+                Conversation = ExtensionTokenResolverHelper.GetConversationReference(turnContext),
                 MsAppId = (this._credentialProvider as MicrosoftAppCredentials)?.MicrosoftAppId,
                 IsFromStreaming = true,
             };
@@ -794,30 +768,9 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
             var state = Convert.ToBase64String(encodedState);
 
             var client = await CreateOAuthApiClientAsync(turnContext).ConfigureAwait(false);
-            return await client.BotSignIn.GetSignInUrlAsync(state, null, null, null, cancellationToken).ConfigureAwait(false);
-        }
+            var msAppId = (this._credentialProvider as MicrosoftAppCredentials)?.MicrosoftAppId;
 
-        private ConversationReference GetConversationReference(ITurnContext turnContext)
-        {
-            var activity = turnContext.Activity;
-
-            return new ConversationReference()
-            {
-                ActivityId = activity.Id,
-                Bot = new ChannelAccount
-                {
-                    Id = turnContext.Activity.Recipient.Id,
-                    Name = turnContext.Activity.Recipient.Name
-                },
-                ChannelId = activity.ChannelId,
-                Conversation = activity.Conversation,
-                ServiceUrl = activity.ServiceUrl,
-                User = new ChannelAccount
-                {
-                    Id = turnContext.Activity.From.Id,
-                    Name = turnContext.Activity.From.Name
-                },
-            };
+            return await _extensionTokenResolver.GetSignInUrl(turnContext, client, connectionName, msAppId, cancellationToken);
         }
 
         /// <summary>
@@ -944,6 +897,11 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
             return (Dictionary<string, TokenResponse>)await client.UserToken.GetAadTokensAsync(userId, connectionName, new AadResourceUrls() { ResourceUrls = resourceUrls?.ToList() }, context.Activity?.ChannelId, cancellationToken).ConfigureAwait(false);
         }
 
+        public async Task<OAuthClient> GetOAuthApiClientAsync(ITurnContext turnContext)
+        {
+            return await CreateOAuthApiClientAsync(turnContext);
+        }
+
         /// <summary>
         /// Creates an OAuth client for the bot.
         /// </summary>
@@ -975,87 +933,6 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
             }
 
             return new OAuthClient(new Uri(OAuthClientConfig.OAuthEndpoint), connectorClient.Credentials);
-        }
-
-        private async Task StartPollingForToken(ITurnContext turnContext, Activity activity, string connectionName, string magicCode, CancellationToken cancellationToken)
-        {
-            TokenResponse tokenResponse = null;
-            bool shouldEndPolling = false;
-            int pollingTimeout = this._pollingTimeout;
-            int pollingRequestsInterval = this._pollingRequestsInterval;
-            var loginTimeout = turnContext?.TurnState?.Get<object>(LoginTimeout.Key);
-
-            // Override login timeout with value set from the OAuthPrompt or by the developer
-            if (loginTimeout != null)
-            {
-                pollingTimeout = (int)loginTimeout;
-            }
-
-            BotAssert.ContextNotNull(turnContext);
-
-            if (activity == null)
-            {
-                throw new ArgumentNullException($"BotFrameworkAdapter.StartPollingForToken(): getting response activity by {InvokeResponseKey} not found.");
-            }
-
-            if (activity.From == null || string.IsNullOrWhiteSpace(activity.From.Id))
-            {
-                throw new ArgumentNullException("BotFrameworkAdapter.GetUserTokenAsync(): missing from or from.id");
-            }
-
-            if (string.IsNullOrWhiteSpace(connectionName))
-            {
-                throw new ArgumentNullException(nameof(connectionName));
-            }
-
-            var client = await this.CreateOAuthApiClientAsync(turnContext).ConfigureAwait(false);
-
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start();
-
-            while (stopwatch.Elapsed < TimeSpan.FromMilliseconds(pollingTimeout) && !shouldEndPolling)
-            {
-                tokenResponse = await client.UserToken.GetTokenAsync(turnContext.Activity.From.Id, connectionName, activity.ChannelId, magicCode, cancellationToken).ConfigureAwait(false);
-
-                if (tokenResponse != null)
-                {
-                    // This can be used to short-circuit the polling loop.
-                    if (tokenResponse.Properties != null)
-                    {
-                        JToken tokenPollingSettingsToken = null;
-                        TokenPollingSettings tokenPollingSettings = null;
-                        var tokenPollingSettingsKey = nameof(TokenPollingSettings);
-                        tokenPollingSettingsKey = char.ToLower(tokenPollingSettingsKey[0]) + tokenPollingSettingsKey.Substring(1);
-                        tokenResponse.Properties.TryGetValue(tokenPollingSettingsKey, out tokenPollingSettingsToken);
-
-                        if (tokenPollingSettingsToken != null)
-                        {
-                            tokenPollingSettings = tokenPollingSettingsToken.ToObject<TokenPollingSettings>();
-
-                            if (tokenPollingSettings != null)
-                            {
-                                shouldEndPolling = tokenPollingSettings.Timeout <= 0 ? true : shouldEndPolling; // Timeout now and stop polling
-                                pollingRequestsInterval = tokenPollingSettings.Interval > 0 ? tokenPollingSettings.Interval : pollingRequestsInterval; // Only overrides if it is set.
-                            }
-                        }
-                    }
-
-                    // if there is token, send it to the bot
-                    if (tokenResponse.Token != null)
-                    {
-                        var tokenResponseActivityEvent = CreateTokenResponse(GetConversationReference(turnContext), tokenResponse.Token, connectionName);
-                        await ContinueConversationAsync(turnContext.Activity.Recipient.Id, GetConversationReference(turnContext), new BotCallbackHandler(_bot.OnTurnAsync), cancellationToken);
-                        shouldEndPolling = true;
-                    }
-                }
-
-                if (!shouldEndPolling)
-                {
-                    await Task.Delay(pollingRequestsInterval);
-                }
-            }
-
-            stopwatch.Stop();
         }
 
         /// <summary>
@@ -1128,34 +1005,6 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
             }
 
             return null;
-        }
-
-        public static IEventActivity CreateTokenResponse(ConversationReference relatesTo, string token, string connectionName)
-        {
-            var tokenResponse = Activity.CreateEventActivity() as Activity;
-
-            // IActivity properties
-            tokenResponse.Id = Guid.NewGuid().ToString();
-            tokenResponse.Timestamp = DateTime.UtcNow;
-            tokenResponse.From = relatesTo.User;
-            tokenResponse.Recipient = relatesTo.Bot;
-            tokenResponse.ReplyToId = relatesTo.ActivityId;
-            tokenResponse.ServiceUrl = relatesTo.ServiceUrl;
-            tokenResponse.ChannelId = relatesTo.ChannelId;
-            tokenResponse.Conversation = relatesTo.Conversation;
-            tokenResponse.Attachments = new List<Attachment>().ToArray();
-            tokenResponse.Entities = new List<Entity>().ToArray();
-
-            // IEventActivity properties
-            tokenResponse.Name = "tokens/response";
-            tokenResponse.RelatesTo = relatesTo;
-            tokenResponse.Value = new TokenResponse()
-            {
-                Token = token,
-                ConnectionName = connectionName
-            };
-
-            return tokenResponse;
         }
     }
 }
