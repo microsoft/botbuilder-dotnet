@@ -83,7 +83,7 @@ namespace Microsoft.Bot.Builder
 
         /// <summary>
         /// Override this in a derived class to provide logic specific to
-        /// <see cref="ActivityTypes.Message"/> activities, such as your bot's conversational logic.
+        /// <see cref="ActivityTypes.Message"/> activities, such as the conversational logic.
         /// </summary>
         /// <param name="turnContext">A strongly-typed context object for this turn.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
@@ -100,7 +100,13 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
-        /// Processes an inbound <see cref="ActivityTypes.ConversationUpdate"/> activity.
+        /// Invoked when a conversation update activity is received from the channel when the base behavior of
+        /// <see cref="OnTurnAsync(ITurnContext, CancellationToken)"/> is used.
+        /// Conversation update activities are useful when it comes to responding to users being added to or removed from the conversation.
+        /// For example, a bot could respond to a user being added by greeting the user.
+        /// By default, this method will call <see cref="OnMembersAddedAsync(IList{ChannelAccount}, ITurnContext{IConversationUpdateActivity}, CancellationToken)"/>
+        /// if any users have been added or <see cref="OnMembersRemovedAsync(IList{ChannelAccount}, ITurnContext{IConversationUpdateActivity}, CancellationToken)"/>
+        /// if any users have been removed. The method checks the member ID so that it only responds to updates regarding members other than the bot itself.
         /// </summary>
         /// <param name="turnContext">A strongly-typed context object for this turn.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
@@ -186,7 +192,13 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
-        /// Processes an inbound <see cref="ActivityTypes.MessageReaction"/> activity.
+        /// Invoked when an event activity is received from the connector when the base behavior of
+        /// <see cref="OnTurnAsync(ITurnContext, CancellationToken)"/> is used.
+        /// Message reactions correspond to the user adding a 'like' or 'sad' etc. (often an emoji) to a
+        /// previously sent activity. Message reactions are only supported by a few channels.
+        /// The activity that the message reaction corresponds to is indicated in the replyToId property.
+        /// The value of this property is the activity id of a previously sent activity given back to the
+        /// bot as the response from a send call.
         /// </summary>
         /// <param name="turnContext">A strongly-typed context object for this turn.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
@@ -276,8 +288,12 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
-        /// Override this in a derived class to provide logic specific to
-        /// <see cref="ActivityTypes.Event"/> activities.
+        /// Invoked when an event activity is received from the connector when the base behavior of
+        /// <see cref="OnTurnAsync(ITurnContext, CancellationToken)"/> is used.
+        /// Event activities can be used to communicate many different things.
+        /// By default, this method will call <see cref="OnTokenResponseEventAsync(ITurnContext{IEventActivity}, CancellationToken)"/> if the
+        /// activity's name is <c>tokens/response</c> or <see cref="OnEventAsync(ITurnContext{IEventActivity}, CancellationToken)"/> otherwise.
+        /// A <c>tokens/response</c> event can be triggered by an <see cref="OAuthCard"/>.
         /// </summary>
         /// <param name="turnContext">A strongly-typed context object for this turn.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
@@ -315,8 +331,10 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
-        /// Override this in a derived class to provide logic for when the bot receives a
-        /// <c>tokens/response</c> event.
+        /// Invoked when a <c>tokens/response</c> event is received when the base behavior of
+        /// <see cref="OnEventActivityAsync(ITurnContext{IEventActivity}, CancellationToken)"/> is used.
+        /// If using an <c>OAuthPrompt</c>, override this method to forward this <see cref="Activity"/> to the current dialog.
+        /// By default, this method does nothing.
         /// </summary>
         /// <param name="turnContext">A strongly-typed context object for this turn.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
@@ -338,8 +356,10 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
-        /// Override this in a derived class to provide logic for when the bot receives an event
-        /// that is not a <c>tokens/response</c> event.
+        /// Invoked when an event other than <c>tokens/response</c> is received when the base behavior of
+        /// <see cref="OnEventActivityAsync(ITurnContext{IEventActivity}, CancellationToken)"/> is used.
+        /// This method could optionally be overridden if the bot is meant to handle miscellaneous events.
+        /// By default, this method does nothing.
         /// </summary>
         /// <param name="turnContext">A strongly-typed context object for this turn.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
@@ -358,9 +378,11 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
-        /// Override this in a derived class to provide logic for when the bot receives an activity
-        /// that is not a message, conversation update, message reaction, or event activity, such as
-        /// a contact relation update or end of conversation activity.
+        /// Invoked when an activity other than a message, conversation update, or event is received when the base behavior of
+        /// <see cref="OnTurnAsync(ITurnContext, CancellationToken)"/> is used.
+        /// If overridden, this could potentially respond to any of the other activity types like
+        /// <see cref="ActivityTypes.ContactRelationUpdate"/> or <see cref="ActivityTypes.EndOfConversation"/>.
+        /// By default, this method does nothing.
         /// </summary>
         /// <param name="turnContext">The context object for this turn.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
