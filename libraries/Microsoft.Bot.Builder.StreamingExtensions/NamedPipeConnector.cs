@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
     public class NamedPipeConnector
     {
         /*  The default named pipe all instances of DL ASE listen on is named bfv4.pipes
-            Unfortunately this name is no longer very discriptive, but for the time being
+            Unfortunately this name is no longer very descriptive, but for the time being
             we're unable to change it without coordinated updates to DL ASE, which we
             currently are unable to perform.
         */
