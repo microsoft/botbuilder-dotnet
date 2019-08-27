@@ -629,6 +629,50 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         }
 
         [TestMethod]
+        public void TestExpandTemplateWithFunction()
+        {
+            var engine = new TemplateEngine().AddFile(GetExampleFilePath("Expand.lg"));
+
+            var alarms = new[]
+            {
+                new
+                {
+                    time = "7 am",
+                    date = "tomorrow"
+                },
+                new
+                {
+                    time = "8 pm",
+                    date = "tomorrow"
+                }
+            };
+
+            var evaled = engine.ExpandTemplate("ShowAlarmsWithForeach", new { alarms = alarms });
+            var evalOptions = new List<string>()
+            {
+                "You have 2 alarms, 7 am at tomorrow and 8 pm at tomorrow",
+                "You have 2 alarms, 7 am at tomorrow and 8 pm of tomorrow",
+                "You have 2 alarms, 7 am of tomorrow and 8 pm at tomorrow",
+                "You have 2 alarms, 7 am of tomorrow and 8 pm of tomorrow"
+            };
+
+            Assert.AreEqual(1, evaled.Count);
+            Assert.AreEqual(true, evalOptions.Contains(evaled[0]));
+
+            evaled = engine.ExpandTemplate("T2");
+            Assert.AreEqual(1, evaled.Count);
+            Assert.AreEqual(true, evaled[0] == "3" || evaled[0] == "5");
+
+            evaled = engine.ExpandTemplate("T3");
+            Assert.AreEqual(1, evaled.Count);
+            Assert.AreEqual(true, evaled[0] == "3" || evaled[0] == "5");
+
+            evaled = engine.ExpandTemplate("T4");
+            Assert.AreEqual(1, evaled.Count);
+            Assert.AreEqual(true, evaled[0] == "ey" || evaled[0] == "el");
+        }
+
+        [TestMethod]
         public void TestEvalExpression()
         {
             var engine = new TemplateEngine().AddFile(GetExampleFilePath("EvalExpression.lg"));

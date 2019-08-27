@@ -25,9 +25,7 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
             { "@", $"turn.recognized.entities" },
             { "@@", $"turn.recognized.entities" },
             { "$", $"" },
-            { "^", $"" },
             { "%", $"dialog.options" },
-            { "~", $"dialog.instance" },
         };
 
         /// <summary>

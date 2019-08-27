@@ -2,6 +2,8 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
@@ -15,14 +17,9 @@ namespace Microsoft.Bot.Builder.Dialogs
         public DialogState(IList<DialogInstance> stack)
         {
             DialogStack = stack ?? new List<DialogInstance>();
-            ConversationState = new Dictionary<string, object>();
-            UserState = new Dictionary<string, object>();
         }
 
+        [JsonProperty("dialogStack")]
         public IList<DialogInstance> DialogStack { get; set; } = new List<DialogInstance>();
-
-        public IDictionary<string, object> ConversationState { get; set; } = new Dictionary<string, object>();
-
-        public IDictionary<string, object> UserState { get; set; } = new Dictionary<string, object>();
     }
 }

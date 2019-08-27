@@ -3,6 +3,8 @@
 
 using System.Collections.Generic;
 using System.Diagnostics;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
@@ -18,6 +20,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <value>
         /// ID of the dialog this instance is for.
         /// </value>
+        [JsonProperty("id")]
         public string Id { get; set; }
 
         /// <summary>
@@ -26,12 +29,14 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <value>
         /// The instance's persisted state.
         /// </value>
+        [JsonProperty("state")]
         public IDictionary<string, object> State { get; set; }
 
         /// <summary>
         /// Positive values are indexes within the current DC and negative values are indexes in
         /// the parent DC.
         /// </summary>
+        [JsonProperty("stackIndex")]
         public int? StackIndex { get; set; }
     }
 }

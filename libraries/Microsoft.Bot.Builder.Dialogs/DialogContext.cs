@@ -32,8 +32,8 @@ namespace Microsoft.Bot.Builder.Dialogs
             Context = Parent.Context;
             Stack = state.DialogStack;
             settings = settings ?? Configuration.LoadSettings(Context.TurnState.Get<IConfiguration>());
-            conversationState = conversationState ?? state?.ConversationState ?? new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
-            userState = userState ?? state?.UserState ?? new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
+            conversationState = conversationState ?? new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
+            userState = userState ?? new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
             if (!Context.TurnState.TryGetValue("TurnStateMap", out object turnState))
             {
                 turnState = new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
@@ -51,8 +51,8 @@ namespace Microsoft.Bot.Builder.Dialogs
             Context = turnContext ?? throw new ArgumentNullException(nameof(turnContext));
             Stack = state.DialogStack;
             settings = settings ?? Configuration.LoadSettings(Context.TurnState.Get<IConfiguration>());
-            conversationState = conversationState ?? state?.ConversationState ?? new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
-            userState = userState ?? state?.UserState ?? new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
+            conversationState = conversationState ?? new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
+            userState = userState ?? new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
             if (!Context.TurnState.TryGetValue("TurnStateMap", out object turnState))
             {
                 turnState = new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
@@ -343,6 +343,17 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             // Check for a dialog on the stack
             var instance = this.ActiveDialog;
+
+            // if we are continuing and haven't emitted the activityReceived event, emit it
+            // NOTE: This is backward compatible way for activity received to be fired even if you have legacy dialog loop
+            if (!this.Context.TurnState.ContainsKey("activityReceivedEmitted"))
+            {
+                this.Context.TurnState["activityReceivedEmitted"] = true;
+
+                // Dispatch "activityReceived" event
+                // - This will queue up any interruptions.
+                await this.EmitEventAsync(DialogEvents.ActivityReceived, value: this.Context.Activity, bubble: true, fromLeaf: true, cancellationToken: cancellationToken).ConfigureAwait(false);
+            }
 
             if (instance != null)
             {
