@@ -12,16 +12,6 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Helpers
     /// </summary>
     internal static class AttachmentHelper
     {
-        public static bool IsValidAttachmentData(AttachmentData attachmentData)
-        {
-            if (attachmentData == null || attachmentData.Type == null || attachmentData.OriginalBase64 == null)
-            {
-                return false;
-            }
-
-            return true;
-        }
-
         /// <summary>
         /// Determines if the content param can be turned into an Uri with http or https scheme.
         /// </summary>

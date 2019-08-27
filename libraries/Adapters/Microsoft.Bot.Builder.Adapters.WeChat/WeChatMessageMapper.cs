@@ -165,9 +165,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                     foreach (var attachment in messageActivity.Attachments ?? new List<Attachment>())
                     {
                         IList<IResponseMessageBase> attachmentResponses = new List<IResponseMessageBase>();
-                        if (attachment.ContentType == AdaptiveCard.ContentType ||
-                            attachment.ContentType == "application/adaptive-card" ||
-                            attachment.ContentType == "application/vnd.microsoft.card.adaptive")
+                        if (attachment.ContentType == AdaptiveCard.ContentType || attachment.ContentType == "application/adaptive-card")
                         {
                             attachmentResponses = await ProcessAdaptiveCardAsync(messageActivity, attachment).ConfigureAwait(false);
                         }
@@ -243,23 +241,22 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// <returns>Media resposne such as ImageResponse, etc.</returns>
         private static ResponseMessage CreateMediaResponse(IActivity activity, string mediaId, string type)
         {
-            ResponseMessage response = null;
             if (type.Contains(MediaTypes.Image))
             {
-                response = new ImageResponse(activity.From.Id, activity.Recipient.Id, mediaId);
+                return new ImageResponse(activity.From.Id, activity.Recipient.Id, mediaId);
             }
 
             if (type.Contains(MediaTypes.Video))
             {
-                response = new VideoResponse(activity.From.Id, activity.Recipient.Id, new Video(mediaId));
+                return new VideoResponse(activity.From.Id, activity.Recipient.Id, new Video(mediaId));
             }
 
             if (type.Contains(MediaTypes.Audio))
             {
-                response = new VoiceResponse(activity.From.Id, activity.Recipient.Id, mediaId);
+                return new VoiceResponse(activity.From.Id, activity.Recipient.Id, mediaId);
             }
 
-            return response;
+            throw new Exception($"Unsupported media type: {type}");
         }
 
         /// <summary>
@@ -386,11 +383,9 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         private static IList<IResponseMessageBase> ProcessCardActions(IMessageActivity activity, IList<CardAction> actions)
         {
             var messages = new List<IResponseMessageBase>();
-
-            actions = actions ?? new List<CardAction>();
             var menuItems = new List<MenuItem>();
             var text = string.Empty;
-            foreach (var action in actions)
+            foreach (var action in actions ?? new List<CardAction>())
             {
                 // Convert action to a tag if its a url other wise convert it to message menu.
                 var actionContent = action.DisplayText ?? action.Title ?? action.Text;
@@ -538,23 +533,22 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// <returns>The fixed media type WeChat supported.</returns>
         private static string GetFixedMeidaType(string type)
         {
-            var fixedType = string.Empty;
             if (type.IndexOf(MediaTypes.Image, StringComparison.InvariantCultureIgnoreCase) >= 0)
             {
-                fixedType = MediaTypes.Image;
+                type = MediaTypes.Image;
             }
 
             if (type.IndexOf(MediaTypes.Video, StringComparison.InvariantCultureIgnoreCase) >= 0)
             {
-                fixedType = MediaTypes.Video;
+                type = MediaTypes.Video;
             }
 
             if (type.IndexOf(MediaTypes.Voice, StringComparison.InvariantCultureIgnoreCase) >= 0)
             {
-                fixedType = MediaTypes.Voice;
+                type = MediaTypes.Voice;
             }
 
-            return fixedType;
+            return type;
         }
 
         /// <summary>
@@ -587,7 +581,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
 
             if (AttachmentHelper.IsUrl(attachment.Content))
             {
-                responseList.Add(await MediaContentToWeChatResponse(activity, attachment.Name, attachment.ContentUrl, attachment.ContentType).ConfigureAwait(false));
+                responseList.Add(await MediaContentToWeChatResponse(activity, attachment.Name, attachment.Content.ToString(), attachment.ContentType).ConfigureAwait(false));
             }
             else if (attachment.Content != null)
             {
