@@ -136,12 +136,16 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
             var attachments = new List<Attachment>();
             for (var i = 0; i < numMedia; i++)
             {
-                var attachment = new Attachment()
+                // Ensure MediaContentType and MediaUrl are present before adding the attachment
+                if (message.ContainsKey($"MediaContentType{i}") && message.ContainsKey($"MediaUrl{i}"))
                 {
-                    ContentType = message[$"MediaContentType{i}"],
-                    ContentUrl = message[$"MediaUrl{i}"],
-                };
-                attachments.Add(attachment);
+                    var attachment = new Attachment()
+                    {
+                        ContentType = message[$"MediaContentType{i}"],
+                        ContentUrl = message[$"MediaUrl{i}"],
+                    };
+                    attachments.Add(attachment);
+                }
             }
 
             return attachments;
