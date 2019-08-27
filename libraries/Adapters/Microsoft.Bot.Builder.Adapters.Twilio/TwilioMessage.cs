@@ -13,6 +13,12 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
     public class TwilioMessage
     {
         /// <summary>
+        /// Gets or sets the Author of the message.
+        /// </summary>
+        /// <value>The Author of the message.</value>
+        public string Author { get; set; }
+
+        /// <summary>
         /// Gets or sets the receiver's country.
         /// </summary>
         /// <value>The receiver's country, such as "US".</value>
@@ -143,5 +149,11 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// </summary>
         /// <value>The API version used to process the message.</value>
         public string ApiVersion { get; set; }
+
+        /// <summary>
+        /// Gets or sets the event type for using with Twilio Conversation API.
+        /// </summary>
+        /// <value>The type of event, e.g. "onMessageAdd", "onMessageAdded", "onConversationAdd".</value>
+        public string EventType { get; set; }
     }
 }

@@ -239,6 +239,55 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
         }
 
         [Fact]
+        public void RequestToActivity_Should_NotThrow_KeyNotFoundException_With_NumMedia_GreaterThan_Attachments()
+        {
+            var hmac = new HMACSHA1(Encoding.UTF8.GetBytes(AuthTokenString));
+            var builder = new StringBuilder(ValidationUrlString);
+
+            var bodyString = File.ReadAllText(Directory.GetCurrentDirectory() + @"\files\MediaPayload.txt");
+
+            // Replace NumMedia with a number > the number of attachments
+            bodyString = bodyString.Replace("NumMedia=1", "NumMedia=2");
+
+            byte[] byteArray = Encoding.ASCII.GetBytes(bodyString);
+            MemoryStream stream = new MemoryStream(byteArray);
+
+            var values = new Dictionary<string, string>();
+
+            var pairs = bodyString.Replace("+", "%20").Split('&');
+
+            foreach (var p in pairs)
+            {
+                var pair = p.Split('=');
+                var key = pair[0];
+                var value = Uri.UnescapeDataString(pair[1]);
+
+                values.Add(key, value);
+            }
+
+            var sortedKeys = new List<string>(values.Keys);
+            sortedKeys.Sort(StringComparer.Ordinal);
+
+            foreach (var key in sortedKeys)
+            {
+                builder.Append(key).Append(values[key] ?? string.Empty);
+            }
+
+            var hashArray = hmac.ComputeHash(Encoding.UTF8.GetBytes(builder.ToString()));
+            string hash = Convert.ToBase64String(hashArray);
+
+            var httpRequest = new Mock<HttpRequest>();
+            httpRequest.SetupAllProperties();
+            httpRequest.SetupGet(req => req.Headers[It.IsAny<string>()]).Returns(hash);
+
+            httpRequest.Object.Body = stream;
+
+            var activity = TwilioHelper.RequestToActivity(httpRequest.Object, ValidationUrlString, AuthTokenString);
+
+            Assert.NotNull(activity.Attachments);
+        }
+
+        [Fact]
         public void RequestToActivity_Should_Return_Null_With_Null_HttpRequest()
         {
             Assert.Null(TwilioHelper.RequestToActivity(null, ValidationUrlString, AuthTokenString));

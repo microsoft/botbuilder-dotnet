@@ -22,13 +22,12 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
             TwilioClient.Init(username, password);
         }
 
-        /// <summary>
+        /// <summary>        
         /// Sends a Twilio SMS message.
         /// </summary>
         /// <param name="messageOptions">An object containing the parameters for the message to send.</param>
         /// <returns>The SID of the Twilio message sent.</returns>
-        /// <remarks><paramref name="messageOptions"/> should be a <see cref="CreateMessageOptions"/> object.</remarks>
-        public async Task<string> GetResourceIdentifier(object messageOptions)
+        public async Task<string> SendMessage(CreateMessageOptions messageOptions)
         {
             var messageResource = await MessageResource.CreateAsync((CreateMessageOptions)messageOptions).ConfigureAwait(false);
             return messageResource.Sid;
