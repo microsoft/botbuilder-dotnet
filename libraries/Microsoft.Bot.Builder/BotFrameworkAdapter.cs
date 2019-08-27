@@ -827,14 +827,12 @@ namespace Microsoft.Bot.Builder
         {
             if (reference.Conversation != null)
             {
-                var typeOfDynamic = reference.Conversation.GetType();
-                var tenantProperty = typeOfDynamic.GetProperty("tenantId");
-                var tenantId = tenantProperty?.GetValue(reference.Conversation, null);
+                var tenantId = reference.Conversation.TenantId;
 
                 if (tenantId != null)
                 {
                     // Putting tenantId in channelData is a temporary solution while we wait for the Teams API to be updated
-                    conversationParameters.ChannelData = new { tenant = new { tenantId= tenantId.ToString() } };
+                    conversationParameters.ChannelData = new { tenant = new { tenantId = tenantId.ToString() } };
 
                     // Permanent solution is to put tenantId in parameters.tenantId
                     conversationParameters.TenantId = tenantId.ToString();
