@@ -86,5 +86,21 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
             Assert.Equal(message.Id, activity.Id);
             Assert.Equal(ActivityTypes.Event, activity.Type);
         }
+
+        [Fact]
+        public void DecryptedMessageToActivity_With_Html_Should_Return_Activity()
+        {
+            var serializedPerson = "{\"id\":\"different_id\"}";
+            WebexHelper.Identity = JsonConvert.DeserializeObject<Person>(serializedPerson);
+
+            var message =
+                JsonConvert.DeserializeObject<Message>(
+                    File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\MessageHtml.json"));
+
+            var activity = WebexHelper.DecryptedMessageToActivity(message);
+
+            Assert.Equal(message.Id, activity.Id);
+            Assert.Equal(message.Html, activity.Text);
+        }
     }
 }

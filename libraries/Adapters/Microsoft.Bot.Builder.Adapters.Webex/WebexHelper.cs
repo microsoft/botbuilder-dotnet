@@ -151,7 +151,11 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                 {
                     // this should look like ciscospark://us/PEOPLE/<id string>
                     var match = Regex.Match(Identity.Id, "/ciscospark://.*/(.*)/im");
-                    pattern = new Regex($"^(<p>)?<spark-mention .*?data-object-id=\"{match.Captures[1]}\".*?>.*?</spark-mention>");
+                    if (match.Captures.Count > 0)
+                    {
+                        pattern = new Regex(
+                            $"^(<p>)?<spark-mention .*?data-object-id=\"{match.Captures[1]}\".*?>.*?</spark-mention>");
+                    }
                 }
 
                 var action = decryptedMessage.Html.Replace(pattern.ToString(), string.Empty);
