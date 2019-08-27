@@ -183,7 +183,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// <remarks>Call this method to proactively send a message to a conversation.
         /// Most channels require a user to initiate a conversation with a bot
         /// before the bot can send activities to the user.</remarks>
-        /// <seealso cref="RunPipelineAsync(ITurnContext, BotCallbackHandler, CancellationToken)"/>
+        /// <seealso cref="BotAdapter.RunPipelineAsync(ITurnContext, BotCallbackHandler, CancellationToken)"/>
         /// <exception cref="ArgumentNullException"><paramref name="reference"/> or
         /// <paramref name="logic"/> is <c>null</c>.</exception>
         public async Task ContinueConversationAsync(ConversationReference reference, BotCallbackHandler logic, CancellationToken cancellationToken)
