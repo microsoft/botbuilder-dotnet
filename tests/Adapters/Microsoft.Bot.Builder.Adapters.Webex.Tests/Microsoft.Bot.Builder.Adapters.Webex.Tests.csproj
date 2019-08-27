@@ -17,4 +17,10 @@
     <ProjectReference Include="..\..\..\libraries\Adapters\Microsoft.Bot.Builder.Adapters.Webex\Microsoft.Bot.Builder.Adapters.Webex.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Files\Message.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
