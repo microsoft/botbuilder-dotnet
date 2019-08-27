@@ -5,10 +5,20 @@ using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.StreamingExtensions
 {
+    /// <summary>
+    /// Defines utility methods used by the ExtensionResourceResolver class
+    /// </summary>
     public class ExtensionTokenResolverHelper
     {
         public static string InvokeResponseKey = "BotFrameworkStreamingExtensionsAdapter.InvokeResponse";
 
+        /// <summary>
+        /// Creates a response containing a token.
+        /// </summary>
+        /// <param name="relatesTo"></param>
+        /// <param name="token">The token to be included in the response</param>
+        /// <param name="connectionName">The connection name of which this token belongs to</param>
+        /// <returns>The resnsponse to be sent to the bot</returns>
         public static IEventActivity CreateTokenResponse(ConversationReference relatesTo, string token, string connectionName)
         {
             var tokenResponse = Activity.CreateEventActivity() as Activity;
@@ -37,6 +47,11 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
             return tokenResponse;
         }
 
+        /// <summary>
+        /// Gets the conversation's reference object with details the conversation.
+        /// </summary>
+        /// <param name="turnContext">The current turn context</param>
+        /// <returns>The conversation reference object</returns>
         public static ConversationReference GetConversationReference(ITurnContext turnContext)
         {
             var activity = turnContext.Activity;
@@ -60,6 +75,11 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
             };
         }
 
+        /// <summary>
+        /// Find an OAuth card from an attachment.
+        /// </summary>
+        /// <param name="attachment">Activity attachment</param>
+        /// <returns>Return the OAuth card found in the attachment</returns>
         public static OAuthCard FindOAuthCard(Attachment attachment)
         {
             if (attachment.Content is OAuthCard)
