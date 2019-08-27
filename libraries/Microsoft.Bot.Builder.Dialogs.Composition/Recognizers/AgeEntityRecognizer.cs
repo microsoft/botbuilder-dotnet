@@ -6,7 +6,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition.Recognizers
 {
     public class AgeEntityRecognizer : BaseEntityRecognizer
     {
-        public AgeEntityRecognizer() { }
+        public AgeEntityRecognizer()
+        {
+        }
 
         protected override List<ModelResult> Recognize(string text, string culture)
         {

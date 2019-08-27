@@ -4,9 +4,7 @@
 using System;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
@@ -16,7 +14,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
     [TestClass]
     public class ResourceTests
     {
-        private static JsonSerializerSettings jsonSerializerSettings = new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore, Formatting = Formatting.Indented };
+        private static JsonSerializerSettings jsonSerializerSettings = 
+            new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore, Formatting = Formatting.Indented };
 
         public TestContext TestContext { get; set; }
 
@@ -27,35 +26,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
             {
                 File.Delete(file);
             }
-        }
-
-        private static void AssertResourceFound(ResourceExplorer explorer, string id)
-        {
-            var dialog = explorer.GetResource(id);
-            Assert.IsNotNull(dialog, $"getResource({id}) should return resource");
-            var dialogs = explorer.GetResources("dialog");
-            Assert.IsTrue(dialogs.Where(d => d.Id == id).Any(), $"getResources({id}) should return resource");
-        }
-
-        private static void AssertResourceNull(ResourceExplorer explorer, string id)
-        {
-            var dialog = explorer.GetResource(id);
-            Assert.IsNull(dialog, $"GetResource({id}) should return null");
-            var dialogs = explorer.GetResources("dialog");
-            Assert.IsFalse(dialogs.Where(d => d.Id == id).Any(), $"getResources({id}) should not return resource");
-
-        }
-
-        private async Task AssertResourceContents(ResourceExplorer explorer, string id, string contents)
-        {
-            var resource = explorer.GetResource(id);
-
-            var text = await resource.ReadTextAsync();
-            Assert.AreEqual(contents, text, $"getResource({id}) contents not the same ");
-            resource = explorer.GetResources("dialog").Where(d => d.Id == id).Single();
-
-            text = await resource.ReadTextAsync();
-            Assert.AreEqual(contents, text, $"getResources({id}) contents not the same");
         }
 
         [TestMethod]
@@ -163,7 +133,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
             }
         }
 
-
         [TestMethod]
         public async Task TestFolderSource_DeleteFiresChanged()
         {
@@ -189,6 +158,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
                         changeFired.SetResult(true);
                     }
                 };
+
                 // changed file
                 File.Delete(testDialogFile);
 
@@ -203,6 +173,35 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
             var resources = explorer.GetResources(resourceType).ToArray();
             Assert.AreEqual(1, resources.Length);
             Assert.AreEqual($".{resourceType}", Path.GetExtension(resources[0].Id));
+            await Task.FromResult<object>(null);
+        }
+
+        private static void AssertResourceFound(ResourceExplorer explorer, string id)
+        {
+            var dialog = explorer.GetResource(id);
+            Assert.IsNotNull(dialog, $"getResource({id}) should return resource");
+            var dialogs = explorer.GetResources("dialog");
+            Assert.IsTrue(dialogs.Where(d => d.Id == id).Any(), $"getResources({id}) should return resource");
+        }
+
+        private static void AssertResourceNull(ResourceExplorer explorer, string id)
+        {
+            var dialog = explorer.GetResource(id);
+            Assert.IsNull(dialog, $"GetResource({id}) should return null");
+            var dialogs = explorer.GetResources("dialog");
+            Assert.IsFalse(dialogs.Where(d => d.Id == id).Any(), $"getResources({id}) should not return resource");
+        }
+
+        private async Task AssertResourceContents(ResourceExplorer explorer, string id, string contents)
+        {
+            var resource = explorer.GetResource(id);
+
+            var text = await resource.ReadTextAsync();
+            Assert.AreEqual(contents, text, $"getResource({id}) contents not the same ");
+            resource = explorer.GetResources("dialog").Where(d => d.Id == id).Single();
+
+            text = await resource.ReadTextAsync();
+            Assert.AreEqual(contents, text, $"getResources({id}) contents not the same");
         }
     }
 }

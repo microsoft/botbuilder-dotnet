@@ -4,22 +4,19 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
     /// <summary>
-    /// Action which calls another dialog, when it is done it will go to the callers parent dialog
+    /// Action which calls another dialog, when it is done it will go to the callers parent dialog.
     /// </summary>
     public class ReplaceDialog : BaseInvokeDialog
     {
         [JsonConstructor]
-        public ReplaceDialog(string dialogIdToCall = null, string property = null, IDictionary<string,string> options = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public ReplaceDialog(string dialogIdToCall = null, string property = null, IDictionary<string, string> options = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base(dialogIdToCall, property, options)
         {
             this.RegisterSourceLocation(callerPath, callerLine);

@@ -2,14 +2,14 @@
 {
     using System.Collections.Generic;
     using System.Linq;
-    using System.Reflection;
     using System.Text;
     using Microsoft.Bot.Builder.Expressions;
 
     public class Clause : Expression
     {
-        private Dictionary<string, string> anyBindings = new Dictionary<string, string>();
         internal bool Subsumed = false;
+
+        private Dictionary<string, string> anyBindings = new Dictionary<string, string>();
 
         internal Clause()
             : base(ExpressionType.And)

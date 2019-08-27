@@ -150,14 +150,13 @@
     <Content Include="Schemas\Recognizers\Microsoft.RegexRecognizer.schema" />
     <Content Include="Schemas\Selectors\Microsoft.ConditionalSelector.schema" />
     <Content Include="Schemas\Selectors\Microsoft.TrueSelector.schema" />
+    <Content Include="Schemas\Selectors\Microsoft.FirstSelector.schema" />
+    <Content Include="Schemas\Selectors\Microsoft.MostSpecificSelector.schema" />
+    <Content Include="Schemas\Selectors\Microsoft.RandomSelector.schema" />
     <Content Include="Schemas\Actions\Microsoft.RepeatDialog.schema" />
     <Content Include="Schemas\Actions\Microsoft.DeleteProperty.schema" />
     <Content Include="Schemas\Actions\Microsoft.IfCondition.schema" />
     <Content Include="Schemas\Actions\Microsoft.LogAction.schema" />
-    <Content Include="Schemas\Actions\Microsoft.TraceActivity.schema" />
-    <Content Include="Schemas\Selectors\Microsoft.FirstSelector.schema" />
-    <Content Include="Schemas\Selectors\Microsoft.MostSpecificSelector.schema" />
-    <Content Include="Schemas\Selectors\Microsoft.RandomSelector.schema" />
     <Content Include="Schemas\Actions\Microsoft.TraceActivity.schema" />
     <Content Include="Schemas\Actions\Microsoft.InitProperty.schema" />
     <Content Include="Schemas\Actions\Microsoft.SetProperty.schema" />

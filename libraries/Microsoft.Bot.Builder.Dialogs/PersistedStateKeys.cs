@@ -7,7 +7,7 @@ using System.Collections.Generic;
 namespace Microsoft.Bot.Builder.Dialogs
 {
     /// <summary>
-    /// These are the keys which are persisted
+    /// These are the keys which are persisted.
     /// </summary>
     public class PersistedStateKeys : IEnumerable<string>
     {

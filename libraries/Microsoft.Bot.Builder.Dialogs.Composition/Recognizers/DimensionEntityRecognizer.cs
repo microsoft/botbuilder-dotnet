@@ -6,7 +6,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition.Recognizers
 {
     public class DimensionEntityRecognizer : BaseEntityRecognizer
     {
-        public DimensionEntityRecognizer() { }
+        public DimensionEntityRecognizer()
+        {
+        }
 
         protected override List<ModelResult> Recognize(string text, string culture)
         {

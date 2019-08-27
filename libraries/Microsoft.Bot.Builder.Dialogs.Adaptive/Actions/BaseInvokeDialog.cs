@@ -2,49 +2,17 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Expressions.Parser;
-using Microsoft.Bot.Schema;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
     /// <summary>
     /// Action which calls another dialog.
+    /// </summary>
     public abstract class BaseInvokeDialog : DialogAction
     {
-        /// <summary>
-        /// Gets or sets configurable options for the dialog. 
-        /// </summary>
-        public object Options { get; set; } = new JObject();
-
-        /// <summary>
-        /// Gets or sets the dialog ID to call.
-        /// </summary>
-        public string DialogId { get; set; }
-
-        /// <summary>
-        /// The property from memory to pass to the calling dialog and to set the return value to.
-        /// </summary>
-        public string Property
-        {
-            get
-            {
-                return InputBindings.TryGetValue(DialogContextState.DIALOG_VALUE, out string value) ? value : null;
-            }
-
-            set
-            {
-                InputBindings[DialogContextState.DIALOG_VALUE] = value;
-                OutputBinding = value;
-            }
-        }
-
         public BaseInvokeDialog(string dialogIdToCall = null, string property = null, IDictionary<string, string> bindingOptions = null)
             : base()
         {
@@ -58,6 +26,42 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             if (!string.IsNullOrEmpty(property))
             {
                 Property = property;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets configurable options for the dialog. 
+        /// </summary>
+        /// <value>
+        /// Configurable options for the dialog. 
+        /// </value>
+        public object Options { get; set; } = new JObject();
+
+        /// <summary>
+        /// Gets or sets the dialog ID to call.
+        /// </summary>
+        /// <value>
+        /// The dialog ID to call.
+        /// </value>
+        public string DialogId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the property from memory to pass to the calling dialog and to set the return value to.
+        /// </summary>
+        /// <value>
+        /// The property from memory to pass to the calling dialog and to set the return value to.
+        /// </value>
+        public string Property
+        {
+            get
+            {
+                return InputBindings.TryGetValue(DialogContextState.DIALOG_VALUE, out string value) ? value : null;
+            }
+
+            set
+            {
+                InputBindings[DialogContextState.DIALOG_VALUE] = value;
+                OutputBinding = value;
             }
         }
 

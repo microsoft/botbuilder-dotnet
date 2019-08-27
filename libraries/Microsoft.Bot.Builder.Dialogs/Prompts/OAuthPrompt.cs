@@ -45,7 +45,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// ## Prompt Usage
     ///
     /// When used with your bot's <see cref="DialogSet"/> you can simply add a new instance of the prompt as a named
-    /// dialog using <see cref="DialogSet.Add(Dialog)"/>. You can then start the prompt from a waterfall step using either
+    /// dialog using <see cref="DialogSet.Add(IDialog)"/>. You can then start the prompt from a waterfall step using either
     /// <see cref="DialogContext.BeginDialogAsync(string, object, CancellationToken)"/> or
     /// <see cref="DialogContext.PromptAsync(string, PromptOptions, CancellationToken)"/>. The user
     /// will be prompted to signin as needed and their access token will be passed as an argument to

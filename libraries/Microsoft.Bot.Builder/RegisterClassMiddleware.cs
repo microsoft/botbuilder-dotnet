@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder
@@ -9,7 +6,7 @@ namespace Microsoft.Bot.Builder
     /// <summary>
     /// Middleware for injecting a class into the turn context.
     /// </summary>
-    /// <typeparam name="T">The type to register</typeparam>
+    /// <typeparam name="T">The type to register.</typeparam>
     public class RegisterClassMiddleware<T> : IMiddleware
         where T : class
     {
@@ -25,10 +22,13 @@ namespace Microsoft.Bot.Builder
         /// <summary>
         /// Gets or sets the Service to be registered into turn context.
         /// </summary>
+        /// <value>
+        /// The Service to be registered into turn context.
+        /// </value>
         public T Service { get; set; }
 
         /// <summary>
-        /// registers into the turncontext
+        /// registers into the turncontext.
         /// </summary>
         /// <param name="turnContext">The context object for this turn.</param>
         /// <param name="nextTurn">The delegate to call to continue the bot middleware pipeline.</param>

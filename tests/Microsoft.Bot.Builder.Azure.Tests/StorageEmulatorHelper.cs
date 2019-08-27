@@ -2,17 +2,8 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Tests;
-using Microsoft.Bot.Schema;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Auth;
-using Activity = Microsoft.Bot.Schema.Activity;
 
 // These tests require Azure Storage Emulator v5.7
 // The emulator must be installed at this path C:\Program Files (x86)\Microsoft SDKs\Azure\Storage Emulator\AzureStorageEmulator.exe
@@ -93,7 +84,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 RedirectStandardOutput = true,
             };
 
-            using (var proc = new Process { StartInfo = startIInfo})
+            using (var proc = new Process { StartInfo = startIInfo })
             {
                 proc.OutputDataReceived += (sender, e) => sb.Append(e.Data);
                 proc.Start();

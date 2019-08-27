@@ -2,36 +2,25 @@
 // Licensed under the MIT License.
 
 using System;
-using System.IO;
 using System.Threading.Tasks;
 using AdaptiveCards;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
 using Microsoft.Bot.Builder.LanguageGeneration;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Configuration.Memory;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Tests
 {
-    public class MockLanguageGenator : ILanguageGenerator
-    {
-        public Task<string> Generate(ITurnContext turnContext, string template, object data)
-        {
-            return Task.FromResult(template);
-        }
-    }
-
     [TestClass]
     public class TextMessageGeneratorTests
     {
-        public TestContext TestContext { get; set; }
-
         private static ResourceExplorer resourceExplorer;
+
+        public TestContext TestContext { get; set; }
 
         [ClassInitialize]
         public static void ClassInitialize(TestContext context)
@@ -40,11 +29,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             TypeFactory.RegisterAdaptiveTypes();
             resourceExplorer = ResourceExplorer.LoadProject(GetProjectFolder());
         }
-        private static string GetProjectFolder()
-        {
-            return AppContext.BaseDirectory.Substring(0, AppContext.BaseDirectory.IndexOf("bin"));
-        }
-
 
         [ClassCleanup]
         public static void ClassCleanup()
@@ -52,27 +36,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             resourceExplorer.Dispose();
         }
 
-        private ITurnContext GetTurnContext(ILanguageGenerator lg)
-        {
-            var context = new TurnContext(new TestAdapter(), new Activity());
-            context.TurnState.Add<ILanguageGenerator>(lg);
-            return context;
-        }
-
-        private async Task<ITurnContext> GetTurnContext(string lgFile)
-        {
-
-            var context = new TurnContext(new TestAdapter(), new Activity());
-            var lgText = await resourceExplorer.GetResource(lgFile).ReadTextAsync();
-            context.TurnState.Add<ILanguageGenerator>(new TemplateEngineLanguageGenerator(lgText, "test", LanguageGeneratorManager.ResourceResolver(resourceExplorer)));
-            return context;
-        }
-
-
         [TestMethod]
         public async Task TestInline()
         {
-            var context = GetTurnContext(new MockLanguageGenator());
+            var context = GetTurnContext(new MockLanguageGenerator());
             var mg = new TextMessageActivityGenerator();
             var activity = await mg.Generate(context, "text", data: null);
             Assert.AreEqual(ActivityTypes.Message, activity.Type);
@@ -83,7 +50,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public async Task TestSpeak()
         {
-            var context = GetTurnContext(new MockLanguageGenator());
+            var context = GetTurnContext(new MockLanguageGenerator());
             var mg = new TextMessageActivityGenerator();
             var activity = await mg.Generate(context, "text||speak", data: null);
             Assert.AreEqual(ActivityTypes.Message, activity.Type);
@@ -113,7 +80,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.AreEqual("https://memegenerator.net/img/instances/500x/73055378/cheese-gromit.jpg", card.Images[1].Url, "image should be set");
             Assert.AreEqual(3, card.Buttons.Count, "card buttons should be set");
             for (int i = 0; i <= 2; i++)
+            {
                 Assert.AreEqual($"Option {i + 1}", card.Buttons[i].Title, "card buttons should be set");
+            }
+
             // TODO add all of the other property types
         }
 
@@ -139,7 +109,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.AreEqual("https://memegenerator.net/img/instances/500x/73055378/cheese-gromit.jpg", card.Images[1].Url, "image should be set");
             Assert.AreEqual(3, card.Buttons.Count, "card buttons should be set");
             for (int i = 0; i <= 2; i++)
+            {
                 Assert.AreEqual($"Option {i + 1}", card.Buttons[i].Title, "card buttons should be set");
+            }
+
             // TODO add all of the other property types
         }
 
@@ -169,7 +142,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.AreEqual("https://memegenerator.net/img/instances/500x/73055378/cheese-gromit.jpg", card.Images[0].Url, "image should be set");
             Assert.AreEqual(3, card.Buttons.Count, "card buttons should be set");
             for (int i = 0; i <= 2; i++)
+            {
                 Assert.AreEqual($"Option {i + 1}", card.Buttons[i].Title, "card buttons should be set");
+            }
+
             // TODO add all of the other property types
         }
 
@@ -198,7 +174,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.AreEqual("https://docs.microsoft.com/en-us/bot-framework/media/how-it-works/architecture-resize.png", activity.Attachments[0].ContentUrl);
         }
 
-
         [TestMethod]
         public async Task TestLocalImageAttachment()
         {
@@ -216,7 +191,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var bytes = Convert.FromBase64String(content);
             Assert.AreEqual(237449, bytes.Length);
         }
-
 
         [TestMethod]
         public async Task TestAdaptiveCard()
@@ -292,11 +266,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.AreEqual("https://memegenerator.net/img/instances/500x/73055378/cheese-gromit.jpg", card.Images[0].Url, "image should be set");
             Assert.AreEqual(3, card.Buttons.Count, "card buttons should be set");
             for (int i = 0; i <= 2; i++)
+            {
                 Assert.AreEqual($"Option {i + 1}", card.Buttons[i].Title, "card buttons should be set");
+            }
 
             Assert.AreEqual("test", (string)((dynamic)activity.Attachments[1].Content).body[0].text);
         }
-
 
         [TestMethod]
         public async Task TestAttachmentContentType()
@@ -314,5 +289,32 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.AreEqual(data.url.ToString(), activity.Attachments[0].ContentUrl.ToString());
         }
 
+        private static string GetProjectFolder()
+        {
+            return AppContext.BaseDirectory.Substring(0, AppContext.BaseDirectory.IndexOf("bin"));
+        }
+
+        private ITurnContext GetTurnContext(ILanguageGenerator lg)
+        {
+            var context = new TurnContext(new TestAdapter(), new Activity());
+            context.TurnState.Add<ILanguageGenerator>(lg);
+            return context;
+        }
+
+        private async Task<ITurnContext> GetTurnContext(string lgFile)
+        {
+            var context = new TurnContext(new TestAdapter(), new Activity());
+            var lgText = await resourceExplorer.GetResource(lgFile).ReadTextAsync();
+            context.TurnState.Add<ILanguageGenerator>(new TemplateEngineLanguageGenerator(lgText, "test", LanguageGeneratorManager.ResourceResolver(resourceExplorer)));
+            return context;
+        }
+    }
+
+    public class MockLanguageGenerator : ILanguageGenerator
+    {
+        public Task<string> Generate(ITurnContext turnContext, string template, object data)
+        {
+            return Task.FromResult(template);
+        }
     }
 }

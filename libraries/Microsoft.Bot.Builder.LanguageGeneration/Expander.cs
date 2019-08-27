@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
@@ -257,9 +256,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return EvalExpression(exp);
         }
 
-        private EvaluationTarget CurrentTarget() =>
-            // just don't want to write evaluationTargetStack.Peek() everywhere
-            evaluationTargetStack.Peek();
+        // just don't want to write evaluationTargetStack.Peek() everywhere
+        private EvaluationTarget CurrentTarget() => evaluationTargetStack.Peek();
 
         private List<string> EvalMultiLineText(string exp)
         {

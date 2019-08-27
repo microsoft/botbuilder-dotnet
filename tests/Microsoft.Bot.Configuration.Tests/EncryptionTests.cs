@@ -1,5 +1,4 @@
 ﻿using System;
-using Microsoft.Bot.Configuration;
 using Microsoft.Bot.Configuration.Encryption;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 

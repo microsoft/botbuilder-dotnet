@@ -14,7 +14,7 @@ using Newtonsoft.Json.Serialization;
 namespace Microsoft.Bot.Builder.Dialogs
 {
     /// <summary>
-    /// Defines the shape of the state object returned by calling DialogContext.State.ToJson()
+    /// Defines the shape of the state object returned by calling DialogContext.State.ToJson().
     /// </summary>
     public class DialogContextVisibleState
     {
@@ -30,7 +30,24 @@ namespace Microsoft.Bot.Builder.Dialogs
 
     public class DialogContextState : IDictionary<string, object>
     {
-        private const string prefixCallBack = "callstackScope('";
+        /// <summary>
+        /// Common state properties paths.
+        /// </summary>
+#pragma warning disable SA1310 // Field should not contain underscore.
+        public const string DIALOG_OPTIONS = "dialog.options";
+        public const string DIALOG_VALUE = "dialog.value";
+
+        public const string TURN_ACTIVITY = "turn.activity";
+        public const string TURN_RECOGNIZED = "turn.recognized";
+        public const string TURN_TOPINTENT = "turn.recognized.intent";
+        public const string TURN_TOPSCORE = "turn.recognized.score";
+        public const string TURN_STEPCOUNT = "turn.stepCount";
+        public const string TURN_DIALOGEVENT = "turn.dialogEvent";
+
+        public const string STEP_OPTIONS_PROPERTY = "dialog.step.options";
+#pragma warning restore SA1310 // Field should not contain underscore.
+
+        private const string PrefixCallBack = "callstackScope('";
 
         private static JsonSerializerSettings expressionCaseSettings = new JsonSerializerSettings
         {
@@ -50,41 +67,38 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// Common state properties paths.
-        /// </summary>
-        public const string DIALOG_OPTIONS = "dialog.options";
-        public const string DIALOG_VALUE = "dialog.value";
-
-        public const string TURN_ACTIVITY = "turn.activity";
-        public const string TURN_RECOGNIZED = "turn.recognized";
-        public const string TURN_TOPINTENT = "turn.recognized.intent";
-        public const string TURN_TOPSCORE = "turn.recognized.score";
-        public const string TURN_STEPCOUNT = "turn.stepCount";
-        public const string TURN_DIALOGEVENT = "turn.dialogEvent";
-
-        public const string STEP_OPTIONS_PROPERTY = "dialog.step.options";
-
-        /// <summary>
         /// Gets or sets settings for the application.
         /// </summary>
+        /// <value>
+        /// Settings for the application.
+        /// </value>
         [JsonProperty(PropertyName = "settings")]
         public IDictionary<string, object> Settings { get; set; }
 
         /// <summary>
         /// Gets or sets state associated with the active user in the turn.
         /// </summary>
+        /// <value>
+        /// State associated with the active user in the turn.
+        /// </value>
         [JsonProperty(PropertyName = "user")]
         public IDictionary<string, object> User { get; set; }
 
         /// <summary>
         /// Gets or sets state assocaited with the active conversation for the turn.
         /// </summary>
+        /// <value>
+        /// State assocaited with the active conversation for the turn.
+        /// </value>
         [JsonProperty(PropertyName = "conversation")]
         public IDictionary<string, object> Conversation { get; set; }
 
         /// <summary>
         /// Gets or sets state associated with the active dialog for the turn.
         /// </summary>
+        /// <value>
+        /// State associated with the active dialog for the turn.
+        /// </value>
         [JsonProperty(PropertyName = "dialog")]
         public IDictionary<string, object> Dialog
         {
@@ -130,6 +144,9 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <summary>
         /// Gets access to the callstack of dialog state.
         /// </summary>
+        /// <value>
+        /// Access to the callstack of dialog state.
+        /// </value>
         [JsonIgnore]
         public IEnumerable<object> CallStack
         {
@@ -158,6 +175,9 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <summary>
         /// Gets or sets state associated with the current turn only (this is non-persisted).
         /// </summary>
+        /// <value>
+        /// State associated with the current turn only (this is non-persisted).
+        /// </value>
         [JsonProperty(PropertyName = "turn")]
         public IDictionary<string, object> Turn { get; set; }
 
@@ -319,10 +339,10 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             var e = pathExpression.ToString();
-            if (e.StartsWith(prefixCallBack))
+            if (e.StartsWith(PrefixCallBack))
             {
                 // turn $foo which comes in as callbackStack('foo') => dialog.foo
-                pathExpression = new ExpressionEngine().Parse($"dialog.{e.Substring(prefixCallBack.Length, e.Length - prefixCallBack.Length - 2)}");
+                pathExpression = new ExpressionEngine().Parse($"dialog.{e.Substring(PrefixCallBack.Length, e.Length - PrefixCallBack.Length - 2)}");
             }
 
             ObjectPath.SetValue(this, pathExpression, value);

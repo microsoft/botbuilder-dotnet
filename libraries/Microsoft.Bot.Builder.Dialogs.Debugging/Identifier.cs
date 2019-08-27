@@ -1,26 +1,30 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
 
 namespace Microsoft.Bot.Builder.Dialogs.Debugging
 {
-    public sealed class ReferenceEquality<T> : IEqualityComparer<T>
-    {
-        public static readonly IEqualityComparer<T> Instance = new ReferenceEquality<T>();
-        private ReferenceEquality()
-        {
-        }
-        bool IEqualityComparer<T>.Equals(T x, T y) => object.ReferenceEquals(x, y);
-        int IEqualityComparer<T>.GetHashCode(T obj) => RuntimeHelpers.GetHashCode(obj);
-    }
-
     public static class Identifier
     {
         private const ulong MORE = 0x80;
         private const ulong DATA = 0x7F;
+
+        public static ulong Encode(ulong one, ulong two)
+        {
+            ulong target = 0;
+            int offset = 0;
+            Encode(one, ref target, ref offset);
+            Encode(two, ref target, ref offset);
+            return target;
+        }
+
+        public static void Decode(ulong item, out ulong one, out ulong two)
+        {
+            Decode(ref item, out one);
+            Decode(ref item, out two);
+        }
+
         private static void Encode(ulong source, ref ulong target, ref int offset)
         {
             while (source > DATA)
@@ -37,6 +41,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 offset += 8;
             }
         }
+
         private static void Decode(ref ulong source, out ulong target)
         {
             target = 0;
@@ -55,20 +60,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 offset += 7;
             }
         }
-        public static ulong Encode(ulong one, ulong two)
-        {
-            ulong target = 0;
-            int offset = 0;
-            Encode(one, ref target, ref offset);
-            Encode(two, ref target, ref offset);
-            return target;
-        }
-
-        public static void Decode(ulong item, out ulong one, out ulong two)
-        {
-            Decode(ref item, out one);
-            Decode(ref item, out two);
-        }
     }
 
     /// <summary>
@@ -80,47 +71,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
     /// Some identifiers have a lifetime scoped to a thread (e.g. values or stack frames)
     /// For these combined identifiers, we use 7 bit encoding.
     /// </summary>
+    /// <typeparam name="T">Datatype of the stored items.</typeparam>
     public sealed class Identifier<T> : IEnumerable<KeyValuePair<ulong, T>>
     {
         private readonly Dictionary<T, ulong> codeByItem = new Dictionary<T, ulong>(ReferenceEquality<T>.Instance);
         private readonly Dictionary<ulong, T> itemByCode = new Dictionary<ulong, T>();
         private readonly object gate = new object();
         private ulong last = 0;
-
-        public ulong Add(T item)
-        {
-            lock (gate)
-            {
-                if (!this.codeByItem.TryGetValue(item, out var code))
-                {
-                    // avoid falsey values
-                    code = ++last;
-                    this.codeByItem.Add(item, code);
-                    this.itemByCode.Add(code, item);
-                }
-
-                return code;
-            }
-        }
-        public void Remove(T item)
-        {
-            lock (gate)
-            {
-                var code = this.codeByItem[item];
-                this.itemByCode.Remove(code);
-                this.codeByItem.Remove(item);
-            }
-        }
-
-        IEnumerator<KeyValuePair<ulong, T>> IEnumerable<KeyValuePair<ulong, T>>.GetEnumerator()
-        {
-            lock (gate)
-            {
-                return this.itemByCode.ToList().GetEnumerator();
-            }
-        }
-
-        IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable<KeyValuePair<ulong, T>>)this).GetEnumerator();
 
         public IEnumerable<T> Items
         {
@@ -143,6 +100,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 }
             }
         }
+
         public ulong this[T item]
         {
             get
@@ -154,6 +112,42 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             }
         }
 
+        public ulong Add(T item)
+        {
+            lock (gate)
+            {
+                if (!this.codeByItem.TryGetValue(item, out var code))
+                {
+                    // avoid false values
+                    code = ++last;
+                    this.codeByItem.Add(item, code);
+                    this.itemByCode.Add(code, item);
+                }
+
+                return code;
+            }
+        }
+
+        public void Remove(T item)
+        {
+            lock (gate)
+            {
+                var code = this.codeByItem[item];
+                this.itemByCode.Remove(code);
+                this.codeByItem.Remove(item);
+            }
+        }
+
+        IEnumerator<KeyValuePair<ulong, T>> IEnumerable<KeyValuePair<ulong, T>>.GetEnumerator()
+        {
+            lock (gate)
+            {
+                return this.itemByCode.ToList().GetEnumerator();
+            }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable<KeyValuePair<ulong, T>>)this).GetEnumerator();
+
         public bool TryGetValue(ulong code, out T item)
         {
             lock (gate)
@@ -161,5 +155,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 return this.itemByCode.TryGetValue(code, out item);
             }
         }
+    }
+
+    public sealed class ReferenceEquality<T> : IEqualityComparer<T>
+    {
+        public static readonly IEqualityComparer<T> Instance = new ReferenceEquality<T>();
+
+        private ReferenceEquality()
+        {
+        }
+
+        bool IEqualityComparer<T>.Equals(T x, T y) => object.ReferenceEquals(x, y);
+
+        int IEqualityComparer<T>.GetHashCode(T obj) => RuntimeHelpers.GetHashCode(obj);
     }
 }

@@ -3,9 +3,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Dynamic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
@@ -23,9 +21,18 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// Initializes a new instance of the <see cref="DialogContext"/> class.
         /// </summary>
         /// <param name="dialogs">Parent dialog set.</param>
-        /// <param name="turnContext">Context for the current turn of conversation with the user.</param>
+        /// <param name="parentDialogContext">Parent dialog state.</param>
         /// <param name="state">Current dialog state.</param>
-        public DialogContext(DialogSet dialogs, DialogContext parentDialogContext, DialogState state, IDictionary<string, object> conversationState = null, IDictionary<string, object> userState = null, IDictionary<string, object> settings = null)
+        /// <param name="conversationState">Context for the current turn of conversation with the user.</param>
+        /// <param name="userState">Context for the user state.</param>
+        /// <param name="settings">Settings state.</param>
+        public DialogContext(
+            DialogSet dialogs, 
+            DialogContext parentDialogContext, 
+            DialogState state, 
+            IDictionary<string, object> conversationState = null, 
+            IDictionary<string, object> userState = null, 
+            IDictionary<string, object> settings = null)
         {
             Dialogs = dialogs;
             Parent = parentDialogContext ?? throw new ArgumentNullException(nameof(parentDialogContext));
@@ -64,36 +71,51 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// Parent context.
+        /// Gets or sets parent context.
         /// </summary>
+        /// <value>
+        /// Parent context.
+        /// </value>
         public DialogContext Parent { get; set; }
 
         /// <summary>
-        /// Set of dialogs which are active for the current dialog container.
+        /// Gets set of dialogs which are active for the current dialog container.
         /// </summary>
+        /// <value>
+        /// Set of dialogs which are active for the current dialog container.
+        /// </value>
         public DialogSet Dialogs { get; private set; }
 
         /// <summary>
-        /// Turn context.
+        /// Gets turn context.
         /// </summary>
         /// <value>
         /// The context for the current turn of conversation.
         /// </value>
         public ITurnContext Context { get; private set; }
 
+        /// <summary>
+        /// Gets the current dialog stack.
+        /// </summary>
         /// <value>
         /// The current dialog stack.
         /// </value>
         public IList<DialogInstance> Stack { get; private set; }
 
         /// <summary>
-        /// Current active scoped state with (user|conversation|dialog|settings scopes).
+        /// Gets current active scoped state with (user|conversation|dialog|settings scopes).
         /// </summary>
+        /// <value>
+        /// Current active scoped state with (user|conversation|dialog|settings scopes).
+        /// </value>
         public DialogContextState State { get; private set; }
 
         /// <summary>
-        /// Dialog context for child if there is an active child.
+        /// Gets dialog context for child if there is an active child.
         /// </summary>
+        /// <value>
+        /// Dialog context for child if there is an active child.
+        /// </value>
         public DialogContext Child
         {
             get
@@ -143,13 +165,21 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// Returns a list of all `Dialog.tags` that are currently on the dialog stack.
+        /// Gets a list of all `Dialog.tags` that are currently on the dialog stack.
         /// Any duplicate tags are removed from the returned list and the order of the tag reflects the
         /// order of the dialogs on the stack.
         /// The returned list will also include any tags applied as "globalTags". These tags are
         /// retrieved by calling context.TurnState.get('globalTags')` and will therefore need to be
         /// assigned for every turn of conversation using context.TurnState.set('globalTags', ['myTag'])`.
         /// </summary>
+        /// <value>
+        /// Returns a list of all `Dialog.tags` that are currently on the dialog stack.
+        /// Any duplicate tags are removed from the returned list and the order of the tag reflects the
+        /// order of the dialogs on the stack.
+        /// The returned list will also include any tags applied as "globalTags". These tags are
+        /// retrieved by calling context.TurnState.get('globalTags')` and will therefore need to be
+        /// assigned for every turn of conversation using context.TurnState.set('globalTags', ['myTag'])`.
+        /// </value>
         public List<string> ActiveTags
         {
             get
@@ -184,8 +214,11 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// The current dialog state for the active dialog.
+        /// Gets the current dialog state for the active dialog.
         /// </summary>
+        /// <value>
+        /// The current dialog state for the active dialog.
+        /// </value>
         public Dictionary<string, object> DialogState
         {
             get
@@ -420,9 +453,14 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <summary>
         /// Deletes any existing dialog stack thus cancelling all dialogs on the stack.
         /// </summary>
+        /// <param name="eventName">The event.</param>
+        /// <param name="eventValue">The event value.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The dialog context.</returns>
-        public async Task<DialogTurnResult> CancelAllDialogsAsync(string eventName = DialogEvents.CancelDialog, object eventValue = null, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<DialogTurnResult> CancelAllDialogsAsync(
+            string eventName = DialogEvents.CancelDialog, 
+            object eventValue = null, 
+            CancellationToken cancellationToken = default(CancellationToken))
         {
             if (eventValue is CancellationToken)
             {
@@ -491,6 +529,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             await EndActiveDialogAsync(DialogReason.ReplaceCalled, cancellationToken: cancellationToken).ConfigureAwait(false);
 
             this.State.Turn["__repeatDialogId"] = dialogId;
+
             // Start replacement dialog
             return await BeginDialogAsync(dialogId, options, cancellationToken).ConfigureAwait(false);
         }
@@ -527,8 +566,8 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <summary>
         /// Find the dialog id for the given context.
         /// </summary>
-        /// <param name="dialogId">dialog id to find</param>
-        /// <returns>dialog with that id</returns>
+        /// <param name="dialogId">dialog id to find.</param>
+        /// <returns>dialog with that id.</returns>
         public IDialog FindDialog(string dialogId)
         {
             if (this.Dialogs != null)

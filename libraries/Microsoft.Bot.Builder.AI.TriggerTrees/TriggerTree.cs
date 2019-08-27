@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using Microsoft.Bot.Builder.Expressions;
 using Microsoft.Bot.Builder.Expressions.Parser;
@@ -45,37 +43,19 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
     /// A trigger tree organizes evaluators according to generalization/specialization in order to make it easier to use rules.
     /// </summary>
     /// <remarks>
-    /// A trigger expression generates true if the expression evaluated on a frame is true.  
-    /// The expression itself consists of arbitrary boolean functions ("predicates") combined with && || !.
+    /// A trigger expression generates true if the expression evaluated on a frame is true.
+    /// The expression itself consists of arbitrary boolean functions ("predicates") combined with &amp;&amp; || !.
     /// Most predicates are expressed over the frame passed in, but they can be anything--there are even ways of optimizing or comparing them.
-    /// By organizing evaluators into a tree (techinically a DAG) it becomes easier to use rules by reducing the coupling between rules.  
-    /// For example if a rule applies if some predicate A is true, then another rule that applies if A && B are true is
+    /// By organizing evaluators into a tree (techinically a DAG) it becomes easier to use rules by reducing the coupling between rules.
+    /// For example if a rule applies if some predicate A is true, then another rule that applies if A &amp;&amp; B are true is
     /// more specialized.  If the second expression is true, then because we know of the relationship we can ignore the first
     /// rule--even though its expression is true.  Without this kind of capability in order to add the second rule, you would
-    /// have to change the first to become A && !B.
+    /// have to change the first to become A &amp;&amp; !B.
     /// </remarks>
-    [DebuggerDisplay("{ToString()}"), DebuggerTypeProxy(typeof(Debugger))]
+    [DebuggerDisplay("{ToString()}")]
+    [DebuggerTypeProxy(typeof(Debugger))]
     public class TriggerTree
     {
-        public List<IOptimizer> Optimizers = new List<IOptimizer>();
-        public Dictionary<string, IPredicateComparer> Comparers = new Dictionary<string, IPredicateComparer>();
-        public Node Root;
-        public int TotalTriggers = 0;
-
-        private class Debugger
-        {
-            public string TreeString;
-            public List<IOptimizer> _optimizers;
-            public Dictionary<string, IPredicateComparer> _comparers;
-
-            public Debugger(TriggerTree triggers)
-            {
-                TreeString = triggers.TreeToString();
-                _optimizers = triggers.Optimizers;
-                _comparers = triggers.Comparers;
-            }
-        }
-
         /// <summary>
         /// Mark a sub-expression as optional.
         /// </summary>
@@ -96,6 +76,21 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
         /// </remarks>
         public const string Ignore = "ignore";
 
+        public List<IOptimizer> Optimizers = new List<IOptimizer>();
+        public Dictionary<string, IPredicateComparer> Comparers = new Dictionary<string, IPredicateComparer>();
+        public Node Root;
+        public int TotalTriggers = 0;
+
+        private static readonly IExpressionParser _parser = new ExpressionEngine(LookupFunction);
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TriggerTree"/> class.
+        /// </summary>
+        public TriggerTree()
+        {
+            Root = new Node(new Clause(), this);
+        }
+
         public static ExpressionEvaluator LookupFunction(string type)
         {
             ExpressionEvaluator eval;
@@ -108,17 +103,8 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
             {
                 eval = BuiltInFunctions.Lookup(type);
             }
+
             return eval;
-        }
-
-        private static readonly IExpressionParser _parser = new ExpressionEngine(LookupFunction);
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TriggerTree"/> class.
-        /// </summary>
-        public TriggerTree()
-        {
-            Root = new Node(new Clause(), this);
         }
 
         public static Expression Parse(string expr) => _parser.Parse(expr);
@@ -194,17 +180,6 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
             return builder.ToString();
         }
 
-        private void TreeToString(StringBuilder builder, Node node, int indent)
-        {
-            node.ToString(builder, indent);
-            builder.Append($" [{node.Triggers.Count}]");
-            builder.AppendLine();
-            foreach (var child in node.Specializations)
-            {
-                TreeToString(builder, child, indent + 2);
-            }
-        }
-
         public void GenerateGraph(string outPath)
         {
             using (var output = new StreamWriter(outPath))
@@ -213,6 +188,30 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                 output.WriteLine("strict digraph TriggerTree {");
                 GenerateGraph(output, Root, 0, visited);
                 output.WriteLine("}");
+            }
+        }
+
+        /// <summary>
+        /// Return the possible matches given the current state.
+        /// </summary>
+        /// <param name="state">State to evaluate against.</param>
+        /// <returns>Enumeration of possible matches.</returns>
+        public IEnumerable<Node> Matches(object state) => Root.Matches(state);
+
+        /// <summary>
+        /// Verify the tree meets speicalization/generalization invariants. 
+        /// </summary>
+        /// <returns>Bad node if found.</returns>
+        public Node VerifyTree() => VerifyTree(Root, new HashSet<Node>());
+
+        private void TreeToString(StringBuilder builder, Node node, int indent)
+        {
+            node.ToString(builder, indent);
+            builder.Append($" [{node.Triggers.Count}]");
+            builder.AppendLine();
+            foreach (var child in node.Specializations)
+            {
+                TreeToString(builder, child, indent + 2);
             }
         }
 
@@ -233,6 +232,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                         output.WriteLine(" -> {");
                         first = false;
                     }
+
                     output.WriteLine($"{spaces}{NameNode(child)}");
                 }
 
@@ -247,19 +247,6 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                 }
             }
         }
-
-        /// <summary>
-        /// Return the possible matches given the current state.
-        /// </summary>
-        /// <param name="frame">Frame to evaluate against.</param>
-        /// <returns>Enumeration of possible matches.</returns>
-        public IEnumerable<Node> Matches(object state) => Root.Matches(state);
-
-        /// <summary>
-        /// Verify the tree meets speicalization/generalization invariants. 
-        /// </summary>
-        /// <returns></returns>
-        public Node VerifyTree() => VerifyTree(Root, new HashSet<Node>());
 
         private Node VerifyTree(Node node, HashSet<Node> visited)
         {
@@ -291,6 +278,20 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
             }
 
             return badNode;
+        }
+
+        private class Debugger
+        {
+            public string TreeString;
+            public List<IOptimizer> _optimizers;
+            public Dictionary<string, IPredicateComparer> _comparers;
+
+            public Debugger(TriggerTree triggers)
+            {
+                TreeString = triggers.TreeToString();
+                _optimizers = triggers.Optimizers;
+                _comparers = triggers.Comparers;
+            }
         }
     }
 }

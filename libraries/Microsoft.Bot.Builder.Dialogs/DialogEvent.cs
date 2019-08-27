@@ -1,25 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Newtonsoft.Json;
-
-namespace Microsoft.Bot.Builder.Dialogs
+﻿namespace Microsoft.Bot.Builder.Dialogs
 {
     public class DialogEvent
     {
         /// <summary>
-        /// If `true` the event will be bubbled to the parent `DialogContext` if not handled by the current dialog.
+        /// Gets or sets a value indicating whether the event will be bubbled to the parent `DialogContext` 
+        /// if not handled by the current dialog.
         /// </summary>
+        /// <value>
+        /// Whether the event can be bubbled to the parent `DialogContext`.
+        /// </value>
         public bool Bubble { get; set; }
 
         /// <summary>
-        /// Name of the event being raised.
+        /// Gets or sets name of the event being raised.
         /// </summary>
+        /// <value>
+        /// Name of the event being raised.
+        /// </value>
         public string Name { get; set; }
 
         /// <summary>
-        /// Optional value associated with the event.
+        /// Gets or sets optional value associated with the event.
         /// </summary>
+        /// <value>
+        /// Optional value associated with the event.
+        /// </value>
         public object Value { get; set; }
     }
 }

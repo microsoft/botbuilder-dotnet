@@ -12,31 +12,39 @@ using Newtonsoft.Json.Linq;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
     /// <summary>
-    /// Send an Tace activity back to the transcript
+    /// Send an Tace activity back to the transcript.
     /// </summary>
     public class TraceActivity : DialogAction
     {
-
-        /// <summary>
-        /// Name of the trace activity
-        /// </summary>
-        public string Name { get; set; }
-
-        /// <summary>
-        /// Value type of the trace activity
-        /// </summary>
-        public string ValueType { get; set; }
-
-        /// <summary>
-        /// Property binding to memory to send as the value 
-        /// </summary>
-        public string Value { get; set; }
-
         [JsonConstructor]
         public TraceActivity([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
             this.RegisterSourceLocation(callerPath, callerLine);
         }
+
+        /// <summary>
+        /// Gets or sets name of the trace activity.
+        /// </summary>
+        /// <value>
+        /// Name of the trace activity.
+        /// </value>
+        public string Name { get; set; }
+
+        /// <summary>
+        /// Gets or sets value type of the trace activity.
+        /// </summary>
+        /// <value>
+        /// Value type of the trace activity.
+        /// </value>
+        public string ValueType { get; set; }
+
+        /// <summary>
+        /// Gets or sets property binding to memory to send as the value. 
+        /// </summary>
+        /// <value>
+        /// Property binding to memory to send as the value. 
+        /// </value>
+        public string Value { get; set; }
 
         protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {

@@ -49,14 +49,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         public int Timeout { get; set; } = 900000;
 
         /// <summary>
-        /// The property from memory to pass to the calling dialog and to set the return value to.
+        /// Gets or sets the property from memory to pass to the calling dialog and to set the return value to.
         /// </summary>
+        /// <value>
+        /// The property from memory to pass to the calling dialog and to set the return value to.
+        /// </value>
         public string Property
         {
             get
             {
                 return OutputBinding;
             }
+
             set
             {
                 InputBindings[DialogContextState.DIALOG_VALUE] = value;

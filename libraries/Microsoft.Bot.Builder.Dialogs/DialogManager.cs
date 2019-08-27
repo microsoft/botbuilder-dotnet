@@ -36,153 +36,6 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
-        /// <summary>
-        /// Root dialog to use to start conversation.
-        /// </summary>
-        public IDialog RootDialog
-        {
-            get
-            {
-                if (this.rootDialogId != null)
-                {
-                    return this.dialogSet.Find(this.rootDialogId);
-                }
-
-                return null;
-            }
-
-            set
-            {
-                this.rootDialogId = value.Id;
-                this.dialogSet = new DialogSet();
-                this.dialogSet.Add(value);
-            }
-        }
-
-        /// <summary>
-        /// (Optional) number of milliseconds to expire the bots state after.
-        /// </summary>
-        public int? ExpireAfter { get; set; }
-
-        /// <summary>
-        /// (Optional) storage provider that will be used to read and write the bots state..
-        /// </summary>
-        public IStorage Storage { get; set; }
-
-        /// <summary>
-        /// Run a dialog purely by processing an activity and getting the result. 
-        /// </summary>
-        /// <remarks>
-        /// NOTE: does not support any activity semantic other then SendActivity
-        /// </remarks>
-        /// <param name="activity">activity to process</param>
-        /// <param name="state">state to use</param>
-        /// <returns>result of the running the logic against the activity.</returns>
-        public async Task<DialogManagerResult> RunAsync(Activity activity, PersistedState state = null)
-        {
-            // Initialize context object
-            var adapter = new DialogManagerAdapter();
-            var context = new TurnContext(adapter, activity);
-            var result = await this.OnTurnAsync(context, state).ConfigureAwait(false);
-            result.Activities = adapter.Activities.ToArray();
-            return result;
-        }
-
-        /// <summary>
-        /// Runs dialog system in the context of an ITurnContext.
-        /// </summary>
-        /// <param name="context">turn context.</param>
-        /// <param name="state">stored state.</param>
-        /// <param name="cancellationToken">cancelation token.</param>
-        /// <returns>result of the running the logic against the activity.</returns>
-        public async Task<DialogManagerResult> OnTurnAsync(ITurnContext context, PersistedState state = null, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            var saveState = false;
-            var keys = GetKeys(context);
-            var storage = context.TurnState.Get<IStorage>();
-
-            if (state == null)
-            {
-                if (storage == null)
-                {
-                    throw new Exception("DialogManager: unable to load the bots state.Bot.storage not assigned.");
-                }
-
-                state = await LoadState(storage, keys).ConfigureAwait(false);
-                saveState = true;
-            }
-
-            // Clone state to preserve original state
-            var newState = ObjectPath.Clone(state);
-
-            // Check for expired conversation
-            var now = DateTime.UtcNow;
-
-            if (this.ExpireAfter.HasValue && newState.ConversationState.ContainsKey(LASTACCESS))
-            {
-                var lastAccess = DateTime.Parse(newState.ConversationState[LASTACCESS] as string);
-                if ((DateTime.UtcNow - lastAccess) >= TimeSpan.FromMilliseconds((double)this.ExpireAfter))
-                {
-                    // Clear conversation state
-                    state.ConversationState = new Dictionary<string, object>();
-                    state.ConversationState[ETAG] = newState.ConversationState[ETAG];
-                }
-            }
-
-            newState.ConversationState[LASTACCESS] = DateTime.UtcNow.ToString("u");
-
-            // Ensure dialog stack populated
-            DialogState dialogState;
-            if (!newState.ConversationState.ContainsKey(DIALOGS))
-            {
-                dialogState = new DialogState();
-                newState.ConversationState[DIALOGS] = dialogState;
-            }
-            else
-            {
-                dialogState = (DialogState)newState.ConversationState[DIALOGS];
-            }
-
-            // Create DialogContext
-            var dc = new DialogContext(
-                this.dialogSet,
-                context,
-                dialogState,
-                conversationState: newState.ConversationState,
-                userState: newState.UserState,
-                settings: null);
-
-            DialogTurnResult turnResult = null;
-            if (dc.ActiveDialog == null)
-            {
-                // start root dialog
-                turnResult = await dc.BeginDialogAsync(this.rootDialogId, cancellationToken: cancellationToken).ConfigureAwait(false);
-            }
-            else
-            {
-                // Continue execution
-                // - This will apply any queued up interruptions and execute the current/next step(s).
-                turnResult = await dc.ContinueDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
-
-                if (turnResult.Status == DialogTurnStatus.Empty)
-                {
-                    // restart root dialog
-                    turnResult = await dc.BeginDialogAsync(this.rootDialogId, cancellationToken: cancellationToken).ConfigureAwait(false);
-                }
-            }
-
-            // Save state if loaded from storage
-            if (saveState)
-            {
-                await DialogManager.SaveState(storage, keys: keys, newState: newState, oldState: state, eTag: "*").ConfigureAwait(false);
-                return new DialogManagerResult() { TurnResult = turnResult };
-            }
-            else
-            {
-                return new DialogManagerResult() { TurnResult = turnResult, NewState = newState };
-            }
-        }
-
         public static async Task<PersistedState> LoadState(IStorage storage, PersistedStateKeys keys)
         {
             var data = await storage.ReadAsync(keys.ToArray()).ConfigureAwait(false);
@@ -288,6 +141,161 @@ namespace Microsoft.Bot.Builder.Dialogs
                 UserState = $"{channelId}/users/{userId}",
                 ConversationState = $"{channelId}/conversations/{conversationId}/{@namespace}"
             };
+        }
+        /// <summary>
+        /// Gets or sets root dialog to use to start conversation.
+        /// </summary>
+        /// <value>
+        /// Root dialog to use to start conversation.
+        /// </value>
+        public IDialog RootDialog
+        {
+            get
+            {
+                if (this.rootDialogId != null)
+                {
+                    return this.dialogSet.Find(this.rootDialogId);
+                }
+
+                return null;
+            }
+
+            set
+            {
+                this.rootDialogId = value.Id;
+                this.dialogSet = new DialogSet();
+                this.dialogSet.Add(value);
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets (optional) number of milliseconds to expire the bot's state after.
+        /// </summary>
+        /// <value>
+        /// Number of milliseconds.
+        /// </value>
+        public int? ExpireAfter { get; set; }
+
+        /// <summary>
+        /// Gets or sets (optional) storage provider that will be used to read and write the bot's state.
+        /// </summary>
+        /// <value>
+        /// Storage provider.
+        /// </value>
+        public IStorage Storage { get; set; }
+
+        /// <summary>
+        /// Run a dialog purely by processing an activity and getting the result. 
+        /// </summary>
+        /// <remarks>
+        /// NOTE: does not support any activity semantic other then SendActivity.
+        /// </remarks>
+        /// <param name="activity">activity to process.</param>
+        /// <param name="state">state to use.</param>
+        /// <returns>result of the running the logic against the activity.</returns>
+        public async Task<DialogManagerResult> RunAsync(Activity activity, PersistedState state = null)
+        {
+            // Initialize context object
+            var adapter = new DialogManagerAdapter();
+            var context = new TurnContext(adapter, activity);
+            var result = await this.OnTurnAsync(context, state).ConfigureAwait(false);
+            result.Activities = adapter.Activities.ToArray();
+            return result;
+        }
+
+        /// <summary>
+        /// Runs dialog system in the context of an ITurnContext.
+        /// </summary>
+        /// <param name="context">turn context.</param>
+        /// <param name="state">stored state.</param>
+        /// <param name="cancellationToken">cancelation token.</param>
+        /// <returns>result of the running the logic against the activity.</returns>
+        public async Task<DialogManagerResult> OnTurnAsync(ITurnContext context, PersistedState state = null, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var saveState = false;
+            var keys = GetKeys(context);
+            var storage = context.TurnState.Get<IStorage>();
+
+            if (state == null)
+            {
+                if (storage == null)
+                {
+                    throw new Exception("DialogManager: unable to load the bots state.Bot.storage not assigned.");
+                }
+
+                state = await LoadState(storage, keys).ConfigureAwait(false);
+                saveState = true;
+            }
+
+            // Clone state to preserve original state
+            var newState = ObjectPath.Clone(state);
+
+            // Check for expired conversation
+            var now = DateTime.UtcNow;
+
+            if (this.ExpireAfter.HasValue && newState.ConversationState.ContainsKey(LASTACCESS))
+            {
+                var lastAccess = DateTime.Parse(newState.ConversationState[LASTACCESS] as string);
+                if ((DateTime.UtcNow - lastAccess) >= TimeSpan.FromMilliseconds((double)this.ExpireAfter))
+                {
+                    // Clear conversation state
+                    state.ConversationState = new Dictionary<string, object>();
+                    state.ConversationState[ETAG] = newState.ConversationState[ETAG];
+                }
+            }
+
+            newState.ConversationState[LASTACCESS] = DateTime.UtcNow.ToString("u");
+
+            // Ensure dialog stack populated
+            DialogState dialogState;
+            if (!newState.ConversationState.ContainsKey(DIALOGS))
+            {
+                dialogState = new DialogState();
+                newState.ConversationState[DIALOGS] = dialogState;
+            }
+            else
+            {
+                dialogState = (DialogState)newState.ConversationState[DIALOGS];
+            }
+
+            // Create DialogContext
+            var dc = new DialogContext(
+                this.dialogSet,
+                context,
+                dialogState,
+                conversationState: newState.ConversationState,
+                userState: newState.UserState,
+                settings: null);
+
+            DialogTurnResult turnResult = null;
+            if (dc.ActiveDialog == null)
+            {
+                // start root dialog
+                turnResult = await dc.BeginDialogAsync(this.rootDialogId, cancellationToken: cancellationToken).ConfigureAwait(false);
+            }
+            else
+            {
+                // Continue execution
+                // - This will apply any queued up interruptions and execute the current/next step(s).
+                turnResult = await dc.ContinueDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+
+                if (turnResult.Status == DialogTurnStatus.Empty)
+                {
+                    // restart root dialog
+                    turnResult = await dc.BeginDialogAsync(this.rootDialogId, cancellationToken: cancellationToken).ConfigureAwait(false);
+                }
+            }
+
+            // Save state if loaded from storage
+            if (saveState)
+            {
+                await DialogManager.SaveState(storage, keys: keys, newState: newState, oldState: state, eTag: "*").ConfigureAwait(false);
+                return new DialogManagerResult() { TurnResult = turnResult };
+            }
+            else
+            {
+                return new DialogManagerResult() { TurnResult = turnResult, NewState = newState };
+            }
         }
     }
 }

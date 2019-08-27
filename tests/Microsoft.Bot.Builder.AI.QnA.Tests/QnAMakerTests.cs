@@ -11,13 +11,12 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Events;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Events;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
-using Microsoft.Bot.Builder.Expressions.Parser;
 using Microsoft.Bot.Configuration;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
@@ -38,30 +37,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
 
         public TestContext TestContext { get; set; }
 
-        private TestFlow CreateFlow(AdaptiveDialog ruleDialog)
-        {
-            var resourceExplorer = new ResourceExplorer();
-            var storage = new MemoryStorage();
-            var userState = new UserState(storage);
-            var conversationState = new ConversationState(storage);
-
-            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
-            adapter
-                .UseStorage(storage)
-                .UseState(userState, conversationState)
-                .UseResourceExplorer(resourceExplorer)
-                .UseLanguageGeneration(resourceExplorer)
-                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
-
-            DialogManager dm = new DialogManager(ruleDialog);
-
-            return new TestFlow(adapter, async (turnContext, cancellationToken) =>
-            {
-                await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
-            });
-        }
-
-
         [TestMethod]
         public async Task QnAMakerDialog_Answers()
         {
@@ -70,7 +45,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             mockHttp.When(HttpMethod.Post, GetRequestUrl())
                 .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswer.json"));
 
-            var rootDialog = createDialog(mockHttp);
+            var rootDialog = CreateDialog(mockHttp);
 
             await CreateFlow(rootDialog)
             .Send("moo")
@@ -90,7 +65,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             mockHttp.When(HttpMethod.Post, GetRequestUrl())
                 .Respond("application/json", GetResponse("QnaMaker_TestThreshold.json"));
 
-            var rootDialog = createDialog(mockHttp);
+            var rootDialog = CreateDialog(mockHttp);
 
             await CreateFlow(rootDialog)
             .Send("moo")
@@ -100,85 +75,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             .Send("moo")
                 .AssertReply("Yippee ki-yay!")
             .StartTestAsync();
-        }
-
-        private AdaptiveDialog createDialog(MockHttpMessageHandler mockHttp)
-        {
-            var qna = GetQnAMaker(mockHttp,
-                new QnAMakerEndpoint
-                {
-                    KnowledgeBaseId = _knowlegeBaseId,
-                    EndpointKey = _endpointKey,
-                    Host = _hostname
-                },
-                new QnAMakerOptions
-                {
-                    Top = 1
-                });
-            var outerDialog = new AdaptiveDialog("outer")
-            {
-                AutoEndDialog = false,
-                Recognizer = new RegexRecognizer()
-                {
-                    Intents = new Dictionary<string, string>()
-                                        {
-                                            { "CowboyIntent" , "moo" }
-                                        }
-                },
-                Events = new List<IOnEvent>()
-                                    {
-                                        new OnIntent(intent: "CowboyIntent")
-                                        {
-                                            Actions = new List<IDialog>()
-                                            {
-                                                new SendActivity("Yippee ki-yay!")
-                                            }
-                                        },
-                                        new OnUnknownIntent()
-                                        {
-                                            Actions = new List<IDialog>()
-                                            {
-                                                new QnAMakerDialog(qnamaker:qna )
-                                                {
-                                                    OutputBinding = "turn.LastResult"
-                                                },
-                                                new IfCondition()
-                                                {
-                                                     Condition = "turn.LastResult == false",
-                                                     Actions =   new List<IDialog>()
-                                                     {
-                                                         new SendActivity("I didn't understand that.")
-                                                     }
-                                                }
-                                            }
-                                        }
-                                    }
-            };
-
-            var rootDialog = new AdaptiveDialog("root")
-            {
-                Events = new List<IOnEvent>()
-                {
-                    new OnBeginDialog()
-                    {
-                        Actions = new List<IDialog>()
-                        {
-                            new BeginDialog(outerDialog.Id)
-                        }
-                    },
-                    new Dialogs.Adaptive.Events.OnDialogEvent()
-                    {
-                        Events = new List<string>() { "UnhandledUnknownIntent"},
-                        Actions = new List<IDialog>()
-                        {
-                            new EditArray(),
-                            new SendActivity("magenta")
-                        }
-                    }
-                }
-            };
-            rootDialog.AddDialog(outerDialog);
-            return rootDialog;
         }
 
         [TestMethod]
@@ -842,8 +738,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
 
             var result = await qna.GetAnswersAsync(
                     GetContext("What happens when you hug a porcupine?"),
-                    queryOptionsWithScoreThreshold
-            );
+                    queryOptionsWithScoreThreshold);
 
             Assert.IsNotNull(result);
 
@@ -1419,6 +1314,109 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 From = new ChannelAccount(),
             };
             return new TurnContext(b, a);
+        }
+
+        private TestFlow CreateFlow(AdaptiveDialog ruleDialog)
+        {
+            var resourceExplorer = new ResourceExplorer();
+            var storage = new MemoryStorage();
+            var userState = new UserState(storage);
+            var conversationState = new ConversationState(storage);
+
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
+            adapter
+                .UseStorage(storage)
+                .UseState(userState, conversationState)
+                .UseResourceExplorer(resourceExplorer)
+                .UseLanguageGeneration(resourceExplorer)
+                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+
+            DialogManager dm = new DialogManager(ruleDialog);
+
+            return new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
+            });
+        }
+
+        private AdaptiveDialog CreateDialog(MockHttpMessageHandler mockHttp)
+        {
+            var qna = GetQnAMaker(
+                mockHttp,
+                new QnAMakerEndpoint
+                {
+                    KnowledgeBaseId = _knowlegeBaseId,
+                    EndpointKey = _endpointKey,
+                    Host = _hostname
+                },
+                new QnAMakerOptions
+                {
+                    Top = 1
+                });
+            var outerDialog = new AdaptiveDialog("outer")
+            {
+                AutoEndDialog = false,
+                Recognizer = new RegexRecognizer()
+                {
+                    Intents = new Dictionary<string, string>()
+                                        {
+                                            { "CowboyIntent", "moo" }
+                                        }
+                },
+                Events = new List<IOnEvent>()
+                                    {
+                                        new OnIntent(intent: "CowboyIntent")
+                                        {
+                                            Actions = new List<IDialog>()
+                                            {
+                                                new SendActivity("Yippee ki-yay!")
+                                            }
+                                        },
+                                        new OnUnknownIntent()
+                                        {
+                                            Actions = new List<IDialog>()
+                                            {
+                                                new QnAMakerDialog(qnamaker: qna)
+                                                {
+                                                    OutputBinding = "turn.LastResult"
+                                                },
+                                                new IfCondition()
+                                                {
+                                                     Condition = "turn.LastResult == false",
+                                                     Actions = new List<IDialog>()
+                                                     {
+                                                         new SendActivity("I didn't understand that.")
+                                                     }
+                                                }
+                                            }
+                                        }
+                                    }
+            };
+
+            var rootDialog = new AdaptiveDialog("root")
+            {
+                Events = new List<IOnEvent>()
+                {
+                    new OnBeginDialog()
+                    {
+                        Actions = new List<IDialog>()
+                        {
+                            new BeginDialog(outerDialog.Id)
+                        }
+                    },
+                    new Dialogs.Adaptive.Events.OnDialogEvent()
+                    {
+                        Events = new List<string>() { "UnhandledUnknownIntent" },
+                        Actions = new List<IDialog>()
+                        {
+                            new EditArray(),
+                            new SendActivity("magenta")
+                        }
+                    }
+                }
+            };
+            rootDialog.AddDialog(outerDialog);
+            return rootDialog;
         }
 
         private string GetV2LegacyRequestUrl() => $"{_hostname}/v2.0/knowledgebases/{_knowlegeBaseId}/generateanswer";

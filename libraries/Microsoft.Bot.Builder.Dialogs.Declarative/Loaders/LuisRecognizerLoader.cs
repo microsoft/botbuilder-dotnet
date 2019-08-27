@@ -3,9 +3,7 @@
 
 using System;
 using Microsoft.Bot.Builder.AI.Luis;
-using Microsoft.Bot.Configuration;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 

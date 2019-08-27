@@ -47,11 +47,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
                     selection = 0;
                 }
             }
+
             var result = new List<int>();
             if (selection != -1)
             {
                 result.Add(selection);
             }
+
             return Task.FromResult((IReadOnlyList<int>)result);
         }
     }

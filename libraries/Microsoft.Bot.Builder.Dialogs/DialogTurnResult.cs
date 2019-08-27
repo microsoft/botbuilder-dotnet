@@ -38,8 +38,11 @@ namespace Microsoft.Bot.Builder.Dialogs
         public object Result { get; set; }
 
         /// <summary>
-        /// If true, a DialogCommand has ended its parent container and the parent should not perform any further processing.
+        /// Gets or sets a value indicating whether a DialogCommand has ended its parent container and the parent should not perform any further processing.
         /// </summary>
+        /// <value>
+        /// Whether a DialogCommand has ended its parent container and the parent should not perform any further processing.
+        /// </value>
         public bool ParentEnded { get; set; }
     }
 }

@@ -3,7 +3,6 @@
 
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.LanguageGeneration;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -110,7 +109,6 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
         [TestMethod]
         public async Task TemplateManager_defaultlookup()
         {
-
             TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
 
@@ -131,13 +129,13 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
         [TestMethod]
         public async Task TemplateManager_DataDefined()
         {
-
             TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
 
             var templateManager = new TemplateManager()
             {
-                Renderers = {
+                Renderers =
+                {
                     new DictionaryRenderer(templates1),
                     new DictionaryRenderer(templates2)
                 }
@@ -153,11 +151,9 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
                 .StartTestAsync();
         }
 
-
         [TestMethod]
         public async Task TemplateManager_enLookup()
         {
-
             TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                                 .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
 
@@ -179,7 +175,6 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
         [TestMethod]
         public async Task TemplateManager_frLookup()
         {
-
             TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                                 .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
 
@@ -201,7 +196,6 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
         [TestMethod]
         public async Task TemplateManager_override()
         {
-
             TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                                 .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
 
@@ -223,7 +217,6 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
         [TestMethod]
         public async Task TemplateManager_useTemplateEngine()
         {
-
             TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                                 .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
 
@@ -244,7 +237,6 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
         [TestMethod]
         public async Task TemplateManagerMiddleware_Declarative()
         {
-
             TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                                 .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()))
                                 .Use(new TemplateManagerMiddleware()
@@ -255,7 +247,6 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
                                         new DictionaryRenderer(templates2)
                                     }
                                 });
-
 
             await new TestFlow(adapter, async (context, cancellationToken) =>
             {

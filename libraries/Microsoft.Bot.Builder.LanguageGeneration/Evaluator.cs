@@ -13,7 +13,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 {
     public class Evaluator : LGFileParserBaseVisitor<string>
     {
-       
         private readonly Stack<EvaluationTarget> evaluationTargetStack = new Stack<EvaluationTarget>();
 
         public Evaluator(List<LGTemplate> templates, ExpressionEngine expressionEngine)
@@ -263,7 +262,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var parse = this.ExpressionEngine.Parse(exp);
             return parse.TryEvaluate(scope);
         }
-
 
         // Genearte a new lookup function based on one lookup function
         private EvaluatorLookup CustomizedEvaluatorLookup(EvaluatorLookup baseLookup)

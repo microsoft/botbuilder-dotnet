@@ -1,28 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.Bot.Builder.LanguageGeneration;
 using System.IO;
+using Microsoft.Bot.Builder.LanguageGeneration;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 {
     [TestClass]
     public class TemplateEngineThrowExceptionTest
     {
-        /// <summary>
-        ///  Gets or sets the test context which provides
-        ///  information about and functionality for the current test run.
-        ///</summary>
-        public TestContext TestContext { get; set; }
-
-        private string GetExampleFilePath(string fileName)
-        {
-            return AppContext.BaseDirectory.Substring(0, AppContext.BaseDirectory.IndexOf("bin")) + "ExceptionExamples" + Path.DirectorySeparatorChar + fileName;
-        }
-
-        public static object[] Test(string input) => new object[] { input };
-        public static object[] TestTemplate(string input, string templateName) => new object[] { input, templateName };
-
         public static IEnumerable<object[]> StaticCheckExceptionData => new[]
         {
             Test("EmptyTemplate.lg"),
@@ -64,6 +50,19 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             TestTemplate("LoopDetected.lg", "NotExistTemplate"),
         };
 
+        /// <summary>
+        ///  Gets or sets the test context which provides
+        ///  information about and functionality for the current test run.
+        /// </summary>
+        /// <value>
+        /// The test context which provides
+        ///  information about and functionality for the current test run.
+        /// </value>
+        public TestContext TestContext { get; set; }
+
+        public static object[] Test(string input) => new object[] { input };
+
+        public static object[] TestTemplate(string input, string templateName) => new object[] { input, templateName };
 
         [DataTestMethod]
         [DynamicData(nameof(StaticCheckExceptionData))]
@@ -102,7 +101,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         public void AnalyzerThrowExceptionTest(string input, string templateName)
         {
             var isFail = false;
-            var errorMessage = "";
+            var errorMessage = string.Empty;
             TemplateEngine engine = null;
             try
             {
@@ -113,6 +112,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                 isFail = true;
                 errorMessage = "error occurs when parsing file";
             }
+
             if (!isFail)
             {
                 try
@@ -138,7 +138,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         public void EvaluatorThrowExceptionTest(string input, string templateName)
         {
             var isFail = false;
-            var errorMessage = "";
+            var errorMessage = string.Empty;
             TemplateEngine engine = null;
             try
             {
@@ -175,6 +175,11 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         public void AddTextWithWrongId()
         {
             new TemplateEngine().AddText("# t \n - hi", "a.lg");
+        }
+
+        private string GetExampleFilePath(string fileName)
+        {
+            return AppContext.BaseDirectory.Substring(0, AppContext.BaseDirectory.IndexOf("bin")) + "ExceptionExamples" + Path.DirectorySeparatorChar + fileName;
         }
     }
 }

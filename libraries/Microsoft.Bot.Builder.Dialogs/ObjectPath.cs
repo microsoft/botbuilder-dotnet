@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Expressions;
 using Microsoft.Bot.Builder.Expressions.Parser;
 using Newtonsoft.Json;
@@ -238,9 +235,9 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <summary>
         /// Clone an object.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="obj"></param>
-        /// <returns></returns>
+        /// <typeparam name="T">Type to clone.</typeparam>
+        /// <param name="obj">The object.</param>
+        /// <returns>The object as Json.</returns>
         public static T Clone<T>(T obj)
         {
             return JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(obj, ObjectPath.cloneSettings), ObjectPath.cloneSettings);
@@ -249,10 +246,10 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <summary>
         /// Equivalent to javascripts ObjectPath.Assign, creates a new object from startObject overlaying any non-null values from the overlay object.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="startObject">intial object</param>
-        /// <param name="overlayObject">overlay object</param>
-        /// <returns>merged object</returns>
+        /// <typeparam name="T">The object type.</typeparam>
+        /// <param name="startObject">Intial object.</param>
+        /// <param name="overlayObject">Overlay object.</param>
+        /// <returns>merged object.</returns>
         public static T Merge<T>(T startObject, T overlayObject)
             where T : class
         {
@@ -262,10 +259,10 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <summary>
         /// Equivalent to javascripts ObjectPath.Assign, creates a new object from startObject overlaying any non-null values from the overlay object.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="startObject">intial object of any type</param>
-        /// <param name="overlayObject">overlay object of any type</param>
-        /// <returns>merged object</returns>
+        /// <typeparam name="T">The target type.</typeparam>
+        /// <param name="startObject">intial object of any type.</param>
+        /// <param name="overlayObject">overlay object of any type.</param>
+        /// <returns>merged object.</returns>
         public static T Assign<T>(object startObject, object overlayObject)
             where T : class
         {

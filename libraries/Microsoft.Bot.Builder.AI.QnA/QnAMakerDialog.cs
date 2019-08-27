@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
@@ -21,7 +17,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
     {
         private QnAMaker qnamaker;
 
-        public QnAMakerDialog(string dialogId = null, QnAMaker qnamaker=null)
+        public QnAMakerDialog(string dialogId = null, QnAMaker qnamaker = null)
             : base(dialogId)
         {
             this.qnamaker = qnamaker;

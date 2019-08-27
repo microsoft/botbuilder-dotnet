@@ -46,6 +46,11 @@ namespace Microsoft.Bot.Builder.Expressions
         public static readonly string DefaultDateTimeFormat = "yyyy-MM-ddTHH:mm:ss.fffZ";
 
         /// <summary>
+        /// Dictionary of built-in functions.
+        /// </summary>
+        private static readonly Dictionary<string, ExpressionEvaluator> _functions = BuildFunctionLookup();
+
+        /// <summary>
         /// Verify the result of an expression is of the appropriate type and return a string if not.
         /// </summary>
         /// <param name="value">Value to verify.</param>
@@ -114,7 +119,7 @@ namespace Microsoft.Bot.Builder.Expressions
         /// Validate the number and type of arguments to a function.
         /// </summary>
         /// <param name="expression">Expression to validate.</param>
-        /// <param name="optional">Optional types in order.</parm>
+        /// <param name="optional">Optional types in order.</param>
         /// <param name="types">Expected types in order.</param>
         public static void ValidateOrder(Expression expression, ReturnType[] optional, params ReturnType[] types)
         {
@@ -230,6 +235,7 @@ namespace Microsoft.Bot.Builder.Expressions
         /// </summary>
         /// <param name="value">Value to check.</param>
         /// <param name="expression">Expression that led to value.</param>
+        /// <param name="number">No function.</param>
         /// <returns>Error or null if valid.</returns>
         public static string VerifyNumber(object value, Expression expression, int number)
         {
@@ -246,6 +252,7 @@ namespace Microsoft.Bot.Builder.Expressions
         /// </summary>
         /// <param name="value">Value to check.</param>
         /// <param name="expression">Expression that led to value.</param>
+        /// <param name="number">No function.</param>
         /// <returns>Error or null if valid.</returns>
         public static string VerifyNumericList(object value, Expression expression, int number)
         {
@@ -273,6 +280,7 @@ namespace Microsoft.Bot.Builder.Expressions
         /// </summary>
         /// <param name="value">Value to check.</param>
         /// <param name="expression">Expression that led to value.</param>
+        /// <param name="number">No function.</param>
         /// <returns>Error or null if valid.</returns>
         public static string VerifyContainer(object value, Expression expression, int number)
         {
@@ -289,6 +297,7 @@ namespace Microsoft.Bot.Builder.Expressions
         /// </summary>
         /// <param name="value">Value to check.</param>
         /// <param name="expression">Expression that led to value.</param>
+        /// <param name="number">No function.</param>
         /// <returns>Error or null if valid.</returns>
         public static string VerifyList(object value, Expression expression, int number)
         {
@@ -323,6 +332,7 @@ namespace Microsoft.Bot.Builder.Expressions
         /// </summary>
         /// <param name="value">Value to check.</param>
         /// <param name="expression">Expression that led to value.</param>
+        /// <param name="number">No function.</param>
         /// <returns>Error or null if valid.</returns>
         public static string VerifyInteger(object value, Expression expression, int number)
         {
@@ -339,6 +349,7 @@ namespace Microsoft.Bot.Builder.Expressions
         /// </summary>
         /// <param name="value">Value to check.</param>
         /// <param name="expression">Expression that led to value.</param>
+        /// <param name="number">No function.</param>
         /// <returns>Error or null if valid.</returns>
         public static string VerifyString(object value, Expression expression, int number)
         {
@@ -355,6 +366,7 @@ namespace Microsoft.Bot.Builder.Expressions
         /// </summary>
         /// <param name="value">Value to check.</param>
         /// <param name="expression">Expression that led to value.</param>
+        /// <param name="number">No function.</param>
         /// <returns>Error or null if valid.</returns>
         public static string VerifyNotNull(object value, Expression expression, int number)
         {
@@ -371,6 +383,7 @@ namespace Microsoft.Bot.Builder.Expressions
         /// </summary>
         /// <param name="value">Value to check.</param>
         /// <param name="expression">Expression that led to value.</param>
+        /// <param name="number">No function.</param>
         /// <returns>Error or null if valid.</returns>
         public static string VerifyNumberOrString(object value, Expression expression, int number)
         {
@@ -387,6 +400,7 @@ namespace Microsoft.Bot.Builder.Expressions
         /// </summary>
         /// <param name="value">Value to check.</param>
         /// <param name="expression">Expression that led to value.</param>
+        /// <param name="number">No function.</param>
         /// <returns>Error or null if valid.</returns>
         public static string VerifyBoolean(object value, Expression expression, int number)
         {
@@ -495,41 +509,6 @@ namespace Microsoft.Bot.Builder.Expressions
 
                 return (value, error);
             };
-
-
-        /// <summary>
-        /// walk dialog callstack looking for property
-        /// </summary>
-        /// <param name="expression"></param>
-        /// <param name="state"></param>
-        /// <returns></returns>
-        private static (object value, string error) CallstackScope(Expression expression, object state)
-        {
-            // get collection
-            var (result, error) = AccessProperty(state, "callstack");
-            if (result != null)
-            {
-                var items = (IEnumerable<object>)result;
-                object property = null;
-                (property, error) = expression.Children[0].TryEvaluate(state);
-                if (property != null && error == null)
-                {
-                    foreach (var item in items)
-                    {
-                        // get property off of item
-                        (result, error) = AccessProperty(item, property.ToString());
-
-                        // if not null
-                        if (error == null && result != null)
-                        {
-                            // return it
-                            return (result, null);
-                        }
-                    }
-                }
-            }
-            return (null, error);
-        }
 
         /// <summary>
         /// Generate an expression delegate that applies function on the accumulated value after verifying all children.
@@ -691,6 +670,42 @@ namespace Microsoft.Bot.Builder.Expressions
                 throw new SyntaxErrorException($"{type} does not have an evaluator, it's not a built-in function or a customized function");
             }
             return eval;
+        }
+
+        /// <summary>
+        /// Walk dialog callstack looking for property.
+        /// </summary>
+        /// <param name="expression">Filter expression.</param>
+        /// <param name="state">Object containing the dialog callstack to search.</param>
+        /// <returns>The property.</returns>
+        private static (object value, string error) CallstackScope(Expression expression, object state)
+        {
+            // get callstack collection?
+            var (result, error) = AccessProperty(state, "callstack");
+            if (result != null)
+            {
+                var items = (IEnumerable<object>)result;
+                object property = null;
+
+                // Check for a match??
+                (property, error) = expression.Children[0].TryEvaluate(state);
+                if (property != null && error == null)
+                {
+                    foreach (var item in items)
+                    {
+                        // get property off of item
+                        (result, error) = AccessProperty(item, property.ToString());
+
+                        // if not null
+                        if (error == null && result != null)
+                        {
+                            // return it
+                            return (result, null);
+                        }
+                    }
+                }
+            }
+            return (null, error);
         }
 
         private static void ValidateAccessor(Expression expression)
@@ -1084,10 +1099,10 @@ namespace Microsoft.Bot.Builder.Expressions
         }
 
         /// <summary>
-        /// return new object list replace jarray.ToArray<object>().
+        /// Return new object list replace jarray.ToArray&lt;object&gt;().
         /// </summary>
-        /// <param name="jarray"></param>
-        /// <returns></returns>
+        /// <param name="instance">List to resolve.</param>
+        /// <returns>Resolved list.</returns>
         private static IList ResolveListValue(object instance)
         {
             IList result = null;
@@ -2011,7 +2026,7 @@ namespace Microsoft.Bot.Builder.Expressions
                 {
                     if (products.Count() == 1)
                     {
-                        result = ResolveValue(products.ElementAt(0)); ;
+                        result = ResolveValue(products.ElementAt(0));
                     }
                     else if (products.Count() > 1)
                     {
@@ -3307,10 +3322,5 @@ namespace Microsoft.Bot.Builder.Expressions
             lookup.Add("concat", lookup[ExpressionType.Concat]);
             return lookup;
         }
-
-        /// <summary>
-        /// Dictionary of built-in functions.
-        /// </summary>
-        private static readonly Dictionary<string, ExpressionEvaluator> _functions = BuildFunctionLookup();
     }
 }

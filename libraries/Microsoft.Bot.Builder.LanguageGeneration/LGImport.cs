@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-
-namespace Microsoft.Bot.Builder.LanguageGeneration
+﻿namespace Microsoft.Bot.Builder.LanguageGeneration
 {
     /// <summary>
     /// Here is a data model that can easily understanded and used as the LG import definition in lg files.

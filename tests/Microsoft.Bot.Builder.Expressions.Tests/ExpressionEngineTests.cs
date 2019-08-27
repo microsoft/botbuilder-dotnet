@@ -11,11 +11,9 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
     [TestClass]
     public class ExpressionEngineTests
     {
-        public static object[] Test(string input, object value, HashSet<string> paths = null) => new object[] { input, value, paths };
-
-        public static HashSet<string> one = new HashSet<string> { "one" };
-        public static HashSet<string> oneTwo = new HashSet<string> { "one", "two" };
-        private static readonly string nullStr = null;
+        public static HashSet<string> One = new HashSet<string> { "one" };
+        public static HashSet<string> OneTwo = new HashSet<string> { "one", "two" };
+        private static readonly string NullStr = null;
 
         private readonly object scope = new Dictionary<string, object>
         {
@@ -26,8 +24,9 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             { "cit", "cit" },
             { "y", "y" },
             { "istrue", true },
-            { "nullObj", nullStr },
-            { "bag", new Dictionary<string, object>
+            { "nullObj", NullStr },
+            {
+                "bag", new Dictionary<string, object>
                 {
                     { "three", 3.0 },
                     { "set", new { four = 4.0 } },
@@ -37,7 +36,8 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
                 }
             },
             { "items", new string[] { "zero", "one", "two" } },
-            { "nestedItems",
+            {
+                "nestedItems",
                 new[]
                 {
                     new { x = 1 },
@@ -45,7 +45,8 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
                     new { x = 3 }
                 }
             },
-            { "user",
+            {
+                "user",
                 new
                 {
                     lists = new
@@ -65,7 +66,8 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             { "timestampObj", DateTime.Parse("2018-03-15T13:00:00.000Z").ToUniversalTime() },
             { "unixTimestamp", 1521118800 },
             { "xmlStr", "<?xml version='1.0'?> <produce> <item> <name>Gala</name> <type>apple</type> <count>20</count> </item> <item> <name>Honeycrisp</name> <type>apple</type> <count>10</count> </item> </produce>" },
-            {"jsonStr", @"{
+            {
+                "jsonStr", @"{
                           'Stores': [
                             'Lambton Quay',
                             'Willis Street'
@@ -94,8 +96,10 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
                               ]
                             }
                           ]
-                        }"},
-            { "turn", new
+                        }"
+            },
+            {
+                "turn", new
                 {
                     recognized = new
                     {
@@ -161,7 +165,8 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
                     }
                 }
             },
-            { "dialog",
+            {
+                "dialog",
                 new
                 {
                     x=3,
@@ -182,7 +187,8 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
                     subTitle = "Dialog Sub Title"
                 }
             },
-            { "callstack", new object[]
+            {
+                "callstack", new object[]
                 {
                     new
                     {
@@ -210,7 +216,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
         };
 
         public static IEnumerable<object[]> Data => new[]
-       {
+        {
             #region SetPathToProperty test
             // TODO: We should support this.
             // Test("@@['c' + 'ity']", "Seattle"),
@@ -241,8 +247,8 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("(1 + 3) / 2", 2),
             Test("1 * (2 + 3)", 5),
             Test("(1 + 2) * 3", 9),
-            Test("(one + two) * bag.three", 9.0, new HashSet<string> {"one", "two", "bag.three" }),
-            Test("(one + two) * bag.set.four", 12.0, new HashSet<string> {"one", "two", "bag.set.four" } ),
+            Test("(one + two) * bag.three", 9.0, new HashSet<string> { "one", "two", "bag.three" }),
+            Test("(one + two) * bag.set.four", 12.0, new HashSet<string> { "one", "two", "bag.set.four" }),
 
             Test("2^2", 4.0),
             Test("3^2^2", 81.0),
@@ -254,9 +260,9 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("!exists(xione) || !!exists(two)", true),
             Test("(1 + 2) == (4 - 1)", true),
             Test("!!exists(one) == !!exists(one)", true),
-            Test("!(one == 1.0)", false, new HashSet<string> {"one" }),
-            Test("!!(one == 1.0)", true, new HashSet<string> {"one" }),
-            Test("!(one == 1.0) || !!(two == 2.0)", true, oneTwo),
+            Test("!(one == 1.0)", false, new HashSet<string> { "one" }),
+            Test("!!(one == 1.0)", true, new HashSet<string> { "one" }),
+            Test("!(one == 1.0) || !!(two == 2.0)", true, OneTwo),
             Test("!true", false),
             Test("!!true", true),
             Test("!(one == 1.0) || !!(two == 2.0)", true),
@@ -274,9 +280,9 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("(1 + 2) <= (4 - 1)", true),
             Test("(2 + 2) <= (4 - 1)", false),
             Test("float(5.5) <= float(4 - 1)", false),
-            Test("'string'&'builder'","stringbuilder"),
-            Test("\"string\"&\"builder\"","stringbuilder"),
-            Test("one > 0.5 && two < 2.5", true, oneTwo),
+            Test("'string'&'builder'", "stringbuilder"),
+            Test("\"string\"&\"builder\"", "stringbuilder"),
+            Test("one > 0.5 && two < 2.5", true, OneTwo),
             Test("notThere > 4", false),
             Test("float(5.5) && float(0.0)", true),
             Test("hello && \"hello\"", true),
@@ -285,32 +291,32 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("!(hello)", false), // false
             Test("!(10)", false),
             Test("!(0)", false),
-            Test("one > 0.5 || two < 1.5", true, oneTwo),
+            Test("one > 0.5 || two < 1.5", true, OneTwo),
             Test("one / 0 || two", true),
             Test("0/3", 0),
             Test("True == true", true),
             #endregion
 
             #region  String functions test
-            Test("concat(hello,world)","helloworld"),
-            Test("concat('hello','world')","helloworld"),
-            Test("concat(\"hello\",\"world\")","helloworld"),
-            Test("length('hello')",5),
-            Test("length(\"hello\")",5),
-            Test("length(concat(hello,world))",10),
-            Test("count('hello')",5),
-            Test("count(\"hello\")",5),
-            Test("count(concat(hello,world))",10),
-            Test("replace('hello', 'l', 'k')","hekko"),
-            Test("replace('hello', 'L', 'k')","hello"),
+            Test("concat(hello,world)", "helloworld"),
+            Test("concat('hello','world')", "helloworld"),
+            Test("concat(\"hello\",\"world\")", "helloworld"),
+            Test("length('hello')", 5),
+            Test("length(\"hello\")", 5),
+            Test("length(concat(hello,world))", 10),
+            Test("count('hello')", 5),
+            Test("count(\"hello\")", 5),
+            Test("count(concat(hello,world))", 10),
+            Test("replace('hello', 'l', 'k')", "hekko"),
+            Test("replace('hello', 'L', 'k')", "hello"),
             Test("replace(\"hello'\", \"'\", '\"')", "hello\""),
             Test("replace('hello\"', '\"', \"'\")", "hello'"),
             Test("replace('hello\"', '\"', '\n')", "hello\n"),
             Test("replace('hello\n', '\n', '\\\\')", "hello\\"),
             Test(@"replace('hello\\', '\\', '\\\\')", @"hello\\"),
             Test(@"replace('hello\n', '\n', '\\\\')", @"hello\\"),
-            Test("replaceIgnoreCase('hello', 'L', 'k')","hekko"),
-            Test("split('hello','e')",new string[]{ "h","llo"}),
+            Test("replaceIgnoreCase('hello', 'L', 'k')", "hekko"),
+            Test("split('hello','e')", new string[] { "h", "llo" }),
             Test("substring('hello', 0, 5)", "hello"),
             Test("substring('hello', 0, 3)", "hel"),
             Test("substring('hello', 3)", "lo"),
@@ -336,21 +342,21 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("addOrdinal(11 + 11)", "22nd"),
             Test("addOrdinal(11 + 12)", "23rd"),
             Test("addOrdinal(11 + 13)", "24th"),
-            Test("addOrdinal(-1)", "-1"),//original string value
+            Test("addOrdinal(-1)", "-1"), // original string value
             
-            # endregion
+            #endregion
 
-            # region  Logical comparison functions test
+            #region  Logical comparison functions test
             Test("and(1 == 1, 1 < 2, 1 > 2)", false),
-            Test("and(!true, !!true)", false),//false && true
-            Test("and(!!true, !!true)", true),//true && true
-            Test("and(hello != 'world', bool('true'))", true),//true && true
-            Test("and(hello == 'world', bool('true'))", false),//false && true
-            Test("or(!exists(one), !!exists(one))", true),//false && true
-            Test("or(!exists(one), !exists(one))", false),//false && false
-            Test("greater(one, two)", false, oneTwo),
-            Test("greater(one , 0.5) && less(two , 2.5)", true),// true && true
-            Test("greater(one , 0.5) || less(two , 1.5)", true),//true || false
+            Test("and(!true, !!true)", false), // false && true
+            Test("and(!!true, !!true)", true), // true && true
+            Test("and(hello != 'world', bool('true'))", true), // true && true
+            Test("and(hello == 'world', bool('true'))", false), // false && true
+            Test("or(!exists(one), !!exists(one))", true), // false && true
+            Test("or(!exists(one), !exists(one))", false), // false && false
+            Test("greater(one, two)", false, OneTwo),
+            Test("greater(one , 0.5) && less(two , 2.5)", true), // true && true
+            Test("greater(one , 0.5) || less(two , 1.5)", true), // true || false
             Test("greater(5, 2)", true),
             Test("greater(2, 2)", false),
             Test("greater(one, two)", false),
@@ -359,14 +365,14 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("greaterOrEquals(float(5.5) , float(4 - 1))", true),
             Test("greaterOrEquals(one, one)", true),
             Test("greaterOrEquals(one, two)", false),
-            Test("greaterOrEquals(one, one)", true, one),
-            Test("greaterOrEquals(one, two)", false, oneTwo),
+            Test("greaterOrEquals(one, one)", true, One),
+            Test("greaterOrEquals(one, two)", false, OneTwo),
             Test("less(5, 2)", false),
             Test("less(2, 2)", false),
             Test("less(one, two)", true),
-            Test("less(one, two)", true, oneTwo),
-            Test("lessOrEquals(one, one)", true, new HashSet<string>{"one" }),
-            Test("lessOrEquals(one, two)", true, oneTwo),
+            Test("less(one, two)", true, OneTwo),
+            Test("lessOrEquals(one, one)", true, new HashSet<string> { "one" }),
+            Test("lessOrEquals(one, two)", true, OneTwo),
             Test("lessOrEquals(one, one)", true),
             Test("lessOrEquals(one, two)", true),
             Test("lessOrEquals((1 + 2) , (4 - 1))", true),
@@ -377,16 +383,16 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("equals(hello, 'hello')", true),
             Test("equals(bag.index, 3)", true),
             Test("equals(bag.index, 2)", false),
-            Test("equals(hello == 'world', bool('true'))", false),//false, true
-            Test("equals(hello == 'world', bool(0))", false),//false, true
-            Test("if(!exists(one), 'r1', 'r2')", "r2"),//false
-            Test("if(!!exists(one), 'r1', 'r2')", "r1"),//true
-            Test("if(0, 'r1', 'r2')", "r1"),//true
-            Test("if(bool('true'), 'r1', 'r2')", "r1"),//true
-            Test("if(istrue, 'r1', 'r2')", "r1"),//true
+            Test("equals(hello == 'world', bool('true'))", false), // false, true
+            Test("equals(hello == 'world', bool(0))", false), // false, true
+            Test("if(!exists(one), 'r1', 'r2')", "r2"), // false
+            Test("if(!!exists(one), 'r1', 'r2')", "r1"), // true
+            Test("if(0, 'r1', 'r2')", "r1"), // true
+            Test("if(bool('true'), 'r1', 'r2')", "r1"), // true
+            Test("if(istrue, 'r1', 'r2')", "r1"), // true
             Test("if(bag.name == null, \"hello\",  bag.name)", "mybag"),
             Test("if(user.name == null, \"hello\",  user.name)", "hello"), // user.name don't exist
-            Test("if(user.name == null, '',  user.name)", ""), // user.name don't exist
+            Test("if(user.name == null, '',  user.name)", string.Empty), // user.name don't exist
             Test("if(one > 0, one, two)", 1),
             Test("if(one < 0, one, two)", 2),
             Test("exists(one)", true),
@@ -395,10 +401,10 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("not(one != null)", false),
             Test("not(not(one != null))", true),
             Test("not(false)", true),
-            Test("not(one == 1.0)", false, new HashSet<string> {"one" }),
-            Test("not(not(one == 1.0))", true, new HashSet<string> {"one" }),
+            Test("not(one == 1.0)", false, new HashSet<string> { "one" }),
+            Test("not(not(one == 1.0))", true, new HashSet<string> { "one" }),
             Test("not(false)", true),
-            Test("and(one > 0.5, two < 2.5)", true, oneTwo),
+            Test("and(one > 0.5, two < 2.5)", true, OneTwo),
             Test("and(float(5.5), float(0.0))", true),
             Test("and(hello, \"hello\")", true),
             Test("or(items, (2 + 2) <= (4 - 1))", true), // true || false
@@ -410,9 +416,9 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("if(null, 'r1', 'r2')", "r2"),
             Test("if(hello * 5, 'r1', 'r2')", "r2"),
             Test("if(10, 'r1', 'r2')", "r1"),
-            # endregion
+            #endregion
 
-            # region  Conversion functions test
+            #region  Conversion functions test
             Test("float('10.333')", 10.333f),
             Test("float('10')", 10.0f),
             Test("int('10')", 10),
@@ -426,17 +432,17 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("bool(hello * 5)", false),
             Test("bool('false')", true),
             Test("bool('hi')", true),
-            Test("createArray('h', 'e', 'l', 'l', 'o')", new List<object>{"h", "e", "l", "l", "o" }),
-            Test("createArray(1, bool(0), string(bool(1)), float('10'))", new List<object>{1, true, "true", 10.0f }),
-            Test("array('hello')",new List<object>{ "hello" }),
+            Test("createArray('h', 'e', 'l', 'l', 'o')", new List<object> { "h", "e", "l", "l", "o" }),
+            Test("createArray(1, bool(0), string(bool(1)), float('10'))", new List<object> { 1, true, "true", 10.0f }),
+            Test("array('hello')", new List<object> { "hello" }),
             Test("binary(hello)", "0110100001100101011011000110110001101111"),
             Test("length(binary(hello))", 40),
             Test("base64(hello)", "aGVsbG8="),
             Test("base64ToBinary(base64(hello))", "0110000101000111010101100111001101100010010001110011100000111101"),
             Test("base64ToString(base64(hello))", "hello"),
             Test("dataUri(hello)", "data:text/plain;charset=utf-8;base64,aGVsbG8="),
-            Test("dataUriToBinary(base64(hello))","0110000101000111010101100111001101100010010001110011100000111101"),
-            Test("dataUriToString(dataUri(hello))","hello"),
+            Test("dataUriToBinary(base64(hello))", "0110000101000111010101100111001101100010010001110011100000111101"),
+            Test("dataUriToString(dataUri(hello))", "hello"),
             Test("xml('{\"person\": {\"name\": \"Sophia Owen\", \"city\": \"Seattle\"}}')", $"<root type=\"object\">{Environment.NewLine}  <person type=\"object\">{Environment.NewLine}    <name type=\"string\">Sophia Owen</name>{Environment.NewLine}    <city type=\"string\">Seattle</city>{Environment.NewLine}  </person>{Environment.NewLine}</root>"),
             Test("uriComponent('http://contoso.com')", "http%3A%2F%2Fcontoso.com"),
             Test("uriComponentToString('http%3A%2F%2Fcontoso.com')", "http://contoso.com"),
@@ -453,7 +459,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("min(mul(1, 2), 5) ", 2),
             Test("min(4, 5) ", 4),
             Test("min(4) ", 4),
-            Test("min(1.0, two) + max(one, 2.0)", 3.0, oneTwo),
+            Test("min(1.0, two) + max(one, 2.0)", 3.0, OneTwo),
             Test("sub(2, 1)", 1),
             Test("sub(2, 1, 1)", 0),
             Test("sub(2.0, 0.5)", 1.5),
@@ -466,12 +472,13 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("mod(5,2)", 1),
             Test("rand(1, 2)", 1),
             Test("rand(2, 3)", 2),
-            Test("range(1,4)",new[]{1,2,3,4}),
-            Test("range(-1,6)",new[]{-1,0,1,2,3,4}),
-            # endregion
+            Test("range(1,4)", new[] { 1, 2, 3, 4 }),
+            Test("range(-1,6)", new[] { -1, 0, 1, 2, 3, 4 }),
+            #endregion
 
-            # region  Date and time function test
-            //init dateTime: 2018-03-15T13:00:00Z
+            #region  Date and time function test
+
+            // init dateTime: 2018-03-15T13:00:00Z
             Test("addDays(timestamp, 1)", "2018-03-16T13:00:00.000Z"),
             Test("addDays(timestamp, 1,'MM-dd-yy')", "03-16-18"),
             Test("addHours(timestamp, 1)", "2018-03-15T14:00:00.000Z"),
@@ -481,10 +488,10 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("addSeconds(timestamp, 1)", "2018-03-15T13:00:01.000Z"),
             Test("addSeconds(timestamp, 1, 'MM-dd-yy hh-mm-ss')", "03-15-18 01-00-01"),
             Test("dayOfMonth(timestamp)", 15),
-            Test("dayOfWeek(timestamp)", 4),//Thursday
+            Test("dayOfWeek(timestamp)", 4), // Thursday
             Test("dayOfYear(timestamp)", 74),
             Test("month(timestamp)", 3),
-            Test("date(timestamp)", "3/15/2018"),//Default. TODO
+            Test("date(timestamp)", "3/15/2018"), // Default. TODO
             Test("year(timestamp)", 2018),
             Test("length(utcNow())", 24),
             Test("utcNow('MM-DD-YY')", DateTime.UtcNow.ToString("MM-DD-YY")),
@@ -548,8 +555,8 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("contains(items, 'hi')", false),
             Test("contains(bag, 'three')", true),
             Test("contains(bag, 'xxx')", false),
-            Test("count(split(hello,'e'))",2),
-            Test("count(createArray('h', 'e', 'l', 'l', 'o'))",5),
+            Test("count(split(hello,'e'))", 2),
+            Test("count(createArray('h', 'e', 'l', 'l', 'o'))", 5),
             Test("empty('')", true),
             Test("empty('a')", false),
             Test("empty(bag)", false),
@@ -558,19 +565,19 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("first('hello')", "h"),
             Test("first(createArray(0, 1, 2))", 0),
             Test("first(1)", null),
-            Test("first(nestedItems).x", 1, new HashSet<string> { "nestedItems"}),
+            Test("first(nestedItems).x", 1, new HashSet<string> { "nestedItems" }),
             Test("join(items,',')", "zero,one,two"),
             Test("join(createArray('a', 'b', 'c'), '.')", "a.b.c"),
             Test("join(createArray('a', 'b', 'c'), ',', ' and ')", "a,b and c"),
             Test("join(createArray('a', 'b'), ',', ' and ')", "a and b"),
             Test("join(foreach(items, item, item), ',')", "zero,one,two"),
-            Test("join(foreach(nestedItems, i, i.x + first(nestedItems).x), ',')", "2,3,4", new HashSet<string>{ "nestedItems"}),
-            Test("join(foreach(items, item, concat(item, string(count(items)))), ',')", "zero3,one3,two3", new HashSet<string>{ "items"}),
+            Test("join(foreach(nestedItems, i, i.x + first(nestedItems).x), ',')", "2,3,4", new HashSet<string> { "nestedItems" }),
+            Test("join(foreach(items, item, concat(item, string(count(items)))), ',')", "zero3,one3,two3", new HashSet<string> { "items" }),
             Test("join(select(items, item, item), ',')", "zero,one,two"),
-            Test("join(select(nestedItems, i, i.x + first(nestedItems).x), ',')", "2,3,4", new HashSet<string>{ "nestedItems"}),
-            Test("join(select(items, item, concat(item, string(count(items)))), ',')", "zero3,one3,two3", new HashSet<string>{ "items"}),
+            Test("join(select(nestedItems, i, i.x + first(nestedItems).x), ',')", "2,3,4", new HashSet<string> { "nestedItems" }),
+            Test("join(select(items, item, concat(item, string(count(items)))), ',')", "zero3,one3,two3", new HashSet<string> { "items" }),
             Test("join(where(items, item, item == 'two'), ',')", "two"),
-            Test("join(foreach(where(nestedItems, item, item.x > 1), result, result.x), ',')", "2,3", new HashSet<string>{ "nestedItems"}),
+            Test("join(foreach(where(nestedItems, item, item.x > 1), result, result.x), ',')", "2,3", new HashSet<string> { "nestedItems" }),
             Test("last(items)", "two"),
             Test("last('hello')", "o"),
             Test("last(createArray(0, 1, 2))", 2),
@@ -579,48 +586,48 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("count(union(createArray('a', 'b'), createArray('b', 'c'), createArray('b', 'd')))", 4),
             Test("count(intersection(createArray('a', 'b')))", 2),
             Test("count(intersection(createArray('a', 'b'), createArray('b', 'c'), createArray('b', 'd')))", 1),
-            Test("skip(createArray('H','e','l','l','0'),2)", new List<object>{"l", "l", "0"}),
-            Test("take(createArray('H','e','l','l','0'),2)", new List<object>{"H", "e"}),
-            Test("subArray(createArray('H','e','l','l','o'),2,5)", new List<object>{"l", "l", "o"}),
+            Test("skip(createArray('H','e','l','l','0'),2)", new List<object> { "l", "l", "0" }),
+            Test("take(createArray('H','e','l','l','0'),2)", new List<object> { "H", "e" }),
+            Test("subArray(createArray('H','e','l','l','o'),2,5)", new List<object> { "l", "l", "o" }),
             Test("count(newGuid())", 36),
             Test("indexOf(newGuid(), '-')", 8),
             Test("indexOf(hello, '-')", -1),
             Test("lastIndexOf(newGuid(), '-')", 23),
             Test("lastIndexOf(hello, '-')", -1),
-            Test("length(newGuid())",36),
-            # endregion
+            Test("length(newGuid())", 36),
+            #endregion
 
-            # region  Object manipulation and construction functions
+            #region  Object manipulation and construction functions
             Test("string(addProperty(json('{\"key1\":\"value1\"}'), 'key2','value2'))", "{\"key1\":\"value1\",\"key2\":\"value2\"}"),
             Test("string(setProperty(json('{\"key1\":\"value1\"}'), 'key1','value2'))", "{\"key1\":\"value2\"}"),
             Test("string(removeProperty(json('{\"key1\":\"value1\",\"key2\":\"value2\"}'), 'key2'))", "{\"key1\":\"value1\"}"),
             Test("coalesce(nullObj,hello,nullObj)", "hello"),
-            Test("xPath(xmlStr,'/produce/item/name')", new[] { "<name>Gala</name>", "<name>Honeycrisp</name>"}),
+            Test("xPath(xmlStr,'/produce/item/name')", new[] { "<name>Gala</name>", "<name>Honeycrisp</name>" }),
             Test("xPath(xmlStr,'sum(/produce/item/count)')", 30),
             Test("jPath(jsonStr,'Manufacturers[0].Products[0].Price')", 50),
-            Test("jPath(jsonStr,'$..Products[?(@.Price >= 50)].Name')", new[] {"Anvil", "Elbow Grease" }),
-            # endregion
+            Test("jPath(jsonStr,'$..Products[?(@.Price >= 50)].Name')", new[] { "Anvil", "Elbow Grease" }),
+            #endregion
 
-            # region  Short Hand Expression
-            Test("@city == 'Bellevue'", false, new HashSet<string> {"turn.recognized.entities.city"}),
-            Test("@city", "Seattle", new HashSet<string> {"turn.recognized.entities.city"}),
-            Test("@city == 'Seattle'", true, new HashSet<string> {"turn.recognized.entities.city"}),
-            Test("@@city[0]","Seattle", new HashSet<string> {"turn.recognized.entities.city[0]"}),
+            #region  Short Hand Expression
+            Test("@city == 'Bellevue'", false, new HashSet<string> { "turn.recognized.entities.city" }),
+            Test("@city", "Seattle", new HashSet<string> { "turn.recognized.entities.city" }),
+            Test("@city == 'Seattle'", true, new HashSet<string> { "turn.recognized.entities.city" }),
+            Test("@@city[0]", "Seattle", new HashSet<string> { "turn.recognized.entities.city[0]" }),
             Test("count(@@city)", 1),
             Test("count(@@city) == 1", true),
-            Test("@ordinal", "1", new HashSet<string> {"turn.recognized.entities.ordinal"}),
-            Test("@@ordinal[1]", "2", new HashSet<string> {"turn.recognized.entities.ordinal[1]"}),
-            Test("@['city']", "Seattle", new HashSet<string> {"turn.recognized.entities.city"}),
-            Test("@[concat('cit', 'y')]", "Seattle", new HashSet<string> {"turn.recognized.entities"}),
-            Test("@[concat(cit, y)]", "Seattle", new HashSet<string> {"turn.recognized.entities", "cit", "y"}),
-            Test("#BookFlight == 'BookFlight'", true, new HashSet<string> {"turn.recognized.intents.BookFlight"}),
-            Test("#BookHotel[1].Where", "Kirkland", new HashSet<string> {"turn.recognized.intents.BookHotel[1].Where"}),
-            Test("exists(#BookFlight)", true, new HashSet<string> {"turn.recognized.intents.BookFlight"}),
+            Test("@ordinal", "1", new HashSet<string> { "turn.recognized.entities.ordinal" }),
+            Test("@@ordinal[1]", "2", new HashSet<string> { "turn.recognized.entities.ordinal[1]" }),
+            Test("@['city']", "Seattle", new HashSet<string> { "turn.recognized.entities.city" }),
+            Test("@[concat('cit', 'y')]", "Seattle", new HashSet<string> { "turn.recognized.entities" }),
+            Test("@[concat(cit, y)]", "Seattle", new HashSet<string> { "turn.recognized.entities", "cit", "y" }),
+            Test("#BookFlight == 'BookFlight'", true, new HashSet<string> { "turn.recognized.intents.BookFlight" }),
+            Test("#BookHotel[1].Where", "Kirkland", new HashSet<string> { "turn.recognized.intents.BookHotel[1].Where" }),
+            Test("exists(#BookFlight)", true, new HashSet<string> { "turn.recognized.intents.BookFlight" }),
             Test("dialog.title", "Dialog Title"),
             Test("dialog.subTitle", "Dialog Sub Title"),
-            Test("%xxx", "options", new HashSet<string> {"dialog.options.xxx"}),
-            Test("%['xxx']", "options", new HashSet<string> {"dialog.options.xxx"}),
-            Test("%yyy[1]", "optionY2", new HashSet<string> {"dialog.options.yyy[1]"}),
+            Test("%xxx", "options", new HashSet<string> { "dialog.options.xxx" }),
+            Test("%['xxx']", "options", new HashSet<string> { "dialog.options.xxx" }),
+            Test("%yyy[1]", "optionY2", new HashSet<string> { "dialog.options.yyy[1]" }),
             Test("dialog.x", 3),
             Test("dialog.y", null),
             Test("dialog.z", null),
@@ -631,18 +638,18 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             #endregion
 
             #region  Memory access
-            Test("getProperty(bag, concat('na','me'))","mybag"),
+            Test("getProperty(bag, concat('na','me'))", "mybag"),
             Test("items[2]", "two", new HashSet<string> { "items[2]" }),
-            Test("bag.list[bag.index - 2]", "blue", new HashSet<string> {"bag.list", "bag.index" }),
-            Test("items[nestedItems[1].x]", "two", new HashSet<string> { "items","nestedItems[1].x" }),
-            Test("bag['name']","mybag"),
-            Test("bag[substring(concat('na','me','more'), 0, length('name'))]","mybag"),
-            Test("items[1+1]","two"),
+            Test("bag.list[bag.index - 2]", "blue", new HashSet<string> { "bag.list", "bag.index" }),
+            Test("items[nestedItems[1].x]", "two", new HashSet<string> { "items", "nestedItems[1].x" }),
+            Test("bag['name']", "mybag"),
+            Test("bag[substring(concat('na','me','more'), 0, length('name'))]", "mybag"),
+            Test("items[1+1]", "two"),
             Test("getProperty(null, 'p')", null),
             Test("(getProperty(null, 'p'))[1]", null),
             #endregion
 
-            # region Dialog 
+            #region Dialog 
             Test("user.lists.todo[int(@@ordinal[0]) - 1] != null", true),
             Test("user.lists.todo[int(@@ordinal[0]) + 3] != null", false),
             Test("count(user.lists.todo) > int(@@ordinal[0]))", true),
@@ -651,7 +658,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("user.lists[user.listType][int(@@ordinal[0]) - 1]", "todo1"),
             #endregion
 
-            # region Regex
+            #region Regex
             Test("isMatch('abc', '^[ab]+$')", false), // simple character classes ([abc]), "+" (one or more)
             Test("isMatch('abb', '^[ab]+$')", true), // simple character classes ([abc])
             Test("isMatch('123', '^[^abc]+$')", true), // complemented character classes ([^abc])
@@ -676,10 +683,25 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("isMatch('12abc', '([0-9]+)([a-z]+)([0-9]+)')", false), // "(...)" (simple group)
             Test(@"isMatch('a', '\\w{1}')", true), // "\w" (match [a-zA-Z0-9_])
             Test(@"isMatch('1', '\\d{1}')", true), // "\d" (match [0-9])
-            # endregion
+            #endregion
         };
 
-        [DataTestMethod()]
+        public static object[] Test(string input, object value, HashSet<string> paths = null) => new object[] { input, value, paths };
+
+        public static bool IsNumber(object value) =>
+           value is sbyte
+           || value is byte
+           || value is short
+           || value is ushort
+           || value is int
+           || value is uint
+           || value is long
+           || value is ulong
+           || value is float
+           || value is double
+           || value is decimal;
+
+        [DataTestMethod]
         [DynamicData(nameof(Data))]
         public void Evaluate(string input, object expected, HashSet<string> expectedRefs)
         {
@@ -712,19 +734,6 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             }
         }
 
-        public static bool IsNumber(object value) =>
-            value is sbyte
-            || value is byte
-            || value is short
-            || value is ushort
-            || value is int
-            || value is uint
-            || value is long
-            || value is ulong
-            || value is float
-            || value is double
-            || value is decimal;
-
         private void AssertObjectEquals(object expected, object actual)
         {
             if (IsNumber(actual) && IsNumber(expected))
@@ -739,6 +748,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
                     Assert.IsTrue(Convert.ToSingle(actual) == Convert.ToSingle(expected));
                 }
             }
+
             // Compare two lists
             else if (expected is IList expectedList
                 && actual is IList actualList)

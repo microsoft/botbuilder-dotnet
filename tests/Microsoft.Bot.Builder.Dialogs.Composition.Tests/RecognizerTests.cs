@@ -1,42 +1,29 @@
-﻿using System;
-using System.IO;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.Dialogs.Composition.Recognizers;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Composition.Tests
 {
-    public class TestRecognizer : IRecognizer
-    {
-        public TestRecognizer(string id)
-        {
-            this.Id = id;
-        }
-
-        public string Id { get; set; }
-
-        public async Task<RecognizerResult> RecognizeAsync(ITurnContext turnContext, CancellationToken cancellationToken)
-        {
-            return new RecognizerResult() { Text = this.Id };
-        }
-
-        public async Task<T> RecognizeAsync<T>(ITurnContext turnContext, CancellationToken cancellationToken) where T : IRecognizerConvert, new()
-        {
-            return new T();
-        }
-    }
-
     [TestClass]
     public class RecognizerTests
     {
         private static JsonSerializerSettings jsonSerializerSettings = new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore, Formatting = Formatting.Indented };
 
+        public TestContext TestContext { get; set; }
+
+        private Activity CreateLocaleActivity(string locale)
+        {
+            var activity = Activity.CreateMessageActivity();
+            activity.Text = locale;
+            activity.Locale = locale;
+            return (Activity)activity;
+        }
+ 
         /// <summary>
-        /// Create test flow
+        /// Create test flow.
         /// </summary>
         private TestAdapter CreateTestAdapter(string initialDialog, out DialogSet dialogs, out BotCallbackHandler botHandler)
         {
@@ -55,13 +42,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition.Tests
 
                 var results = await dialogContext.ContinueDialogAsync(cancellationToken);
                 if (results.Status == DialogTurnStatus.Empty)
+                {
                     results = await dialogContext.BeginDialogAsync(initialDialog, null, cancellationToken);
+                }
             };
 
             return adapter;
         }
-
-        public TestContext TestContext { get; set; }
 
         public class RecognizerDialog : Dialog, IDialog
         {
@@ -81,13 +68,26 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition.Tests
                 return new DialogTurnResult(DialogTurnStatus.Waiting);
             }
         }
+    }
 
-        private Activity CreateLocaleActivity(string locale)
+    public class TestRecognizer : IRecognizer
+    {
+        public TestRecognizer(string id)
         {
-            var activity = Activity.CreateMessageActivity();
-            activity.Text = locale;
-            activity.Locale = locale;
-            return (Activity)activity;
+            this.Id = id;
+        }
+
+        public string Id { get; set; }
+
+        public async Task<RecognizerResult> RecognizeAsync(ITurnContext turnContext, CancellationToken cancellationToken)
+        {
+            return await Task.FromResult(new RecognizerResult() { Text = this.Id });
+        }
+
+        public async Task<T> RecognizeAsync<T>(ITurnContext turnContext, CancellationToken cancellationToken)
+            where T : IRecognizerConvert, new()
+        {
+            return await Task.FromResult(new T());
         }
     }
 }
