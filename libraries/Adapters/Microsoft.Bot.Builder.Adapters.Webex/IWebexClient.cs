@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
 
         Task<TeamsResult<Person>> GetMeAsync();
 
-        Task<TeamsResult<Message>> GetMessageAsync(string messageId, CancellationToken? cancellationToken = null);
+        Task<Message> GetMessageAsync(string messageId, CancellationToken? cancellationToken = null);
 
         Task<TeamsListResult<WebhookList>> ListWebhooksAsync();
 

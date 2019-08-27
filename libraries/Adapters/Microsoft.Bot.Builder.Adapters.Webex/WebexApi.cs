@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Thrzn41.WebexTeams;
 using Thrzn41.WebexTeams.Version1;
 
@@ -39,9 +40,11 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
             return await _api.GetMeAsync().ConfigureAwait(false);
         }
 
-        public async Task<TeamsResult<Message>> GetMessageAsync(string messageId, CancellationToken? cancellationToken = null)
+        public async Task<Message> GetMessageAsync(string messageId, CancellationToken? cancellationToken = null)
         {
-            return await _api.GetMessageAsync(messageId).ConfigureAwait(false);
+            var message = await _api.GetMessageAsync(messageId).ConfigureAwait(false);
+
+            return message.GetData(false);
         }
 
         public async Task<TeamsListResult<WebhookList>> ListWebhooksAsync()

@@ -252,12 +252,9 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
 
             Activity activity;
 
-            // var activity = payload.Resource == EventResource.Message && payload.EventType == EventType.Created
-            //    ? await WebexHelper.DecryptedMessageToActivityAsync(payload, _webexApi.GetMessageAsync).ConfigureAwait(false)
-            //    : WebexHelper.PayloadToActivity(payload);
             if (payload.Resource == EventResource.Message && payload.EventType == EventType.Created)
             {
-                Message decryptedMessage = await WebexHelper.GetDecryptedMessage(payload, _webexApi.GetMessageAsync).ConfigureAwait(false);
+                Message decryptedMessage = await WebexHelper.GetDecryptedMessageAsync(payload, _webexApi.GetMessageAsync).ConfigureAwait(false);
 
                 activity = WebexHelper.DecryptedMessageToActivity(decryptedMessage);
             }

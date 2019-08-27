@@ -60,13 +60,29 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         }
 
         [Fact]
-        public async void GetDecryptedMessage_Should_Return_Null_With_Null_Payload()
+        public async void GetDecryptedMessageAsync_Should_Return_Null_With_Null_Payload()
         {
-            Assert.Null(await WebexHelper.GetDecryptedMessage(null, null));
+            Assert.Null(await WebexHelper.GetDecryptedMessageAsync(null, null));
         }
 
         [Fact]
-        public void DecryptedMessageToActivityAsync_Should_Return_Null_With_Null_Message()
+        public async void GetDecryptedMessageAsync_Should_Succeed()
+        {
+            var payload = JsonConvert.DeserializeObject<WebhookEventData>(File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\Payload.json"));
+
+            var message = JsonConvert.DeserializeObject<Message>(File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\Message.json"));
+
+            var webexApi = new Mock<IWebexClient>();
+            webexApi.SetupAllProperties();
+            webexApi.Setup(x => x.GetMessageAsync(It.IsAny<string>(), default)).Returns(Task.FromResult(message));
+
+            var actualMessage = await WebexHelper.GetDecryptedMessageAsync(payload, webexApi.Object.GetMessageAsync);
+
+            Assert.Equal(message.Id, actualMessage.Id);
+        }
+
+        [Fact]
+        public void DecryptedMessageToActivity_Should_Return_Null_With_Null_Message()
         {
             Assert.Null(WebexHelper.DecryptedMessageToActivity(null));
         }

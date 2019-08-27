@@ -1,0 +1,16 @@
+{
+  "id": "message_id",
+  "roomId": "room_id",
+  "roomType": "direct",
+  "toPersonId": null,
+  "toPersonEmail": null,
+  "text": "Echo: Hello",
+  "markdown": "Echo: Hello",
+  "files": null,
+  "personId": "person_id",
+  "personEmail": "test_email@webex.bot",
+  "created": "2019-08-26T19:03:00.205Z",
+  "mentionedPeople": null,
+  "mentionedGroups": null,
+  "html": "<p>Echo: Hello</p>"
+}
