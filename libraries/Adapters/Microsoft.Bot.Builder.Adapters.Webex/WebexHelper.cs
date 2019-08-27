@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
@@ -89,19 +88,33 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         }
 
         /// <summary>
-        /// Converts a decrypted <see cref="Message"/> into an <see cref="Activity"/>.
+        /// Gets a decrypted message by its Id.
         /// </summary>
         /// <param name="payload">The payload obtained from the body of the request.</param>
         /// <param name="decrypterFunc">The function used to decrypt the message.</param>
-        /// <returns>An <see cref="Activity"/> object.</returns>
-        public static async Task<Activity> DecryptedMessageToActivityAsync(WebhookEventData payload, Func<string, CancellationToken?, Task<TeamsResult<Message>>> decrypterFunc)
+        /// <returns>A <see cref="Message"/> object.</returns>
+        public static async Task<Message> GetDecryptedMessage(WebhookEventData payload, Func<string, CancellationToken?, Task<TeamsResult<Message>>> decrypterFunc)
         {
             if (payload == null)
             {
                 return null;
             }
 
-            Message decryptedMessage = (await decrypterFunc(payload.MessageData.Id, null).ConfigureAwait(false)).GetData();
+            return (await decrypterFunc(payload.MessageData.Id, null).ConfigureAwait(false)).GetData();
+        }
+
+        /// <summary>
+        /// Converts a decrypted <see cref="Message"/> into an <see cref="Activity"/>.
+        /// </summary>
+        /// <param name="decryptedMessage">The decrypted message obtained from the body of the request.</param>
+        /// <returns>An <see cref="Activity"/> object.</returns>
+        public static Activity DecryptedMessageToActivity(Message decryptedMessage)
+        {
+            if (decryptedMessage == null)
+            {
+                return null;
+            }
+
             var activity = new Activity
             {
                 Id = decryptedMessage.Id,

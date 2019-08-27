@@ -53,7 +53,8 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task GetIdentityAsync()
         {
-            await _webexApi.GetMeAsync().ContinueWith(task => { WebexHelper.Identity = task.Result.Data; }, TaskScheduler.Current).ConfigureAwait(false);
+            await _webexApi.GetMeAsync().ContinueWith(
+                task => { WebexHelper.Identity = task.Result.Data; }, TaskScheduler.Current).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -249,9 +250,21 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                 }
             }
 
-            var activity = payload.Resource == EventResource.Message && payload.EventType == EventType.Created
-                ? await WebexHelper.DecryptedMessageToActivityAsync(payload, _webexApi.GetMessageAsync).ConfigureAwait(false)
-                : WebexHelper.PayloadToActivity(payload);
+            Activity activity;
+
+            // var activity = payload.Resource == EventResource.Message && payload.EventType == EventType.Created
+            //    ? await WebexHelper.DecryptedMessageToActivityAsync(payload, _webexApi.GetMessageAsync).ConfigureAwait(false)
+            //    : WebexHelper.PayloadToActivity(payload);
+            if (payload.Resource == EventResource.Message && payload.EventType == EventType.Created)
+            {
+                Message decryptedMessage = await WebexHelper.GetDecryptedMessage(payload, _webexApi.GetMessageAsync).ConfigureAwait(false);
+
+                activity = WebexHelper.DecryptedMessageToActivity(decryptedMessage);
+            }
+            else
+            {
+                activity = WebexHelper.PayloadToActivity(payload);
+            }
 
             using (var context = new TurnContext(this, activity))
             {
