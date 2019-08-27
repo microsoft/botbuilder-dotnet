@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
             TwilioClient.Init(username, password);
         }
 
-        /// <summary>        
+        /// <summary>
         /// Sends a Twilio SMS message.
         /// </summary>
         /// <param name="messageOptions">An object containing the parameters for the message to send.</param>

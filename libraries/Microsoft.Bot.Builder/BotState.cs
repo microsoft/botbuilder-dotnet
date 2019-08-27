@@ -136,6 +136,7 @@ namespace Microsoft.Bot.Builder
         /// <remarks>This method clears the state cache in the turn context. Call
         /// <see cref="SaveChangesAsync(ITurnContext, bool, CancellationToken)"/> to persist this
         /// change in the storage layer.
+        /// </remarks>
         /// <exception cref="ArgumentNullException"><paramref name="turnContext"/> is <c>null</c>.</exception>
         public virtual Task ClearStateAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
         {
