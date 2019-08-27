@@ -54,7 +54,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         public async Task GetIdentityAsync()
         {
             await _webexApi.GetMeAsync().ContinueWith(
-                task => { WebexHelper.Identity = task.Result.Data; }, TaskScheduler.Current).ConfigureAwait(false);
+                task => { WebexHelper.Identity = task.Result; }, TaskScheduler.Current).ConfigureAwait(false);
         }
 
         /// <summary>

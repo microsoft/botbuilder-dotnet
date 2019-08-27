@@ -3,11 +3,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Schema;
 using Moq;
+using Newtonsoft.Json;
 using Thrzn41.WebexTeams;
 using Thrzn41.WebexTeams.Version1;
 using Xunit;
@@ -116,12 +118,16 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
             options.Object.AccessToken = "Test";
             options.Object.PublicAddress = "http://contoso.com/api/messages";
 
+            var person = JsonConvert.DeserializeObject<Person>(File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\Person.json"));
+
             var webexApi = new Mock<IWebexClient>();
             webexApi.SetupAllProperties();
-            webexApi.Setup(x => x.GetMeAsync()).Returns(Task.FromResult(new TeamsResult<Person>()));
+            webexApi.Setup(x => x.GetMeAsync()).Returns(Task.FromResult(person));
 
             var webexAdapter = new WebexAdapter(options.Object, webexApi.Object);
             await webexAdapter.GetIdentityAsync();
+
+            Assert.Equal(person.Id, WebexHelper.Identity.Id);
         }
 
         [Fact]

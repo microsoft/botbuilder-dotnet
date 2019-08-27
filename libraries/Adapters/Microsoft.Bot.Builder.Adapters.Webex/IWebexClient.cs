@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
 
         Task DeleteMessageAsync(string activityId);
 
-        Task<TeamsResult<Person>> GetMeAsync();
+        Task<Person> GetMeAsync();
 
         Task<Message> GetMessageAsync(string messageId, CancellationToken? cancellationToken = null);
 

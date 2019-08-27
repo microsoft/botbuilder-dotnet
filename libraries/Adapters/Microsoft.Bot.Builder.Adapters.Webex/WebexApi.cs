@@ -35,9 +35,11 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
             await _api.DeleteMessageAsync(activityId, default).ConfigureAwait(false);
         }
 
-        public async Task<TeamsResult<Person>> GetMeAsync()
+        public async Task<Person> GetMeAsync()
         {
-            return await _api.GetMeAsync().ConfigureAwait(false);
+            var resultPerson = await _api.GetMeAsync().ConfigureAwait(false);
+
+            return resultPerson.GetData(false);
         }
 
         public async Task<Message> GetMessageAsync(string messageId, CancellationToken? cancellationToken = null)
