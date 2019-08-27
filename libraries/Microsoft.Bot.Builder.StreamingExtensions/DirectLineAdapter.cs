@@ -9,6 +9,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
@@ -27,7 +28,7 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
     /// <summary>
     /// Used to process incoming requests sent over an <see cref="IStreamingTransport"/> and adhering to the Bot Framework Protocol v3 with Streaming Extensions.
     /// </summary>
-    public class DirectLineAdapter : BotFrameworkAdapter, IRequestHandler
+    public class DirectLineAdapter : BotFrameworkAdapter, IRequestHandler, IBotFrameworkHttpAdapter
     {
         /*  The default named pipe all instances of DL ASE listen on is named bfv4.pipes
         Unfortunately this name is no longer very discriptive, but for the time being
@@ -40,7 +41,7 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
         private const string InvokeResponseKey = "DirectLineAdapter.InvokeResponse";
         private IStreamingTransportServer _transportServer;
         private string _userAgent;
-        private readonly IBot _bot;
+        private IBot _bot;
         private readonly IChannelProvider _channelProvider;
         private readonly ICredentialProvider _credentialProvider;
         private readonly IList<IMiddleware> _middlewareSet;
@@ -96,13 +97,11 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
         /// <summary>
         /// Process the initial request to establish a long lived connection via a streaming server.
         /// </summary>
-        /// <param name="onTurnError"> The function to execute on turn errors.</param>
-        /// <param name="middlewareSet">The set of middleware to perform on each turn.</param>
         /// <param name="httpRequest">The connection request.</param>
         /// <param name="httpResponse">The response sent on error or connection termination.</param>
         /// <param name="cancellationToken">Optional cancellation token.</param>
         /// <returns>Returns on task completion.</returns>
-        public async Task ConnectWebSocket(Func<ITurnContext, Exception, Task> onTurnError, List<Builder.IMiddleware> middlewareSet, HttpRequest httpRequest, HttpResponse httpResponse, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task ConnectWebSocket(HttpRequest httpRequest, HttpResponse httpResponse, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (httpRequest == null)
             {
@@ -300,6 +299,53 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
             return await ProcessActivityAsync(activity, callback, cancellationToken).ConfigureAwait(false);
         }
 
+        public async Task ProcessAsync(HttpRequest httpRequest, HttpResponse httpResponse, IBot bot, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (httpRequest == null)
+            {
+                throw new ArgumentNullException(nameof(httpRequest));
+            }
+
+            if (httpResponse == null)
+            {
+                throw new ArgumentNullException(nameof(httpResponse));
+            }
+
+            if (bot == null)
+            {
+                throw new ArgumentNullException(nameof(bot));
+            }
+
+            this._bot = bot;
+
+            if (httpRequest.Method == HttpMethods.Get)
+            {
+                await ConnectWebSocket(httpRequest, httpResponse, cancellationToken).ConfigureAwait(false);
+            }
+            else
+            {
+                // deserialize the incoming Activity
+                var activity = HttpHelper.ReadRequest(httpRequest);
+
+                // grab the auth header from the inbound http request
+                var authHeader = httpRequest.Headers["Authorization"];
+
+                try
+                {
+                    // process the inbound activity with the bot
+                    var invokeResponse = await ProcessActivityAsync(authHeader, activity, bot.OnTurnAsync, cancellationToken).ConfigureAwait(false);
+
+                    // write the response, potentially serializing the InvokeResponse
+                    HttpHelper.WriteResponse(httpResponse, invokeResponse);
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    // handle unauthorized here as this layer creates the http response
+                    httpResponse.StatusCode = (int)HttpStatusCode.Unauthorized;
+                }
+            }
+        }
+
         /// <summary>
         /// Primary adapter method for processing activities sent from channel.
         /// Creates a turn context and runs the middleware pipeline for an incoming activity.
@@ -401,7 +447,6 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
 
             try
             {
-                // var adapter = new BotFrameworkStreamingExtensionsAdapter(_transportServer, _middlewareSet, logger);
                 IBot bot = null;
 
                 // First check if an IBot type definition is available from the service provider.
