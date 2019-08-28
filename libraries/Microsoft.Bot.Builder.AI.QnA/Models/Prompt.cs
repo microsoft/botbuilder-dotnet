@@ -11,7 +11,6 @@ namespace Microsoft.Bot.Builder.AI.QnA
     /// <summary>
     /// Prompt Object.
     /// </summary>
-    [Serializable]
     public class Prompt
     {
         private const int DefaultDisplayOrder = 0;
@@ -31,6 +30,13 @@ namespace Microsoft.Bot.Builder.AI.QnA
         public int QnaId { get; set; }
 
         /// <summary>
+        /// Gets or sets displayText - Text displayed to represent a follow up question prompt.
+        /// </summary>
+        /// <value>Display test.</value>
+        [JsonProperty("displayText")]
+        public string DisplayText { get; set; } = string.Empty;
+
+        /// <summary>
         /// Gets or sets the QnADTO returned from the API.
         /// </summary>
         /// <value>
@@ -38,12 +44,5 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// </value>
         [JsonProperty("qna")]
         public object Qna { get; set; }
-
-        /// <summary>
-        /// Gets or sets displayText - Text displayed to represent a follow up question prompt.
-        /// </summary>
-        /// <value>Display test.</value>
-        [JsonProperty("displayText")]
-        public string DisplayText { get; set; }
     }
 }
