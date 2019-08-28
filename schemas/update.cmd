@@ -14,7 +14,7 @@ set branch=%1
 if "%branch%" neq "" goto update
 set branch=4.Future
 
-rem Update .schema
+rem Update .schema 
 :update
 echo Updating .schema files and building sdk.schema for branch %branch%
 bf dialog:merge ../libraries/**/*.schema -u -b %branch% -o sdk.schema
