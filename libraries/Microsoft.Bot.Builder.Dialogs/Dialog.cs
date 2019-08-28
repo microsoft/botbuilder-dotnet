@@ -20,6 +20,8 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         private IBotTelemetryClient _telemetryClient;
 
+        private string id;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Dialog"/> class.
         /// Called from constructors in derived classes to initialize the <see cref="Dialog"/> class.
@@ -31,11 +33,12 @@ namespace Microsoft.Bot.Builder.Dialogs
             _telemetryClient = NullBotTelemetryClient.Instance;
         }
 
-        private string id;
-
         /// <summary>
-        /// Unique id for the dialog.
+        /// Gets or sets id for the dialog.
         /// </summary>
+        /// <value>
+        /// Id for the dialog.
+        /// </value>
         public string Id
         {
             get
@@ -51,18 +54,27 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// Set of tags assigned to the dialog.
+        /// Gets set of tags assigned to the dialog.
         /// </summary>
+        /// <value>
+        /// Set of tags assigned to the dialog.
+        /// </value>
         public List<string> Tags { get; private set; } = new List<string>();
 
         /// <summary>
         /// Gets or sets expression for the memory slots to bind the dialogs options to on a call to `beginDialog()`.
         /// </summary>
+        /// <value>
+        /// Expression for the memory slots to bind the dialogs options to on a call to `beginDialog()`.
+        /// </value>
         public Dictionary<string, string> InputBindings { get; set; } = new Dictionary<string, string>();
 
         /// <summary>
         /// Gets or sets jSONPath expression for the memory slot to bind the dialogs result to when `endDialog()` is called.
         /// </summary>
+        /// <value>
+        /// JSONPath expression for the memory slot to bind the dialogs result to when `endDialog()` is called.
+        /// </value>
         public string OutputBinding { get; set; }
 
         /// <summary>
@@ -120,7 +132,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// to the current dialog's parent.
         /// </summary>
         /// <param name="dc">The dialog context for the current turn of the conversation.</param>
-        /// <param name="reason">Reason why the dialog resumed.</param>
+        /// <param name="reason">An enum indicating why the dialog resumed.</param>
         /// <param name="result">(Optional) value returned from the dialog that was called. The type of the value returned is dependent on the dialog that was called.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
@@ -195,6 +207,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </remarks>
         /// <param name="dc">The dialog context for the current turn of conversation.</param>
         /// <param name="e">The event being raised.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns> Whether the event is handled by the current dialog and further processing should stop.</returns>
         protected virtual Task<bool> OnPreBubbleEvent(DialogContext dc, DialogEvent e, CancellationToken cancellationToken)
         {
@@ -210,6 +223,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </remarks>
         /// <param name="dc">The dialog context for the current turn of conversation.</param>
         /// <param name="e">The event being raised.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns> Whether the event is handled by the current dialog and further processing should stop.</returns>
         protected virtual Task<bool> OnPostBubbleEvent(DialogContext dc, DialogEvent e, CancellationToken cancellationToken)
         {

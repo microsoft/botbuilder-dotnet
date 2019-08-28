@@ -1,14 +1,12 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Text;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
     /// <summary>
-    /// Language policy with fallback for each language as most specific to default en-us -> en -> default
+    /// Language policy with fallback for each language as most specific to default en-us -> en -> default.
     /// </summary>
     public class LanguagePolicy : Dictionary<string, string[]>, ILanguagePolicy
     {

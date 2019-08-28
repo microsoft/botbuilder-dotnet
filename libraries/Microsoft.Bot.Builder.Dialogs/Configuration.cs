@@ -1,19 +1,16 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Configuration;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
-
     public static class Configuration
     {
         /// <summary>
-        /// Build a dictionary view of configuration providers
+        /// Build a dictionary view of configuration providers.
         /// </summary>
-        /// <param name="configuration">IConfiguration that we are running with</param>
-        /// <returns>projected dictionary for settings</returns>
+        /// <param name="configuration">IConfiguration that we are running with.</param>
+        /// <returns>projected dictionary for settings.</returns>
         public static Dictionary<string, object> LoadSettings(IConfiguration configuration)
         {
             var settings = new Dictionary<string, object>();

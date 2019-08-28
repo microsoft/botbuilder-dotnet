@@ -2,10 +2,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Expressions;
@@ -21,6 +19,48 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// </summary>
     public class EditArray : DialogAction
     {
+        private Expression value;
+        private Expression arrayProperty;
+        private Expression resultProperty;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EditArray"/> class.
+        /// </summary>
+        /// <param name="changeType">change type.</param>
+        /// <param name="arrayProperty">array property (optional).</param>
+        /// <param name="value">value to insert.</param>
+        /// <param name="resultProperty">output property to put Pop/Take into.</param>
+        public EditArray(ArrayChangeType changeType, string arrayProperty = null, string value = null, string resultProperty = null)
+            : base()
+        {
+            this.ChangeType = changeType;
+
+            if (!string.IsNullOrEmpty(arrayProperty))
+            {
+                this.ArrayProperty = arrayProperty;
+            }
+
+            switch (changeType)
+            {
+                case ArrayChangeType.Clear:
+                case ArrayChangeType.Pop:
+                case ArrayChangeType.Take:
+                    this.ResultProperty = resultProperty;
+                    break;
+                case ArrayChangeType.Push:
+                case ArrayChangeType.Remove:
+                    this.Value = value;
+                    break;
+            }
+        }
+
+        [JsonConstructor]
+        public EditArray([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+            : base()
+        {
+            this.RegisterSourceLocation(callerPath, callerLine);
+        }
+
         public enum ArrayChangeType
         {
             /// <summary>
@@ -49,32 +89,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             Clear
         }
 
-        private Expression value;
-        private Expression arrayProperty;
-        private Expression resultProperty;
-
-        [JsonConstructor]
-        public EditArray([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
-            : base()
-        {
-            this.RegisterSourceLocation(callerPath, callerLine);
-        }
-
-        protected override string OnComputeId()
-        {
-            return $"array[{ChangeType + ": " + ArrayProperty}]";
-        }
-
         /// <summary>
-        /// Gets or sets type of change being applied
+        /// Gets or sets type of change being applied.
         /// </summary>
+        /// <value>
+        /// Type of change being applied.
+        /// </value>
         [JsonConverter(typeof(StringEnumConverter))]
         [JsonProperty("changeType")]
         public ArrayChangeType ChangeType { get; set; }
 
         /// <summary>
         /// Gets or sets memory expression of the array to manipulate.
-        /// </summary>Edit
+        /// </summary>
+        /// <value>
+        /// Memory expression of the array to manipulate.
+        /// </value>Edit
         [JsonProperty("arrayProperty")]
         public string ArrayProperty
         {
@@ -83,8 +113,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         }
 
         /// <summary>
-        /// Gets or sets the result of the action
+        /// Gets or sets the result of the action.
         /// </summary>
+        /// <value>
+        /// The result of the action.
+        /// </value>
         [JsonProperty("resultProperty")]
         public string ResultProperty 
         {
@@ -95,6 +128,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <summary>
         /// Gets or sets the expression of the item to put onto the array.
         /// </summary>
+        /// <value>
+        /// The expression of the item to put onto the array.
+        /// </value>
         [JsonProperty("value")]
         public string Value
         {
@@ -102,35 +138,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             set { this.value = (value != null) ? new ExpressionEngine().Parse(value) : null; }
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="EditArray"/> class.
-        /// </summary>
-        /// <param name="changeType">change type.</param>
-        /// <param name="arrayProperty">array property (optional)</param>
-        /// <param name="value">value to insert</param>
-        /// <param name="resultProperty">output property to put Pop/Take into</param>
-        public EditArray(ArrayChangeType changeType, string arrayProperty = null, string value = null, string resultProperty = null)
-            : base()
+        protected override string OnComputeId()
         {
-            this.ChangeType = changeType;
-
-            if (!string.IsNullOrEmpty(arrayProperty))
-            {
-                this.ArrayProperty = arrayProperty;
-            }
-
-            switch (changeType)
-            {
-                case ArrayChangeType.Clear:
-                case ArrayChangeType.Pop:
-                case ArrayChangeType.Take:
-                    this.ResultProperty = resultProperty;
-                    break;
-                case ArrayChangeType.Push:
-                case ArrayChangeType.Remove:
-                    this.Value = value;
-                    break;
-            }
+            return $"array[{ChangeType + ": " + ArrayProperty}]";
         }
 
         protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
@@ -142,7 +152,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             if (string.IsNullOrEmpty(ArrayProperty))
             {
-                throw new Exception($"EditArray: \"{ ChangeType }\" operation couldn't be performed because the arrayProperty wasn't specified.");
+                throw new Exception($"EditArray: \"{ChangeType}\" operation couldn't be performed because the arrayProperty wasn't specified.");
             }
 
             var array = dc.State.GetValue<JArray>(this.arrayProperty, new JArray());
@@ -217,6 +227,5 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new Exception($"EditArray: \"{ChangeType}\" operation couldn't be performed for array \"{ArrayProperty}\" because a value wasn't specified.");
             }
         }
-
     }
 }

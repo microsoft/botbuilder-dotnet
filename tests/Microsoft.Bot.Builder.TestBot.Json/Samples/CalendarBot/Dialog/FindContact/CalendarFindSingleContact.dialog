@@ -6,7 +6,7 @@
       "$type": "Microsoft.OnBeginDialog",
       "actions": [
         {
-          "$type": "Microsoft.OAuthPrompt",
+          "$type": "Microsoft.OAuthInput",
           "ConnectionName": "msgraph",
           "Title": "Log in",
           "Text": "Please log in to your calendar account",

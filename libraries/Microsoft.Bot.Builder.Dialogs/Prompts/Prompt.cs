@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// <typeparam name="T">The type of value the prompt returns.</typeparam>
     /// <remarks>When the prompt ends, it should return a <typeparamref name="T"/> object that
     /// represents the value that was prompted for.
-    /// Use <see cref="DialogSet.Add(Dialog)"/> or <see cref="ComponentDialog.AddDialog(Dialog)"/>
+    /// Use <see cref="DialogSet.Add(IDialog)"/> or <see cref="ComponentDialog.AddDialog(IDialog)"/>
     /// to add a prompt to a dialog set or component dialog, respectively.
     /// Use <see cref="DialogContext.PromptAsync(string, PromptOptions, CancellationToken)"/> or
     /// <see cref="DialogContext.BeginDialogAsync(string, object, CancellationToken)"/> to start the prompt.
@@ -171,7 +171,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// when the previous active dialog on the stack completes.
         /// </summary>
         /// <param name="dc">The dialog context for the current turn of the conversation.</param>
-        /// <param name="reason">An enumeration values that indicates why the dialog resumed.</param>
+        /// <param name="reason">An enum indicating why the dialog resumed.</param>
         /// <param name="result">Optional, value returned from the previous dialog on the stack.
         /// The type of the value returned is dependent on the previous dialog.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects

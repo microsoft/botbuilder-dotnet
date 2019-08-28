@@ -9,13 +9,14 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
 {
     /// <summary>
-    /// Event for Typing Activity
+    /// Event for Typing Activity.
     /// </summary>
     public class OnTypingActivity : OnActivity
     {
         [JsonConstructor]
-        public OnTypingActivity(List<IDialog> actions = null, string constraint= null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
-            : base(type: ActivityTypes.Typing, actions: actions, constraint: constraint, callerPath: callerPath, callerLine: callerLine) { }
+        public OnTypingActivity(List<IDialog> actions = null, string constraint = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+            : base(type: ActivityTypes.Typing, actions: actions, constraint: constraint, callerPath: callerPath, callerLine: callerLine)
+        {
+        }
     }
-
 }

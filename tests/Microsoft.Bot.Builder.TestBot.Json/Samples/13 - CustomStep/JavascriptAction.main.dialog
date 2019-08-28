@@ -16,7 +16,7 @@
                     "activity": "Your age is: {user.age}"
                 },
                 {
-                    "$type": "Testbot.JavascriptStep",
+                    "$type": "Testbot.JavascriptAction",
                     "script": "Samples/13 - CustomStep/dogyears.js",
                     "inputBindings": {
                         "age": "user.age"

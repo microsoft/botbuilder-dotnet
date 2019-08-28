@@ -6,7 +6,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition.Recognizers
 {
     public class TemperatureEntityRecognizer : BaseEntityRecognizer
     {
-        public TemperatureEntityRecognizer() { }
+        public TemperatureEntityRecognizer()
+        {
+        }
 
         protected override List<ModelResult> Recognize(string text, string culture)
         {

@@ -2,15 +2,8 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.TraceExtensions;
-using Microsoft.Bot.Configuration;
-using Microsoft.Bot.Schema;
-using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.AI.QnA
 {
@@ -464,7 +457,8 @@ namespace Microsoft.Bot.Builder.AI.QnA
             throw new NotImplementedException();
         }
 
-        public Task<T> RecognizeAsync<T>(ITurnContext turnContext, CancellationToken cancellationToken) where T : IRecognizerConvert, new()
+        public Task<T> RecognizeAsync<T>(ITurnContext turnContext, CancellationToken cancellationToken)
+            where T : IRecognizerConvert, new()
         {
             throw new NotImplementedException();
         }

@@ -2,10 +2,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Json.Pointer;
 using Newtonsoft.Json.Linq;
@@ -64,30 +62,32 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resolvers
             var json = jPointer.Evaluate(refDoc);
 
             foreach (JProperty prop in refToken.Children<JProperty>())
+            {
+                if (prop.Name != RefPropertyName)
                 {
-                    if (prop.Name != RefPropertyName)
+                    // JToken is an object, so we merge objects
+                    if (json[prop.Name] != null && json[prop.Name].Type == JTokenType.Object)
                     {
-                        // JToken is an object, so we merge objects
-                        if (json[prop.Name] != null && json[prop.Name].Type == JTokenType.Object)
-                        {
-                            JObject targetProperty = json[prop.Name] as JObject;
-                            targetProperty.Merge(prop.Value);
-                        }
-                        // JToken is an object, so we merge objects
-                        else if (json[prop.Name] != null && json[prop.Name].Type == JTokenType.Array)
-                        {
-                            JArray targetArray = json[prop.Name] as JArray;
-                            targetArray.Merge(prop.Value);
-                        }
-                        // JToken is a value, simply assign
-                        else
-                        {
-                            json[prop.Name] = prop.Value;
-                        }
+                        JObject targetProperty = json[prop.Name] as JObject;
+                        targetProperty.Merge(prop.Value);
+                    }
+
+                    // JToken is an object, so we merge objects
+                    else if (json[prop.Name] != null && json[prop.Name].Type == JTokenType.Array)
+                    {
+                        JArray targetArray = json[prop.Name] as JArray;
+                        targetArray.Merge(prop.Value);
+                    }
+
+                    // JToken is a value, simply assign
+                    else
+                    {
+                        json[prop.Name] = prop.Value;
                     }
                 }
+            }
 
-            return json;
+            return await Task.FromResult(json);
         }
 
         private JProperty GetRefJProperty(JToken token)

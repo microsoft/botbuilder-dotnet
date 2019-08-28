@@ -13,7 +13,6 @@ namespace Microsoft.Bot.Builder.Tests
     [TestCategory("Middleware")]
     public class BotAdapterBracketingTest
     {
-
         public TestContext TestContext { get; set; }
 
         /// <summary>

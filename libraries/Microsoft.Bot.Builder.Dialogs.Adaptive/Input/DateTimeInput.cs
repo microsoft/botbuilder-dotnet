@@ -1,24 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text.DateTime;
 using static Microsoft.Recognizers.Text.Culture;
-
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 {
     public class DateTimeInput : InputDialog
     {
-        public string DefaultLocale { get; set; } = null;
-
         public DateTimeInput([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
             this.RegisterSourceLocation(callerPath, callerLine);
         }
+
+        public string DefaultLocale { get; set; } = null;
 
         protected override string OnComputeId()
         {

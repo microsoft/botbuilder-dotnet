@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
@@ -14,14 +13,18 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 {
     public class Expander : LGFileParserBaseVisitor<List<string>>
     {
-        private readonly IGetMethod getMethodX;
+        private readonly ExpressionEngine expanderExpressionEngine;
+        private readonly ExpressionEngine evaluatorExpressionEngine;
         private readonly Stack<EvaluationTarget> evaluationTargetStack = new Stack<EvaluationTarget>();
 
-        public Expander(List<LGTemplate> templates, IGetMethod getMethod)
+        public Expander(List<LGTemplate> templates, ExpressionEngine expressionEngine)
         {
             Templates = templates;
             TemplateMap = templates.ToDictionary(x => x.Name);
-            getMethodX = getMethod ?? new GetExpanderMethod(this);
+
+            // generate a new customzied expression engine by injecting the template as functions
+            this.expanderExpressionEngine = new ExpressionEngine(CustomizedEvaluatorLookup(expressionEngine.EvaluatorLookup, true));
+            this.evaluatorExpressionEngine = new ExpressionEngine(CustomizedEvaluatorLookup(expressionEngine.EvaluatorLookup, false));
         }
 
         public List<LGTemplate> Templates { get; }
@@ -253,10 +256,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return EvalExpression(exp);
         }
 
-        private EvaluationTarget CurrentTarget() =>
-
-            // just don't want to write evaluationTargetStack.Peek() everywhere
-            evaluationTargetStack.Peek();
+        // just don't want to write evaluationTargetStack.Peek() everywhere
+        private EvaluationTarget CurrentTarget() => evaluationTargetStack.Peek();
 
         private List<string> EvalMultiLineText(string exp)
         {
@@ -293,8 +294,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         private (object value, string error) EvalByExpressionEngine(string exp, object scope)
         {
-            var parse = new ExpressionEngine(getMethodX.GetMethodX).Parse(exp);
-            return parse.TryEvaluate(scope);
+            object value = null;
+            string error = null;
+            var expanderExpression = this.expanderExpressionEngine.Parse(exp);
+            var evaluatorExpression = this.evaluatorExpressionEngine.Parse(exp);
+            var parse = ReconstructExpression(expanderExpression, evaluatorExpression);
+            (value, error) = parse.TryEvaluate(scope);
+
+            return (value, error);
         }
 
         private List<string> StringListConcat(List<string> list1, List<string> list2)
@@ -310,63 +317,60 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             return result;
         }
-    }
 
-    internal class GetExpanderMethod : IGetMethod
-    {
-        // Hold an evaluator instance to make sure all functions have access
-        // This ensentially make all functions as closure
-        // This is perticularly used for using templateName as lambda
-        // Such as {foreach(alarms, ShowAlarm)}
-        private readonly Expander _expander;
-
-        public GetExpanderMethod(Expander expander)
+        // Genearte a new lookup function based on one lookup function
+        private EvaluatorLookup CustomizedEvaluatorLookup(EvaluatorLookup baseLookup, bool isExpander)
+        => (string name) =>
         {
-            _expander = expander;
-        }
+            var prebuiltPrefix = "prebuilt.";
 
-        public ExpressionEvaluator GetMethodX(string name)
-        {
-            // user can always choose to use builtin.xxx to disambiguate with template xxx
-            var builtInPrefix = "builtin.";
-
-            if (name.StartsWith(builtInPrefix))
+            if (name.StartsWith(prebuiltPrefix))
             {
-                return BuiltInFunctions.Lookup(name.Substring(builtInPrefix.Length));
+                return baseLookup(name.Substring(prebuiltPrefix.Length));
             }
 
-            // TODO: Should add verifiers and validators
-            switch (name)
+            if (this.TemplateMap.ContainsKey(name))
             {
-                case "join":
-                    return new ExpressionEvaluator("join", BuiltInFunctions.Apply(this.Join));
+                if (isExpander)
+                {
+                    return new ExpressionEvaluator(name, BuiltInFunctions.Apply(this.TemplateExpander(name)), ReturnType.String, this.ValidTemplateReference);
+                }
+                else
+                {
+                    return new ExpressionEvaluator(name, BuiltInFunctions.Apply(this.TemplateEvaluator(name)), ReturnType.String, this.ValidTemplateReference);
+                }
             }
 
-            if (_expander.TemplateMap.ContainsKey(name))
-            {
-                return new ExpressionEvaluator($"{name}", BuiltInFunctions.Apply(this.TemplateEvaluator(name)), ReturnType.String, this.ValidTemplateReference);
-            }
+            return baseLookup(name);
+        };
 
-            return BuiltInFunctions.Lookup(name);
-        }
-
-        public Func<IReadOnlyList<object>, object> TemplateEvaluator(string templateName) =>
+        private Func<IReadOnlyList<object>, object> TemplateExpander(string templateName) =>
             (IReadOnlyList<object> args) =>
             {
-                var newScope = _expander.ConstructScope(templateName, args.ToList());
-                return _expander.EvaluateTemplate(templateName, newScope);
+                var newScope = this.ConstructScope(templateName, args.ToList());
+                return this.EvaluateTemplate(templateName, newScope);
             };
 
-        public void ValidTemplateReference(Expression expression)
+        private Func<IReadOnlyList<object>, object> TemplateEvaluator(string templateName) =>
+            (IReadOnlyList<object> args) =>
+            {
+                var newScope = this.ConstructScope(templateName, args.ToList());
+
+                var value = this.EvaluateTemplate(templateName, newScope);
+                var rd = new Random();
+                return value[rd.Next(value.Count)];
+            };
+
+        private void ValidTemplateReference(Expression expression)
         {
             var templateName = expression.Type;
 
-            if (!_expander.TemplateMap.ContainsKey(templateName))
+            if (!this.TemplateMap.ContainsKey(templateName))
             {
                 throw new Exception($"no such template '{templateName}' to call in {expression}");
             }
 
-            var expectedArgsCount = _expander.TemplateMap[templateName].Parameters.Count();
+            var expectedArgsCount = this.TemplateMap[templateName].Parameters.Count();
             var actualArgsCount = expression.Children.Length;
 
             if (expectedArgsCount != actualArgsCount)
@@ -375,35 +379,26 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
         }
 
-        public object Join(IReadOnlyList<object> parameters)
+        private Expression ReconstructExpression(Expression expanderExpression, Expression evaluatorExpression, bool foundPrebuiltFunction = false)
         {
-            object result = null;
-            if (parameters.Count == 2 &&
-                BuiltInFunctions.TryParseList(parameters[0], out var p0) &&
-                parameters[1] is string sep)
+            if (this.TemplateMap.ContainsKey(expanderExpression.Type))
             {
-                var p = p0.OfType<object>().Select(x => BuiltInFunctions.TryParseList(x, out var p1) ? p1[0].ToString() : x.ToString());
-                result = string.Join(sep, p);
-            }
-            else if (parameters.Count == 3 &&
-                BuiltInFunctions.TryParseList(parameters[0], out var li) &&
-                parameters[1] is string sep1 &&
-                parameters[2] is string sep2)
-            {
-                var p = li.OfType<object>().Select(x => BuiltInFunctions.TryParseList(x, out var p1) ? p1[0].ToString() : x.ToString());
-
-                if (li.Count < 3)
+                if (foundPrebuiltFunction)
                 {
-                    result = string.Join(sep2, p);
-                }
-                else
-                {
-                    var firstPart = string.Join(sep1, p.TakeWhile(o => o != null && o != p.LastOrDefault()));
-                    result = firstPart + sep2 + p.Last().ToString();
+                    return evaluatorExpression;
                 }
             }
+            else
+            {
+                foundPrebuiltFunction = true;
+            }
 
-            return result;
+            for (var i = 0; i < expanderExpression.Children.Count(); i++)
+            {
+                expanderExpression.Children[i] = ReconstructExpression(expanderExpression.Children[i], evaluatorExpression.Children[i], foundPrebuiltFunction);
+            }
+
+            return expanderExpression;
         }
     }
 }

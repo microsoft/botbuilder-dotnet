@@ -15,28 +15,31 @@ using Newtonsoft.Json.Linq;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
 {
     /// <summary>
-    /// IRecognizer implementation which uses regex expressions to identify intents
+    /// IRecognizer implementation which uses regex expressions to identify intents.
     /// </summary>
     public class RegexRecognizer : IRecognizer
     {
         private Dictionary<string, Regex> patterns = new Dictionary<string, Regex>();
 
-        /// <summary>
-        /// Dictionary of patterns -> Intent names
-        /// </summary>
-        [JsonProperty("intents")]
-        public Dictionary<string, string> Intents { get; set; } = new Dictionary<string, string>();
-
         public RegexRecognizer()
         {
         }
+
+        /// <summary>
+        /// Gets or sets dictionary of patterns -> Intent names.
+        /// </summary>
+        /// <value>
+        /// Dictionary of patterns -> Intent names.
+        /// </value>
+        [JsonProperty("intents")]
+        public Dictionary<string, string> Intents { get; set; } = new Dictionary<string, string>();
 
         public async Task<RecognizerResult> RecognizeAsync(ITurnContext turnContext, CancellationToken cancellationToken)
         {
             // Process only messages
             if (turnContext.Activity.Type != ActivityTypes.Message)
             {
-                return new RecognizerResult() { Text = turnContext.Activity.Text };
+                return await Task.FromResult(new RecognizerResult() { Text = turnContext.Activity.Text });
             }
 
             // Identify matched intents
@@ -102,7 +105,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
             return result;
         }
 
-        public Task<T> RecognizeAsync<T>(ITurnContext turnContext, CancellationToken cancellationToken) where T : IRecognizerConvert, new()
+        public Task<T> RecognizeAsync<T>(ITurnContext turnContext, CancellationToken cancellationToken) 
+            where T : IRecognizerConvert, new()
         {
             throw new NotImplementedException();
         }

@@ -11,36 +11,42 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
 {
-
     /// <summary>
-    /// Event triggered when a Activity of a given type is received 
+    /// Event triggered when a Activity of a given type is received. 
     /// </summary>
     public class OnActivity : OnDialogEvent
     {
         [JsonConstructor]
-        public OnActivity(string type=null, List<IDialog> actions = null, string constraint = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
-            : base(events: new List<string>()
-            {
-                AdaptiveEvents.ActivityReceived
-            },
-            actions: actions,
-            constraint: constraint,
-            callerPath: callerPath, callerLine: callerLine)
+        public OnActivity(string type = null, List<IDialog> actions = null, string constraint = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+            : base(
+                events: new List<string>() { AdaptiveEvents.ActivityReceived },
+                actions: actions,
+                constraint: constraint,
+                callerPath: callerPath, 
+                callerLine: callerLine)
         {
             Type = type;
         }
 
         /// <summary>
-        /// ActivityType
+        /// Gets or sets the ActivityType which must be matched for this to trigger.
         /// </summary>
+        /// <value>
+        /// ActivityType.
+        /// </value>
         [JsonProperty("type")]
         public string Type { get; set; }
 
+        public override string GetIdentity()
+        {
+            return $"{this.GetType().Name}({this.Type})[{this.Constraint}]";
+        }
+
         protected override Expression BuildExpression(IExpressionParser factory)
         {
-
             // add constraints for activity type
-            return Expression.AndExpression(factory.Parse($"turn.dialogEvent.value.type == '{this.Type}'"), 
+            return Expression.AndExpression(
+                factory.Parse($"turn.dialogEvent.value.type == '{this.Type}'"),
                 base.BuildExpression(factory));
         }
 
@@ -56,11 +62,5 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
                 }).ToList()
             };
         }
-
-        public override string GetIdentity()
-        {
-            return $"{this.GetType().Name}({this.Type})[{this.Constraint}]";
-        }
     }
-
 }

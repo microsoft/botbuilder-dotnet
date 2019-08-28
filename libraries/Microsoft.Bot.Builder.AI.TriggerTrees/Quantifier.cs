@@ -1,15 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.AI.TriggerTrees
 {
     /// <summary>
     /// Type of quantifier for expanding trigger expressions.
     /// </summary>
-    public enum QuantifierType {
+    public enum QuantifierType
+    {
         /// <summary>
         /// Within a clause, duplicate any predicate with variable for each possible binding.
         /// </summary>
@@ -18,7 +16,8 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
         /// <summary>
         /// Create a new clause for each possible binding of variable.
         /// </summary>
-        Any };
+        Any
+    }
 
     /// <summary>
     /// Quantifier for allowing runtime expansion of expressions.
@@ -26,22 +25,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
     public class Quantifier
     {
         /// <summary>
-        /// Name of variable that will be replaced.
-        /// </summary>
-        public string Variable { get;  }
-
-        /// <summary>
-        /// Type of quantifier.
-        /// </summary>
-        public QuantifierType Type { get; }
-
-        /// <summary>
-        /// Possible bindings for quantifier.
-        /// </summary>
-        public IEnumerable<string> Bindings { get; }
-
-        /// <summary>
-        /// Create a quantifier.
+        /// Initializes a new instance of the <see cref="Quantifier"/> class.
         /// </summary>
         /// <param name="variable">Name of variable to replace.</param>
         /// <param name="type">Type of quantifier.</param>
@@ -53,10 +37,33 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
             Bindings = bindings;
         }
 
+        /// <summary>
+        /// Gets name of variable that will be replaced.
+        /// </summary>
+        /// <value>
+        /// Name of variable that will be replaced.
+        /// </value>
+        public string Variable { get;  }
+
+        /// <summary>
+        /// Gets type of quantifier.
+        /// </summary>
+        /// <value>
+        /// Type of quantifier.
+        /// </value>
+        public QuantifierType Type { get; }
+
+        /// <summary>
+        /// Gets possible bindings for quantifier.
+        /// </summary>
+        /// <value>
+        /// Possible bindings for quantifier.
+        /// </value>
+        public IEnumerable<string> Bindings { get; }
+
         public override string ToString()
         {
             return $"{Type} {Variable} {Bindings.Count()}";
-
         }
     }
 }

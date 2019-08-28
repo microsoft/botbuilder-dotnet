@@ -1,15 +1,9 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
-using Microsoft.Bot.Builder.LanguageGeneration;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
@@ -24,7 +18,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <summary>
         /// Initializes a new instance of the <see cref="LanguageGeneratorManager"/> class.
         /// </summary>
-        /// <param name="resourceExplorer">resourceExplorer to manage LG files from</param>
+        /// <param name="resourceExplorer">resourceExplorer to manage LG files from.</param>
         public LanguageGeneratorManager(ResourceExplorer resourceExplorer)
         {
             this.resourceExplorer = resourceExplorer;
@@ -39,6 +33,25 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             this.resourceExplorer.Changed += ResourceExplorer_Changed;
         }
 
+        /// <summary>
+        /// Gets or sets generators.
+        /// </summary>
+        /// <value>
+        /// Generators.
+        /// </value>
+        public ConcurrentDictionary<string, ILanguageGenerator> LanguageGenerators { get; set; } = new ConcurrentDictionary<string, ILanguageGenerator>(StringComparer.OrdinalIgnoreCase);
+
+        public static ImportResolverDelegate ResourceResolver(ResourceExplorer resourceExplorer) =>
+            (string source, string id) =>
+            {
+                var resourceName = Path.GetFileName(PathUtils.NormalizePath(id));
+                var res = resourceExplorer.GetResource(resourceName);
+
+                var content = res?.ReadTextAsync().GetAwaiter().GetResult();
+
+                return (content, resourceName);
+            };
+
         private void ResourceExplorer_Changed(IResource[] resources)
         {
             // reload changed LG files
@@ -52,21 +65,5 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             return new TemplateEngineLanguageGenerator(resource.ReadTextAsync().GetAwaiter().GetResult(), resource.Id, ResourceResolver(resourceExplorer));
         }
-
-        /// <summary>
-        /// Generators
-        /// </summary>
-        public ConcurrentDictionary<string, ILanguageGenerator> LanguageGenerators { get; set; } = new ConcurrentDictionary<string, ILanguageGenerator>(StringComparer.OrdinalIgnoreCase);
-
-        public static ImportResolverDelegate ResourceResolver(ResourceExplorer resourceExplorer) =>
-            (string source, string id) =>
-            {
-                var resourceName = Path.GetFileName(PathUtils.NormalizePath(id));
-                var res = resourceExplorer.GetResource(resourceName);
-
-                var content = res?.ReadTextAsync().GetAwaiter().GetResult();
-
-                return (content, resourceName);
-            };
     }
 }

@@ -35,7 +35,6 @@ namespace Microsoft.Bot.Builder.Azure
         private readonly IDocumentClient _client;
         private string _collectionLink = null;
 
-
         /// <summary>
         /// Initializes a new instance of the <see cref="CosmosDbStorage"/> class.
         /// using the provided CosmosDB credentials, database ID, and collection ID.

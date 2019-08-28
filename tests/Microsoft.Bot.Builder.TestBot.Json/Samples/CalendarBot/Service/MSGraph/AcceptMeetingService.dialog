@@ -10,7 +10,7 @@
           "condition": "dialog.token == null",
           "actions": [
             {
-              "$type": "Microsoft.OAuthPrompt",
+              "$type": "Microsoft.OAuthInput",
               "ConnectionName": "msgraph",
               "Title": "Log in",
               "Text": "Please log in to your calendar account",
@@ -30,7 +30,7 @@
         }
         //{
         //  "$type": "Microsoft.SendActivity",
-        //  "activity": "response: {user.acceptResponse}"
+        //  "activity": "response: {user.acceptResponse.content}"
         //}
       ]
     }

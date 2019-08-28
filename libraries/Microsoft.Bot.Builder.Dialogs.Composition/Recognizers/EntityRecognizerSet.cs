@@ -6,25 +6,29 @@ using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Dialogs.Composition.Recognizers
 {
-
     /// <summary>
     /// EntityRecognizerSet - Implements a workflow against a pool of IEntityRecognizer instances, iterating until nobody has anything new to add.
     /// </summary>
     public class EntityRecognizerSet : IEntityRecognizer
     {
-        public EntityRecognizerSet() { }
+        public EntityRecognizerSet()
+        {
+        }
 
         /// <summary>
-        /// Recognizer pool 
+        /// Gets or sets recognizer pool. 
         /// </summary>
+        /// <value>
+        /// Recognizer pool. 
+        /// </value>
         public IList<IEntityRecognizer> Recognizers { get; set; } = new List<IEntityRecognizer>();
 
         /// <summary>
         /// Implement RecognizeEntities by iterating against the Recognizer pool.
         /// </summary>
-        /// <param name="turnContext"></param>
-        /// <param name="entities">if no entities are passed in, it will generate a TextEntity for turnContext.Activity.Text and then generate entities off of that</param>
-        /// <returns></returns>
+        /// <param name="turnContext">Context for the current turn of conversation.</param>
+        /// <param name="entities">if no entities are passed in, it will generate a <see cref="TextEntity"/> for turnContext.Activity.Text and then generate entities off of that.</param>
+        /// <returns><see cref="Entity"/> list.</returns>
         public async Task<IList<Entity>> RecognizeEntities(ITurnContext turnContext, IEnumerable<Entity> entities = null)
         {
             List<Entity> allNewEntities = new List<Entity>();
@@ -45,7 +49,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition.Recognizers
                 {
                     try
                     {
-
                         // get new entities
                         var newEntities = await recognizer.RecognizeEntities(turnContext, entitiesToProcess).ConfigureAwait(false);
 
@@ -70,8 +73,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition.Recognizers
 
                 // switch to next pool of new entities to process
                 entitiesToProcess = newEntitiesToProcess;
-
-            } while (entitiesToProcess.Count > 0);
+            }
+            while (entitiesToProcess.Count > 0);
 
             return allNewEntities;
         }

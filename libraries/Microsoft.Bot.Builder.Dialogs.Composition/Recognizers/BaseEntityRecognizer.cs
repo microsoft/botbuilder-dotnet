@@ -10,10 +10,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition.Recognizers
     {
         public BaseEntityRecognizer()
         {
-
         }
-
-        protected abstract List<ModelResult> Recognize(string text, string culture);
 
         public Task<IList<Entity>> RecognizeEntities(ITurnContext turnContext, IEnumerable<Entity> entities)
         {
@@ -23,7 +20,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition.Recognizers
                 var culture = Culture.MapToNearestLanguage(turnContext.Activity.Locale);
 
                 // look for text entities to recognize 
-                foreach(var entity in entities.Where(e => e.Type == TextEntity.TypeName).Select(e => e as TextEntity ?? e.GetAs<TextEntity>()))
+                foreach (var entity in entities.Where(e => e.Type == TextEntity.TypeName).Select(e => e as TextEntity ?? e.GetAs<TextEntity>()))
                 {
                     var results = Recognize(entity.Text, culture);
                     foreach (var result in results)
@@ -35,7 +32,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition.Recognizers
                     }
                 }
             }
+
             return Task.FromResult((IList<Entity>)newEntities);
         }
+
+        protected abstract List<ModelResult> Recognize(string text, string culture);
     }
 }

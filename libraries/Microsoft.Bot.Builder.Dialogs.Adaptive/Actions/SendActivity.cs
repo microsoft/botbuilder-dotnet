@@ -15,10 +15,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// </summary>
     public class SendActivity : DialogAction
     {
-        /// <summary>
-        /// Template for the activity.
-        /// </summary>
-        public ITemplate<Activity> Activity { get; set; }
+        public SendActivity(Activity activity, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        {
+            this.RegisterSourceLocation(callerPath, callerLine);
+            this.Activity = new StaticActivityTemplate(activity);
+        }
 
         [JsonConstructor]
         public SendActivity(string text = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
@@ -27,11 +28,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             this.Activity = new ActivityTemplate(text ?? string.Empty);
         }
 
-        public SendActivity(Activity activity, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
-        {
-            this.RegisterSourceLocation(callerPath, callerLine);
-            this.Activity = new StaticActivityTemplate(activity);
-        }
+        /// <summary>
+        /// Gets or sets template for the activity.
+        /// </summary>
+        /// <value>
+        /// Template for the activity.
+        /// </value>
+        public ITemplate<Activity> Activity { get; set; }
 
         protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -57,7 +60,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
         private static string Ellipsis(string text, int length)
         {
-            if (text.Length <= length) return text;
+            if (text.Length <= length)
+            {
+                return text;
+            }
+
             int pos = text.IndexOf(" ", length);
 
             if (pos >= 0)

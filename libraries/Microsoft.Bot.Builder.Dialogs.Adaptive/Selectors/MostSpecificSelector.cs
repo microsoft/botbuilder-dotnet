@@ -16,8 +16,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
         private readonly TriggerTree _tree = new TriggerTree();
 
         /// <summary>
-        /// Optional rule selector to use when more than one most specific rule is true.
+        /// Gets or sets optional rule selector to use when more than one most specific rule is true.
         /// </summary>
+        /// <value>
+        /// Optional rule selector to use when more than one most specific rule is true.
+        /// </value>
         public IEventSelector Selector { get; set; }
 
         public void Initialize(IEnumerable<IOnEvent> rules, bool evaluate)
@@ -47,6 +50,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
                         matches.Add(pos);
                     }
                 }
+
                 selections = matches;
             }
             else
@@ -59,11 +63,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
                         matches.Add((ValueTuple<int, IOnEvent>)trigger.Action);
                     }
                 }
+
                 // Sort rules by original order and then pass to child selector
                 matches = (from candidate in matches orderby candidate.Item1 ascending select candidate).ToList();
                 Selector.Initialize(matches.Select(m => m.Item2), false);
                 selections = (from match in await Selector.Select(context, cancel).ConfigureAwait(false) select matches[match].Item1).ToList();
             }
+
             return selections;
         }
     }

@@ -9,32 +9,38 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
 {
     /// <summary>
-    /// Defines map of languages -> recognizer
+    /// Defines map of languages -> recognizer.
     /// </summary>
     public class MultiLanguageRecognizer : IRecognizer
     {
+        public MultiLanguageRecognizer()
+        {
+        }
 
         /// <summary>
-        /// Policy for languages fallback 
+        /// Gets or sets policy for languages fallback. 
         /// </summary>
+        /// <value>
+        /// Policy for languages fallback. 
+        /// </value>
         [JsonProperty("languagePolicy")]
         public ILanguagePolicy LanguagePolicy { get; set; } = new LanguagePolicy();
 
         /// <summary>
-        /// Map of languages -> IRecognizer
+        /// Gets or sets map of languages -> IRecognizer.
         /// </summary>
+        /// <value>
+        /// Map of languages -> IRecognizer.
+        /// </value>
         [JsonProperty("recognizers")]
         public IDictionary<string, IRecognizer> Recognizers { get; set; } = new Dictionary<string, IRecognizer>();
-
-        public MultiLanguageRecognizer()
-        {
-
-        }
 
         public Task<RecognizerResult> RecognizeAsync(ITurnContext turnContext, CancellationToken cancellationToken)
         {
             if (!LanguagePolicy.TryGetValue(turnContext.Activity.Locale ?? string.Empty, out string[] policy))
+            {
                 policy = new string[] { string.Empty };
+            }
 
             foreach (var option in policy)
             {
@@ -43,14 +49,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
                     return recognizer.RecognizeAsync(turnContext, cancellationToken);
                 }
             }
+
             // nothing recognized
             return Task.FromResult(new RecognizerResult() { });
         }
 
-        public Task<T> RecognizeAsync<T>(ITurnContext turnContext, CancellationToken cancellationToken) where T : IRecognizerConvert, new()
+        public Task<T> RecognizeAsync<T>(ITurnContext turnContext, CancellationToken cancellationToken) 
+            where T : IRecognizerConvert, new()
         {
             if (!LanguagePolicy.TryGetValue(turnContext.Activity.Locale ?? string.Empty, out string[] policy))
+            {
                 policy = new string[] { string.Empty };
+            }
 
             foreach (var option in policy)
             {
@@ -59,6 +69,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
                     return recognizer.RecognizeAsync<T>(turnContext, cancellationToken);
                 }
             }
+
             // nothing recognized
             return Task.FromResult(default(T));
         }

@@ -1,25 +1,7 @@
-﻿using System.Collections.Generic;
-using Microsoft.Bot.Builder.Expressions;
+﻿using Microsoft.Bot.Builder.Expressions;
 
 namespace Microsoft.Bot.Builder.AI.TriggerTrees
 {
-    /// <summary>
-    /// Optimize a clause by rewriting it.
-    /// </summary>
-    /// <remarks>
-    /// If returned clause is null, then the expression will always be false.
-    /// This is to allow things like combining simple comparisons into a range predicate.
-    /// </remarks>
-    public interface IOptimizer
-    {
-        /// <summary>
-        /// Optionally rewrite a clause.
-        /// </summary>
-        /// <param name="clause">Original clause.</param>
-        /// <returns></returns>
-        Clause Optimize(Clause clause);
-    }
-
     /// <summary>
     /// Relationship between trigger expressions.
     /// </summary>
@@ -44,6 +26,23 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
         /// Cannot tell how the first and second arguments relate.
         /// </summary>
         Incomparable
+    }
+
+    /// <summary>
+    /// Optimize a clause by rewriting it.
+    /// </summary>
+    /// <remarks>
+    /// If returned clause is null, then the expression will always be false.
+    /// This is to allow things like combining simple comparisons into a range predicate.
+    /// </remarks>
+    public interface IOptimizer
+    {
+        /// <summary>
+        /// Optionally rewrite a clause.
+        /// </summary>
+        /// <param name="clause">Original clause.</param>
+        /// <returns>Optimized clause.</returns>
+        Clause Optimize(Clause clause);
     }
 
     /// <summary>

@@ -11,37 +11,49 @@ using Newtonsoft.Json.Linq;
 namespace Microsoft.Bot.Builder.TemplateManager
 {
     /// <summary>
-    /// Middleware for registering ITemplateRender
+    /// Middleware for registering ITemplateRender.
     /// </summary>
     public class TemplateManagerMiddleware : IMiddleware
     {
         private static JsonSerializerSettings _jsonSettings = new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore };
 
-        private TemplateManager TemplateManager { get; set; }
-
         /// <summary>
-        /// Initializes a new instance of the <see cref="TranscriptLoggerMiddleware"/> class.
+        /// Initializes a new instance of the <see cref="TemplateManagerMiddleware"/> class.
         /// </summary>
-        /// <param name="transcriptLogger">The conversation store to use.</param>
+        /// <param name="templateManager">The template store to use.</param>
         public TemplateManagerMiddleware(TemplateManager templateManager = null)
         {
             this.TemplateManager = templateManager ?? new TemplateManager();
         }
 
         /// <summary>
-        /// Template Renderers
+        /// Gets or sets template Renderers.
         /// </summary>
-        public List<ITemplateRenderer> Renderers { get { return this.TemplateManager.Renderers; } set { this.TemplateManager.Renderers = value; } }
+        /// <value>
+        /// Template Renderers.
+        /// </value>
+        public List<ITemplateRenderer> Renderers
+        {
+            get { return this.TemplateManager.Renderers; } set { this.TemplateManager.Renderers = value; }
+        }
 
         /// <summary>
-        /// Language fallback policy
+        /// Gets or sets language fallback policy.
         /// </summary>
-        public List<string> LanguageFallback { get { return this.TemplateManager.LanguageFallback; } set { this.TemplateManager.LanguageFallback = value; } }
+        /// <value>
+        /// Language fallback policy.
+        /// </value>
+        public List<string> LanguageFallback
+        {
+            get { return this.TemplateManager.LanguageFallback; } set { this.TemplateManager.LanguageFallback = value; }
+        }
+
+        private TemplateManager TemplateManager { get; set; }
 
         /// <summary>
         /// Records incoming and outgoing activities to the conversation store.
         /// </summary>
-        /// <param name="turnContext">The context object for this turn.</param>
+        /// <param name="turnContext">Context for the current turn of conversation.</param>
         /// <param name="nextTurn">The delegate to call to continue the bot middleware pipeline.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
@@ -81,14 +93,15 @@ namespace Microsoft.Bot.Builder.TemplateManager
             {
                 var templateOptions = JToken.FromObject(activity.Value)?.ToObject<TemplateOptions>();
 
-                var newActivity = await this.TemplateManager.RenderTemplate(turnContext,
+                var newActivity = await this.TemplateManager.RenderTemplate(
+                    turnContext,
                     turnContext.Activity.Locale,
                     templateOptions.TemplateId,
                     templateOptions.Data).ConfigureAwait(false);
 
-                foreach(var property in typeof(Activity).GetProperties())
+                foreach (var property in typeof(Activity).GetProperties())
                 {
-                    switch(property.Name)
+                    switch (property.Name)
                     {
                         // keep envelope information
                         case nameof(IActivity.ChannelId):

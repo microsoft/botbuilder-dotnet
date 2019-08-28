@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
@@ -35,30 +34,32 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 var dialogs = new DialogSet(dialogState);
 
                 var childComponent = new ComponentDialog("childComponent");
-                childComponent.AddDialog(new WaterfallDialog("childDialog", new WaterfallStep[]
+                var childStep = new WaterfallStep[]
                     {
-                        async (step, token) => 
+                        async (step, token) =>
                         {
                             await step.Context.SendActivityAsync("Child started.");
                             return await step.BeginDialogAsync("parentDialog", "test");
                         },
-                        async (step, token) => 
+                        async (step, token) =>
                         {
                             await step.Context.SendActivityAsync($"Child finished. Value: {step.Result}");
                             return await step.EndDialogAsync();
                         }
-                    }));
+                    };
+                childComponent.AddDialog(new WaterfallDialog("childDialog", childStep));
 
                 var parentComponent = new ComponentDialog("parentComponent");
                 parentComponent.AddDialog(childComponent);
-                parentComponent.AddDialog(new WaterfallDialog("parentDialog", new WaterfallStep[]
+                var parentStep = new WaterfallStep[]
                     {
                         async (step, token) =>
                         {
                             await step.Context.SendActivityAsync("Parent called.");
                             return await step.EndDialogAsync(step.Options);
                         }
-                    }));
+                    };
+                parentComponent.AddDialog(new WaterfallDialog("parentDialog", parentStep));
 
                 dialogs.Add(parentComponent);
 

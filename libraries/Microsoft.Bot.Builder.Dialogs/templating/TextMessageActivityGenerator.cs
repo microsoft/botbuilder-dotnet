@@ -23,12 +23,12 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// Generate the activity 
+        /// Generate the activity. 
         /// </summary>
-        /// <param name="turnContext">turn context</param>
+        /// <param name="turnContext">turn context.</param>
         /// <param name="template">(optional) inline template definition.</param>
         /// <param name="data">data to bind the template to.</param>
-        /// <returns>message activity</returns>
+        /// <returns>message activity.</returns>
         public async Task<IMessageActivity> Generate(ITurnContext turnContext, string template, object data)
         {
             var languageGenerator = turnContext.TurnState.Get<ILanguageGenerator>();
@@ -47,7 +47,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// Given a text result (text or text||speak or text||speak with [herocard... etc), create an activity
+        /// Given a text result (text or text||speak or text||speak with [herocard... etc), create an activity.
         /// </summary>
         /// <remarks>
         /// This method will create an MessageActivity from text.  It supports 3 formats
@@ -55,11 +55,11 @@ namespace Microsoft.Bot.Builder.Dialogs
         ///     text || speak
         ///     text || speak [Herocard][attachment]etc...
         /// </remarks>
-        /// <param name="text">text</param>
-        /// <param name="data">data to bind to</param>
-        /// <param name="languageGenerator">languageGenerator</param>
-        /// <param name="turnContext">turnContext</param>
-        /// <returns>MessageActivity for it</returns>
+        /// <param name="text">text.</param>
+        /// <param name="data">data to bind to.</param>
+        /// <param name="turnContext">turnContext.</param>
+        /// <param name="languageGenerator">languageGenerator.</param>
+        /// <returns>MessageActivity for it.</returns>
         public async Task<IMessageActivity> CreateActivityFromText(string text, object data, ITurnContext turnContext, ILanguageGenerator languageGenerator)
         {
             var activity = Activity.CreateMessageActivity();
@@ -127,7 +127,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                             }
                         }
 
-                        if (!String.IsNullOrEmpty(line))
+                        if (!string.IsNullOrEmpty(line))
                         {
                             var i = line.IndexOf("||");
                             if (i > 0)
@@ -155,78 +155,13 @@ namespace Microsoft.Bot.Builder.Dialogs
             return activity;
         }
 
-        private async Task AddAttachment(ITurnContext turnContext, ILanguageGenerator languageGenerator, IMessageActivity activity, string line, object data)
-        {
-            var parts = line.Split('=');
-            if (parts.Length == 1)
-            {
-                throw new ArgumentOutOfRangeException($"Missing = seperator in {line}");
-            }
-
-            var value = parts[1].TrimEnd(']').Trim();
-            var parts2 = value.Split(' ');
-            var contentUrl = parts2[0];
-            var attachment = new Attachment(contentUrl: contentUrl);
-
-            if (parts2.Length == 2)
-            {
-                switch (parts2[1].ToLower())
-                {
-                    case "animation":
-                        attachment.ContentType = AnimationCard.ContentType;
-                        attachment.Content = await readAttachmentFile(turnContext, languageGenerator, contentUrl, attachment.ContentType, isCard: true, data: data).ConfigureAwait(false);
-                        break;
-                    case "audio":
-                        attachment.ContentType = AudioCard.ContentType;
-                        attachment.Content = await readAttachmentFile(turnContext, languageGenerator, contentUrl, attachment.ContentType, isCard: true, data: data).ConfigureAwait(false);
-                        break;
-                    case "hero":
-                        attachment.ContentType = HeroCard.ContentType;
-                        attachment.Content = await readAttachmentFile(turnContext, languageGenerator, contentUrl, attachment.ContentType, isCard: true, data: data).ConfigureAwait(false);
-                        break;
-                    case "receipt":
-                        attachment.ContentType = ReceiptCard.ContentType;
-                        attachment.Content = await readAttachmentFile(turnContext, languageGenerator, contentUrl, attachment.ContentType, isCard: true, data: data).ConfigureAwait(false);
-                        break;
-                    case "thumbnail":
-                        attachment.ContentType = ThumbnailCard.ContentType;
-                        attachment.Content = await readAttachmentFile(turnContext, languageGenerator, contentUrl, attachment.ContentType, isCard: true, data: data).ConfigureAwait(false);
-                        break;
-                    case "signin":
-                        attachment.ContentType = SigninCard.ContentType;
-                        attachment.Content = await readAttachmentFile(turnContext, languageGenerator, contentUrl, attachment.ContentType, isCard: true, data: data).ConfigureAwait(false);
-                        break;
-                    case "video":
-                        attachment.ContentType = VideoCard.ContentType;
-                        attachment.Content = await readAttachmentFile(turnContext, languageGenerator, contentUrl, attachment.ContentType, isCard: true, data: data).ConfigureAwait(false);
-                        break;
-                    case "adaptivecard":
-                        attachment.ContentType = "application/vnd.microsoft.card.adaptive";
-                        attachment.Content = await readAttachmentFile(turnContext, languageGenerator, contentUrl, attachment.ContentType, isCard: true, data: data).ConfigureAwait(false);
-                        break;
-                    default:
-                        attachment.ContentType = parts2[1].Trim();
-                        attachment.Content = await readAttachmentFile(turnContext, languageGenerator, contentUrl, attachment.ContentType, isCard: false, data: data).ConfigureAwait(false);
-                        break;
-                }
-            }
-
-            if (attachment.Content != null && attachment.Content is string && ((string)attachment.Content).StartsWith("data:"))
-            {
-                attachment.ContentUrl = (string)attachment.Content;
-                attachment.Content = null;
-            }
-
-            if (attachment.Content != null)
-            {
-                // if we are sending content, then no need for contentUrl
-                attachment.ContentUrl = null;
-            }
-
-            activity.Attachments.Add(attachment);
-        }
-
-        protected async Task<object> readAttachmentFile(ITurnContext turnContext, ILanguageGenerator languageGenerator, string fileLocation, string contentType, bool isCard, object data)
+        protected async Task<object> ReadAttachmentFile(
+            ITurnContext turnContext, 
+            ILanguageGenerator languageGenerator, 
+            string fileLocation, 
+            string contentType, 
+            bool isCard, 
+            object data)
         {
             if (Uri.TryCreate(fileLocation, UriKind.Absolute, out Uri uri))
             {
@@ -250,7 +185,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 if (languageGeneratorr != null)
                 {
                     var template = $"```\n{jsonContents}\n```";
-                    
+
                     // databind json 
                     var result = await languageGenerator.Generate(turnContext, template, data).ConfigureAwait(false);
                     if (result != null)
@@ -424,6 +359,77 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             return iLine;
+        }
+
+        private async Task AddAttachment(ITurnContext turnContext, ILanguageGenerator languageGenerator, IMessageActivity activity, string line, object data)
+        {
+            var parts = line.Split('=');
+            if (parts.Length == 1)
+            {
+                throw new ArgumentOutOfRangeException($"Missing = seperator in {line}");
+            }
+
+            var value = parts[1].TrimEnd(']').Trim();
+            var parts2 = value.Split(' ');
+            var contentUrl = parts2[0];
+            var attachment = new Attachment(contentUrl: contentUrl);
+
+            if (parts2.Length == 2)
+            {
+                switch (parts2[1].ToLower())
+                {
+                    case "animation":
+                        attachment.ContentType = AnimationCard.ContentType;
+                        attachment.Content = await ReadAttachmentFile(turnContext, languageGenerator, contentUrl, attachment.ContentType, isCard: true, data: data).ConfigureAwait(false);
+                        break;
+                    case "audio":
+                        attachment.ContentType = AudioCard.ContentType;
+                        attachment.Content = await ReadAttachmentFile(turnContext, languageGenerator, contentUrl, attachment.ContentType, isCard: true, data: data).ConfigureAwait(false);
+                        break;
+                    case "hero":
+                        attachment.ContentType = HeroCard.ContentType;
+                        attachment.Content = await ReadAttachmentFile(turnContext, languageGenerator, contentUrl, attachment.ContentType, isCard: true, data: data).ConfigureAwait(false);
+                        break;
+                    case "receipt":
+                        attachment.ContentType = ReceiptCard.ContentType;
+                        attachment.Content = await ReadAttachmentFile(turnContext, languageGenerator, contentUrl, attachment.ContentType, isCard: true, data: data).ConfigureAwait(false);
+                        break;
+                    case "thumbnail":
+                        attachment.ContentType = ThumbnailCard.ContentType;
+                        attachment.Content = await ReadAttachmentFile(turnContext, languageGenerator, contentUrl, attachment.ContentType, isCard: true, data: data).ConfigureAwait(false);
+                        break;
+                    case "signin":
+                        attachment.ContentType = SigninCard.ContentType;
+                        attachment.Content = await ReadAttachmentFile(turnContext, languageGenerator, contentUrl, attachment.ContentType, isCard: true, data: data).ConfigureAwait(false);
+                        break;
+                    case "video":
+                        attachment.ContentType = VideoCard.ContentType;
+                        attachment.Content = await ReadAttachmentFile(turnContext, languageGenerator, contentUrl, attachment.ContentType, isCard: true, data: data).ConfigureAwait(false);
+                        break;
+                    case "adaptivecard":
+                        attachment.ContentType = "application/vnd.microsoft.card.adaptive";
+                        attachment.Content = await ReadAttachmentFile(turnContext, languageGenerator, contentUrl, attachment.ContentType, isCard: true, data: data).ConfigureAwait(false);
+                        break;
+                    default:
+                        attachment.ContentType = parts2[1].Trim();
+                        attachment.Content = await ReadAttachmentFile(turnContext, languageGenerator, contentUrl, attachment.ContentType, isCard: false, data: data).ConfigureAwait(false);
+                        break;
+                }
+            }
+
+            if (attachment.Content != null && attachment.Content is string && ((string)attachment.Content).StartsWith("data:"))
+            {
+                attachment.ContentUrl = (string)attachment.Content;
+                attachment.Content = null;
+            }
+
+            if (attachment.Content != null)
+            {
+                // if we are sending content, then no need for contentUrl
+                attachment.ContentUrl = null;
+            }
+
+            activity.Attachments.Add(attachment);
         }
     }
 }

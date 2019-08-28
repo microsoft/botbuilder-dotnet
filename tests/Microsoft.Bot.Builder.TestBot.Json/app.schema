@@ -281,9 +281,9 @@
             "$ref": "#/definitions/Microsoft.TrueSelector"
         },
         {
-            "title": "Testbot.JavascriptStep",
+            "title": "Testbot.JavascriptAction",
             "description": "This gives you the ability to execute javascript to manipulate memory",
-            "$ref": "#/definitions/Testbot.JavascriptStep"
+            "$ref": "#/definitions/Testbot.JavascriptAction"
         },
         {
             "title": "Testbot.Multiply",
@@ -497,6 +497,15 @@
                     "description": "The message to send to when then input was not valid for the input type.",
                     "examples": [
                         "No date was recognized"
+                    ],
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                },
+                "defaultValueResponse": {
+                    "$type": "Microsoft.IActivityTemplate",
+                    "title": "Default Value Response",
+                    "description": "The message to send to when max turn count has been exceeded and the default value is selected as the value.",
+                    "examples": [
+                        "I didn't understand your responses, so I will just use the default value of 10.  Let me know if you want to change it."
                     ],
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
@@ -879,6 +888,15 @@
                     ],
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
+                "defaultValueResponse": {
+                    "$type": "Microsoft.IActivityTemplate",
+                    "title": "Default Value Response",
+                    "description": "The message to send to when max turn count has been exceeded and the default value is selected as the value.",
+                    "examples": [
+                        "I didn't understand your responses, so I will just use the default value of 10.  Let me know if you want to change it."
+                    ],
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                },
                 "maxTurnCount": {
                     "type": "integer",
                     "title": "Max Turn Count",
@@ -1247,6 +1265,15 @@
                     ],
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
+                "defaultValueResponse": {
+                    "$type": "Microsoft.IActivityTemplate",
+                    "title": "Default Value Response",
+                    "description": "The message to send to when max turn count has been exceeded and the default value is selected as the value.",
+                    "examples": [
+                        "I didn't understand your responses, so I will just use the default value of 10.  Let me know if you want to change it."
+                    ],
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                },
                 "maxTurnCount": {
                     "type": "integer",
                     "title": "Max Turn Count",
@@ -1483,6 +1510,15 @@
                     "description": "The message to send to when then input was not valid for the input type.",
                     "examples": [
                         "No date was recognized"
+                    ],
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                },
+                "defaultValueResponse": {
+                    "$type": "Microsoft.IActivityTemplate",
+                    "title": "Default Value Response",
+                    "description": "The message to send to when max turn count has been exceeded and the default value is selected as the value.",
+                    "examples": [
+                        "I didn't understand your responses, so I will just use the default value of 10.  Let me know if you want to change it."
                     ],
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
@@ -2534,7 +2570,7 @@
                 "property": {
                     "$role": "expression",
                     "title": "Property",
-                    "description": "The property to store the result of the HTTP call in (as object or string)",
+                    "description": "The property to store the result of the HTTP call in. The result will have 4 properties from the http response: statusCode|reasonPhrase|content|headers.  If the content is json it will be an deserialized object, otherwise it will be a string",
                     "examples": [
                         "dialog.contosodata"
                     ],
@@ -2755,9 +2791,9 @@
                     "title": "string"
                 },
                 {
-                    "title": "Testbot.JavascriptStep",
+                    "title": "Testbot.JavascriptAction",
                     "description": "This gives you the ability to execute javascript to manipulate memory",
-                    "$ref": "#/definitions/Testbot.JavascriptStep"
+                    "$ref": "#/definitions/Testbot.JavascriptAction"
                 },
                 {
                     "title": "Testbot.Multiply",
@@ -3544,6 +3580,15 @@
                     ],
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
+                "defaultValueResponse": {
+                    "$type": "Microsoft.IActivityTemplate",
+                    "title": "Default Value Response",
+                    "description": "The message to send to when max turn count has been exceeded and the default value is selected as the value.",
+                    "examples": [
+                        "I didn't understand your responses, so I will just use the default value of 10.  Let me know if you want to change it."
+                    ],
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                },
                 "maxTurnCount": {
                     "type": "integer",
                     "title": "Max Turn Count",
@@ -3719,6 +3764,15 @@
                     "description": "The message to send to when then input was not valid for the input type.",
                     "examples": [
                         "No date was recognized"
+                    ],
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                },
+                "defaultValueResponse": {
+                    "$type": "Microsoft.IActivityTemplate",
+                    "title": "Default Value Response",
+                    "description": "The message to send to when max turn count has been exceeded and the default value is selected as the value.",
+                    "examples": [
+                        "I didn't understand your responses, so I will just use the default value of 10.  Let me know if you want to change it."
                     ],
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
@@ -5733,6 +5787,15 @@
                     ],
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
+                "defaultValueResponse": {
+                    "$type": "Microsoft.IActivityTemplate",
+                    "title": "Default Value Response",
+                    "description": "The message to send to when max turn count has been exceeded and the default value is selected as the value.",
+                    "examples": [
+                        "I didn't understand your responses, so I will just use the default value of 10.  Let me know if you want to change it."
+                    ],
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                },
                 "maxTurnCount": {
                     "type": "integer",
                     "title": "Max Turn Count",
@@ -5970,7 +6033,7 @@
                 }
             ]
         },
-        "Testbot.JavascriptStep": {
+        "Testbot.JavascriptAction": {
             "$role": "unionType(Microsoft.IDialog)",
             "title": "Javascript Action",
             "description": "This gives you the ability to execute javascript to manipulate memory",
@@ -5982,7 +6045,7 @@
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Testbot.JavascriptStep"
+                    "const": "Testbot.JavascriptAction"
                 },
                 "$copy": {
                     "title": "$copy",

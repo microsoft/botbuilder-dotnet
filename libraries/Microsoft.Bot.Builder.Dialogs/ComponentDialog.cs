@@ -100,15 +100,6 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
-        protected async Task EnsureInitialized(DialogContext outerDc)
-        {
-            if (!this.initialized)
-            {
-                this.initialized = true;
-                await OnInitialize(outerDc).ConfigureAwait(false);
-            }
-        }
-
         public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext outerDc, DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (result is CancellationToken)
@@ -168,11 +159,11 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// Finds a dialog by ID (ONLY in this ComponentDialog, use DialogContext.FindDialog to get scoped dialogs)
+        /// Finds a dialog by ID (ONLY in this ComponentDialog, use DialogContext.FindDialog to get scoped dialogs).
         /// </summary>
         /// <param name="dialogId">The ID of the dialog to find.</param>
         /// <returns>The dialog; or <c>null</c> if there is not a match for the ID.</returns>
-        public IDialog FindDialog(string dialogId)
+        public new IDialog FindDialog(string dialogId)
         {
             return _dialogs.Find(dialogId);
         }
@@ -184,26 +175,13 @@ namespace Microsoft.Bot.Builder.Dialogs
             return childDc;
         }
 
-        private DialogContext CreateInnerDc(ITurnContext context, DialogInstance instance, IDictionary<string, object> userState, IDictionary<string, object> conversationState)
+        protected async Task EnsureInitialized(DialogContext outerDc)
         {
-            DialogState state;
-
-            if (instance.State.ContainsKey(PersistedDialogState))
+            if (!this.initialized)
             {
-                state = instance.State[PersistedDialogState] as DialogState;
+                this.initialized = true;
+                await OnInitialize(outerDc).ConfigureAwait(false);
             }
-            else
-            {
-                state = new DialogState();
-                instance.State[PersistedDialogState] = state;
-            }
-
-            if (state.DialogStack == null)
-            {
-                state.DialogStack = new List<DialogInstance>();
-            }
-
-            return new DialogContext(this._dialogs, context, state, conversationState, userState);
         }
 
         protected virtual Task OnInitialize(DialogContext dc)
@@ -244,6 +222,28 @@ namespace Microsoft.Bot.Builder.Dialogs
         protected override string OnComputeId()
         {
             return $"component[{this.BindingPath()}]";
+        }
+
+        private DialogContext CreateInnerDc(ITurnContext context, DialogInstance instance, IDictionary<string, object> userState, IDictionary<string, object> conversationState)
+        {
+            DialogState state;
+
+            if (instance.State.ContainsKey(PersistedDialogState))
+            {
+                state = instance.State[PersistedDialogState] as DialogState;
+            }
+            else
+            {
+                state = new DialogState();
+                instance.State[PersistedDialogState] = state;
+            }
+
+            if (state.DialogStack == null)
+            {
+                state.DialogStack = new List<DialogInstance>();
+            }
+
+            return new DialogContext(this._dialogs, context, state, conversationState, userState);
         }
     }
 }

@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Text;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Debugging
@@ -16,6 +13,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         public Coercion()
         {
         }
+
         object ICoercion.Coerce(object source, Type target)
         {
             var token = source as JToken;
