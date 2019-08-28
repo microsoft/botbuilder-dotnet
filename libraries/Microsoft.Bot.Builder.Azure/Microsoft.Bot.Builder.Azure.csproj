@@ -36,6 +36,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Include="**/*.dialog" />
+    <Content Include="**/*.lg" />
+    <Content Include="**/*.lu" />
+    <Content Include="**/*.schema" />
+  </ItemGroup>
+  
+  <ItemGroup>
     <PackageReference Include="Microsoft.Rest.ClientRuntime" Version="2.3.20" />
     <PackageReference Include="AsyncUsageAnalyzers" Version="1.0.0-alpha003" PrivateAssets="all" />
     <PackageReference Include="Microsoft.Azure.DocumentDB.Core" Version="2.1.2" />
@@ -50,12 +57,4 @@
   <ItemGroup>
     <ProjectReference Include="..\Microsoft.Bot.Builder\Microsoft.Bot.Builder.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="**/*.dialog" CopyToOutputDirectory="PreserveNewest" />
-    <Content Include="**/*.lg" CopyToOutputDirectory="PreserveNewest" />
-    <Content Include="**/*.lu" CopyToOutputDirectory="PreserveNewest" />
-    <Content Include="**/*.schema" CopyToOutputDirectory="PreserveNewest" />
-  </ItemGroup>
-
 </Project>

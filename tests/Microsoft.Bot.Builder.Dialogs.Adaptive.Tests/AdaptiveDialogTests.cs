@@ -17,7 +17,6 @@ using Microsoft.Bot.Builder.LanguageGeneration;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Schema.NET;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 {

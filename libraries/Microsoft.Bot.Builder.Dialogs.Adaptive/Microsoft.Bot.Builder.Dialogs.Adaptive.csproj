@@ -45,11 +45,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="**/*.dialog" CopyToOutputDirectory="PreserveNewest" />
-    <Content Include="**/*.json" CopyToOutputDirectory="PreserveNewest" />
-    <Content Include="**/*.lg" CopyToOutputDirectory="PreserveNewest" />
-    <Content Include="**/*.lu" CopyToOutputDirectory="PreserveNewest" />
-    <Content Include="**/*.schema" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="**/*.dialog" />
+    <Content Include="**/*.json" />
+    <Content Include="**/*.lg" />
+    <Content Include="**/*.lu" />
+    <Content Include="**/*.schema" />
   </ItemGroup>
 
   <ItemGroup>
@@ -58,6 +58,10 @@
     <ProjectReference Include="..\Microsoft.Bot.Builder.Expressions.Parser\Microsoft.Bot.Builder.Expressions.Parser.csproj" />
   </ItemGroup>
 
-  <ProjectExtensions><VisualStudio><UserProperties schemas_4actions_4microsoft_1begindialog_1schema__JsonSchema="" /></VisualStudio></ProjectExtensions>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties schemas_4actions_4microsoft_1begindialog_1schema__JsonSchema="" />
+    </VisualStudio>
+  </ProjectExtensions>
 
 </Project>

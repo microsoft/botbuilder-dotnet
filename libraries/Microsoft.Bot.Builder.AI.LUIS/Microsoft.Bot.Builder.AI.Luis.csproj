@@ -23,14 +23,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Microsoft.LuisRecognizer.schema" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="**/*.dialog" CopyToOutputDirectory="PreserveNewest" />
-    <Content Include="**/*.lg" CopyToOutputDirectory="PreserveNewest" />
-    <Content Include="**/*.lu" CopyToOutputDirectory="PreserveNewest" />
-    <Content Include="**/*.schema" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="**/*.dialog" />
+    <Content Include="**/*.lg" />
+    <Content Include="**/*.lu" />
+    <Content Include="**/*.schema" />
   </ItemGroup>
 
   <ItemGroup>
