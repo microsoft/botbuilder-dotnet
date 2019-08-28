@@ -27,6 +27,6 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// The previous user query.
         /// </value>
         [JsonProperty(PropertyName = "previousUserQuery")]
-        public string PreviousUserQuery { get; set; }
+        public string PreviousUserQuery { get; set; } = string.Empty;
     }
 }
