@@ -32,7 +32,7 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
         /// <param name="activity">The activity</param>
         /// <param name="cancellationToken"></param>
         /// <returns>The task after the execution has completed</returns>
-        public async Task CheckForOAuthCard(ITurnContext turnContext, Activity activity, CancellationToken cancellationToken)
+        public async Task CheckForOAuthCardAsync(ITurnContext turnContext, Activity activity, CancellationToken cancellationToken)
         {
             OAuthClient oAuthClient = await _botFrameworkStreamingExtensionsAdapter.GetOAuthApiClientAsync(turnContext).ConfigureAwait(false);
 
@@ -43,7 +43,7 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
                     var oAuthCard = ExtensionTokenResolverHelper.FindOAuthCard(attachment);
                     var firstSignInButton = oAuthCard?.Buttons?.FirstOrDefault(b => b.Type == ActionTypes.Signin);
                     firstSignInButton.Value = await _botFrameworkStreamingExtensionsAdapter.GetOauthSignInLinkAsync(turnContext, oAuthCard.ConnectionName, cancellationToken);
-                    StartPollingForToken(turnContext, activity, oAuthCard.ConnectionName, null, oAuthClient, cancellationToken);
+                    StartPollingForTokenAsync(turnContext, activity, oAuthCard.ConnectionName, null, oAuthClient, cancellationToken);
                 }
             }
         }
@@ -57,7 +57,7 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
         /// <param name="msAppId">The Microsoft App ID</param>
         /// <param name="cancellationToken">The cancelation token</param>
         /// <returns>The signin URL string</returns>
-        public async Task<string> GetSignInUrl(ITurnContext turnContext, OAuthClient oAuthClient, string connectionName, string msAppId, CancellationToken cancellationToken)
+        public async Task<string> GetSignInUrlAsync(ITurnContext turnContext, OAuthClient oAuthClient, string connectionName, string msAppId, CancellationToken cancellationToken)
         {
             BotAssert.ContextNotNull(turnContext);
             if (string.IsNullOrWhiteSpace(connectionName))
@@ -82,7 +82,7 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
             return await oAuthClient.BotSignIn.GetSignInUrlAsync(state, null, null, null, cancellationToken).ConfigureAwait(false);
         }
 
-        private async Task StartPollingForToken(ITurnContext turnContext, Activity activity, string connectionName, string magicCode, OAuthClient oAuthClient, CancellationToken cancellationToken)
+        private async Task StartPollingForTokenAsync(ITurnContext turnContext, Activity activity, string connectionName, string magicCode, OAuthClient oAuthClient, CancellationToken cancellationToken)
         {
             TokenResponse tokenResponse = null;
             bool shouldEndPolling = false;
