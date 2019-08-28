@@ -3,6 +3,7 @@
 //
 // Generated with Bot Builder V4 SDK Template for Visual Studio EchoBot v4.3.0
 
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -23,7 +24,8 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.TestBot
 
             var options = new SimpleWebexAdapterOptions(configuration["AccessToken"], configuration["PublicAddress"], configuration["Secret"], configuration["WebhookName"]);
             _adapter = new WebexAdapter(options, new WebexApi());
-            _adapter.RegisterWebhookSubscriptionAsync("/api/messages").Wait();
+
+            RegisterWebhookAsync().Wait();
         }
 
         public IConfiguration Configuration { get; }
@@ -63,6 +65,13 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.TestBot
 
             // app.UseHttpsRedirection();
             app.UseMvc();
+        }
+
+        public async Task RegisterWebhookAsync()
+        {
+            var webhookList = await _adapter.ListWebhookSubscriptionsAsync();
+
+            await _adapter.RegisterWebhookSubscriptionAsync("/api/messages", webhookList);
         }
     }
 }
