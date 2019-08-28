@@ -644,11 +644,11 @@
                         "type": "string"
                     }
                 },
-                "dialogId": {
-                    "$role": "expression",
-                    "title": "Dialog Id",
-                    "description": "The Id the dialog to call.",
-                    "type": "string"
+                "dialog": {
+                    "$type": "Microsoft.IDialog",
+                    "title": "Dialog",
+                    "description": "This is the dialog to call.",
+                    "$ref": "#/definitions/Microsoft.IDialog"
                 },
                 "options": {
                     "type": "object",
@@ -5355,11 +5355,11 @@
                         "type": "string"
                     }
                 },
-                "dialogId": {
-                    "$role": "expression",
-                    "title": "Dialog Id",
-                    "description": "The Id the dialog to call.",
-                    "type": "string"
+                "dialog": {
+                    "$type": "Microsoft.IDialog",
+                    "title": "Dialog",
+                    "description": "This is the dialog to switch to.",
+                    "$ref": "#/definitions/Microsoft.IDialog"
                 },
                 "options": {
                     "type": "object",
