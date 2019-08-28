@@ -581,7 +581,12 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             var evaled = engine.ExpandTemplate("ShowAlarmsWithForeach", new { alarms = alarms });
             Assert.AreEqual(1, evaled.Count);
-            Assert.AreEqual("You have 2 alarms, 7 am at tomorrow and 8 pm at tomorrow", evaled[0]);
+            var evalOptions = new List<string>()
+            {
+                "You have 2 alarms, 7 am at tomorrow and 8 pm at tomorrow",
+                "You have 2 alarms, 7 am of tomorrow and 8 pm of tomorrow"
+            };
+            Assert.IsTrue(evalOptions.Contains(evaled[0]));
         }
 
         [TestMethod]

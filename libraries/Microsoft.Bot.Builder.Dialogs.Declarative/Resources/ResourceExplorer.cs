@@ -39,6 +39,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// <summary>
         /// Gets the resource providers.
         /// </summary>
+        public IEnumerable<IResourceProvider> ResourceProviders
         {
             get { return this.resourceProviders; }
         }
