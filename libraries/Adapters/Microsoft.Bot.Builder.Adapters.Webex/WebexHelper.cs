@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
@@ -83,6 +84,11 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                 Type = ActivityTypes.Event,
             };
 
+            if (payload.MessageData.FileCount > 0)
+            {
+                activity.Attachments = HandleMessageAttachments(payload.MessageData);
+            }
+
             return activity;
         }
 
@@ -99,7 +105,9 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                 return null;
             }
 
-            return await decrypterFunc(payload.MessageData.Id, null).ConfigureAwait(false);
+            var message = await decrypterFunc(payload.MessageData.Id, null).ConfigureAwait(false);
+
+            return message;
         }
 
         /// <summary>
@@ -132,7 +140,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                 {
                     Id = Identity.Id,
                 },
-                Text = decryptedMessage.Text,
+                Text = !string.IsNullOrEmpty(decryptedMessage.Text) ? decryptedMessage.Text : string.Empty,
                 ChannelData = decryptedMessage,
                 Type = ActivityTypes.Message,
             };
@@ -168,7 +176,39 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                 activity.Text = activity.Text.Replace(pattern.ToString(), string.Empty);
             }
 
+            if (decryptedMessage.FileCount > 0)
+            {
+                activity.Attachments = HandleMessageAttachments(decryptedMessage);
+            }
+
             return activity;
+        }
+
+        /// <summary>
+        /// Adds the message's files to a attachments list.
+        /// </summary>
+        /// <param name="message">The message with the files to process.</param>
+        /// <returns>A list of attachments containing the message's files.</returns>
+        public static List<Attachment> HandleMessageAttachments(Message message)
+        {
+            var attachmentsList = new List<Attachment>();
+
+            for (var i = 0; i < message.FileCount; i++)
+            {
+                var attachment = new Attachment
+                {
+                    ContentUrl = message.FileUris[i].AbsoluteUri,
+                };
+
+                attachmentsList.Add(attachment);
+            }
+
+            if (attachmentsList.Count > 1)
+            {
+                throw new Exception("Currently Webex API takes only one attachment");
+            }
+
+            return attachmentsList;
         }
     }
 }

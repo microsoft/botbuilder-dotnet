@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
     {
         void CreateClient(string accessToken);
 
-        Task<string> CreateMessageAsync(string toPersonOrEmail, string text);
+        Task<string> CreateMessageAsync(string toPersonOrEmail, string text, IList<Uri> files = null);
 
         Task DeleteMessageAsync(string activityId);
 

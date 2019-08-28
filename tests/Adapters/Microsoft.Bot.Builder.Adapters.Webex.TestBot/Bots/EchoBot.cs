@@ -14,7 +14,22 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.TestBot.Bots
     {
         protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
-            await turnContext.SendActivityAsync(MessageFactory.Text($"Echo: {turnContext.Activity.Text}"), cancellationToken);
+            var activity = MessageFactory.Text($"Echo: {turnContext.Activity.Text}");
+
+            if (turnContext.Activity.Attachments != null)
+            {
+                activity.Text += $" got {turnContext.Activity.Attachments.Count} attachments";
+                foreach (var attachment in turnContext.Activity.Attachments)
+                {
+                    var image = new Attachment(
+                        "image/png",
+                        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQtB3AwMUeNoq4gUBGe6Ocj8kyh3bXa9ZbV7u1fVKQoyKFHdkqU");
+
+                    activity.Attachments.Add(image);
+                }
+            }
+
+            await turnContext.SendActivityAsync(activity, cancellationToken);
         }
 
         protected override async Task OnMembersAddedAsync(IList<ChannelAccount> membersAdded, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)

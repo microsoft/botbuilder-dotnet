@@ -150,7 +150,19 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                     }
                 }
 
-                var responseId = await _webexApi.CreateMessageAsync(personIdOrEmail, activity.Text).ConfigureAwait(false);
+                var files = new List<Uri>();
+
+                if (activity.Attachments != null)
+                {
+                    foreach (var attachment in activity.Attachments)
+                    {
+                        var file = new Uri(attachment.ContentUrl);
+
+                        files.Add(file);
+                    }
+                }
+
+                var responseId = await _webexApi.CreateMessageAsync(personIdOrEmail, activity.Text, files.Count > 0 ? files : null).ConfigureAwait(false);
                 responses.Add(new ResourceResponse(responseId));
             }
 

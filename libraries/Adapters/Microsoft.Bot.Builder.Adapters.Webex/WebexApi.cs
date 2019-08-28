@@ -23,9 +23,10 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
             _api = TeamsAPI.CreateVersion1Client(accessToken);
         }
 
-        public async Task<string> CreateMessageAsync(string toPersonOrEmail, string text)
+        public async Task<string> CreateMessageAsync(string toPersonOrEmail, string text, IList<Uri> files = null)
         {
-            var webexResponse = await _api.CreateDirectMessageAsync(toPersonOrEmail, text).ConfigureAwait(false);
+            var webexResponse = await _api.CreateDirectMessageAsync(toPersonOrEmail, text, files).ConfigureAwait(false);
+
             return webexResponse.Data.Id;
         }
 

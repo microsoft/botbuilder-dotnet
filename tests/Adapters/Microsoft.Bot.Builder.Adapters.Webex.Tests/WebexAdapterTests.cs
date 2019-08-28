@@ -397,7 +397,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
             // Setup mocked Webex API client
             const string expectedResponseId = "Mocked Response Id";
             var webexApi = new Mock<IWebexClient>();
-            webexApi.Setup(x => x.CreateMessageAsync(It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(expectedResponseId));
+            webexApi.Setup(x => x.CreateMessageAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IList<Uri>>())).Returns(Task.FromResult(expectedResponseId));
 
             // Create a new Webex Adapter with the mocked classes and get the responses
             var webexAdapter = new WebexAdapter(options.Object, webexApi.Object);
@@ -426,7 +426,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
             // Setup mocked Webex API client
             const string expectedResponseId = "Mocked Response Id";
             var webexApi = new Mock<IWebexClient>();
-            webexApi.Setup(x => x.CreateMessageAsync(It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(expectedResponseId));
+            webexApi.Setup(x => x.CreateMessageAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IList<Uri>>())).Returns(Task.FromResult(expectedResponseId));
 
             // Create a new Webex Adapter with the mocked classes and get the responses
             var webexAdapter = new WebexAdapter(options.Object, webexApi.Object);
