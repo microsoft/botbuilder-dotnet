@@ -27,7 +27,7 @@ if %errorlevel% neq 0 goto done
 rem Update .schema
 :update
 echo Updating .schema files and building sdk.schema
-call dialogSchema ../libraries/**/*.schema -u -b %branch% -o sdk.schema
+call bf dialog:merge ../libraries/**/*.schema -u -b %branch% -o sdk.schema
 if %errorlevel% neq 0 goto done
 
 rem Commit
