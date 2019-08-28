@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         Complete,
 
         /// <summary>
-        /// Indicates that the dialog was cancelled, and no child
+        /// Indicates that the dialog was canceled, and no child
         /// dialogs to the current context are on the dialog stack.
         /// </summary>
         Cancelled,
