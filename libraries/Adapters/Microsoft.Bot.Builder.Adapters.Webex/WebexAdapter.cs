@@ -83,35 +83,35 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// Register a webhook subscription with Webex Teams to start receiving message events.
         /// </summary>
         /// <param name="webhookPath">The path of the webhook endpoint like '/api/messages'.</param>
+        /// <param name="webhookList">List of webhook subscriptions associated with the application.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public async Task RegisterWebhookSubscriptionAsync(string webhookPath)
+        public async Task<Webhook> RegisterWebhookSubscriptionAsync(string webhookPath, WebhookList webhookList)
         {
             var webHookName = _config.WebhookName ?? "Botkit Firehose";
 
-            await _webexApi.ListWebhooksAsync().ContinueWith(
-                async task =>
+            string hookId = null;
+
+            for (var i = 0; i < webhookList.ItemCount; i++)
             {
-                string hookId = null;
-
-                for (var i = 0; i < task.Result.ItemCount; i++)
+                if (webhookList.Items[i].Name == webHookName)
                 {
-                    if (task.Result.Items[i].Name == webHookName)
-                    {
-                        hookId = task.Result.Items[i].Id;
-                    }
+                    hookId = webhookList.Items[i].Id;
                 }
+            }
 
-                var hookUrl = "https://" + _config.PublicAddress + webhookPath;
+            var hookUrl = "https://" + _config.PublicAddress + webhookPath;
+            Webhook webhook = null;
 
-                if (hookId != null)
-                {
-                    await _webexApi.UpdateWebhookAsync(hookId, webHookName, new Uri(hookUrl), _config.Secret).ConfigureAwait(false);
-                }
-                else
-                {
-                    await _webexApi.CreateWebhookAsync(webHookName, new Uri(hookUrl), EventResource.All, EventType.All, null, _config.Secret).ConfigureAwait(false);
-                }
-            }, TaskScheduler.Current).ConfigureAwait(false);
+            if (hookId != null)
+            {
+                webhook = await _webexApi.UpdateWebhookAsync(hookId, webHookName, new Uri(hookUrl), _config.Secret).ConfigureAwait(false);
+            }
+            else
+            {
+                webhook = await _webexApi.CreateWebhookAsync(webHookName, new Uri(hookUrl), EventResource.All, EventType.All, null, _config.Secret).ConfigureAwait(false);
+            }
+
+            return webhook;
         }
 
         /// <summary>

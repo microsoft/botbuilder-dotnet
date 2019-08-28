@@ -10,7 +10,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Schema;
-using Thrzn41.WebexTeams;
 using Thrzn41.WebexTeams.Version1;
 
 [assembly: InternalsVisibleTo("Microsoft.Bot.Builder.Adapters.Webex.Tests")]

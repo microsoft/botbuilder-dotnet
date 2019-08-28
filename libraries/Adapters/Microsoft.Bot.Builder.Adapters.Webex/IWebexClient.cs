@@ -26,8 +26,8 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
 
         Task<TeamsResult<NoContent>> DeleteWebhookAsync(Webhook id);
 
-        Task<TeamsResult<Webhook>> UpdateWebhookAsync(string webhookId, string name, Uri targetUri, string secret);
+        Task<Webhook> UpdateWebhookAsync(string webhookId, string name, Uri targetUri, string secret);
 
-        Task<TeamsResult<Webhook>> CreateWebhookAsync(string name, Uri targetUri, EventResource resource, EventType type, IEnumerable<EventFilter> filters, string secret);
+        Task<Webhook> CreateWebhookAsync(string name, Uri targetUri, EventResource resource, EventType type, IEnumerable<EventFilter> filters, string secret);
     }
 }

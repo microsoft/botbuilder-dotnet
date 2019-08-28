@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using Thrzn41.WebexTeams;
 using Thrzn41.WebexTeams.Version1;
 
@@ -56,9 +55,11 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
             return webhookList.GetData(false);
         }
 
-        public async Task<TeamsResult<Webhook>> CreateWebhookAsync(string name, Uri targetUri, EventResource resource, EventType type, IEnumerable<EventFilter> filters, string secret)
+        public async Task<Webhook> CreateWebhookAsync(string name, Uri targetUri, EventResource resource, EventType type, IEnumerable<EventFilter> filters, string secret)
         {
-            return await _api.CreateWebhookAsync(name, targetUri, resource, type, null, secret).ConfigureAwait(false);
+            var resultWebhook = await _api.CreateWebhookAsync(name, targetUri, resource, type, null, secret).ConfigureAwait(false);
+
+            return resultWebhook.GetData(false);
         }
 
         public async Task<TeamsResult<NoContent>> DeleteWebhookAsync(Webhook id)
@@ -66,9 +67,11 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
             return await _api.DeleteWebhookAsync(id).ConfigureAwait(false);
         }
 
-        public async Task<TeamsResult<Webhook>> UpdateWebhookAsync(string webhookId, string name, Uri targetUri, string secret)
+        public async Task<Webhook> UpdateWebhookAsync(string webhookId, string name, Uri targetUri, string secret)
         {
-            return await _api.UpdateWebhookAsync(webhookId, name, targetUri, secret).ConfigureAwait(false);
+            var resultWebhook = await _api.UpdateWebhookAsync(webhookId, name, targetUri, secret).ConfigureAwait(false);
+
+            return resultWebhook.GetData(false);
         }
     }
 }
