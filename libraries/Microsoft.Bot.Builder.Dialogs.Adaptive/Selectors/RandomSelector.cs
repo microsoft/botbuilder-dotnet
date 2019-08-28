@@ -20,9 +20,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
         private IExpressionParser _parser = new ExpressionEngine();
 
         /// <summary>
-        /// Optional seed for random number generator.
+        /// Gets or sets optional seed for random number generator.
         /// </summary>
         /// <remarks>If not specified a random seed will be used.</remarks>
+        /// <value>
+        /// Optional seed for random number generator.
+        /// </value>
         public int Seed
         {
             get => _seed;
@@ -64,12 +67,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
                     candidates.Add(i);
                 }
             }
+
             var result = new List<int>();
             if (candidates.Count > 0)
             {
                 var selection = _rand.Next(candidates.Count);
                 result.Add(candidates[selection]);
             }
+
             return Task.FromResult((IReadOnlyList<int>)result);
         }
     }

@@ -154,7 +154,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// when the previous active dialog on the stack completes.
         /// </summary>
         /// <param name="dc">The dialog context for the current turn of the conversation.</param>
-        /// <param name="reason">An enumeration values that indicates why the dialog resumed.</param>
+        /// <param name="reason">An enum indicating why the dialog resumed.</param>
         /// <param name="result">Optional, value returned from the previous dialog on the stack.
         /// The type of the value returned is dependent on the previous dialog.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects

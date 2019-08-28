@@ -33,10 +33,13 @@ namespace Microsoft.Bot.Builder.Dialogs
         public IDictionary<string, object> State { get; set; }
 
         /// <summary>
+        /// Gets or sets a stack index. Positive values are indexes within the current DC and negative values are 
+        /// indexes in the parent DC.
+        /// </summary>
+        /// <value>
         /// Positive values are indexes within the current DC and negative values are indexes in
         /// the parent DC.
-        /// </summary>
-        [JsonProperty("stackIndex")]
+        /// </value>
         public int? StackIndex { get; set; }
     }
 }

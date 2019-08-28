@@ -5,36 +5,49 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 {
+    /// <summary>
+    /// How to modify an action sequence.
+    /// </summary>
+    public enum ActionChangeType
+    {
+        /// <summary>
+        /// Add the change actions to the head of the sequence.
+        /// </summary>
+        InsertActions,
+
+        /// <summary>
+        /// Insert the change actions before named tags in the sequence.
+        /// </summary>
+        InsertActionsBeforeTags,
+
+        /// <summary>
+        /// Add the changeactions to the tail of the sequence.
+        /// </summary>
+        AppendActions,
+
+        /// <summary>
+        /// Terminate the action sequence.
+        /// </summary>
+        EndSequence,
+
+        /// <summary>
+        /// Terminate the action sequence, then add the change actions.
+        /// </summary>
+        ReplaceSequence,
+    }
+
     public class SequenceContext : DialogContext
     {
         private readonly string changeKey;
 
         private DialogSet actionDialogs;
-
-        public AdaptiveDialogState Plans { get; private set; }
-
-        /// <summary>
-        /// List of actions being executed
-        /// </summary>
-        public List<ActionState> Actions { get; set; }
-        
-        /// <summary>
-        /// List of changes that are queued to be applied.
-        /// </summary>
-        public List<ActionChangeList> Changes
-        {
-            get { return this.Context.TurnState.Get<List<ActionChangeList>>(changeKey); }
-            private set { this.Context.TurnState[changeKey] = value; }
-        }
 
         public SequenceContext(DialogSet dialogs, DialogContext dc, DialogState state, List<ActionState> actions, string changeKey, DialogSet actionDialogs)
             : base(dialogs, dc.Context, state, conversationState: dc.State.Conversation, userState: dc.State.User, settings: dc.State.Settings)
@@ -44,10 +57,32 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             this.actionDialogs = actionDialogs;
         }
 
+        public AdaptiveDialogState Plans { get; private set; }
+
+        /// <summary>
+        /// Gets or sets list of actions being executed.
+        /// </summary>
+        /// <value>
+        /// List of actions being executed.
+        /// </value>
+        public List<ActionState> Actions { get; set; }
+
+        /// <summary>
+        /// Gets list of changes that are queued to be applied.
+        /// </summary>
+        /// <value>
+        /// List of changes that are queued to be applied.
+        /// </value>
+        public List<ActionChangeList> Changes
+        {
+            get { return this.Context.TurnState.Get<List<ActionChangeList>>(changeKey); }
+            private set { this.Context.TurnState[changeKey] = value; }
+        }
+
         /// <summary>
         /// Queues up a set of changes that will be applied when ApplyChanges is called.
         /// </summary>
-        /// <param name="changes">Plan changes to queue up</param>
+        /// <param name="changes">Plan changes to queue up.</param>
         public void QueueChanges(ActionChangeList changes)
         {
             // Pull change lists from turn context
@@ -66,6 +101,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// will loop and apply any additional plan changes until there are no more changes left to 
         /// apply.
         /// </remarks>
+        /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>True if there were any changes to apply. </returns>
         public async Task<bool> ApplyChangesAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -101,6 +137,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                             {
                                 this.Actions.Clear();
                             }
+
                             await EmitEventAsync(name: AdaptiveEvents.SequenceEnded, value: null, bubble: false).ConfigureAwait(false);
                             break;
                         case ActionChangeType.ReplaceSequence:
@@ -108,6 +145,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                             {
                                 this.Actions.Clear();
                             }
+
                             await UpdateSequenceAsync(change, cancellationToken).ConfigureAwait(false);
                             break;
                     }
@@ -175,6 +213,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     Actions = actions
                 });
             return this;
+        }
+
+        /// <summary>
+        /// Specifies whether a given dialog should inherit dialog-level state. For adaptive dialogs, 
+        /// we take our base class cases plus we explicitly ask that InputDialogs inherit state as well.
+        /// InputDialogs don't inherit state out of the box because they inherit directly from Dialog and 
+        /// are declared in the Adaptive assembly, so the base class, DialogContext does not explicitly
+        /// request that they inherit state. Thus, we add it here. This enables seamless usage of
+        /// dialog level properties such as $name across Input dialogs and / or steps within an adaptive dialog.
+        /// </summary>
+        /// <param name="dialog">The dialog to be tested.</param>
+        /// <returns>Whether the passed dialog should inherit dialog-level state.</returns>
+        protected override bool ShouldInheritState(IDialog dialog)
+        {
+            return base.ShouldInheritState(dialog) || dialog is InputDialog;
         }
 
         private async Task UpdateSequenceAsync(ActionChangeList change, CancellationToken cancellationToken = default(CancellationToken))
@@ -253,21 +306,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
             return false;
         }
-
-        /// <summary>
-        /// Specifies whether a given dialog should inherit dialog-level state. For adaptive dialogs, 
-        /// we take our base class cases plus we explicitly ask that InputDialogs inherit state as well.
-        /// InputDialogs don't inherit state out of the box because they inherit directly from Dialog and 
-        /// are declared in the Adaptive assembly, so the base class, DialogContext does not explicitly
-        /// request that they inherit state. Thus, we add it here. This enables seamless usage of
-        /// dialog level properties such as $name across Input dialogs and / or steps within an adaptive dialog.
-        /// </summary>
-        /// <param name="dialog">The dialog to be tested.</param>
-        /// <returns>Whether the passed dialog should inherit dialog-level state.</returns>
-        protected override bool ShouldInheritState(IDialog dialog)
-        {
-            return base.ShouldInheritState(dialog) || dialog is InputDialog;
-        }
     }
 
     public class AdaptiveEvents : DialogContext.DialogEvents
@@ -314,15 +352,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         public object Options { get; set; }
     }
 
-    public enum ActionChangeType
-    {
-        InsertActions,
-        InsertActionsBeforeTags,
-        AppendActions,
-        EndSequence,
-        ReplaceSequence,
-    }
-
     [DebuggerDisplay("{ChangeType}:{Desire}")]
     public class ActionChangeList
     {
@@ -336,8 +365,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         public List<string> Tags { get; set; } = new List<string>();
 
         /// <summary>
-        /// Gets or sets turn state associated with the plan change list (it will be applied to turn state when plan is applied)
+        /// Gets or sets turn state associated with the plan change list (it will be applied to turn state when plan is applied).
         /// </summary>
+        /// <value>
+        /// Turn state associated with the plan change list (it will be applied to turn state when plan is applied).
+        /// </value>
         [JsonProperty(PropertyName = "turn")]
         public Dictionary<string, object> Turn { get; set; }
     }

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
-using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {

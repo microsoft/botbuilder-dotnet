@@ -6,105 +6,13 @@ using Microsoft.Bot.Builder.Expressions;
 
 namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
 {
-    public class Comparison
-    {
-        public string Type;
-        public object Value;
-        public Comparison(string type, object value)
-        {
-            Type = type;
-            Value = value;
-        }
-    }
-
-    public class ExpressionInfo
-    {
-        public Expression Expression;
-        public Dictionary<string, Comparison> Bindings = new Dictionary<string, Comparison>();
-        public List<Quantifier> Quantifiers = new List<Quantifier>();
-
-        public ExpressionInfo(Expression expression)
-        {
-            Expression = expression;
-        }
-
-        public ExpressionInfo(Expression expression, string name, object value, string type)
-        {
-            Expression = expression;
-            Bindings.Add(name, new Comparison(type, value));
-        }
-
-        public ExpressionInfo(Expression expression, Dictionary<string, Comparison> bindings, List<Quantifier> quantifiers = null)
-        {
-            Expression = expression;
-            Bindings = bindings;
-            if (quantifiers != null)
-            {
-                Quantifiers = quantifiers;
-            }
-        }
-
-        public override string ToString() => Expression.ToString();
-    }
-
-    public class TriggerInfo
-    {
-        public Expression Trigger;
-        public Dictionary<string, object> Bindings = new Dictionary<string, object>();
-    }
-
     public class Generator
     {
         public Random Rand;
 
-        public class SimpleValues
-        {
-            public int Int = 1;
-            public double Double = 2.0;
-            public string String = "3";
-            public object Object = null;
+        private const double DoubleEpsilon = 0.000001;
 
-            public SimpleValues()
-            { }
-
-            public SimpleValues(int integer)
-            {
-                Int = integer;
-            }
-
-            public SimpleValues(double number)
-            {
-                Double = number;
-            }
-
-            public SimpleValues(object obj)
-            {
-                Object = obj;
-            }
-
-            public bool Test(int? value) => value.HasValue && Int == value;
-
-            public bool Test(double? value) => value.HasValue && Double == value;
-
-            public bool Test(string value) => value != null && String == value;
-
-            public bool Test(SimpleValues value) => Int == value.Int && Double == value.Double && String == value.String && Object.Equals(value.Object);
-
-            public static bool Test(SimpleValues obj, int? value) => value.HasValue && obj.Int == value;
-
-            public static bool Test(SimpleValues obj, double? value) => value.HasValue && obj.Double == value;
-
-            public static bool Test(SimpleValues obj, string value) => value != null && obj.String == value;
-
-            public static bool Test(SimpleValues obj, object other) => other != null && obj.Object.Equals(other);
-        }
-
-        public Generator(int seed = 0)
-        {
-            Rand = new Random(seed);
-        }
-
-        private static readonly string[] comparisons = new string[]
+        private static readonly string[] Comparisons = new string[]
         {
             ExpressionType.LessThan,
             ExpressionType.LessThanOrEqual,
@@ -114,6 +22,11 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
             ExpressionType.GreaterThanOrEqual,
             ExpressionType.GreaterThan
         };
+
+        public Generator(int seed = 0)
+        {
+            Rand = new Random(seed);
+        }
 
         /* Predicates */
 
@@ -130,40 +43,11 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
             return builder.ToString();
         }
 
-        private const double DoubleEpsilon = 0.000001;
-
-        private int AdjustValue(int value, string type)
-        {
-            var result = value;
-            const int epsilon = 1;
-            switch (type)
-            {
-                case ExpressionType.LessThan: result += epsilon; break;
-                case ExpressionType.NotEqual: result += epsilon; break;
-                case ExpressionType.GreaterThan: result -= epsilon; break;
-            }
-
-            return result;
-        }
-
-        private double AdjustValue(double value, string type)
-        {
-            var result = value;
-            switch (type)
-            {
-                case ExpressionType.LessThan: result += DoubleEpsilon; break;
-                case ExpressionType.NotEqual: result += DoubleEpsilon; break;
-                case ExpressionType.GreaterThan: result -= DoubleEpsilon; break;
-            }
-
-            return result;
-        }
-
         public ExpressionInfo GenerateSimpleComparison(string name)
         {
             Expression expression = null;
             object value = null;
-            var type = RandomChoice<string>(comparisons);
+            var type = RandomChoice<string>(Comparisons);
             switch (Rand.Next(2))
             {
                 case 0:
@@ -245,7 +129,8 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
                     do
                     {
                         choice = Rand.Next(predicates.Count);
-                    } while (used.Contains(choice));
+                    }
+                    while (used.Contains(choice));
 
                     expressions.Add(predicates[choice]);
                     used.Add(choice);
@@ -272,7 +157,8 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
                     do
                     {
                         choice = Rand.Next(predicates.Count);
-                    } while (used.Contains(choice));
+                    }
+                    while (used.Contains(choice));
                     expressions.Add(predicates[choice]);
                     used.Add(choice);
                 }
@@ -298,7 +184,8 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
                     do
                     {
                         choice = Rand.Next(predicates.Count);
-                    } while (used.Contains(choice));
+                    }
+                    while (used.Contains(choice));
 
                     var predicate = predicates[choice];
                     if (j == 0)
@@ -326,9 +213,10 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
             return optionals;
         }
 
-        public Expression Binary(string type,
-                                 IEnumerable<ExpressionInfo> expressions,
-                                 out Dictionary<string, Comparison> bindings)
+        public Expression Binary(
+            string type,
+            IEnumerable<ExpressionInfo> expressions,
+            out Dictionary<string, Comparison> bindings)
         {
             bindings = MergeBindings(expressions);
             Expression binaryExpression = null;
@@ -343,6 +231,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
                     binaryExpression = Expression.MakeExpression(type, binaryExpression, info.Expression);
                 }
             }
+
             return binaryExpression;
         }
 
@@ -352,20 +241,6 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
             {
                 yield return info.Expression;
             }
-        }
-
-        private int SplitMemory(string mem, out string baseName)
-        {
-            var i = 0;
-            for (; i < mem.Length; ++i)
-            {
-                if (char.IsDigit(mem[i]))
-                {
-                    break;
-                }
-            }
-            baseName = mem.Substring(0, i);
-            return int.Parse(mem.Substring(i));
         }
 
         public List<ExpressionInfo> GenerateQuantfiers(List<ExpressionInfo> predicates, int numExpressions, int maxVariable, int maxExpansion, int maxQuantifiers)
@@ -383,11 +258,13 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
                 for (var quant = 0; quant < maxBase; ++quant)
                 {
                     KeyValuePair<string, Comparison> baseBinding;
+
                     // Can only map each expression variable once in a quantifier
                     do
                     {
                         baseBinding = expression.Bindings.ElementAt(Rand.Next(expression.Bindings.Count));
-                    } while (chosen.Contains(baseBinding.Key));
+                    }
+                    while (chosen.Contains(baseBinding.Key));
                     chosen.Add(baseBinding.Key);
                     SplitMemory(baseBinding.Key, out var baseName);
                     var mappings = new List<string>();
@@ -407,6 +284,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
                             }
                         }
                     }
+
                     var any = Rand.NextDouble() < 0.5;
                     if (any)
                     {
@@ -433,6 +311,137 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
                 }
 
                 result.Add(info);
+            }
+
+            return result;
+        }
+
+        public IEnumerable<ExpressionInfo> GenerateNots(IList<ExpressionInfo> predicates, int numNots)
+        {
+            for (var i = 0; i < numNots; ++i)
+            {
+                var expr = RandomChoice(predicates);
+                var bindings = new Dictionary<string, Comparison>();
+                foreach (var binding in expr.Bindings)
+                {
+                    var comparison = NotValue(binding.Value);
+                    if (comparison != null)
+                    {
+                        bindings.Add(binding.Key, comparison);
+                    }
+                }
+
+                yield return new ExpressionInfo(Expression.NotExpression(expr.Expression), bindings, expr.Quantifiers);
+            }
+        }
+
+        public Dictionary<string, Comparison> MergeBindings(IEnumerable<ExpressionInfo> expressions)
+        {
+            var bindings = new Dictionary<string, Comparison>();
+            foreach (var info in expressions)
+            {
+                foreach (var binding in info.Bindings)
+                {
+                    bindings[binding.Key] = binding.Value;
+                }
+            }
+
+            return bindings;
+        }
+
+        public T RandomChoice<T>(IList<T> choices) => choices[Rand.Next(choices.Count)];
+
+        public T RandomWeighted<T>(IEnumerable<WeightedChoice<T>> choices)
+        {
+            var totalWeight = 0.0;
+            foreach (var choice in choices)
+            {
+                totalWeight += choice.Weight;
+            }
+
+            var selection = Rand.NextDouble() * totalWeight;
+            var soFar = 0.0;
+            var result = default(T);
+            foreach (var choice in choices)
+            {
+                if (soFar <= selection)
+                {
+                    soFar += choice.Weight;
+                    result = choice.Choice;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            return result;
+        }
+
+        public int RandomWeighted(IReadOnlyList<double> weights)
+        {
+            var totalWeight = 0.0;
+            foreach (var weight in weights)
+            {
+                totalWeight += weight;
+            }
+
+            var selection = Rand.NextDouble() * totalWeight;
+            var soFar = 0.0;
+            var result = 0;
+            for (var i = 0; i < weights.Count; ++i)
+            {
+                if (soFar <= selection)
+                {
+                    soFar += weights[i];
+                    result = i;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            return result;
+        }
+
+        private int SplitMemory(string mem, out string baseName)
+        {
+            var i = 0;
+            for (; i < mem.Length; ++i)
+            {
+                if (char.IsDigit(mem[i]))
+                {
+                    break;
+                }
+            }
+
+            baseName = mem.Substring(0, i);
+            return int.Parse(mem.Substring(i));
+        }
+
+        private int AdjustValue(int value, string type)
+        {
+            var result = value;
+            const int epsilon = 1;
+            switch (type)
+            {
+                case ExpressionType.LessThan: result += epsilon; break;
+                case ExpressionType.NotEqual: result += epsilon; break;
+                case ExpressionType.GreaterThan: result -= epsilon; break;
+            }
+
+            return result;
+        }
+
+        private double AdjustValue(double value, string type)
+        {
+            var result = value;
+            switch (type)
+            {
+                case ExpressionType.LessThan: result += DoubleEpsilon; break;
+                case ExpressionType.NotEqual: result += DoubleEpsilon; break;
+                case ExpressionType.GreaterThan: result -= DoubleEpsilon; break;
             }
 
             return result;
@@ -511,28 +520,9 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
                     }
 
                     break;
-
             }
+
             return isNot ? null : new Comparison(comparison.Type, value);
-        }
-
-        public IEnumerable<ExpressionInfo> GenerateNots(IList<ExpressionInfo> predicates, int numNots)
-        {
-            for (var i = 0; i < numNots; ++i)
-            {
-                var expr = RandomChoice(predicates);
-                var bindings = new Dictionary<string, Comparison>();
-                foreach (var binding in expr.Bindings)
-                {
-                    var comparison = NotValue(binding.Value);
-                    if (comparison != null)
-                    {
-                        bindings.Add(binding.Key, comparison);
-                    }
-                }
-
-                yield return new ExpressionInfo(Expression.NotExpression(expr.Expression), bindings, expr.Quantifiers);
-            }
         }
 
         private Dictionary<Type, List<string>> VariablesByType(Dictionary<string, Comparison> bindings)
@@ -548,24 +538,9 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
 
                 result[type].Add(binding.Key);
             }
+
             return result;
         }
-
-        public Dictionary<string, Comparison> MergeBindings(IEnumerable<ExpressionInfo> expressions)
-        {
-            var bindings = new Dictionary<string, Comparison>();
-            foreach (var info in expressions)
-            {
-                foreach (var binding in info.Bindings)
-                {
-                    bindings[binding.Key] = binding.Value;
-                }
-            }
-
-            return bindings;
-        }
-
-        public T RandomChoice<T>(IList<T> choices) => choices[Rand.Next(choices.Count)];
 
         public class WeightedChoice<T>
         {
@@ -573,57 +548,95 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
             public T Choice = default(T);
         }
 
-        public T RandomWeighted<T>(IEnumerable<WeightedChoice<T>> choices)
+        public class SimpleValues
         {
-            var totalWeight = 0.0;
-            foreach (var choice in choices)
+            public int Int = 1;
+            public double Double = 2.0;
+            public string String = "3";
+            public object Object = null;
+
+            public SimpleValues()
             {
-                totalWeight += choice.Weight;
-            }
-            var selection = Rand.NextDouble() * totalWeight;
-            var soFar = 0.0;
-            var result = default(T);
-            foreach (var choice in choices)
-            {
-                if (soFar <= selection)
-                {
-                    soFar += choice.Weight;
-                    result = choice.Choice;
-                }
-                else
-                {
-                    break;
-                }
             }
 
-            return result;
+            public SimpleValues(int integer)
+            {
+                Int = integer;
+            }
+
+            public SimpleValues(double number)
+            {
+                Double = number;
+            }
+
+            public SimpleValues(object obj)
+            {
+                Object = obj;
+            }
+            
+            public static bool Test(SimpleValues obj, int? value) => value.HasValue && obj.Int == value;
+
+            public static bool Test(SimpleValues obj, double? value) => value.HasValue && obj.Double == value;
+
+            public static bool Test(SimpleValues obj, string value) => value != null && obj.String == value;
+
+            public static bool Test(SimpleValues obj, object other) => other != null && obj.Object.Equals(other);
+
+            public bool Test(int? value) => value.HasValue && Int == value;
+
+            public bool Test(double? value) => value.HasValue && Double == value;
+
+            public bool Test(string value) => value != null && String == value;
+
+            public bool Test(SimpleValues value) => Int == value.Int && Double == value.Double && String == value.String && Object.Equals(value.Object);
+        }
+    }
+
+    public class Comparison
+    {
+        public string Type;
+        public object Value;
+
+        public Comparison(string type, object value)
+        {
+            Type = type;
+            Value = value;
+        }
+    }
+
+    public class ExpressionInfo
+    {
+        public Expression Expression;
+        public Dictionary<string, Comparison> Bindings = new Dictionary<string, Comparison>();
+        public List<Quantifier> Quantifiers = new List<Quantifier>();
+
+        public ExpressionInfo(Expression expression)
+        {
+            Expression = expression;
         }
 
-        public int RandomWeighted(IReadOnlyList<double> weights)
+        public ExpressionInfo(Expression expression, string name, object value, string type)
         {
-            var totalWeight = 0.0;
-            foreach (var weight in weights)
-            {
-                totalWeight += weight;
-            }
-
-            var selection = Rand.NextDouble() * totalWeight;
-            var soFar = 0.0;
-            var result = 0;
-            for (var i = 0; i < weights.Count; ++i)
-            {
-                if (soFar <= selection)
-                {
-                    soFar += weights[i];
-                    result = i;
-                }
-                else
-                {
-                    break;
-                }
-            }
-
-            return result;
+            Expression = expression;
+            Bindings.Add(name, new Comparison(type, value));
         }
+
+        public ExpressionInfo(Expression expression, Dictionary<string, Comparison> bindings, List<Quantifier> quantifiers = null)
+        {
+            Expression = expression;
+            Bindings = bindings;
+            if (quantifiers != null)
+            {
+                Quantifiers = quantifiers;
+            }
+        }
+
+        public override string ToString() => Expression.ToString();
+    }
+
+    public class TriggerInfo
+    {
+        public Expression Trigger;
+        public Dictionary<string, object> Bindings = new Dictionary<string, object>();
     }
 }

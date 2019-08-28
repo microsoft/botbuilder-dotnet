@@ -3,9 +3,6 @@
 
 namespace Microsoft.Bot.Configuration
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Text;
     using Newtonsoft.Json;
 
     public class AzureService : ConnectedService

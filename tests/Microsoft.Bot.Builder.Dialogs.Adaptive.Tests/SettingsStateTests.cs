@@ -4,9 +4,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Events;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
-using Microsoft.Bot.Builder.Dialogs.Declarative;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Events;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -16,8 +15,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
     [TestClass]
     public class SettingsStateTests
     {
-        public TestContext TestContext { get; set; }
-
         public IConfiguration Configuration;
 
         public SettingsStateTests()
@@ -27,6 +24,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             this.Configuration = builder.Build();
         }
+
+        public TestContext TestContext { get; set; }
 
         [TestMethod]
         public async Task DialogContextState_SettingsTest()
@@ -75,6 +74,5 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
             });
         }
-
     }
 }

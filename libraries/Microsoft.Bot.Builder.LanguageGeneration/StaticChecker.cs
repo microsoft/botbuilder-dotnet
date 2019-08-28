@@ -14,6 +14,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     public class StaticChecker
     {
         private readonly ExpressionEngine expressionEngine;
+
         public StaticChecker(ExpressionEngine expressionEngine = null)
         {
             this.expressionEngine = expressionEngine ?? new ExpressionEngine();
@@ -110,13 +111,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             private IExpressionParser _expressionParser;
 
-
-
             public StaticCheckerInner(List<LGTemplate> templates, ExpressionEngine expressionEngine)
             {
                 Templates = templates;
                 baseExpressionEngine = expressionEngine;
             }
+
+            public List<LGTemplate> Templates { get; }
 
             // Create a property because we want this to be lazy loaded
             private IExpressionParser ExpressionParser
@@ -132,8 +133,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     return _expressionParser;
                 }
             }
-
-            public List<LGTemplate> Templates { get; }
 
             /// <summary>
             /// Return error messaages list.

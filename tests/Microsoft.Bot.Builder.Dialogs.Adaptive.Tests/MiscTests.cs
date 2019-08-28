@@ -21,29 +21,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
     {
         public TestContext TestContext { get; set; }
 
-        private TestFlow CreateFlow(AdaptiveDialog dialog, bool sendTrace = false)
-        {
-            TypeFactory.Configuration = new ConfigurationBuilder().Build();
-            var resourceExplorer = new ResourceExplorer();
-            var storage = new MemoryStorage();
-            var convoState = new ConversationState(storage);
-            var userState = new UserState(storage);
-            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName), sendTrace);
-            adapter
-                .UseStorage(storage)
-                .UseState(userState, convoState)
-                .UseResourceExplorer(resourceExplorer)
-                .UseLanguageGeneration(resourceExplorer)
-                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
-
-            DialogManager dm = new DialogManager(dialog);
-
-            return new TestFlow(adapter, async (turnContext, cancellationToken) =>
-            {
-                await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
-            });
-        }
-
         [TestMethod]
         public async Task IfCondition_EndDialog()
         {
@@ -84,6 +61,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 {
                                     new SendActivity("notcanceling")
                                 }
+
                                 // We do not need to specify an else block here since if user said no,
                                 // the control flow will automatically return to the last active step (if any)
                             }
@@ -120,7 +98,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 {
                     Intents = new Dictionary<string, string>()
                     {
-                        {  "SetName", @"my name is (?<name>.*)" }
+                        { "SetName", @"my name is (?<name>.*)" }
                     }
                 },
                 Events = new List<IOnEvent>()
@@ -129,7 +107,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     {
                         Actions = new List<IDialog>()
                         {
-                            new TextInput() { Prompt = new ActivityTemplate("Hello, what is your name?"), OutputBinding = "user.name", AllowInterruptions = AllowInterruptions.Always, Value = "user.name"},
+                            new TextInput() { Prompt = new ActivityTemplate("Hello, what is your name?"), OutputBinding = "user.name", AllowInterruptions = AllowInterruptions.Always, Value = "user.name" },
                             new SendActivity("Hello {user.name}, nice to meet you!"),
                             new NumberInput() { Prompt = new ActivityTemplate("What is your age?"), OutputBinding = "user.age" },
                             new SendActivity("{user.age} is a good age to be!"),
@@ -148,7 +126,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         }
                     }
                 }
-
             };
 
             await CreateFlow(testDialog)
@@ -163,6 +140,29 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     .AssertReply("15 is a good age to be!")
                     .AssertReply("your name is Joe!")
                 .StartTestAsync();
+        }
+
+        private TestFlow CreateFlow(AdaptiveDialog dialog, bool sendTrace = false)
+        {
+            TypeFactory.Configuration = new ConfigurationBuilder().Build();
+            var resourceExplorer = new ResourceExplorer();
+            var storage = new MemoryStorage();
+            var convoState = new ConversationState(storage);
+            var userState = new UserState(storage);
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName), sendTrace);
+            adapter
+                .UseStorage(storage)
+                .UseState(userState, convoState)
+                .UseResourceExplorer(resourceExplorer)
+                .UseLanguageGeneration(resourceExplorer)
+                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+
+            DialogManager dm = new DialogManager(dialog);
+
+            return new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
+            });
         }
     }
 }

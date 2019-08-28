@@ -19,54 +19,79 @@ using static Microsoft.Bot.Builder.Dialogs.Debugging.DebugSupport;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 {
-
     /// <summary>
-    /// The Adaptive Dialog models conversation using events and events to adapt dynamicaly to changing conversation flow
+    /// The Adaptive Dialog models conversation using events and events to adapt dynamicaly to changing conversation flow.
     /// </summary>
     public class AdaptiveDialog : DialogContainer
     {
+#pragma warning disable SA1310 // Field should not contain underscore.
         private const string ADAPTIVE_KEY = "adaptiveDialogState";
+#pragma warning restore SA1310 // Field should not contain underscore.
 
         private readonly string changeKey = Guid.NewGuid().ToString();
 
         private bool installedDependencies = false;
+
+        public AdaptiveDialog(string dialogId = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+            : base(dialogId)
+        {
+            this.RegisterSourceLocation(callerPath, callerLine);
+        }
 
         public IStatePropertyAccessor<BotState> BotState { get; set; }
 
         public IStatePropertyAccessor<Dictionary<string, object>> UserState { get; set; }
 
         /// <summary>
-        /// Recognizer for processing incoming user input
+        /// Gets or sets recognizer for processing incoming user input.
         /// </summary>
+        /// <value>
+        /// Recognizer for processing incoming user input.
+        /// </value>
         public IRecognizer Recognizer { get; set; }
 
         /// <summary>
-        /// Language Generator override
+        /// Gets or sets language Generator override.
         /// </summary>
+        /// <value>
+        /// Language Generator override.
+        /// </value>
         public ILanguageGenerator Generator { get; set; }
 
         /// <summary>
-        /// Rules for handling events to dynamic modifying the executing plan 
+        /// Gets or sets rules for handling events to dynamic modifying the executing plan. 
         /// </summary>
+        /// <value>
+        /// Rules for handling events to dynamic modifying the executing plan. 
+        /// </value>
         public virtual List<IOnEvent> Events { get; set; } = new List<IOnEvent>();
 
         /// <summary>
-        /// Gets or sets the policty to Automatically end the dialog when there are no actions to execute
+        /// Gets or sets a value indicating whether to end the dialog when there are no actions to execute.
         /// </summary>
         /// <remarks>
-        /// If true, when there are no actions to execute the current dialog will end
-        /// If false, when there are no actions to execute the current dialog will simply end the turn and still be active
+        /// If true, when there are no actions to execute, the current dialog will end
+        /// If false, when there are no actions to execute, the current dialog will simply end the turn and still be active.
         /// </remarks>
+        /// <value>
+        /// Whether to end the dialog when there are no actions to execute.
+        /// </value>
         public bool AutoEndDialog { get; set; } = true;
 
         /// <summary>
         /// Gets or sets the selector for picking the possible events to execute.
         /// </summary>
+        /// <value>
+        /// The selector for picking the possible events to execute.
+        /// </value>
         public IEventSelector Selector { get; set; }
 
         /// <summary>
         /// Gets or sets the property to return as the result when the dialog ends when there are no more Actions and AutoEndDialog = true.
         /// </summary>
+        /// <value>
+        /// The property to return as the result when the dialog ends when there are no more Actions and AutoEndDialog = true.
+        /// </value>
         public string DefaultResultProperty { get; set; } = "dialog.result";
 
         public override IBotTelemetryClient TelemetryClient
@@ -82,12 +107,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 _dialogs.TelemetryClient = client;
                 base.TelemetryClient = client;
             }
-        }
-
-        public AdaptiveDialog(string dialogId = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
-            : base(dialogId)
-        {
-            this.RegisterSourceLocation(callerPath, callerLine);
         }
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
@@ -132,6 +151,80 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
             // Continue step execution
             return await ContinueActionsAsync(dc, null, cancellationToken).ConfigureAwait(false);
+        }
+
+        public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (result is CancellationToken)
+            {
+                throw new ArgumentException($"{nameof(result)} cannot be a cancellation token");
+            }
+
+            // Containers are typically leaf nodes on the stack but the dev is free to push other dialogs
+            // on top of the stack which will result in the container receiving an unexpected call to
+            // resumeDialog() when the pushed on dialog ends.
+            // To avoid the container prematurely ending we need to implement this method and simply
+            // ask our inner dialog stack to re-prompt.
+            await RepromptDialogAsync(dc.Context, dc.ActiveDialog).ConfigureAwait(false);
+
+            return Dialog.EndOfTurn;
+        }
+
+        public override async Task RepromptDialogAsync(ITurnContext turnContext, DialogInstance instance, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            // Forward to current sequence step
+            var state = (instance.State as Dictionary<string, object>)[ADAPTIVE_KEY] as AdaptiveDialogState;
+
+            if (state.Actions.Any())
+            {
+                // We need to mockup a DialogContext so that we can call RepromptDialog
+                // for the active step
+                var stepDc = new DialogContext(_dialogs, turnContext, state.Actions[0], new Dictionary<string, object>(), new Dictionary<string, object>());
+                await stepDc.RepromptDialogAsync(cancellationToken).ConfigureAwait(false);
+            }
+        }
+
+        public void AddEvent(IOnEvent evt)
+        {
+            evt.Actions.ForEach(action => _dialogs.Add(action));
+            this.Events.Add(evt);
+        }
+
+        public void AddEvents(IEnumerable<IOnEvent> events)
+        {
+            foreach (var evt in events)
+            {
+                this.AddEvent(evt);
+            }
+        }
+
+        public void AddDialogs(IEnumerable<IDialog> dialogs)
+        {
+            foreach (var dialog in dialogs)
+            {
+                this._dialogs.Add(dialog);
+            }
+        }
+
+        public override DialogContext CreateChildContext(DialogContext dc)
+        {
+            var activeDialogState = dc.ActiveDialog.State as Dictionary<string, object>;
+            var state = activeDialogState[ADAPTIVE_KEY] as AdaptiveDialogState;
+
+            if (state == null)
+            {
+                state = new AdaptiveDialogState();
+                activeDialogState[ADAPTIVE_KEY] = state;
+            }
+
+            if (state.Actions != null && state.Actions.Any())
+            {
+                var ctx = new SequenceContext(this._dialogs, dc, state.Actions.First(), state.Actions, changeKey, this._dialogs);
+                ctx.Parent = dc;
+                return ctx;
+            }
+
+            return null;
         }
 
         protected override async Task<bool> OnPreBubbleEvent(DialogContext dc, DialogEvent dialogEvent, CancellationToken cancellationToken = default(CancellationToken))
@@ -230,64 +323,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                                 handled = false;
                             }
                         }
+
                         break;
                 }
             }
 
             return handled;
-        }
-
-        public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            if (result is CancellationToken)
-            {
-                throw new ArgumentException($"{nameof(result)} cannot be a cancellation token");
-            }
-
-            // Containers are typically leaf nodes on the stack but the dev is free to push other dialogs
-            // on top of the stack which will result in the container receiving an unexpected call to
-            // resumeDialog() when the pushed on dialog ends.
-            // To avoid the container prematurely ending we need to implement this method and simply
-            // ask our inner dialog stack to re-prompt.
-            await RepromptDialogAsync(dc.Context, dc.ActiveDialog).ConfigureAwait(false);
-
-            return Dialog.EndOfTurn;
-        }
-
-        public override async Task RepromptDialogAsync(ITurnContext turnContext, DialogInstance instance, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            // Forward to current sequence step
-            var state = (instance.State as Dictionary<string, object>)[ADAPTIVE_KEY] as AdaptiveDialogState;
-
-            if (state.Actions.Any())
-            {
-                // We need to mockup a DialogContext so that we can call RepromptDialog
-                // for the active step
-                var stepDc = new DialogContext(_dialogs, turnContext, state.Actions[0], new Dictionary<string, object>(), new Dictionary<string, object>());
-                await stepDc.RepromptDialogAsync(cancellationToken).ConfigureAwait(false);
-            }
-        }
-
-        public void AddEvent(IOnEvent evt)
-        {
-            evt.Actions.ForEach(action => _dialogs.Add(action));
-            this.Events.Add(evt);
-        }
-
-        public void AddEvents(IEnumerable<IOnEvent> events)
-        {
-            foreach (var evt in events)
-            {
-                this.AddEvent(evt);
-            }
-        }
-
-        public void AddDialogs(IEnumerable<IDialog> dialogs)
-        {
-            foreach (var dialog in dialogs)
-            {
-                this._dialogs.Add(dialog);
-            }
         }
 
         protected override string OnComputeId()
@@ -298,32 +339,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
 
             return $"AdaptiveDialog[{this.BindingPath()}]";
-        }
-
-        public override DialogContext CreateChildContext(DialogContext dc)
-        {
-            var activeDialogState = dc.ActiveDialog.State as Dictionary<string, object>;
-            var state = activeDialogState[ADAPTIVE_KEY] as AdaptiveDialogState;
-
-            if (state == null)
-            {
-                state = new AdaptiveDialogState();
-                activeDialogState[ADAPTIVE_KEY] = state;
-            }
-
-            if (state.Actions != null && state.Actions.Any())
-            {
-                var ctx = new SequenceContext(this._dialogs, dc, state.Actions.First(), state.Actions, changeKey, this._dialogs);
-                ctx.Parent = dc;
-                return ctx;
-            }
-
-            return null;
-        }
-
-        private string GetUniqueInstanceId(DialogContext dc)
-        {
-            return dc.Stack.Count > 0 ? $"{dc.Stack.Count}:{dc.ActiveDialog.Id}" : string.Empty;
         }
 
         protected async Task<DialogTurnResult> ContinueActionsAsync(DialogContext dc, object options, CancellationToken cancellationToken)
@@ -442,7 +457,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 Text = context.Activity.Text ?? string.Empty,
                 Intents = new Dictionary<string, IntentScore>()
                     {
-                        { "None", new IntentScore() { Score = 0.0} }
+                        { "None", new IntentScore() { Score = 0.0 } }
                     },
                 Entities = JObject.Parse("{}")
             };
@@ -483,6 +498,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             if (Recognizer != null)
             {
                 var result = await Recognizer.RecognizeAsync(context, cancellationToken).ConfigureAwait(false);
+                
                 // only allow one intent
                 var topIntent = result.GetTopScoringIntent();
                 result.Intents.Clear();
@@ -493,6 +509,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             {
                 return noneIntent;
             }
+        }
+
+        private string GetUniqueInstanceId(DialogContext dc)
+        {
+            return dc.Stack.Count > 0 ? $"{dc.Stack.Count}:{dc.ActiveDialog.Id}" : string.Empty;
         }
 
         private async Task<bool> QueueFirstMatchAsync(SequenceContext sequenceContext, DialogEvent dialogEvent, bool preBubble, CancellationToken cancellationToken)
@@ -511,6 +532,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     return true;
                 }
             }
+
             return false;
         }
 
@@ -555,6 +577,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                             Selector = new FirstSelector()
                         };
                     }
+
                     this.Selector.Initialize(this.Events, true);
                 }
             }

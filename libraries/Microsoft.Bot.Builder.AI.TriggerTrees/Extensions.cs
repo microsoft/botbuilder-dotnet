@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Microsoft.Bot.Builder.AI.TriggerTrees
+﻿namespace Microsoft.Bot.Builder.AI.TriggerTrees
 {
+    /// <summary>
+    /// Extension method to swap between <see cref="RelationshipType"/> "Generalizes" and "Specializes".
+    /// </summary>
     public static partial class Extensions
     {
         public static RelationshipType Swap(this RelationshipType original)

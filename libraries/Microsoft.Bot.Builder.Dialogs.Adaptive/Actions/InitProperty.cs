@@ -2,7 +2,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
 using System;
-using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,25 +11,30 @@ using Newtonsoft.Json.Linq;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
     /// <summary>
-    /// Sets a property with the result of evaluating a value expression
+    /// Sets a property with the result of evaluating a value expression.
     /// </summary>
     public class InitProperty : DialogAction
     {
         [JsonConstructor]
-        public InitProperty([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0) : base()
+        public InitProperty([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+            : base()
         {
             this.RegisterSourceLocation(callerPath, callerLine);
         }
 
         /// <summary>
-        /// Property which is bidirectional property for input and output.  Example: user.age will be passed in, and user.age will be set when the dialog completes
+        /// Gets or sets bidirectional property for input and output.  Example: user.age will be passed in, and user.age will be set when the dialog completes.
         /// </summary>
+        /// <value>
+        /// Property for input and output.
+        /// </value>
         public string Property
         {
             get
             {
                 return OutputBinding;
             }
+
             set
             {
                 InputBindings[DialogContextState.DIALOG_VALUE] = value;
@@ -39,8 +43,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         }
 
         /// <summary>
-        ///  Type, either Array or Object
+        ///  Gets or sets type, either Array or Object.
         /// </summary>
+        /// <value>
+        /// Type, either Array or Object.
+        /// </value>
         public string Type { get; set; }
 
         protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
@@ -49,7 +56,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             {
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
-
 
             // Ensure planning context
             if (dc is SequenceContext planning)

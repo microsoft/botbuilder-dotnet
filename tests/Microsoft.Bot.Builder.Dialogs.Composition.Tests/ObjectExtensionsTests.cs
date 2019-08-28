@@ -1,24 +1,8 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Composition
 {
-    public class Location
-    {
-        public float? Lat { get; set; }
-        public float? Long { get; set; }
-    }
-
-    public class Options
-    {
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public int? Age { get; set; }
-        public bool? Bool { get; set; }
-        public Location Location { get; set; }
-    }
-
     [TestClass]
     public class ObjectExtensionsTests
     {
@@ -34,7 +18,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition
             };
             var overlay = new Options() { };
 
-            var result = ObjectPath.Merge(defaultOptions,overlay);
+            var result = ObjectPath.Merge(defaultOptions, overlay);
             Assert.AreEqual(result.LastName, defaultOptions.LastName);
             Assert.AreEqual(result.FirstName, defaultOptions.FirstName);
             Assert.AreEqual(result.Age, defaultOptions.Age);
@@ -48,7 +32,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition
         {
             var defaultOptions = new Options() { };
 
-            var overlay= new Options()
+            var overlay = new Options()
             {
                 LastName = "Smith",
                 FirstName = "Fred",
@@ -57,7 +41,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition
             };
 
             var result = ObjectPath.Merge(defaultOptions, overlay);
-
             Assert.AreEqual(result.LastName, overlay.LastName);
             Assert.AreEqual(result.FirstName, overlay.FirstName);
             Assert.AreEqual(result.Age, overlay.Age);
@@ -364,6 +347,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition
             Assert.AreEqual(result.Location.Lat, defaultOptions.Location.Lat);
             Assert.AreEqual(result.Location.Long, defaultOptions.Location.Long);
         }
+    }
 
+    public class Location
+    {
+        public float? Lat { get; set; }
+
+        public float? Long { get; set; }
+    }
+
+    public class Options
+    {
+        public string FirstName { get; set; }
+
+        public string LastName { get; set; }
+
+        public int? Age { get; set; }
+
+        public bool? Bool { get; set; }
+
+        public Location Location { get; set; }
     }
 }

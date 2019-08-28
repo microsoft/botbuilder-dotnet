@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -36,7 +35,7 @@ namespace Microsoft.Bot.Builder
         /// <summary>
         /// Gets the currently configured <see cref="IBotTelemetryClient"/> that logs the QnaMessage event.
         /// </summary>
-        /// <value>The <see cref=IBotTelemetryClient"/> being used to log events.</value>
+        /// <value>The <see cref="IBotTelemetryClient"/> being used to log events.</value>
         public IBotTelemetryClient TelemetryClient { get; }
 
         /// <summary>

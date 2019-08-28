@@ -76,7 +76,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         [TestMethod]
         public async Task Test_DefaultFallback()
         {
-            await CreateFlow("")
+            await CreateFlow(string.Empty)
                 .Send("salve")
                     .AssertReply("greeting intent")
                 .Send("hello") // should not recognize as this is in the en recognizer
@@ -84,6 +84,60 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .Send("vale dicere")
                     .AssertReply("goodbye intent")
                 .StartTestAsync();
+        }
+
+        private static MultiLanguageRecognizer GetMultiLingualRecognizer()
+        {
+            return new MultiLanguageRecognizer()
+            {
+                Recognizers = new Dictionary<string, IRecognizer>()
+                {
+                     {
+                        "en-us",
+                        new RegexRecognizer()
+                        {
+                            Intents = new Dictionary<string, string>()
+                            {
+                                { "Greeting", "(?i)howdy" },
+                                { "Goodbye", "(?i)bye" },
+                            }
+                        }
+                     },
+                     {
+                        "en-gb",
+                        new RegexRecognizer()
+                        {
+                            Intents = new Dictionary<string, string>()
+                            {
+                                { "Greeting", "(?i)hiya" },
+                                { "Goodbye", "(?i)cheerio" },
+                            }
+                        }
+                     },
+                     {
+                        "en",
+                        new RegexRecognizer()
+                        {
+                            Intents = new Dictionary<string, string>()
+                            {
+                                { "Greeting", "(?i)hello" },
+                                { "Goodbye", "(?i)goodbye" },
+                            }
+                        }
+                     },
+                     {
+                        string.Empty,
+                        new RegexRecognizer()
+                        {
+                            Intents = new Dictionary<string, string>()
+                            {
+                                { "Greeting", "(?i)salve" },
+                                { "Goodbye", "(?i)vale dicere" },
+                            }
+                        }
+                     },
+                }
+            };
         }
 
         private TestFlow CreateFlow(string locale)
@@ -129,56 +183,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             {
                 await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
             });
-        }
-
-        private static MultiLanguageRecognizer GetMultiLingualRecognizer()
-        {
-            return new MultiLanguageRecognizer()
-            {
-                Recognizers = new Dictionary<string, IRecognizer>()
-                {
-                     {
-                        "en-us",
-                        new RegexRecognizer() {
-                            Intents = new Dictionary<string, string>()
-                            {
-                                { "Greeting", "(?i)howdy" },
-                                { "Goodbye", "(?i)bye" },
-                            }
-                         }
-                     },
-                     {
-                        "en-gb",
-                        new RegexRecognizer() {
-                            Intents = new Dictionary<string, string>()
-                            {
-                                { "Greeting", "(?i)hiya" },
-                                { "Goodbye", "(?i)cheerio" },
-                            }
-                         }
-                     },
-                     {
-                        "en",
-                        new RegexRecognizer() {
-                            Intents = new Dictionary<string, string>()
-                            {
-                                { "Greeting", "(?i)hello" },
-                                { "Goodbye", "(?i)goodbye" },
-                            }
-                         }
-                     },
-                     {
-                        "",
-                        new RegexRecognizer() {
-                            Intents = new Dictionary<string, string>()
-                            {
-                                { "Greeting", "(?i)salve" },
-                                { "Goodbye", "(?i)vale dicere" },
-                            }
-                         }
-                     },
-                }
-            };
         }
     }
 }

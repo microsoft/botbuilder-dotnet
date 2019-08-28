@@ -3,26 +3,35 @@
 
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 {
+    /// <summary>
+    /// Format specifier for outputs.
+    /// </summary>
     public enum AttachmentOutputFormat
     {
+        /// <summary>
+        /// Pass iputs in a List.
+        /// </summary>
         All,
+
+        /// <summary>
+        /// Pass input as a single element.
+        /// </summary>
         First
     }
 
     public class AttachmentInput : InputDialog
     {
-        public AttachmentOutputFormat OutputFormat { get; set; } = AttachmentOutputFormat.First;
-
         public AttachmentInput([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
             this.RegisterSourceLocation(callerPath, callerLine);
         }
+
+        public AttachmentOutputFormat OutputFormat { get; set; } = AttachmentOutputFormat.First;
 
         protected override string OnComputeId()
         {

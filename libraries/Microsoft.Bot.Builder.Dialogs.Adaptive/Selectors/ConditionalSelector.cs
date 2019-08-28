@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Expressions;
@@ -19,22 +17,31 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
         private Expression condition;
 
         /// <summary>
-        /// Expression that determines which selector to use.
+        /// Gets or sets expression that determines which selector to use.
         /// </summary>
+        /// <value>
+        /// Expression that determines which selector to use.
+        /// </value>
         public string Condition
         {
             get { return condition?.ToString(); }
-            set {this.condition = (value != null) ? new ExpressionEngine().Parse(value) : null; }
+            set { this.condition = (value != null) ? new ExpressionEngine().Parse(value) : null; }
         }
 
         /// <summary>
-        /// Selector if <see cref="Condition"/> is true.
+        /// Gets or sets selector if <see cref="Condition"/> is true.
         /// </summary>
+        /// <value>
+        /// Selector if <see cref="Condition"/> is true.
+        /// </value>
         public IEventSelector IfTrue { get; set; }
 
         /// <summary>
-        /// Selector if <see cref="Condition"/> is false.
+        /// Gets or sets selector if <see cref="Condition"/> is false.
         /// </summary>
+        /// <value>
+        /// Selector if <see cref="Condition"/> is false.
+        /// </value>
         public IEventSelector IfFalse { get; set; }
 
         public void Initialize(IEnumerable<IOnEvent> rules, bool evaluate = true)
@@ -58,6 +65,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
                 selector = IfFalse;
                 IfFalse.Initialize(_rules, _evaluate);
             }
+
             return await selector.Select(context, cancel).ConfigureAwait(false);
         }
     }

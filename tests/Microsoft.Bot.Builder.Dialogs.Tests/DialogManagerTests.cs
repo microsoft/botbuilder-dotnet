@@ -6,9 +6,9 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Events;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Events;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
 using Microsoft.Extensions.Configuration;
@@ -100,7 +100,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var componentDialog = new ComponentDialog();
             componentDialog.AddDialog(outerAdaptiveDialog);
 
-
             await CreateFlow(componentDialog, storage, firstConversationId)
             .Send("hi")
                 .AssertReply("Hello, what is your name?")
@@ -113,7 +112,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 .AssertReply("Hello Carlos, nice to meet you!")
             .StartTestAsync();
         }
-
 
         private AdaptiveDialog CreateTestDialog(string property = "user.name")
         {

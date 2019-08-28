@@ -11,7 +11,8 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
 {
-    public class InterfaceConverter<T> : JsonConverter where T : class
+    public class InterfaceConverter<T> : JsonConverter 
+        where T : class
     {
         private readonly IRefResolver refResolver;
         private readonly Source.IRegistry registry;

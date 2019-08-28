@@ -2,17 +2,25 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Text;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Debugging
 {
     public static class Source
     {
+        public interface IRegistry
+        {
+            void Add(object item, Range range);
+
+            bool TryGetValue(object item, out Range range);
+        }
+
         public struct Point
         {
+            public int LineIndex { get; set; }
+
+            public int CharIndex { get; set; }
+
             public static Point From(JsonReader reader)
                 => (reader is IJsonLineInfo info)
                 ? new Point() { LineIndex = info.LineNumber, CharIndex = info.LinePosition }
@@ -34,10 +42,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 return item;
             }
 
-            public int LineIndex { get; set; }
-
-            public int CharIndex { get; set; }
-
             public override string ToString() => $"{LineIndex}:{CharIndex}";
         }
 
@@ -50,13 +54,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             public Point After { get; set; }
 
             public override string ToString() => $"{System.IO.Path.GetFileName(Path)}:{Start}->{After}";
-        }
-
-        public interface IRegistry
-        {
-            void Add(object item, Range range);
-
-            bool TryGetValue(object item, out Range range);
         }
 
         public sealed class NullRegistry : IRegistry

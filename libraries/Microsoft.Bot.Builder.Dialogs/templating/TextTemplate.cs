@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
-
     /// <summary>
     /// Defines an text Template where the template expression is local aka "inline".
     /// </summary>
@@ -20,6 +19,9 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <summary>
         /// Gets or sets the template to evaluate to create the IMessageActivity.
         /// </summary>
+        /// <value>
+        /// The template to evaluate to create the IMessageActivity.
+        /// </value>
         public string Template { get; set; }
 
         public async Task<string> BindToData(ITurnContext turnContext, object data)
@@ -46,6 +48,5 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             return $"{nameof(TextTemplate)}({this.Template})";
         }
-
     }
 }

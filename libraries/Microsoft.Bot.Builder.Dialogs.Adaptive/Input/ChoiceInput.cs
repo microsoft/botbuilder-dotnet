@@ -5,22 +5,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using static Microsoft.Recognizers.Text.Culture;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 {
-    public class ChoiceInputOptions : InputDialogOptions
-    {
-        public List<Choice> Choices { get; set; }
-    }
-
     public enum ChoiceOutputFormat
     {
         /// <summary>
@@ -35,7 +28,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
     }
 
     /// <summary>
-    /// Declarative text input to gather choices from users
+    /// Declarative text input to gather choices from users.
     /// </summary>
     public class ChoiceInput : InputDialog
     {
@@ -51,44 +44,77 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             { Chinese, new ChoiceFactoryOptions { InlineSeparator = "， ", InlineOr = " 要么 ", InlineOrMore = "， 要么 ", IncludeNumbers = true } },
         };
 
-        /// <summary>
-        /// List of choices to present to user
-        /// </summary>
-        public List<Choice> Choices { get; set; }
-
-        /// <summary>
-        /// Expression collection of choices to present o user
-        /// </summary>
-        public string ChoicesProperty { get; set; }
-
-        /// <summary>
-        /// ListStyle to use to render the choices
-        /// </summary>
-        public ListStyle Style { get; set; } = ListStyle.Auto;
-
-        /// <summary>
-        /// DefaultLocale
-        /// </summary>
-        public string DefaultLocale { get; set; } = null;
-
-        /// <summary>
-        /// Control the format of the response (value or the index of the choice)
-        /// </summary>
-        public ChoiceOutputFormat OutputFormat { get; set; } = ChoiceOutputFormat.Value;
-
-        /// <summary>
-        /// ChoiceOptions controls display options for customizing language
-        /// </summary>
-        public ChoiceFactoryOptions ChoiceOptions { get; set; } = null;
-
-        /// <summary>
-        /// Customize how to use the choices to recognize the response from the user
-        /// </summary>
-        public FindChoicesOptions RecognizerOptions { get; set; } = null;
-
         public ChoiceInput([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
             this.RegisterSourceLocation(callerPath, callerLine);
+        }
+
+        /// <summary>
+        /// Gets or sets list of choices to present to user.
+        /// </summary>
+        /// <value>
+        /// List of choices to present to user.
+        /// </value>
+        public List<Choice> Choices { get; set; }
+
+        /// <summary>
+        /// Gets or sets expression collection of choices to present o user.
+        /// </summary>
+        /// <value>
+        /// Expression collection of choices to present o user.
+        /// </value>
+        public string ChoicesProperty { get; set; }
+
+        /// <summary>
+        /// Gets or sets listStyle to use to render the choices.
+        /// </summary>
+        /// <value>
+        /// ListStyle to use to render the choices.
+        /// </value>
+        public ListStyle Style { get; set; } = ListStyle.Auto;
+
+        /// <summary>
+        /// Gets or sets defaultLocale.
+        /// </summary>
+        /// <value>
+        /// DefaultLocale.
+        /// </value>
+        public string DefaultLocale { get; set; } = null;
+
+        /// <summary>
+        /// Gets or sets control the format of the response (value or the index of the choice).
+        /// </summary>
+        /// <value>
+        /// Control the format of the response (value or the index of the choice).
+        /// </value>
+        public ChoiceOutputFormat OutputFormat { get; set; } = ChoiceOutputFormat.Value;
+
+        /// <summary>
+        /// Gets or sets choiceOptions controls display options for customizing language.
+        /// </summary>
+        /// <value>
+        /// ChoiceOptions controls display options for customizing language.
+        /// </value>
+        public ChoiceFactoryOptions ChoiceOptions { get; set; } = null;
+
+        /// <summary>
+        /// Gets or sets customize how to use the choices to recognize the response from the user.
+        /// </summary>
+        /// <value>
+        /// Customize how to use the choices to recognize the response from the user.
+        /// </value>
+        public FindChoicesOptions RecognizerOptions { get; set; } = null;
+
+        public override Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            FoundChoice foundChoice = result as FoundChoice;
+            if (foundChoice != null)
+            {
+                // return value insted of FoundChoice object
+                return base.ResumeDialogAsync(dc, reason, foundChoice.Value, cancellationToken);
+            }
+
+            return base.ResumeDialogAsync(dc, reason, result, cancellationToken);
         }
 
         protected override object OnInitializeOptions(DialogContext dc, object options)
@@ -106,18 +132,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             }
 
             return base.OnInitializeOptions(dc, op);
-        }
-
-        public override Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            FoundChoice foundChoice = result as FoundChoice;
-            if (foundChoice != null)
-            {
-                // return value insted of FoundChoice object
-                return base.ResumeDialogAsync(dc, reason, foundChoice.Value, cancellationToken);
-            }
-
-            return base.ResumeDialogAsync(dc, reason, result, cancellationToken);
         }
 
         protected override string OnComputeId()
@@ -201,7 +215,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 }
                 catch
                 {
-
                 }
 
                 if (choices == null || choices.Count == 0)
@@ -213,12 +226,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                     }
                     catch
                     {
-
                     }
                 }
             }
 
             return choices;
         }
+    }
+
+    public class ChoiceInputOptions : InputDialogOptions
+    {
+        public List<Choice> Choices { get; set; }
     }
 }

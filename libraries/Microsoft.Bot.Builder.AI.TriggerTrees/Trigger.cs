@@ -20,6 +20,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
         private List<Clause> _clauses;
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="Trigger"/> class.
         /// Construct a trigger expression.
         /// </summary>
         /// <param name="tree">Trigger tree that contains this trigger.</param>
@@ -49,13 +50,21 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
         }
 
         /// <summary>
-        /// Action to take when trigger is true.
+        /// Gets action to take when trigger is true.
         /// </summary>
+        /// <value>
+        /// Action to take when trigger is true.
+        /// </value>
         public object Action { get; }
 
         /// <summary>
-        /// Expressions are converted into Disjunctive Normal Form where ! is pushed to the leaves and there is an implicit || between clauses and && within a clause. 
+        /// Gets list of expressions converted into Disjunctive Normal Form where ! is pushed to the leaves and 
+        /// there is an implicit || between clauses and &amp;&amp; within a clause. 
         /// </summary>
+        /// <value>
+        /// List of expressions converted into Disjunctive Normal Form where ! is pushed to the leaves and 
+        /// there is an implicit || between clauses and &amp;&amp; within a clause. 
+        /// </value>
         public IReadOnlyList<Clause> Clauses => _clauses;
 
         public override string ToString()
@@ -100,6 +109,34 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
             }
 
             return result;
+        }
+
+        protected void ToString(StringBuilder builder, int indent = 0)
+        {
+            builder.Append(' ', indent);
+            if (_clauses.Any())
+            {
+                var first = true;
+                foreach (var clause in _clauses)
+                {
+                    if (first)
+                    {
+                        first = false;
+                    }
+                    else
+                    {
+                        builder.AppendLine();
+                        builder.Append(' ', indent);
+                        builder.Append("|| ");
+                    }
+
+                    builder.Append(clause.ToString());
+                }
+            }
+            else
+            {
+                builder.Append("<Empty>");
+            }
         }
 
         private RelationshipType Relationship(Trigger trigger, Trigger other, Dictionary<string, IPredicateComparer> comparers)
@@ -150,34 +187,6 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
             return soFar;
         }
 
-        protected void ToString(StringBuilder builder, int indent = 0)
-        {
-            builder.Append(' ', indent);
-            if (_clauses.Any())
-            {
-                var first = true;
-                foreach (var clause in _clauses)
-                {
-                    if (first)
-                    {
-                        first = false;
-                    }
-                    else
-                    {
-                        builder.AppendLine();
-                        builder.Append(' ', indent);
-                        builder.Append("|| ");
-                    }
-
-                    builder.Append(clause.ToString());
-                }
-            }
-            else
-            {
-                builder.Append("<Empty>");
-            }
-        }
-
         private IEnumerable<Clause> GenerateClauses(Expression expression)
         {
             switch (expression.Type)
@@ -196,6 +205,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                                 soFar.Clear();
                                 break;
                             }
+
                             if (first)
                             {
                                 soFar.AddRange(clauses);
@@ -214,14 +224,17 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                                         newClauses.Add(new Clause(children));
                                     }
                                 }
+
                                 soFar = newClauses;
                             }
                         }
+
                         foreach (var clause in soFar)
                         {
                             yield return clause;
                         }
                     }
+
                     break;
                 case ExpressionType.Or:
                     {
@@ -233,6 +246,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                             }
                         }
                     }
+
                     break;
                 case TriggerTree.Optional:
                     {
@@ -242,6 +256,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                             yield return clause;
                         }
                     }
+
                     break;
                 default:
                     // True becomes empty expression and false drops clause
@@ -256,6 +271,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                     {
                         yield return new Clause(expression);
                     }
+
                     break;
             }
         }
@@ -281,11 +297,13 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                             break;
                         }
                     }
+
                     if (!found)
                     {
                         children.Add(pred);
                     }
                 }
+
                 _clauses[i] = new Clause(children);
             }
         }
@@ -349,6 +367,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                     {
                         newClauses.AddRange(ExpandQuantifier(quantifier, clause));
                     }
+
                     _clauses = newClauses;
                 }
             }
@@ -375,11 +394,13 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                     children.Add(SubstituteVariable(variable, binding, child, out var childChanged));
                     changed = changed || childChanged;
                 }
+
                 if (changed)
                 {
                     newExpr = new Expression(expression.Evaluator, children.ToArray());
                 }
             }
+
             return newExpr;
         }
 
@@ -416,6 +437,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                         }
                     }
                 }
+
                 yield return new Clause(children);
             }
             else
@@ -433,10 +455,12 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                             changed = changed || predicateChanged;
                             children.Add(newPredicate);
                         }
+
                         if (changed)
                         {
                             newClause.AnyBindings.Add(quantifier.Variable, binding);
                         }
+
                         newClause.Children = children.ToArray();
                         yield return newClause;
                         if (!changed)
@@ -458,6 +482,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                             break;
                         }
                     }
+
                     if (!changed)
                     {
                         yield return clause;
@@ -488,6 +513,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                         }
                     }
                 }
+
                 clause.Children = predicates.ToArray();
             }
         }

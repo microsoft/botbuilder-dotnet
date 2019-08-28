@@ -1,20 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
-    class DialogManagerAdapter : BotAdapter
+    public class DialogManagerAdapter : BotAdapter
     {
+        public readonly List<Activity> Activities = new List<Activity>();
+
         public DialogManagerAdapter()
         {
         }
-
-        public readonly List<Activity> Activities = new List<Activity>();
 
         public override Task<ResourceResponse[]> SendActivitiesAsync(ITurnContext turnContext, Activity[] activities, CancellationToken cancellationToken)
         {

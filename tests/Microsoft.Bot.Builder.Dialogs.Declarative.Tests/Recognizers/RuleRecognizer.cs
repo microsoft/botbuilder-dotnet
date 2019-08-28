@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -8,13 +7,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests.Recognizers
 {
     public class RuleRecognizer : IRecognizer
     {
-        public Dictionary<string, string> Rules { get; set; } = new Dictionary<string, string>();
+        private const string DefaultIntent = "None";
 
-        private const string defaultIntent = "None";
+        public Dictionary<string, string> Rules { get; set; } = new Dictionary<string, string>();
 
         public Task<RecognizerResult> RecognizeAsync(ITurnContext turnContext, CancellationToken cancellationToken)
         {
-            string intent = defaultIntent;
+            string intent = DefaultIntent;
 
             if (Rules.TryGetValue(turnContext.Activity.Text, out string value))
             {
@@ -27,12 +26,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests.Recognizers
                 AlteredText = turnContext.Activity.Text,
                 Intents = new Dictionary<string, IntentScore>()
                 {
-                    { intent, new IntentScore() { Score = 1.0} }
+                    { intent, new IntentScore() { Score = 1.0 } }
                 }
             });
         }
 
-        public Task<T> RecognizeAsync<T>(ITurnContext turnContext, CancellationToken cancellationToken) where T : IRecognizerConvert, new()
+        public Task<T> RecognizeAsync<T>(ITurnContext turnContext, CancellationToken cancellationToken) 
+            where T : IRecognizerConvert, new()
         {
             throw new NotImplementedException();
         }

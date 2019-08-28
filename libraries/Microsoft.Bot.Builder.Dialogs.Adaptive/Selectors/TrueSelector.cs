@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Expressions.Parser;
@@ -44,6 +42,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
                     candidates.Add(i);
                 }
             }
+
             return Task.FromResult((IReadOnlyList<int>)candidates);
         }
     }

@@ -5,100 +5,73 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Expressions;
 using Microsoft.Bot.Builder.Expressions.Parser;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
-    public class Case
-    {
-        public Case(string value = null, IEnumerable<IDialog> actions = null)
-        {
-            this.Value = value;
-            this.Actions = actions?.ToList() ?? this.Actions;
-        }
-
-        /// <summary>
-        /// Value expression to be compared against condition.
-        /// </summary>
-        [JsonProperty("value")]
-        public string Value { get; set; }
-
-        /// <summary>
-        /// Set of actions to be executed given that the condition of the switch matches the value of this case.
-        /// </summary>
-        [JsonProperty("actions")]
-        public List<IDialog> Actions { get; set; } = new List<IDialog>();
-
-        /// <summary>
-        /// Creates an expression that returns the value in its primitive type. Still
-        /// assumes that switch case values are compile time constants and not expressions
-        /// that can be evaluated against state.
-        /// </summary>
-        /// <returns>An expression that reflects the constant case value</returns>
-        public Expression CreateValueExpression()
-        {
-            Expression expression = null;
-
-            if (Int64.TryParse(Value, out Int64 i))
-            {
-                expression = Expression.ConstantExpression(i);
-            }
-            else if (float.TryParse(Value, out float f))
-            {
-                expression = Expression.ConstantExpression(f);
-            }
-            else if (bool.TryParse(Value, out bool b))
-            {
-                expression = Expression.ConstantExpression(b);
-            }
-            else 
-            {
-                expression = Expression.ConstantExpression(Value);
-            }
-
-            return expression;
-        }
-    }
-
     /// <summary>
-    /// Conditional branch with multiple cases
+    /// Conditional branch with multiple cases.
     /// </summary>
     public class SwitchCondition : DialogAction, IDialogDependencies
     {
+        /// <summary>
+        /// Cases.
+        /// </summary>
+        public List<Case> Cases = new List<Case>();
+
         private Dictionary<string, Expression> caseExpressions = null;
 
         private Expression condition;
 
+        [JsonConstructor]
+        public SwitchCondition([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+            : base()
+        {
+            this.RegisterSourceLocation(callerPath, callerLine);
+        }
+
         /// <summary>
-        /// Condition expression against memory Example: "user.age > 18"
+        /// Gets or sets condition expression against memory Example: "user.age > 18".
         /// </summary>
+        /// <value>
+        /// Condition expression against memory Example: "user.age > 18".
+        /// </value>
         [JsonProperty("condition")]
         public string Condition
         {
             get { return condition?.ToString(); }
-            set {condition = (value != null) ? new ExpressionEngine().Parse(value) : null; }
+            set { condition = (value != null) ? new ExpressionEngine().Parse(value) : null; }
         }
 
         /// <summary>
-        /// Cases
+        /// Gets or sets default case.
         /// </summary>
-        public List<Case> Cases = new List<Case>();
-
-        /// <summary>
-        /// Default case
-        /// </summary>
+        /// <value>
+        /// Default case.
+        /// </value>
         public List<IDialog> Default { get; set; } = new List<IDialog>();
 
-        [JsonConstructor]
-        public SwitchCondition([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0) : base()
+        public override List<IDialog> ListDependencies()
         {
-            this.RegisterSourceLocation(callerPath, callerLine);
+            var dialogs = new List<IDialog>();
+            if (this.Default != null)
+            {
+                dialogs.AddRange(this.Default);
+            }
+
+            if (this.Cases != null)
+            {
+                foreach (var conidtionalCase in this.Cases)
+                {
+                    dialogs.AddRange(conidtionalCase.Actions);
+                }
+            }
+
+            return dialogs;
         }
 
         protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
@@ -132,7 +105,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
                 foreach (var caseCondition in this.Cases)
                 {
-
                     var (value, error) = this.caseExpressions[caseCondition.Value].TryEvaluate(dc.State);
 
                     if (error != null)
@@ -175,24 +147,62 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         {
             return $"Switch({this.Condition})";
         }
+    }
 
-        public override List<IDialog> ListDependencies()
+    public class Case
+    {
+        public Case(string value = null, IEnumerable<IDialog> actions = null)
         {
-            var dialogs = new List<IDialog>();
-            if (this.Default != null)
+            this.Value = value;
+            this.Actions = actions?.ToList() ?? this.Actions;
+        }
+
+        /// <summary>
+        /// Gets or sets value expression to be compared against condition.
+        /// </summary>
+        /// <value>
+        /// Value expression to be compared against condition.
+        /// </value>
+        [JsonProperty("value")]
+        public string Value { get; set; }
+
+        /// <summary>
+        /// Gets or sets set of actions to be executed given that the condition of the switch matches the value of this case.
+        /// </summary>
+        /// <value>
+        /// Set of actions to be executed given that the condition of the switch matches the value of this case.
+        /// </value>
+        [JsonProperty("actions")]
+        public List<IDialog> Actions { get; set; } = new List<IDialog>();
+
+        /// <summary>
+        /// Creates an expression that returns the value in its primitive type. Still
+        /// assumes that switch case values are compile time constants and not expressions
+        /// that can be evaluated against state.
+        /// </summary>
+        /// <returns>An expression that reflects the constant case value.</returns>
+        public Expression CreateValueExpression()
+        {
+            Expression expression = null;
+
+            if (long.TryParse(Value, out long i))
             {
-                dialogs.AddRange(this.Default);
+                expression = Expression.ConstantExpression(i);
+            }
+            else if (float.TryParse(Value, out float f))
+            {
+                expression = Expression.ConstantExpression(f);
+            }
+            else if (bool.TryParse(Value, out bool b))
+            {
+                expression = Expression.ConstantExpression(b);
+            }
+            else 
+            {
+                expression = Expression.ConstantExpression(Value);
             }
 
-            if (this.Cases != null)
-            {
-                foreach (var conidtionalCase in this.Cases)
-                {
-                    dialogs.AddRange(conidtionalCase.Actions);
-                }
-            }
-
-            return dialogs;
+            return expression;
         }
     }
 }

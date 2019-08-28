@@ -1,19 +1,13 @@
-﻿using Jurassic;
-using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Builder.Dialogs.Adaptive;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
-using System.IO;
-using System.Runtime.CompilerServices;
-using System.Text;
+﻿using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Dialogs;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.TestBot.Json
 {
     /// <summary>
-    /// Custom command which takes takes 2 data bound arguments (arg1 and arg2) and multiplies them returning that as a databound result
+    /// Custom command which takes takes 2 data bound arguments (arg1 and arg2) and multiplies them returning that as a databound result.
     /// </summary>
     public class MultiplyAction : DialogAction
     {
@@ -26,22 +20,40 @@ namespace Microsoft.Bot.Builder.TestBot.Json
         }
 
         /// <summary>
-        /// memory path to bind to arg1 (ex: conversation.width)
+        /// Gets or sets memory path to bind to arg1 (ex: conversation.width).
         /// </summary>
+        /// <value>
+        /// memory path to bind to arg1 (ex: conversation.width).
+        /// </value>
         [JsonProperty("arg1")]
-        public string Arg1 { get { return this.InputBindings["arg1"]; } set { this.InputBindings["arg1"] = value; } }
+        public string Arg1
+        {
+            get { return this.InputBindings["arg1"]; } set { this.InputBindings["arg1"] = value; }
+        }
 
         /// <summary>
-        /// memory path to bind to arg2 (ex: conversation.height)
+        /// Gets or sets memory path to bind to arg2 (ex: conversation.height).
         /// </summary>
+        /// <value>
+        /// memory path to bind to arg2 (ex: conversation.height).
+        /// </value>
         [JsonProperty("arg2")]
-        public string Arg2 { get { return this.InputBindings["arg2"]; } set { this.InputBindings["arg2"] = value; } }
+        public string Arg2
+        {
+            get { return this.InputBindings["arg2"]; } set { this.InputBindings["arg2"] = value; }
+        }
 
         /// <summary>
-        /// caller's memory path to store the result of this step in (ex: conversation.area)
+        /// Gets or sets caller's memory path to store the result of this step in (ex: conversation.area).
         /// </summary>
+        /// <value>
+        /// caller's memory path to store the result of this step in (ex: conversation.area).
+        /// </value>
         [JsonProperty("result")]
-        public string Result { get { return this.OutputBinding; } set { this.OutputBinding = value; } }
+        public string Result
+        {
+            get { return this.OutputBinding; } set { this.OutputBinding = value; }
+        }
 
         protected override Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {

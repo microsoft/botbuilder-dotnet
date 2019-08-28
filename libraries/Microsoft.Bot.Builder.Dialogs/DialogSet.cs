@@ -125,7 +125,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// Finds a dialog that was previously added to the set using <see cref="Add(Dialog)"/>.
+        /// Finds a dialog that was previously added to the set using <see cref="Add(IDialog)"/>.
         /// </summary>
         /// <param name="dialogId">ID of the dialog/prompt to look up.</param>
         /// <returns>The dialog if found, otherwise null.</returns>

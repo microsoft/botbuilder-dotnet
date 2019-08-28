@@ -18,13 +18,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// Return an empty engine, you can then use AddFile\AddFiles to add files to it,
         /// or you can just use this empty engine to evaluate inline template.
         /// </summary>
-        /// <param name="expressionEngine">The expression engine this template engine based on</param>
+        /// <param name="expressionEngine">The expression engine this template engine based on.</param>
         public TemplateEngine(ExpressionEngine expressionEngine = null)
         {
             this.expressionEngine = expressionEngine ?? new ExpressionEngine();
         }
 
-        
         /// <summary>
         /// Gets or sets parsed LG templates.
         /// </summary>
@@ -49,8 +48,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 var fullPath = Path.GetFullPath(ImportResolver.NormalizePath(filePath));
                 var rootResource = LGParser.Parse(File.ReadAllText(fullPath), fullPath);
-                var lgResources = rootResource.DiscoverDependencies(importResolver);
-                totalLGResources.AddRange(lgResources);
+                var lgresources = rootResource.DiscoverDependencies(importResolver);
+                totalLGResources.AddRange(lgresources);
             }
 
             // Remove duplicated lg files by id
@@ -74,7 +73,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// Add text as lg file content to template engine. A fullpath id is needed when importResolver is empty, or simply pass in customized importResolver.
         /// </summary>
         /// <param name="content">Text content contains lg templates.</param>
-        /// <param name="id">id is the content identifier. If <see cref="importResolver"/> is null, id should must be a full path string. </param>
+        /// <param name="id">id is the content identifier. If importResolver is null, id must be a full path string. </param>
         /// <param name="importResolver">resolver to resolve LG import id to template text.</param>
         /// <returns>Template engine with the parsed content.</returns>
         public TemplateEngine AddText(string content, string id = "", ImportResolverDelegate importResolver = null)
@@ -82,27 +81,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             CheckImportResolver(id, importResolver);
 
             var rootResource = LGParser.Parse(content, id);
-            var lgResources = rootResource.DiscoverDependencies(importResolver);
-            Templates.AddRange(lgResources.SelectMany(x => x.Templates));
+            var lgresources = rootResource.DiscoverDependencies(importResolver);
+            Templates.AddRange(lgresources.SelectMany(x => x.Templates));
             RunStaticCheck(Templates);
 
             return this;
-        }
-
-        /// <summary>
-        /// Check templates/text to match LG format.
-        /// </summary>
-        /// <param name="templates">the templates which should be checked.</param>
-        private void RunStaticCheck(List<LGTemplate> templates = null)
-        {
-            var teamplatesToCheck = templates ?? this.Templates;
-            var diagnostics = new StaticChecker(this.expressionEngine).CheckTemplates(teamplatesToCheck);
-
-            var errors = diagnostics.Where(u => u.Severity == DiagnosticSeverity.Error).ToList();
-            if (errors.Count != 0)
-            {
-                throw new Exception(string.Join("\n", errors));
-            }
         }
 
         /// <summary>
@@ -123,7 +106,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </summary>
         /// <param name="templateName">Template name to be evaluated.</param>
         /// <param name="scope">The state visible in the evaluation.</param>
-        /// <param name="methodBinder">Optional methodBinder to extend or override functions.</param>
         /// <returns>Expand result.</returns>
         public List<string> ExpandTemplate(string templateName, object scope = null)
         {
@@ -142,7 +124,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </summary>
         /// <param name="inlineStr">inline string which will be evaluated.</param>
         /// <param name="scope">scope object or JToken.</param>
-        /// <param name="methodBinder">input method.</param>
         /// <returns>Evaluate result.</returns>
         public string Evaluate(string inlineStr, object scope = null)
         {
@@ -152,12 +133,28 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                    ? "```" + inlineStr + "```" : inlineStr;
             var wrappedStr = $"# {fakeTemplateId} \r\n - {inlineStr}";
 
-            var lgSource = LGParser.Parse(wrappedStr, "inline");
-            var templates = Templates.Concat(lgSource.Templates).ToList();
+            var lgsource = LGParser.Parse(wrappedStr, "inline");
+            var templates = Templates.Concat(lgsource.Templates).ToList();
             RunStaticCheck(templates);
 
             var evaluator = new Evaluator(templates, this.expressionEngine);
             return evaluator.EvaluateTemplate(fakeTemplateId, scope);
+        }
+
+        /// <summary>
+        /// Check templates/text to match LG format.
+        /// </summary>
+        /// <param name="templates">the templates which should be checked.</param>
+        private void RunStaticCheck(List<LGTemplate> templates = null)
+        {
+            var teamplatesToCheck = templates ?? this.Templates;
+            var diagnostics = new StaticChecker(this.expressionEngine).CheckTemplates(teamplatesToCheck);
+
+            var errors = diagnostics.Where(u => u.Severity == DiagnosticSeverity.Error).ToList();
+            if (errors.Count != 0)
+            {
+                throw new Exception(string.Join("\n", errors));
+            }
         }
 
         private void CheckImportResolver(string id, ImportResolverDelegate importResolver)

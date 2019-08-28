@@ -20,9 +20,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
     [TestClass]
     public class JsonLoadTests
     {
+        private static ResourceExplorer resourceExplorer;
+
         private readonly string samplesDirectory = PathUtils.NormalizePath(@"..\..\..\..\..\tests\Microsoft.Bot.Builder.TestBot.Json\Samples\");
 
-        private static ResourceExplorer resourceExplorer;
+        public TestContext TestContext { get; set; }
 
         [ClassInitialize]
         public static void ClassInitialize(TestContext context)
@@ -39,8 +41,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         {
             resourceExplorer.Dispose();
         }
-
-        public TestContext TestContext { get; set; }
 
         [TestMethod]
         public async Task JsonDialogLoad_Actions()
@@ -184,7 +184,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         public async Task JsonDialogLoad_BeginDialog()
         {
             await BuildTestFlow("BeginDialog.main.dialog")
-            .Send(new Activity(ActivityTypes.ConversationUpdate,
+            .Send(new Activity(
+                ActivityTypes.ConversationUpdate,
                 membersAdded: new List<ChannelAccount>() { new ChannelAccount("bot", "Bot") }))
             .SendConversationUpdate()
                 .AssertReply("Hello, I'm Zoidberg. What is your name?")
@@ -309,7 +310,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
 
             var resource = resourceExplorer.GetResource(resourceName);
             if (resource == null)
+            {
                 throw new Exception($"Resource[{resourceName}] not found");
+            }
+
             var dialog = DeclarativeTypeLoader.Load<IDialog>(resource, resourceExplorer, DebugSupport.SourceRegistry);
             DialogManager dm = new DialogManager(dialog);
 

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -7,7 +6,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Logging.Debug;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -16,16 +14,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 {
     public abstract class DebugTransport
     {
+        protected readonly ILogger logger;
+
+        private const string Prefix = @"Content-Length: ";
+        private static readonly Encoding Encoding = Encoding.ASCII;
+
         private readonly ReaderWriterLock connected = new ReaderWriterLock(writer: true);
         private readonly SemaphoreSlim readable = new SemaphoreSlim(1, 1);
         private readonly SemaphoreSlim writable = new SemaphoreSlim(1, 1);
         private StreamReader reader;
         private StreamWriter writer;
-
-        private const string Prefix = @"Content-Length: ";
-        private static readonly Encoding Encoding = Encoding.ASCII;
-
-        protected readonly ILogger logger;
 
         protected DebugTransport(ILogger logger)
         {
@@ -38,7 +36,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             listener.Start();
             using (cancellationToken.Register(listener.Stop))
             {
-                var local = (IPEndPoint) listener.LocalEndpoint;
+                var local = (IPEndPoint)listener.LocalEndpoint;
+
                 // output is parsed on launch by "vscode-dialog-debugger\src\ts\extension.ts"
                 Console.WriteLine($"{nameof(DebugTransport)}\t{local.Address}\t{local.Port}");
 

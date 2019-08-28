@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System.Configuration;
-using System.Linq;
 using Microsoft.Bot.Connector.Authentication;
 
 namespace Microsoft.Bot.Builder.BotFramework

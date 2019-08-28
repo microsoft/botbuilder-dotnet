@@ -1,14 +1,12 @@
-﻿using Jurassic;
-using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Builder.Dialogs.Adaptive;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
-using System.IO;
+﻿using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Jurassic;
+using Microsoft.Bot.Builder.Dialogs;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.TestBot.Json
 {
@@ -17,8 +15,18 @@ namespace Microsoft.Bot.Builder.TestBot.Json
         private ScriptEngine scriptEngine;
         private string script;
 
+        [JsonConstructor]
+        public JavascriptAction([CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
+            : base()
+        {
+            this.scriptEngine = new ScriptEngine();
+
+            // enable instances of this command as debug break point
+            this.RegisterSourceLocation(sourceFilePath, sourceLineNumber);
+        }
+
         /// <summary>
-        /// Javascript bound to memory run function(user, conversation, dialog, turn)
+        /// Gets or sets javascript bound to memory run function(user, conversation, dialog, turn).
         /// </summary>
         /// <example>
         /// example inline script:
@@ -30,18 +38,14 @@ namespace Microsoft.Bot.Builder.TestBot.Json
         ///    if (user.age)
         ///        return user.age* 7;
         ///    return 0;
-        /// }
+        /// }.
         /// </example>
-        public string Script { get { return script; } set { LoadScript(value); } }
-
-        [JsonConstructor]
-        public JavascriptAction([CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
-            : base()
+        /// <value>
+        /// Javascript bound to memory run function(user, conversation, dialog, turn).
+        /// </value>
+        public string Script
         {
-            this.scriptEngine = new ScriptEngine();
-
-            // enable instances of this command as debug break point
-            this.RegisterSourceLocation(sourceFilePath, sourceLineNumber);
+            get { return script; } set { LoadScript(value); }
         }
 
         protected override Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
@@ -58,7 +62,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             string payloadJson = JsonConvert.SerializeObject(payload);
             var responseJson = scriptEngine.CallGlobalFunction<string>("callAction", payloadJson);
 
-            if (!String.IsNullOrEmpty(responseJson))
+            if (!string.IsNullOrEmpty(responseJson))
             {
                 dynamic response = JsonConvert.DeserializeObject(responseJson);
                 payload.state.User = response.state.user;
@@ -67,6 +71,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                 payload.state.Turn = response.state.turn;
                 return dc.EndDialogAsync((object)response.result, cancellationToken: cancellationToken);
             }
+
             return dc.EndDialogAsync(cancellationToken: cancellationToken);
         }
 
@@ -103,7 +108,5 @@ namespace Microsoft.Bot.Builder.TestBot.Json
 
             scriptEngine.Evaluate(sb.ToString());
         }
-
-
     }
 }

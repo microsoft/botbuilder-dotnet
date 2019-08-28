@@ -5,18 +5,18 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Cache;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Schema;
 using Microsoft.Bot.Builder.TraceExtensions;
+using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
-using System.Net.Cache;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
@@ -25,45 +25,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// </summary>
     public class HttpRequest : DialogAction
     {
-        private static readonly HttpClient client = new HttpClient();
+        private static readonly HttpClient Client = new HttpClient();
 
-        /// <summary>
-        /// Result data of the the http operation.
-        /// </summary>
-        public class Result
+        public HttpRequest(HttpMethod method, string url, string inputProperty, Dictionary<string, string> headers = null, JObject body = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
-            public Result()
-            {
-            }
+            this.RegisterSourceLocation(callerPath, callerLine);
+            this.Method = method;
+            this.Url = url ?? throw new ArgumentNullException(nameof(url));
+            this.Headers = headers;
+            this.Body = body;
+        }
 
-            public Result(HttpHeaders headers)
-            {
-                this.Headers = headers.ToDictionary(t => t.Key, t => t.Value.First());
-            }
-
-            /// <summary>
-            /// Gets or sets the status code from the response to the http operation.
-            /// </summary>
-            [JsonProperty("statusCode")]
-            public int StatusCode { get; set; }
-
-            /// <summary>
-            /// Gets or sets the reason phrase from the response to the http operation.
-            /// </summary>
-            [JsonProperty("reasonPhrase")]
-            public string ReasonPhrase { get; set; }
-
-            /// <summary>
-            /// Gets the headers from the response to the http operation.
-            /// </summary>
-            [JsonProperty("headers")]
-            public Dictionary<string, string> Headers { get; } = new Dictionary<string, string>();
-
-            /// <summary>
-            /// Gets or sets the content body from the response to the http operation.
-            /// </summary>
-            [JsonProperty("content")]
-            public object Content { get; set; }
+        [JsonConstructor]
+        public HttpRequest([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+            : base()
+        {
+            this.RegisterSourceLocation(callerPath, callerLine);
         }
 
         public enum ResponseTypes
@@ -89,25 +66,36 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             Activities
         }
 
+        /// <summary>
+        /// Http methods.
+        /// </summary>
         public enum HttpMethod
         {
+            /// <summary>
+            /// Http GET.
+            /// </summary>
+            /// 
             GET,
+
+            /// <summary>
+            /// Http POST.
+            /// </summary>
             POST,
+
+            /// <summary>
+            /// Http PATCH.
+            /// </summary>
             PATCH,
+
+            /// <summary>
+            /// Http PUT.
+            /// </summary>
             PUT,
+
+            /// <summary>
+            /// Http DELETE.
+            /// </summary>
             DELETE
-        }
-
-        [JsonConstructor]
-        public HttpRequest([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
-            : base()
-        {
-            this.RegisterSourceLocation(callerPath, callerLine);
-        }
-
-        protected override string OnComputeId()
-        {
-            return $"HttpRequest[{Method} {Url}]";
         }
 
         [JsonConverter(typeof(StringEnumConverter))]
@@ -127,13 +115,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         public ResponseTypes ResponseType { get; set; } = ResponseTypes.Json;
 
         /// <summary>
-        /// Gets or sets The property to store the result of the HTTP call in. 
+        /// Gets or sets the property to store the HTTP response in. 
         /// </summary>
         /// <remarks>
         /// The result will have 4 properties from the http response: 
         /// [statusCode|reasonPhrase|content|headers]
         /// If the content is json it will be an deserialized object, otherwise it will be a string.
         /// </remarks>
+        /// <value>
+        /// Property from the HTTP response.
+        /// </value>
         public string Property
         {
             get
@@ -147,57 +138,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             }
         }
 
-        public HttpRequest(HttpMethod method, string url, string inputProperty, Dictionary<string, string> headers = null, JObject body = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        protected override string OnComputeId()
         {
-            this.RegisterSourceLocation(callerPath, callerLine);
-            this.Method = method;
-            this.Url = url ?? throw new ArgumentNullException(nameof(url));
-            this.Headers = headers;
-            this.Body = body;
-        }
-
-        private async Task ReplaceJTokenRecursively(DialogContext dc, JToken token)
-        {
-            switch (token.Type)
-            {
-                case JTokenType.Object:
-                    foreach (var child in token.Children<JProperty>())
-                    {
-                        await ReplaceJTokenRecursively(dc, child);
-                    }
-
-                    break;
-
-                case JTokenType.Array:
-                    foreach (var child in token.Children())
-                    {
-                        await ReplaceJTokenRecursively(dc, child);
-                    }
-
-                    break;
-
-                case JTokenType.Property:
-                    await ReplaceJTokenRecursively(dc, ((JProperty)token).Value);
-                    break;
-
-                default:
-                    if (token.Type == JTokenType.String)
-                    {
-                        var temp = await new TextTemplate(token.ToString()).BindToData(dc.Context, dc.State);
-                        if ((temp.StartsWith("{") && temp.EndsWith("}")) || (temp.StartsWith("[") && temp.EndsWith("]")))
-                        {
-                            // try parse with json                        
-                            var jtoken = JToken.Parse(temp);
-                            token.Replace(jtoken);
-                        }
-                        else
-                        {
-                            token.Replace(temp);
-                        }
-                    }
-
-                    break;
-            }
+            return $"HttpRequest[{Method} {Url}]";
         }
 
         protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
@@ -208,7 +151,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             }
 
             // Single command running with a copy of the original data
-            client.DefaultRequestHeaders.Clear();
+            Client.DefaultRequestHeaders.Clear();
 
             JToken instanceBody = null;
             if (this.Body != null)
@@ -232,7 +175,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             {
                 foreach (var unit in instanceHeaders)
                 {
-                    client.DefaultRequestHeaders.Add(
+                    Client.DefaultRequestHeaders.Add(
                         await new TextTemplate(unit.Key).BindToData(dc.Context, dc.State),
                         await new TextTemplate(unit.Value).BindToData(dc.Context, dc.State));
                 }
@@ -251,14 +194,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 case HttpMethod.POST:
                     if (instanceBody == null)
                     {
-                        response = await client.PostAsync(instanceUrl, null);
+                        response = await Client.PostAsync(instanceUrl, null);
                     }
                     else
                     {
                         var postContent = new StringContent(instanceBody.ToString(), Encoding.UTF8, "application/json");
                         traceInfo.request.content = instanceBody.ToString();
                         traceInfo.request.headers = JObject.FromObject(postContent?.Headers.ToDictionary(t => t.Key, t => (object)t.Value?.FirstOrDefault()));
-                        response = await client.PostAsync(instanceUrl, postContent);
+                        response = await Client.PostAsync(instanceUrl, postContent);
                     }
 
                     break;
@@ -267,7 +210,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                     if (instanceBody == null)
                     {
                         var request = new HttpRequestMessage(new System.Net.Http.HttpMethod("PATCH"), instanceUrl);
-                        response = await client.SendAsync(request);
+                        response = await Client.SendAsync(request);
                     }
                     else
                     {
@@ -275,7 +218,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                         request.Content = new StringContent(instanceBody.ToString(), Encoding.UTF8, "application/json");
                         traceInfo.request.content = instanceBody.ToString();
                         traceInfo.request.headers = JObject.FromObject(request.Content.Headers.ToDictionary(t => t.Key, t => (object)t.Value?.FirstOrDefault()));
-                        response = await client.SendAsync(request);
+                        response = await Client.SendAsync(request);
                     }
 
                     break;
@@ -283,24 +226,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 case HttpMethod.PUT:
                     if (instanceBody == null)
                     {
-                        response = await client.PutAsync(instanceUrl, null);
+                        response = await Client.PutAsync(instanceUrl, null);
                     }
                     else
                     {
                         var putContent = new StringContent(instanceBody.ToString(), Encoding.UTF8, "application/json");
                         traceInfo.request.content = instanceBody.ToString();
                         traceInfo.request.headers = JObject.FromObject(putContent.Headers.ToDictionary(t => t.Key, t => (object)t.Value?.FirstOrDefault()));
-                        response = await client.PutAsync(instanceUrl, putContent);
+                        response = await Client.PutAsync(instanceUrl, putContent);
                     }
 
                     break;
 
                 case HttpMethod.DELETE:
-                    response = await client.DeleteAsync(instanceUrl);
+                    response = await Client.DeleteAsync(instanceUrl);
                     break;
 
                 case HttpMethod.GET:
-                    response = await client.GetAsync(instanceUrl);
+                    response = await Client.GetAsync(instanceUrl);
                     break;
             }
 
@@ -352,6 +295,93 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             // return the actionResult as the result of this operation
             return await dc.EndDialogAsync(result: requestResult, cancellationToken: cancellationToken);
+        }
+
+        private async Task ReplaceJTokenRecursively(DialogContext dc, JToken token)
+        {
+            switch (token.Type)
+            {
+                case JTokenType.Object:
+                    foreach (var child in token.Children<JProperty>())
+                    {
+                        await ReplaceJTokenRecursively(dc, child);
+                    }
+
+                    break;
+
+                case JTokenType.Array:
+                    foreach (var child in token.Children())
+                    {
+                        await ReplaceJTokenRecursively(dc, child);
+                    }
+
+                    break;
+
+                case JTokenType.Property:
+                    await ReplaceJTokenRecursively(dc, ((JProperty)token).Value);
+                    break;
+
+                default:
+                    if (token.Type == JTokenType.String)
+                    {
+                        var temp = await new TextTemplate(token.ToString()).BindToData(dc.Context, dc.State);
+                        if ((temp.StartsWith("{") && temp.EndsWith("}")) || (temp.StartsWith("[") && temp.EndsWith("]")))
+                        {
+                            // try parse with json                        
+                            var jtoken = JToken.Parse(temp);
+                            token.Replace(jtoken);
+                        }
+                        else
+                        {
+                            token.Replace(temp);
+                        }
+                    }
+
+                    break;
+            }
+        }
+ 
+        /// <summary>
+        /// Result data of the the http operation.
+        /// </summary>
+        public class Result
+        {
+            public Result()
+            {
+            }
+
+            public Result(HttpHeaders headers)
+            {
+                this.Headers = headers.ToDictionary(t => t.Key, t => t.Value.First());
+            }
+
+            /// <summary>
+            /// Gets or sets the status code from the response to the http operation.
+            /// </summary>
+            /// <value>Response status code.</value>
+            [JsonProperty("statusCode")]
+            public int StatusCode { get; set; }
+
+            /// <summary>
+            /// Gets or sets the reason phrase from the response to the http operation.
+            /// </summary>
+            /// <value>Response reason phrase.</value>
+            [JsonProperty("reasonPhrase")]
+            public string ReasonPhrase { get; set; }
+
+            /// <summary>
+            /// Gets the headers from the response to the http operation.
+            /// </summary>
+            /// <value>Response headers.</value>
+            [JsonProperty("headers")]
+            public Dictionary<string, string> Headers { get; } = new Dictionary<string, string>();
+
+            /// <summary>
+            /// Gets or sets the content body from the response to the http operation.
+            /// </summary>
+            /// <value>Response content body.</value>
+            [JsonProperty("content")]
+            public object Content { get; set; }
         }
     }
 }
