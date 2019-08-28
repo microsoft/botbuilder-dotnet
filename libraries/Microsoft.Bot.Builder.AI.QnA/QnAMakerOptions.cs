@@ -45,6 +45,14 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// </value>
         public int Top { get; set; }
 
+        /// <summary>
+        /// Gets or sets context of the previous turn.
+        /// </summary>
+        /// <value>
+        /// The context of previous turn.
+        /// </value>
+        public QnARequestContext Context { get; set; }
+
         public Metadata[] StrictFilters { get; set; }
 
         public Metadata[] MetadataBoost { get; set; }
