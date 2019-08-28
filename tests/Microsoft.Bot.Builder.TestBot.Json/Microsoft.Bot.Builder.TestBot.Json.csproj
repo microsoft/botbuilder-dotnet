@@ -9,6 +9,7 @@
     <Content Include="**/*.dialog" />
     <Content Include="**/*.lg" />
     <Content Include="**/*.lu" />
+    <Content Include="**/*.schema" />
   </ItemGroup>
 
   <ItemGroup>
