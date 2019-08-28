@@ -24,13 +24,13 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         [Fact]
         public void PayloadToActivity_Should_Return_Activity()
         {
-            var seralizedPayload =
-                "{\"id\":\"id\",\"name\":\"name\",\"resource\":\"messages\",\"event\":\"created\",\"filter\":null,\"orgId\":\"orgId\",\"createdBy\":\"creator_id\",\"appId\":\"app_id\",\"ownedBy\":\"creator\",\"status\":\"active\",\"actorId\":\"actor_id\",\"targetUrl\":\"https://contoso.com/api/messages\",\"created\":\"2019-01-01T00:00:00.096Z\",\"data\":{\"id\":\"id\",\"roomId\":\"room_id\",\"roomType\":\"direct\",\"personId\":\"person_id\",\"personEmail\":\"person@email.com\",\"created\":\"2019-01-01T00:00:00.534Z\"}}";
-            var payload = JsonConvert.DeserializeObject<WebhookEventData>(seralizedPayload);
-            var serializedPerson = "{\"id\":\"person_id\"}";
-            WebexHelper.Identity = JsonConvert.DeserializeObject<Person>(serializedPerson);
+            var payload = JsonConvert.DeserializeObject<WebhookEventData>(File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\Payload.json"));
+            WebexHelper.Identity = JsonConvert.DeserializeObject<Person>(File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\Person.json"));
 
-            Assert.NotNull(WebexHelper.PayloadToActivity(payload));
+            var activity = WebexHelper.PayloadToActivity(payload);
+
+            Assert.Equal(payload.Id, activity.Id);
+            Assert.Equal(payload.ActorId, activity.From.Id);
         }
 
         [Fact]
