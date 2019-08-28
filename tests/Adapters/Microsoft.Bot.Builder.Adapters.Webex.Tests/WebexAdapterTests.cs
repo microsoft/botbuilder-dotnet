@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -183,8 +184,44 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
             });
         }
 
-        [Fact(Skip = "Can't mock extension methods")]
-        public async void ProcessAsync_Should_Succeed()
+        [Fact]
+        public async void ProcessAsync_With_EvenType_Created_Should_Succeed()
+        {
+            var options = new Mock<IWebexAdapterOptions>();
+            options.SetupAllProperties();
+            options.Object.AccessToken = "Test";
+            options.Object.PublicAddress = "http://contoso.com/api/messages";
+
+            var message = JsonConvert.DeserializeObject<Message>(File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\Message.json"));
+            var payload = File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\Payload.json");
+            var stream = new MemoryStream(Encoding.UTF8.GetBytes(payload.ToString()));
+            var call = false;
+
+            WebexHelper.Identity = JsonConvert.DeserializeObject<Person>(File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\Person.json"));
+
+            var webexApi = new Mock<IWebexClient>();
+            webexApi.SetupAllProperties();
+            webexApi.Setup(x => x.GetMessageAsync(It.IsAny<string>(), default)).Returns(Task.FromResult(message));
+
+            var webexAdapter = new WebexAdapter(options.Object, webexApi.Object);
+
+            var httpRequest = new Mock<HttpRequest>();
+            httpRequest.SetupGet(req => req.Body).Returns(stream);
+
+            var httpResponse = new Mock<HttpResponse>();
+            var bot = new Mock<IBot>();
+            bot.Setup(x => x.OnTurnAsync(It.IsAny<TurnContext>(), It.IsAny<CancellationToken>())).Callback(() =>
+            {
+                call = true;
+            });
+
+            await webexAdapter.ProcessAsync(httpRequest.Object, httpResponse.Object, bot.Object, default);
+
+            Assert.True(call);
+        }
+
+        [Fact]
+        public async void ProcessAsync_With_EvenType_Updated_Should_Succeed()
         {
             var options = new Mock<IWebexAdapterOptions>();
             options.SetupAllProperties();
@@ -192,14 +229,25 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
             options.Object.PublicAddress = "http://contoso.com/api/messages";
 
             var webexAdapter = new WebexAdapter(options.Object, new Mock<IWebexClient>().Object);
+
+            WebexHelper.Identity = JsonConvert.DeserializeObject<Person>(File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\Person.json"));
+            var payload = File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\Payload2.json");
+            var stream = new MemoryStream(Encoding.UTF8.GetBytes(payload.ToString()));
+            var call = false;
+
             var httpRequest = new Mock<HttpRequest>();
+            httpRequest.SetupGet(req => req.Body).Returns(stream);
+
             var httpResponse = new Mock<HttpResponse>();
             var bot = new Mock<IBot>();
-            httpResponse
-                .Setup(e => e.WriteAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .Returns(Task.CompletedTask);
+            bot.Setup(x => x.OnTurnAsync(It.IsAny<TurnContext>(), It.IsAny<CancellationToken>())).Callback(() =>
+            {
+                call = true;
+            });
 
-            await webexAdapter.ProcessAsync(httpRequest.Object, httpResponse.Object, bot.Object, default(CancellationToken));
+            await webexAdapter.ProcessAsync(httpRequest.Object, httpResponse.Object, bot.Object, default);
+
+            Assert.True(call);
         }
 
         [Fact]

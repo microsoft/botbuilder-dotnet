@@ -237,11 +237,9 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                 throw new ArgumentNullException(nameof(bot));
             }
 
-            response.StatusCode = StatusCodes.Status200OK;
-            await response.WriteAsync(string.Empty, cancellationToken).ConfigureAwait(false);
-
             WebhookEventData payload;
             string json = null;
+
             using (var bodyStream = new StreamReader(request.Body))
             {
                 json = bodyStream.ReadToEnd();
