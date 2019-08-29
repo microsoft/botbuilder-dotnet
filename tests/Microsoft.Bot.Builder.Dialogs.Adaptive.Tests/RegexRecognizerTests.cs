@@ -7,6 +7,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
+using Microsoft.Bot.Builder.Dialogs.Composition;
+using Microsoft.Bot.Builder.Dialogs.Composition.Recognizers;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -23,10 +25,34 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var recognizer = new RegexRecognizer()
             {
                 Intents = new Dictionary<string, string>()
-                 {
-                     { "codeIntent", "(?<code>[a-z][0-9])" },
-                     { "colorIntent", "(?<color>(red|orange|yellow|green|blue|indigo|violet))" }
-                 }
+                {
+                     { "codeIntent",  "(?<code>[a-z][0-9])" },
+                     { "colorIntent", "(?i)(color|colour)" }
+                },
+                Entities = new EntityRecognizerSet()
+                {
+                    Recognizers = new List<IEntityRecognizer>()
+                    {
+                        new AgeEntityRecognizer(),
+                        new ChoiceEntityRecognizer(),
+                        new CurrencyEntityRecognizer(),
+                        new DateTimeEntityRecognizer(),
+                        new DimensionEntityRecognizer(),
+                        new EmailEntityRecognizer(),
+                        new GuidEntityRecognizer(),
+                        new HashtagEntityRecognizer(),
+                        new IpEntityRecognizer(),
+                        new MentionEntityRecognizer(),
+                        new NumberEntityRecognizer(),
+                        new NumberRangeEntityRecognizer(),
+                        new OrdinalEntityRecognizer(),
+                        new PercentageEntityRecognizer(),
+                        new PhoneNumberEntityRecognizer(),
+                        new TemperatureEntityRecognizer(),
+                        new UrlEntityRecognizer(),
+                        new RegexEntityRecognizer() { Name = "color", Pattern = "(?i)(red|green|blue|purble|orange|violet|white|black)" },
+                    }
+                }
             };
             var tc = CreateContext("intent a1 b2");
 
@@ -44,7 +70,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             Assert.AreEqual("a1", (string)entities.code[0], "should find a1");
             Assert.AreEqual("b2", (string)entities.code[1], "should find b2");
 
-            tc = CreateContext("red and orange");
+            tc = CreateContext("I would like color red and orange");
 
             // intent assertions
             result = await recognizer.RecognizeAsync(tc, CancellationToken.None);

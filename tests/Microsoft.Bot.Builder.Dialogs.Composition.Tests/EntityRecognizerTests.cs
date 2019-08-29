@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 
@@ -13,25 +16,31 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition.Recognizers.Tests
 
         private static Lazy<EntityRecognizerSet> recognizers = new Lazy<EntityRecognizerSet>(() =>
         {
-            EntityRecognizerSet set = new EntityRecognizerSet();
-            set.Recognizers.Add(new AgeEntityRecognizer());
-            set.Recognizers.Add(new ChoiceEntityRecognizer());
-            set.Recognizers.Add(new CurrencyEntityRecognizer());
-            set.Recognizers.Add(new DateTimeEntityRecognizer());
-            set.Recognizers.Add(new DimensionEntityRecognizer());
-            set.Recognizers.Add(new EmailEntityRecognizer());
-            set.Recognizers.Add(new GuidEntityRecognizer());
-            set.Recognizers.Add(new HashtagEntityRecognizer());
-            set.Recognizers.Add(new IpEntityRecognizer());
-            set.Recognizers.Add(new MentionEntityRecognizer());
-            set.Recognizers.Add(new NumberEntityRecognizer());
-            set.Recognizers.Add(new NumberRangeEntityRecognizer());
-            set.Recognizers.Add(new OrdinalEntityRecognizer());
-            set.Recognizers.Add(new PercentageEntityRecognizer());
-            set.Recognizers.Add(new PhoneNumberEntityRecognizer());
-            set.Recognizers.Add(new TemperatureEntityRecognizer());
-            set.Recognizers.Add(new UrlEntityRecognizer());
-            return set;
+            return new EntityRecognizerSet()
+            {
+                Recognizers = new List<IEntityRecognizer>()
+                {
+                    new AgeEntityRecognizer(),
+                    new ChoiceEntityRecognizer(),
+                    new CurrencyEntityRecognizer(),
+                    new DateTimeEntityRecognizer(),
+                    new DimensionEntityRecognizer(),
+                    new EmailEntityRecognizer(),
+                    new GuidEntityRecognizer(),
+                    new HashtagEntityRecognizer(),
+                    new IpEntityRecognizer(),
+                    new MentionEntityRecognizer(),
+                    new NumberEntityRecognizer(),
+                    new NumberRangeEntityRecognizer(),
+                    new OrdinalEntityRecognizer(),
+                    new PercentageEntityRecognizer(),
+                    new PhoneNumberEntityRecognizer(),
+                    new TemperatureEntityRecognizer(),
+                    new UrlEntityRecognizer(),
+                    new RegexEntityRecognizer() { Name = "color", Pattern = "(?i)(red|green|blue|purble|orange|violet|white|black)" },
+                    new RegexEntityRecognizer() { Name = "size", Pattern = "(?i)(small|medium|large)" },
+                }
+            };
         });
 
         public TestContext TestContext { get; set; }
@@ -205,6 +214,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition.Recognizers.Tests
 
             Assert.AreEqual(2, results.Count, "Should be 1 entities found");
             Assert.AreEqual(1, results.Where(entity => entity.Type == "url").Count(), "Should have 1 url");
+        }
+
+        [TestMethod]
+        public void TestRegEx()
+        {
+            // I would like {order} 
+            var turnContext = GetTurnContext("I would like a one red or Blue cat");
+            var results = recognizers.Value.RecognizeEntities(turnContext).Result;
+
+            Assert.AreEqual(3, results.Count, "Should be 2 entities found");
+            Assert.AreEqual(2, results.Where(entity => entity.Type == "color").Count(), "Should have 2 color results");
+            Assert.AreEqual(results[1].Properties["Text"], "red", "should be red");
+            Assert.AreEqual(results[2].Properties["Text"], "Blue", "should be Blue");
         }
 
         private TurnContext GetTurnContext(string text, string locale = "en-us")

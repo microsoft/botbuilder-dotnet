@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition.Recognizers
             List<Entity> newEntities = new List<Entity>();
             if (turnContext.Activity.Type == ActivityTypes.Message)
             {
-                var culture = Culture.MapToNearestLanguage(turnContext.Activity.Locale);
+                var culture = Culture.MapToNearestLanguage(turnContext.Activity.Locale ?? string.Empty);
 
                 // look for text entities to recognize 
                 foreach (var entity in entities.Where(e => e.Type == TextEntity.TypeName).Select(e => e as TextEntity ?? e.GetAs<TextEntity>()))
