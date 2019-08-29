@@ -40,11 +40,11 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <summary>
         /// Wraps Webex API's DeleteMessageAsync method.
         /// </summary>
-        /// <param name="activityId">The id of the message to be deleted.</param>
+        /// <param name="messageId">The id of the message to be deleted.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public async Task DeleteMessageAsync(string activityId)
+        public async Task DeleteMessageAsync(string messageId)
         {
-            await _api.DeleteMessageAsync(activityId, default).ConfigureAwait(false);
+            await _api.DeleteMessageAsync(messageId, default).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -114,7 +114,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// </summary>
         /// <param name="webhookId">Id of the webhook to be updated.</param>
         /// <param name="name">Name for the webhook.</param>
-        /// <param name="targetUri">>Uri of the webhook.</param>
+        /// <param name="targetUri">Uri of the webhook.</param>
         /// <param name="secret">Secret used to validate the webhook.</param>
         /// <returns>The updated <see cref="Webhook"/>.</returns>
         public async Task<Webhook> UpdateWebhookAsync(string webhookId, string name, Uri targetUri, string secret)
