@@ -105,9 +105,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                 return null;
             }
 
-            var message = await decrypterFunc(payload.MessageData.Id, null).ConfigureAwait(false);
-
-            return message;
+            return await decrypterFunc(payload.MessageData.Id, null).ConfigureAwait(false);
         }
 
         /// <summary>
