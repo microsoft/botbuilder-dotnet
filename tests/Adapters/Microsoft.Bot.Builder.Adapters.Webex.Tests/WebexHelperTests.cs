@@ -117,5 +117,26 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
             Assert.Equal(message.Id, activity.Id);
             Assert.Equal(message.Html, activity.Text);
         }
+
+        [Fact]
+        public void HandleMessageAttachments_Should_Fail_With_MoreThanOne_Attachment()
+        {
+            var message = JsonConvert.DeserializeObject<Message>(File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\MessageAttachments.json"));
+
+            Assert.Throws<Exception>(() =>
+            {
+                var attachmentList = WebexHelper.HandleMessageAttachments(message);
+            });
+        }
+
+        [Fact]
+        public void HandleMessageAttachments_Should_Succeed()
+        {
+            var message = JsonConvert.DeserializeObject<Message>(File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\Message.json"));
+
+            var attachmentList = WebexHelper.HandleMessageAttachments(message);
+
+            Assert.Equal(message.FileCount, attachmentList.Count);
+        }
     }
 }

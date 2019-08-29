@@ -16,6 +16,9 @@
     "id": "actor_id",
     "roomId": "room_id",
     "roomType": "direct",
+	"files": [
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQtB3AwMUeNoq4gUBGe6Ocj8kyh3bXa9ZbV7u1fVKQoyKFHdkqU"
+    ],
     "personId": "person_id",
     "personEmail": "SampleLittleBot@webex.bot",
     "created": "2019-08-26T20:10:15.849Z"

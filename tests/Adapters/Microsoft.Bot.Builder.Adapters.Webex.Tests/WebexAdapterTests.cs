@@ -443,6 +443,38 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         }
 
         [Fact]
+        public async void SendActivitiesAsync_With_Attachment_Should_Succeed()
+        {
+            var options = new Mock<IWebexAdapterOptions>();
+            options.SetupAllProperties();
+            options.Object.AccessToken = "Test";
+            options.Object.PublicAddress = "http://contoso.com/api/messages";
+
+            // Setup mocked Webex API client
+            const string expectedResponseId = "Mocked Response Id";
+            var webexApi = new Mock<IWebexClient>();
+            webexApi.Setup(x => x.CreateMessageAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IList<Uri>>())).Returns(Task.FromResult(expectedResponseId));
+
+            // Create a new Webex Adapter with the mocked classes and get the responses
+            var webexAdapter = new WebexAdapter(options.Object, webexApi.Object);
+
+            var activity = new Mock<Activity>().SetupAllProperties();
+            activity.Object.Type = "message";
+            activity.Object.Recipient = new ChannelAccount(id: "MockId");
+            activity.Object.Text = "Hello, Bot!";
+            var image = new Attachment("image/png", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQtB3AwMUeNoq4gUBGe6Ocj8kyh3bXa9ZbV7u1fVKQoyKFHdkqU");
+            activity.Object.Attachments = new List<Attachment>();
+            activity.Object.Attachments.Add(image);
+
+            var turnContext = new TurnContext(webexAdapter, activity.Object);
+
+            var resourceResponse = await webexAdapter.SendActivitiesAsync(turnContext, new Activity[] { activity.Object }, default).ConfigureAwait(false);
+
+            // Assert the result
+            Assert.True(resourceResponse[0].Id == expectedResponseId);
+        }
+
+        [Fact]
         public async void DeleteActivityAsync_With_ActivityId_Should_Succeed()
         {
             var options = new Mock<IWebexAdapterOptions>();

@@ -1,0 +1,19 @@
+{
+  "id": "test_id",
+  "roomId": "room_id",
+  "roomType": "direct",
+  "toPersonId": null,
+  "toPersonEmail": null,
+  "text": "Two attachments",
+  "markdown": null,
+  "files": [
+    "https://api.ciscospark.com/v1/contents/Y2lzY29zcGFyazovL3VzL0NPTlRFTlQvZmMwMzFmZTAtY2E2ZC0xMWU5LWI0YTEtMmIxYjViYWU2N2NlLzA",
+    "https://api.ciscospark.com/v1/contents/Y2lzY29zcGFyazovL3VzL0NPTlRFTlQvZmMwMzFmZTAtY2E2ZC0xMWU5LWI0YTEtMmIxYjViYWU2N2NlLzE"
+  ],
+  "personId": "person_id",
+  "personEmail": "test_email",
+  "created": "2019-08-29T15:02:13.982Z",
+  "mentionedPeople": null,
+  "mentionedGroups": null,
+  "html": null
+}
