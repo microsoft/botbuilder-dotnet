@@ -121,42 +121,9 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
                 return;
             }
 
-            try
+            if (!await AuthCheck(httpRequest))
             {
-                if (!await _credentialProvider.IsAuthenticationDisabledAsync().ConfigureAwait(false))
-                {
-                    var authHeader = httpRequest.Headers.Where(x => x.Key.ToLower() == AuthHeaderName).FirstOrDefault().Value.FirstOrDefault();
-                    var channelId = httpRequest.Headers.Where(x => x.Key.ToLower() == ChannelIdHeaderName).FirstOrDefault().Value.FirstOrDefault();
-
-                    if (string.IsNullOrWhiteSpace(authHeader))
-                    {
-                        await MissingAuthHeaderHelperAsync(AuthHeaderName, httpRequest).ConfigureAwait(false);
-
-                        return;
-                    }
-
-                    if (string.IsNullOrWhiteSpace(channelId))
-                    {
-                        await MissingAuthHeaderHelperAsync(ChannelIdHeaderName, httpRequest).ConfigureAwait(false);
-
-                        return;
-                    }
-
-                    var claimsIdentity = await JwtTokenValidation.ValidateAuthHeader(authHeader, _credentialProvider, _channelProvider, channelId).ConfigureAwait(false);
-                    if (!claimsIdentity.IsAuthenticated)
-                    {
-                        httpRequest.HttpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-
-                        return;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                httpRequest.HttpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                await httpRequest.HttpContext.Response.WriteAsync("Error while attempting to authorize connection.").ConfigureAwait(false);
-
-                throw ex;
+                return;
             }
 
             try
@@ -171,6 +138,49 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
             {
                 httpRequest.HttpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 await httpRequest.HttpContext.Response.WriteAsync("Unable to create transport server.").ConfigureAwait(false);
+
+                throw ex;
+            }
+        }
+
+        private async Task<bool> AuthCheck(HttpRequest httpRequest)
+        {
+            try
+            {
+                if (!await _credentialProvider.IsAuthenticationDisabledAsync().ConfigureAwait(false))
+                {
+                    var authHeader = httpRequest.Headers.Where(x => x.Key.ToLower() == AuthHeaderName).FirstOrDefault().Value.FirstOrDefault();
+                    var channelId = httpRequest.Headers.Where(x => x.Key.ToLower() == ChannelIdHeaderName).FirstOrDefault().Value.FirstOrDefault();
+
+                    if (string.IsNullOrWhiteSpace(authHeader))
+                    {
+                        await MissingAuthHeaderHelperAsync(AuthHeaderName, httpRequest).ConfigureAwait(false);
+
+                        return false;
+                    }
+
+                    if (string.IsNullOrWhiteSpace(channelId))
+                    {
+                        await MissingAuthHeaderHelperAsync(ChannelIdHeaderName, httpRequest).ConfigureAwait(false);
+
+                        return false;
+                    }
+
+                    var claimsIdentity = await JwtTokenValidation.ValidateAuthHeader(authHeader, _credentialProvider, _channelProvider, channelId).ConfigureAwait(false);
+                    if (!claimsIdentity.IsAuthenticated)
+                    {
+                        httpRequest.HttpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                httpRequest.HttpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                await httpRequest.HttpContext.Response.WriteAsync("Error while attempting to authorize connection.").ConfigureAwait(false);
 
                 throw ex;
             }
