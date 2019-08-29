@@ -31,8 +31,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         {
         }
 
+        /// <summary>
+        /// Event which fires when a resource is changed.
+        /// </summary>
         public event ResourceChangedEventHandler Changed;
 
+        /// <summary>
+        /// Gets the resource providers.
+        /// </summary>
         public IEnumerable<IResourceProvider> ResourceProviders
         {
             get { return this.resourceProviders; }
@@ -56,7 +62,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                 projectFile = Directory.EnumerateFiles(projectFile, "*.*proj").FirstOrDefault();
                 if (projectFile == null)
                 {
-                    throw new ArgumentNullException(nameof(projectFile));
+                    explorer.AddFolder(Path.GetDirectoryName(projectFile));
+                    return explorer;
                 }
             }
 

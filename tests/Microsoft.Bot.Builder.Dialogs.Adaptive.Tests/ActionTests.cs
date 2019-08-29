@@ -972,17 +972,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         [TestMethod]
         public async Task Action_BeginDialog()
         {
-            var tellJokeDialog = new AdaptiveDialog("TellJokeDialog");
-            tellJokeDialog.AddEvents(new List<IOnEvent>()
+            var tellJokeDialog = new AdaptiveDialog("TellJokeDialog")
             {
-                new OnUnknownIntent(
-                    new List<IDialog>()
+                Events = new List<IOnEvent>()
+                {
+                    new OnUnknownIntent()
                     {
-                        new SendActivity("Why did the chicken cross the road?"),
-                        new EndTurn(),
-                        new SendActivity("To get to the other side")
-                    })
-            });
+                        Actions = new List<IDialog>()
+                        {
+                            new SendActivity("Why did the chicken cross the road?"),
+                            new EndTurn(),
+                            new SendActivity("To get to the other side")
+                        },
+                    }
+                }
+            };
 
             var askNameDialog = new AdaptiveDialog("AskNameDialog")
             {
@@ -1025,21 +1029,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         new BeginDialog(askNameDialog.Id)
                     }
                 },
-
                 new OnIntent(
                     "JokeIntent",
                     actions: new List<IDialog>()
                     {
-                        new BeginDialog(tellJokeDialog.Id)
+                        new BeginDialog() { Dialog = tellJokeDialog }
                     }),
                 new OnUnknownIntent(
                     actions: new List<IDialog>()
                     {
                         new SendActivity("I'm a joke bot. To get started say 'tell me a joke'")
                     }),
-            });
+            }); 
             testDialog.AddDialog(askNameDialog);
-            testDialog.AddDialog(tellJokeDialog);
 
             await CreateFlow(testDialog)
             .SendConversationUpdate()

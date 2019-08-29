@@ -10,10 +10,10 @@
         },
         {
             "properties": {
-                "dialogId": {
-                    "$role": "expression",
-                    "title": "Dialog Id",
-                    "description": "The Id the dialog to call."
+                "dialog": {
+                    "$type": "Microsoft.IDialog",
+                    "title": "Dialog",
+                    "description": "This is the dialog to call."
                 },
                 "options": {
                     "type": "object",

@@ -74,10 +74,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Testi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.TestBot.Tests", "tests\Microsoft.Bot.Builder.TestBot.Tests\Microsoft.Bot.Builder.TestBot.Tests.csproj", "{76391566-9F22-4994-8B0F-02EFC0E9E228}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Dialogs.Composition", "libraries\Microsoft.Bot.Builder.Dialogs.Composition\Microsoft.Bot.Builder.Dialogs.Composition.csproj", "{2255FF5B-8010-4C8D-897E-BDDEBB629967}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Dialogs.Composition.Tests", "tests\Microsoft.Bot.Builder.Dialogs.Composition.Tests\Microsoft.Bot.Builder.Dialogs.Composition.Tests.csproj", "{78D16CCC-6184-4678-87D8-E8C4299317CE}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Dialogs.Declarative", "libraries\Microsoft.Bot.Builder.Dialogs.Declarative\Microsoft.Bot.Builder.Dialogs.Declarative.csproj", "{1BC05915-044E-4776-8956-B44BBEFF2F84}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Dialogs.Adaptive", "libraries\Microsoft.Bot.Builder.Dialogs.Adaptive\Microsoft.Bot.Builder.Dialogs.Adaptive.csproj", "{3CF175CF-1AF4-4109-96CB-221684DCED7D}"
@@ -113,6 +109,24 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.StreamingExtensions.Tests", "tests\Microsoft.Bot.StreamingExtensions.Test\Microsoft.Bot.StreamingExtensions.Tests.csproj", "{B7DB6561-7D83-4706-9DE0-02C5520DE2B7}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.StreamingExtensions", "libraries\Microsoft.Bot.Builder.StreamingExtensions\Microsoft.Bot.Builder.StreamingExtensions.csproj", "{BDCAC491-8518-4CE6-B56A-9E36936C7E70}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6B6AFE9D-6FA5-4699-B0EB-62335FD431C8}"
+	ProjectSection(SolutionItems) = preProject
+		BotBuilder-DotNet.ruleset = BotBuilder-DotNet.ruleset
+		Directory.Build.props = Directory.Build.props
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Schemas", "Schemas", "{EE56F2B6-4995-4E8F-ACFF-310AF0A4DA0F}"
+	ProjectSection(SolutionItems) = preProject
+		schemas\baseComponent.schema = schemas\baseComponent.schema
+		schemas\component.schema = schemas\component.schema
+		schemas\readme.md = schemas\readme.md
+		schemas\sdk.schema = schemas\sdk.schema
+		schemas\update.cmd = schemas\update.cmd
+		schemas\updateBranch.cmd = schemas\updateBranch.cmd
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.TestBot.Json", "tests\Microsoft.Bot.Builder.TestBot.Json\Microsoft.Bot.Builder.TestBot.Json.csproj", "{2454BBCD-77BC-4E3D-B5A6-3562BED898D6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -301,18 +315,6 @@ Global
 		{76391566-9F22-4994-8B0F-02EFC0E9E228}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{76391566-9F22-4994-8B0F-02EFC0E9E228}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{76391566-9F22-4994-8B0F-02EFC0E9E228}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2255FF5B-8010-4C8D-897E-BDDEBB629967}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{2255FF5B-8010-4C8D-897E-BDDEBB629967}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
-		{2255FF5B-8010-4C8D-897E-BDDEBB629967}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2255FF5B-8010-4C8D-897E-BDDEBB629967}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2255FF5B-8010-4C8D-897E-BDDEBB629967}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2255FF5B-8010-4C8D-897E-BDDEBB629967}.Release|Any CPU.Build.0 = Release|Any CPU
-		{78D16CCC-6184-4678-87D8-E8C4299317CE}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{78D16CCC-6184-4678-87D8-E8C4299317CE}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
-		{78D16CCC-6184-4678-87D8-E8C4299317CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{78D16CCC-6184-4678-87D8-E8C4299317CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{78D16CCC-6184-4678-87D8-E8C4299317CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{78D16CCC-6184-4678-87D8-E8C4299317CE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1BC05915-044E-4776-8956-B44BBEFF2F84}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug - NuGet Packages|Any CPU
 		{1BC05915-044E-4776-8956-B44BBEFF2F84}.Debug - NuGet Packages|Any CPU.Build.0 = Debug - NuGet Packages|Any CPU
 		{1BC05915-044E-4776-8956-B44BBEFF2F84}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -421,6 +423,12 @@ Global
 		{BDCAC491-8518-4CE6-B56A-9E36936C7E70}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BDCAC491-8518-4CE6-B56A-9E36936C7E70}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BDCAC491-8518-4CE6-B56A-9E36936C7E70}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2454BBCD-77BC-4E3D-B5A6-3562BED898D6}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{2454BBCD-77BC-4E3D-B5A6-3562BED898D6}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
+		{2454BBCD-77BC-4E3D-B5A6-3562BED898D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2454BBCD-77BC-4E3D-B5A6-3562BED898D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2454BBCD-77BC-4E3D-B5A6-3562BED898D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2454BBCD-77BC-4E3D-B5A6-3562BED898D6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -459,8 +467,6 @@ Global
 		{060F070A-BBFA-490E-BE89-3844C857B771} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
 		{E4E13301-9193-4106-B0E3-41276B478E7C} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{76391566-9F22-4994-8B0F-02EFC0E9E228} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
-		{2255FF5B-8010-4C8D-897E-BDDEBB629967} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
-		{78D16CCC-6184-4678-87D8-E8C4299317CE} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{1BC05915-044E-4776-8956-B44BBEFF2F84} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
 		{3CF175CF-1AF4-4109-96CB-221684DCED7D} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
 		{CA008713-655E-46DA-BBDF-1EF6B8CE7DCA} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
@@ -479,6 +485,7 @@ Global
 		{038E1C00-13D6-4923-870E-CD5A97ED97B3} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
 		{B7DB6561-7D83-4706-9DE0-02C5520DE2B7} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{BDCAC491-8518-4CE6-B56A-9E36936C7E70} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
+		{2454BBCD-77BC-4E3D-B5A6-3562BED898D6} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7173C9F3-A7F9-496E-9078-9156E35D6E16}
