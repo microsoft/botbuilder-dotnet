@@ -29,29 +29,26 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                      { "codeIntent",  "(?<code>[a-z][0-9])" },
                      { "colorIntent", "(?i)(color|colour)" }
                 },
-                Entities = new EntityRecognizerSet()
+                EntityRecognizer = new EntityRecognizerSet()
                 {
-                    Recognizers = new List<IEntityRecognizer>()
-                    {
-                        new AgeEntityRecognizer(),
-                        new ChoiceEntityRecognizer(),
-                        new CurrencyEntityRecognizer(),
-                        new DateTimeEntityRecognizer(),
-                        new DimensionEntityRecognizer(),
-                        new EmailEntityRecognizer(),
-                        new GuidEntityRecognizer(),
-                        new HashtagEntityRecognizer(),
-                        new IpEntityRecognizer(),
-                        new MentionEntityRecognizer(),
-                        new NumberEntityRecognizer(),
-                        new NumberRangeEntityRecognizer(),
-                        new OrdinalEntityRecognizer(),
-                        new PercentageEntityRecognizer(),
-                        new PhoneNumberEntityRecognizer(),
-                        new TemperatureEntityRecognizer(),
-                        new UrlEntityRecognizer(),
-                        new RegexEntityRecognizer() { Name = "color", Pattern = "(?i)(red|green|blue|purple|orange|violet|white|black)" },
-                    }
+                    new AgeEntityRecognizer(),
+                    new ChoiceEntityRecognizer(),
+                    new CurrencyEntityRecognizer(),
+                    new DateTimeEntityRecognizer(),
+                    new DimensionEntityRecognizer(),
+                    new EmailEntityRecognizer(),
+                    new GuidEntityRecognizer(),
+                    new HashtagEntityRecognizer(),
+                    new IpEntityRecognizer(),
+                    new MentionEntityRecognizer(),
+                    new NumberEntityRecognizer(),
+                    new NumberRangeEntityRecognizer(),
+                    new OrdinalEntityRecognizer(),
+                    new PercentageEntityRecognizer(),
+                    new PhoneNumberEntityRecognizer(),
+                    new TemperatureEntityRecognizer(),
+                    new UrlEntityRecognizer(),
+                    new RegexEntityRecognizer() { Name = "color", Pattern = "(?i)(red|green|blue|purple|orange|violet|white|black)" },
                 }
             };
             var tc = CreateContext("intent a1 b2");

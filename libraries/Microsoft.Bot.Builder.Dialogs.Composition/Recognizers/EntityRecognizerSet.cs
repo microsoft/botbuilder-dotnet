@@ -9,19 +9,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition.Recognizers
     /// <summary>
     /// EntityRecognizerSet - Implements a workflow against a pool of IEntityRecognizer instances, iterating until nobody has anything new to add.
     /// </summary>
-    public class EntityRecognizerSet : IEntityRecognizer
+    public class EntityRecognizerSet : List<IEntityRecognizer>, IEntityRecognizer
     {
         public EntityRecognizerSet()
         {
         }
-
-        /// <summary>
-        /// Gets or sets recognizer pool. 
-        /// </summary>
-        /// <value>
-        /// Recognizer pool. 
-        /// </value>
-        public IList<IEntityRecognizer> Recognizers { get; set; } = new List<IEntityRecognizer>();
 
         /// <summary>
         /// Implement RecognizeEntities by iterating against the Recognizer pool.
@@ -45,7 +37,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition.Recognizers
             {
                 List<Entity> newEntitiesToProcess = new List<Entity>();
 
-                foreach (var recognizer in this.Recognizers)
+                foreach (var recognizer in this)
                 {
                     try
                     {

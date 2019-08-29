@@ -13,6 +13,7 @@ using Microsoft.Bot.Builder.Expressions;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Schema.NET;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
 {
@@ -40,7 +41,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         /// Gets or sets the entity recognizers.
         /// </summary>
         [JsonProperty("entities")]
-        public IEntityRecognizer Entities { get; set; } = new EntityRecognizerSet();
+        public EntityRecognizerSet EntityRecognizer { get; set; } = new EntityRecognizerSet();
 
         public async Task<RecognizerResult> RecognizeAsync(ITurnContext turnContext, CancellationToken cancellationToken)
         {
@@ -70,6 +71,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
                         patterns.Add(intent, regex);
                     }
                 }
+
                 patterns = patterns.OrderByDescending(p => p.Key).ToDictionary(p => p.Key, p => p.Value);
             }
 
@@ -115,10 +117,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
                 }
             }
 
-            if (this.Entities != null)
+            if (this.EntityRecognizer != null)
             {
                 IList<Entity> entities2 = new List<Entity>();
-                entities2 = await this.Entities.RecognizeEntities(turnContext, entities2).ConfigureAwait(false);
+                entities2 = await this.EntityRecognizer.RecognizeEntities(turnContext, entities2).ConfigureAwait(false);
                 foreach (var entity in entities2)
                 {
                     if (!entities.TryGetValue(entity.Type, out List<string> values))
@@ -142,10 +144,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
             return result;
         }
 
-        public Task<T> RecognizeAsync<T>(ITurnContext turnContext, CancellationToken cancellationToken)
+        public async Task<T> RecognizeAsync<T>(ITurnContext turnContext, CancellationToken cancellationToken)
             where T : IRecognizerConvert, new()
         {
-            throw new NotImplementedException();
+            var result = await this.RecognizeAsync(turnContext, cancellationToken).ConfigureAwait(false);
+            return JObject.FromObject(result).ToObject<T>();
         }
     }
 }

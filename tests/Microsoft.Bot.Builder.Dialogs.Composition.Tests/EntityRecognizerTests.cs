@@ -18,28 +18,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition.Recognizers.Tests
         {
             return new EntityRecognizerSet()
             {
-                Recognizers = new List<IEntityRecognizer>()
-                {
-                    new AgeEntityRecognizer(),
-                    new ChoiceEntityRecognizer(),
-                    new CurrencyEntityRecognizer(),
-                    new DateTimeEntityRecognizer(),
-                    new DimensionEntityRecognizer(),
-                    new EmailEntityRecognizer(),
-                    new GuidEntityRecognizer(),
-                    new HashtagEntityRecognizer(),
-                    new IpEntityRecognizer(),
-                    new MentionEntityRecognizer(),
-                    new NumberEntityRecognizer(),
-                    new NumberRangeEntityRecognizer(),
-                    new OrdinalEntityRecognizer(),
-                    new PercentageEntityRecognizer(),
-                    new PhoneNumberEntityRecognizer(),
-                    new TemperatureEntityRecognizer(),
-                    new UrlEntityRecognizer(),
-                    new RegexEntityRecognizer() { Name = "color", Pattern = "(?i)(red|green|blue|purble|orange|violet|white|black)" },
-                    new RegexEntityRecognizer() { Name = "size", Pattern = "(?i)(small|medium|large)" },
-                }
+                new AgeEntityRecognizer(),
+                new ChoiceEntityRecognizer(),
+                new CurrencyEntityRecognizer(),
+                new DateTimeEntityRecognizer(),
+                new DimensionEntityRecognizer(),
+                new EmailEntityRecognizer(),
+                new GuidEntityRecognizer(),
+                new HashtagEntityRecognizer(),
+                new IpEntityRecognizer(),
+                new MentionEntityRecognizer(),
+                new NumberEntityRecognizer(),
+                new NumberRangeEntityRecognizer(),
+                new OrdinalEntityRecognizer(),
+                new PercentageEntityRecognizer(),
+                new PhoneNumberEntityRecognizer(),
+                new TemperatureEntityRecognizer(),
+                new UrlEntityRecognizer(),
+                new RegexEntityRecognizer() { Name = "color", Pattern = "(?i)(red|green|blue|purble|orange|violet|white|black)" },
+                new RegexEntityRecognizer() { Name = "size", Pattern = "(?i)(small|medium|large)" },
             };
         });
 
@@ -220,7 +217,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition.Recognizers.Tests
         public void TestRegEx()
         {
             // I would like {order} 
-            var turnContext = GetTurnContext("I would like a one red or Blue cat");
+            var turnContext = GetTurnContext("I would like a red or Blue cat");
             var results = recognizers.Value.RecognizeEntities(turnContext).Result;
 
             Assert.AreEqual(3, results.Count, "Should be 2 entities found");
