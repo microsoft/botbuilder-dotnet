@@ -4,32 +4,47 @@
 namespace Microsoft.Bot.Builder.Adapters.Webex
 {
     /// <summary>
-    /// Interface for defining implementation of the WebexAdapter Options.
+    /// Defines implementation of the WebexAdapter Options.
     /// </summary>
-    public interface IWebexAdapterOptions
+    public class WebexAdapterOptions
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WebexAdapterOptions"/> class.
+        /// </summary>
+        /// <param name="accessToken">An access token for the bot.</param>
+        /// <param name="publicAddress">The root URL of the bot application.</param>
+        /// <param name="secret">The secret used to validate incoming webhooks.</param>
+        /// <param name="webhookName">A name for the webhook subscription.</param>
+        public WebexAdapterOptions(string accessToken, string publicAddress, string secret, string webhookName = null)
+        {
+            this.AccessToken = accessToken;
+            this.PublicAddress = publicAddress;
+            this.Secret = secret;
+            this.WebhookName = webhookName;
+        }
+
         /// <summary>
         /// Gets or sets an access token for the bot.
         /// </summary>
         /// <value>An access token for the bot. Get one from https://developer.webex.com/.</value>
-        string AccessToken { get; set; }
+        public string AccessToken { get; set; }
 
         /// <summary>
         /// Gets or sets the secret used to validate incoming webhooks.
         /// </summary>
         /// <value>The secret used to validate incoming webhooks. You can define this yourself.</value>
-        string Secret { get; set; }
+        public string Secret { get; set; }
 
         /// <summary>
         /// Gets or sets the root URL of your bot application. Something like 'https://mybot.com/'.
         /// </summary>
         /// <value>the root URL of your bot application.</value>
-        string PublicAddress { get; set; }
+        public string PublicAddress { get; set; }
 
         /// <summary>
         /// Gets or sets a name for the webhook subscription that will be created to tell WebEx to send your bot webhooks.
         /// </summary>
         /// <value>A name for the webhook subscription.</value>
-        string WebhookName { get; set; }
+        public string WebhookName { get; set; }
     }
 }

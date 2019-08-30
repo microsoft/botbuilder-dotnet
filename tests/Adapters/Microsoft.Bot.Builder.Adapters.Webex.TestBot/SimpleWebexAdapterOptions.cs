@@ -7,7 +7,7 @@ using Microsoft.Bot.Builder.Adapters.Webex;
 
 namespace Microsoft.Bot.Builder.Adapters.Webex.TestBot
 {
-    public class SimpleWebexAdapterOptions : IWebexAdapterOptions
+    public class SimpleWebexAdapterOptions : WebexAdapterOptions
     {
         public SimpleWebexAdapterOptions(string accessToken, string publicAddress, string secret, string webhookName = null)
         {

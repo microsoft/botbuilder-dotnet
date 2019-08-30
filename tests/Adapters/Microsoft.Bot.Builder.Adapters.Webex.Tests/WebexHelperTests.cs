@@ -71,7 +71,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
 
             var message = JsonConvert.DeserializeObject<Message>(File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\Message.json"));
 
-            var webexApi = new Mock<IWebexClient>();
+            var webexApi = new Mock<WebexClientWrapper>();
             webexApi.SetupAllProperties();
             webexApi.Setup(x => x.GetMessageAsync(It.IsAny<string>(), default)).Returns(Task.FromResult(message));
 

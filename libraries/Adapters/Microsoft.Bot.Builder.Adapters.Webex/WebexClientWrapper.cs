@@ -10,7 +10,7 @@ using Thrzn41.WebexTeams.Version1;
 
 namespace Microsoft.Bot.Builder.Adapters.Webex
 {
-    public class WebexApi : IWebexClient
+    public class WebexClientWrapper
     {
         private TeamsAPIClient _api;
 
@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// Creates a Webex client by supplying the access token.
         /// </summary>
         /// <param name="accessToken">The access token of the Webex account.</param>
-        public void CreateClient(string accessToken)
+        public virtual void CreateClient(string accessToken)
         {
             _api = TeamsAPI.CreateVersion1Client(accessToken);
         }
@@ -30,7 +30,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <param name="text">Text of the message.</param>
         /// <param name="files">List of files attached to the message.</param>
         /// <returns>The created message id.</returns>
-        public async Task<string> CreateMessageAsync(string toPersonOrEmail, string text, IList<Uri> files = null)
+        public virtual async Task<string> CreateMessageAsync(string toPersonOrEmail, string text, IList<Uri> files = null)
         {
             var webexResponse = await _api.CreateDirectMessageAsync(toPersonOrEmail, text, files).ConfigureAwait(false);
 
@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// </summary>
         /// <param name="messageId">The id of the message to be deleted.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public async Task DeleteMessageAsync(string messageId)
+        public virtual async Task DeleteMessageAsync(string messageId)
         {
             await _api.DeleteMessageAsync(messageId, default).ConfigureAwait(false);
         }
@@ -51,7 +51,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// Wraps Webex API's GetMeAsync method.
         /// </summary>
         /// <returns>The <see cref="Person"/> object associated with the bot.</returns>
-        public async Task<Person> GetMeAsync()
+        public virtual async Task<Person> GetMeAsync()
         {
             var resultPerson = await _api.GetMeAsync().ConfigureAwait(false);
 
@@ -64,7 +64,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <param name="messageId">Id of the message to be recovered.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>The message's data.</returns>
-        public async Task<Message> GetMessageAsync(string messageId, CancellationToken? cancellationToken = null)
+        public virtual async Task<Message> GetMessageAsync(string messageId, CancellationToken? cancellationToken = null)
         {
             var message = await _api.GetMessageAsync(messageId).ConfigureAwait(false);
 
@@ -75,7 +75,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// Wraps Webex API's ListWebhooksAsync method.
         /// </summary>
         /// <returns>A list of Webhooks associated with the application.</returns>
-        public async Task<WebhookList> ListWebhooksAsync()
+        public virtual async Task<WebhookList> ListWebhooksAsync()
         {
             var webhookList = await _api.ListWebhooksAsync().ConfigureAwait(false);
 
@@ -92,7 +92,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <param name="filters">Filters for the webhook.</param>
         /// <param name="secret">Secret used to validate the webhook.</param>
         /// <returns>The created <see cref="Webhook"/>.</returns>
-        public async Task<Webhook> CreateWebhookAsync(string name, Uri targetUri, EventResource resource, EventType type, IEnumerable<EventFilter> filters, string secret)
+        public virtual async Task<Webhook> CreateWebhookAsync(string name, Uri targetUri, EventResource resource, EventType type, IEnumerable<EventFilter> filters, string secret)
         {
             var resultWebhook = await _api.CreateWebhookAsync(name, targetUri, resource, type, null, secret).ConfigureAwait(false);
 
@@ -104,7 +104,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// </summary>
         /// <param name="id">Id of the webhook to be deleted.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public async Task<TeamsResult<NoContent>> DeleteWebhookAsync(Webhook id)
+        public virtual async Task<TeamsResult<NoContent>> DeleteWebhookAsync(Webhook id)
         {
             return await _api.DeleteWebhookAsync(id).ConfigureAwait(false);
         }
@@ -117,7 +117,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <param name="targetUri">Uri of the webhook.</param>
         /// <param name="secret">Secret used to validate the webhook.</param>
         /// <returns>The updated <see cref="Webhook"/>.</returns>
-        public async Task<Webhook> UpdateWebhookAsync(string webhookId, string name, Uri targetUri, string secret)
+        public virtual async Task<Webhook> UpdateWebhookAsync(string webhookId, string name, Uri targetUri, string secret)
         {
             var resultWebhook = await _api.UpdateWebhookAsync(webhookId, name, targetUri, secret).ConfigureAwait(false);
 

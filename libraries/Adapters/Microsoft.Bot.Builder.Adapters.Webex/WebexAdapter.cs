@@ -15,17 +15,17 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
 {
     public class WebexAdapter : BotAdapter
     {
-        private readonly IWebexAdapterOptions _config;
+        private readonly WebexAdapterOptions _config;
 
-        private readonly IWebexClient _webexApi;
+        private readonly WebexClientWrapper _webexClient;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WebexAdapter"/> class.
-        /// Creates a Webex adapter. See <see cref="IWebexAdapterOptions"/> for a full definition of the allowed parameters.
+        /// Creates a Webex adapter. See <see cref="WebexAdapterOptions"/> for a full definition of the allowed parameters.
         /// </summary>
         /// <param name="config">An object containing API credentials, a webhook verification token and other options.</param>
-        /// <param name="webexApi">A Webex API interface.</param>
-        public WebexAdapter(IWebexAdapterOptions config, IWebexClient webexApi)
+        /// <param name="webexClient">A Webex API interface.</param>
+        public WebexAdapter(WebexAdapterOptions config, WebexClientWrapper webexClient)
         {
             _config = config ?? throw new ArgumentNullException(nameof(config));
 
@@ -41,9 +41,9 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
 
             _config.PublicAddress = new Uri(_config.PublicAddress).Host;
 
-            _webexApi = webexApi ?? throw new Exception("Could not create the Webex Teams API client");
+            _webexClient = webexClient ?? throw new Exception("Could not create the Webex Teams API client");
 
-            _webexApi.CreateClient(_config.AccessToken);
+            _webexClient.CreateClient(_config.AccessToken);
         }
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task GetIdentityAsync()
         {
-            await _webexApi.GetMeAsync().ContinueWith(
+            await _webexClient.GetMeAsync().ContinueWith(
                 task => { WebexHelper.Identity = task.Result; }, TaskScheduler.Current).ConfigureAwait(false);
         }
 
@@ -63,7 +63,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <returns>A list of webhook subscriptions.</returns>
         public async Task<WebhookList> ListWebhookSubscriptionsAsync()
         {
-           return await _webexApi.ListWebhooksAsync().ConfigureAwait(false);
+           return await _webexClient.ListWebhooksAsync().ConfigureAwait(false);
         }
 
         /// <summary>
@@ -75,7 +75,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         {
             for (var i = 0; i < webhookList.ItemCount; i++)
             {
-                await _webexApi.DeleteWebhookAsync(webhookList.Items[i]).ConfigureAwait(false);
+                await _webexClient.DeleteWebhookAsync(webhookList.Items[i]).ConfigureAwait(false);
             }
         }
 
@@ -104,11 +104,11 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
 
             if (hookId != null)
             {
-                webhook = await _webexApi.UpdateWebhookAsync(hookId, webHookName, new Uri(hookUrl), _config.Secret).ConfigureAwait(false);
+                webhook = await _webexClient.UpdateWebhookAsync(hookId, webHookName, new Uri(hookUrl), _config.Secret).ConfigureAwait(false);
             }
             else
             {
-                webhook = await _webexApi.CreateWebhookAsync(webHookName, new Uri(hookUrl), EventResource.All, EventType.All, null, _config.Secret).ConfigureAwait(false);
+                webhook = await _webexClient.CreateWebhookAsync(webHookName, new Uri(hookUrl), EventResource.All, EventType.All, null, _config.Secret).ConfigureAwait(false);
             }
 
             return webhook;
@@ -162,7 +162,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                     }
                 }
 
-                var responseId = await _webexApi.CreateMessageAsync(personIdOrEmail, activity.Text, files.Count > 0 ? files : null).ConfigureAwait(false);
+                var responseId = await _webexClient.CreateMessageAsync(personIdOrEmail, activity.Text, files.Count > 0 ? files : null).ConfigureAwait(false);
                 responses.Add(new ResourceResponse(responseId));
             }
 
@@ -193,7 +193,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         {
             if (!string.IsNullOrWhiteSpace(reference.ActivityId))
             {
-                await _webexApi.DeleteMessageAsync(reference.ActivityId).ConfigureAwait(false);
+                await _webexClient.DeleteMessageAsync(reference.ActivityId).ConfigureAwait(false);
             }
         }
 
@@ -270,7 +270,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
 
             if (payload.Resource == EventResource.Message && payload.EventType == EventType.Created)
             {
-                Message decryptedMessage = await WebexHelper.GetDecryptedMessageAsync(payload, _webexApi.GetMessageAsync).ConfigureAwait(false);
+                Message decryptedMessage = await WebexHelper.GetDecryptedMessageAsync(payload, _webexClient.GetMessageAsync).ConfigureAwait(false);
 
                 activity = WebexHelper.DecryptedMessageToActivity(decryptedMessage);
             }

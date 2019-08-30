@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.TestBot
             Configuration = configuration;
 
             var options = new SimpleWebexAdapterOptions(configuration["AccessToken"], configuration["PublicAddress"], configuration["Secret"], configuration["WebhookName"]);
-            _adapter = new WebexAdapter(options, new WebexApi());
+            _adapter = new WebexAdapter(options, new WebexClientWrapper());
 
             RegisterWebhookAsync().Wait();
         }
@@ -39,7 +39,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.TestBot
             services.AddSingleton<ICredentialProvider, ConfigurationCredentialProvider>();
 
             // Create the options for the WebexAdapter
-            services.AddSingleton<IWebexAdapterOptions, ConfigurationWebexAdapterOptions>();
+            services.AddSingleton<WebexAdapterOptions, ConfigurationWebexAdapterOptions>();
 
             // Create the Bot Framework Adapter.
             services.AddSingleton(_adapter);
