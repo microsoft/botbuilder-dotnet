@@ -106,8 +106,8 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
             var builder = new StringBuilder(ValidationUrlString);
 
             var bodyString = File.ReadAllText(Directory.GetCurrentDirectory() + @"\files\NoMediaPayload.txt");
-            byte[] byteArray = Encoding.ASCII.GetBytes(bodyString);
-            MemoryStream stream = new MemoryStream(byteArray);
+            var byteArray = Encoding.ASCII.GetBytes(bodyString);
+            var stream = new MemoryStream(byteArray);
 
             var values = new Dictionary<string, string>();
 
@@ -131,7 +131,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
             }
 
             var hashArray = hmac.ComputeHash(Encoding.UTF8.GetBytes(builder.ToString()));
-            string hash = Convert.ToBase64String(hashArray);
+            var hash = Convert.ToBase64String(hashArray);
 
             var httpRequest = new Mock<HttpRequest>();
             httpRequest.SetupAllProperties();
@@ -155,8 +155,8 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
             var builder = new StringBuilder(ValidationUrlString);
 
             var bodyString = File.ReadAllText(Directory.GetCurrentDirectory() + @"\files\NoMediaPayload.txt");
-            byte[] byteArray = Encoding.ASCII.GetBytes(bodyString);
-            MemoryStream stream = new MemoryStream(byteArray);
+            var byteArray = Encoding.ASCII.GetBytes(bodyString);
+            var stream = new MemoryStream(byteArray);
 
             var values = new Dictionary<string, string>();
 
@@ -180,7 +180,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
             }
 
             var hashArray = hmac.ComputeHash(Encoding.UTF8.GetBytes(builder.ToString()));
-            string hash = Convert.ToBase64String(hashArray);
+            var hash = Convert.ToBase64String(hashArray);
 
             var httpRequest = new Mock<HttpRequest>();
             httpRequest.SetupAllProperties();
@@ -200,8 +200,8 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
             var builder = new StringBuilder(ValidationUrlString);
 
             var bodyString = File.ReadAllText(Directory.GetCurrentDirectory() + @"\files\MediaPayload.txt");
-            byte[] byteArray = Encoding.ASCII.GetBytes(bodyString);
-            MemoryStream stream = new MemoryStream(byteArray);
+            var byteArray = Encoding.ASCII.GetBytes(bodyString);
+            var stream = new MemoryStream(byteArray);
 
             var values = new Dictionary<string, string>();
 
@@ -225,7 +225,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
             }
 
             var hashArray = hmac.ComputeHash(Encoding.UTF8.GetBytes(builder.ToString()));
-            string hash = Convert.ToBase64String(hashArray);
+            var hash = Convert.ToBase64String(hashArray);
 
             var httpRequest = new Mock<HttpRequest>();
             httpRequest.SetupAllProperties();
@@ -249,8 +249,8 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
             // Replace NumMedia with a number > the number of attachments
             bodyString = bodyString.Replace("NumMedia=1", "NumMedia=2");
 
-            byte[] byteArray = Encoding.ASCII.GetBytes(bodyString);
-            MemoryStream stream = new MemoryStream(byteArray);
+            var byteArray = Encoding.ASCII.GetBytes(bodyString);
+            var stream = new MemoryStream(byteArray);
 
             var values = new Dictionary<string, string>();
 
@@ -274,7 +274,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
             }
 
             var hashArray = hmac.ComputeHash(Encoding.UTF8.GetBytes(builder.ToString()));
-            string hash = Convert.ToBase64String(hashArray);
+            var hash = Convert.ToBase64String(hashArray);
 
             var httpRequest = new Mock<HttpRequest>();
             httpRequest.SetupAllProperties();
