@@ -8,8 +8,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
-using Microsoft.Bot.Builder.Dialogs.Composition;
-using Microsoft.Bot.Builder.Dialogs.Composition.Recognizers;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.FileSystemGlobbing.Internal.Patterns;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
