@@ -70,10 +70,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 },
                 Recognizer = new RegexRecognizer()
                 {
-                    Intents = new Dictionary<string, string>()
+                    Intents = new List<IntentPattern>()
                     {
-                        { "HelpIntent", "(?i)help" },
-                        { "CancelIntent", "(?i)cancel" }
+                        new IntentPattern("HelpIntent", "(?i)help" ),
+                        new IntentPattern("CancelIntent", "(?i)cancel"),
                     }
                 }
             };
@@ -96,9 +96,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 AutoEndDialog = false,
                 Recognizer = new RegexRecognizer()
                 {
-                    Intents = new Dictionary<string, string>()
+                    Intents = new List<IntentPattern>()
                     {
-                        { "SetName", @"my name is (?<name>.*)" }
+                        new IntentPattern("SetName", @"my name is (?<name>.*)"),
                     }
                 },
                 Events = new List<IOnEvent>()

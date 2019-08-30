@@ -4,7 +4,7 @@ using Microsoft.Recognizers.Text.DateTime;
 
 namespace Microsoft.Bot.Builder.Dialogs.Composition.Recognizers
 {
-    public class DateTimeEntityRecognizer : BaseEntityRecognizer
+    public class DateTimeEntityRecognizer : EntityRecognizer
     {
         public DateTimeEntityRecognizer()
         {

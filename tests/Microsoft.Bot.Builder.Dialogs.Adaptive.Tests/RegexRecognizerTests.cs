@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -10,6 +11,7 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Composition;
 using Microsoft.Bot.Builder.Dialogs.Composition.Recognizers;
 using Microsoft.Bot.Schema;
+using Microsoft.Extensions.FileSystemGlobbing.Internal.Patterns;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
@@ -24,12 +26,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             var recognizer = new RegexRecognizer()
             {
-                Intents = new Dictionary<string, string>()
+                Intents = new List<IntentPattern>()
                 {
-                     { "codeIntent",  "(?<code>[a-z][0-9])" },
-                     { "colorIntent", "(?i)(color|colour)" }
+                     new IntentPattern("codeIntent", "(?<code>[a-z][0-9])"),
+                     new IntentPattern("colorIntent", "(?i)(color|colour)"),
                 },
-                EntityRecognizer = new EntityRecognizerSet()
+                Entities = new EntityRecognizerSet()
                 {
                     new AgeEntityRecognizer(),
                     new ChoiceEntityRecognizer(),
@@ -49,6 +51,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     new TemperatureEntityRecognizer(),
                     new UrlEntityRecognizer(),
                     new RegexEntityRecognizer() { Name = "color", Pattern = "(?i)(red|green|blue|purple|orange|violet|white|black)" },
+                    new RegexEntityRecognizer() { Name = "backgroundColor", Pattern = "(?i)(back|background) {color}" },
+                    new RegexEntityRecognizer() { Name = "foregroundColor", Pattern = "(?i)(foreground|front) {color}" },
                 }
             };
             var tc = CreateContext("intent a1 b2");

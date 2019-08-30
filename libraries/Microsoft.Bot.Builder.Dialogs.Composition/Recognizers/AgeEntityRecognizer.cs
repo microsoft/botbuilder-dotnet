@@ -4,7 +4,7 @@ using Microsoft.Recognizers.Text.NumberWithUnit;
 
 namespace Microsoft.Bot.Builder.Dialogs.Composition.Recognizers
 {
-    public class AgeEntityRecognizer : BaseEntityRecognizer
+    public class AgeEntityRecognizer : EntityRecognizer
     {
         public AgeEntityRecognizer()
         {

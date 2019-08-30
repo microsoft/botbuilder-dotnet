@@ -418,11 +418,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             if (sequenceContext.Actions.Any())
             {
                 sequenceContext.Actions.RemoveAt(0);
-
-                if (!sequenceContext.Actions.Any())
-                {
-                    await sequenceContext.EmitEventAsync(AdaptiveEvents.SequenceEnded, value: null, bubble: false, fromLeaf: false, cancellationToken: cancellationToken).ConfigureAwait(false);
-                }
             }
 
             return false;

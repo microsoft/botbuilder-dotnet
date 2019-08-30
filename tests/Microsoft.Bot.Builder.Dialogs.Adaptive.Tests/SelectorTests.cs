@@ -90,11 +90,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var dialog = new AdaptiveDialog() { Selector = selector };
             dialog.Recognizer = new RegexRecognizer
             {
-                Intents = new Dictionary<string, string>
+                Intents = new List<IntentPattern>()
                 {
-                    { "a", "a" },
-                    { "b", "b" },
-                    { "trigger", "trigger" }
+                    new IntentPattern("a", "a"),
+                    new IntentPattern("b", "b"),
+                    new IntentPattern("trigger", "trigger"),
                 }
             };
             dialog.AddEvents(new List<IOnEvent>()

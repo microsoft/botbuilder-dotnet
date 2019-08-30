@@ -179,7 +179,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
             Register("Microsoft.LuisRecognizer", typeof(LuisRecognizer), new LuisRecognizerLoader(TypeFactory.Configuration));
             Register("Microsoft.RegexRecognizer", typeof(RegexRecognizer));
             Register("Microsoft.MultiLanguageRecognizer", typeof(MultiLanguageRecognizer));
+            Register("Microsoft.IntentPattern", typeof(IntentPattern));
 
+            // Dialogs
             Register("Microsoft.AdaptiveDialog", typeof(AdaptiveDialog));
         }
 

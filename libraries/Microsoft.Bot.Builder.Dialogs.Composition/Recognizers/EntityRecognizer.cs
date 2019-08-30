@@ -6,9 +6,9 @@ using Microsoft.Recognizers.Text;
 
 namespace Microsoft.Bot.Builder.Dialogs.Composition.Recognizers
 {
-    public abstract class BaseEntityRecognizer : IEntityRecognizer
+    public abstract class EntityRecognizer 
     {
-        public BaseEntityRecognizer()
+        public EntityRecognizer()
         {
         }
 

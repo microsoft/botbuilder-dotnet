@@ -4,7 +4,7 @@ using Microsoft.Recognizers.Text.Sequence;
 
 namespace Microsoft.Bot.Builder.Dialogs.Composition.Recognizers
 {
-    public class MentionEntityRecognizer : BaseEntityRecognizer
+    public class MentionEntityRecognizer : EntityRecognizer
     {
         public MentionEntityRecognizer()
         {

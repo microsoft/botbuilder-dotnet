@@ -44,7 +44,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 this.stateByFilter.TryAdd(filter, true);
             }
 
-            this.stateByFilter[DialogContext.DialogEvents.EndDialog] = false;
+            this.stateByFilter["EndDialog"] = false;
         }
 
         Protocol.ExceptionBreakpointFilter[] IEvents.Filters =>

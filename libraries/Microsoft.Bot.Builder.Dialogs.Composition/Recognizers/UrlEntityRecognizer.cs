@@ -4,7 +4,7 @@ using Microsoft.Recognizers.Text.Sequence;
 
 namespace Microsoft.Bot.Builder.Dialogs.Composition.Recognizers
 {
-    public class UrlEntityRecognizer : BaseEntityRecognizer
+    public class UrlEntityRecognizer : EntityRecognizer
     {
         public UrlEntityRecognizer()
         {

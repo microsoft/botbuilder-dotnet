@@ -4,7 +4,7 @@ using Microsoft.Recognizers.Text.Number;
 
 namespace Microsoft.Bot.Builder.Dialogs.Composition.Recognizers
 {
-    public class PercentageEntityRecognizer : BaseEntityRecognizer
+    public class PercentageEntityRecognizer : EntityRecognizer
     {
         public PercentageEntityRecognizer()
         {

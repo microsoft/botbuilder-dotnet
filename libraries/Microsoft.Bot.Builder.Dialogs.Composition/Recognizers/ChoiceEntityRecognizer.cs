@@ -4,7 +4,7 @@ using Microsoft.Recognizers.Text.Choice;
 
 namespace Microsoft.Bot.Builder.Dialogs.Composition.Recognizers
 {
-    public class ChoiceEntityRecognizer : BaseEntityRecognizer
+    public class ChoiceEntityRecognizer : EntityRecognizer
     {
         public ChoiceEntityRecognizer()
         {

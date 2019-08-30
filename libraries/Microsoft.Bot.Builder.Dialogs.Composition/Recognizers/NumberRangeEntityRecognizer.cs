@@ -4,7 +4,7 @@ using Microsoft.Recognizers.Text.Number;
 
 namespace Microsoft.Bot.Builder.Dialogs.Composition.Recognizers
 {
-    public class NumberRangeEntityRecognizer : BaseEntityRecognizer
+    public class NumberRangeEntityRecognizer : EntityRecognizer
     {
         public NumberRangeEntityRecognizer()
         {

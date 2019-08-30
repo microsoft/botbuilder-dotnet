@@ -22,26 +22,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
     /// </summary>
     public class RegexRecognizer : IRecognizer
     {
-        private Dictionary<string, Regex> patterns = new Dictionary<string, Regex>();
-
         public RegexRecognizer()
         {
         }
 
         /// <summary>
-        /// Gets or sets dictionary of patterns -> Intent names.
+        /// Gets or sets intent patterns for recognizing intents using regular expressions
         /// </summary>
         /// <value>
         /// Dictionary of patterns -> Intent names.
         /// </value>
         [JsonProperty("intents")]
-        public Dictionary<string, string> Intents { get; set; } = new Dictionary<string, string>();
+        public List<IntentPattern> Intents { get; set; } = new List<IntentPattern>();
 
         /// <summary>
         /// Gets or sets the entity recognizers.
         /// </summary>
         [JsonProperty("entities")]
-        public EntityRecognizerSet EntityRecognizer { get; set; } = new EntityRecognizerSet();
+        public List<EntityRecognizer> Entities { get; set; } = new List<EntityRecognizer>();
 
         public async Task<RecognizerResult> RecognizeAsync(ITurnContext turnContext, CancellationToken cancellationToken)
         {
@@ -60,67 +58,51 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
                 Intents = new Dictionary<string, IntentScore>(),
             };
 
-            lock (patterns)
-            {
-                foreach (var kv in Intents)
-                {
-                    var intent = kv.Key;
-                    if (!patterns.TryGetValue(intent, out Regex regex))
-                    {
-                        regex = CommonRegex.CreateRegex(kv.Value);
-                        patterns.Add(intent, regex);
-                    }
-                }
-
-                patterns = patterns.OrderByDescending(p => p.Key).ToDictionary(p => p.Key, p => p.Value);
-            }
-
             var entities = new Dictionary<string, List<string>>();
-            foreach (var pattern in patterns)
+            foreach (var intentPattern in this.Intents)
             {
-                var intent = pattern.Key;
+                var matches = intentPattern.Regex.Matches(utterance);
 
-                foreach (var regex in patterns.Values)
+                if (matches.Count > 0)
                 {
-                    var matches = pattern.Value.Matches(utterance);
-
-                    if (matches.Count > 0)
+                    // TODO length weighted match and multiple intents
+                    var intentKey = intentPattern.Intent.Replace(" ", "_");
+                    if (!result.Intents.ContainsKey(intentKey))
                     {
-                        // TODO length weighted match and multiple intents
-                        var intentKey = intent.Replace(" ", "_");
-                        if (!result.Intents.ContainsKey(intentKey))
-                        {
-                            result.Intents.Add(intentKey, new IntentScore() { Score = 1.0 });
-                        }
+                        result.Intents.Add(intentKey, new IntentScore() { Score = 1.0 });
+                    }
 
-                        // Check for named capture groups
-                        // only if we have a value and the name is not a number "0"
-                        foreach (var groupName in regex.GetGroupNames().Where(name => name.Length > 1))
+                    // Check for named capture groups
+                    // only if we have a value and the name is not a number "0"
+                    foreach (var groupName in intentPattern.Regex.GetGroupNames().Where(name => name.Length > 1))
+                    {
+                        foreach (var match in matches.Cast<Match>())
                         {
-                            foreach (var match in matches.Cast<Match>())
+                            var group = (Group)match.Groups[groupName];
+                            if (group.Success)
                             {
-                                var group = (Group)match.Groups[groupName];
-                                if (group.Success)
+                                List<string> values;
+                                if (!entities.TryGetValue(groupName, out values))
                                 {
-                                    List<string> values;
-                                    if (!entities.TryGetValue(groupName, out values))
-                                    {
-                                        values = new List<string>();
-                                        entities.Add(groupName, values);
-                                    }
-
-                                    values.Add(group.Value);
+                                    values = new List<string>();
+                                    entities.Add(groupName, values);
                                 }
+
+                                values.Add(group.Value);
                             }
                         }
                     }
+
+                    // found
+                    break;
                 }
             }
 
-            if (this.EntityRecognizer != null)
+            if (this.Entities != null)
             {
+                EntityRecognizerSet entitySet = new EntityRecognizerSet(this.Entities);
                 IList<Entity> entities2 = new List<Entity>();
-                entities2 = await this.EntityRecognizer.RecognizeEntities(turnContext, entities2).ConfigureAwait(false);
+                entities2 = await entitySet.RecognizeEntities(turnContext, entities2).ConfigureAwait(false);
                 foreach (var entity in entities2)
                 {
                     if (!entities.TryGetValue(entity.Type, out List<string> values))

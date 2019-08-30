@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,9 +10,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Composition.Recognizers
     /// <summary>
     /// EntityRecognizerSet - Implements a workflow against a pool of IEntityRecognizer instances, iterating until nobody has anything new to add.
     /// </summary>
-    public class EntityRecognizerSet : List<IEntityRecognizer>, IEntityRecognizer
+    public class EntityRecognizerSet : List<EntityRecognizer>
     {
         public EntityRecognizerSet()
+        {
+        }
+
+        public EntityRecognizerSet(IEnumerable<EntityRecognizer> recognizers)
+            : base(recognizers)
         {
         }
 

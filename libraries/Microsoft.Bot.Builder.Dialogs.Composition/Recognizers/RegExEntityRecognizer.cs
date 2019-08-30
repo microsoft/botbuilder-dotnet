@@ -6,7 +6,7 @@ using Microsoft.Recognizers.Text.Sequence;
 
 namespace Microsoft.Bot.Builder.Dialogs.Composition.Recognizers
 {
-    public class RegexEntityRecognizer : BaseEntityRecognizer
+    public class RegexEntityRecognizer : EntityRecognizer
     {
         private string pattern;
         private Regex regex;
