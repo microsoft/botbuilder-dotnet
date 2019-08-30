@@ -311,9 +311,9 @@
             "$ref": "#/definitions/Microsoft.RandomSelector"
         },
         {
-            "title": "Microsoft.RegExEntityRecognizer",
+            "title": "Microsoft.RegexEntityRecognizer",
             "description": "Recognizer which recognizes patterns of input based on regex.",
-            "$ref": "#/definitions/Microsoft.RegExEntityRecognizer"
+            "$ref": "#/definitions/Microsoft.RegexEntityRecognizer"
         },
         {
             "title": "Microsoft.RegexRecognizer",
@@ -2701,9 +2701,9 @@
                     "$ref": "#/definitions/Microsoft.PhoneNumberEntityRecognizer"
                 },
                 {
-                    "title": "Microsoft.RegExEntityRecognizer",
+                    "title": "Microsoft.RegexEntityRecognizer",
                     "description": "Recognizer which recognizes patterns of input based on regex.",
-                    "$ref": "#/definitions/Microsoft.RegExEntityRecognizer"
+                    "$ref": "#/definitions/Microsoft.RegexEntityRecognizer"
                 },
                 {
                     "title": "Microsoft.TemperatureEntityRecognizer",
@@ -6140,7 +6140,7 @@
                 }
             ]
         },
-        "Microsoft.RegExEntityRecognizer": {
+        "Microsoft.RegexEntityRecognizer": {
             "$role": "unionType(Microsoft.EntityRecognizer)",
             "title": "Regex Entity Recognizer",
             "description": "Recognizer which recognizes patterns of input based on regex.",
@@ -6151,7 +6151,7 @@
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.RegExEntityRecognizer"
+                    "const": "Microsoft.RegexEntityRecognizer"
                 },
                 "$copy": {
                     "title": "$copy",
@@ -6197,6 +6197,8 @@
                 {
                     "title": "Type",
                     "required": [
+                        "name",
+                        "pattern",
                         "$type"
                     ]
                 }

@@ -15,5 +15,9 @@
             "title": "Pattern",
             "description": "Pattern expressed as regular expression."
         }
-    }
+    },
+    "required": [
+        "name",
+        "pattern"
+    ]
 }
