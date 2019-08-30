@@ -1,11 +1,14 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using static Microsoft.Bot.Builder.Dialogs.Prompts.PromptCultureModels;
 
 namespace Microsoft.Bot.Builder.Dialogs.Tests
 {
@@ -105,6 +108,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             await ConfirmPrompt_Locale_Impl(activityLocale, defaultLocale, prompt, utterance, expectedResponse);
         }
 
+        [DataTestMethod]
+        [DynamicData(nameof(GetLocaleVariationTest), DynamicDataSourceType.Method)]
+        public async Task ConfirmPrompt_Locale_Variations(string activityLocale, string defaultLocale, string prompt, string utterance, string expectedResponse)
+        {
+            await ConfirmPrompt_Locale_Impl(activityLocale, defaultLocale, prompt, utterance, expectedResponse);
+        }
+
         private async Task ConfirmPrompt_Locale_Impl(string activityLocale, string defaultLocale, string prompt, string utterance, string expectedResponse)
         {
             var convoState = new ConversationState(new MemoryStorage());
@@ -147,6 +157,43 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .Send(utterance)
             .AssertReply(expectedResponse)
             .StartTestAsync();
+        }
+
+        /// <summary>
+        /// Generates an Enumerable of variations on all supported locales.
+        /// </summary>
+#pragma warning disable SA1204 // Static elements should appear before instance elements
+        private static IEnumerable<object[]> GetLocaleVariationTest()
+        {
+            var testLocales = new TestLocale[]
+            {
+                new TestLocale(Dutch, "(1) Ja of (2) Nee", "Ja", "Nee"),
+                new TestLocale(Spanish, "(1) Sí o (2) No", "Sí", "No"),
+                new TestLocale(English, "(1) Yes or (2) No", "Yes", "No"),
+                new TestLocale(French, "(1) Oui ou (2) Non", "Oui", "Non"),
+                new TestLocale(German, "(1) Ja oder (2) Nein", "Ja", "Nein"),
+                new TestLocale(Japanese, "(1) はい または (2) いいえ", "はい", "いいえ"),
+                new TestLocale(Portuguese, "(1) Sim ou (2) Não", "Sim", "Não"),
+                new TestLocale(Chinese, "(1) 是的 要么 (2) 不", "是的", "不"),
+            };
+
+            foreach (var locale in testLocales)
+            {
+                yield return new object[] { locale.ValidLocale, locale.ValidLocale, locale.ExpectedPrompt, locale.InputThatResultsInOne, "1" };
+                yield return new object[] { locale.ValidLocale, locale.ValidLocale, locale.ExpectedPrompt, locale.InputThatResultsInZero, "0" };
+
+                yield return new object[] { locale.CapEnding, locale.CapEnding, locale.ExpectedPrompt, locale.InputThatResultsInOne, "1" };
+                yield return new object[] { locale.CapEnding, locale.CapEnding, locale.ExpectedPrompt, locale.InputThatResultsInZero, "0" };
+
+                yield return new object[] { locale.TitleEnding, locale.TitleEnding, locale.ExpectedPrompt, locale.InputThatResultsInOne, "1" };
+                yield return new object[] { locale.TitleEnding, locale.TitleEnding, locale.ExpectedPrompt, locale.InputThatResultsInZero, "0" };
+
+                yield return new object[] { locale.CapTwoLetter, locale.CapTwoLetter, locale.ExpectedPrompt, locale.InputThatResultsInOne, "1" };
+                yield return new object[] { locale.CapTwoLetter, locale.CapTwoLetter, locale.ExpectedPrompt, locale.InputThatResultsInZero, "0" };
+
+                yield return new object[] { locale.LowerTwoLetter, locale.LowerTwoLetter, locale.ExpectedPrompt, locale.InputThatResultsInOne, "1" };
+                yield return new object[] { locale.LowerTwoLetter, locale.LowerTwoLetter, locale.ExpectedPrompt, locale.InputThatResultsInZero, "0" };
+            }
         }
     }
 }

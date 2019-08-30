@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text.Choice;
-using static Microsoft.Recognizers.Text.Culture;
+using static Microsoft.Bot.Builder.Dialogs.Prompts.PromptCultureModels;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
@@ -17,18 +17,6 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// </summary>
     public class ConfirmPrompt : Prompt<bool>
     {
-        private static readonly Dictionary<string, (Choice, Choice, ChoiceFactoryOptions)> ChoiceDefaults = new Dictionary<string, (Choice, Choice, ChoiceFactoryOptions)>()
-        {
-            { Spanish, (new Choice("Sí"), new Choice("No"), new ChoiceFactoryOptions(", ", " o ", ", o ", true)) },
-            { Dutch, (new Choice("Ja"), new Choice("Nee"), new ChoiceFactoryOptions(", ", " of ", ", of ", true)) },
-            { English, (new Choice("Yes"), new Choice("No"), new ChoiceFactoryOptions(", ", " or ", ", or ", true)) },
-            { French, (new Choice("Oui"), new Choice("Non"), new ChoiceFactoryOptions(", ", " ou ", ", ou ", true)) },
-            { German, (new Choice("Ja"), new Choice("Nein"), new ChoiceFactoryOptions(", ", " oder ", ", oder ", true)) },
-            { Japanese, (new Choice("はい"), new Choice("いいえ"), new ChoiceFactoryOptions("、 ", " または ", "、 または ", true)) },
-            { Portuguese, (new Choice("Sim"), new Choice("Não"), new ChoiceFactoryOptions(", ", " ou ", ", ou ", true)) },
-            { Chinese, (new Choice("是的"), new Choice("不"), new ChoiceFactoryOptions("， ", " 要么 ",  "， 要么 ", true)) },
-        };
-
         /// <summary>
         /// Initializes a new instance of the <see cref="ConfirmPrompt"/> class.
         /// </summary>
@@ -77,6 +65,23 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         /// <value>The yes and no <see cref="Choice"/> for the prompt.</value>
         public Tuple<Choice, Choice> ConfirmChoices { get; set; }
+
+        /// <summary>
+        /// Gets a dictionary of Default Choices based on Microsoft.Bot.Builder.Dialogs.Prompts.PromptCultureModels.GetSupportedCultures.
+        /// </summary>
+        private static Dictionary<string, (Choice, Choice, ChoiceFactoryOptions)> ChoiceDefaults
+        {
+            get
+            {
+                var defaults = new Dictionary<string, (Choice, Choice, ChoiceFactoryOptions)>();
+                foreach (var culture in GetSupportedCultures())
+                {
+                    defaults.Add(culture.Locale, (new Choice(culture.YesInLanguage), new Choice(culture.NoInLanguage), new ChoiceFactoryOptions(culture.Separator, culture.InlineOr, culture.InlineOrMore, true)));
+                }
+
+                return defaults;
+            }
+        }
 
         /// <summary>
         /// Prompts the user for input.
@@ -184,10 +189,10 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         private string DetermineCulture(Activity activity)
         {
-            var culture = activity.Locale ?? DefaultLocale;
+            var culture = MapToNearestLanguage(activity.Locale ?? DefaultLocale ?? English.Locale);
             if (string.IsNullOrEmpty(culture) || !ChoiceDefaults.ContainsKey(culture))
             {
-                culture = English;
+                culture = English.Locale;
             }
 
             return culture;

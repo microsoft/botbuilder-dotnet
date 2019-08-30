@@ -10,6 +10,7 @@ using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using static Microsoft.Bot.Builder.Dialogs.Prompts.PromptCultureModels;
 
 namespace Microsoft.Bot.Builder.Dialogs.Tests
 {
@@ -603,6 +604,52 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 .StartTestAsync();
         }
 
+        [DataTestMethod]
+        [DynamicData(nameof(GetLocaleVariationTest), DynamicDataSourceType.Method)]
+        public async Task ShouldRecognizeLocaleVariationsOfCorrectLocales(string testCulture, string inlineOr, string inlineOrMore, string separator)
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+
+            var adapter = new TestAdapter()
+                .Use(new AutoSaveStateMiddleware(convoState));
+
+            // Create new DialogSet.
+            var dialogs = new DialogSet(dialogState);
+            dialogs.Add(new ChoicePrompt("ChoicePrompt", defaultLocale: testCulture));
+
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+
+                var results = await dc.ContinueDialogAsync(cancellationToken);
+                if (results.Status == DialogTurnStatus.Empty)
+                {
+                    await dc.PromptAsync(
+                        "ChoicePrompt",
+                        new PromptOptions
+                        {
+                            Prompt = new Activity { Type = ActivityTypes.Message, Text = "favorite color?", Locale = testCulture },
+                            Choices = _colorChoices,
+                        },
+                        cancellationToken);
+                }
+            })
+                .Send("hello")
+                .AssertReply((activity) =>
+                {
+                    // Use ChoiceFactory to build the expected answer, manually
+                    var expectedChoices = ChoiceFactory.Inline(_colorChoices, null, null, new ChoiceFactoryOptions()
+                    {
+                        InlineOr = inlineOr,
+                        InlineOrMore = inlineOrMore,
+                        InlineSeparator = separator,
+                    }).Text;
+                    Assert.AreEqual($"favorite color?{expectedChoices}", activity.AsMessageActivity().Text);
+                })
+                .StartTestAsync();
+        }
+
         /*
         [TestMethod]
         public async Task ShouldHandleAnUndefinedRequest()
@@ -706,6 +753,34 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 Assert.AreEqual(expectedText, msg.Text);
                 Assert.AreEqual(expectedSpeak, msg.Speak);
             };
+        }
+
+        /// <summary>
+        /// Generates an Enumerable of variations on all supported locales.
+        /// </summary>
+        #pragma warning disable SA1204 // Static elements should appear before instance elements
+        private static IEnumerable<object[]> GetLocaleVariationTest()
+        {
+            var testLocales = new TestLocale[]
+            {
+                new TestLocale(Dutch),
+                new TestLocale(Spanish),
+                new TestLocale(English),
+                new TestLocale(French),
+                new TestLocale(German),
+                new TestLocale(Japanese),
+                new TestLocale(Portuguese),
+                new TestLocale(Chinese),
+            };
+
+            foreach (var locale in testLocales)
+            {
+                yield return new object[] { locale.ValidLocale, locale.InlineOr, locale.InlineOrMore, locale.Separator };
+                yield return new object[] { locale.CapEnding, locale.InlineOr, locale.InlineOrMore, locale.Separator };
+                yield return new object[] { locale.TitleEnding, locale.InlineOr, locale.InlineOrMore, locale.Separator };
+                yield return new object[] { locale.CapTwoLetter, locale.InlineOr, locale.InlineOrMore, locale.Separator };
+                yield return new object[] { locale.LowerTwoLetter, locale.InlineOr, locale.InlineOrMore, locale.Separator };
+            }
         }
     }
 }

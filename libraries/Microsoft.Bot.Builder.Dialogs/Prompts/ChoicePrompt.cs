@@ -7,7 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Schema;
-using static Microsoft.Recognizers.Text.Culture;
+using static Microsoft.Bot.Builder.Dialogs.Prompts.PromptCultureModels;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
@@ -16,18 +16,6 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// </summary>
     public class ChoicePrompt : Prompt<FoundChoice>
     {
-        private static readonly Dictionary<string, ChoiceFactoryOptions> DefaultChoiceOptions = new Dictionary<string, ChoiceFactoryOptions>()
-        {
-            { Spanish, new ChoiceFactoryOptions { InlineSeparator = ", ", InlineOr = " o ", InlineOrMore = ", o ", IncludeNumbers = true } },
-            { Dutch, new ChoiceFactoryOptions { InlineSeparator = ", ", InlineOr = " of ", InlineOrMore = ", of ", IncludeNumbers = true } },
-            { English, new ChoiceFactoryOptions { InlineSeparator = ", ", InlineOr = " or ", InlineOrMore = ", or ", IncludeNumbers = true } },
-            { French, new ChoiceFactoryOptions { InlineSeparator = ", ", InlineOr = " ou ", InlineOrMore = ", ou ", IncludeNumbers = true } },
-            { German, new ChoiceFactoryOptions { InlineSeparator = ", ", InlineOr = " oder ", InlineOrMore = ", oder ", IncludeNumbers = true } },
-            { Japanese, new ChoiceFactoryOptions { InlineSeparator = "、 ", InlineOr = " または ", InlineOrMore = "、 または ", IncludeNumbers = true } },
-            { Portuguese, new ChoiceFactoryOptions { InlineSeparator = ", ", InlineOr = " ou ", InlineOrMore = ", ou ", IncludeNumbers = true } },
-            { Chinese, new ChoiceFactoryOptions { InlineSeparator = "， ", InlineOr = " 要么 ", InlineOrMore = "， 要么 ", IncludeNumbers = true } },
-        };
-
         /// <summary>
         /// Initializes a new instance of the <see cref="ChoicePrompt"/> class.
         /// </summary>
@@ -77,6 +65,23 @@ namespace Microsoft.Bot.Builder.Dialogs
         public FindChoicesOptions RecognizerOptions { get; set; }
 
         /// <summary>
+        /// Gets a dictionary of Default ChoiceOptions based on Microsoft.Bot.Builder.Dialogs.Prompts.PromptCultureModels.GetSupportedCultures.
+        /// </summary>
+        private static Dictionary<string, ChoiceFactoryOptions> DefaultChoiceOptions
+        {
+            get
+            {
+                var defaults = new Dictionary<string, ChoiceFactoryOptions>();
+                foreach (var culture in GetSupportedCultures())
+                {
+                    defaults.Add(culture.Locale, new ChoiceFactoryOptions { InlineSeparator = culture.Separator, InlineOr = culture.InlineOr, InlineOrMore = culture.InlineOrMore, IncludeNumbers = true });
+                }
+
+                return defaults;
+            }
+        }
+
+        /// <summary>
         /// Prompts the user for input.
         /// </summary>
         /// <param name="turnContext">Context for the current turn of conversation with the user.</param>
@@ -101,10 +106,10 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             // Determine culture
-            var culture = turnContext.Activity.Locale ?? DefaultLocale;
+            var culture = MapToNearestLanguage(turnContext.Activity.Locale ?? DefaultLocale);
             if (string.IsNullOrEmpty(culture) || !DefaultChoiceOptions.ContainsKey(culture))
             {
-                culture = English;
+                culture = English.Locale;
             }
 
             // Format prompt to send
@@ -152,7 +157,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 var activity = turnContext.Activity;
                 var utterance = activity.Text;
                 var opt = RecognizerOptions ?? new FindChoicesOptions();
-                opt.Locale = activity.Locale ?? opt.Locale ?? DefaultLocale ?? English;
+                opt.Locale = MapToNearestLanguage(activity.Locale ?? opt.Locale ?? DefaultLocale ?? English.Locale);
                 var results = ChoiceRecognizers.RecognizeChoices(utterance, choices, opt);
                 if (results != null && results.Count > 0)
                 {
