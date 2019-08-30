@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.TestBot
         {
             Configuration = configuration;
 
-            var options = new SimpleWebexAdapterOptions(configuration["AccessToken"], configuration["PublicAddress"], configuration["Secret"], configuration["WebhookName"]);
+            var options = new WebexAdapterOptions(configuration["AccessToken"], configuration["PublicAddress"], configuration["Secret"], configuration["WebhookName"]);
             _adapter = new WebexAdapter(options, new WebexClientWrapper());
 
             RegisterWebhookAsync().Wait();

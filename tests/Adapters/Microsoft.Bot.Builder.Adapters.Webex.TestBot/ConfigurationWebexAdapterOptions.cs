@@ -7,7 +7,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace Microsoft.Bot.Builder.Adapters.Webex.TestBot
 {
-    public class ConfigurationWebexAdapterOptions : SimpleWebexAdapterOptions
+    public class ConfigurationWebexAdapterOptions : WebexAdapterOptions
     {
         public ConfigurationWebexAdapterOptions(IConfiguration configuration)
              : base(configuration["AccessToken"], configuration["PublicAddress"], configuration["Secret"], configuration["WebhookName"])
