@@ -14,7 +14,7 @@ using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
 {
     [TestClass]
     public class RecognizerTests

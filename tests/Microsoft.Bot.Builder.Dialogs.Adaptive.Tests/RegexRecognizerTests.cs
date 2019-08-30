@@ -12,7 +12,7 @@ using Microsoft.Bot.Schema;
 using Microsoft.Extensions.FileSystemGlobbing.Internal.Patterns;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
 {
     [TestClass]
     public class RegexRecognizerTests
