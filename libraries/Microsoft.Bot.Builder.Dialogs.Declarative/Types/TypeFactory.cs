@@ -183,7 +183,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
 
             // Entity recognizers
             Register("Microsoft.AgeEntityRecognizer", typeof(AgeEntityRecognizer));
-            Register("Microsoft.ChoiceEntityRecognizer", typeof(ChoiceEntityRecognizer));
+            Register("Microsoft.ConfirmationEntityRecognizer", typeof(ConfirmationEntityRecognizer));
             Register("Microsoft.CurrencyEntityRecognizer", typeof(CurrencyEntityRecognizer));
             Register("Microsoft.DateTimeEntityRecognizer", typeof(DateTimeEntityRecognizer));
             Register("Microsoft.DimensionEntityRecognizer", typeof(DimensionEntityRecognizer));

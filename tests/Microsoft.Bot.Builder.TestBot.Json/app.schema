@@ -31,11 +31,6 @@
             "$ref": "#/definitions/Microsoft.CancelAllDialogs"
         },
         {
-            "title": "Microsoft.ChoiceEntityRecognizer",
-            "description": "Recognizer which recognizes confirmation choices (yes/no).",
-            "$ref": "#/definitions/Microsoft.ChoiceEntityRecognizer"
-        },
-        {
             "title": "Microsoft.ChoiceInput",
             "description": "This represents a dialog which gathers a choice responses",
             "$ref": "#/definitions/Microsoft.ChoiceInput"
@@ -49,6 +44,11 @@
             "title": "Microsoft.ConfirmInput",
             "description": "This represents a dialog which gathers a yes/no style responses",
             "$ref": "#/definitions/Microsoft.ConfirmInput"
+        },
+        {
+            "title": "Microsoft.ConfirmationEntityRecognizer",
+            "description": "Recognizer which recognizes confirmation choices (yes/no).",
+            "$ref": "#/definitions/Microsoft.ConfirmationEntityRecognizer"
         },
         {
             "title": "Microsoft.CurrencyEntityRecognizer",
@@ -925,58 +925,6 @@
                 }
             ]
         },
-        "Microsoft.ChoiceEntityRecognizer": {
-            "$role": "unionType(Microsoft.EntityRecognizer)",
-            "title": "Choice Entity Recognizer",
-            "description": "Recognizer which recognizes confirmation choices (yes/no).",
-            "type": "object",
-            "properties": {
-                "$type": {
-                    "title": "$type",
-                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.ChoiceEntityRecognizer"
-                },
-                "$copy": {
-                    "title": "$copy",
-                    "description": "Copy the definition by id from a .dialog file.",
-                    "type": "string",
-                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
-                },
-                "$id": {
-                    "title": "$id",
-                    "description": "Inline id for reuse of an inline definition",
-                    "type": "string",
-                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
-                },
-                "$designer": {
-                    "title": "$designer",
-                    "type": "object",
-                    "description": "Extra information for the Bot Framework Designer."
-                }
-            },
-            "additionalProperties": false,
-            "patternProperties": {
-                "^\\$": {
-                    "type": "string"
-                }
-            },
-            "anyOf": [
-                {
-                    "title": "Reference",
-                    "required": [
-                        "$copy"
-                    ]
-                },
-                {
-                    "title": "Type",
-                    "required": [
-                        "$type"
-                    ]
-                }
-            ]
-        },
         "Microsoft.ChoiceInput": {
             "$role": "unionType(Microsoft.IDialog)",
             "title": "ChoiceInput Dialog",
@@ -1607,6 +1555,58 @@
                             }
                         }
                     ]
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$type"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.ConfirmationEntityRecognizer": {
+            "$role": "unionType(Microsoft.EntityRecognizer)",
+            "title": "Confirmation Entity Recognizer",
+            "description": "Recognizer which recognizes confirmation choices (yes/no).",
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.ConfirmationEntityRecognizer"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
                 }
             },
             "additionalProperties": false,
@@ -2641,9 +2641,9 @@
                     "$ref": "#/definitions/Microsoft.AgeEntityRecognizer"
                 },
                 {
-                    "title": "Microsoft.ChoiceEntityRecognizer",
+                    "title": "Microsoft.ConfirmationEntityRecognizer",
                     "description": "Recognizer which recognizes confirmation choices (yes/no).",
-                    "$ref": "#/definitions/Microsoft.ChoiceEntityRecognizer"
+                    "$ref": "#/definitions/Microsoft.ConfirmationEntityRecognizer"
                 },
                 {
                     "title": "Microsoft.CurrencyEntityRecognizer",

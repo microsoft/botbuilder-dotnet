@@ -4,9 +4,12 @@ using Microsoft.Recognizers.Text.Choice;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
 {
-    public class ChoiceEntityRecognizer : EntityRecognizer
+    /// <summary>
+    /// Recognizes yes/no confirmation style input.
+    /// </summary>
+    public class ConfirmationEntityRecognizer : EntityRecognizer
     {
-        public ChoiceEntityRecognizer()
+        public ConfirmationEntityRecognizer()
         {
         }
 

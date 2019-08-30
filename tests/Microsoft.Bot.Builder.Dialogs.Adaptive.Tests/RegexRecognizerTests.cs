@@ -32,7 +32,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
                 Entities = new EntityRecognizerSet()
                 {
                     new AgeEntityRecognizer(),
-                    new ChoiceEntityRecognizer(),
+                    new ConfirmationEntityRecognizer(),
                     new CurrencyEntityRecognizer(),
                     new DateTimeEntityRecognizer(),
                     new DimensionEntityRecognizer(),

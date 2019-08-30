@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
             return new EntityRecognizerSet()
             {
                 new AgeEntityRecognizer(),
-                new ChoiceEntityRecognizer(),
+                new ConfirmationEntityRecognizer(),
                 new CurrencyEntityRecognizer(),
                 new DateTimeEntityRecognizer(),
                 new DimensionEntityRecognizer(),
@@ -53,13 +53,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
         }
 
         [TestMethod]
-        public void TestChoice()
+        public void TestConfirmation()
         {
             var turnContext = GetTurnContext("yes, please");
             var results = recognizers.Value.RecognizeEntities(turnContext).Result;
 
             Assert.AreEqual(2, results.Count, "Should be 1 entities found");
-            Assert.AreEqual(1, results.Where(entity => entity.Type == "boolean").Count(), "Should have 1 age results");
+            Assert.AreEqual(1, results.Where(entity => entity.Type == "boolean").Count(), "Should have 1 boolean results");
         }
 
         [TestMethod]
