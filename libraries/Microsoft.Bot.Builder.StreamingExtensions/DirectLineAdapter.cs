@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Security.Claims;
+using System.Security.Principal;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -39,6 +41,7 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
         private const string AuthHeaderName = "authorization";
         private const string ChannelIdHeaderName = "channelid";
         private const string InvokeResponseKey = "DirectLineAdapter.InvokeResponse";
+        private const string BotIdentityKey = "BotIdentity";
         private IStreamingTransportServer _transportServer;
         private string _userAgent;
         private IBot _bot;
@@ -48,6 +51,7 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
         private readonly IServiceProvider _services;
         private readonly ILogger _logger;
         private HttpClient _httpClient;
+        private ClaimsIdentity _claimsIdentity;
 
         public DirectLineAdapter(ICredentialProvider credentialProvider, IChannelProvider channelProvider = null, ILogger logger = null)
             : base(credentialProvider, channelProvider)
@@ -138,49 +142,6 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
             {
                 httpRequest.HttpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 await httpRequest.HttpContext.Response.WriteAsync("Unable to create transport server.").ConfigureAwait(false);
-
-                throw ex;
-            }
-        }
-
-        private async Task<bool> AuthCheck(HttpRequest httpRequest)
-        {
-            try
-            {
-                if (!await _credentialProvider.IsAuthenticationDisabledAsync().ConfigureAwait(false))
-                {
-                    var authHeader = httpRequest.Headers.Where(x => x.Key.ToLower() == AuthHeaderName).FirstOrDefault().Value.FirstOrDefault();
-                    var channelId = httpRequest.Headers.Where(x => x.Key.ToLower() == ChannelIdHeaderName).FirstOrDefault().Value.FirstOrDefault();
-
-                    if (string.IsNullOrWhiteSpace(authHeader))
-                    {
-                        await MissingAuthHeaderHelperAsync(AuthHeaderName, httpRequest).ConfigureAwait(false);
-
-                        return false;
-                    }
-
-                    if (string.IsNullOrWhiteSpace(channelId))
-                    {
-                        await MissingAuthHeaderHelperAsync(ChannelIdHeaderName, httpRequest).ConfigureAwait(false);
-
-                        return false;
-                    }
-
-                    var claimsIdentity = await JwtTokenValidation.ValidateAuthHeader(authHeader, _credentialProvider, _channelProvider, channelId).ConfigureAwait(false);
-                    if (!claimsIdentity.IsAuthenticated)
-                    {
-                        httpRequest.HttpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-
-                        return false;
-                    }
-                }
-
-                return true;
-            }
-            catch (Exception ex)
-            {
-                httpRequest.HttpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                await httpRequest.HttpContext.Response.WriteAsync("Error while attempting to authorize connection.").ConfigureAwait(false);
 
                 throw ex;
             }
@@ -388,6 +349,10 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
 
             using (var context = new TurnContext(this, activity))
             {
+                context.TurnState.Add<IIdentity>(BotIdentityKey, _claimsIdentity);
+                var connectorClient = CreateStreamingConnectorClient(activity);
+                context.TurnState.Add(connectorClient);
+
                 await RunPipelineAsync(context, callback, cancellationToken).ConfigureAwait(false);
 
                 if (activity.Type == ActivityTypes.Invoke)
@@ -424,6 +389,60 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
                 ConnectorClient.GetASPNetVersion(),
                 ConnectorClient.GetOsVersion(),
                 ConnectorClient.GetArchitecture());
+
+        private IConnectorClient CreateStreamingConnectorClient(Activity activity)
+        {
+            var emptyCredentials = (_channelProvider != null && _channelProvider.IsGovernment()) ?
+                    MicrosoftGovernmentAppCredentials.Empty :
+                    MicrosoftAppCredentials.Empty;
+            var connectorClient = new ConnectorClient(new Uri(activity.ServiceUrl), emptyCredentials, customHttpClient: _httpClient);
+            return connectorClient;
+        }
+
+        private async Task<bool> AuthCheck(HttpRequest httpRequest)
+        {
+            try
+            {
+                if (!await _credentialProvider.IsAuthenticationDisabledAsync().ConfigureAwait(false))
+                {
+                    var authHeader = httpRequest.Headers.Where(x => x.Key.ToLower() == AuthHeaderName).FirstOrDefault().Value.FirstOrDefault();
+                    var channelId = httpRequest.Headers.Where(x => x.Key.ToLower() == ChannelIdHeaderName).FirstOrDefault().Value.FirstOrDefault();
+
+                    if (string.IsNullOrWhiteSpace(authHeader))
+                    {
+                        await MissingAuthHeaderHelperAsync(AuthHeaderName, httpRequest).ConfigureAwait(false);
+
+                        return false;
+                    }
+
+                    if (string.IsNullOrWhiteSpace(channelId))
+                    {
+                        await MissingAuthHeaderHelperAsync(ChannelIdHeaderName, httpRequest).ConfigureAwait(false);
+
+                        return false;
+                    }
+
+                    var claimsIdentity = await JwtTokenValidation.ValidateAuthHeader(authHeader, _credentialProvider, _channelProvider, channelId).ConfigureAwait(false);
+                    if (!claimsIdentity.IsAuthenticated)
+                    {
+                        httpRequest.HttpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+
+                        return false;
+                    }
+
+                    _claimsIdentity = claimsIdentity;
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                httpRequest.HttpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                await httpRequest.HttpContext.Response.WriteAsync("Error while attempting to authorize connection.").ConfigureAwait(false);
+
+                throw ex;
+            }
+        }
 
         private async Task MissingAuthHeaderHelperAsync(string headerName, HttpRequest httpRequest)
         {
@@ -480,7 +499,7 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
                     throw new Exception("Unable to find bot when processing request.");
                 }
 
-                var invokeResponse = await ProcessActivityAsync(body, request.Streams, new BotCallbackHandler(bot.OnTurnAsync), cancellationToken).ConfigureAwait(false);
+                var invokeResponse = await ProcessActivityAsync(body, request.Streams, bot.OnTurnAsync, cancellationToken).ConfigureAwait(false);
 
                 if (invokeResponse == null)
                 {

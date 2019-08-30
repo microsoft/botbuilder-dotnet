@@ -24,14 +24,14 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
             _logger = logger != null ? logger : NullLogger.Instance;
         }
 
-        public override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        public override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken = default(CancellationToken))
         {
             var streamingRequest = new StreamingRequest();
             streamingRequest.Path = request.RequestUri.OriginalString.Substring(request.RequestUri.OriginalString.IndexOf("/v3"));
             streamingRequest.Verb = request.Method.ToString();
             streamingRequest.SetBody(request.Content);
 
-            return SendRequestAsync<HttpResponseMessage>(streamingRequest, cancellationToken);
+            return await SendRequestAsync<HttpResponseMessage>(streamingRequest, cancellationToken).ConfigureAwait(false);
         }
 
         private async Task<T> SendRequestAsync<T>(StreamingRequest request, CancellationToken cancellation = default(CancellationToken))
