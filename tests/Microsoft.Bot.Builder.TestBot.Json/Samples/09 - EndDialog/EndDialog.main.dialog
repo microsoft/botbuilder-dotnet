@@ -4,10 +4,20 @@
     "autoEndDialog": false,
     "recognizer": {
         "$type": "Microsoft.RegexRecognizer",
-        "intents": {
-            "JokeIntent": "(?i)joke",
-            "CancelIntent": "(?i)cancel|never mind"
-        }
+        "intents": [
+            {
+
+                "$type": "Microsoft.IntentPattern",
+                "intent": "JokeIntent",
+                "pattern": "(?i)joke" 
+            },
+            {
+
+                "$type": "Microsoft.IntentPattern",
+                "intent": "CancelIntent",
+                "pattern": "(?i)cancel|never mind"
+            }
+        ]
     },
     "events": [
         {

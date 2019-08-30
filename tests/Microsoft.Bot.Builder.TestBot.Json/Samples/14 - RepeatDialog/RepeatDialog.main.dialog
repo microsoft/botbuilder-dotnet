@@ -4,9 +4,14 @@
     "$id": "root",
     "recognizer": {
         "$type": "Microsoft.RegexRecognizer",
-        "intents": {
-            "cancel": "cancel"
-        }
+        "intents": [
+            {
+
+                "$type": "Microsoft.IntentPattern",
+                "intent": "cancel",
+                "pattern": "cancel"
+            }
+        ]
     },
     "events": [
         {

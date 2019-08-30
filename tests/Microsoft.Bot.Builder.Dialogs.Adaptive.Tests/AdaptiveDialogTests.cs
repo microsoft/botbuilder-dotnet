@@ -379,10 +379,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 AutoEndDialog = false,
                 Recognizer = new RegexRecognizer()
                 {
-                    Intents = new Dictionary<string, string>()
+                    Intents = new List<IntentPattern>()
                     {
-                        { "JokeIntent", "joke" },
-                        { "HelloIntent", "hi|hello" }
+                        new IntentPattern("JokeIntent", "joke"),
+                        new IntentPattern( "HelloIntent", "hi|hello"),
                     }
                 },
                 Events = new List<IOnEvent>()
@@ -448,10 +448,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             ruleDialog.AutoEndDialog = false;
             ruleDialog.Recognizer = new RegexRecognizer()
             {
-                Intents = new Dictionary<string, string>()
+                Intents = new List<IntentPattern>()
                 {
-                    { "JokeIntent", "(?i)joke" },
-                    { "GreetingIntent", "(?i)greeting|hi|hello" }
+                    new IntentPattern("JokeIntent", "(?i)joke"),
+                    new IntentPattern("GreetingIntent", "(?i)greeting|hi|hello"),
                 }
             };
 
@@ -521,11 +521,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 AutoEndDialog = false,
                 Recognizer = new RegexRecognizer()
                 {
-                    Intents = new Dictionary<string, string>()
+                    Intents = new List<IntentPattern>()
                     {
-                        { "JokeIntent", "joke" },
-                        { "GreetingIntemt", "hi|hello" },
-                        { "GoodbyeIntent", "bye|goodbye|seeya|see ya" },
+                        new IntentPattern("JokeIntent", "joke"),
+                        new IntentPattern("GreetingIntemt", "hi|hello"),
+                        new IntentPattern("GoodbyeIntent", "bye|goodbye|seeya|see ya"),
                     }
                 },
                 Events = new List<IOnEvent>()
@@ -604,11 +604,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 AutoEndDialog = false,
                 Recognizer = new RegexRecognizer()
                 {
-                    Intents = new Dictionary<string, string>()
+                    Intents = new List<IntentPattern>()
                     {
-                        { "JokeIntent", "(?i)joke" },
-                        { "GreetingIntent", "(?i)hi|hello" },
-                        { "GoodbyeIntent", "(?i)bye|goodbye|seeya|see ya" }
+                        new IntentPattern("JokeIntent", "(?i)joke"),
+                        new IntentPattern("GreetingIntent", "(?i)hi|hello"),
+                        new IntentPattern("GoodbyeIntent", "(?i)bye|goodbye|seeya|see ya"),
                     }
                 },
                 Events = new List<IOnEvent>()
@@ -704,10 +704,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 AutoEndDialog = false,
                 Recognizer = new RegexRecognizer()
                 {
-                    Intents = new Dictionary<string, string>()
+                    Intents = new List<IntentPattern>()
                     {
-                        { "BeginIntent", "(?i)begin" },
-                        { "HelpIntent", "(?i)help" }
+                        new IntentPattern("BeginIntent", "(?i)begin"),
+                        new IntentPattern("HelpIntent", "(?i)help"),
                     }
                 },
                 Events = new List<IOnEvent>()
@@ -779,10 +779,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 AutoEndDialog = false,
                 Recognizer = new RegexRecognizer()
                 {
-                    Intents = new Dictionary<string, string>()
+                    Intents = new List<IntentPattern>()
                     {
-                        { "SideIntent", "side" },
-                        { "CancelIntent", "cancel" },
+                        new IntentPattern("SideIntent", "side"),
+                        new IntentPattern("CancelIntent", "cancel"),
                     }
                 },
                 Events = new List<IOnEvent>()
@@ -824,10 +824,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 AutoEndDialog = false,
                 Recognizer = new RegexRecognizer()
                 {
-                    Intents = new Dictionary<string, string>()
+                    Intents = new List<IntentPattern>()
                     {
-                        { "StartOuterIntent", "start" },
-                        { "RootIntent", "root" },
+                        new IntentPattern("StartOuterIntent", "start"),
+                        new IntentPattern("RootIntent", "root"),
                     }
                 },
                 Events = new List<IOnEvent>()
@@ -873,9 +873,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 AutoEndDialog = false,
                 Recognizer = new RegexRecognizer()
                 {
-                    Intents = new Dictionary<string, string>()
+                    Intents = new List<IntentPattern>()
                     {
-                        { "JokeIntent", "joke" }
+                        new IntentPattern("JokeIntent", "joke"),
                     }
                 },
                 Events = new List<IOnEvent>()
@@ -931,9 +931,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 AutoEndDialog = false,
                 Recognizer = new RegexRecognizer()
                 {
-                    Intents = new Dictionary<string, string>()
+                    Intents = new List<IntentPattern>()
                     {
-                        { "JokeIntent", "joke" }
+                        new IntentPattern("JokeIntent", "joke"),
                     }
                 },
                 Events = new List<IOnEvent>()
@@ -1154,14 +1154,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 Generator = new TemplateEngineLanguageGenerator(),
                 Recognizer = new RegexRecognizer()
                 {
-                    Intents = new Dictionary<string, string>()
+                    Intents = new List<IntentPattern>()
                     {
-                        { "Interruption", "(?i)interrupt" },
-                        { "Greeting", "(?i)hi" },
-                        { "Start", "(?i)start" },
-                        { "noage", "(?i)no" },
-                        { "why", "(?i)why" },
-                        { "reset", "(?i)reset" }
+                        new IntentPattern("Interruption", "(?i)interrupt"),
+                        new IntentPattern("Greeting", "(?i)hi"),
+                        new IntentPattern("Start", "(?i)start"),
+                        new IntentPattern("noage", "(?i)no"),
+                        new IntentPattern("why", "(?i)why"),
+                        new IntentPattern("reset", "(?i)reset"),
                     }
                 },
                 Events = new List<IOnEvent>()
@@ -1273,10 +1273,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 Generator = new TemplateEngineLanguageGenerator(),
                 Recognizer = new RegexRecognizer()
                 {
-                    Intents = new Dictionary<string, string>()
+                    Intents = new List<IntentPattern>()
                     {
-                        { "Interruption", "(?i)interrupt" },
-                        { "Start", "(?i)start" }
+                        new IntentPattern("Interruption", "(?i)interrupt"),
+                        new IntentPattern("Start", "(?i)start"),
                     }
                 },
                 Events = new List<IOnEvent>()
@@ -1331,10 +1331,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 Generator = new TemplateEngineLanguageGenerator(),
                 Recognizer = new RegexRecognizer()
                 {
-                    Intents = new Dictionary<string, string>()
+                    Intents = new List<IntentPattern>()
                     {
-                        { "Interruption", "(?i)interrupt" },
-                        { "Start", "(?i)start" }
+                        new IntentPattern("Interruption", "(?i)interrupt" ),
+                        new IntentPattern("Start", "(?i)start"),
                     }
                 },
                 Events = new List<IOnEvent>()
@@ -1413,10 +1413,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 Generator = new TemplateEngineLanguageGenerator(),
                 Recognizer = new RegexRecognizer()
                 {
-                    Intents = new Dictionary<string, string>()
+                    Intents = new List<IntentPattern>()
                     {
-                        { "Start", "(?i)start" },
-                        { "None", "200" }
+                        new IntentPattern("Start", "(?i)start" ),
+                        new IntentPattern("None", "200"),
                     }
                 },
                 Events = new List<IOnEvent>()
@@ -1483,9 +1483,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 Generator = new TemplateEngineLanguageGenerator(),
                 Recognizer = new RegexRecognizer()
                 {
-                    Intents = new Dictionary<string, string>()
+                    Intents = new List<IntentPattern>()
                     {
-                        { "Start", "(?i)start" }
+                        new IntentPattern("Start", "(?i)start"),
                     }
                 },
                 Events = new List<IOnEvent>()
@@ -1549,9 +1549,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 Generator = new TemplateEngineLanguageGenerator(),
                 Recognizer = new RegexRecognizer()
                 {
-                    Intents = new Dictionary<string, string>()
+                    Intents = new List<IntentPattern>()
                     {
-                        { "Start", "(?i)start" }
+                        new IntentPattern("Start", "(?i)start"),
                     }
                 },
                 Events = new List<IOnEvent>()
@@ -1613,9 +1613,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 Generator = new TemplateEngineLanguageGenerator(),
                 Recognizer = new RegexRecognizer()
                 {
-                    Intents = new Dictionary<string, string>()
+                    Intents = new List<IntentPattern>()
                     {
-                        { "Start", "(?i)start" }
+                        new IntentPattern("Start", "(?i)start"),
                     }
                 },
                 Events = new List<IOnEvent>()
@@ -1676,9 +1676,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 Generator = new TemplateEngineLanguageGenerator(),
                 Recognizer = new RegexRecognizer()
                 {
-                    Intents = new Dictionary<string, string>()
+                    Intents = new List<IntentPattern>()
                     {
-                        { "Start", "(?i)start" }
+                        new IntentPattern("Start", "(?i)start"),
                     }
                 },
                 Events = new List<IOnEvent>()
@@ -1736,9 +1736,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 Generator = new TemplateEngineLanguageGenerator(),
                 Recognizer = new RegexRecognizer()
                 {
-                    Intents = new Dictionary<string, string>()
+                    Intents = new List<IntentPattern>()
                     {
-                        { "Start", "(?i)start" }
+                        new IntentPattern("Start", "(?i)start"),
                     }
                 },
                 Events = new List<IOnEvent>()
@@ -1797,9 +1797,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 Generator = new TemplateEngineLanguageGenerator(),
                 Recognizer = new RegexRecognizer()
                 {
-                    Intents = new Dictionary<string, string>()
+                    Intents = new List<IntentPattern>()
                     {
-                        { "Start", "(?i)start" }
+                        new IntentPattern("Start", "(?i)start"),
                     }
                 },
                 Events = new List<IOnEvent>()
@@ -1864,9 +1864,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 Generator = new TemplateEngineLanguageGenerator(),
                 Recognizer = new RegexRecognizer()
                 {
-                    Intents = new Dictionary<string, string>()
+                    Intents = new List<IntentPattern>()
                     {
-                        { "Start", "(?i)start" }
+                        new IntentPattern("Start", "(?i)start"),
                     }
                 },
                 Events = new List<IOnEvent>()
@@ -1984,9 +1984,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 AutoEndDialog = false,
                 Recognizer = new RegexRecognizer()
                 {
-                    Intents = new Dictionary<string, string>()
+                    Intents = new List<IntentPattern>()
                     {
-                        { "SubmitIntent", "123123123" }
+                        new IntentPattern("SubmitIntent", "123123123"),
                     }
                 },
                 Events = new List<IOnEvent>()

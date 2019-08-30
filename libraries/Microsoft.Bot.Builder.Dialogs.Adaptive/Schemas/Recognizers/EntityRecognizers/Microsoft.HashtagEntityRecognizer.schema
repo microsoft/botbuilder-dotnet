@@ -1,0 +1,8 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
+    "$role": "unionType(Microsoft.EntityRecognizer)",
+    "title": "Hashtag Entity Recognizer",
+    "description": "Recognizer which recognizes Hashtags.",
+    "type": "object",
+    "properties": {}
+}

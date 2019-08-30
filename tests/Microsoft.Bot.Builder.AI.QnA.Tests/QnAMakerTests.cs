@@ -1358,39 +1358,39 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 AutoEndDialog = false,
                 Recognizer = new RegexRecognizer()
                 {
-                    Intents = new Dictionary<string, string>()
-                                        {
-                                            { "CowboyIntent", "moo" }
-                                        }
+                    Intents = new List<IntentPattern>()
+                    {
+                        new IntentPattern("CowboyIntent", "moo")
+                    }
                 },
                 Events = new List<IOnEvent>()
+                {
+                    new OnIntent(intent: "CowboyIntent")
+                    {
+                        Actions = new List<IDialog>()
+                        {
+                            new SendActivity("Yippee ki-yay!")
+                        }
+                    },
+                    new OnUnknownIntent()
+                    {
+                        Actions = new List<IDialog>()
+                        {
+                            new QnAMakerDialog(qnamaker: qna)
+                            {
+                                OutputBinding = "turn.LastResult"
+                            },
+                            new IfCondition()
+                            {
+                                    Condition = "turn.LastResult == false",
+                                    Actions = new List<IDialog>()
                                     {
-                                        new OnIntent(intent: "CowboyIntent")
-                                        {
-                                            Actions = new List<IDialog>()
-                                            {
-                                                new SendActivity("Yippee ki-yay!")
-                                            }
-                                        },
-                                        new OnUnknownIntent()
-                                        {
-                                            Actions = new List<IDialog>()
-                                            {
-                                                new QnAMakerDialog(qnamaker: qna)
-                                                {
-                                                    OutputBinding = "turn.LastResult"
-                                                },
-                                                new IfCondition()
-                                                {
-                                                     Condition = "turn.LastResult == false",
-                                                     Actions = new List<IDialog>()
-                                                     {
-                                                         new SendActivity("I didn't understand that.")
-                                                     }
-                                                }
-                                            }
-                                        }
+                                        new SendActivity("I didn't understand that.")
                                     }
+                            }
+                        }
+                    }
+                }
             };
 
             var rootDialog = new AdaptiveDialog("root")
