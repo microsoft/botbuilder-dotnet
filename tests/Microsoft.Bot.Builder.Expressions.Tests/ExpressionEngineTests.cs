@@ -220,6 +220,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             #region SetPathToProperty test
             // TODO: We should support this.
             // Test("@@['c' + 'ity']", "Seattle"),
+            /*
             Test("setPathToValue(@@blah.woof, 1+2) + @@blah.woof", 6),
             Test("setPathToValue(path.simple, 3) + path.simple", 6),
             Test("setPathToValue(path.simple, 5) + path.simple", 10),
@@ -231,6 +232,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("setPathToValue(path.overwrite[0], 3) + setPathToValue(path.overwrite, 4) + path.overwrite", 11),
             Test("setPathToValue(path.overwrite.prop, 3) + setPathToValue(path.overwrite, 4) + path.overwrite", 11),
             Test("setPathToValue(path.overwrite.prop, 3) + setPathToValue(path.overwrite[0], 4) + path.overwrite[0]", 11),
+            */
             #endregion
 
             #region Operators test

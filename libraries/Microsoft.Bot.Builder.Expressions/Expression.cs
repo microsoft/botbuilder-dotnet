@@ -266,6 +266,9 @@ namespace Microsoft.Bot.Builder.Expressions
         public (object value, string error) TryEvaluate(IMemoryScopeManager state)
             => Evaluator.TryEvaluate(this, state);
 
+        public (object value, string error) TryEvaluate(object state)
+            => Evaluator.TryEvaluate(this, new DefaultMemoryScopeManager(state));
+
         public override string ToString()
         {
             var builder = new StringBuilder();

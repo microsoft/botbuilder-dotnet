@@ -22,14 +22,19 @@ namespace Microsoft.Bot.Builder.Expressions
             return value;
         }
 
+        public object SetValue(string path, object value)
+        {
+            return SetProperty(scopes.Peek(), path, value);
+        }
+
         public void PopScope()
         {
-            throw new NotImplementedException();
+            scopes.Pop();
         }
 
         public void PushScope(object scope)
         {
-            throw new NotImplementedException();
+            scopes.Push(scope);
         }
 
         public void SetValue(string path)
@@ -117,6 +122,36 @@ namespace Microsoft.Bot.Builder.Expressions
                 }
             }
             return value;
+        }
+
+        private object SetProperty(object instance, string property, object value)
+        {
+            object result = value;
+
+            if (instance is IDictionary<string, object> idict)
+            {
+                idict[property] = value;
+            }
+            else if (instance is IDictionary dict)
+            {
+                dict[property] = value;
+            }
+            else if (instance is JObject jobj)
+            {
+                result = JToken.FromObject(value);
+                jobj[property] = (JToken)result;
+            }
+            else
+            {
+                // Use reflection
+                var type = instance.GetType();
+                var prop = type.GetProperties().Where(p => p.Name.ToLower() == property).SingleOrDefault();
+                if (prop != null)
+                {
+                    prop.SetValue(instance, value);
+                }
+            }
+            return result;
         }
     }
 }

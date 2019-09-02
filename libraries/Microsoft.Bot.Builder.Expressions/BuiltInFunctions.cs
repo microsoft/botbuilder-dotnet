@@ -730,22 +730,29 @@ namespace Microsoft.Bot.Builder.Expressions
         private static (object value, string error) Accessor(Expression expression, IMemoryScopeManager state)
         {
             object value = null;
-            string error = null;
-            object instance;
             var children = expression.Children;
-            if (children.Length == 2)
+
+            if (children[0] is Constant cnst && cnst.ReturnType == ReturnType.String)
             {
-                (instance, error) = children[1].TryEvaluate(state);
+                if (children.Length == 2)
+                {
+                    var (newScope, error) = children[1].TryEvaluate(state);
+
+                    if (error != null)
+                    {
+                        return (null, error);
+                    }
+
+                    state.PushScope(newScope);
+                    value = state.GetValue((string)cnst.Value);
+                    state.PopScope();
+                }
+                else
+                {
+                    value = state.GetValue((string)cnst.Value);
+                }
             }
-            else
-            {
-                instance = state;
-            }
-            if (error == null && children[0] is Constant cnst && cnst.ReturnType == ReturnType.String)
-            {
-                (value, error) = AccessProperty(instance, (string)cnst.Value);
-            }
-            return (value, error);
+            return (value, null);
         }
 
         private static (object value, string error) GetProperty(Expression expression, IMemoryScopeManager state)
