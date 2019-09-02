@@ -681,7 +681,19 @@ namespace Microsoft.Bot.Builder.Expressions
         private static (object value, string error) CallstackScope(Expression expression, IMemoryScopeManager state)
         {
             // get callstack collection?
-            var (result, error) = AccessProperty(state, "callstack");
+            object result = null;
+            string error = null;
+
+            try
+            {
+                result = state.GetValue("callstack");
+            }
+            catch (Exception e)
+            {
+                error = e.Message;
+                return (result, error);
+            }
+
             if (result != null)
             {
                 var items = (IEnumerable<object>)result;
