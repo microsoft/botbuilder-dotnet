@@ -11,6 +11,9 @@
         // set a value to a given path
         void SetValue(string path);
 
+        // return the current active memory scope
+        object CurrentScope();
+
         // push a new scope when a sub-evaluation
         void PushScope(object scope);
 

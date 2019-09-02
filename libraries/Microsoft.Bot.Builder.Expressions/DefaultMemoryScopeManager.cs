@@ -16,6 +16,15 @@ namespace Microsoft.Bot.Builder.Expressions
             scopes.Push(initialScope);
         }
 
+        // This is particular useful, when evaluting foreach
+        // when evaluting foreach(items, x, x.y), we will construct a new scope like this
+        // { "$global": currentScope, "$local", {x: item[0..n]} }
+        // it's based on current scope, so we have to know the current scope
+        public object CurrentScope()
+        {
+            return scopes.Peek();
+        }
+
         public object GetValue(string path)
         {
             var (value, error) = AccessProperty(scopes.Peek(), path);

@@ -1332,7 +1332,7 @@ namespace Microsoft.Bot.Builder.Expressions
                         };
                         var newScope = new Dictionary<string, object>
                         {
-                            { "$global", state },
+                            { "$global", state.CurrentScope() },
                             { "$local", local },
                         };
 
