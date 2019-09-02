@@ -1,5 +1,4 @@
-﻿
-namespace Microsoft.Bot.Builder.Expressions
+﻿namespace Microsoft.Bot.Builder.Expressions
 {
     // the memory scope manager for the evaluation process an expression
     // which controls the memory scope access and update

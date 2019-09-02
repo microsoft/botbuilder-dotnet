@@ -421,7 +421,7 @@ namespace Microsoft.Bot.Builder.Expressions
         /// <param name="state">Global state.</param>
         /// <param name="verify">Optional function to verify each child's result.</param>
         /// <returns>List of child values or error message.</returns>
-        public static (IReadOnlyList<dynamic>, string error) EvaluateChildren(Expression expression, object state, VerifyExpression verify = null)
+        public static (IReadOnlyList<dynamic>, string error) EvaluateChildren(Expression expression, IMemoryScopeManager state, VerifyExpression verify = null)
         {
             var args = new List<dynamic>();
             object value;
@@ -678,7 +678,7 @@ namespace Microsoft.Bot.Builder.Expressions
         /// <param name="expression">Filter expression.</param>
         /// <param name="state">Object containing the dialog callstack to search.</param>
         /// <returns>The property.</returns>
-        private static (object value, string error) CallstackScope(Expression expression, object state)
+        private static (object value, string error) CallstackScope(Expression expression, IMemoryScopeManager state)
         {
             // get callstack collection?
             var (result, error) = AccessProperty(state, "callstack");
@@ -727,7 +727,7 @@ namespace Microsoft.Bot.Builder.Expressions
             }
         }
 
-        private static (object value, string error) Accessor(Expression expression, object state)
+        private static (object value, string error) Accessor(Expression expression, IMemoryScopeManager state)
         {
             object value = null;
             string error = null;
@@ -748,7 +748,7 @@ namespace Microsoft.Bot.Builder.Expressions
             return (value, error);
         }
 
-        private static (object value, string error) GetProperty(Expression expression, object state)
+        private static (object value, string error) GetProperty(Expression expression, IMemoryScopeManager state)
         {
             object value = null;
             string error;
@@ -902,7 +902,7 @@ namespace Microsoft.Bot.Builder.Expressions
             return (value, error);
         }
 
-        private static (object value, string error) ExtractElement(Expression expression, object state)
+        private static (object value, string error) ExtractElement(Expression expression, IMemoryScopeManager state)
         {
             object value = null;
             string error;
@@ -959,7 +959,7 @@ namespace Microsoft.Bot.Builder.Expressions
 
         // Expected is null if expecting an object or the desired offset in a list.
         // Value is null except at the root
-        private static (object, string) SetPathToValue(Expression path, int? expected, object value, object state)
+        private static (object, string) SetPathToValue(Expression path, int? expected, object value, IMemoryScopeManager state)
         {
             object result = null;
             string error;
@@ -1052,7 +1052,7 @@ namespace Microsoft.Bot.Builder.Expressions
             return (result, error);
         }
 
-        private static (object value, string error) SetPathToValue(Expression expr, object state)
+        private static (object value, string error) SetPathToValue(Expression expr, IMemoryScopeManager state)
         {
             var path = expr.Children[0];
             var valueExpr = expr.Children[1];
@@ -1158,7 +1158,7 @@ namespace Microsoft.Bot.Builder.Expressions
             return result;
         }
 
-        private static (object value, string error) And(Expression expression, object state)
+        private static (object value, string error) And(Expression expression, IMemoryScopeManager state)
         {
             object result = false;
             string error = null;
@@ -1188,7 +1188,7 @@ namespace Microsoft.Bot.Builder.Expressions
             return (result, error);
         }
 
-        private static (object value, string error) Or(Expression expression, object state)
+        private static (object value, string error) Or(Expression expression, IMemoryScopeManager state)
         {
             object result = false;
             string error = null;
@@ -1212,7 +1212,7 @@ namespace Microsoft.Bot.Builder.Expressions
             return (result, error);
         }
 
-        private static (object value, string error) Not(Expression expression, object state)
+        private static (object value, string error) Not(Expression expression, IMemoryScopeManager state)
         {
             object result;
             string error;
@@ -1229,7 +1229,7 @@ namespace Microsoft.Bot.Builder.Expressions
             return (result, error);
         }
 
-        private static (object value, string error) If(Expression expression, object state)
+        private static (object value, string error) If(Expression expression, IMemoryScopeManager state)
         {
             object result;
             string error;
@@ -1246,7 +1246,7 @@ namespace Microsoft.Bot.Builder.Expressions
             return (result, error);
         }
 
-        private static (object value, string error) Substring(Expression expression, object state)
+        private static (object value, string error) Substring(Expression expression, IMemoryScopeManager state)
         {
             object result = null;
             string error;
@@ -1302,7 +1302,7 @@ namespace Microsoft.Bot.Builder.Expressions
             return (result, error);
         }
 
-        private static (object value, string error) Foreach(Expression expression, object state)
+        private static (object value, string error) Foreach(Expression expression, IMemoryScopeManager state)
         {
             object result = null;
             string error;
@@ -1329,7 +1329,11 @@ namespace Microsoft.Bot.Builder.Expressions
                             { "$local", local },
                         };
 
-                        (var r, var e) = expression.Children[2].TryEvaluate(newScope);
+                        // Push\pop scope for evaluation
+                        state.PushScope(newScope);
+                        (var r, var e) = expression.Children[2].TryEvaluate(state);
+                        state.PopScope();
+
                         if (e != null)
                         {
                             return (null, e);
@@ -1346,7 +1350,7 @@ namespace Microsoft.Bot.Builder.Expressions
             return (result, error);
         }
 
-        private static (object value, string error) Where(Expression expression, object state)
+        private static (object value, string error) Where(Expression expression, IMemoryScopeManager state)
         {
             object result = null;
             string error;
@@ -1373,7 +1377,10 @@ namespace Microsoft.Bot.Builder.Expressions
                             { "$local", local },
                         };
 
-                        (var r, var e) = expression.Children[2].TryEvaluate(newScope);
+                        state.PushScope(newScope);
+                        (var r, var e) = expression.Children[2].TryEvaluate(state);
+                        state.PopScope();
+
                         if (e != null)
                         {
                             return (null, e);
@@ -2087,7 +2094,7 @@ namespace Microsoft.Bot.Builder.Expressions
         }
 
         // collection functions
-        private static (object value, string error) Skip(Expression expression, object state)
+        private static (object value, string error) Skip(Expression expression, IMemoryScopeManager state)
         {
             object result = null;
             string error;
@@ -2132,7 +2139,7 @@ namespace Microsoft.Bot.Builder.Expressions
             return (result, error);
         }
 
-        private static (object, string) Take(Expression expression, object state)
+        private static (object, string) Take(Expression expression, IMemoryScopeManager state)
         {
             object result = null;
             string error;
@@ -2190,7 +2197,7 @@ namespace Microsoft.Bot.Builder.Expressions
             return (result, error);
         }
 
-        private static (object, string) SubArray(Expression expression, object state)
+        private static (object, string) SubArray(Expression expression, IMemoryScopeManager state)
         {
             object result = null;
             string error;
