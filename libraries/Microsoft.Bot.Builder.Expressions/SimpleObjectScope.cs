@@ -7,48 +7,25 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Expressions
 {
-    internal class DefaultMemoryScopeManager : IMemoryScopeManager
+    internal class SimpleObjectScope : IMemoryScope
     {
-        private readonly Stack<object> scopes = new Stack<object>();
+        private object scope = null;
 
-        public DefaultMemoryScopeManager(object initialScope)
+        public SimpleObjectScope(object scope)
         {
-            scopes.Push(initialScope);
+            this.scope = scope;
         }
 
-        // This is particular useful, when evaluting foreach
-        // when evaluting foreach(items, x, x.y), we will construct a new scope like this
-        // { "$global": currentScope, "$local", {x: item[0..n]} }
-        // it's based on current scope, so we have to know the current scope
-        public object CurrentScope()
-        {
-            return scopes.Peek();
-        }
 
         public object GetValue(string path)
         {
-            var (value, error) = AccessProperty(scopes.Peek(), path);
+            var (value, error) = AccessProperty(scope, path);
             return value;
         }
 
         public object SetValue(string path, object value)
         {
-            return SetProperty(scopes.Peek(), path, value);
-        }
-
-        public void PopScope()
-        {
-            scopes.Pop();
-        }
-
-        public void PushScope(object scope)
-        {
-            scopes.Push(scope);
-        }
-
-        public void SetValue(string path)
-        {
-            throw new NotImplementedException();
+            return SetProperty(scope, path, value);
         }
 
         private (object value, string error) AccessProperty(object instance, string property)
