@@ -1123,18 +1123,23 @@ namespace Microsoft.Bot.Builder.Expressions
 
         private static (object value, string error) SetPathToValue(Expression expr, IMemoryScope state)
         {
-            var path = expr.Children[0];
-            var valueExpr = expr.Children[1];
-            var (value, error) = valueExpr.TryEvaluate(state);
-            if (error == null)
+            try
             {
-                (_, error) = SetPathToValue(path, null, value, state);
-                if (error != null)
+                var (path, left) = TryAccumulatePath(expr.Children[0], state);
+                if (left != null)
                 {
-                    value = null;
+                    // the expression can't be fully merged as a path
+                    return (null, $"{expr.Children[0].ToString()} is not a valid path to set value");
                 }
+
+                var (value, error) = expr.Children[1].TryEvaluate(state);
+
+                return (state.SetValue(path, value), null);
+
+            } catch (Exception e)
+            {
+                return (null, e.Message);
             }
-            return (value, error);
         }
 
         private static object ResolveValue(object obj)

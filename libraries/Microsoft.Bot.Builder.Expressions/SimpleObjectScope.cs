@@ -46,9 +46,70 @@ namespace Microsoft.Bot.Builder.Expressions
             return value;
         }
 
+        // In this simple object scope, we don't allow you to set a path in which some parts in middle don't exist
+        // for example
+        // if you set dialog.a.b = x, but dialog.a don't exist, this will result in an error
+        // because we can't and shouldn't smart create structure in the middle
+        // you can implement a customzied Scope that support such behavior
         public object SetValue(string path, object value)
         {
-            return SetProperty(scope, path, value);
+            var parts = path.Split(".[]".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+
+            var curScope = scope;
+            string error = null;
+
+            for (int i = 0; i < parts.Length - 1; i++)
+            {
+                if (int.TryParse(parts[i], out var index))
+                {
+                    (curScope, error) = AccessIndex(curScope, index);
+                }
+                else
+                {
+                    (curScope, error) = AccessProperty(curScope, parts[i]);
+                }
+
+                if (error != null)
+                {
+                    throw new Exception(error);
+                }
+            }
+
+            if (curScope == null)
+            {
+                throw new Exception($"Some parts in the middle of path doesn't exist: {path}");
+            }
+
+            // set the last value
+            if (int.TryParse(parts.Last(), out var idx))
+            {
+                if (TryParseList(curScope, out var li))
+                {
+                    if (idx > li.Count)
+                    {
+                        throw new Exception($"{idx} index out of range");
+                    }
+                    else if (idx == li.Count)
+                    {
+                        // expand for one
+                        li.Add(value);
+                    }
+                    else
+                    {
+                        li[idx] = value;
+                    }
+                }
+                else
+                {
+                    throw new Exception($"set value for an index to a non-list object");
+                }
+            }
+            else
+            {
+                SetProperty(curScope, parts.Last(), value);
+            }
+
+            return value;
         }
 
         private (object value, string error) AccessProperty(object instance, string property)
