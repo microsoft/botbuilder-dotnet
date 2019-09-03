@@ -739,37 +739,81 @@ namespace Microsoft.Bot.Builder.Expressions
             }
         }
 
+
+        // Try to accumulate the path from an Accessor or Element
+        // return the accumulated path and the expression left unable to accumulate
+        private static (string path, Expression left) TryAccumulatePath(Expression expression, IMemoryScope state)
+        {
+            string path = string.Empty;
+            var left = expression;
+
+            // get path from Accessor or Element+Accessor
+            while (left != null)
+            {
+                if (left.Type == ExpressionType.Accessor)
+                {
+                    path = (string)((Constant)left.Children[0]).Value + "." + path;
+                    left = left.Children.Length == 2 ? left.Children[1] : null;
+                }
+                else if (left.Type == ExpressionType.Element && left.Children[0].Type == ExpressionType.Accessor)
+                {
+                    var (value, error) = left.Children[1].TryEvaluate(state);
+                    if (error != null)
+                    {
+                        throw new Exception(error);
+                    }
+                    if (!(value is int || value is string))
+                    {
+                        throw new Exception($"{left.Children[1].ToString()} don't return a int or string");
+                    }
+
+                    path = (string)((Constant)left.Children[0].Children[0]).Value + $"[{value}]" + "." + path;
+                    left = left.Children[0].Children.Length == 2 ? left.Children[0].Children[1] : null;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            path = path.TrimEnd('.');
+
+            if (string.IsNullOrEmpty(path))
+            {
+                path = null;
+            }
+
+            return (path, left);
+        }
+
         private static (object value, string error) Accessor(Expression expression, IMemoryScope state)
         {
             object value = null;
-            var children = expression.Children;
-
-            // accumulate path for Accessor
-            var curPath = (string)((Constant)children[0]).Value;
-            while (children.Length == 2 && children[1].Type == ExpressionType.Accessor)
+            try
             {
-                curPath = (string)((Constant)children[1].Children[0]).Value + "." + curPath;
-                children = children[1].Children;
-            }
-
-            if (children.Length == 1)
-            {
-                // stop at children.length = 1, means all the way up is Accessor
-                // like a.b.c
-                value = state.GetValue(curPath);
-            }
-            else
-            {
-                // means we stop at non-Accessor like
-                // f().a.b
-                var (newScope, error) = children[1].TryEvaluate(state);
-                if (error != null)
+                var (path, left) = TryAccumulatePath(expression, state);
+                if (left == null)
                 {
-                    return (null, error);
+                    // fully converted to path
+                    value = state.GetValue(path);
                 }
+                else
+                {
+                    // stop at somewhere
+                    var (newScope, error) = left.TryEvaluate(state);
+                    if (error != null)
+                    {
+                        return (null, error);
+                    }
 
-                value = new SimpleObjectScope(newScope).GetValue(curPath);
+                    value = new SimpleObjectScope(newScope).GetValue(path);
+                }
             }
+            catch (Exception e)
+            {
+                return (null, e.Message);
+            }
+
             return (value, null);
         }
 

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using Newtonsoft.Json.Linq;
 
@@ -19,7 +20,7 @@ namespace Microsoft.Bot.Builder.Expressions
 
         public object GetValue(string path)
         {
-            var parts = path.Split('.');
+            var parts = path.Split(".[]".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
 
             object value = null;
             string error = null;
@@ -27,7 +28,15 @@ namespace Microsoft.Bot.Builder.Expressions
             var curScope = scope;
             foreach (string part in parts)
             {
-                (value, error) = AccessProperty(curScope, part);
+                if (int.TryParse(part, out var idx))
+                {
+                    (value, error) = AccessIndex(curScope, idx);
+                }
+                else
+                {
+                    (value, error) = AccessProperty(curScope, part);
+                }
+
                 if (error != null)
                 {
                     throw new Exception(error);
@@ -92,6 +101,58 @@ namespace Microsoft.Bot.Builder.Expressions
             value = ResolveValue(value);
 
             return (value, error);
+        }
+
+        private (object value, string error) AccessIndex(object instance, int index)
+        {
+            // NOTE: This returns null rather than an error if property is not present
+            if (instance == null)
+            {
+                return (null, null);
+            }
+
+            object value = null;
+            string error = null;
+
+            var count = -1;
+            if (TryParseList(instance, out var list))
+            {
+                count = list.Count;
+            }
+            var itype = instance.GetType();
+            var indexer = itype.GetProperties().Except(itype.GetDefaultMembers().OfType<PropertyInfo>());
+            if (count != -1 && indexer != null)
+            {
+                if (index >= 0 && count > index)
+                {
+                    dynamic idyn = instance;
+                    value = idyn[index];
+                }
+                else
+                {
+                    error = $"{index} is out of range for ${instance}";
+                }
+            }
+            else
+            {
+                error = $"{instance} is not a collection.";
+            }
+
+            value = ResolveValue(value);
+
+            return (value, error);
+        }
+
+        private bool TryParseList(object value, out IList list)
+        {
+            var isList = false;
+            list = null;
+            if (!(value is JObject) && value is IList listValue)
+            {
+                list = listValue;
+                isList = true;
+            }
+            return isList;
         }
 
         private object ResolveValue(object obj)
