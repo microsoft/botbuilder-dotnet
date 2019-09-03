@@ -1038,10 +1038,9 @@ namespace Microsoft.Bot.Builder.Expressions
                 }
 
                 var (value, error) = expr.Children[1].TryEvaluate(state);
-
                 return (state.SetValue(path, value), null);
-
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 return (null, e.Message);
             }
