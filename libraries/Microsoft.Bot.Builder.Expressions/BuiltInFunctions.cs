@@ -974,57 +974,69 @@ namespace Microsoft.Bot.Builder.Expressions
         private static (object value, string error) ExtractElement(Expression expression, IMemoryScope state)
         {
             object value = null;
-            string error;
-            var instance = expression.Children[0];
-            var index = expression.Children[1];
-            object inst;
-            (inst, error) = instance.TryEvaluate(state);
-            if (error == null)
+
+            // if children 0 is Accessor, we will try to accumalate path
+            if (expression.Children[0].Type == ExpressionType.Accessor)
             {
-                object idxValue;
-                (idxValue, error) = index.TryEvaluate(state);
-                if (error == null)
+                try
                 {
-                    if (idxValue is int idx)
+                    var (path, left) = TryAccumulatePath(expression, state);
+                    if (left == null)
                     {
-                        (value, error) = AccessIndex(inst, idx);
-                    }
-                    else if (idxValue is string idxStr)
-                    {
-                        (value, error) = AccessProperty(inst, idxStr);
+                        // fully converted to path
+                        value = state.GetValue(path);
                     }
                     else
                     {
-                        error = $"Could not coerce {index}<{idxValue.GetType()}> to an int or string";
+                        // stop at somewhere
+                        var (newScope, error) = left.TryEvaluate(state);
+                        if (error != null)
+                        {
+                            return (null, error);
+                        }
+
+                        value = new SimpleObjectScope(newScope).GetValue(path);
                     }
                 }
-            }
-            return (value, error);
-        }
+                catch (Exception e)
+                {
+                    return (null, e.Message);
+                }
 
-        private static bool CanBeModified(object value, string property, int? expected)
-        {
-            var modifiable = false;
-            if (expected.HasValue)
-            {
-                // Modifiable list
-                modifiable = TryParseList(value, out var _);
+                return (value, null);
             }
             else
             {
-                // Modifiable object
-                modifiable = value is IDictionary<string, object>
-                    || value is IDictionary
-                    || value is JObject;
-                if (!modifiable)
+                // otherwise, fallback to a normal evalution
+                string error = null;
+                var instance = expression.Children[0];
+                var index = expression.Children[1];
+                object inst;
+                (inst, error) = instance.TryEvaluate(state);
+                if (error == null)
                 {
-                    var type = value.GetType();
-                    var prop = type.GetProperties().Where(p => p.Name.ToLower() == property).SingleOrDefault();
-                    modifiable = prop != null;
+                    object idxValue;
+                    (idxValue, error) = index.TryEvaluate(state);
+                    if (error == null)
+                    {
+                        if (idxValue is int idx)
+                        {
+                            (value, error) = AccessIndex(inst, idx);
+                        }
+                        else if (idxValue is string idxStr)
+                        {
+                            (value, error) = AccessProperty(inst, idxStr);
+                        }
+                        else
+                        {
+                            error = $"Could not coerce {index}<{idxValue.GetType()}> to an int or string";
+                        }
+                    }
                 }
+                return (value, error);
             }
-            return modifiable;
         }
+
 
         private static (object value, string error) SetPathToValue(Expression expr, IMemoryScope state)
         {
