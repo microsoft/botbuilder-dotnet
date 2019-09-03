@@ -182,7 +182,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
                     metadataBoost = options.MetadataBoost,
                     scoreThreshold = options.ScoreThreshold,
                     context = options.Context,
-                    qnaId = options.QnAId
+                    qnaId = options.QnAId,
                 }, Formatting.None);
 
             var httpRequestHelper = new HttpRequestUtils(httpClient);
