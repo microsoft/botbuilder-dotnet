@@ -7,15 +7,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Prompts
     /// </summary>
     public static class PromptCultureModels
     {
-        public static IPromptCultureModel Spanish =>
+        public static IPromptCultureModel Chinese =>
             new IPromptCultureModel
             {
-                InlineOr = " o ",
-                InlineOrMore = ", o ",
-                Locale = Culture.Spanish,
-                NoInLanguage = "No",
-                Separator = ", ",
-                YesInLanguage = "Sí",
+                InlineOr = " 要么 ",
+                InlineOrMore = "， 要么 ",
+                Locale = Culture.Chinese,
+                NoInLanguage = "不",
+                Separator = "， ",
+                YesInLanguage = "是的",
             };
 
         public static IPromptCultureModel Dutch =>
@@ -84,15 +84,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Prompts
                 YesInLanguage = "Sim",
             };
 
-        public static IPromptCultureModel Chinese =>
+        public static IPromptCultureModel Spanish =>
             new IPromptCultureModel
             {
-                InlineOr = " 要么 ",
-                InlineOrMore = "， 要么 ",
-                Locale = Culture.Chinese,
-                NoInLanguage = "不",
-                Separator = "， ",
-                YesInLanguage = "是的",
+                InlineOr = " o ",
+                InlineOrMore = ", o ",
+                Locale = Culture.Spanish,
+                NoInLanguage = "No",
+                Separator = ", ",
+                YesInLanguage = "Sí",
             };
 
         /// <summary>
@@ -105,14 +105,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Prompts
 
         public static IPromptCultureModel[] GetSupportedCultures() => new IPromptCultureModel[]
             {
-                Spanish,
+                Chinese,
+                Danish,
                 Dutch,
                 English,
                 French,
                 German,
                 Japanese,
                 Portuguese,
-                Chinese,
+                Spanish,
             };
     }
 }
