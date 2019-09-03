@@ -59,6 +59,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         public const string TURN_RECOGNIZED = "turn.recognized";
         public const string TURN_TOPINTENT = "turn.recognized.intent";
         public const string TURN_TOPSCORE = "turn.recognized.score";
+        public const string TURN_SCHEMA = "turn.schema";
         public const string TURN_STEPCOUNT = "turn.stepCount";
         public const string TURN_DIALOGEVENT = "turn.dialogEvent";
 

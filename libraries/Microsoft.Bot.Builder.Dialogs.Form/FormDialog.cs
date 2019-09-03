@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -15,18 +16,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
 {
     public class FormDialog : AdaptiveDialog
     {
+        // TODO: This should be wired up to be declarative for the selector and for the schemas
         public FormDialog(DialogSchema inputSchema, DialogSchema outputSchema)
         {
             InputSchema = inputSchema;
             OutputSchema = outputSchema;
-            Selector = new FirstSelector();  // new SlotMapSelector(outputSchema);
+            Selector = new FormSelector(new MostSpecificSelector
+            {
+                Selector = new FirstSelector()
+            });
 
             if (outputSchema.Schema["type"].Value<string>() != "object")
             {
                 throw new ArgumentException("Forms must be an object schema.");
             }
-
-            GenerateRules();
         }
 
         public DialogSchema InputSchema { get; }
@@ -35,51 +38,70 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
 
         protected override async Task<bool> ProcessEventAsync(SequenceContext sequenceContext, DialogEvent dialogEvent, bool preBubble, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (preBubble && dialogEvent.Name == AdaptiveEvents.RecognizedIntent)
+            var handled = false;
+            // Save into turn
+            sequenceContext.State.SetValue(DialogContextState.TURN_SCHEMA, this.OutputSchema);
+            if (preBubble)
             {
-                var queues = Queues.Read(sequenceContext);
-                var entities = NormalizeEntities(sequenceContext);
-                if (entities.Any())
+                switch (dialogEvent.Name)
                 {
-                    var newQueues = new Queues();
-                    AssignEntities(entities, newQueues);
-                    queues.Merge(newQueues);
-                    CombineOldSlotMappings(queues, entities.First().Value.First().Turn);
-                    queues.Write(sequenceContext);
-                }
+                    case AdaptiveEvents.RecognizedIntent:
+                        {
+                            var queues = Queues.Read(sequenceContext);
+                            var entities = NormalizeEntities(sequenceContext);
+                            if (entities.Any())
+                            {
+                                var newQueues = new Queues();
+                                AssignEntities(entities, newQueues);
+                                queues.Merge(newQueues);
+                                CombineOldSlotMappings(queues, entities.First().Value.First().Turn);
+                                queues.Write(sequenceContext);
+                            }
 
-                // TODO: 
-                // 1) Fire rule from QueueFirstAsync and add emit event of NextFormEvent to end
-                // 2) On NextFormEvent do the below if not handled by someone else.
+                            handled = await base.ProcessEventAsync(sequenceContext, dialogEvent, preBubble, cancellationToken);
+                        }
 
-                if (queues.Clear.Any())
-                {
+                        break;
+                    case FormEvents.FillForm:
+                        {
+                            var queues = Queues.Read(sequenceContext);
+                            if (queues.Clear.Any())
+                            {
+                                var evt = new DialogEvent() { Name = FormEvents.ClearSlot, Value = queues.Clear.Dequeue(), Bubble = false };
+                                handled = await this.ProcessEventAsync(sequenceContext, dialogEvent: evt, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
+                            }
+                            else if (queues.Set.Any())
+                            {
+                                var evt = new DialogEvent() { Name = FormEvents.SetSlot, Value = queues.Set.Dequeue(), Bubble = false };
+                                handled = await this.ProcessEventAsync(sequenceContext, dialogEvent: evt, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
+                            }
+                            else if (queues.SlotChoices.Any())
+                            {
+                                var evt = new DialogEvent() { Name = FormEvents.ChooseSlot, Value = queues.SlotChoices.Dequeue(), Bubble = false };
+                                handled = await this.ProcessEventAsync(sequenceContext, dialogEvent: evt, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
+                            }
+                            else if (queues.SingletonChoice.Any())
+                            {
+                                var evt = new DialogEvent() { Name = FormEvents.ChooseSlotValue, Value = queues.SingletonChoice.Dequeue(), Bubble = false };
+                                handled = await this.ProcessEventAsync(sequenceContext, dialogEvent: evt, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
+                            }
+                            else if (queues.Clarify.Any())
+                            {
+                                var evt = new DialogEvent() { Name = FormEvents.ClarifySlotValue, Value = queues.Clarify.Dequeue(), Bubble = false };
+                                handled = await this.ProcessEventAsync(sequenceContext, dialogEvent: evt, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
+                            }
+                            else
+                            {
+                                var evt = new DialogEvent() { Name = FormEvents.Ask, Bubble = false };
+                                handled = await this.ProcessEventAsync(sequenceContext, dialogEvent: evt, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
+                            }
 
-                }
-                else if (queues.Set.Any())
-                {
-
-                }
-                else if (queues.SlotChoices.Any())
-                {
-
-                }
-                else if (queues.SingletonChoice.Any())
-                {
-
-                }
-                else if (queues.SlotChoices.Any())
-                {
-
-                }
-                else
-                {
-                    // TODO: Emit ask
+                            break;
+                        }
                 }
             }
 
-            // TODO: Emit events based on memory information
-            return await base.ProcessEventAsync(sequenceContext, dialogEvent, preBubble, cancellationToken);
+            return handled;
         }
 
         // A big issue is that we want multiple firings.  We can get this from quantification, but not arrays.
@@ -612,223 +634,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
         //                          (1->1) -> foreach meatslot_clarify -> set meat slot (clears others)
         // If we get a new @meat, then it would reset them all.
         // Should this be a flat set of rules?
-        protected void GenerateRules()
-        {
-            /*
-            AddEvent(new OnMessageActivity
-            {
-                Actions = new List<IDialog>
-                {
-                    MemoryTest()
-                }
-            });
-            foreach (var child in OutputSchema.Property.Children)
-            {
-                GenerateRules(child);
-            }
-            */
-        }
-
-        protected string Suffix(string prefix, string source)
-            => source.Substring(prefix.Length);
-
-        /*
-        protected void GenerateRules(PropertySchema property)
-        {
-            if (property.Children.Count() > 0)
-            {
-                throw new ArgumentException($"{property.Path} is a complex object and that is not supported yet.");
-            }
-
-            var events = new List<string> { AdaptiveEvents.RecognizedIntent };
-            foreach (var mapping in property.Mappings)
-            {
-                // Entity names are simple indices to internal structures, not @@ or full expressions
-                var entity = mapping.Replace("[]", string.Empty);
-                var path = FormPath(property.Path);
-                if (entity != null)
-                {
-                    if (property.IsArray)
-                    {
-                        AddEvent(new OnDialogEvent(
-                            events: events,
-                            constraint: $"{entity}",
-                            actions: new List<IDialog>
-                            {
-                                    new SetProperty
-                                    {
-                                        Property = path,
-                                        Value = entity
-                                    }
-                            }));
-                    }
-                    else
-                    {
-                        // Check for choice
-                        AddEvent(new OnDialogEvent(
-                            events: events,
-                            constraint: $"count(Entities[{entity}]) > 1",
-                            actions: new List<IDialog>
-                            {
-                                // TODO: 
-                            }));
-
-                        // Disambiguate to singleton
-                        AddEvent(new OnDialogEvent(
-                            events: events,
-                            constraint: $"count({entity}) > 1",
-                            actions: new List<IDialog>
-                            {
-                                new Ask(
-                                    text: $"[disambiguate({entity}, {path})]",
-                                    expectedSlots: new List<string> { path })
-                            }));
-                    }
-                }
-                else
-                {
-                    // TODO: How to load IRule?
-                }
-            }
-        }
-
-        // TODO: Remove this--experiment only
-        protected IDialog MemoryTest()
-        {
-            var dialog = new AdaptiveDialog("test")
-            {
-                Events = new List<IOnEvent>
-                {
-                    new OnMessageActivity
-                    {
-                        Actions = new List<IDialog>
-                        {
-                            new IfCondition
-                            {
-                                Condition = $"$isChild",
-                                Actions = new List<IDialog>
-                                {
-                                    new SendActivity("inChild"),
-                                    new SetProperty()
-                                    {
-                                        Property = "$isChild",
-                                        Value = "false"
-                                    },
-                                    new DebugBreak(),
-                                    new EndDialog()
-                                },
-                                ElseActions = new List<IDialog>
-                                {
-                                    // new DebugBreak(),
-                                    new SetProperty {
-                                        Property = "$isChild",
-                                        Value = "true"
-                                    },
-                                    new BeginDialog("test"),
-                                    new SendActivity("Value {dialog.isChild}"),
-                                    new DebugBreak()
-                                }
-                            },
-                        }
-                    }
-                }
-            };
-            return dialog;
-        }
 
         // If one @@entity then goes to foreach
-        protected IOnEvent SingletonEntityStart(string entity, string slot)
-        {
-            var name = entity;
-            var slots = new List<string> { slot };
-            var choice = $"{slot}_choice";
-            return new OnDialogEvent(
-                events: new List<string> { AdaptiveEvents.RecognizedIntent },
-                constraint: $"{entity}",
-                actions: new List<IDialog>
-                {
-                    // If multiple choices for singleton ask which one.
-                    new IfCondition()
-                    {
-                        Condition = $"count({entity}) > 1",
-                        Actions = new List<IDialog>
-                        {
-                            // Ask which one
-                            new SetProperty { Property = $"dialog.{slot}_choice", Value = entity },
-                            new Ask($"which({name}, {entity})]", expectedSlots: new List<string>())
-                            // TODO: Create new list of just selected value.
-                        },
-                        ElseActions = new List<IDialog>
-                        {
-
-                        }
-                    },
-
-                    // Loop over each entity to clarify
-                    new Foreach()
-                    {
-                        ValueProperty = entity,
-                        Actions = new List<IDialog>
-                        {
-                            new IfCondition()
-                            {
-                                Condition = $"count(dialog.value) > 1",
-                                Actions = new List<IDialog>
-                                {
-                                    // Clarify value
-                                    new Ask($"[clarification({name})]", slots),
-                                    new IfCondition()
-                                    {
-                                        Condition = ""
-                                    }
-                                },
-                                ElseActions = new List<IDialog>
-                                {
-                                    // TODO: Fill in 
-                                    new SetProperty
-                                    {
-                                        Property = slot,
-                                        Value = "dialog.value"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                });
-        }
-
-        protected IDialog Clarify(string slot, string source, string working, string result)
-        {
-            return new IfCondition
-            {
-                Condition = $"count(where({source}, value, count(value) > 1)) > 0",
-                Actions = new List<IDialog>
-                {
-                    new SetProperty {Property = working, Value = source},
-                    new Foreach
-                    {
-                         ListProperty = source,
-                         Actions = new List<IDialog>
-                         {
-                             new IfCondition
-                             {
-                                 Condition = $"count(working[dialog.index]) > 1",
-                                 Actions = new List<IDialog>
-                                 {
-                                     new Ask($"[clarify({slot}, dialog.value)]")
-                                 }
-                             }
-                         }
-                    }
-                },
-                ElseActions = new List<IDialog>
-                {
-                    new SetProperty { Property = result, Value = source}
-                }
-            };
-        }
-
-        protected string FormPath(string schemaPath) => $"$form.{schemaPath.Replace("[]", string.Empty)}";
-        */
     }
 }
