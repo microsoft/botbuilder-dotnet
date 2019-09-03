@@ -541,6 +541,37 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
         [TestMethod]
         [TestCategory("AI")]
         [TestCategory("QnAMaker")]
+        public async Task QnaMaker_ReturnsHighScoreWhenIdPassed()
+        {
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, GetRequestUrl())
+                .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswerWithContext.json"));
+
+            var qna = GetQnAMaker(
+                mockHttp,
+                new QnAMakerEndpoint
+                {
+                    KnowledgeBaseId = _knowlegeBaseId,
+                    EndpointKey = _endpointKey,
+                    Host = _hostname,
+                });
+
+            var options = new QnAMakerOptions()
+            {
+                Top = 1,
+                QnAId = 55,
+            };
+
+            var results = await qna.GetAnswersAsync(GetContext("Where can I buy?"), options);
+            Assert.IsNotNull(results);
+            Assert.AreEqual(1, results.Length, "should get one result");
+            Assert.AreEqual(55, results[0].Id, "should get context based follow-up");
+            Assert.AreEqual(1, results[0].Score, "Score should be high");
+        }
+
+        [TestMethod]
+        [TestCategory("AI")]
+        [TestCategory("QnAMaker")]
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void QnaMaker_Test_Top_OutOfRange()
         {

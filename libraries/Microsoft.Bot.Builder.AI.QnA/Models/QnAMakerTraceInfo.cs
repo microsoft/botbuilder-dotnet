@@ -84,5 +84,14 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// </value>
         [JsonProperty("context")]
         public QnARequestContext Context { get; set; }
+
+        /// <summary>
+        /// Gets or sets QnA Id of the current question asked.
+        /// </summary>
+        /// <value>
+        /// Id of the current question asked.
+        /// </value>
+        [JsonProperty("qnaId")]
+        public int QnAId { get; set; }
     }
 }
