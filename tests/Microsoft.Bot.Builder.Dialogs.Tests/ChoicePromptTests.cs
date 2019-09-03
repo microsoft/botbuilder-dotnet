@@ -763,14 +763,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         {
             var testLocales = new TestLocale[]
             {
+                new TestLocale(Chinese),
+                new TestLocale(Danish),
                 new TestLocale(Dutch),
-                new TestLocale(Spanish),
                 new TestLocale(English),
                 new TestLocale(French),
                 new TestLocale(German),
                 new TestLocale(Japanese),
                 new TestLocale(Portuguese),
-                new TestLocale(Chinese),
+                new TestLocale(Spanish),
             };
 
             foreach (var locale in testLocales)
