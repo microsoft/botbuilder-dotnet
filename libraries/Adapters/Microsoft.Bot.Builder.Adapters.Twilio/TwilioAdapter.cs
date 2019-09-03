@@ -17,17 +17,17 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
     /// </summary>
     public class TwilioAdapter : BotAdapter
     {
-        private readonly ITwilioAdapterOptions _options;
+        private readonly TwilioAdapterOptions _options;
 
-        private readonly ITwilioClient _twilioApi;
+        private readonly TwilioClientWrapper _twilioClient;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TwilioAdapter"/> class.
         /// </summary>
         /// <param name="options">The options to use to authenticate the bot with the Twilio service.</param>
-        /// <param name="twilioApi">The Twilio client to connect to.</param>
+        /// <param name="twilioClient">The Twilio client to connect to.</param>
         /// <exception cref="ArgumentNullException"><paramref name="options"/> is <c>null</c>.</exception>
-        public TwilioAdapter(ITwilioAdapterOptions options, ITwilioClient twilioApi)
+        public TwilioAdapter(TwilioAdapterOptions options, TwilioClientWrapper twilioClient)
         {
             if (options == null)
             {
@@ -49,10 +49,10 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
                 throw new ArgumentException("AuthToken is a required part of the configuration.", nameof(options));
             }
 
-            _twilioApi = twilioApi ?? throw new ArgumentNullException(nameof(twilioApi));
+            _twilioClient = twilioClient ?? throw new ArgumentNullException(nameof(twilioClient));
             _options = options;
 
-            _twilioApi.LogIn(_options.AccountSid, _options.AuthToken);
+            _twilioClient.LogIn(_options.AccountSid, _options.AuthToken);
         }
 
         /// <summary>
@@ -76,7 +76,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
                 {
                     var messageOptions = TwilioHelper.ActivityToTwilio(activity, _options.TwilioNumber);
 
-                    var res = await _twilioApi.SendMessage(messageOptions).ConfigureAwait(false);
+                    var res = await _twilioClient.SendMessage(messageOptions).ConfigureAwait(false);
 
                     var response = new ResourceResponse()
                     {
