@@ -744,23 +744,31 @@ namespace Microsoft.Bot.Builder.Expressions
             object value = null;
             var children = expression.Children;
 
-            if (children[0] is Constant cnst && cnst.ReturnType == ReturnType.String)
+            // accumulate path for Accessor
+            var curPath = (string)((Constant)children[0]).Value;
+            while (children.Length == 2 && children[1].Type == ExpressionType.Accessor)
             {
-                if (children.Length == 2)
-                {
-                    var (newScope, error) = children[1].TryEvaluate(state);
+                curPath = (string)((Constant)children[1].Children[0]).Value + "." + curPath;
+                children = children[1].Children;
+            }
 
-                    if (error != null)
-                    {
-                        return (null, error);
-                    }
-
-                    value = new SimpleObjectScope(newScope).GetValue((string)cnst.Value);
-                }
-                else
+            if (children.Length == 1)
+            {
+                // stop at children.length = 1, means all the way up is Accessor
+                // like a.b.c
+                value = state.GetValue(curPath);
+            }
+            else
+            {
+                // means we stop at non-Accessor like
+                // f().a.b
+                var (newScope, error) = children[1].TryEvaluate(state);
+                if (error != null)
                 {
-                    value = state.GetValue((string)cnst.Value);
+                    return (null, error);
                 }
+
+                value = new SimpleObjectScope(newScope).GetValue(curPath);
             }
             return (value, null);
         }

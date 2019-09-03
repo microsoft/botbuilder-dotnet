@@ -19,7 +19,21 @@ namespace Microsoft.Bot.Builder.Expressions
 
         public object GetValue(string path)
         {
-            var (value, error) = AccessProperty(scope, path);
+            var parts = path.Split('.');
+
+            object value = null;
+            string error = null;
+
+            var curScope = scope;
+            foreach (string part in parts)
+            {
+                (value, error) = AccessProperty(curScope, part);
+                if (error != null)
+                {
+                    throw new Exception(error);
+                }
+                curScope = value;
+            }
             return value;
         }
 

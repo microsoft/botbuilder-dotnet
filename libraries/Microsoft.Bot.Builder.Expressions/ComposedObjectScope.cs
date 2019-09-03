@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder.Expressions
             var prefix = path.Split('.')[0];
             if (scopeMap.TryGetValue(prefix, out var scope))
             {
-                return scope.GetValue(path.Substring(prefix.Length));
+                return scope.GetValue(path.Substring(prefix.Length+1)); // +1 to swallow the "."
             }
             return null;
         }
