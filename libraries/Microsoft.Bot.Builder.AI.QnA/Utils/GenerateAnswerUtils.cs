@@ -205,6 +205,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 StrictFilters = options.StrictFilters,
                 MetadataBoost = options.MetadataBoost,
                 Context = options.Context,
+                QnAId = options.QnAId,
             };
             var traceActivity = Activity.CreateTraceActivity(QnAMaker.QnAMakerName, QnAMaker.QnAMakerTraceType, traceInfo, QnAMaker.QnAMakerTraceLabel);
             await turnContext.SendActivityAsync(traceActivity).ConfigureAwait(false);
