@@ -85,6 +85,11 @@ namespace Microsoft.Bot.Builder.Expressions
             {
                 if (TryParseList(curScope, out var li))
                 {
+                    if (li is JArray)
+                    {
+                        value = JToken.FromObject(value);
+                    }
+
                     if (idx > li.Count)
                     {
                         throw new Exception($"{idx} index out of range");
@@ -109,7 +114,7 @@ namespace Microsoft.Bot.Builder.Expressions
                 SetProperty(curScope, parts.Last(), value);
             }
 
-            return value;
+            return ResolveValue(value);
         }
 
         private (object value, string error) AccessProperty(object instance, string property)
