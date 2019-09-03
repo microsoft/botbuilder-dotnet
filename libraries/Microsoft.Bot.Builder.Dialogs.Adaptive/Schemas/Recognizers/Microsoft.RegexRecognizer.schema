@@ -6,12 +6,32 @@
     "type": "object",
     "properties": {
         "intents": {
-            "type": "object",
+            "type": "array",
             "title": "RegEx patterns to intents",
-            "description": "Pattern->Intents mappings",
-            "additionalProperties": {
-                "type": "string"
+            "description": "Collection of patterns to match intents",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "intent": {
+                        "type": "string",
+                        "title": "Intent",
+                        "description": "The intent name"
+                    },
+                    "pattern": {
+                        "type": "string",
+                        "title": "Pattern",
+                        "description": "The regular expression pattern for matching"
+                    }
+                }
             }
+        },
+        "entities": {
+            "type": "array",
+            "items": {
+                "$type": "Microsoft.EntityRecognizer"
+            },
+            "title": "Entitie Recognizers",
+            "description": "Entity Recognizers to use"
         }
     },
     "required": [

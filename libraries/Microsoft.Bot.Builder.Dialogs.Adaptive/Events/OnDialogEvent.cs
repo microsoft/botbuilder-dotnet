@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
         /// Gets or sets list of events to filter.
         /// </summary>
         /// <value>
-        /// List of events to filter.
+        /// List of events to filter. (Example: [BeginDialog,Error]
         /// </value>
         public List<string> Events { get; set; }
 

@@ -208,10 +208,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 AutoEndDialog = false,
                 Recognizer = new RegexRecognizer()
                 {
-                    Intents = new Dictionary<string, string>()
+                    Intents = new List<IntentPattern>()
                     {
-                        { "IntentNumber1", "intent1" },
-                        { "NameIntent", ".*name is (?<name>.*)" }
+                        new IntentPattern("IntentNumber1", "intent1" ),
+                        new IntentPattern("NameIntent", ".*name is (?<name>.*)"),
                     }
                 },
                 Events = new List<IOnEvent>()

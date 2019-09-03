@@ -138,7 +138,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                                 this.Actions.Clear();
                             }
 
-                            await EmitEventAsync(name: AdaptiveEvents.SequenceEnded, value: null, bubble: false).ConfigureAwait(false);
                             break;
                         case ActionChangeType.ReplaceSequence:
                             if (this.Actions.Any())
@@ -287,12 +286,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     this.Actions.AddRange(change.Actions);
                     break;
             }
-
-            // Emit SequenceStarted event if applicable
-            if (newSequence)
-            {
-                await this.EmitEventAsync(name: AdaptiveEvents.SequenceStarted, value: null, bubble: false).ConfigureAwait(false);
-            }
         }
 
         private bool ActionHasTags(ActionState step, List<string> tags)
@@ -312,8 +305,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
     {
         public const string RecognizedIntent = "recognizedIntent";
         public const string UnknownIntent = "unknownIntent";
-        public const string SequenceStarted = "actionsStarted";
-        public const string SequenceEnded = "actionsEnded";
     }
 
     public class AdaptiveDialogState

@@ -811,9 +811,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             {
                 Recognizer = new RegexRecognizer()
                 {
-                    Intents = new Dictionary<string, string>()
+                    Intents = new List<IntentPattern>()
                     {
-                        { "Replace", "(?i)replace" }
+                        new IntentPattern("Replace", "(?i)replace"),
                     }
                 }
             };
@@ -873,10 +873,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             {
                 Recognizer = new RegexRecognizer()
                 {
-                    Intents = new Dictionary<string, string>()
+                    Intents = new List<IntentPattern>()
                     {
-                        { "Insert", "(?i)insert" },
-                        { "Execute", "(?i)execute" }
+                        new IntentPattern("Insert", "(?i)insert" ),
+                        new IntentPattern("Execute", "(?i)execute"),
                     }
                 }
             };
@@ -924,7 +924,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             var testDialog = new AdaptiveDialog("planningTest");
 
-            testDialog.Recognizer = new RegexRecognizer() { Intents = new Dictionary<string, string>() { { "JokeIntent", "joke" } } };
+            testDialog.Recognizer = new RegexRecognizer() { Intents = new List<IntentPattern>() { new IntentPattern("JokeIntent", "joke") } };
 
             testDialog.AddEvents(new List<IOnEvent>()
             {
@@ -1017,7 +1017,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var testDialog = new AdaptiveDialog("planningTest");
             testDialog.AutoEndDialog = false;
 
-            testDialog.Recognizer = new RegexRecognizer() { Intents = new Dictionary<string, string>() { { "JokeIntent", "joke" } } };
+            testDialog.Recognizer = new RegexRecognizer() { Intents = new List<IntentPattern>() { new IntentPattern("JokeIntent", "joke") } };
 
             testDialog.AddEvents(new List<IOnEvent>()
             {
@@ -1040,7 +1040,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     {
                         new SendActivity("I'm a joke bot. To get started say 'tell me a joke'")
                     }),
-            }); 
+            });
             testDialog.AddDialog(askNameDialog);
 
             await CreateFlow(testDialog)
@@ -1099,7 +1099,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             var testDialog = new AdaptiveDialog("planningTest");
             testDialog.AutoEndDialog = false;
-            testDialog.Recognizer = new RegexRecognizer() { Intents = new Dictionary<string, string>() { { "JokeIntent", "joke" } } };
+            testDialog.Recognizer = new RegexRecognizer() { Intents = new List<IntentPattern>() { new IntentPattern("JokeIntent", "joke") } };
 
             testDialog.AddEvent(new OnBeginDialog()
             {
@@ -1144,7 +1144,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             var testDialog = new AdaptiveDialog("planningTest");
 
-            testDialog.Recognizer = new RegexRecognizer() { Intents = new Dictionary<string, string>() { { "EndIntent", "end" } } };
+            testDialog.Recognizer = new RegexRecognizer() { Intents = new List<IntentPattern>() { new IntentPattern("EndIntent", "end") } };
 
             var tellJokeDialog = new AdaptiveDialog("TellJokeDialog");
             tellJokeDialog.AddEvents(new List<IOnEvent>()
@@ -1163,7 +1163,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         new SendActivity("To get to the other side")
                     })
             });
-            tellJokeDialog.Recognizer = new RegexRecognizer() { Intents = new Dictionary<string, string>() { { "EndIntent", "end" } } };
+            tellJokeDialog.Recognizer = new RegexRecognizer() { Intents = new List<IntentPattern>() { new IntentPattern("EndIntent", "end") } };
 
             testDialog.AddEvents(new List<IOnEvent>()
             {
@@ -1226,33 +1226,33 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 AutoEndDialog = false,
                 Recognizer = new RegexRecognizer()
                 {
-                    Intents = new Dictionary<string, string>()
-                                        {
-                                            { "EmitIntent", "emit" },
-                                            { "CowboyIntent", "moo" }
-                                        }
+                    Intents = new List<IntentPattern>()
+                    {
+                        new IntentPattern("EmitIntent", "emit"),
+                        new IntentPattern("CowboyIntent", "moo")
+                    }
                 },
                 Events = new List<IOnEvent>()
-                                    {
-                                        new OnIntent(intent: "CowboyIntent")
-                                        {
-                                            Actions = new List<IDialog>()
-                                            {
-                                                new SendActivity("Yippee ki-yay!")
-                                            }
-                                        },
-                                        new OnIntent(intent: "EmitIntent")
-                                        {
-                                            Actions = new List<IDialog>()
-                                            {
-                                                new EmitEvent()
-                                                {
-                                                    EventName = "CustomEvent",
-                                                    BubbleEvent = true,
-                                                }
-                                            }
-                                        }
-                                    }
+                {
+                    new OnIntent(intent: "CowboyIntent")
+                    {
+                        Actions = new List<IDialog>()
+                        {
+                            new SendActivity("Yippee ki-yay!")
+                        }
+                    },
+                    new OnIntent(intent: "EmitIntent")
+                    {
+                        Actions = new List<IDialog>()
+                        {
+                            new EmitEvent()
+                            {
+                                EventName = "CustomEvent",
+                                BubbleEvent = true,
+                            }
+                        }
+                    }
+                }
             };
 
             var rootDialog = new AdaptiveDialog("root")

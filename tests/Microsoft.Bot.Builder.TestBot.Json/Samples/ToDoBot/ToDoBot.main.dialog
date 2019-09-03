@@ -5,18 +5,48 @@
     "generator": "todo.lg",
     "recognizer": {
         "$type": "Microsoft.RegexRecognizer",
-        "intents": {
-            "AddIntent": "(?i)(?:add|create) .*(?:to-do|todo|task)(?: )?(?:named (?<title>.*))?",
-            "ClearIntent": "(?i)(?:delete|remove|clear) (?:all|every) (?:to-dos|todos|tasks)",
-            "DeleteIntent": "(?i)(?:delete|remove|clear) .*(?:to-do|todo|task)(?: )?(?:named (?<title>.*))?",
-            "ShowIntent": "(?i)(?:show|see|view) .*(?:to-do|todo|task)",
-            "HelpIntent": "(?i)help",
-            "CancelIntent": "(?i)cancel|never mind"
-        }
+        "intents": [
+            {
+
+                "$type": "Microsoft.IntentPattern",
+                "intent": "AddIntent",
+                "pattern": "(?i)(?:add|create) .*(?:to-do|todo|task)(?: )?(?:named (?<title>.*))?" 
+            },
+            {
+
+                "$type": "Microsoft.IntentPattern",
+                "intent": "ClearIntent",
+                "pattern": "(?i)(?:delete|remove|clear) (?:all|every) (?:to-dos|todos|tasks)" 
+            },
+            {
+
+                "$type": "Microsoft.IntentPattern",
+                "intent": "DeleteIntent",
+                "pattern": "(?i)(?:delete|remove|clear) .*(?:to-do|todo|task)(?: )?(?:named (?<title>.*))?" 
+            },
+            {
+
+                "$type": "Microsoft.IntentPattern",
+                "intent": "ShowIntent",
+                "pattern": "(?i)(?:show|see|view) .*(?:to-do|todo|task)" 
+            },
+            {
+
+                "$type": "Microsoft.IntentPattern",
+                "intent": "HelpIntent",
+                "pattern": "(?i)help" 
+            },
+            {
+
+                "$type": "Microsoft.IntentPattern",
+                "intent": "CancelIntent",
+                "pattern": "(?i)cancel|never mind"
+            }
+        ]
     },
     "events": [
         {
-            "$type":"Microsoft.OnBeginDialog",
+            "$type": "Microsoft.OnBeginDialog",
             "actions": [
                 {
                     "$type": "Microsoft.SendActivity",

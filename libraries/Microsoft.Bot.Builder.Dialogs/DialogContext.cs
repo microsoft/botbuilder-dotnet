@@ -441,7 +441,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 }
 
                 // Return result to previous dialog
-                await this.DebuggerStepAsync(dialog, DialogEvents.ResumeDialog, cancellationToken).ConfigureAwait(false);
+                await this.DebuggerStepAsync(dialog, "ResumeDialog", cancellationToken).ConfigureAwait(false);
                 return await dialog.ResumeDialogAsync(this, DialogReason.EndCalled, result, cancellationToken).ConfigureAwait(false);
             }
             else
@@ -669,7 +669,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 if (dialog != null)
                 {
                     // Notify dialog of end
-                    await this.DebuggerStepAsync(dialog, DialogEvents.EndDialog, cancellationToken).ConfigureAwait(false);
+                    await this.DebuggerStepAsync(dialog, "EndDialog", cancellationToken).ConfigureAwait(false);
                     await dialog.EndDialogAsync(Context, instance, reason, cancellationToken).ConfigureAwait(false);
                 }
 
@@ -721,11 +721,10 @@ namespace Microsoft.Bot.Builder.Dialogs
         public class DialogEvents
         {
             public const string BeginDialog = "beginDialog";
-            public const string ResumeDialog = "resumeDialog";
             public const string RepromptDialog = "repromptDialog";
             public const string CancelDialog = "cancelDialog";
-            public const string EndDialog = "endDialog";
             public const string ActivityReceived = "activityReceived";
+            public const string Error = "error";
         }
     }
 }

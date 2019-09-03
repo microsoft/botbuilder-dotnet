@@ -178,8 +178,31 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
             // Recognizers
             Register("Microsoft.LuisRecognizer", typeof(LuisRecognizer), new LuisRecognizerLoader(TypeFactory.Configuration));
             Register("Microsoft.RegexRecognizer", typeof(RegexRecognizer));
+            Register("Microsoft.IntentPattern", typeof(IntentPattern));
             Register("Microsoft.MultiLanguageRecognizer", typeof(MultiLanguageRecognizer));
 
+            // Entity recognizers
+            Register("Microsoft.AgeEntityRecognizer", typeof(AgeEntityRecognizer));
+            Register("Microsoft.ConfirmationEntityRecognizer", typeof(ConfirmationEntityRecognizer));
+            Register("Microsoft.CurrencyEntityRecognizer", typeof(CurrencyEntityRecognizer));
+            Register("Microsoft.DateTimeEntityRecognizer", typeof(DateTimeEntityRecognizer));
+            Register("Microsoft.DimensionEntityRecognizer", typeof(DimensionEntityRecognizer));
+            Register("Microsoft.EmailEntityRecognizer", typeof(EmailEntityRecognizer));
+            Register("Microsoft.EntityRecognizer", typeof(EntityRecognizer));
+            Register("Microsoft.EntityRecognizerSet", typeof(EntityRecognizerSet));
+            Register("Microsoft.GuidEntityRecognizer", typeof(GuidEntityRecognizer));
+            Register("Microsoft.HashtagEntityRecognizer", typeof(HashtagEntityRecognizer));
+            Register("Microsoft.IpEntityRecognizer", typeof(IpEntityRecognizer));
+            Register("Microsoft.MentionEntityRecognizer", typeof(MentionEntityRecognizer));
+            Register("Microsoft.NumberEntityRecognizer", typeof(NumberEntityRecognizer));
+            Register("Microsoft.NumberRangeEntityRecognizer", typeof(NumberRangeEntityRecognizer));
+            Register("Microsoft.OrdinalEntityRecognizer", typeof(OrdinalEntityRecognizer));
+            Register("Microsoft.PercentageEntityRecognizer", typeof(PercentageEntityRecognizer));
+            Register("Microsoft.PhoneNumberEntityRecognizer", typeof(PhoneNumberEntityRecognizer));
+            Register("Microsoft.TemperatureEntityRecognizer", typeof(TemperatureEntityRecognizer));
+            Register("Microsoft.UrlEntityRecognizer", typeof(UrlEntityRecognizer));
+
+            // Dialogs
             Register("Microsoft.AdaptiveDialog", typeof(AdaptiveDialog));
         }
 

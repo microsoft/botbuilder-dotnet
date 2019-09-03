@@ -30,9 +30,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 AutoEndDialog = false,
                 Recognizer = new RegexRecognizer()
                 {
-                    Intents = new Dictionary<string, string>()
+                    Intents = new List<IntentPattern>()
                     {
-                        { "JokeIntent", "joke" }
+                        new IntentPattern("JokeIntent", "joke"),
                     }
                 },
                 Events = new List<IOnEvent>()
@@ -73,9 +73,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 AutoEndDialog = false,
                 Recognizer = new RegexRecognizer()
                 {
-                    Intents = new Dictionary<string, string>()
+                    Intents = new List<IntentPattern>()
                     {
-                        { "addColor", "I want (?<color>(red|green|blue|yellow))*" }
+                        new IntentPattern("addColor", "I want (?<color>(red|green|blue|yellow))*"),
                     }
                 },
                 Events = new List<IOnEvent>()
