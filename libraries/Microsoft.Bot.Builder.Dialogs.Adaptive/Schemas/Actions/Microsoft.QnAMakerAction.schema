@@ -1,0 +1,70 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
+    "$role": "unionType(Microsoft.IDialog)",
+    "title": "QnAMaker Action",
+    "description": "This represents an action which is driven by a call to QnAMaker.ai knowledge base",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "kb-ID": {
+            "type": "string",
+            "title": "Knowledgebase Id",
+            "description": "Kb ID of your QnA Maker KB.",
+            "default": "settings.qna.kbid"
+        },
+        "endpointKey": {
+            "type": "string",
+            "title": "Endpoint Key",
+            "description": "Endpoint key for the QnA Maker KB.",
+            "default": "settings.qna.endpointkey"
+        },
+        "hostname": {
+            "type": "string",
+            "title": "Host",
+            "description": "Host name for your QnA Maker KB.",
+            "default": "settings.qna.hostname",
+            "examples": [
+                "https://yourserver.azurewebsites.net/qnamaker"
+            ]
+        },
+        "threshold": {
+            "type": "float",
+            "title": "Threshold",
+            "description": "The minimum score threshold, used to filter returned results.",
+            "default": 0.3
+        },
+        "autoRespond": {
+            "type": "boolean",
+            "title": "Auto respond",
+            "description": "Automatically send the response to user.",
+            "default": true,
+            "examples": [ true ]
+        },
+        "property": {
+            "$role": "expression",
+            "title": "Property",
+            "description": "Memory property to store results returned by the QnA action.",
+            "default": "dialog.qna.result"
+        },
+        "strictFilterProperty": {
+            "$role": "expression",
+            "title": "Strict Filter Property",
+            "description": "Memory property that holds strict filters to use when calling the QnA Maker KB.",
+            "default": "dialog.qna.strictFilters"
+        },
+        "noAnswer": {
+            "$type": "Microsoft.IActivityTemplate",
+            "title": "Initial Prompt",
+            "description": "Default answer to return when none found in KB.",
+            "default": "Sorry, I did not find an answer"
+        }
+    },
+    "required": [
+        "Kb-ID",
+        "endpointKey",
+        "hostname",
+        "threshold",
+        "autoRespond",
+        "noAnswer"
+    ]      
+}
