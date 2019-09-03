@@ -11,6 +11,11 @@
             "$ref": "#/definitions/Microsoft.AdaptiveDialog"
         },
         {
+            "title": "Microsoft.AgeEntityRecognizer",
+            "description": "Recognizer which recognizes age.",
+            "$ref": "#/definitions/Microsoft.AgeEntityRecognizer"
+        },
+        {
             "title": "Microsoft.AttachmentInput",
             "description": "This represents a dialog which gathers an attachment such as image or music",
             "$ref": "#/definitions/Microsoft.AttachmentInput"
@@ -41,6 +46,21 @@
             "$ref": "#/definitions/Microsoft.ConfirmInput"
         },
         {
+            "title": "Microsoft.ConfirmationEntityRecognizer",
+            "description": "Recognizer which recognizes confirmation choices (yes/no).",
+            "$ref": "#/definitions/Microsoft.ConfirmationEntityRecognizer"
+        },
+        {
+            "title": "Microsoft.CurrencyEntityRecognizer",
+            "description": "Recognizer which recognizes currency.",
+            "$ref": "#/definitions/Microsoft.CurrencyEntityRecognizer"
+        },
+        {
+            "title": "Microsoft.DateTimeEntityRecognizer",
+            "description": "Recognizer which recognizes dates and time fragments.",
+            "$ref": "#/definitions/Microsoft.DateTimeEntityRecognizer"
+        },
+        {
             "title": "Microsoft.DateTimeInput",
             "description": "This represents a dialog which gathers Date or Time or DateTime from the user",
             "$ref": "#/definitions/Microsoft.DateTimeInput"
@@ -56,6 +76,11 @@
             "$ref": "#/definitions/Microsoft.DeleteProperty"
         },
         {
+            "title": "Microsoft.DimensionEntityRecognizer",
+            "description": "Recognizer which recognizes dimension.",
+            "$ref": "#/definitions/Microsoft.DimensionEntityRecognizer"
+        },
+        {
             "title": "Microsoft.EditActions",
             "description": "Edit current dialog with changeType and Actions",
             "$ref": "#/definitions/Microsoft.EditActions"
@@ -64,6 +89,11 @@
             "title": "Microsoft.EditArray",
             "description": "This is a action which allows you to modify an array in memory",
             "$ref": "#/definitions/Microsoft.EditArray"
+        },
+        {
+            "title": "Microsoft.EmailEntityRecognizer",
+            "description": "Recognizer which recognizes email.",
+            "$ref": "#/definitions/Microsoft.EmailEntityRecognizer"
         },
         {
             "title": "Microsoft.EmitEvent",
@@ -96,6 +126,16 @@
             "$ref": "#/definitions/Microsoft.ForeachPage"
         },
         {
+            "title": "Microsoft.GuidEntityRecognizer",
+            "description": "Recognizer which recognizes guids.",
+            "$ref": "#/definitions/Microsoft.GuidEntityRecognizer"
+        },
+        {
+            "title": "Microsoft.HashtagEntityRecognizer",
+            "description": "Recognizer which recognizes Hashtags.",
+            "$ref": "#/definitions/Microsoft.HashtagEntityRecognizer"
+        },
+        {
             "title": "Microsoft.HttpRequest",
             "description": "This is a action which replaces the current dialog with the target dialog",
             "$ref": "#/definitions/Microsoft.HttpRequest"
@@ -109,6 +149,11 @@
             "title": "Microsoft.InitProperty",
             "description": "This action allows you to innitial a property to either an object or array",
             "$ref": "#/definitions/Microsoft.InitProperty"
+        },
+        {
+            "title": "Microsoft.IpEntityRecognizer",
+            "description": "Recognizer which recognizes internet IP patterns (like 192.1.1.1).",
+            "$ref": "#/definitions/Microsoft.IpEntityRecognizer"
         },
         {
             "title": "Microsoft.LanguagePolicy",
@@ -126,6 +171,11 @@
             "$ref": "#/definitions/Microsoft.LuisRecognizer"
         },
         {
+            "title": "Microsoft.MentionEntityRecognizer",
+            "description": "Recognizer which recognizes @Mentions",
+            "$ref": "#/definitions/Microsoft.MentionEntityRecognizer"
+        },
+        {
             "title": "Microsoft.MostSpecificSelector",
             "description": "Select most specific true events with optional additional selector",
             "$ref": "#/definitions/Microsoft.MostSpecificSelector"
@@ -136,9 +186,19 @@
             "$ref": "#/definitions/Microsoft.MultiLanguageRecognizer"
         },
         {
+            "title": "Microsoft.NumberEntityRecognizer",
+            "description": "Recognizer which recognizes numbers.",
+            "$ref": "#/definitions/Microsoft.NumberEntityRecognizer"
+        },
+        {
             "title": "Microsoft.NumberInput",
             "description": "This represents a dialog which gathers a decimal number in a specified range",
             "$ref": "#/definitions/Microsoft.NumberInput"
+        },
+        {
+            "title": "Microsoft.NumberRangeEntityRecognizer",
+            "description": "Recognizer which recognizes ranges of numbers (Example:2 to 5).",
+            "$ref": "#/definitions/Microsoft.NumberRangeEntityRecognizer"
         },
         {
             "title": "Microsoft.OAuthInput",
@@ -226,6 +286,21 @@
             "$ref": "#/definitions/Microsoft.OnUnknownIntent"
         },
         {
+            "title": "Microsoft.OrdinalEntityRecognizer",
+            "description": "Recognizer which recognizes ordinals (example: first, second, 3rd).",
+            "$ref": "#/definitions/Microsoft.OrdinalEntityRecognizer"
+        },
+        {
+            "title": "Microsoft.PercentageEntityRecognizer",
+            "description": "Recognizer which recognizes percentages.",
+            "$ref": "#/definitions/Microsoft.PercentageEntityRecognizer"
+        },
+        {
+            "title": "Microsoft.PhoneNumberEntityRecognizer",
+            "description": "Recognizer which recognizes phone numbers.",
+            "$ref": "#/definitions/Microsoft.PhoneNumberEntityRecognizer"
+        },
+        {
             "title": "Microsoft.QnAMakerDialog",
             "description": "This represents a dialog which is driven by a call to QnAMaker.ai knowledge base",
             "$ref": "#/definitions/Microsoft.QnAMakerDialog"
@@ -234,6 +309,11 @@
             "title": "Microsoft.RandomSelector",
             "description": "Select most specific true rule",
             "$ref": "#/definitions/Microsoft.RandomSelector"
+        },
+        {
+            "title": "Microsoft.RegexEntityRecognizer",
+            "description": "Recognizer which recognizes patterns of input based on regex.",
+            "$ref": "#/definitions/Microsoft.RegexEntityRecognizer"
         },
         {
             "title": "Microsoft.RegexRecognizer",
@@ -266,6 +346,11 @@
             "$ref": "#/definitions/Microsoft.SwitchCondition"
         },
         {
+            "title": "Microsoft.TemperatureEntityRecognizer",
+            "description": "Recognizer which recognizes temperatures.",
+            "$ref": "#/definitions/Microsoft.TemperatureEntityRecognizer"
+        },
+        {
             "title": "Microsoft.TextInput",
             "description": "This represents a dialog which gathers a text from the user",
             "$ref": "#/definitions/Microsoft.TextInput"
@@ -279,6 +364,11 @@
             "title": "Microsoft.TrueSelector",
             "description": "Selector for all true events",
             "$ref": "#/definitions/Microsoft.TrueSelector"
+        },
+        {
+            "title": "Microsoft.UrlEntityRecognizer",
+            "description": "Recognizer which recognizes urls (example: http://bing.com)",
+            "$ref": "#/definitions/Microsoft.UrlEntityRecognizer"
         },
         {
             "title": "Testbot.JavascriptAction",
@@ -400,6 +490,58 @@
                         "$type": "Microsoft.IOnEvent",
                         "$ref": "#/definitions/Microsoft.IOnEvent"
                     }
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$type"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.AgeEntityRecognizer": {
+            "$role": "unionType(Microsoft.EntityRecognizer)",
+            "title": "Age Entity Recognizer",
+            "description": "Recognizer which recognizes age.",
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.AgeEntityRecognizer"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
                 }
             },
             "additionalProperties": false,
@@ -1436,6 +1578,162 @@
                 }
             ]
         },
+        "Microsoft.ConfirmationEntityRecognizer": {
+            "$role": "unionType(Microsoft.EntityRecognizer)",
+            "title": "Confirmation Entity Recognizer",
+            "description": "Recognizer which recognizes confirmation choices (yes/no).",
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.ConfirmationEntityRecognizer"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$type"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.CurrencyEntityRecognizer": {
+            "$role": "unionType(Microsoft.EntityRecognizer)",
+            "title": "Currency Entity Recognizer",
+            "description": "Recognizer which recognizes currency.",
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.CurrencyEntityRecognizer"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$type"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.DateTimeEntityRecognizer": {
+            "$role": "unionType(Microsoft.EntityRecognizer)",
+            "title": "DateTime Entity Recognizer",
+            "description": "Recognizer which recognizes dates and time fragments.",
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.DateTimeEntityRecognizer"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$type"
+                    ]
+                }
+            ]
+        },
         "Microsoft.DateTimeInput": {
             "$role": "unionType(Microsoft.IDialog)",
             "title": "DateTimeInput Dialog",
@@ -1764,6 +2062,58 @@
                 }
             ]
         },
+        "Microsoft.DimensionEntityRecognizer": {
+            "$role": "unionType(Microsoft.EntityRecognizer)",
+            "title": "Dimension Entity Recognizer",
+            "description": "Recognizer which recognizes dimension.",
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.DimensionEntityRecognizer"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$type"
+                    ]
+                }
+            ]
+        },
         "Microsoft.EditActions": {
             "$role": "unionType(Microsoft.IDialog)",
             "title": "EditActions Action",
@@ -1961,6 +2311,58 @@
                     "required": [
                         "changeType",
                         "arrayProperty",
+                        "$type"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.EmailEntityRecognizer": {
+            "$role": "unionType(Microsoft.EntityRecognizer)",
+            "title": "Email Entity Recognizer",
+            "description": "Recognizer which recognizes email.",
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.EmailEntityRecognizer"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
                         "$type"
                     ]
                 }
@@ -2227,6 +2629,104 @@
                 }
             ]
         },
+        "Microsoft.EntityRecognizer": {
+            "$role": "unionType",
+            "title": "Entity Recognizer",
+            "description": "Union of components which derive from EntityRecognizer abstract class.",
+            "type": "object",
+            "oneOf": [
+                {
+                    "title": "Microsoft.AgeEntityRecognizer",
+                    "description": "Recognizer which recognizes age.",
+                    "$ref": "#/definitions/Microsoft.AgeEntityRecognizer"
+                },
+                {
+                    "title": "Microsoft.ConfirmationEntityRecognizer",
+                    "description": "Recognizer which recognizes confirmation choices (yes/no).",
+                    "$ref": "#/definitions/Microsoft.ConfirmationEntityRecognizer"
+                },
+                {
+                    "title": "Microsoft.CurrencyEntityRecognizer",
+                    "description": "Recognizer which recognizes currency.",
+                    "$ref": "#/definitions/Microsoft.CurrencyEntityRecognizer"
+                },
+                {
+                    "title": "Microsoft.DateTimeEntityRecognizer",
+                    "description": "Recognizer which recognizes dates and time fragments.",
+                    "$ref": "#/definitions/Microsoft.DateTimeEntityRecognizer"
+                },
+                {
+                    "title": "Microsoft.DimensionEntityRecognizer",
+                    "description": "Recognizer which recognizes dimension.",
+                    "$ref": "#/definitions/Microsoft.DimensionEntityRecognizer"
+                },
+                {
+                    "title": "Microsoft.EmailEntityRecognizer",
+                    "description": "Recognizer which recognizes email.",
+                    "$ref": "#/definitions/Microsoft.EmailEntityRecognizer"
+                },
+                {
+                    "title": "Microsoft.GuidEntityRecognizer",
+                    "description": "Recognizer which recognizes guids.",
+                    "$ref": "#/definitions/Microsoft.GuidEntityRecognizer"
+                },
+                {
+                    "title": "Microsoft.HashtagEntityRecognizer",
+                    "description": "Recognizer which recognizes Hashtags.",
+                    "$ref": "#/definitions/Microsoft.HashtagEntityRecognizer"
+                },
+                {
+                    "title": "Microsoft.IpEntityRecognizer",
+                    "description": "Recognizer which recognizes internet IP patterns (like 192.1.1.1).",
+                    "$ref": "#/definitions/Microsoft.IpEntityRecognizer"
+                },
+                {
+                    "title": "Microsoft.MentionEntityRecognizer",
+                    "description": "Recognizer which recognizes @Mentions",
+                    "$ref": "#/definitions/Microsoft.MentionEntityRecognizer"
+                },
+                {
+                    "title": "Microsoft.NumberEntityRecognizer",
+                    "description": "Recognizer which recognizes numbers.",
+                    "$ref": "#/definitions/Microsoft.NumberEntityRecognizer"
+                },
+                {
+                    "title": "Microsoft.NumberRangeEntityRecognizer",
+                    "description": "Recognizer which recognizes ranges of numbers (Example:2 to 5).",
+                    "$ref": "#/definitions/Microsoft.NumberRangeEntityRecognizer"
+                },
+                {
+                    "title": "Microsoft.OrdinalEntityRecognizer",
+                    "description": "Recognizer which recognizes ordinals (example: first, second, 3rd).",
+                    "$ref": "#/definitions/Microsoft.OrdinalEntityRecognizer"
+                },
+                {
+                    "title": "Microsoft.PercentageEntityRecognizer",
+                    "description": "Recognizer which recognizes percentages.",
+                    "$ref": "#/definitions/Microsoft.PercentageEntityRecognizer"
+                },
+                {
+                    "title": "Microsoft.PhoneNumberEntityRecognizer",
+                    "description": "Recognizer which recognizes phone numbers.",
+                    "$ref": "#/definitions/Microsoft.PhoneNumberEntityRecognizer"
+                },
+                {
+                    "title": "Microsoft.RegexEntityRecognizer",
+                    "description": "Recognizer which recognizes patterns of input based on regex.",
+                    "$ref": "#/definitions/Microsoft.RegexEntityRecognizer"
+                },
+                {
+                    "title": "Microsoft.TemperatureEntityRecognizer",
+                    "description": "Recognizer which recognizes temperatures.",
+                    "$ref": "#/definitions/Microsoft.TemperatureEntityRecognizer"
+                },
+                {
+                    "title": "Microsoft.UrlEntityRecognizer",
+                    "description": "Recognizer which recognizes urls (example: http://bing.com)",
+                    "$ref": "#/definitions/Microsoft.UrlEntityRecognizer"
+                }
+            ]
+        },
         "Microsoft.FirstSelector": {
             "$role": "unionType(Microsoft.IEventSelector)",
             "title": "First Event Selector",
@@ -2485,6 +2985,110 @@
                     "required": [
                         "listProperty",
                         "actions",
+                        "$type"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.GuidEntityRecognizer": {
+            "$role": "unionType(Microsoft.EntityRecognizer)",
+            "title": "Guid Entity Recognizer",
+            "description": "Recognizer which recognizes guids.",
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.GuidEntityRecognizer"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$type"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.HashtagEntityRecognizer": {
+            "$role": "unionType(Microsoft.EntityRecognizer)",
+            "title": "Hashtag Entity Recognizer",
+            "description": "Recognizer which recognizes Hashtags.",
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.HashtagEntityRecognizer"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
                         "$type"
                     ]
                 }
@@ -3178,6 +3782,58 @@
                 }
             ]
         },
+        "Microsoft.IpEntityRecognizer": {
+            "$role": "unionType(Microsoft.EntityRecognizer)",
+            "title": "Ip Entity Recognizer",
+            "description": "Recognizer which recognizes internet IP patterns (like 192.1.1.1).",
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.IpEntityRecognizer"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$type"
+                    ]
+                }
+            ]
+        },
         "Microsoft.LanguagePolicy": {
             "$role": "unionType(Microsoft.ILanguagePolicy)",
             "title": "Language Policy",
@@ -3378,6 +4034,58 @@
                 }
             ]
         },
+        "Microsoft.MentionEntityRecognizer": {
+            "$role": "unionType(Microsoft.EntityRecognizer)",
+            "title": "Mentions Entity Recognizer",
+            "description": "Recognizer which recognizes @Mentions",
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.MentionEntityRecognizer"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$type"
+                    ]
+                }
+            ]
+        },
         "Microsoft.MostSpecificSelector": {
             "$role": "unionType(Microsoft.IEventSelector)",
             "title": "Most Specific Event Selector",
@@ -3498,6 +4206,58 @@
                     "title": "Type",
                     "required": [
                         "recognizers",
+                        "$type"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.NumberEntityRecognizer": {
+            "$role": "unionType(Microsoft.EntityRecognizer)",
+            "title": "Number Entity Recognizer",
+            "description": "Recognizer which recognizes numbers.",
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.NumberEntityRecognizer"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
                         "$type"
                     ]
                 }
@@ -3667,6 +4427,58 @@
                     "title": "Default Locale",
                     "description": "The prompts default locale that should be recognized.",
                     "default": "en-us"
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$type"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.NumberRangeEntityRecognizer": {
+            "$role": "unionType(Microsoft.EntityRecognizer)",
+            "title": "NumberRange Entity Recognizer",
+            "description": "Recognizer which recognizes ranges of numbers (Example:2 to 5).",
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.NumberRangeEntityRecognizer"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
                 }
             },
             "additionalProperties": false,
@@ -5043,6 +5855,162 @@
                 }
             ]
         },
+        "Microsoft.OrdinalEntityRecognizer": {
+            "$role": "unionType(Microsoft.EntityRecognizer)",
+            "title": "Ordinal Entity Recognizer",
+            "description": "Recognizer which recognizes ordinals (example: first, second, 3rd).",
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.OrdinalEntityRecognizer"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$type"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.PercentageEntityRecognizer": {
+            "$role": "unionType(Microsoft.EntityRecognizer)",
+            "title": "Percentage Entity Recognizer",
+            "description": "Recognizer which recognizes percentages.",
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.PercentageEntityRecognizer"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$type"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.PhoneNumberEntityRecognizer": {
+            "$role": "unionType(Microsoft.EntityRecognizer)",
+            "title": "Phone Number Entity Recognizer",
+            "description": "Recognizer which recognizes phone numbers.",
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.PhoneNumberEntityRecognizer"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$type"
+                    ]
+                }
+            ]
+        },
         "Microsoft.QnAMakerDialog": {
             "$role": "unionType(Microsoft.IDialog)",
             "title": "QnAMaker Dialog",
@@ -5192,6 +6160,70 @@
                 }
             ]
         },
+        "Microsoft.RegexEntityRecognizer": {
+            "$role": "unionType(Microsoft.EntityRecognizer)",
+            "title": "Regex Entity Recognizer",
+            "description": "Recognizer which recognizes patterns of input based on regex.",
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.RegexEntityRecognizer"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "name": {
+                    "type": "string",
+                    "title": "Name",
+                    "description": "Name of the entity"
+                },
+                "pattern": {
+                    "type": "string",
+                    "title": "Pattern",
+                    "description": "Pattern expressed as regular expression."
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "name",
+                        "pattern",
+                        "$type"
+                    ]
+                }
+            ]
+        },
         "Microsoft.RegexRecognizer": {
             "$role": "unionType(Microsoft.IRecognizer)",
             "title": "Regex Recognizer",
@@ -5223,11 +6255,32 @@
                     "description": "Extra information for the Bot Framework Designer."
                 },
                 "intents": {
-                    "type": "object",
+                    "type": "array",
                     "title": "RegEx patterns to intents",
-                    "description": "Pattern->Intents mappings",
-                    "additionalProperties": {
-                        "type": "string"
+                    "description": "Collection of patterns to match intents",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "intent": {
+                                "type": "string",
+                                "title": "Intent",
+                                "description": "The intent name"
+                            },
+                            "pattern": {
+                                "type": "string",
+                                "title": "Pattern",
+                                "description": "The regular expression pattern for matching"
+                            }
+                        }
+                    }
+                },
+                "entities": {
+                    "type": "array",
+                    "title": "Entitie Recognizers",
+                    "description": "Entity Recognizers to use",
+                    "items": {
+                        "$type": "Microsoft.EntityRecognizer",
+                        "$ref": "#/definitions/Microsoft.EntityRecognizer"
                     }
                 }
             },
@@ -5710,6 +6763,58 @@
                 }
             ]
         },
+        "Microsoft.TemperatureEntityRecognizer": {
+            "$role": "unionType(Microsoft.EntityRecognizer)",
+            "title": "Temperature Entity Recognizer",
+            "description": "Recognizer which recognizes temperatures.",
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.TemperatureEntityRecognizer"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$type"
+                    ]
+                }
+            ]
+        },
         "Microsoft.TextInput": {
             "$role": "unionType(Microsoft.IDialog)",
             "title": "TextInput Dialog",
@@ -5993,6 +7098,58 @@
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
                     "const": "Microsoft.TrueSelector"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$type"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.UrlEntityRecognizer": {
+            "$role": "unionType(Microsoft.EntityRecognizer)",
+            "title": "Url Entity Recognizer",
+            "description": "Recognizer which recognizes urls (example: http://bing.com)",
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.UrlEntityRecognizer"
                 },
                 "$copy": {
                     "title": "$copy",

@@ -14,7 +14,7 @@ using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
 {
     [TestClass]
     public class RecognizerTests
@@ -96,10 +96,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         "en-us",
                         new RegexRecognizer()
                         {
-                            Intents = new Dictionary<string, string>()
+                            Intents = new List<IntentPattern>()
                             {
-                                { "Greeting", "(?i)howdy" },
-                                { "Goodbye", "(?i)bye" },
+                                new IntentPattern("Greeting", "(?i)howdy" ),
+                                new IntentPattern("Goodbye", "(?i)bye" ),
                             }
                         }
                      },
@@ -107,10 +107,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         "en-gb",
                         new RegexRecognizer()
                         {
-                            Intents = new Dictionary<string, string>()
+                            Intents = new List<IntentPattern>()
                             {
-                                { "Greeting", "(?i)hiya" },
-                                { "Goodbye", "(?i)cheerio" },
+                                new IntentPattern("Greeting", "(?i)hiya" ),
+                                new IntentPattern("Goodbye", "(?i)cheerio" ),
                             }
                         }
                      },
@@ -118,10 +118,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         "en",
                         new RegexRecognizer()
                         {
-                            Intents = new Dictionary<string, string>()
+                            Intents = new List<IntentPattern>()
                             {
-                                { "Greeting", "(?i)hello" },
-                                { "Goodbye", "(?i)goodbye" },
+                                new IntentPattern("Greeting", "(?i)hello" ),
+                                new IntentPattern("Goodbye", "(?i)goodbye" ),
                             }
                         }
                      },
@@ -129,10 +129,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         string.Empty,
                         new RegexRecognizer()
                         {
-                            Intents = new Dictionary<string, string>()
+                            Intents = new List<IntentPattern>()
                             {
-                                { "Greeting", "(?i)salve" },
-                                { "Goodbye", "(?i)vale dicere" },
+                                new IntentPattern("Greeting", "(?i)salve" ),
+                                new IntentPattern("Goodbye", "(?i)vale dicere" ),
                             }
                         }
                      },
