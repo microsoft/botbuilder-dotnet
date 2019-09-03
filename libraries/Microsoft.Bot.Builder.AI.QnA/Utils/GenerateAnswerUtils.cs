@@ -130,8 +130,6 @@ namespace Microsoft.Bot.Builder.AI.QnA
             {
                 options.MetadataBoost = new Metadata[] { };
             }
-
-            options.Context = new QnARequestContext();
         }
 
         /// <summary>
@@ -165,10 +163,8 @@ namespace Microsoft.Bot.Builder.AI.QnA
                     hydratedOptions.MetadataBoost = queryOptions.MetadataBoost;
                 }
 
-                if (queryOptions.Context != null)
-                {
-                    hydratedOptions.Context = queryOptions.Context;
-                }
+                hydratedOptions.Context = queryOptions.Context;
+                hydratedOptions.QnAId = queryOptions.QnAId;
             }
 
             return hydratedOptions;
@@ -186,6 +182,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
                     metadataBoost = options.MetadataBoost,
                     scoreThreshold = options.ScoreThreshold,
                     context = options.Context,
+                    qnaId = options.QnAId
                 }, Formatting.None);
 
             var httpRequestHelper = new HttpRequestUtils(httpClient);
