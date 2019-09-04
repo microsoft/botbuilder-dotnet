@@ -83,8 +83,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             // Start the inner dialog.
-            var dialogState = new DialogState();
-            outerDc.ActiveDialog.State[PersistedDialogState] = dialogState;
+            var dialogState = InitializeDialogState(outerDc.ActiveDialog);
             var innerDc = new DialogContext(_dialogs, outerDc.Context, dialogState);
             innerDc.Parent = outerDc;
             var turnResult = await OnBeginDialogAsync(innerDc, options, cancellationToken).ConfigureAwait(false);
@@ -128,8 +127,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             // Continue execution of inner dialog.
-            var dialogState = (DialogState)outerDc.ActiveDialog.State[PersistedDialogState];
-            var innerDc = new DialogContext(_dialogs, outerDc.Context, dialogState);
+            var innerDc = new DialogContext(_dialogs, outerDc.Context, GetDialogState(outerDc.ActiveDialog));
             innerDc.Parent = outerDc;
             var turnResult = await OnContinueDialogAsync(innerDc, cancellationToken).ConfigureAwait(false);
 
@@ -191,8 +189,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         public override async Task RepromptDialogAsync(ITurnContext turnContext, DialogInstance instance, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Delegate to inner dialog.
-            var dialogState = (DialogState)instance.State[PersistedDialogState];
-            var innerDc = new DialogContext(_dialogs, turnContext, dialogState);
+            var innerDc = new DialogContext(_dialogs, turnContext, GetDialogState(instance));
             await innerDc.RepromptDialogAsync(cancellationToken).ConfigureAwait(false);
 
             // Notify component
@@ -218,8 +215,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             // Forward cancel to inner dialogs
             if (reason == DialogReason.CancelCalled)
             {
-                var dialogState = (DialogState)instance.State[PersistedDialogState];
-                var innerDc = new DialogContext(_dialogs, turnContext, dialogState);
+                var innerDc = new DialogContext(_dialogs, turnContext, GetDialogState(instance));
                 await innerDc.CancelAllDialogsAsync(cancellationToken).ConfigureAwait(false);
             }
 
@@ -360,6 +356,23 @@ namespace Microsoft.Bot.Builder.Dialogs
         protected virtual Task<DialogTurnResult> EndComponentAsync(DialogContext outerDc, object result, CancellationToken cancellationToken)
         {
             return outerDc.EndDialogAsync(result, cancellationToken);
+        }
+
+        private static DialogState GetDialogState(DialogInstance instance)
+        {
+            if (!instance.State.TryGetValue(PersistedDialogState, out var dialogState))
+            {
+                dialogState = InitializeDialogState(instance);
+            }
+
+            return dialogState as DialogState;
+        }
+
+        private static DialogState InitializeDialogState(DialogInstance instance)
+        {
+            var dialogState = new DialogState();
+            instance.State[PersistedDialogState] = dialogState;
+            return dialogState;
         }
     }
 }
