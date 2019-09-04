@@ -25,8 +25,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Prompts
         public static IPromptCultureModel Danish =>
             new IPromptCultureModel
             {
-                InlineOr = " of ",
-                InlineOrMore = "， of ",
+                InlineOr = " eller ",
+                InlineOrMore = "， eller ",
                 Locale = "da-DK",
                 NoInLanguage = "Nej",
                 Separator = "， ",
