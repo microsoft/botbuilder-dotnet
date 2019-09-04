@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -68,6 +69,33 @@ namespace Microsoft.Bot.Builder
             Intents = result.Intents;
             Entities = result.Entities;
             Properties = result.Properties;
+        }
+
+        /// <summary>
+        /// Returns the name of the top scoring intent from a set of LUIS results.
+        /// </summary>
+        /// <param name="results">Result set to be searched.</param>
+        /// <param name="defaultIntent">(Optional) Intent name to return should a top intent be found. Defaults to a value of "None".</param>
+        /// <param name="minScore">(Optional) Minimum score needed for an intent to be considered as a top intent. If all intents in the set are below this threshold then the `defaultIntent` will be returned.  Defaults to a value of `0.0`.</param>
+        /// <returns>The top scoring intent name.</returns>
+        public string TopIntent(string defaultIntent = "None", double minScore = 0.0)
+        {
+            string topIntent = null;
+            var topScore = -1.0;
+            if (this.Intents.Count > 0)
+            {
+                foreach (var intent in this.Intents)
+                {
+                    var score = (double)intent.Value.Score;
+                    if (score > topScore && score >= minScore)
+                    {
+                        topIntent = intent.Key;
+                        topScore = score;
+                    }
+                }
+            }
+
+            return !string.IsNullOrEmpty(topIntent) ? topIntent : defaultIntent;
         }
     }
 }

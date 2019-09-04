@@ -35,7 +35,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
                 new PhoneNumberEntityRecognizer(),
                 new TemperatureEntityRecognizer(),
                 new UrlEntityRecognizer(),
-                new RegexEntityRecognizer() { Name = "color", Pattern = "(?i)(red|green|blue|purble|orange|violet|white|black)" },
+                new RegexEntityRecognizer() { Name = "color", Pattern = "(?i)(red|green|blue|purple|orange|violet|white|black)" },
                 new RegexEntityRecognizer() { Name = "size", Pattern = "(?i)(small|medium|large)" },
             };
         });

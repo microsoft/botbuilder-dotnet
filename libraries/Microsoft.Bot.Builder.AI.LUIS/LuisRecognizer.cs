@@ -124,22 +124,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
                 throw new ArgumentNullException(nameof(results));
             }
 
-            string topIntent = null;
-            var topScore = -1.0;
-            if (results.Intents.Count > 0)
-            {
-                foreach (var intent in results.Intents)
-                {
-                    var score = (double)intent.Value.Score;
-                    if (score > topScore && score >= minScore)
-                    {
-                        topIntent = intent.Key;
-                        topScore = score;
-                    }
-                }
-            }
-
-            return !string.IsNullOrEmpty(topIntent) ? topIntent : defaultIntent;
+            return results.TopIntent(defaultIntent, minScore);
         }
 
         /// <inheritdoc />
