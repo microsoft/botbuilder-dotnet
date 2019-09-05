@@ -2,7 +2,7 @@
   "items": [
     {
       "id": "test_webhook_id1",
-      "name": "TestWH",
+      "name": "Webex AttachmentActions",
       "targetUrl": "https://contoso.com/api/messages",
       "resource": "all",
       "event": "all",

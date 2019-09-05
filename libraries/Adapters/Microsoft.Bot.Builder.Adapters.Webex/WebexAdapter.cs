@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
-using Thrzn41.WebexTeams;
 using Thrzn41.WebexTeams.Version1;
 
 namespace Microsoft.Bot.Builder.Adapters.Webex

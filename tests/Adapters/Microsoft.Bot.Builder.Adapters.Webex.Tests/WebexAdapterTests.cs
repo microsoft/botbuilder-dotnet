@@ -193,7 +193,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
             var httpRequest = new Mock<HttpRequest>();
             httpRequest.SetupGet(req => req.Body).Returns(stream);
             httpRequest.Setup(req => req.Headers.ContainsKey(It.IsAny<string>())).Returns(true);
-            httpRequest.SetupGet(req => req.Headers[It.IsAny<string>()]).Returns("61E7F071CE5C9FA21C773E7D6E9C6FF3B8A21F80");
+            httpRequest.SetupGet(req => req.Headers[It.IsAny<string>()]).Returns("0DAE6B9150DA80E6049E81B9DC5AF3D57831AC60");
 
             var httpResponse = new Mock<HttpResponse>();
             var bot = new Mock<IBot>();
@@ -224,7 +224,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
             var httpRequest = new Mock<HttpRequest>();
             httpRequest.SetupGet(req => req.Body).Returns(stream);
             httpRequest.Setup(req => req.Headers.ContainsKey(It.IsAny<string>())).Returns(true);
-            httpRequest.SetupGet(req => req.Headers[It.IsAny<string>()]).Returns("9C32875928D2901E0BE90AEDDF4063174E25BB4E");
+            httpRequest.SetupGet(req => req.Headers[It.IsAny<string>()]).Returns("1F8A7273D461C5517505A7A7551609FDF45CBF7B");
 
             var httpResponse = new Mock<HttpResponse>();
             var bot = new Mock<IBot>();
@@ -510,6 +510,49 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
             await webexAdapter.DeleteActivityAsync(turnContext, conversationReference, default);
 
             Assert.Equal(1, deletedMessages);
+        }
+
+        [Fact]
+        public async void RegisterAdaptiveCardsWebhookSubscriptionAsync_CreateWebhook_Should_Succeed()
+        {
+            var testPublicAddress = "http://contoso.com/api/messages";
+            var webhookName = "New_Webhook";
+
+            var options = new WebexAdapterOptions("Test", testPublicAddress, "Test", webhookName);
+
+            var webhookList = JsonConvert.DeserializeObject<WebhookList>(File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\WebhookList.json"));
+            var webhook = JsonConvert.DeserializeObject<Webhook>(File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\WebhookAttachmentActions.json"));
+
+            var webexApi = new Mock<WebexClientWrapper>();
+            webexApi.SetupAllProperties();
+            webexApi.Setup(x => x.CreateAdaptiveCardsWebhookAsync(It.IsAny<string>(), It.IsAny<Uri>(), It.IsAny<EventType>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(webhook));
+
+            var webexAdapter = new WebexAdapter(options, webexApi.Object);
+
+            var actualWebhook = await webexAdapter.RegisterAdaptiveCardsWebhookSubscriptionAsync("api/messages", webhookList);
+
+            Assert.Equal(webhook.Id, actualWebhook.Id);
+            Assert.Equal(webhook.Name, actualWebhook.Name);
+        }
+
+        [Fact]
+        public async void RegisterAdaptiveCardsWebhookSubscriptionAsync_UpdateWebhook_Should_Succeed()
+        {
+            var testPublicAddress = "http://contoso.com/api/messages";
+
+            var options = new WebexAdapterOptions("Test", testPublicAddress, "Test");
+
+            var webhookList = JsonConvert.DeserializeObject<WebhookList>(File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\WebhookList.json"));
+
+            var webexApi = new Mock<WebexClientWrapper>();
+            webexApi.SetupAllProperties();
+            webexApi.Setup(x => x.UpdateAdaptiveCardsWebhookAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(webhookList.Items[0]));
+
+            var webexAdapter = new WebexAdapter(options, webexApi.Object);
+
+            var webhook = await webexAdapter.RegisterAdaptiveCardsWebhookSubscriptionAsync("api/messages", webhookList);
+
+            Assert.Equal(webhookList.Items[0].Id, webhook.Id);
         }
     }
 }
