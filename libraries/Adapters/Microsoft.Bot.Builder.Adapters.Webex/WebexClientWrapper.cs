@@ -18,6 +18,10 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
 {
     public class WebexClientWrapper
     {
+        private const string WebhookUrl = "https://api.ciscospark.com/v1/webhooks";
+        private const string MessageUrl = "https://api.ciscospark.com/v1/messages";
+        private const string ActionsUrl = "https://api.ciscospark.com/v1/attachment/actions";
+
         private TeamsAPIClient _api;
 
         /// <summary>
@@ -64,7 +68,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         public virtual async Task<string> CreateMessageWithAttachmentsAsync(string toPersonOrEmail, string text, IList<Attachment> attachments, string token)
         {
             Message result = null;
-            var url = "https://api.ciscospark.com/v1/messages";
+            var url = MessageUrl;
 
             var attachmentsContent = new List<object>();
 
@@ -118,7 +122,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         {
             Message result = null;
 
-            var url = $"https://api.ciscospark.com/v1/attachment/actions/{actionId}";
+            var url = $"{ActionsUrl}/{actionId}";
 
             var http = (HttpWebRequest)WebRequest.Create(new Uri(url));
             http.PreAuthenticate = true;
@@ -228,7 +232,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         {
             Webhook result = null;
 
-            var url = "https://api.ciscospark.com/v1/webhooks";
+            var url = WebhookUrl;
             var data = new NameValueCollection
             {
                 ["name"] = name,
@@ -263,7 +267,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         {
             Webhook result = null;
 
-            var url = $"https://api.ciscospark.com/v1/webhooks/{webhookId}";
+            var url = $"{WebhookUrl}/{webhookId}";
             var data = new NameValueCollection
             {
                 ["name"] = name,
