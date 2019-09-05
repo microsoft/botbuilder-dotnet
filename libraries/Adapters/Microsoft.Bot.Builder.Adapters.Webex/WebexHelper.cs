@@ -11,6 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Schema;
+using Newtonsoft.Json;
 using Thrzn41.WebexTeams.Version1;
 
 [assembly: InternalsVisibleTo("Microsoft.Bot.Builder.Adapters.Webex.Tests")]
@@ -178,6 +179,49 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
             {
                 activity.Attachments = HandleMessageAttachments(decryptedMessage);
             }
+
+            return activity;
+        }
+
+        /// <summary>
+        /// Converts a decrypted related to an attachment action into an <see cref="Activity"/>.
+        /// </summary>
+        /// <param name="decryptedMessage">The decrypted message obtained from the body of the request.</param>
+        /// <returns>An <see cref="Activity"/> object.</returns>
+        public static Activity AttachmentActionToActivity(Message decryptedMessage)
+        {
+            if (decryptedMessage == null)
+            {
+                return null;
+            }
+
+            var data = JsonConvert.SerializeObject(decryptedMessage);
+
+            var messageExtraData = JsonConvert.DeserializeObject<AttachmentActionData>(data);
+
+            var activity = new Activity
+            {
+                Id = decryptedMessage.Id,
+                Timestamp = new DateTime(),
+                ChannelId = "webex",
+                Conversation = new ConversationAccount
+                {
+                    Id = decryptedMessage.SpaceId,
+                },
+                From = new ChannelAccount
+                {
+                    Id = decryptedMessage.PersonId,
+                    Name = decryptedMessage.PersonEmail,
+                },
+                Recipient = new ChannelAccount
+                {
+                    Id = Identity.Id,
+                },
+                Text = !string.IsNullOrEmpty(decryptedMessage.Text) ? decryptedMessage.Text : string.Empty,
+                Value = messageExtraData.Inputs,
+                ChannelData = decryptedMessage,
+                Type = ActivityTypes.Event,
+            };
 
             return activity;
         }

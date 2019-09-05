@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
+using Thrzn41.WebexTeams;
 using Thrzn41.WebexTeams.Version1;
 
 namespace Microsoft.Bot.Builder.Adapters.Webex
@@ -115,6 +116,41 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         }
 
         /// <summary>
+        /// Register a webhook subscription with Webex Teams to start receiving message events.
+        /// </summary>
+        /// <param name="webhookPath">The path of the webhook endpoint like '/api/messages'.</param>
+        /// <param name="webhookList">List of webhook subscriptions associated with the application.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        public async Task<Webhook> RegisterAdaptiveCardsWebhookSubscriptionAsync(string webhookPath, WebhookList webhookList)
+        {
+            var webHookName = _config.WebhookName ?? "Webex AttachmentActions";
+
+            string hookId = null;
+
+            for (var i = 0; i < webhookList.ItemCount; i++)
+            {
+                if (webhookList.Items[i].Name == webHookName)
+                {
+                    hookId = webhookList.Items[i].Id;
+                }
+            }
+
+            var hookUrl = "https://" + _config.PublicAddress + webhookPath;
+            Webhook webhook = null;
+
+            if (hookId != null)
+            {
+                webhook = await _webexClient.UpdateAdaptiveCardsWebhookAsync(hookId, webHookName, new Uri(hookUrl), _config.Secret, _config.AccessToken).ConfigureAwait(false);
+            }
+            else
+            {
+                webhook = await _webexClient.CreateAdaptiveCardsWebhookAsync(webHookName, new Uri(hookUrl), EventType.All, _config.Secret, _config.AccessToken).ConfigureAwait(false);
+            }
+
+            return webhook;
+        }
+
+        /// <summary>
         /// Standard BotBuilder adapter method to send a message from the bot to the messaging API.
         /// </summary>
         /// <param name="turnContext">A TurnContext representing the current incoming message and environment.</param>
@@ -150,19 +186,32 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                     }
                 }
 
-                var files = new List<Uri>();
+                string responseId = null;
 
-                if (activity.Attachments != null)
+                if (activity.Attachments != null && activity.Attachments.Count > 0)
                 {
-                    foreach (var attachment in activity.Attachments)
+                    if (activity.Attachments[0].ContentType == "application/vnd.microsoft.card.adaptive")
                     {
-                        var file = new Uri(attachment.ContentUrl);
+                        responseId = await _webexClient.CreateMessageWithAttachmentsAsync(personIdOrEmail, activity.Text, activity.Attachments, _config.AccessToken).ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        var files = new List<Uri>();
 
-                        files.Add(file);
+                        foreach (var attachment in activity.Attachments)
+                        {
+                            var file = new Uri(attachment.ContentUrl);
+                            files.Add(file);
+                        }
+
+                        responseId = await _webexClient.CreateMessageAsync(personIdOrEmail, activity.Text, files.Count > 0 ? files : null).ConfigureAwait(false);
                     }
                 }
+                else
+                {
+                    responseId = await _webexClient.CreateMessageAsync(personIdOrEmail, activity.Text).ConfigureAwait(false);
+                }
 
-                var responseId = await _webexClient.CreateMessageAsync(personIdOrEmail, activity.Text, files.Count > 0 ? files : null).ConfigureAwait(false);
                 responses.Add(new ResourceResponse(responseId));
             }
 
@@ -273,6 +322,18 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                 var decryptedMessage = await WebexHelper.GetDecryptedMessageAsync(payload, _webexClient.GetMessageAsync).ConfigureAwait(false);
 
                 activity = WebexHelper.DecryptedMessageToActivity(decryptedMessage);
+            }
+            else if (payload.Resource.Name == "attachmentActions" && payload.EventType == EventType.Created)
+            {
+                var extraData = payload.GetResourceData<TeamsData>();
+
+                var data = JsonConvert.SerializeObject(extraData);
+
+                var datajson = JsonConvert.DeserializeObject<AttachmentActionData>(data);
+
+                var decryptedMessage = await _webexClient.GetAttachmentActionAsync(datajson.Id, _config.AccessToken).ConfigureAwait(false);
+
+                activity = WebexHelper.AttachmentActionToActivity(decryptedMessage);
             }
             else
             {

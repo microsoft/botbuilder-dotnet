@@ -401,7 +401,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         }
 
         [Fact]
-        public async void SendActivitiesAsync_Null_toPersonEmail_Should_Succeed()
+        public async void SendActivitiesAsync_NotNull_toPersonEmail_Should_Succeed()
         {
             var testPublicAddress = "http://contoso.com/api/messages";
 
