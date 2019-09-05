@@ -138,5 +138,47 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
 
             Assert.Equal(message.FileCount, attachmentList.Count);
         }
+
+        [Fact]
+        public void AttachmentActionToActivity_With_Null_Message_Should_Fail()
+        {
+            Assert.Null(WebexHelper.AttachmentActionToActivity(null));
+        }
+
+        [Fact]
+        public void AttachmentActionToActivity_Should_Return_Activity_With_Empty_Text()
+        {
+            WebexHelper.Identity = JsonConvert.DeserializeObject<Person>(File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\Person.json"));
+            var message =
+                JsonConvert.DeserializeObject<Message>(
+                    File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\MessageWithInputs.json"));
+
+            var data = JsonConvert.SerializeObject(message);
+            var messageExtraData = JsonConvert.DeserializeObject<AttachmentActionData>(data);
+
+            var activity = WebexHelper.AttachmentActionToActivity(message);
+
+            Assert.Equal(message.Id, activity.Id);
+            Assert.Equal(messageExtraData.Inputs, activity.Value);
+            Assert.Equal(string.Empty, activity.Text);
+        }
+
+        [Fact]
+        public void AttachmentActionToActivity_Should_Return_Activity_With_Text()
+        {
+            WebexHelper.Identity = JsonConvert.DeserializeObject<Person>(File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\Person.json"));
+            var message =
+                JsonConvert.DeserializeObject<Message>(
+                    File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\MessageWithText.json"));
+
+            var data = JsonConvert.SerializeObject(message);
+            var messageExtraData = JsonConvert.DeserializeObject<AttachmentActionData>(data);
+
+            var activity = WebexHelper.AttachmentActionToActivity(message);
+
+            Assert.Equal(message.Id, activity.Id);
+            Assert.Equal(messageExtraData.Inputs, activity.Value);
+            Assert.Equal(message.Text, activity.Text);
+        }
     }
 }
