@@ -215,7 +215,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             if (e.Name == DialogEvents.ActivityReceived && dc.Context.Activity.Type == ActivityTypes.Message)
             {
                 // Perform base recognition
-                var state = dc.DialogState;
+                var state = dc.ActiveDialog.State;
                 var recognized = await this.OnRecognizeAsync(dc.Context, (IDictionary<string, object>)state[PersistedState], (PromptOptions)state[PersistedOptions]).ConfigureAwait(false);
                 return recognized.Succeeded;
             }

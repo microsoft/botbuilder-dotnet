@@ -14,12 +14,12 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
         }
 
-        public DialogState(IList<DialogInstance> stack)
+        public DialogState(List<DialogInstance> stack)
         {
             DialogStack = stack ?? new List<DialogInstance>();
         }
 
         [JsonProperty("dialogStack")]
-        public IList<DialogInstance> DialogStack { get; set; } = new List<DialogInstance>();
+        public List<DialogInstance> DialogStack { get; set; } = new List<DialogInstance>();
     }
 }

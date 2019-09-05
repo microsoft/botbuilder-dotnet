@@ -94,7 +94,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                     conversation = state.Conversation,
                     dialog = DialogContext.ActiveDialog != null ? state.Dialog : null,
                     turn = state.Turn,
-                    tags = DialogContext.ActiveTags,
                 };
             }
         }

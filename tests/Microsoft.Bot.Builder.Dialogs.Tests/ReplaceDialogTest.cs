@@ -75,10 +75,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         public async Task ReplaceDialogTelemetryClientNotNull()
         {
             var botTelemetryClient = new Mock<IBotTelemetryClient>();
-            var dialog = new FirstDialog()
-            {
-                TelemetryClient = botTelemetryClient.Object,
-            };
+            var dialog = new FirstDialog();
             var storage = new MemoryStorage();
             var userState = new UserState(storage);
             var conversationState = new ConversationState(storage);
@@ -91,7 +88,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             {
                 await dialogManager.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
 
-                Assert.AreEqual(dialog.TelemetryClient, botTelemetryClient.Object);
+                Assert.IsNotNull(dialog.TelemetryClient);
             })
             .Send("hello")
             .StartTestAsync();
