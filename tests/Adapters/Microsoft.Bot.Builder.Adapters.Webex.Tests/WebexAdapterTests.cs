@@ -83,7 +83,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         [Fact]
         public async void ContinueConversationAsync_Should_Succeed()
         {
-            bool callbackInvoked = false;
+            var callbackInvoked = false;
             var testPublicAddress = "http://contoso.com/api/messages";
 
             var options = new WebexAdapterOptions("Test", testPublicAddress, "Test");
@@ -132,7 +132,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
 
             await Assert.ThrowsAsync<ArgumentNullException>(async () =>
             {
-                await webexAdapter.ProcessAsync(null, httpResponse.Object, bot.Object, default(CancellationToken));
+                await webexAdapter.ProcessAsync(null, httpResponse.Object, bot.Object, default);
             });
         }
 
@@ -149,7 +149,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
 
             await Assert.ThrowsAsync<ArgumentNullException>(async () =>
             {
-                await webexAdapter.ProcessAsync(httpRequest.Object, null, default(IBot), default(CancellationToken));
+                await webexAdapter.ProcessAsync(httpRequest.Object, null, default, default);
             });
         }
 
@@ -166,7 +166,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
 
             await Assert.ThrowsAsync<ArgumentNullException>(async () =>
             {
-                await webexAdapter.ProcessAsync(httpRequest.Object, httpResponse.Object, null, default(CancellationToken));
+                await webexAdapter.ProcessAsync(httpRequest.Object, httpResponse.Object, null, default);
             });
         }
 
@@ -250,7 +250,6 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
             WebexHelper.Identity = JsonConvert.DeserializeObject<Person>(File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\Person.json"));
             var payload = File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\Payload2.json");
             var stream = new MemoryStream(Encoding.UTF8.GetBytes(payload.ToString()));
-            var call = false;
 
             var httpRequest = new Mock<HttpRequest>();
             httpRequest.SetupGet(req => req.Body).Returns(stream);
@@ -259,10 +258,6 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
 
             var httpResponse = new Mock<HttpResponse>();
             var bot = new Mock<IBot>();
-            bot.Setup(x => x.OnTurnAsync(It.IsAny<TurnContext>(), It.IsAny<CancellationToken>())).Callback(() =>
-            {
-                call = true;
-            });
 
             await Assert.ThrowsAsync<Exception>(async () =>
             {
@@ -433,7 +428,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
 
             await Assert.ThrowsAsync<Exception>(async () =>
             {
-                await webexAdapter.SendActivitiesAsync(turnContext, activities, default(CancellationToken));
+                await webexAdapter.SendActivitiesAsync(turnContext, activities, default);
             });
         }
 
@@ -487,7 +482,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
 
             await Assert.ThrowsAsync<Exception>(async () =>
             {
-                await webexAdapter.SendActivitiesAsync(turnContext, new Activity[] { activity.Object }, default(CancellationToken));
+                await webexAdapter.SendActivitiesAsync(turnContext, new Activity[] { activity.Object }, default);
             });
         }
 
@@ -510,9 +505,10 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
             activity.Object.Type = "message";
             activity.Object.Recipient = new ChannelAccount(id: "MockId");
             activity.Object.Text = "Hello, Bot!";
-            var image = new Attachment("image/png", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQtB3AwMUeNoq4gUBGe6Ocj8kyh3bXa9ZbV7u1fVKQoyKFHdkqU");
-            activity.Object.Attachments = new List<Attachment>();
-            activity.Object.Attachments.Add(image);
+            activity.Object.Attachments = new List<Attachment>
+            {
+                new Attachment("image/png", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQtB3AwMUeNoq4gUBGe6Ocj8kyh3bXa9ZbV7u1fVKQoyKFHdkqU"),
+            };
 
             var turnContext = new TurnContext(webexAdapter, activity.Object);
 
@@ -539,10 +535,9 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
             activity.Object.Type = "message";
             activity.Object.Recipient = new ChannelAccount(id: "MockId");
             activity.Object.Text = "Hello, Bot!";
-            var card = new Attachment("application/vnd.microsoft.card.adaptive");
             activity.Object.Attachments = new List<Attachment>
             {
-                card,
+                new Attachment("application/vnd.microsoft.card.adaptive"),
             };
 
             var turnContext = new TurnContext(webexAdapter, activity.Object);
