@@ -1367,14 +1367,14 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 {
                     new OnIntent(intent: "CowboyIntent")
                     {
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             new SendActivity("Yippee ki-yay!")
                         }
                     },
                     new OnUnknownIntent()
                     {
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             new QnAMakerDialog(qnamaker: qna)
                             {
@@ -1383,7 +1383,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                             new IfCondition()
                             {
                                     Condition = "turn.LastResult == false",
-                                    Actions = new List<IDialog>()
+                                    Actions = new List<Dialog>()
                                     {
                                         new SendActivity("I didn't understand that.")
                                     }
@@ -1399,7 +1399,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 {
                     new OnBeginDialog()
                     {
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             new BeginDialog(outerDialog.Id)
                         }
@@ -1407,7 +1407,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                     new Dialogs.Adaptive.Events.OnDialogEvent()
                     {
                         Events = new List<string>() { "UnhandledUnknownIntent" },
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             new EditArray(),
                             new SendActivity("magenta")

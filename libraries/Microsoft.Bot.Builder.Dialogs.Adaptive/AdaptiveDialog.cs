@@ -198,7 +198,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
         }
 
-        public void AddDialogs(IEnumerable<IDialog> dialogs)
+        public void AddDialogs(IEnumerable<Dialog> dialogs)
         {
             foreach (var dialog in dialogs)
             {

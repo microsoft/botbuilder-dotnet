@@ -39,14 +39,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 {
                     new OnBeginDialog()
                     {
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             new SendActivity("I'm a joke bot. To get started say 'tell me a joke'")
                         },
                     },
                     new OnIntent(
                         "JokeIntent",
-                        actions: new List<IDialog>()
+                        actions: new List<Dialog>()
                         {
                             new SendActivity("Why did the chicken cross the road?"),
                             new EndTurn(),
@@ -83,8 +83,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     new OnIntent(
                         intent: "addColor",
                         entities: new List<string>() { "color" },
-                        actions: new List<IDialog>() { new SendActivity("You picked {@color}") }),
-                    new OnUnknownIntent(actions: new List<IDialog>() { new SendActivity("pbtpbtpbt!") })
+                        actions: new List<Dialog>() { new SendActivity("You picked {@color}") }),
+                    new OnUnknownIntent(actions: new List<Dialog>() { new SendActivity("pbtpbtpbt!") })
                 }
             };
 

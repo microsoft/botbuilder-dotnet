@@ -27,7 +27,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
         private Expression fullConstraint = null;
 
         [JsonConstructor]
-        public OnEvent(string constraint = null, List<IDialog> actions = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public OnEvent(string constraint = null, List<Dialog> actions = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
             this.RegisterSourceLocation(callerPath, callerLine);
 
@@ -51,7 +51,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
         /// The actions to add to the plan when the rule constraints are met.
         /// </value>
         [JsonProperty("actions")]
-        public List<IDialog> Actions { get; set; } = new List<IDialog>();
+        public List<Dialog> Actions { get; set; } = new List<Dialog>();
 
         /// <summary>
         /// Get the expression for this rule by calling GatherConstraints().

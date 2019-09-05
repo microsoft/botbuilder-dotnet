@@ -14,13 +14,13 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         public abstract DialogContext CreateChildContext(DialogContext dc);
 
-        public virtual Dialog AddDialog(IDialog dialog)
+        public virtual Dialog AddDialog(Dialog dialog)
         {
             this._dialogs.Add(dialog);
             return this;
         }
 
-        public IDialog FindDialog(string dialogId)
+        public Dialog FindDialog(string dialogId)
         {
             return this._dialogs.Find(dialogId);
         }

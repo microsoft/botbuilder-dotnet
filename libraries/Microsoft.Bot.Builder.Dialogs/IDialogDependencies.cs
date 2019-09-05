@@ -7,6 +7,6 @@ namespace Microsoft.Bot.Builder.Dialogs
 {
     public interface IDialogDependencies
     {
-        List<IDialog> ListDependencies();
+        List<Dialog> ListDependencies();
     }
 }

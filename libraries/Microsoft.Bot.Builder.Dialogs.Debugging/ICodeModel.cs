@@ -28,7 +28,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         string ICodeModel.NameFor(object item)
         {
             var type = item.GetType().Name;
-            if (item is IDialog dialog)
+            if (item is Dialog dialog)
             {
                 return dialog.Id;
             }

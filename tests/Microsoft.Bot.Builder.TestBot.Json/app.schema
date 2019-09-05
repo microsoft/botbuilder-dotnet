@@ -383,7 +383,7 @@
     ],
     "definitions": {
         "Microsoft.AdaptiveDialog": {
-            "$role": "unionType(Microsoft.IDialog)",
+            "$role": "unionType(Microsoft.Dialog)",
             "title": "Adaptive Dialog",
             "description": "Configures a data driven dialog via a collection of actions/dialogs.",
             "type": "object",
@@ -566,7 +566,7 @@
             ]
         },
         "Microsoft.AttachmentInput": {
-            "$role": "unionType(Microsoft.IDialog)",
+            "$role": "unionType(Microsoft.Dialog)",
             "title": "AttachmentInput Dialog",
             "description": "This represents a dialog which gathers an attachment such as image or music",
             "type": "object",
@@ -747,7 +747,7 @@
             ]
         },
         "Microsoft.BeginDialog": {
-            "$role": "unionType(Microsoft.IDialog)",
+            "$role": "unionType(Microsoft.Dialog)",
             "title": "Begin Dialog",
             "description": "Action which begins another dialog (and when that dialog is done, it will return the caller).",
             "type": "object",
@@ -797,10 +797,10 @@
                     }
                 },
                 "dialog": {
-                    "$type": "Microsoft.IDialog",
+                    "$type": "Microsoft.Dialog",
                     "title": "Dialog",
                     "description": "This is the dialog to call.",
-                    "$ref": "#/definitions/Microsoft.IDialog"
+                    "$ref": "#/definitions/Microsoft.Dialog"
                 },
                 "options": {
                     "type": "object",
@@ -843,7 +843,7 @@
             ]
         },
         "Microsoft.CancelAllDialogs": {
-            "$role": "unionType(Microsoft.IDialog)",
+            "$role": "unionType(Microsoft.Dialog)",
             "title": "Cancel All Dialogs",
             "description": "Command to cancel all of the current dialogs by emitting an event which must be caught to prevent cancelation from propagating.",
             "type": "object",
@@ -926,7 +926,7 @@
             ]
         },
         "Microsoft.ChoiceInput": {
-            "$role": "unionType(Microsoft.IDialog)",
+            "$role": "unionType(Microsoft.Dialog)",
             "title": "ChoiceInput Dialog",
             "description": "This represents a dialog which gathers a choice responses",
             "type": "object",
@@ -1303,7 +1303,7 @@
             ]
         },
         "Microsoft.ConfirmInput": {
-            "$role": "unionType(Microsoft.IDialog)",
+            "$role": "unionType(Microsoft.Dialog)",
             "title": "ConfirmInput Dialog",
             "description": "This represents a dialog which gathers a yes/no style responses",
             "type": "object",
@@ -1735,7 +1735,7 @@
             ]
         },
         "Microsoft.DateTimeInput": {
-            "$role": "unionType(Microsoft.IDialog)",
+            "$role": "unionType(Microsoft.Dialog)",
             "title": "DateTimeInput Dialog",
             "description": "This represents a dialog which gathers Date or Time or DateTime from the user",
             "type": "object",
@@ -1912,7 +1912,7 @@
             ]
         },
         "Microsoft.DebugBreak": {
-            "$role": "unionType(Microsoft.IDialog)",
+            "$role": "unionType(Microsoft.Dialog)",
             "title": "Debugger Break Action",
             "description": "If debugger is attached, do a debugger break at this point",
             "type": "object",
@@ -1984,7 +1984,7 @@
             ]
         },
         "Microsoft.DeleteProperty": {
-            "$role": "unionType(Microsoft.IDialog)",
+            "$role": "unionType(Microsoft.Dialog)",
             "title": "Delete Property",
             "description": "This is a action which allows you to remove a property from memory",
             "type": "object",
@@ -2115,7 +2115,7 @@
             ]
         },
         "Microsoft.EditActions": {
-            "$role": "unionType(Microsoft.IDialog)",
+            "$role": "unionType(Microsoft.Dialog)",
             "title": "EditActions Action",
             "description": "Edit current dialog with changeType and Actions",
             "type": "object",
@@ -2181,8 +2181,8 @@
                     "title": "Actions",
                     "description": "Actions to execute",
                     "items": {
-                        "$type": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.IDialog"
+                        "$type": "Microsoft.Dialog",
+                        "$ref": "#/definitions/Microsoft.Dialog"
                     }
                 }
             },
@@ -2210,7 +2210,7 @@
             ]
         },
         "Microsoft.EditArray": {
-            "$role": "unionType(Microsoft.IDialog)",
+            "$role": "unionType(Microsoft.Dialog)",
             "title": "Edit Array Action",
             "description": "This is a action which allows you to modify an array in memory",
             "type": "object",
@@ -2369,7 +2369,7 @@
             ]
         },
         "Microsoft.EmitEvent": {
-            "$role": "unionType(Microsoft.IDialog)",
+            "$role": "unionType(Microsoft.Dialog)",
             "title": "Emit Event Action",
             "description": "This is a action which allows you to emit an event",
             "type": "object",
@@ -2478,7 +2478,7 @@
             ]
         },
         "Microsoft.EndDialog": {
-            "$role": "unionType(Microsoft.IDialog)",
+            "$role": "unionType(Microsoft.Dialog)",
             "title": "End Dialog",
             "description": "Command which ends the current dialog, returning the resultProperty as the result of the dialog.",
             "type": "object",
@@ -2558,7 +2558,7 @@
             ]
         },
         "Microsoft.EndTurn": {
-            "$role": "unionType(Microsoft.IDialog)",
+            "$role": "unionType(Microsoft.Dialog)",
             "title": "End Turn",
             "description": "End the current turn without ending the dialog.",
             "type": "object",
@@ -2780,7 +2780,7 @@
             ]
         },
         "Microsoft.Foreach": {
-            "$role": "unionType(Microsoft.IDialog)",
+            "$role": "unionType(Microsoft.Dialog)",
             "title": "Foreach Action",
             "description": "Action which executes actions per item in a collection.",
             "type": "object",
@@ -2843,8 +2843,8 @@
                     "title": "Actions",
                     "description": "Actions to execute",
                     "items": {
-                        "$type": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.IDialog"
+                        "$type": "Microsoft.Dialog",
+                        "$ref": "#/definitions/Microsoft.Dialog"
                     }
                 },
                 "indexProperty": {
@@ -2886,7 +2886,7 @@
             ]
         },
         "Microsoft.ForeachPage": {
-            "$role": "unionType(Microsoft.IDialog)",
+            "$role": "unionType(Microsoft.Dialog)",
             "title": "Foreach Page Action",
             "description": "Action which execute actions per item page in a collection.",
             "type": "object",
@@ -2949,8 +2949,8 @@
                     "title": "Actions",
                     "description": "Actions to execute",
                     "items": {
-                        "$type": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.IDialog"
+                        "$type": "Microsoft.Dialog",
+                        "$ref": "#/definitions/Microsoft.Dialog"
                     }
                 },
                 "pageSize": {
@@ -3095,7 +3095,7 @@
             ]
         },
         "Microsoft.HttpRequest": {
-            "$role": "unionType(Microsoft.IDialog)",
+            "$role": "unionType(Microsoft.Dialog)",
             "type": "object",
             "title": "Http Request",
             "description": "This is a action which replaces the current dialog with the target dialog",
@@ -3235,9 +3235,9 @@
                 }
             ]
         },
-        "Microsoft.IDialog": {
-            "title": "Microsoft IDialog",
-            "description": "Union of components which implement the IDialog interface",
+        "Microsoft.Dialog": {
+            "title": "Microsoft Dialog",
+            "description": "Union of components which implement the Dialog interface",
             "$role": "unionType",
             "oneOf": [
                 {
@@ -3590,7 +3590,7 @@
             ]
         },
         "Microsoft.IfCondition": {
-            "$role": "unionType(Microsoft.IDialog)",
+            "$role": "unionType(Microsoft.Dialog)",
             "title": "If Condition Action",
             "description": "Action which conditionally decides which action to execute next.",
             "type": "object",
@@ -3653,8 +3653,8 @@
                     "title": "Actions",
                     "description": "Action to execute if condition is true.",
                     "items": {
-                        "$type": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.IDialog"
+                        "$type": "Microsoft.Dialog",
+                        "$ref": "#/definitions/Microsoft.Dialog"
                     }
                 },
                 "elseActions": {
@@ -3662,8 +3662,8 @@
                     "title": "Else Actions",
                     "description": "Action to execute if condition is false.",
                     "items": {
-                        "$type": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.IDialog"
+                        "$type": "Microsoft.Dialog",
+                        "$ref": "#/definitions/Microsoft.Dialog"
                     }
                 }
             },
@@ -3691,7 +3691,7 @@
             ]
         },
         "Microsoft.InitProperty": {
-            "$role": "unionType(Microsoft.IDialog)",
+            "$role": "unionType(Microsoft.Dialog)",
             "title": "Init Property Action",
             "description": "This action allows you to innitial a property to either an object or array",
             "type": "object",
@@ -3887,7 +3887,7 @@
             ]
         },
         "Microsoft.LogAction": {
-            "$role": "unionType(Microsoft.IDialog)",
+            "$role": "unionType(Microsoft.Dialog)",
             "title": "Log Action",
             "description": "This is a action which writes to console.log and optional creates a TraceActivity around a text binding",
             "type": "object",
@@ -4264,7 +4264,7 @@
             ]
         },
         "Microsoft.NumberInput": {
-            "$role": "unionType(Microsoft.IDialog)",
+            "$role": "unionType(Microsoft.Dialog)",
             "title": "NumberInput Dialog",
             "description": "This represents a dialog which gathers a decimal number in a specified range",
             "type": "object",
@@ -4503,7 +4503,7 @@
             ]
         },
         "Microsoft.OAuthInput": {
-            "$role": "unionType(Microsoft.IDialog)",
+            "$role": "unionType(Microsoft.Dialog)",
             "title": "OAuthInput Dialog",
             "description": "This represents a dialog which gathers an OAuth token from user",
             "type": "object",
@@ -4737,8 +4737,8 @@
                     "type": "array",
                     "description": "Sequence of actions or dialogs to execute",
                     "items": {
-                        "$type": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.IDialog"
+                        "$type": "Microsoft.Dialog",
+                        "$ref": "#/definitions/Microsoft.Dialog"
                     }
                 },
                 "type": {
@@ -4813,8 +4813,8 @@
                     "type": "array",
                     "description": "Sequence of actions or dialogs to execute",
                     "items": {
-                        "$type": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.IDialog"
+                        "$type": "Microsoft.Dialog",
+                        "$ref": "#/definitions/Microsoft.Dialog"
                     }
                 }
             },
@@ -4883,8 +4883,8 @@
                     "type": "array",
                     "description": "Sequence of actions or dialogs to execute",
                     "items": {
-                        "$type": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.IDialog"
+                        "$type": "Microsoft.Dialog",
+                        "$ref": "#/definitions/Microsoft.Dialog"
                     }
                 }
             },
@@ -4953,8 +4953,8 @@
                     "type": "array",
                     "description": "Sequence of actions or dialogs to execute",
                     "items": {
-                        "$type": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.IDialog"
+                        "$type": "Microsoft.Dialog",
+                        "$ref": "#/definitions/Microsoft.Dialog"
                     }
                 },
                 "events": {
@@ -5043,8 +5043,8 @@
                     "type": "array",
                     "description": "Sequence of actions or dialogs to execute",
                     "items": {
-                        "$type": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.IDialog"
+                        "$type": "Microsoft.Dialog",
+                        "$ref": "#/definitions/Microsoft.Dialog"
                     }
                 }
             },
@@ -5113,8 +5113,8 @@
                     "type": "array",
                     "description": "Sequence of actions or dialogs to execute",
                     "items": {
-                        "$type": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.IDialog"
+                        "$type": "Microsoft.Dialog",
+                        "$ref": "#/definitions/Microsoft.Dialog"
                     }
                 }
             },
@@ -5183,8 +5183,8 @@
                     "type": "array",
                     "description": "Sequence of actions or dialogs to execute",
                     "items": {
-                        "$type": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.IDialog"
+                        "$type": "Microsoft.Dialog",
+                        "$ref": "#/definitions/Microsoft.Dialog"
                     }
                 }
             },
@@ -5253,8 +5253,8 @@
                     "type": "array",
                     "description": "Sequence of actions or dialogs to execute",
                     "items": {
-                        "$type": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.IDialog"
+                        "$type": "Microsoft.Dialog",
+                        "$ref": "#/definitions/Microsoft.Dialog"
                     }
                 }
             },
@@ -5323,8 +5323,8 @@
                     "type": "array",
                     "description": "Sequence of actions or dialogs to execute",
                     "items": {
-                        "$type": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.IDialog"
+                        "$type": "Microsoft.Dialog",
+                        "$ref": "#/definitions/Microsoft.Dialog"
                     }
                 },
                 "intent": {
@@ -5407,8 +5407,8 @@
                     "type": "array",
                     "description": "Sequence of actions or dialogs to execute",
                     "items": {
-                        "$type": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.IDialog"
+                        "$type": "Microsoft.Dialog",
+                        "$ref": "#/definitions/Microsoft.Dialog"
                     }
                 }
             },
@@ -5477,8 +5477,8 @@
                     "type": "array",
                     "description": "Sequence of actions or dialogs to execute",
                     "items": {
-                        "$type": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.IDialog"
+                        "$type": "Microsoft.Dialog",
+                        "$ref": "#/definitions/Microsoft.Dialog"
                     }
                 }
             },
@@ -5547,8 +5547,8 @@
                     "type": "array",
                     "description": "Sequence of actions or dialogs to execute",
                     "items": {
-                        "$type": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.IDialog"
+                        "$type": "Microsoft.Dialog",
+                        "$ref": "#/definitions/Microsoft.Dialog"
                     }
                 }
             },
@@ -5617,8 +5617,8 @@
                     "type": "array",
                     "description": "Sequence of actions or dialogs to execute",
                     "items": {
-                        "$type": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.IDialog"
+                        "$type": "Microsoft.Dialog",
+                        "$ref": "#/definitions/Microsoft.Dialog"
                     }
                 }
             },
@@ -5687,8 +5687,8 @@
                     "type": "array",
                     "description": "Sequence of actions or dialogs to execute",
                     "items": {
-                        "$type": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.IDialog"
+                        "$type": "Microsoft.Dialog",
+                        "$ref": "#/definitions/Microsoft.Dialog"
                     }
                 }
             },
@@ -5757,8 +5757,8 @@
                     "type": "array",
                     "description": "Sequence of actions or dialogs to execute",
                     "items": {
-                        "$type": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.IDialog"
+                        "$type": "Microsoft.Dialog",
+                        "$ref": "#/definitions/Microsoft.Dialog"
                     }
                 }
             },
@@ -5827,8 +5827,8 @@
                     "type": "array",
                     "description": "Sequence of actions or dialogs to execute",
                     "items": {
-                        "$type": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.IDialog"
+                        "$type": "Microsoft.Dialog",
+                        "$ref": "#/definitions/Microsoft.Dialog"
                     }
                 }
             },
@@ -6012,7 +6012,7 @@
             ]
         },
         "Microsoft.QnAMakerDialog": {
-            "$role": "unionType(Microsoft.IDialog)",
+            "$role": "unionType(Microsoft.Dialog)",
             "title": "QnAMaker Dialog",
             "description": "This represents a dialog which is driven by a call to QnAMaker.ai knowledge base",
             "type": "object",
@@ -6307,7 +6307,7 @@
             ]
         },
         "Microsoft.RepeatDialog": {
-            "$role": "unionType(Microsoft.IDialog)",
+            "$role": "unionType(Microsoft.Dialog)",
             "type": "object",
             "title": "Repeat Dialog",
             "description": "This is a action which repeats the current dialog with the same dialog.",
@@ -6379,7 +6379,7 @@
             ]
         },
         "Microsoft.ReplaceDialog": {
-            "$role": "unionType(Microsoft.IDialog)",
+            "$role": "unionType(Microsoft.Dialog)",
             "type": "object",
             "title": "Replace Dialog",
             "description": "This is a action which replaces the current dialog with the target dialog",
@@ -6429,10 +6429,10 @@
                     }
                 },
                 "dialog": {
-                    "$type": "Microsoft.IDialog",
+                    "$type": "Microsoft.Dialog",
                     "title": "Dialog",
                     "description": "This is the dialog to switch to.",
-                    "$ref": "#/definitions/Microsoft.IDialog"
+                    "$ref": "#/definitions/Microsoft.Dialog"
                 },
                 "options": {
                     "type": "object",
@@ -6474,7 +6474,7 @@
             ]
         },
         "Microsoft.SendActivity": {
-            "$role": "unionType(Microsoft.IDialog)",
+            "$role": "unionType(Microsoft.Dialog)",
             "title": "Send Activity Action",
             "description": "This is a action which sends an activity to the user",
             "type": "object",
@@ -6552,7 +6552,7 @@
             ]
         },
         "Microsoft.SetProperty": {
-            "$role": "unionType(Microsoft.IDialog)",
+            "$role": "unionType(Microsoft.Dialog)",
             "title": "Set Property Action",
             "description": "This action allows you to set memory to the value of an expression",
             "type": "object",
@@ -6644,7 +6644,7 @@
             ]
         },
         "Microsoft.SwitchCondition": {
-            "$role": "unionType(Microsoft.IDialog)",
+            "$role": "unionType(Microsoft.Dialog)",
             "title": "Switch Action",
             "description": "Action which conditionally decides which action to execute next.",
             "type": "object",
@@ -6724,8 +6724,8 @@
                                 "title": "Actions",
                                 "description": "Actions to execute if case is equal to condition",
                                 "items": {
-                                    "$type": "Microsoft.IDialog",
-                                    "$ref": "#/definitions/Microsoft.IDialog"
+                                    "$type": "Microsoft.Dialog",
+                                    "$ref": "#/definitions/Microsoft.Dialog"
                                 }
                             }
                         }
@@ -6736,8 +6736,8 @@
                     "title": "Default",
                     "description": "Action to execute if no case is equal to condition",
                     "items": {
-                        "$type": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.IDialog"
+                        "$type": "Microsoft.Dialog",
+                        "$ref": "#/definitions/Microsoft.Dialog"
                     }
                 }
             },
@@ -6816,7 +6816,7 @@
             ]
         },
         "Microsoft.TextInput": {
-            "$role": "unionType(Microsoft.IDialog)",
+            "$role": "unionType(Microsoft.Dialog)",
             "title": "TextInput Dialog",
             "description": "This represents a dialog which gathers a text from the user",
             "type": "object",
@@ -6999,7 +6999,7 @@
             ]
         },
         "Microsoft.TraceActivity": {
-            "$role": "unionType(Microsoft.IDialog)",
+            "$role": "unionType(Microsoft.Dialog)",
             "title": "Trace Activity Action",
             "description": "This is a action which sends an TraceActivity to the transcript",
             "type": "object",
@@ -7191,7 +7191,7 @@
             ]
         },
         "Testbot.JavascriptAction": {
-            "$role": "unionType(Microsoft.IDialog)",
+            "$role": "unionType(Microsoft.Dialog)",
             "title": "Javascript Action",
             "description": "This gives you the ability to execute javascript to manipulate memory",
             "type": "object",
@@ -7270,7 +7270,7 @@
             ]
         },
         "Testbot.Multiply": {
-            "$role": "unionType(Microsoft.IDialog)",
+            "$role": "unionType(Microsoft.Dialog)",
             "title": "Multiply",
             "description": "This will return the result of arg1*arg2",
             "type": "object",

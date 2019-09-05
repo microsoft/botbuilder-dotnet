@@ -17,9 +17,9 @@ namespace Microsoft.Bot.Builder.Dialogs
             return OnRunCommandAsync(dc, options);
         }
 
-        public virtual List<IDialog> ListDependencies()
+        public virtual List<Dialog> ListDependencies()
         {
-            return new List<IDialog>();
+            return new List<Dialog>();
         }
 
         protected abstract Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken));

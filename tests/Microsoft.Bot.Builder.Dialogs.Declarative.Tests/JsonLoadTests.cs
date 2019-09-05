@@ -314,7 +314,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
                 throw new Exception($"Resource[{resourceName}] not found");
             }
 
-            var dialog = DeclarativeTypeLoader.Load<IDialog>(resource, resourceExplorer, DebugSupport.SourceRegistry);
+            var dialog = DeclarativeTypeLoader.Load<Dialog>(resource, resourceExplorer, DebugSupport.SourceRegistry);
             DialogManager dm = new DialogManager(dialog);
 
             return new TestFlow(adapter, async (turnContext, cancellationToken) =>

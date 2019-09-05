@@ -26,7 +26,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         private DialogSet dialogSet;
         private string rootDialogId;
 
-        public DialogManager(IDialog rootDialog = null)
+        public DialogManager(Dialog rootDialog = null)
         {
             this.dialogSet = new DialogSet();
 
@@ -148,7 +148,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <value>
         /// Root dialog to use to start conversation.
         /// </value>
-        public IDialog RootDialog
+        public Dialog RootDialog
         {
             get
             {

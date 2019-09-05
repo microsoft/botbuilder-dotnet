@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// <summary>
     /// Conditional branch.
     /// </summary>
-    public class IfCondition : DialogAction, IDialogDependencies
+    public class IfCondition : DialogAction
     {
         private Expression condition;
 
@@ -51,14 +51,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         }
 
         [JsonProperty("actions")]
-        public List<IDialog> Actions { get; set; } = new List<IDialog>();
+        public List<Dialog> Actions { get; set; } = new List<Dialog>();
 
         [JsonProperty("elseActions")]
-        public List<IDialog> ElseActions { get; set; } = new List<IDialog>();
+        public List<Dialog> ElseActions { get; set; } = new List<Dialog>();
 
-        public override List<IDialog> ListDependencies()
+        public override List<Dialog> ListDependencies()
         {
-            var combined = new List<IDialog>(Actions);
+            var combined = new List<Dialog>(Actions);
             combined.AddRange(ElseActions);
             return combined;
         }
@@ -76,7 +76,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 var (value, error) = condition.TryEvaluate(dc.State);
                 var conditionResult = error == null && value != null && (bool)value;
 
-                var actions = new List<IDialog>();
+                var actions = new List<Dialog>();
                 if (conditionResult == true)
                 {
                     actions = this.Actions;

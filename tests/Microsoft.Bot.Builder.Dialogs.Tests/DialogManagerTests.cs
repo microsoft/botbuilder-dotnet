@@ -119,7 +119,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             adaptiveDialog.AddEvent(
                 new OnUnknownIntent(
-                    new List<IDialog>()
+                    new List<Dialog>()
                     {
                         new TextInput()
                         {
@@ -132,7 +132,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             return adaptiveDialog;
         }
 
-        private TestFlow CreateFlow(IDialog adaptiveDialog, IStorage storage, string conversationId)
+        private TestFlow CreateFlow(Dialog adaptiveDialog, IStorage storage, string conversationId)
         {
             TypeFactory.Configuration = new ConfigurationBuilder().Build();
 

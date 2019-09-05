@@ -162,17 +162,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
             dialog.AddEvents(new List<IOnEvent>()
             {
                 new OnIntent("Greeting", actions:
-                    new List<IDialog>()
+                    new List<Dialog>()
                     {
                         new SendActivity("greeting intent"),
                     }),
                 new OnIntent("Goodbye", actions:
-                    new List<IDialog>()
+                    new List<Dialog>()
                     {
                         new SendActivity("goodbye intent"),
                     }),
                 new OnUnknownIntent(actions:
-                    new List<IDialog>()
+                    new List<Dialog>()
                     {
                         new SendActivity("default rule"),
                     }),

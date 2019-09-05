@@ -224,7 +224,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// </summary>
         /// <param name="dialog">The dialog to be tested.</param>
         /// <returns>Whether the passed dialog should inherit dialog-level state.</returns>
-        protected override bool ShouldInheritState(IDialog dialog)
+        protected override bool ShouldInheritState(Dialog dialog)
         {
             return base.ShouldInheritState(dialog) || dialog is InputDialog;
         }

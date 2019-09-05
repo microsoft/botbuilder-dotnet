@@ -48,7 +48,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             dialog.AddEvents(new List<IOnEvent>()
             {
                 new OnUnknownIntent(actions:
-                    new List<IDialog>()
+                    new List<Dialog>()
                     {
                         new SendActivity()
                         {

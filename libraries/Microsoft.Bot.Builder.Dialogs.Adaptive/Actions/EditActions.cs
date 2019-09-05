@@ -11,7 +11,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// <summary>
     /// Class which allows you to edit the current actions. 
     /// </summary>
-    public class EditActions : DialogAction, IDialogDependencies
+    public class EditActions : DialogAction
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="EditActions"/> class.
@@ -32,7 +32,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// The actions to be applied to the active action.
         /// </value>
         [JsonProperty("actions")]
-        public List<IDialog> Actions { get; set; } = new List<IDialog>();
+        public List<Dialog> Actions { get; set; } = new List<Dialog>();
 
         /// <summary>
         /// Gets or sets the type of change to appy to the active actions.
@@ -43,7 +43,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         [JsonProperty("changeType")]
         public ActionChangeType ChangeType { get; set; }
 
-        public override List<IDialog> ListDependencies()
+        public override List<Dialog> ListDependencies()
         {
             return this.Actions;
         }

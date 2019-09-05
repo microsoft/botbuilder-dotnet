@@ -568,7 +568,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         /// <param name="dialogId">dialog id to find.</param>
         /// <returns>dialog with that id.</returns>
-        public IDialog FindDialog(string dialogId)
+        public Dialog FindDialog(string dialogId)
         {
             if (this.Dialogs != null)
             {
@@ -649,7 +649,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         /// <param name="dialog">The dialog to be tested.</param>
         /// <returns>Whether the passed dialog should inherit dialog-level state.</returns>
-        protected virtual bool ShouldInheritState(IDialog dialog)
+        protected virtual bool ShouldInheritState(Dialog dialog)
         {
             return dialog is DialogAction;
         }

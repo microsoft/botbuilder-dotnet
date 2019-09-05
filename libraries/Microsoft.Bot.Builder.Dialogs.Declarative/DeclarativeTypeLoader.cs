@@ -88,7 +88,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
                     TypeNameHandling = TypeNameHandling.Auto,
                     Converters = new List<JsonConverter>()
                     {
-                        new InterfaceConverter<IDialog>(refResolver, registry, paths),
+                        new InterfaceConverter<Dialog>(refResolver, registry, paths),
                         new InterfaceConverter<IOnEvent>(refResolver, registry, paths),
                         new InterfaceConverter<IStorage>(refResolver, registry, paths),
                         new InterfaceConverter<IRecognizer>(refResolver, registry, paths),

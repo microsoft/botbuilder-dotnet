@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// <summary>
     /// Conditional branch with multiple cases.
     /// </summary>
-    public class SwitchCondition : DialogAction, IDialogDependencies
+    public class SwitchCondition : DialogAction
     {
         /// <summary>
         /// Cases.
@@ -53,11 +53,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <value>
         /// Default case.
         /// </value>
-        public List<IDialog> Default { get; set; } = new List<IDialog>();
+        public List<Dialog> Default { get; set; } = new List<Dialog>();
 
-        public override List<IDialog> ListDependencies()
+        public override List<Dialog> ListDependencies()
         {
-            var dialogs = new List<IDialog>();
+            var dialogs = new List<Dialog>();
             if (this.Default != null)
             {
                 dialogs.AddRange(this.Default);
@@ -101,7 +101,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                     }
                 }
 
-                List<IDialog> actionsToRun = this.Default;
+                List<Dialog> actionsToRun = this.Default;
 
                 foreach (var caseCondition in this.Cases)
                 {
@@ -151,7 +151,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
     public class Case
     {
-        public Case(string value = null, IEnumerable<IDialog> actions = null)
+        public Case(string value = null, IEnumerable<Dialog> actions = null)
         {
             this.Value = value;
             this.Actions = actions?.ToList() ?? this.Actions;
@@ -173,7 +173,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// Set of actions to be executed given that the condition of the switch matches the value of this case.
         /// </value>
         [JsonProperty("actions")]
-        public List<IDialog> Actions { get; set; } = new List<IDialog>();
+        public List<Dialog> Actions { get; set; } = new List<Dialog>();
 
         /// <summary>
         /// Creates an expression that returns the value in its primitive type. Still

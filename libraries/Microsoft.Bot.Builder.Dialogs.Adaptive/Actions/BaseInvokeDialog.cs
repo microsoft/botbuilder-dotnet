@@ -43,7 +43,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <summary>
         /// Gets or sets the dialog to call.
         /// </summary>
-        public IDialog Dialog { get; set; }
+        public Dialog Dialog { get; set; }
 
         /// <summary>
         /// Gets or sets the property from memory to pass to the calling dialog and to set the return value to.
@@ -65,14 +65,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             }
         }
 
-        public override List<IDialog> ListDependencies()
+        public override List<Dialog> ListDependencies()
         {
             if (Dialog != null)
             {
-                return new List<IDialog>() { Dialog };
+                return new List<Dialog>() { Dialog };
             }
 
-            return new List<IDialog>();
+            return new List<Dialog>();
         }
 
         protected override string OnComputeId()
@@ -80,7 +80,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             return $"{this.GetType().Name}[{Dialog?.Id ?? this.dialogIdToCall}:{this.BindingPath()}]";
         }
 
-        protected IDialog ResolveDialog(DialogContext dc)
+        protected Dialog ResolveDialog(DialogContext dc)
         {
             if (this.Dialog != null)
             {

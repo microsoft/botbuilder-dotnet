@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     public class DialogSet
     {
         private readonly IStatePropertyAccessor<DialogState> _dialogState;
-        private readonly IDictionary<string, IDialog> _dialogs = new Dictionary<string, IDialog>();
+        private readonly IDictionary<string, Dialog> _dialogs = new Dictionary<string, Dialog>();
 
         private IBotTelemetryClient _telemetryClient;
 
@@ -62,7 +62,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="dialog">The dialog to add.</param>
         /// <returns>The DialogSet for fluent calls to Add().</returns>
         /// <remarks>Adding a new dialog will inherit the <see cref="IBotTelemetryClient"/> of the DialogSet.</remarks>
-        public DialogSet Add(IDialog dialog)
+        public DialogSet Add(Dialog dialog)
         {
             if (dialog == null)
             {
@@ -125,11 +125,11 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// Finds a dialog that was previously added to the set using <see cref="Add(IDialog)"/>.
+        /// Finds a dialog that was previously added to the set using <see cref="Add(Dialog)"/>.
         /// </summary>
         /// <param name="dialogId">ID of the dialog/prompt to look up.</param>
         /// <returns>The dialog if found, otherwise null.</returns>
-        public IDialog Find(string dialogId)
+        public Dialog Find(string dialogId)
         {
             if (string.IsNullOrWhiteSpace(dialogId))
             {
@@ -144,7 +144,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             return null;
         }
 
-        public IEnumerable<IDialog> GetDialogs()
+        public IEnumerable<Dialog> GetDialogs()
         {
             return _dialogs.Values;
         }
