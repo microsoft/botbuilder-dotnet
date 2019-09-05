@@ -2,6 +2,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -56,7 +57,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         [JsonProperty("elseActions")]
         public List<Dialog> ElseActions { get; set; } = new List<Dialog>();
 
-        public override List<Dialog> ListDependencies()
+        public override IEnumerable<Dialog> GetDependencies()
         {
             var combined = new List<Dialog>(Actions);
             combined.AddRange(ElseActions);

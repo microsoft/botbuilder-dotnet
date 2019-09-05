@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -95,7 +96,10 @@ namespace Microsoft.Bot.Builder.Dialogs
             // Automatically add any dependencies the dialog might have
             if (dialog is IDialogDependencies dialogWithDependencies)
             {
-                dialogWithDependencies.ListDependencies()?.ForEach(d => Add(d));
+                foreach (var dependencyDialog in dialogWithDependencies.GetDependencies())
+                {
+                    Add(dependencyDialog);
+                }
             }
 
             return this;

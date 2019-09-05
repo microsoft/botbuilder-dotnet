@@ -2,6 +2,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -47,7 +48,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         [JsonProperty("actions")]
         public List<Dialog> Actions { get; set; } = new List<Dialog>();
 
-        public override List<Dialog> ListDependencies()
+        public override IEnumerable<Dialog> GetDependencies()
         {
             return this.Actions;
         }

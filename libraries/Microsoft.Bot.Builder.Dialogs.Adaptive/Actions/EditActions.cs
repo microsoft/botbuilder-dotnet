@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -43,7 +44,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         [JsonProperty("changeType")]
         public ActionChangeType ChangeType { get; set; }
 
-        public override List<Dialog> ListDependencies()
+        public override IEnumerable<Dialog> GetDependencies()
         {
             return this.Actions;
         }

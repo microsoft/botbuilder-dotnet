@@ -192,13 +192,14 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </remarks>
         /// <param name="activity">activity to process.</param>
         /// <param name="state">state to use.</param>
+        /// <param name="cancellationToken">cancelation token.</param>
         /// <returns>result of the running the logic against the activity.</returns>
-        public async Task<DialogManagerResult> RunAsync(Activity activity, PersistedState state = null)
+        public async Task<DialogManagerResult> RunAsync(Activity activity, PersistedState state = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Initialize context object
             var adapter = new DialogManagerAdapter();
             var context = new TurnContext(adapter, activity);
-            var result = await this.OnTurnAsync(context, state).ConfigureAwait(false);
+            var result = await this.OnTurnAsync(context, state, cancellationToken).ConfigureAwait(false);
             result.Activities = adapter.Activities.ToArray();
             return result;
         }

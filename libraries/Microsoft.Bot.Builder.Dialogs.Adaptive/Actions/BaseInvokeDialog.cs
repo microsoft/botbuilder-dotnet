@@ -2,6 +2,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using Microsoft.Bot.Builder.Expressions.Parser;
 using Newtonsoft.Json.Linq;
@@ -65,14 +66,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             }
         }
 
-        public override List<Dialog> ListDependencies()
+        public override IEnumerable<Dialog> GetDependencies()
         {
             if (Dialog != null)
             {
-                return new List<Dialog>() { Dialog };
+                yield return Dialog;
             }
 
-            return new List<Dialog>();
+            yield break;
         }
 
         protected override string OnComputeId()

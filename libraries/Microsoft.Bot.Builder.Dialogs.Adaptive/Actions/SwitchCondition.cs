@@ -2,6 +2,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -55,7 +56,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// </value>
         public List<Dialog> Default { get; set; } = new List<Dialog>();
 
-        public override List<Dialog> ListDependencies()
+        public override IEnumerable<Dialog> GetDependencies()
         {
             var dialogs = new List<Dialog>();
             if (this.Default != null)
