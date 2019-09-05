@@ -21,7 +21,7 @@
         "hostname": {
             "type": "string",
             "title": "Host",
-            "description": "Host name for your QnA Maker KB.",
+            "description": "Hostname for your QnA Maker service.",
             "default": "settings.qna.hostname",
             "examples": [
                 "https://yourserver.azurewebsites.net/qnamaker"
@@ -30,21 +30,8 @@
         "threshold": {
             "type": "float",
             "title": "Threshold",
-            "description": "The minimum score threshold, used to filter returned results.",
+            "description": "Threshold score to filter results.",
             "default": 0.3
-        },
-        "autoRespond": {
-            "type": "boolean",
-            "title": "Auto respond",
-            "description": "Automatically send the response to user.",
-            "default": true,
-            "examples": [ true ]
-        },
-        "property": {
-            "$role": "expression",
-            "title": "Property",
-            "description": "Memory property to store results returned by the QnA action.",
-            "default": "dialog.qna.result"
         },
         "strictFilterProperty": {
             "$role": "expression",
@@ -56,7 +43,7 @@
             "$type": "Microsoft.IActivityTemplate",
             "title": "Initial Prompt",
             "description": "Default answer to return when none found in KB.",
-            "default": "Sorry, I did not find an answer"
+            "default": "Sorry, I did not find an answer."
         }
     },
     "required": [
@@ -64,7 +51,6 @@
         "endpointKey",
         "hostname",
         "threshold",
-        "autoRespond",
         "noAnswer"
     ]      
 }
