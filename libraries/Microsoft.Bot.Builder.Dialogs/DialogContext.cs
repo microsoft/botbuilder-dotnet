@@ -654,14 +654,5 @@ namespace Microsoft.Bot.Builder.Dialogs
                 return state;
             }
         }
-
-        public class DialogEvents
-        {
-            public const string BeginDialog = "beginDialog";
-            public const string RepromptDialog = "repromptDialog";
-            public const string CancelDialog = "cancelDialog";
-            public const string ActivityReceived = "activityReceived";
-            public const string Error = "error";
-        }
     }
 }

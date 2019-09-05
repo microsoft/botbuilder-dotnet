@@ -142,6 +142,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 ConversationState = $"{channelId}/conversations/{conversationId}/{@namespace}"
             };
         }
+
         /// <summary>
         /// Gets or sets root dialog to use to start conversation.
         /// </summary>

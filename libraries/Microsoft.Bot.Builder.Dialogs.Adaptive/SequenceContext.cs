@@ -12,36 +12,6 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 {
-    /// <summary>
-    /// How to modify an action sequence.
-    /// </summary>
-    public enum ActionChangeType
-    {
-        /// <summary>
-        /// Add the change actions to the head of the sequence.
-        /// </summary>
-        InsertActions,
-
-        /// <summary>
-        /// Insert the change actions before named tags in the sequence.
-        /// </summary>
-        InsertActionsBeforeTags,
-
-        /// <summary>
-        /// Add the changeactions to the tail of the sequence.
-        /// </summary>
-        AppendActions,
-
-        /// <summary>
-        /// Terminate the action sequence.
-        /// </summary>
-        EndSequence,
-
-        /// <summary>
-        /// Terminate the action sequence, then add the change actions.
-        /// </summary>
-        ReplaceSequence,
-    }
 
     public class SequenceContext : DialogContext
     {
@@ -299,69 +269,5 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
             return false;
         }
-    }
-
-    public class AdaptiveEvents : DialogContext.DialogEvents
-    {
-        public const string RecognizedIntent = "recognizedIntent";
-        public const string UnknownIntent = "unknownIntent";
-    }
-
-    public class AdaptiveDialogState
-    {
-        public AdaptiveDialogState()
-        {
-        }
-
-        [JsonProperty(PropertyName = "options")]
-        public dynamic Options { get; set; }
-
-        [JsonProperty(PropertyName = "actions")]
-        public List<ActionState> Actions { get; set; } = new List<ActionState>();
-
-        [JsonProperty(PropertyName = "result")]
-        public object Result { get; set; }
-    }
-
-    [DebuggerDisplay("{DialogId}")]
-    public class ActionState : DialogState
-    {
-        public ActionState()
-        {
-        }
-
-        public ActionState(string dialogId = null, object options = null)
-        {
-            DialogId = dialogId;
-            Options = options;
-        }
-
-        [JsonProperty(PropertyName = "dialogId")]
-        public string DialogId { get; set; }
-
-        [JsonProperty(PropertyName = "options")]
-        public object Options { get; set; }
-    }
-
-    [DebuggerDisplay("{ChangeType}:{Desire}")]
-    public class ActionChangeList
-    {
-        [JsonProperty(PropertyName = "changeType")]
-        public ActionChangeType ChangeType { get; set; } = ActionChangeType.InsertActions;
-
-        [JsonProperty(PropertyName = "actions")]
-        public List<ActionState> Actions { get; set; } = new List<ActionState>();
-
-        [JsonProperty(PropertyName = "tags")]
-        public List<string> Tags { get; set; } = new List<string>();
-
-        /// <summary>
-        /// Gets or sets turn state associated with the plan change list (it will be applied to turn state when plan is applied).
-        /// </summary>
-        /// <value>
-        /// Turn state associated with the plan change list (it will be applied to turn state when plan is applied).
-        /// </value>
-        [JsonProperty(PropertyName = "turn")]
-        public Dictionary<string, object> Turn { get; set; }
     }
 }
