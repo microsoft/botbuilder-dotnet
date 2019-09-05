@@ -88,7 +88,7 @@ namespace Microsoft.Bot.Builder.Tests
             await applicationAdapter.ProcessActivityAsync(MessageFactory.Text("hi"), async (turnContext, cancellationToken) =>
             {
                 await turnContext.SendActivityAsync(MessageFactory.Text($"echo: {turnContext.Activity.Text}"));
-
+                turnContext.TurnState.Add("TurnStateMap", JObject.Parse("{\"hello\": \"world\"}"));
                 (await userState.CreateProperty<Scratch>("x").GetAsync(turnContext, () => new Scratch())).Property = "hello";
                 (await conversationState.CreateProperty<Scratch>("y").GetAsync(turnContext, () => new Scratch())).Property = "world";
                 await userState.SaveChangesAsync(turnContext);
@@ -120,7 +120,8 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.AreEqual("BotState", stateTrace["name"].ToString());
             Assert.AreEqual("hello", stateTrace["value"]["userState"]["x"]["Property"].ToString());
             Assert.AreEqual("world", stateTrace["value"]["conversationState"]["y"]["Property"].ToString());
-        }
+            Assert.AreEqual("world", stateTrace["value"]["turnState"]["hello"].ToString());
+        }   
 
         [TestMethod]
         public async Task ScenarioWithInspectionMiddlwareOpenAttachWithMention()
