@@ -157,7 +157,7 @@
         },
         {
             "title": "Microsoft.LanguagePolicy",
-            "description": "This represents a dialog which gathers a DateTime in a specified range",
+            "description": "This represents a policy map for locales lookups to use for language",
             "$ref": "#/definitions/Microsoft.LanguagePolicy"
         },
         {
@@ -311,9 +311,9 @@
             "$ref": "#/definitions/Microsoft.RandomSelector"
         },
         {
-            "title": "Microsoft.RegexEntityRecognizer",
+            "title": "Microsoft.RegExEntityRecognizer",
             "description": "Recognizer which recognizes patterns of input based on regex.",
-            "$ref": "#/definitions/Microsoft.RegexEntityRecognizer"
+            "$ref": "#/definitions/Microsoft.RegExEntityRecognizer"
         },
         {
             "title": "Microsoft.RegexRecognizer",
@@ -2052,6 +2052,167 @@
                 }
             ]
         },
+        "Microsoft.Dialog": {
+            "title": "Microsoft Dialog",
+            "description": "Union of components which implement the Dialog interface",
+            "$role": "unionType",
+            "oneOf": [
+                {
+                    "title": "Microsoft.AdaptiveDialog",
+                    "description": "Configures a data driven dialog via a collection of actions/dialogs.",
+                    "$ref": "#/definitions/Microsoft.AdaptiveDialog"
+                },
+                {
+                    "title": "Microsoft.AttachmentInput",
+                    "description": "This represents a dialog which gathers an attachment such as image or music",
+                    "$ref": "#/definitions/Microsoft.AttachmentInput"
+                },
+                {
+                    "title": "Microsoft.BeginDialog",
+                    "description": "Action which begins another dialog (and when that dialog is done, it will return the caller).",
+                    "$ref": "#/definitions/Microsoft.BeginDialog"
+                },
+                {
+                    "title": "Microsoft.CancelAllDialogs",
+                    "description": "Command to cancel all of the current dialogs by emitting an event which must be caught to prevent cancelation from propagating.",
+                    "$ref": "#/definitions/Microsoft.CancelAllDialogs"
+                },
+                {
+                    "title": "Microsoft.ChoiceInput",
+                    "description": "This represents a dialog which gathers a choice responses",
+                    "$ref": "#/definitions/Microsoft.ChoiceInput"
+                },
+                {
+                    "title": "Microsoft.ConfirmInput",
+                    "description": "This represents a dialog which gathers a yes/no style responses",
+                    "$ref": "#/definitions/Microsoft.ConfirmInput"
+                },
+                {
+                    "title": "Microsoft.DateTimeInput",
+                    "description": "This represents a dialog which gathers Date or Time or DateTime from the user",
+                    "$ref": "#/definitions/Microsoft.DateTimeInput"
+                },
+                {
+                    "title": "Microsoft.DebugBreak",
+                    "description": "If debugger is attached, do a debugger break at this point",
+                    "$ref": "#/definitions/Microsoft.DebugBreak"
+                },
+                {
+                    "title": "Microsoft.DeleteProperty",
+                    "description": "This is a action which allows you to remove a property from memory",
+                    "$ref": "#/definitions/Microsoft.DeleteProperty"
+                },
+                {
+                    "title": "Microsoft.EditActions",
+                    "description": "Edit current dialog with changeType and Actions",
+                    "$ref": "#/definitions/Microsoft.EditActions"
+                },
+                {
+                    "title": "Microsoft.EditArray",
+                    "description": "This is a action which allows you to modify an array in memory",
+                    "$ref": "#/definitions/Microsoft.EditArray"
+                },
+                {
+                    "title": "Microsoft.EmitEvent",
+                    "description": "This is a action which allows you to emit an event",
+                    "$ref": "#/definitions/Microsoft.EmitEvent"
+                },
+                {
+                    "title": "Microsoft.EndDialog",
+                    "description": "Command which ends the current dialog, returning the resultProperty as the result of the dialog.",
+                    "$ref": "#/definitions/Microsoft.EndDialog"
+                },
+                {
+                    "title": "Microsoft.EndTurn",
+                    "description": "End the current turn without ending the dialog.",
+                    "$ref": "#/definitions/Microsoft.EndTurn"
+                },
+                {
+                    "title": "Microsoft.Foreach",
+                    "description": "Action which executes actions per item in a collection.",
+                    "$ref": "#/definitions/Microsoft.Foreach"
+                },
+                {
+                    "title": "Microsoft.ForeachPage",
+                    "description": "Action which execute actions per item page in a collection.",
+                    "$ref": "#/definitions/Microsoft.ForeachPage"
+                },
+                {
+                    "title": "Microsoft.HttpRequest",
+                    "description": "This is a action which replaces the current dialog with the target dialog",
+                    "$ref": "#/definitions/Microsoft.HttpRequest"
+                },
+                {
+                    "title": "Microsoft.IfCondition",
+                    "description": "Action which conditionally decides which action to execute next.",
+                    "$ref": "#/definitions/Microsoft.IfCondition"
+                },
+                {
+                    "title": "Microsoft.InitProperty",
+                    "description": "This action allows you to innitial a property to either an object or array",
+                    "$ref": "#/definitions/Microsoft.InitProperty"
+                },
+                {
+                    "title": "Microsoft.LogAction",
+                    "description": "This is a action which writes to console.log and optional creates a TraceActivity around a text binding",
+                    "$ref": "#/definitions/Microsoft.LogAction"
+                },
+                {
+                    "title": "Microsoft.NumberInput",
+                    "description": "This represents a dialog which gathers a decimal number in a specified range",
+                    "$ref": "#/definitions/Microsoft.NumberInput"
+                },
+                {
+                    "title": "Microsoft.OAuthInput",
+                    "description": "This represents a dialog which gathers an OAuth token from user",
+                    "$ref": "#/definitions/Microsoft.OAuthInput"
+                },
+                {
+                    "title": "Microsoft.QnAMakerDialog",
+                    "description": "This represents a dialog which is driven by a call to QnAMaker.ai knowledge base",
+                    "$ref": "#/definitions/Microsoft.QnAMakerDialog"
+                },
+                {
+                    "title": "Microsoft.RepeatDialog",
+                    "description": "This is a action which repeats the current dialog with the same dialog.",
+                    "$ref": "#/definitions/Microsoft.RepeatDialog"
+                },
+                {
+                    "title": "Microsoft.ReplaceDialog",
+                    "description": "This is a action which replaces the current dialog with the target dialog",
+                    "$ref": "#/definitions/Microsoft.ReplaceDialog"
+                },
+                {
+                    "title": "Microsoft.SendActivity",
+                    "description": "This is a action which sends an activity to the user",
+                    "$ref": "#/definitions/Microsoft.SendActivity"
+                },
+                {
+                    "title": "Microsoft.SetProperty",
+                    "description": "This action allows you to set memory to the value of an expression",
+                    "$ref": "#/definitions/Microsoft.SetProperty"
+                },
+                {
+                    "title": "Microsoft.SwitchCondition",
+                    "description": "Action which conditionally decides which action to execute next.",
+                    "$ref": "#/definitions/Microsoft.SwitchCondition"
+                },
+                {
+                    "title": "Microsoft.TextInput",
+                    "description": "This represents a dialog which gathers a text from the user",
+                    "$ref": "#/definitions/Microsoft.TextInput"
+                },
+                {
+                    "title": "Microsoft.TraceActivity",
+                    "description": "This is a action which sends an TraceActivity to the transcript",
+                    "$ref": "#/definitions/Microsoft.TraceActivity"
+                },
+                {
+                    "type": "string",
+                    "title": "string"
+                }
+            ]
+        },
         "Microsoft.DimensionEntityRecognizer": {
             "$role": "unionType(Microsoft.EntityRecognizer)",
             "title": "Dimension Entity Recognizer",
@@ -2701,9 +2862,9 @@
                     "$ref": "#/definitions/Microsoft.PhoneNumberEntityRecognizer"
                 },
                 {
-                    "title": "Microsoft.RegexEntityRecognizer",
+                    "title": "Microsoft.RegExEntityRecognizer",
                     "description": "Recognizer which recognizes patterns of input based on regex.",
-                    "$ref": "#/definitions/Microsoft.RegexEntityRecognizer"
+                    "$ref": "#/definitions/Microsoft.RegExEntityRecognizer"
                 },
                 {
                     "title": "Microsoft.TemperatureEntityRecognizer",
@@ -3225,167 +3386,6 @@
                 }
             ]
         },
-        "Microsoft.Dialog": {
-            "title": "Microsoft Dialog",
-            "description": "Union of components which implement the Dialog interface",
-            "$role": "unionType",
-            "oneOf": [
-                {
-                    "title": "Microsoft.AdaptiveDialog",
-                    "description": "Configures a data driven dialog via a collection of actions/dialogs.",
-                    "$ref": "#/definitions/Microsoft.AdaptiveDialog"
-                },
-                {
-                    "title": "Microsoft.AttachmentInput",
-                    "description": "This represents a dialog which gathers an attachment such as image or music",
-                    "$ref": "#/definitions/Microsoft.AttachmentInput"
-                },
-                {
-                    "title": "Microsoft.BeginDialog",
-                    "description": "Action which begins another dialog (and when that dialog is done, it will return the caller).",
-                    "$ref": "#/definitions/Microsoft.BeginDialog"
-                },
-                {
-                    "title": "Microsoft.CancelAllDialogs",
-                    "description": "Command to cancel all of the current dialogs by emitting an event which must be caught to prevent cancelation from propagating.",
-                    "$ref": "#/definitions/Microsoft.CancelAllDialogs"
-                },
-                {
-                    "title": "Microsoft.ChoiceInput",
-                    "description": "This represents a dialog which gathers a choice responses",
-                    "$ref": "#/definitions/Microsoft.ChoiceInput"
-                },
-                {
-                    "title": "Microsoft.ConfirmInput",
-                    "description": "This represents a dialog which gathers a yes/no style responses",
-                    "$ref": "#/definitions/Microsoft.ConfirmInput"
-                },
-                {
-                    "title": "Microsoft.DateTimeInput",
-                    "description": "This represents a dialog which gathers Date or Time or DateTime from the user",
-                    "$ref": "#/definitions/Microsoft.DateTimeInput"
-                },
-                {
-                    "title": "Microsoft.DebugBreak",
-                    "description": "If debugger is attached, do a debugger break at this point",
-                    "$ref": "#/definitions/Microsoft.DebugBreak"
-                },
-                {
-                    "title": "Microsoft.DeleteProperty",
-                    "description": "This is a action which allows you to remove a property from memory",
-                    "$ref": "#/definitions/Microsoft.DeleteProperty"
-                },
-                {
-                    "title": "Microsoft.EditActions",
-                    "description": "Edit current dialog with changeType and Actions",
-                    "$ref": "#/definitions/Microsoft.EditActions"
-                },
-                {
-                    "title": "Microsoft.EditArray",
-                    "description": "This is a action which allows you to modify an array in memory",
-                    "$ref": "#/definitions/Microsoft.EditArray"
-                },
-                {
-                    "title": "Microsoft.EmitEvent",
-                    "description": "This is a action which allows you to emit an event",
-                    "$ref": "#/definitions/Microsoft.EmitEvent"
-                },
-                {
-                    "title": "Microsoft.EndDialog",
-                    "description": "Command which ends the current dialog, returning the resultProperty as the result of the dialog.",
-                    "$ref": "#/definitions/Microsoft.EndDialog"
-                },
-                {
-                    "title": "Microsoft.EndTurn",
-                    "description": "End the current turn without ending the dialog.",
-                    "$ref": "#/definitions/Microsoft.EndTurn"
-                },
-                {
-                    "title": "Microsoft.Foreach",
-                    "description": "Action which executes actions per item in a collection.",
-                    "$ref": "#/definitions/Microsoft.Foreach"
-                },
-                {
-                    "title": "Microsoft.ForeachPage",
-                    "description": "Action which execute actions per item page in a collection.",
-                    "$ref": "#/definitions/Microsoft.ForeachPage"
-                },
-                {
-                    "title": "Microsoft.HttpRequest",
-                    "description": "This is a action which replaces the current dialog with the target dialog",
-                    "$ref": "#/definitions/Microsoft.HttpRequest"
-                },
-                {
-                    "title": "Microsoft.IfCondition",
-                    "description": "Action which conditionally decides which action to execute next.",
-                    "$ref": "#/definitions/Microsoft.IfCondition"
-                },
-                {
-                    "title": "Microsoft.InitProperty",
-                    "description": "This action allows you to innitial a property to either an object or array",
-                    "$ref": "#/definitions/Microsoft.InitProperty"
-                },
-                {
-                    "title": "Microsoft.LogAction",
-                    "description": "This is a action which writes to console.log and optional creates a TraceActivity around a text binding",
-                    "$ref": "#/definitions/Microsoft.LogAction"
-                },
-                {
-                    "title": "Microsoft.NumberInput",
-                    "description": "This represents a dialog which gathers a decimal number in a specified range",
-                    "$ref": "#/definitions/Microsoft.NumberInput"
-                },
-                {
-                    "title": "Microsoft.OAuthInput",
-                    "description": "This represents a dialog which gathers an OAuth token from user",
-                    "$ref": "#/definitions/Microsoft.OAuthInput"
-                },
-                {
-                    "title": "Microsoft.QnAMakerDialog",
-                    "description": "This represents a dialog which is driven by a call to QnAMaker.ai knowledge base",
-                    "$ref": "#/definitions/Microsoft.QnAMakerDialog"
-                },
-                {
-                    "title": "Microsoft.RepeatDialog",
-                    "description": "This is a action which repeats the current dialog with the same dialog.",
-                    "$ref": "#/definitions/Microsoft.RepeatDialog"
-                },
-                {
-                    "title": "Microsoft.ReplaceDialog",
-                    "description": "This is a action which replaces the current dialog with the target dialog",
-                    "$ref": "#/definitions/Microsoft.ReplaceDialog"
-                },
-                {
-                    "title": "Microsoft.SendActivity",
-                    "description": "This is a action which sends an activity to the user",
-                    "$ref": "#/definitions/Microsoft.SendActivity"
-                },
-                {
-                    "title": "Microsoft.SetProperty",
-                    "description": "This action allows you to set memory to the value of an expression",
-                    "$ref": "#/definitions/Microsoft.SetProperty"
-                },
-                {
-                    "title": "Microsoft.SwitchCondition",
-                    "description": "Action which conditionally decides which action to execute next.",
-                    "$ref": "#/definitions/Microsoft.SwitchCondition"
-                },
-                {
-                    "title": "Microsoft.TextInput",
-                    "description": "This represents a dialog which gathers a text from the user",
-                    "$ref": "#/definitions/Microsoft.TextInput"
-                },
-                {
-                    "title": "Microsoft.TraceActivity",
-                    "description": "This is a action which sends an TraceActivity to the transcript",
-                    "$ref": "#/definitions/Microsoft.TraceActivity"
-                },
-                {
-                    "type": "string",
-                    "title": "string"
-                }
-            ]
-        },
         "Microsoft.IEventSelector": {
             "title": "Microsoft IEventSelector",
             "description": "Union of components which implement the IEventSelector interface",
@@ -3423,22 +3423,6 @@
             "description": "Union of components which implement the ILanguageGenerator interface",
             "$role": "unionType",
             "oneOf": [
-                {
-                    "type": "string",
-                    "title": "string"
-                }
-            ]
-        },
-        "Microsoft.ILanguagePolicy": {
-            "title": "Microsoft Language Policy",
-            "description": "Union of components which implement the ILanguagePolicy interface",
-            "$role": "unionType",
-            "oneOf": [
-                {
-                    "title": "Microsoft.LanguagePolicy",
-                    "description": "This represents a dialog which gathers a DateTime in a specified range",
-                    "$ref": "#/definitions/Microsoft.LanguagePolicy"
-                },
                 {
                     "type": "string",
                     "title": "string"
@@ -3815,9 +3799,8 @@
             ]
         },
         "Microsoft.LanguagePolicy": {
-            "$role": "unionType(Microsoft.ILanguagePolicy)",
             "title": "Language Policy",
-            "description": "This represents a dialog which gathers a DateTime in a specified range",
+            "description": "This represents a policy map for locales lookups to use for language",
             "type": "object",
             "additionalProperties": false,
             "properties": {
@@ -4153,11 +4136,11 @@
                     "description": "Extra information for the Bot Framework Designer."
                 },
                 "languagePolicy": {
-                    "$type": "Microsoft.ILanguagePolicy",
+                    "$type": "Microsoft.LanguagePolicy",
                     "type": "object",
                     "title": "Language Policy",
                     "description": "Defines languages to try per language.",
-                    "$ref": "#/definitions/Microsoft.ILanguagePolicy"
+                    "$ref": "#/definitions/Microsoft.LanguagePolicy"
                 },
                 "recognizers": {
                     "type": "object",
@@ -6140,7 +6123,7 @@
                 }
             ]
         },
-        "Microsoft.RegexEntityRecognizer": {
+        "Microsoft.RegExEntityRecognizer": {
             "$role": "unionType(Microsoft.EntityRecognizer)",
             "title": "Regex Entity Recognizer",
             "description": "Recognizer which recognizes patterns of input based on regex.",
@@ -6151,7 +6134,7 @@
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.RegexEntityRecognizer"
+                    "const": "Microsoft.RegExEntityRecognizer"
                 },
                 "$copy": {
                     "title": "$copy",

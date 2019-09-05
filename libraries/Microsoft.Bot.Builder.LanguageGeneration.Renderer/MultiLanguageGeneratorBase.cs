@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
         }
 
-        public ILanguagePolicy LanguagePolicy { get; set; } = new LanguagePolicy();
+        public LanguagePolicy LanguagePolicy { get; set; } = new LanguagePolicy();
 
         /// <summary>
         /// Abstract method to get an ILanguageGenerator by locale.

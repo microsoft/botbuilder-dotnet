@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// <summary>
     /// Language policy with fallback for each language as most specific to default en-us -> en -> default.
     /// </summary>
-    public class LanguagePolicy : Dictionary<string, string[]>, ILanguagePolicy
+    public class LanguagePolicy : Dictionary<string, string[]>
     {
         // walk through all of the cultures and create a dictionary map with most specific to least specific
         // Example output "en-us" will generate fallback rule like this:
