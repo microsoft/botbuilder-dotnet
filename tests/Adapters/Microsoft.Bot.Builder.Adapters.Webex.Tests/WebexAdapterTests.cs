@@ -271,6 +271,43 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         }
 
         [Fact]
+        public async void ProcessAsync_With_AttachmentActions_Should_Succeed()
+        {
+            var testPublicAddress = "http://contoso.com/api/messages";
+
+            var options = new WebexAdapterOptions("Test", testPublicAddress, "Test");
+
+            var message = JsonConvert.DeserializeObject<Message>(File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\MessageWithInputs.json"));
+            var payload = File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\PayloadAttachmentActions.json");
+            var stream = new MemoryStream(Encoding.UTF8.GetBytes(payload.ToString()));
+            var call = false;
+
+            WebexHelper.Identity = JsonConvert.DeserializeObject<Person>(File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\Person.json"));
+
+            var webexApi = new Mock<WebexClientWrapper>();
+            webexApi.SetupAllProperties();
+            webexApi.Setup(x => x.GetAttachmentActionAsync(It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(message));
+
+            var webexAdapter = new WebexAdapter(options, webexApi.Object);
+
+            var httpRequest = new Mock<HttpRequest>();
+            httpRequest.SetupGet(req => req.Body).Returns(stream);
+            httpRequest.Setup(req => req.Headers.ContainsKey(It.IsAny<string>())).Returns(true);
+            httpRequest.SetupGet(req => req.Headers[It.IsAny<string>()]).Returns("C5574DEF8B2CC967501C3547FA1E60B9457BF03E");
+
+            var httpResponse = new Mock<HttpResponse>();
+            var bot = new Mock<IBot>();
+            bot.Setup(x => x.OnTurnAsync(It.IsAny<TurnContext>(), It.IsAny<CancellationToken>())).Callback(() =>
+            {
+                call = true;
+            });
+
+            await webexAdapter.ProcessAsync(httpRequest.Object, httpResponse.Object, bot.Object, default);
+
+            Assert.True(call);
+        }
+
+        [Fact]
         public async void ListWebhookSubscriptionsAsync_Should_Succeed()
         {
             var testPublicAddress = "http://contoso.com/api/messages";
@@ -482,6 +519,36 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
             var resourceResponse = await webexAdapter.SendActivitiesAsync(turnContext, new Activity[] { activity.Object }, default).ConfigureAwait(false);
 
             // Assert the result
+            Assert.True(resourceResponse[0].Id == expectedResponseId);
+        }
+
+        [Fact]
+        public async void SendActivitiesAsync_With_AttachmentActions_Should_Succeed()
+        {
+            var testPublicAddress = "http://contoso.com/api/messages";
+
+            var options = new WebexAdapterOptions("Test", testPublicAddress, "Test");
+
+            const string expectedResponseId = "Mocked Response Id";
+            var webexApi = new Mock<WebexClientWrapper>();
+            webexApi.Setup(x => x.CreateMessageWithAttachmentsAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IList<Attachment>>(), It.IsAny<string>())).Returns(Task.FromResult(expectedResponseId));
+
+            var webexAdapter = new WebexAdapter(options, webexApi.Object);
+
+            var activity = new Mock<Activity>().SetupAllProperties();
+            activity.Object.Type = "message";
+            activity.Object.Recipient = new ChannelAccount(id: "MockId");
+            activity.Object.Text = "Hello, Bot!";
+            var card = new Attachment("application/vnd.microsoft.card.adaptive");
+            activity.Object.Attachments = new List<Attachment>
+            {
+                card,
+            };
+
+            var turnContext = new TurnContext(webexAdapter, activity.Object);
+
+            var resourceResponse = await webexAdapter.SendActivitiesAsync(turnContext, new Activity[] { activity.Object }, default).ConfigureAwait(false);
+
             Assert.True(resourceResponse[0].Id == expectedResponseId);
         }
 
