@@ -96,7 +96,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Dialo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.LanguageGeneration", "libraries\Microsoft.Bot.Builder.LanguageGeneration\Microsoft.Bot.Builder.LanguageGeneration.csproj", "{52CDBBA9-E5AF-433C-80F0-5EF3C8B14946}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.LanguageGeneration.Templates", "libraries\Microsoft.Bot.Builder.LanguageGeneration.Renderer\Microsoft.Bot.Builder.LanguageGeneration.Templates.csproj", "{97347C9A-A33B-453D-B176-0C3E13DC8D4F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.LanguageGeneration.Templates", "libraries\Microsoft.Bot.Builder.LanguageGeneration.Templates\Microsoft.Bot.Builder.LanguageGeneration.Templates.csproj", "{97347C9A-A33B-453D-B176-0C3E13DC8D4F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Dialogs.Debugging.Tests", "tests\Microsoft.Bot.Builder.Dialogs.Debugging.Tests\Microsoft.Bot.Builder.Dialogs.Debugging.Tests.csproj", "{F59673EA-2D0D-441A-BB85-CD343DE6BE45}"
 EndProject
