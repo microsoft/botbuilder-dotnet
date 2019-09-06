@@ -739,7 +739,6 @@ namespace Microsoft.Bot.Builder.Expressions
             }
         }
 
-
         // Try to accumulate the path from an Accessor or Element
         // return the accumulated path and the expression left unable to accumulate
         private static (string path, Expression left) TryAccumulatePath(Expression expression, IMemoryScope state)

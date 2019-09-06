@@ -17,7 +17,6 @@ namespace Microsoft.Bot.Builder.Expressions
             this.scope = scope;
         }
 
-
         public object GetValue(string path)
         {
             var parts = path.Split(".[]".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
