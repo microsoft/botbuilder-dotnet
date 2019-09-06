@@ -9,56 +9,13 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Builder.Expressions;
 using Microsoft.Bot.Builder.Expressions.Parser;
+using Microsoft.Bot.Builder.LanguageGeneration;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 using static Microsoft.Bot.Builder.Dialogs.DialogContext;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 {
-    /// <summary>
-    /// Condition of the input.
-    /// </summary>
-    public enum InputState
-    {
-        /// <summary>
-        /// Input missing.
-        /// </summary>
-        Missing,
-
-        /// <summary>
-        /// Input not recognized.
-        /// </summary>
-        Unrecognized,
-
-        /// <summary>
-        /// Input not valid.
-        /// </summary>
-        Invalid,
-
-        /// <summary>
-        /// Input valid.
-        /// </summary>
-        Valid
-    }
-
-    public enum AllowInterruptions
-    {
-        /// <summary>
-        /// Always consult parent dialogs before taking the input.
-        /// </summary>
-        Always,
-
-        /// <summary>
-        /// Never consult parent dialogs.
-        /// </summary>
-        Never,
-
-        /// <summary>
-        /// Recognize the input first, only consult parent dilaogs when notRecognized.
-        /// </summary>
-        NotRecognized
-    }
-
     public abstract class InputDialog : Dialog
     {
 #pragma warning disable SA1310 // Field should not contain underscore.
@@ -471,9 +428,5 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             await dc.Context.SendActivityAsync(prompt).ConfigureAwait(false);
             return Dialog.EndOfTurn;
         }
-    }
-
-    public class InputDialogOptions
-    {
     }
 }

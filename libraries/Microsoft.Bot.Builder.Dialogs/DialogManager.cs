@@ -36,6 +36,48 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
         }
 
+        /// <summary>
+        /// Gets or sets root dialog to use to start conversation.
+        /// </summary>
+        /// <value>
+        /// Root dialog to use to start conversation.
+        /// </value>
+        public Dialog RootDialog
+        {
+            get
+            {
+                if (this.rootDialogId != null)
+                {
+                    return this.dialogSet.Find(this.rootDialogId);
+                }
+
+                return null;
+            }
+
+            set
+            {
+                this.rootDialogId = value.Id;
+                this.dialogSet = new DialogSet();
+                this.dialogSet.Add(value);
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets (optional) number of milliseconds to expire the bot's state after.
+        /// </summary>
+        /// <value>
+        /// Number of milliseconds.
+        /// </value>
+        public int? ExpireAfter { get; set; }
+
+        /// <summary>
+        /// Gets or sets (optional) storage provider that will be used to read and write the bot's state.
+        /// </summary>
+        /// <value>
+        /// Storage provider.
+        /// </value>
+        public IStorage Storage { get; set; }
+
         public static async Task<PersistedState> LoadState(IStorage storage, PersistedStateKeys keys)
         {
             var data = await storage.ReadAsync(keys.ToArray()).ConfigureAwait(false);
@@ -142,48 +184,6 @@ namespace Microsoft.Bot.Builder.Dialogs
                 ConversationState = $"{channelId}/conversations/{conversationId}/{@namespace}"
             };
         }
-
-        /// <summary>
-        /// Gets or sets root dialog to use to start conversation.
-        /// </summary>
-        /// <value>
-        /// Root dialog to use to start conversation.
-        /// </value>
-        public Dialog RootDialog
-        {
-            get
-            {
-                if (this.rootDialogId != null)
-                {
-                    return this.dialogSet.Find(this.rootDialogId);
-                }
-
-                return null;
-            }
-
-            set
-            {
-                this.rootDialogId = value.Id;
-                this.dialogSet = new DialogSet();
-                this.dialogSet.Add(value);
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets (optional) number of milliseconds to expire the bot's state after.
-        /// </summary>
-        /// <value>
-        /// Number of milliseconds.
-        /// </value>
-        public int? ExpireAfter { get; set; }
-
-        /// <summary>
-        /// Gets or sets (optional) storage provider that will be used to read and write the bot's state.
-        /// </summary>
-        /// <value>
-        /// Storage provider.
-        /// </value>
-        public IStorage Storage { get; set; }
 
         /// <summary>
         /// Run a dialog purely by processing an activity and getting the result. 

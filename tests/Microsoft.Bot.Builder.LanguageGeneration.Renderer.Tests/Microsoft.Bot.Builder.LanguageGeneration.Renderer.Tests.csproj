@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
@@ -23,7 +23,17 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.LanguageGeneration.Renderer\Microsoft.Bot.Builder.LanguageGeneration.Renderer.csproj" />
+    <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Dialogs.Adaptive\Microsoft.Bot.Builder.Dialogs.Adaptive.csproj" />
+    <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.LanguageGeneration.Renderer\Microsoft.Bot.Builder.LanguageGeneration.Templates.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="lg\adaptiveCard.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="lg\turtle.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

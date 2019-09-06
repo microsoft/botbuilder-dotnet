@@ -14,6 +14,8 @@ using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
 using Microsoft.Bot.Builder.Expressions;
 using Microsoft.Bot.Builder.Expressions.Parser;
 using Microsoft.Bot.Builder.LanguageGeneration;
+using Microsoft.Bot.Builder.LanguageGeneration.Generators;
+using Microsoft.Bot.Builder.LanguageGeneration.Templates;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -382,7 +384,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     Intents = new List<IntentPattern>()
                     {
                         new IntentPattern("JokeIntent", "joke"),
-                        new IntentPattern( "HelloIntent", "hi|hello"),
+                        new IntentPattern("HelloIntent", "hi|hello"),
                     }
                 },
                 Events = new List<IOnEvent>()
@@ -1333,7 +1335,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 {
                     Intents = new List<IntentPattern>()
                     {
-                        new IntentPattern("Interruption", "(?i)interrupt" ),
+                        new IntentPattern("Interruption", "(?i)interrupt"),
                         new IntentPattern("Start", "(?i)start"),
                     }
                 },
@@ -1415,7 +1417,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 {
                     Intents = new List<IntentPattern>()
                     {
-                        new IntentPattern("Start", "(?i)start" ),
+                        new IntentPattern("Start", "(?i)start"),
                         new IntentPattern("None", "200"),
                     }
                 },
@@ -2028,6 +2030,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .UseStorage(storage)
                 .UseState(userState, convoState)
                 .Use(new RegisterClassMiddleware<ResourceExplorer>(explorer))
+                .UseAdaptiveDialogs()
                 .UseLanguageGeneration(explorer)
                 .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
 

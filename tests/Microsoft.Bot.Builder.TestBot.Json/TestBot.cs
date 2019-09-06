@@ -20,6 +20,7 @@ using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Expressions.Parser;
+using Microsoft.Bot.Builder.LanguageGeneration.Templates;
 using Microsoft.Bot.Schema;
 using static Microsoft.Bot.Builder.Dialogs.Debugging.Source;
 

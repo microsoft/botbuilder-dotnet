@@ -10,6 +10,7 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
 using Microsoft.Bot.Builder.Expressions.Parser;
+using Microsoft.Bot.Builder.LanguageGeneration;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -112,6 +113,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .UseStorage(storage)
                 .UseState(userState, convoState)
                 .Use(new RegisterClassMiddleware<ResourceExplorer>(explorer))
+                .UseAdaptiveDialogs()
                 .UseLanguageGeneration(explorer)
                 .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
 

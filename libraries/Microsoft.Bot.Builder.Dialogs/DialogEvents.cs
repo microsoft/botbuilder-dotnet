@@ -11,5 +11,4 @@ namespace Microsoft.Bot.Builder.Dialogs
         public const string ActivityReceived = "activityReceived";
         public const string Error = "error";
     }
-
 }

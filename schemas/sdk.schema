@@ -6,6 +6,11 @@
     "description": "These are all of the types that can be created by the loader.",
     "oneOf": [
         {
+            "title": "Microsoft.ActivityTemplate",
+            "description": "",
+            "$ref": "#/definitions/Microsoft.ActivityTemplate"
+        },
+        {
             "title": "Microsoft.AdaptiveDialog",
             "description": "Configures a data driven dialog via a collection of actions/dialogs.",
             "$ref": "#/definitions/Microsoft.AdaptiveDialog"
@@ -372,6 +377,62 @@
         }
     ],
     "definitions": {
+        "Microsoft.ActivityTemplate": {
+            "title": "Microsoft ActivityTemplate",
+            "oneOf": [
+                {
+                    "type": "string",
+                    "title": "string"
+                }
+            ],
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.ActivityTemplate"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$type"
+                    ]
+                }
+            ]
+        },
         "Microsoft.AdaptiveDialog": {
             "$role": "unionType(Microsoft.Dialog)",
             "title": "Adaptive Dialog",
@@ -462,10 +523,10 @@
                     "$ref": "#/definitions/Microsoft.IRecognizer"
                 },
                 "generator": {
-                    "$type": "Microsoft.ILanguageGenerator",
+                    "$type": "Microsoft.LanguageGenerator",
                     "title": "Language Generator",
                     "description": "Language generator to use for this dialog. (aka: LG file)",
-                    "$ref": "#/definitions/Microsoft.ILanguageGenerator"
+                    "$ref": "#/definitions/Microsoft.LanguageGenerator"
                 },
                 "selector": {
                     "$type": "Microsoft.IEventSelector",
@@ -606,40 +667,40 @@
                     }
                 },
                 "prompt": {
-                    "$type": "Microsoft.IActivityTemplate",
+                    "$type": "Microsoft.ActivityTemplate",
                     "title": "Initial Prompt",
                     "description": "The message to send to as prompt for this input.",
                     "examples": [
                         "What is your birth date?"
                     ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
                 },
                 "unrecognizedPrompt": {
-                    "$type": "Microsoft.IActivityTemplate",
+                    "$type": "Microsoft.ActivityTemplate",
                     "title": "Unrecognized Prompt",
                     "description": "The message to send if the last input is not recognized.",
                     "examples": [
                         "Let's try again. What is your birth date?"
                     ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
                 },
                 "invalidPrompt": {
-                    "$type": "Microsoft.IActivityTemplate",
+                    "$type": "Microsoft.ActivityTemplate",
                     "title": "Invalid Prompt",
                     "description": "The message to send to when then input was not valid for the input type.",
                     "examples": [
                         "No date was recognized"
                     ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
                 },
                 "defaultValueResponse": {
-                    "$type": "Microsoft.IActivityTemplate",
+                    "$type": "Microsoft.ActivityTemplate",
                     "title": "Default Value Response",
                     "description": "The message to send to when max turn count has been exceeded and the default value is selected as the value.",
                     "examples": [
                         "I didn't understand your responses, so I will just use the default value of 10.  Let me know if you want to change it."
                     ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
                 },
                 "maxTurnCount": {
                     "type": "integer",
@@ -994,40 +1055,40 @@
                     }
                 },
                 "prompt": {
-                    "$type": "Microsoft.IActivityTemplate",
+                    "$type": "Microsoft.ActivityTemplate",
                     "title": "Initial Prompt",
                     "description": "The message to send to as prompt for this input.",
                     "examples": [
                         "What is your birth date?"
                     ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
                 },
                 "unrecognizedPrompt": {
-                    "$type": "Microsoft.IActivityTemplate",
+                    "$type": "Microsoft.ActivityTemplate",
                     "title": "Unrecognized Prompt",
                     "description": "The message to send if the last input is not recognized.",
                     "examples": [
                         "Let's try again. What is your birth date?"
                     ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
                 },
                 "invalidPrompt": {
-                    "$type": "Microsoft.IActivityTemplate",
+                    "$type": "Microsoft.ActivityTemplate",
                     "title": "Invalid Prompt",
                     "description": "The message to send to when then input was not valid for the input type.",
                     "examples": [
                         "No date was recognized"
                     ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
                 },
                 "defaultValueResponse": {
-                    "$type": "Microsoft.IActivityTemplate",
+                    "$type": "Microsoft.ActivityTemplate",
                     "title": "Default Value Response",
                     "description": "The message to send to when max turn count has been exceeded and the default value is selected as the value.",
                     "examples": [
                         "I didn't understand your responses, so I will just use the default value of 10.  Let me know if you want to change it."
                     ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
                 },
                 "maxTurnCount": {
                     "type": "integer",
@@ -1371,40 +1432,40 @@
                     }
                 },
                 "prompt": {
-                    "$type": "Microsoft.IActivityTemplate",
+                    "$type": "Microsoft.ActivityTemplate",
                     "title": "Initial Prompt",
                     "description": "The message to send to as prompt for this input.",
                     "examples": [
                         "What is your birth date?"
                     ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
                 },
                 "unrecognizedPrompt": {
-                    "$type": "Microsoft.IActivityTemplate",
+                    "$type": "Microsoft.ActivityTemplate",
                     "title": "Unrecognized Prompt",
                     "description": "The message to send if the last input is not recognized.",
                     "examples": [
                         "Let's try again. What is your birth date?"
                     ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
                 },
                 "invalidPrompt": {
-                    "$type": "Microsoft.IActivityTemplate",
+                    "$type": "Microsoft.ActivityTemplate",
                     "title": "Invalid Prompt",
                     "description": "The message to send to when then input was not valid for the input type.",
                     "examples": [
                         "No date was recognized"
                     ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
                 },
                 "defaultValueResponse": {
-                    "$type": "Microsoft.IActivityTemplate",
+                    "$type": "Microsoft.ActivityTemplate",
                     "title": "Default Value Response",
                     "description": "The message to send to when max turn count has been exceeded and the default value is selected as the value.",
                     "examples": [
                         "I didn't understand your responses, so I will just use the default value of 10.  Let me know if you want to change it."
                     ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
                 },
                 "maxTurnCount": {
                     "type": "integer",
@@ -1775,40 +1836,40 @@
                     }
                 },
                 "prompt": {
-                    "$type": "Microsoft.IActivityTemplate",
+                    "$type": "Microsoft.ActivityTemplate",
                     "title": "Initial Prompt",
                     "description": "The message to send to as prompt for this input.",
                     "examples": [
                         "What is your birth date?"
                     ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
                 },
                 "unrecognizedPrompt": {
-                    "$type": "Microsoft.IActivityTemplate",
+                    "$type": "Microsoft.ActivityTemplate",
                     "title": "Unrecognized Prompt",
                     "description": "The message to send if the last input is not recognized.",
                     "examples": [
                         "Let's try again. What is your birth date?"
                     ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
                 },
                 "invalidPrompt": {
-                    "$type": "Microsoft.IActivityTemplate",
+                    "$type": "Microsoft.ActivityTemplate",
                     "title": "Invalid Prompt",
                     "description": "The message to send to when then input was not valid for the input type.",
                     "examples": [
                         "No date was recognized"
                     ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
                 },
                 "defaultValueResponse": {
-                    "$type": "Microsoft.IActivityTemplate",
+                    "$type": "Microsoft.ActivityTemplate",
                     "title": "Default Value Response",
                     "description": "The message to send to when max turn count has been exceeded and the default value is selected as the value.",
                     "examples": [
                         "I didn't understand your responses, so I will just use the default value of 10.  Let me know if you want to change it."
                     ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
                 },
                 "maxTurnCount": {
                     "type": "integer",
@@ -3373,19 +3434,6 @@
                 }
             ]
         },
-        "Microsoft.IActivityTemplate": {
-            "title": "Microsoft ActivityTemplate",
-            "description": "Union of components which implement the IActivityTemplate interface",
-            "$role": "unionType",
-            "oneOf": [
-                {
-                    "$role": "lg",
-                    "type": "string",
-                    "description": "String is used for language generation.",
-                    "title": "string"
-                }
-            ]
-        },
         "Microsoft.IEventSelector": {
             "title": "Microsoft IEventSelector",
             "description": "Union of components which implement the IEventSelector interface",
@@ -3415,17 +3463,6 @@
                     "title": "Microsoft.TrueSelector",
                     "description": "Selector for all true events",
                     "$ref": "#/definitions/Microsoft.TrueSelector"
-                }
-            ]
-        },
-        "Microsoft.ILanguageGenerator": {
-            "title": "Microsoft ILanguageGenerator",
-            "description": "Union of components which implement the ILanguageGenerator interface",
-            "$role": "unionType",
-            "oneOf": [
-                {
-                    "type": "string",
-                    "title": "string"
                 }
             ]
         },
@@ -3536,17 +3573,6 @@
                     "description": "Recognizer which uses regex expressions to generate intents and entities.",
                     "$ref": "#/definitions/Microsoft.RegexRecognizer"
                 },
-                {
-                    "type": "string",
-                    "title": "string"
-                }
-            ]
-        },
-        "Microsoft.ITextTemplate": {
-            "title": "Microsoft TextTemplate",
-            "description": "Union of components which implement the ITextTemplate interface",
-            "$role": "unionType",
-            "oneOf": [
                 {
                     "type": "string",
                     "title": "string"
@@ -3795,6 +3821,17 @@
                     "required": [
                         "$type"
                     ]
+                }
+            ]
+        },
+        "Microsoft.LanguageGenerator": {
+            "title": "Microsoft LanguageGenerator",
+            "description": "Union of components which implement the LanguageGenerator interface",
+            "$role": "unionType",
+            "oneOf": [
+                {
+                    "type": "string",
+                    "title": "string"
                 }
             ]
         },
@@ -4277,40 +4314,40 @@
                     }
                 },
                 "prompt": {
-                    "$type": "Microsoft.IActivityTemplate",
+                    "$type": "Microsoft.ActivityTemplate",
                     "title": "Initial Prompt",
                     "description": "The message to send to as prompt for this input.",
                     "examples": [
                         "What is your birth date?"
                     ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
                 },
                 "unrecognizedPrompt": {
-                    "$type": "Microsoft.IActivityTemplate",
+                    "$type": "Microsoft.ActivityTemplate",
                     "title": "Unrecognized Prompt",
                     "description": "The message to send if the last input is not recognized.",
                     "examples": [
                         "Let's try again. What is your birth date?"
                     ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
                 },
                 "invalidPrompt": {
-                    "$type": "Microsoft.IActivityTemplate",
+                    "$type": "Microsoft.ActivityTemplate",
                     "title": "Invalid Prompt",
                     "description": "The message to send to when then input was not valid for the input type.",
                     "examples": [
                         "No date was recognized"
                     ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
                 },
                 "defaultValueResponse": {
-                    "$type": "Microsoft.IActivityTemplate",
+                    "$type": "Microsoft.ActivityTemplate",
                     "title": "Default Value Response",
                     "description": "The message to send to when max turn count has been exceeded and the default value is selected as the value.",
                     "examples": [
                         "I didn't understand your responses, so I will just use the default value of 10.  Let me know if you want to change it."
                     ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
                 },
                 "maxTurnCount": {
                     "type": "integer",
@@ -4516,40 +4553,40 @@
                     }
                 },
                 "prompt": {
-                    "$type": "Microsoft.IActivityTemplate",
+                    "$type": "Microsoft.ActivityTemplate",
                     "title": "Initial Prompt",
                     "description": "The message to send to as prompt for this input.",
                     "examples": [
                         "What is your birth date?"
                     ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
                 },
                 "unrecognizedPrompt": {
-                    "$type": "Microsoft.IActivityTemplate",
+                    "$type": "Microsoft.ActivityTemplate",
                     "title": "Unrecognized Prompt",
                     "description": "The message to send if the last input is not recognized.",
                     "examples": [
                         "Let's try again. What is your birth date?"
                     ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
                 },
                 "invalidPrompt": {
-                    "$type": "Microsoft.IActivityTemplate",
+                    "$type": "Microsoft.ActivityTemplate",
                     "title": "Invalid Prompt",
                     "description": "The message to send to when then input was not valid for the input type.",
                     "examples": [
                         "No date was recognized"
                     ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
                 },
                 "defaultValueResponse": {
-                    "$type": "Microsoft.IActivityTemplate",
+                    "$type": "Microsoft.ActivityTemplate",
                     "title": "Default Value Response",
                     "description": "The message to send to when max turn count has been exceeded and the default value is selected as the value.",
                     "examples": [
                         "I didn't understand your responses, so I will just use the default value of 10.  Let me know if you want to change it."
                     ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
                 },
                 "maxTurnCount": {
                     "type": "integer",
@@ -6487,10 +6524,10 @@
                     }
                 },
                 "activity": {
-                    "$type": "Microsoft.IActivityTemplate",
+                    "$type": "Microsoft.ActivityTemplate",
                     "title": "Activity",
                     "description": "Activity to send to the user",
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
                 }
             },
             "additionalProperties": false,
@@ -6829,40 +6866,40 @@
                     }
                 },
                 "prompt": {
-                    "$type": "Microsoft.IActivityTemplate",
+                    "$type": "Microsoft.ActivityTemplate",
                     "title": "Initial Prompt",
                     "description": "The message to send to as prompt for this input.",
                     "examples": [
                         "What is your birth date?"
                     ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
                 },
                 "unrecognizedPrompt": {
-                    "$type": "Microsoft.IActivityTemplate",
+                    "$type": "Microsoft.ActivityTemplate",
                     "title": "Unrecognized Prompt",
                     "description": "The message to send if the last input is not recognized.",
                     "examples": [
                         "Let's try again. What is your birth date?"
                     ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
                 },
                 "invalidPrompt": {
-                    "$type": "Microsoft.IActivityTemplate",
+                    "$type": "Microsoft.ActivityTemplate",
                     "title": "Invalid Prompt",
                     "description": "The message to send to when then input was not valid for the input type.",
                     "examples": [
                         "No date was recognized"
                     ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
                 },
                 "defaultValueResponse": {
-                    "$type": "Microsoft.IActivityTemplate",
+                    "$type": "Microsoft.ActivityTemplate",
                     "title": "Default Value Response",
                     "description": "The message to send to when max turn count has been exceeded and the default value is selected as the value.",
                     "examples": [
                         "I didn't understand your responses, so I will just use the default value of 10.  Let me know if you want to change it."
                     ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
                 },
                 "maxTurnCount": {
                     "type": "integer",
@@ -6958,6 +6995,17 @@
                     "required": [
                         "$type"
                     ]
+                }
+            ]
+        },
+        "Microsoft.TextTemplate": {
+            "title": "Microsoft TextTemplate",
+            "description": "Union of components which implement the TextTemplate",
+            "$role": "unionType",
+            "oneOf": [
+                {
+                    "type": "string",
+                    "title": "string"
                 }
             ]
         },

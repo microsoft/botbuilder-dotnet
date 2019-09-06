@@ -7,7 +7,9 @@
 
     public class Clause : Expression
     {
+#pragma warning disable SA1401 // Fields should be private
         internal bool Subsumed = false;
+#pragma warning restore SA1401 // Fields should be private
 
         private Dictionary<string, string> anyBindings = new Dictionary<string, string>();
 

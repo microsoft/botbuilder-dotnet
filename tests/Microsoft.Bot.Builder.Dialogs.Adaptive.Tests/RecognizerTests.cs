@@ -10,6 +10,7 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
+using Microsoft.Bot.Builder.LanguageGeneration;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -98,8 +99,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
                         {
                             Intents = new List<IntentPattern>()
                             {
-                                new IntentPattern("Greeting", "(?i)howdy" ),
-                                new IntentPattern("Goodbye", "(?i)bye" ),
+                                new IntentPattern("Greeting", "(?i)howdy"),
+                                new IntentPattern("Goodbye", "(?i)bye"),
                             }
                         }
                      },
@@ -109,8 +110,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
                         {
                             Intents = new List<IntentPattern>()
                             {
-                                new IntentPattern("Greeting", "(?i)hiya" ),
-                                new IntentPattern("Goodbye", "(?i)cheerio" ),
+                                new IntentPattern("Greeting", "(?i)hiya"),
+                                new IntentPattern("Goodbye", "(?i)cheerio"),
                             }
                         }
                      },
@@ -120,8 +121,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
                         {
                             Intents = new List<IntentPattern>()
                             {
-                                new IntentPattern("Greeting", "(?i)hello" ),
-                                new IntentPattern("Goodbye", "(?i)goodbye" ),
+                                new IntentPattern("Greeting", "(?i)hello"),
+                                new IntentPattern("Goodbye", "(?i)goodbye"),
                             }
                         }
                      },
@@ -131,8 +132,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
                         {
                             Intents = new List<IntentPattern>()
                             {
-                                new IntentPattern("Greeting", "(?i)salve" ),
-                                new IntentPattern("Goodbye", "(?i)vale dicere" ),
+                                new IntentPattern("Greeting", "(?i)salve"),
+                                new IntentPattern("Goodbye", "(?i)vale dicere"),
                             }
                         }
                      },
@@ -152,7 +153,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
                 .UseStorage(storage)
                 .UseState(userState, convoState)
                 .UseResourceExplorer(resourceExplorer)
+                .UseAdaptiveDialogs()
                 .UseLanguageGeneration(resourceExplorer)
+                .UseAdaptiveDialogs()
                 .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
 
             adapter.Locale = locale;

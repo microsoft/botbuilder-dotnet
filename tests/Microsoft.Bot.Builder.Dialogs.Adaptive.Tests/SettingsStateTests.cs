@@ -1,4 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿#pragma warning disable SA1401 // Fields should be private
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
@@ -7,6 +8,8 @@ using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Events;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
+using Microsoft.Bot.Builder.LanguageGeneration;
+using Microsoft.Bot.Builder.LanguageGeneration.Templates;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -62,6 +65,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .Use(new RegisterClassMiddleware<ResourceExplorer>(resourceExplorer))
                 .Use(new RegisterClassMiddleware<IStorage>(new MemoryStorage()))
+                .UseAdaptiveDialogs()
                 .UseLanguageGeneration(resourceExplorer)
                 .Use(new RegisterClassMiddleware<IConfiguration>(this.Configuration))
                 .Use(new AutoSaveStateMiddleware(convoState, userState))

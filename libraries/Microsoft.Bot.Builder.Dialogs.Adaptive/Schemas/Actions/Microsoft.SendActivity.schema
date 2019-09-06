@@ -11,7 +11,7 @@
         {
             "properties": {
                 "activity": {
-                    "$type": "Microsoft.IActivityTemplate",
+                    "$type": "Microsoft.ActivityTemplate",
                     "title": "Activity",
                     "description": "Activity to send to the user"
                 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿#pragma warning disable SA1402
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
@@ -11,6 +12,7 @@ using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
 using Microsoft.Bot.Builder.LanguageGeneration;
+using Microsoft.Bot.Builder.LanguageGeneration.Generators;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -30,7 +32,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         public static void ClassInitialize(TestContext context)
         {
             TypeFactory.Configuration = new ConfigurationBuilder().AddInMemoryCollection().Build();
-            TypeFactory.RegisterAdaptiveTypes();
+            DeclarativeTypeLoader.AddComponent(new AdaptiveComponentRegistration());
+            DeclarativeTypeLoader.AddComponent(new LanguageGenerationComponentRegistration());
             resourceExplorer = ResourceExplorer.LoadProject(GetProjectFolder());
         }
 
@@ -174,6 +177,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var context = new TurnContext(
                 new TestAdapter()
                 .UseResourceExplorer(resourceExplorer)
+                .UseAdaptiveDialogs()
                 .UseLanguageGeneration(resourceExplorer, generator ?? new MockLanguageGenerator()), new Activity() { Locale = locale, Text = string.Empty });
             context.TurnState.Add(new LanguageGeneratorManager(resourceExplorer));
             if (generator != null)
@@ -196,6 +200,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                 .UseStorage(storage)
                 .UseState(userState, convoState)
                 .UseResourceExplorer(resourceExplorer)
+                .UseAdaptiveDialogs()
                 .UseLanguageGeneration(resourceExplorer, "test.lg")
                 .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
 

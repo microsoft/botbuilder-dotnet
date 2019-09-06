@@ -17,6 +17,7 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
+using Microsoft.Bot.Builder.LanguageGeneration;
 using Microsoft.Bot.Configuration;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
@@ -1328,6 +1329,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 .UseStorage(storage)
                 .UseState(userState, conversationState)
                 .UseResourceExplorer(resourceExplorer)
+                .UseAdaptiveDialogs()
                 .UseLanguageGeneration(resourceExplorer)
                 .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
 

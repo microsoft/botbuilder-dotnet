@@ -31,7 +31,7 @@
                     "description": "Configured recognizer to generate intent and entites from user utterance"
                 },
                 "generator": {
-                    "$type": "Microsoft.ILanguageGenerator",
+                    "$type": "Microsoft.LanguageGenerator",
                     "title": "Language Generator",
                     "description": "Language generator to use for this dialog. (aka: LG file)"
                 },

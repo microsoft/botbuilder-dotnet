@@ -12,7 +12,6 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 {
-
     [DebuggerDisplay("{ChangeType}:{Desire}")]
     public class ActionChangeList
     {

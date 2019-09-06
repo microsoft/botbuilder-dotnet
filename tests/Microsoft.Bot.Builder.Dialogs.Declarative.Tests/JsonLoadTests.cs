@@ -6,11 +6,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Tests.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
+using Microsoft.Bot.Builder.LanguageGeneration;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -30,7 +32,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         public static void ClassInitialize(TestContext context)
         {
             TypeFactory.Configuration = new ConfigurationBuilder().AddInMemoryCollection().Build();
-            TypeFactory.RegisterAdaptiveTypes();
+            DeclarativeTypeLoader.AddComponent(new AdaptiveComponentRegistration());
+            DeclarativeTypeLoader.AddComponent(new LanguageGenerationComponentRegistration());
             TypeFactory.Register("Microsoft.RuleRecognizer", typeof(RuleRecognizer));
             string projPath = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, PathUtils.NormalizePath($@"..\..\..\..\..\tests\Microsoft.Bot.Builder.TestBot.Json\Microsoft.Bot.Builder.TestBot.Json.csproj")));
             resourceExplorer = ResourceExplorer.LoadProject(projPath);
@@ -305,6 +308,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
                 .UseStorage(storage)
                 .UseState(userState, convoState)
                 .UseResourceExplorer(resourceExplorer)
+                .UseAdaptiveDialogs()
                 .UseLanguageGeneration(resourceExplorer)
                 .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
 

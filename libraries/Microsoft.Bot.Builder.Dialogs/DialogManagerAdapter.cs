@@ -9,11 +9,11 @@ namespace Microsoft.Bot.Builder.Dialogs
 {
     public class DialogManagerAdapter : BotAdapter
     {
-        public readonly List<Activity> Activities = new List<Activity>();
-
         public DialogManagerAdapter()
         {
         }
+
+        public List<Activity> Activities { get; private set; } = new List<Activity>();
 
         public override Task<ResourceResponse[]> SendActivitiesAsync(ITurnContext turnContext, Activity[] activities, CancellationToken cancellationToken)
         {

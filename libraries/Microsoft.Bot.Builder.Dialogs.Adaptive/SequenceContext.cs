@@ -12,7 +12,6 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 {
-
     public class SequenceContext : DialogContext
     {
         private readonly string changeKey;
@@ -199,7 +198,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             return base.ShouldInheritState(dialog) || dialog is InputDialog;
         }
 
-        private async Task UpdateSequenceAsync(ActionChangeList change, CancellationToken cancellationToken = default(CancellationToken))
+        private Task UpdateSequenceAsync(ActionChangeList change, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (change == null)
             {
@@ -256,6 +255,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     this.Actions.AddRange(change.Actions);
                     break;
             }
+
+            return Task.CompletedTask;
         }
 
         private bool ActionHasTags(ActionState step, List<string> tags)

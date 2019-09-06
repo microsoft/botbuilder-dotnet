@@ -4,8 +4,9 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Converters;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resolvers;
@@ -19,6 +20,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
 {
     public static class DeclarativeTypeLoader
     {
+        private static List<ComponentRegistration> components = new List<ComponentRegistration>();
+
+        public static void AddComponent(ComponentRegistration component)
+        {
+            if (!components.Any(c => c.GetType() == component.GetType()))
+            {
+                components.Add(component);
+
+                foreach (var typeRegistration in component.GetTypes())
+                {
+                    TypeFactory.Register(typeRegistration.Name, typeRegistration.Type, typeRegistration.CustomDeserializer);
+                }
+            }
+        }
+
         public static async Task<T> LoadAsync<T>(IResource resource, ResourceExplorer resourceExplorer, Source.IRegistry registry)
         {
             IRefResolver refResolver = new IdRefResolver(resourceExplorer, registry);
@@ -81,22 +97,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
 
         private static T Load<T>(Source.IRegistry registry, IRefResolver refResolver, Stack<string> paths, string json)
         {
+            var converters = new List<JsonConverter>();
+            foreach (var component in components)
+            {
+                var result = component.GetConverters(registry, refResolver, paths);
+                if (result.Any())
+                {
+                    converters.AddRange(result);
+                }
+            }
+
             return JsonConvert.DeserializeObject<T>(
                 json, new JsonSerializerSettings()
                 {
                     SerializationBinder = new UriTypeBinder(),
                     TypeNameHandling = TypeNameHandling.Auto,
-                    Converters = new List<JsonConverter>()
-                    {
-                        new InterfaceConverter<Dialog>(refResolver, registry, paths),
-                        new InterfaceConverter<IOnEvent>(refResolver, registry, paths),
-                        new InterfaceConverter<IStorage>(refResolver, registry, paths),
-                        new InterfaceConverter<IRecognizer>(refResolver, registry, paths),
-                        new LanguageGeneratorConverter(refResolver, registry, paths),
-                        new ExpressionConverter(),
-                        new ActivityConverter(),
-                        new ActivityTemplateConverter()
-                    },
+                    Converters = converters,
                     Error = (sender, args) =>
                     {
                         var ctx = args.ErrorContext;

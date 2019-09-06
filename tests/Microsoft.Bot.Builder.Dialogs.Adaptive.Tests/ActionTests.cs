@@ -12,6 +12,8 @@ using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
+using Microsoft.Bot.Builder.LanguageGeneration;
+using Microsoft.Bot.Builder.LanguageGeneration.Templates;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -875,7 +877,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 {
                     Intents = new List<IntentPattern>()
                     {
-                        new IntentPattern("Insert", "(?i)insert" ),
+                        new IntentPattern("Insert", "(?i)insert"),
                         new IntentPattern("Execute", "(?i)execute"),
                     }
                 }
@@ -1471,6 +1473,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .UseStorage(storage)
                 .UseState(userState, convoState)
                 .UseResourceExplorer(resourceExplorer)
+                .UseAdaptiveDialogs()
                 .UseLanguageGeneration(resourceExplorer)
                 .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
             DialogManager dm = new DialogManager(testDialog);
