@@ -6,22 +6,6 @@ using static Microsoft.Bot.Builder.Dialogs.DialogContext;
 
 namespace Microsoft.Bot.Builder.Dialogs.Debugging
 {
-    public interface IEvents
-    {
-        Protocol.ExceptionBreakpointFilter[] Filters
-        {
-            get;
-        }
-
-        bool this[string filter]
-        {
-            get;
-            set;
-        }
-
-        void Reset(IEnumerable<string> filters);
-    }
-
     public sealed class Events<TDialogEvents> : IEvents
         where TDialogEvents : DialogEvents
     {

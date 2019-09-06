@@ -1,6 +1,6 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
-    "$role": "unionType(Microsoft.IDialog)",
+    "$role": "unionType(Microsoft.Dialog)",
     "title": "Begin Dialog",
     "description": "Action which begins another dialog (and when that dialog is done, it will return the caller).",
     "type": "object",
@@ -11,7 +11,7 @@
         {
             "properties": {
                 "dialog": {
-                    "$type": "Microsoft.IDialog",
+                    "$type": "Microsoft.Dialog",
                     "title": "Dialog",
                     "description": "This is the dialog to call."
                 },

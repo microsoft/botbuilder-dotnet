@@ -1,4 +1,5 @@
-﻿using System;
+﻿#pragma warning disable SA1402 // File may only contain a single type
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
@@ -7,6 +8,7 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive.Events;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
+using Microsoft.Bot.Builder.LanguageGeneration;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -210,7 +212,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 {
                     Intents = new List<IntentPattern>()
                     {
-                        new IntentPattern("IntentNumber1", "intent1" ),
+                        new IntentPattern("IntentNumber1", "intent1"),
                         new IntentPattern("NameIntent", ".*name is (?<name>.*)"),
                     }
                 },
@@ -218,14 +220,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 {
                     new OnBeginDialog()
                     {
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             new SendActivity("{turn.activity.text}"),
                         }
                     },
                     new OnIntent(
                         intent: "IntentNumber1",
-                        actions: new List<IDialog>()
+                        actions: new List<Dialog>()
                         {
                             new SendActivity("{turn.activity.text}"),
                             new SendActivity("{turn.recognized.intent}"),
@@ -235,7 +237,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         }),
                     new OnIntent(
                         intent: "NameIntent",
-                        actions: new List<IDialog>()
+                        actions: new List<Dialog>()
                         {
                             new SendActivity("{turn.recognized.entities.name[0]}"),
                         }),
@@ -266,7 +268,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 {
                     new OnBeginDialog()
                     {
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             new SetProperty()
                             {
@@ -277,7 +279,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             new IfCondition()
                             {
                                 Condition = "dialog.name == 'testDialog'",
-                                Actions = new List<IDialog>()
+                                Actions = new List<Dialog>()
                                 {
                                     new SendActivity("nested dialogCommand {dialog.name}")
                                 }
@@ -304,7 +306,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                     {
                                         new OnBeginDialog()
                                         {
-                                            Actions = new List<IDialog>()
+                                            Actions = new List<Dialog>()
                                             {
                                                 new SendActivity("nested d2 {$name}"),
                                                 new SetProperty() { Property = "dialog.name", Value = "'testDialogd2'" },
@@ -322,7 +324,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 {
                     new OnBeginDialog()
                     {
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             new SetProperty() { Property = "dialog.name", Value = "'testDialog'" },
                             new SendActivity("{dialog.name}"),
@@ -334,7 +336,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 {
                                     new OnBeginDialog()
                                     {
-                                        Actions = new List<IDialog>()
+                                        Actions = new List<Dialog>()
                                         {
                                             new SendActivity("nested d1 {$name}"),
                                             new SetProperty() { Property = "dialog.name", Value = "'testDialogd1'" },
@@ -375,7 +377,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 {
                     new OnBeginDialog()
                     {
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             new SendActivity("nested begindialog {$zzz}"),
                             new SetProperty() { Property = "dialog.zzz", Value = "'newName2'" },
@@ -392,7 +394,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                     {
                                         new OnBeginDialog()
                                         {
-                                            Actions = new List<IDialog>()
+                                            Actions = new List<Dialog>()
                                             {
                                                 new SendActivity("nested begindialog2 {$qqq}"),
                                                 new SetProperty() { Property = "dialog.qqq", Value = "'newName3'" },
@@ -409,7 +411,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 {
                     new OnBeginDialog()
                     {
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             new SetProperty() { Property = "dialog.name", Value = "'testDialog'" },
                             new SendActivity("{dialog.name}"),
@@ -422,7 +424,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 {
                                     new OnBeginDialog()
                                     {
-                                        Actions = new List<IDialog>()
+                                        Actions = new List<Dialog>()
                                         {
                                             new SendActivity("nested dialogCommand {$xxx}"),
                                             new SetProperty() { Property = "dialog.xxx", Value = "'newName'" },
@@ -471,7 +473,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                                         {
                                                             new OnBeginDialog()
                                                             {
-                                                                Actions = new List<IDialog>()
+                                                                Actions = new List<Dialog>()
                                                                 {
                                                                     new SetProperty() { Property = "$zzz", Value = "'zzz'" },
                                                                     new SetProperty() { Property = "$aaa", Value = "'d3'" },
@@ -490,7 +492,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                     {
                                         new OnBeginDialog()
                                         {
-                                            Actions = new List<IDialog>()
+                                            Actions = new List<Dialog>()
                                             {
                                                 new SetProperty() { Property = "$bbb", Value = "'bbb'" },
                                                 new SendActivity("{$aaa}"),
@@ -510,7 +512,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 {
                     new OnBeginDialog()
                     {
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             new SetProperty() { Property = "dialog.xyz", Value = "'xyz'" },
                             new SetProperty() { Property = "$aaa", Value = "'d1'" },
@@ -553,6 +555,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName), sendTrace)
                 .Use(new RegisterClassMiddleware<ResourceExplorer>(resourceExplorer))
+                .UseAdaptiveDialogs()
                 .UseLanguageGeneration(resourceExplorer)
                 .Use(new RegisterClassMiddleware<IStorage>(new MemoryStorage()))
                 .Use(new AutoSaveStateMiddleware(userState ?? new UserState(new MemoryStorage()), convoState ?? new ConversationState(new MemoryStorage())))

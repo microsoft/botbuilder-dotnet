@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// <typeparam name="T">The type of value the prompt returns.</typeparam>
     /// <remarks>When the prompt ends, it should return a <typeparamref name="T"/> object that
     /// represents the value that was prompted for.
-    /// Use <see cref="DialogSet.Add(IDialog)"/> or <see cref="ComponentDialog.AddDialog(IDialog)"/>
+    /// Use <see cref="DialogSet.Add(Dialog)"/> or <see cref="ComponentDialog.AddDialog(Dialog)"/>
     /// to add a prompt to a dialog set or component dialog, respectively.
     /// Use <see cref="DialogContext.PromptAsync(string, PromptOptions, CancellationToken)"/> or
     /// <see cref="DialogContext.BeginDialogAsync(string, object, CancellationToken)"/> to start the prompt.
@@ -215,7 +215,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             if (e.Name == DialogEvents.ActivityReceived && dc.Context.Activity.Type == ActivityTypes.Message)
             {
                 // Perform base recognition
-                var state = dc.DialogState;
+                var state = dc.ActiveDialog.State;
                 var recognized = await this.OnRecognizeAsync(dc.Context, (IDictionary<string, object>)state[PersistedState], (PromptOptions)state[PersistedOptions]).ConfigureAwait(false);
                 return recognized.Succeeded;
             }

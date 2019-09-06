@@ -146,7 +146,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="dialog">The dialog to add.</param>
         /// <returns>The updated <see cref="ComponentDialog"/>.</returns>
         /// <remarks>Adding a new dialog will inherit the <see cref="IBotTelemetryClient"/> of the ComponentDialog.</remarks>
-        public override Dialog AddDialog(IDialog dialog)
+        public override Dialog AddDialog(Dialog dialog)
         {
             base.AddDialog(dialog);
 
@@ -163,7 +163,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         /// <param name="dialogId">The ID of the dialog to find.</param>
         /// <returns>The dialog; or <c>null</c> if there is not a match for the ID.</returns>
-        public new IDialog FindDialog(string dialogId)
+        public new Dialog FindDialog(string dialogId)
         {
             return _dialogs.Find(dialogId);
         }

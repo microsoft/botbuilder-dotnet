@@ -1,4 +1,5 @@
-﻿using System;
+﻿#pragma warning disable SA1124 // Do not use regions
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
@@ -368,8 +369,19 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             #endregion
         };
 
-        public static object[] Test(string input) => new object[] { input };
+        /// <summary>
+        ///  Gets or sets the test context which provides
+        ///  information about and functionality for the current test run.
+        /// </summary>
+        /// <value>The TestContext.</value>
+        public TestContext TestContext
+        {
+            get { return testContextInstance; }
+            set { testContextInstance = value; }
+        }
 
+        public static object[] Test(string input) => new object[] { input };
+                
         [DataTestMethod]
         [DynamicData(nameof(SyntaxErrorExpressions))]
         [ExpectedException(typeof(SyntaxErrorException))]
@@ -472,17 +484,6 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             {
                 Assert.Fail("Test method did not throw expected exception");
             }
-        }
-
-        /// <summary>
-        ///  Gets or sets the test context which provides
-        ///  information about and functionality for the current test run.
-        /// </summary>
-        /// <value>The TestContext.</value>
-        public TestContext TestContext
-        {
-            get { return testContextInstance; }
-            set { testContextInstance = value; }
         }
     }
 }

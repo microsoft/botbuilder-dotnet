@@ -10,6 +10,7 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
 using Microsoft.Bot.Builder.Expressions.Parser;
+using Microsoft.Bot.Builder.LanguageGeneration;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -39,14 +40,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 {
                     new OnBeginDialog()
                     {
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             new SendActivity("I'm a joke bot. To get started say 'tell me a joke'")
                         },
                     },
                     new OnIntent(
                         "JokeIntent",
-                        actions: new List<IDialog>()
+                        actions: new List<Dialog>()
                         {
                             new SendActivity("Why did the chicken cross the road?"),
                             new EndTurn(),
@@ -83,8 +84,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     new OnIntent(
                         intent: "addColor",
                         entities: new List<string>() { "color" },
-                        actions: new List<IDialog>() { new SendActivity("You picked {@color}") }),
-                    new OnUnknownIntent(actions: new List<IDialog>() { new SendActivity("pbtpbtpbt!") })
+                        actions: new List<Dialog>() { new SendActivity("You picked {@color}") }),
+                    new OnUnknownIntent(actions: new List<Dialog>() { new SendActivity("pbtpbtpbt!") })
                 }
             };
 
@@ -112,6 +113,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .UseStorage(storage)
                 .UseState(userState, convoState)
                 .Use(new RegisterClassMiddleware<ResourceExplorer>(explorer))
+                .UseAdaptiveDialogs()
                 .UseLanguageGeneration(explorer)
                 .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
 

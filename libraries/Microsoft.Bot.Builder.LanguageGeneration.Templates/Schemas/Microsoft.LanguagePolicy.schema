@@ -1,0 +1,13 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
+    "title": "Language Policy",
+    "description": "This represents a policy map for locales lookups to use for language",
+    "type": "object",
+    "additionalProperties": {
+        "type": "array",
+        "items": {
+            "type": "string",
+            "title": "language code like en-us"
+        }
+    }
+}
