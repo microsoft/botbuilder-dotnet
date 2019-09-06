@@ -763,7 +763,7 @@ namespace Microsoft.Bot.Builder.Expressions
                     }
                     if (!(value is int || value is string))
                     {
-                        throw new Exception($"{left.Children[1].ToString()} don't return a int or string");
+                        throw new Exception($"{left.Children[1].ToString()} dones't return a int or string");
                     }
 
                     path = (string)((Constant)left.Children[0].Children[0]).Value + $"[{value}]" + "." + path;
