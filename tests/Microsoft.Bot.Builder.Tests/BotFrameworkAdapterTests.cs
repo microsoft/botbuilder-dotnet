@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.using System.Security.Claims;
 
+using System;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Threading;
@@ -77,7 +78,7 @@ namespace Microsoft.Bot.Builder.Tests
             }
 
             await sut.CreateConversationAsync(activity.ChannelId, activity.ServiceUrl, credentials, parameters, UpdateParameters, reference, new CancellationToken());
-            Assert.AreEqual("theTenantId", newActivity.ChannelData.GetType().GetProperty("TenantId").GetValue(newActivity.ChannelData, null));
+            Assert.AreEqual("theTenantId", (newActivity.ChannelData as JToken)["tenant"]["id"]);
         }
 
         private static async Task<IActivity> ProcessActivity(string channelId, string channelDataTenantId, string conversationTenantId)
@@ -127,11 +128,16 @@ namespace Microsoft.Bot.Builder.Tests
 
             public async override Task CreateConversationAsync(string channelId, string serviceUrl, MicrosoftAppCredentials credentials, ConversationParameters conversationParameters, BotCallbackHandler callback, CancellationToken cancellationToken)
             {
-                var activity = conversationParameters.Activity;
-                activity.ChannelData = new
-                {
-                    conversationParameters.TenantId,
-                };
+                // Create a conversation update activity to represent the result.
+                var eventActivity = Activity.CreateEventActivity();
+                eventActivity.Name = "CreateConversation";
+                eventActivity.ChannelId = channelId;
+                eventActivity.ServiceUrl = serviceUrl;
+                eventActivity.Id = conversationParameters.Activity.Id ?? Guid.NewGuid().ToString("n");
+                eventActivity.Conversation = new ConversationAccount(id: Guid.NewGuid().ToString(), tenantId: conversationParameters.TenantId);
+                eventActivity.ChannelData = conversationParameters.ChannelData;
+                eventActivity.Recipient = conversationParameters.Bot;
+
                 await RunPipelineAsync(new TurnContext(this, conversationParameters.Activity), callback, cancellationToken).ConfigureAwait(false);
 
                 return;

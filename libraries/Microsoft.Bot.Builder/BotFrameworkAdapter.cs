@@ -784,7 +784,8 @@ namespace Microsoft.Bot.Builder
             eventActivity.ChannelId = channelId;
             eventActivity.ServiceUrl = serviceUrl;
             eventActivity.Id = result.ActivityId ?? Guid.NewGuid().ToString("n");
-            eventActivity.Conversation = new ConversationAccount(id: result.Id);
+            eventActivity.Conversation = new ConversationAccount(id: result.Id, tenantId: conversationParameters.TenantId);
+            eventActivity.ChannelData = conversationParameters.ChannelData;
             eventActivity.Recipient = conversationParameters.Bot;
 
             using (TurnContext context = new TurnContext(this, (Activity)eventActivity))
