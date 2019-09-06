@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 
-namespace Microsoft.Bot.Builder.Dialogs
+namespace Microsoft.Bot.Builder.LanguageGeneration
 {
     /// <summary>
     /// Language policy with fallback for each language as most specific to default en-us -> en -> default.

@@ -52,15 +52,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Schemas\Microsoft.IActivityTemplate.schema" />
-    <None Remove="Schemas\Microsoft.ILanguageGenerator.schema" />
-    <None Remove="Schemas\Microsoft.ITextTemplate.schema" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="Schemas\Microsoft.IActivityTemplate.schema" />
-    <Content Include="Schemas\Microsoft.ILanguageGenerator.schema" />
-    <Content Include="Schemas\Microsoft.ITextTemplate.schema" />
+    <Content Include="**/*.dialog" />
+    <Content Include="**/*.lg" />
+    <Content Include="**/*.lu" />
+    <Content Include="**/*.schema" />
   </ItemGroup>
 
   <ItemGroup>

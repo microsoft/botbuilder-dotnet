@@ -15,8 +15,6 @@ namespace Microsoft.Bot.Builder.Dialogs
 {
     public class DialogContext
     {
-        private List<string> activeTags = new List<string>();
-
         /// <summary>
         /// Initializes a new instance of the <see cref="DialogContext"/> class.
         /// </summary>
@@ -249,7 +247,6 @@ namespace Microsoft.Bot.Builder.Dialogs
             };
 
             Stack.Insert(0, instance);
-            activeTags = null;
 
             // take the bindings (dialog.xxx => dialog.yyy)
             foreach (var property in bindings)
@@ -365,7 +362,6 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             // End the active dialog
             await EndActiveDialogAsync(DialogReason.EndCalled, result).ConfigureAwait(false);
-            activeTags = null;
 
             // Resume parent dialog
             if (ActiveDialog != null)
@@ -403,8 +399,6 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 throw new ArgumentException($"{nameof(eventValue)} cannot be a cancellation token");
             }
-
-            activeTags = null;
 
             if (Stack.Any() || Parent != null)
             {

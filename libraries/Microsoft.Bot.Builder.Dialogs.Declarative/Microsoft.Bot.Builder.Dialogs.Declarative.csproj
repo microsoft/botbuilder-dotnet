@@ -52,6 +52,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Include="**/*.dialog" />
+    <Content Include="schemas/**/*.json" />
+    <Content Include="**/*.lg" />
+    <Content Include="**/*.lu" />
+    <Content Include="**/*.schema" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="Debugger\**" />
     <EmbeddedResource Remove="Debugger\**" />
     <None Remove="Debugger\**" />

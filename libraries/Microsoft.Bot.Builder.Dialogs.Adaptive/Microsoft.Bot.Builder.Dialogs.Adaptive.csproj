@@ -46,7 +46,7 @@
 
   <ItemGroup>
     <Content Include="**/*.dialog" />
-    <Content Include="**/*.json" />
+    <Content Include="Schemas/**/*.json" />
     <Content Include="**/*.lg" />
     <Content Include="**/*.lu" />
     <Content Include="**/*.schema" />
