@@ -10,7 +10,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
     public class TypeRegistration
     {
         public TypeRegistration()
-        { }
+        {
+        }
 
         public TypeRegistration(string name, Type type)
         {
