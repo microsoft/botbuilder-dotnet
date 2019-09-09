@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.InteropServices.ComTypes;
 using System.Threading.Tasks;
 using System.Xml;
+using AdaptiveCards;
 using Microsoft.Bot.Builder.LanguageGeneration;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
@@ -382,8 +383,8 @@ namespace Microsoft.Bot.Builder.Dialogs
                     attachment = GetCardAtttachment(ReceiptCard.ContentType, lgJObj);
                     break;
 
-                case "AdaptiveCard":
-                    attachment = new Attachment("application/vnd.microsoft.card.adaptive", content: lgJObj);
+                case nameof(AdaptiveCard):
+                    attachment = new Attachment(AdaptiveCard.ContentType, content: lgJObj);
                     break;
 
                 default:
