@@ -21,11 +21,6 @@ namespace Microsoft.BotBuilder.Adapters.Slack
 {
     public class SlackAdapter : BotAdapter, IBotFrameworkHttpAdapter
     {
-        /// <summary>
-        /// Name used by Botkit plugin loader.
-        /// </summary>
-        public const string NAME = "Slack Adapter";
-
         private readonly ISlackAdapterOptions options;
         private readonly SlackTaskClient slack;
         private readonly string slackOAuthURL = "https://slack.com/oauth/authorize?client_id=";
@@ -60,14 +55,6 @@ namespace Microsoft.BotBuilder.Adapters.Slack
             this.slack = new SlackTaskClient(this.options.BotToken);
             this.LoginWithSlack().Wait();
         }
-
-        /// <summary>
-        /// Gets a customized BotWorker.
-        /// </summary>
-        /// <value>
-        /// A customized BotWorker object that exposes additional utility methods.
-        /// </value>
-        public SlackBotWorker BotkitWorker { get; private set; }
 
         /// <summary>
         /// Get a Slack API client with the correct credentials based on the team identified in the incoming activity.
@@ -519,8 +506,6 @@ namespace Microsoft.BotBuilder.Adapters.Slack
 
                             // add the team id to the conversation record
                             activity.Conversation.Properties["team"] = (activity.ChannelData as dynamic).team;
-
-                            (activity.ChannelData as dynamic).BotkitEventType = "slash_command";
 
                             // create a conversation reference
                             using (TurnContext context = new TurnContext(this, activity))
