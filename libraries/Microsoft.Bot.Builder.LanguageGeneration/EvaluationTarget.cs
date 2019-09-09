@@ -22,15 +22,5 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public string TemplateName { get; set; }
 
         public object Scope { get; set; }
-
-        /// <summary>
-        /// Gets expression that evaluated by current template target.
-        /// </summary>
-        /// <value>
-        /// Expression that evaluated by current template target.
-        /// </value>
-        public Dictionary<string, (object, string)> ExpressionHistory { get; } = new Dictionary<string, (object, string)>();
-
-        public void AddExpression(string expression, (object, string) result) => ExpressionHistory[expression] = result;
     }
 }

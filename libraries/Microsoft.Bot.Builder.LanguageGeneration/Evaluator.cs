@@ -361,18 +361,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         private (object value, string error) EvalByExpressionEngine(string exp, object scope)
         {
-            var currentExpressionHistory = CurrentTarget().ExpressionHistory;
-            if (currentExpressionHistory.ContainsKey(exp))
-            {
-                return currentExpressionHistory[exp];
-            }
-            else
-            {
-                var parse = this.ExpressionEngine.Parse(exp);
-                var result = parse.TryEvaluate(scope);
-                CurrentTarget().AddExpression(exp, result);
-                return result;
-            }
+            var parse = this.ExpressionEngine.Parse(exp);
+            return parse.TryEvaluate(scope);
         }
 
         // Genearte a new lookup function based on one lookup function
