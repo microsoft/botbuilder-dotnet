@@ -11,6 +11,8 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive.Events;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
+using Microsoft.Bot.Builder.LanguageGeneration;
+using Microsoft.Bot.Builder.LanguageGeneration.Templates;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -119,7 +121,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             adaptiveDialog.AddEvent(
                 new OnUnknownIntent(
-                    new List<IDialog>()
+                    new List<Dialog>()
                     {
                         new TextInput()
                         {
@@ -132,7 +134,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             return adaptiveDialog;
         }
 
-        private TestFlow CreateFlow(IDialog adaptiveDialog, IStorage storage, string conversationId)
+        private TestFlow CreateFlow(Dialog adaptiveDialog, IStorage storage, string conversationId)
         {
             TypeFactory.Configuration = new ConfigurationBuilder().Build();
 
@@ -145,6 +147,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 .UseStorage(storage)
                 .UseState(userState, convoState)
                 .Use(new RegisterClassMiddleware<ResourceExplorer>(explorer))
+                .UseAdaptiveDialogs()
                 .UseLanguageGeneration(explorer)
                 .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
 

@@ -17,6 +17,7 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
+using Microsoft.Bot.Builder.LanguageGeneration;
 using Microsoft.Bot.Configuration;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
@@ -1328,6 +1329,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 .UseStorage(storage)
                 .UseState(userState, conversationState)
                 .UseResourceExplorer(resourceExplorer)
+                .UseAdaptiveDialogs()
                 .UseLanguageGeneration(resourceExplorer)
                 .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
 
@@ -1367,14 +1369,14 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 {
                     new OnIntent(intent: "CowboyIntent")
                     {
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             new SendActivity("Yippee ki-yay!")
                         }
                     },
                     new OnUnknownIntent()
                     {
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             new QnAMakerDialog(qnamaker: qna)
                             {
@@ -1383,7 +1385,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                             new IfCondition()
                             {
                                     Condition = "turn.LastResult == false",
-                                    Actions = new List<IDialog>()
+                                    Actions = new List<Dialog>()
                                     {
                                         new SendActivity("I didn't understand that.")
                                     }
@@ -1399,7 +1401,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 {
                     new OnBeginDialog()
                     {
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             new BeginDialog(outerDialog.Id)
                         }
@@ -1407,7 +1409,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                     new Dialogs.Adaptive.Events.OnDialogEvent()
                     {
                         Events = new List<string>() { "UnhandledUnknownIntent" },
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             new EditArray(),
                             new SendActivity("magenta")

@@ -14,6 +14,8 @@ using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
 using Microsoft.Bot.Builder.Expressions;
 using Microsoft.Bot.Builder.Expressions.Parser;
 using Microsoft.Bot.Builder.LanguageGeneration;
+using Microsoft.Bot.Builder.LanguageGeneration.Generators;
+using Microsoft.Bot.Builder.LanguageGeneration.Templates;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -33,7 +35,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var ruleDialog = new AdaptiveDialog("planningTest");
 
             ruleDialog.AddEvent(new OnUnknownIntent(
-                    new List<IDialog>()
+                    new List<Dialog>()
                     {
                         new SendActivity("Hello Planning!")
                     }));
@@ -49,7 +51,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             var ruleDialog = new AdaptiveDialog("planningTest");
 
-            ruleDialog.AddEvent(new OnUnknownIntent(new List<IDialog>()
+            ruleDialog.AddEvent(new OnUnknownIntent(new List<Dialog>()
                     {
                         new SendActivity("Hello Planning!"),
                         new SendActivity("Howdy awain")
@@ -69,7 +71,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             ruleDialog.AddEvent(
                 new OnUnknownIntent(
-                    new List<IDialog>()
+                    new List<Dialog>()
                     {
                         new TextInput()
                         {
@@ -93,7 +95,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var dialog = new AdaptiveDialog("planningTest");
             dialog.Events.Add(new OnBeginDialog()
             {
-                Actions = new List<IDialog>()
+                Actions = new List<Dialog>()
                 {
                     // Add item
                     new TextInput()
@@ -181,12 +183,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var ruleDialog = new AdaptiveDialog("planningTest");
 
             ruleDialog.AddEvent(new OnUnknownIntent(
-                    new List<IDialog>()
+                    new List<Dialog>()
                     {
                         new IfCondition()
                         {
                             Condition = "user.name == null",
-                            Actions = new List<IDialog>()
+                            Actions = new List<Dialog>()
                             {
                                 new TextInput()
                                 {
@@ -215,12 +217,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 {
                     new OnBeginDialog()
                     {
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             new IfCondition()
                             {
                                 Condition = "user.name == null",
-                                Actions = new List<IDialog>()
+                                Actions = new List<Dialog>()
                                 {
                                     new TextInput()
                                     {
@@ -254,12 +256,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 {
                     new OnUnknownIntent()
                     {
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             new IfCondition()
                             {
                                 Condition = "user.name == null",
-                                Actions = new List<IDialog>()
+                                Actions = new List<Dialog>()
                                 {
                                     new TextInput()
                                     {
@@ -272,7 +274,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             {
                                 // Check comparison with string literal
                                 Condition = "user.name == 'Carlos'",
-                                Actions = new List<IDialog>()
+                                Actions = new List<Dialog>()
                                 {
                                     new SendActivity("Hello carlin")
                                 }
@@ -302,7 +304,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 {
                     new OnBeginDialog()
                     {
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             new NumberInput()
                             {
@@ -341,7 +343,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 {
                     new OnBeginDialog()
                     {
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             new NumberInput()
                             {
@@ -382,19 +384,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     Intents = new List<IntentPattern>()
                     {
                         new IntentPattern("JokeIntent", "joke"),
-                        new IntentPattern( "HelloIntent", "hi|hello"),
+                        new IntentPattern("HelloIntent", "hi|hello"),
                     }
                 },
                 Events = new List<IOnEvent>()
                 {
                     new OnBeginDialog()
                     {
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             new IfCondition()
                             {
                                 Condition = "user.name == null",
-                                Actions = new List<IDialog>()
+                                Actions = new List<Dialog>()
                                 {
                                     new TextInput()
                                     {
@@ -409,7 +411,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     new OnIntent()
                     {
                         Intent = "JokeIntent",
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             new SendActivity("Why did the chicken cross the road?"),
                             new EndTurn(),
@@ -419,7 +421,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     new OnIntent()
                     {
                         Intent = "HelloIntent",
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             new SendActivity("Hello {user.name}, nice to meet you!")
                         }
@@ -459,12 +461,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             {
                 new OnBeginDialog()
                 {
-                    Actions = new List<IDialog>()
+                    Actions = new List<Dialog>()
                     {
                         new IfCondition()
                         {
                             Condition = "user.name == null",
-                            Actions = new List<IDialog>()
+                            Actions = new List<Dialog>()
                             {
                                 new TextInput()
                                 {
@@ -479,21 +481,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 new OnIntent()
                 {
                     Intent = "GreetingIntent",
-                    Actions = new List<IDialog>()
+                    Actions = new List<Dialog>()
                     {
                         new SendActivity("Hello {user.name}, nice to meet you!")
                     }
                 },
                 new OnIntent(
                     "JokeIntent",
-                    actions: new List<IDialog>()
+                    actions: new List<Dialog>()
                     {
                         new SendActivity("Why did the chicken cross the road?"),
                         new EndTurn(),
                         new SendActivity("To get to the other side")
                     }),
                 new OnUnknownIntent(
-                    actions: new List<IDialog>()
+                    actions: new List<Dialog>()
                     {
                         new SendActivity("I'm a joke bot. To get started say 'tell me a joke'")
                     })
@@ -532,12 +534,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 {
                     new OnBeginDialog()
                     {
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             new IfCondition()
                             {
                                 Condition = "user.name == null",
-                                Actions = new List<IDialog>()
+                                Actions = new List<Dialog>()
                                 {
                                     new TextInput()
                                     {
@@ -551,13 +553,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     },
                     new OnIntent(
                         "GreetingIntemt",
-                        actions: new List<IDialog>()
+                        actions: new List<Dialog>()
                         {
                             new SendActivity("Hello {user.name}, nice to meet you!"),
                         }),
                     new OnIntent(
                         "JokeIntent",
-                        actions: new List<IDialog>()
+                        actions: new List<Dialog>()
                         {
                             new SendActivity("Why did the chicken cross the road?"),
                             new EndTurn(),
@@ -565,13 +567,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         }),
                     new OnIntent(
                         "GoodbyeIntent",
-                        actions: new List<IDialog>()
+                        actions: new List<Dialog>()
                         {
                             new SendActivity("See you later aligator!"),
                             new EndDialog()
                         }),
                     new OnUnknownIntent(
-                        new List<IDialog>()
+                        new List<Dialog>()
                         {
                             new SendActivity("I'm a joke bot. To get started say 'tell me a joke'")
                         })
@@ -615,7 +617,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 {
                     new OnBeginDialog()
                     {
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             new BeginDialog("Greeting"),
                             new SendActivity("I'm a joke bot. To get started say 'tell me a joke'"),
@@ -624,27 +626,27 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
                     new OnIntent(
                         "JokeIntent",
-                        actions: new List<IDialog>()
+                        actions: new List<Dialog>()
                         {
                             new BeginDialog("TellJokeDialog"),
                         }),
 
                     new OnIntent(
                         "GreetingIntent",
-                        actions: new List<IDialog>()
+                        actions: new List<Dialog>()
                         {
                             new BeginDialog("Greeting"),
                         }),
 
                     new OnIntent(
                         "GoodbyeIntent",
-                        actions: new List<IDialog>()
+                        actions: new List<Dialog>()
                         {
                             new SendActivity("See you later aligator!"),
                             new EndDialog()
                         }),
 
-                    new OnUnknownIntent(actions: new List<IDialog>()
+                    new OnUnknownIntent(actions: new List<Dialog>()
                         {
                             new SendActivity("Like I said, I'm a joke bot. To get started say 'tell me a joke'"),
                         }),
@@ -659,12 +661,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     {
                         new OnBeginDialog()
                         {
-                            Actions = new List<IDialog>()
+                            Actions = new List<Dialog>()
                             {
                                 new IfCondition()
                                 {
                                     Condition = "user.name == null",
-                                    Actions = new List<IDialog>()
+                                    Actions = new List<Dialog>()
                                     {
                                         new TextInput()
                                         {
@@ -673,7 +675,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                         },
                                         new SendActivity("Hello {user.name}, nice to meet you!")
                                     },
-                                    ElseActions = new List<IDialog>()
+                                    ElseActions = new List<Dialog>()
                                     {
                                         new SendActivity("Hello {user.name}, nice to see you again!")
                                     }
@@ -688,7 +690,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     {
                         new OnBeginDialog()
                         {
-                            Actions = new List<IDialog>()
+                            Actions = new List<Dialog>()
                             {
                                 new SendActivity("Why did the chicken cross the road?"),
                                 new EndTurn(),
@@ -714,35 +716,35 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 {
                     new OnBeginDialog()
                     {
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             new SendActivity("Hi, type 'begin' to start a dialog, type 'help' to get help.")
                         },
                     },
                     new OnIntent("BeginIntent")
                     {
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             new BeginDialog("innerDialog")
                         }
                     },
                     new OnIntent("HelpIntent")
                     {
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             new SendActivity("help is coming")
                         }
                     },
                     new OnUnknownIntent()
                     {
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             new SendActivity("Hi, type 'begin' to start a dialog, type 'help' to get help.")
                         }
                     },
                 }
             };
-            outerDialog.AddDialogs(new List<IDialog>() { innerDialog });
+            outerDialog.AddDialogs(new List<Dialog>() { innerDialog });
 
             await CreateFlow(outerDialog)
             .Send("hi")
@@ -789,7 +791,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 {
                     new OnBeginDialog()
                     {
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             new TextInput()
                             {
@@ -813,9 +815,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             new SendActivity("{user.age}")
                         }
                     },
-                    new OnIntent("SideIntent") { Actions = new List<IDialog>() { new SendActivity("sideintent") } },
-                    new OnIntent("CancelIntent") { Actions = new List<IDialog>() { new EndDialog() } },
-                    new OnUnknownIntent() { Actions = new List<IDialog>() { new SendActivity("outerWhat") } }
+                    new OnIntent("SideIntent") { Actions = new List<Dialog>() { new SendActivity("sideintent") } },
+                    new OnIntent("CancelIntent") { Actions = new List<Dialog>() { new EndDialog() } },
+                    new OnUnknownIntent() { Actions = new List<Dialog>() { new SendActivity("outerWhat") } }
                 }
             };
 
@@ -832,9 +834,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 },
                 Events = new List<IOnEvent>()
                 {
-                    new OnIntent("StartOuterIntent", actions: new List<IDialog>() { outerDialog }),
-                    new OnIntent("RootIntent", actions: new List<IDialog>() { new SendActivity("rootintent") }),
-                    new OnUnknownIntent(new List<IDialog>() { new SendActivity("rootunknown") })
+                    new OnIntent("StartOuterIntent", actions: new List<Dialog>() { outerDialog }),
+                    new OnIntent("RootIntent", actions: new List<Dialog>() { new SendActivity("rootintent") }),
+                    new OnUnknownIntent(new List<Dialog>() { new SendActivity("rootunknown") })
                 }
             };
 
@@ -880,18 +882,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 },
                 Events = new List<IOnEvent>()
                 {
-                    new OnActivity("Custom", actions: new List<IDialog>() { new SendActivity("CustomActivityEvent") }),
-                    new OnMessageActivity(actions: new List<IDialog>() { new SendActivity("MessageActivityEvent") }),
-                    new OnMessageDeleteActivity(actions: new List<IDialog>() { new SendActivity("MessageDeleteActivityEvent") }),
-                    new OnMessageUpdateActivity(actions: new List<IDialog>() { new SendActivity("MessageUpdateActivityEvent") }),
-                    new OnMessageReactionActivity(actions: new List<IDialog>() { new SendActivity("MessageReactionActivityEvent") }),
-                    new OnConversationUpdateActivity(actions: new List<IDialog>() { new SendActivity("ConversationUpdateActivityEvent") }),
-                    new OnEndOfConversationActivity(actions: new List<IDialog>() { new SendActivity("EndOfConversationActivityEvent") }),
-                    new OnInvokeActivity(actions: new List<IDialog>() { new SendActivity("InvokeActivityEvent") }),
-                    new OnEventActivity(actions: new List<IDialog>() { new SendActivity("EventActivityEvent") }),
-                    new OnHandoffActivity(actions: new List<IDialog>() { new SendActivity("HandoffActivityEvent") }),
-                    new OnTypingActivity(actions: new List<IDialog>() { new SendActivity("TypingActivityEvent") }),
-                    new OnMessageActivity(constraint: "turn.activity.text == 'constraint'", actions: new List<IDialog>() { new SendActivity("constraint") }),
+                    new OnActivity("Custom", actions: new List<Dialog>() { new SendActivity("CustomActivityEvent") }),
+                    new OnMessageActivity(actions: new List<Dialog>() { new SendActivity("MessageActivityEvent") }),
+                    new OnMessageDeleteActivity(actions: new List<Dialog>() { new SendActivity("MessageDeleteActivityEvent") }),
+                    new OnMessageUpdateActivity(actions: new List<Dialog>() { new SendActivity("MessageUpdateActivityEvent") }),
+                    new OnMessageReactionActivity(actions: new List<Dialog>() { new SendActivity("MessageReactionActivityEvent") }),
+                    new OnConversationUpdateActivity(actions: new List<Dialog>() { new SendActivity("ConversationUpdateActivityEvent") }),
+                    new OnEndOfConversationActivity(actions: new List<Dialog>() { new SendActivity("EndOfConversationActivityEvent") }),
+                    new OnInvokeActivity(actions: new List<Dialog>() { new SendActivity("InvokeActivityEvent") }),
+                    new OnEventActivity(actions: new List<Dialog>() { new SendActivity("EventActivityEvent") }),
+                    new OnHandoffActivity(actions: new List<Dialog>() { new SendActivity("HandoffActivityEvent") }),
+                    new OnTypingActivity(actions: new List<Dialog>() { new SendActivity("TypingActivityEvent") }),
+                    new OnMessageActivity(constraint: "turn.activity.text == 'constraint'", actions: new List<Dialog>() { new SendActivity("constraint") }),
                 }
             };
 
@@ -938,8 +940,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 },
                 Events = new List<IOnEvent>()
                 {
-                    new OnIntent(intent: "JokeIntent", actions: new List<IDialog>() { new SendActivity("chicken joke") }),
-                    new OnMessageActivity(constraint: "turn.activity.text == 'magic'", actions: new List<IDialog>() { new SendActivity("abracadabra") }),
+                    new OnIntent(intent: "JokeIntent", actions: new List<Dialog>() { new SendActivity("chicken joke") }),
+                    new OnMessageActivity(constraint: "turn.activity.text == 'magic'", actions: new List<Dialog>() { new SendActivity("abracadabra") }),
                 }
             };
 
@@ -961,7 +963,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 {
                     new OnUnknownIntent()
                     {
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             new NumberInput()
                             {
@@ -995,7 +997,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 {
                     new OnUnknownIntent()
                     {
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             new NumberInput()
                             {
@@ -1005,11 +1007,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             new IfCondition()
                             {
                                 Condition = "$age > 80",
-                                Actions = new List<IDialog>()
+                                Actions = new List<Dialog>()
                                 {
                                     new SendActivity("Thanks, you are quite young!")
                                 },
-                                ElseActions = new List<IDialog>()
+                                ElseActions = new List<Dialog>()
                                 {
                                     new SendActivity("Thanks, you are awesome!")
                                 }
@@ -1036,7 +1038,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 {
                     new OnUnknownIntent()
                     {
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             new NumberInput()
                             {
@@ -1061,7 +1063,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 {
                     new OnUnknownIntent()
                     {
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             new SendActivity("Hello, you are {dialog.options.userAge} years old!"),
                             new SendActivity("And your actual age is {$options.userAge}")
@@ -1091,7 +1093,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 {
                     new OnUnknownIntent()
                     {
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             new TextInput()
                             {
@@ -1168,7 +1170,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 {
                     new OnUnknownIntent()
                     {
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             new SendActivity("Hello, I'm the demo bot.")
                         }
@@ -1176,7 +1178,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     new OnIntent()
                     {
                         Intent = "reset",
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             new DeleteProperty()
                             {
@@ -1188,7 +1190,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     new OnIntent()
                     {
                         Intent = "Start",
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             new TextInput()
                             {
@@ -1202,7 +1204,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     new OnIntent()
                     {
                         Intent = "Interruption",
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             // short circuiting Interruption so consultation is terminated. 
                             new SendActivity("In Interruption..."),
@@ -1218,7 +1220,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     new OnIntent()
                     {
                         Intent = "Greeting",
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             new SendActivity("Hi, I'm the test bot!")
                         }
@@ -1226,7 +1228,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     new OnIntent()
                     {
                         Intent = "noage",
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             new SendActivity("Sure, no problem. I'll set your name to 'Human'. you can say reset to start over"),
                             new SetProperty()
@@ -1239,7 +1241,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     new OnIntent()
                     {
                         Intent = "why",
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             new SendActivity("I need your name to be able to address you correctly")
                         }
@@ -1284,7 +1286,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     new OnIntent()
                     {
                         Intent = "Start",
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             new TextInput()
                             {
@@ -1298,7 +1300,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     new OnIntent()
                     {
                         Intent = "Interruption",
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             // short circuiting Interruption so consultation is terminated. 
                             new SendActivity("In Interruption..."),
@@ -1333,7 +1335,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 {
                     Intents = new List<IntentPattern>()
                     {
-                        new IntentPattern("Interruption", "(?i)interrupt" ),
+                        new IntentPattern("Interruption", "(?i)interrupt"),
                         new IntentPattern("Start", "(?i)start"),
                     }
                 },
@@ -1342,7 +1344,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     new OnIntent()
                     {
                         Intent = "Start",
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             new TextInput()
                             {
@@ -1363,7 +1365,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     new OnIntent()
                     {
                         Intent = "Interruption",
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             // short circuiting Interruption so consultation is terminated. 
                             new SendActivity("In Interruption..."),
@@ -1379,7 +1381,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     new OnIntent()
                     {
                         Intent = "None",
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             new SendActivity("You said {turn.activity.text}"),
                             new SetProperty()
@@ -1415,7 +1417,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 {
                     Intents = new List<IntentPattern>()
                     {
-                        new IntentPattern("Start", "(?i)start" ),
+                        new IntentPattern("Start", "(?i)start"),
                         new IntentPattern("None", "200"),
                     }
                 },
@@ -1424,7 +1426,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     new OnIntent()
                     {
                         Intent = "Start",
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             new NumberInput()
                             {
@@ -1444,7 +1446,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     new OnIntent()
                     {
                         Intent = "None",
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             // short circuiting Interruption so consultation is terminated. 
                             new SendActivity("In None..."),
@@ -1493,7 +1495,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     new OnIntent()
                     {
                         Intent = "Start",
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             new NumberInput()
                             {
@@ -1513,7 +1515,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     new OnIntent()
                     {
                         Intent = "None",
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             // short circuiting Interruption so consultation is terminated. 
                             new SendActivity("In None..."),
@@ -1559,7 +1561,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     new OnIntent()
                     {
                         Intent = "Start",
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             new NumberInput()
                             {
@@ -1574,7 +1576,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     new OnIntent()
                     {
                         Intent = "None",
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             // short circuiting Interruption so consultation is terminated. 
                             new SendActivity("In None..."),
@@ -1623,7 +1625,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     new OnIntent()
                     {
                         Intent = "Start",
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             new NumberInput()
                             {
@@ -1638,7 +1640,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     new OnIntent()
                     {
                         Intent = "None",
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             // short circuiting Interruption so consultation is terminated. 
                             new SendActivity("In None..."),
@@ -1686,7 +1688,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     new OnIntent()
                     {
                         Intent = "Start",
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             new NumberInput()
                             {
@@ -1700,7 +1702,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     new OnIntent()
                     {
                         Intent = "None",
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             // short circuiting Interruption so consultation is terminated. 
                             new SendActivity("In None..."),
@@ -1746,7 +1748,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     new OnIntent()
                     {
                         Intent = "Start",
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             new NumberInput()
                             {
@@ -1761,7 +1763,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     new OnIntent()
                     {
                         Intent = "None",
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             // short circuiting Interruption so consultation is terminated. 
                             new SendActivity("In None..."),
@@ -1807,7 +1809,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     new OnIntent()
                     {
                         Intent = "Start",
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             new NumberInput()
                             {
@@ -1827,7 +1829,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     new OnIntent()
                     {
                         Intent = "None",
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             // short circuiting Interruption so consultation is terminated. 
                             new SendActivity("In None..."),
@@ -1874,7 +1876,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     new OnIntent()
                     {
                         Intent = "Start",
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             new NumberInput()
                             {
@@ -1890,7 +1892,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     new OnIntent()
                     {
                         Intent = "None",
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             // short circuiting Interruption so consultation is terminated. 
                             new SendActivity("In None..."),
@@ -1924,7 +1926,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 {
                     new OnUnknownIntent()
                     {
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             new TextInput()
                             {
@@ -1948,7 +1950,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 {
                     new OnUnknownIntent()
                     {
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             new NumberInput()
                             {
@@ -1993,7 +1995,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 {
                     new OnIntent(intent: "SubmitIntent")
                     {
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             new SendActivity("The city is {@city}!")
                         }
@@ -2028,6 +2030,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .UseStorage(storage)
                 .UseState(userState, convoState)
                 .Use(new RegisterClassMiddleware<ResourceExplorer>(explorer))
+                .UseAdaptiveDialogs()
                 .UseLanguageGeneration(explorer)
                 .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
 

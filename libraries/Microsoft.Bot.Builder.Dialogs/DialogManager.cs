@@ -26,7 +26,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         private DialogSet dialogSet;
         private string rootDialogId;
 
-        public DialogManager(IDialog rootDialog = null)
+        public DialogManager(Dialog rootDialog = null)
         {
             this.dialogSet = new DialogSet();
 
@@ -35,6 +35,48 @@ namespace Microsoft.Bot.Builder.Dialogs
                 this.RootDialog = rootDialog;
             }
         }
+
+        /// <summary>
+        /// Gets or sets root dialog to use to start conversation.
+        /// </summary>
+        /// <value>
+        /// Root dialog to use to start conversation.
+        /// </value>
+        public Dialog RootDialog
+        {
+            get
+            {
+                if (this.rootDialogId != null)
+                {
+                    return this.dialogSet.Find(this.rootDialogId);
+                }
+
+                return null;
+            }
+
+            set
+            {
+                this.rootDialogId = value.Id;
+                this.dialogSet = new DialogSet();
+                this.dialogSet.Add(value);
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets (optional) number of milliseconds to expire the bot's state after.
+        /// </summary>
+        /// <value>
+        /// Number of milliseconds.
+        /// </value>
+        public int? ExpireAfter { get; set; }
+
+        /// <summary>
+        /// Gets or sets (optional) storage provider that will be used to read and write the bot's state.
+        /// </summary>
+        /// <value>
+        /// Storage provider.
+        /// </value>
+        public IStorage Storage { get; set; }
 
         public static async Task<PersistedState> LoadState(IStorage storage, PersistedStateKeys keys)
         {
@@ -142,47 +184,6 @@ namespace Microsoft.Bot.Builder.Dialogs
                 ConversationState = $"{channelId}/conversations/{conversationId}/{@namespace}"
             };
         }
-        /// <summary>
-        /// Gets or sets root dialog to use to start conversation.
-        /// </summary>
-        /// <value>
-        /// Root dialog to use to start conversation.
-        /// </value>
-        public IDialog RootDialog
-        {
-            get
-            {
-                if (this.rootDialogId != null)
-                {
-                    return this.dialogSet.Find(this.rootDialogId);
-                }
-
-                return null;
-            }
-
-            set
-            {
-                this.rootDialogId = value.Id;
-                this.dialogSet = new DialogSet();
-                this.dialogSet.Add(value);
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets (optional) number of milliseconds to expire the bot's state after.
-        /// </summary>
-        /// <value>
-        /// Number of milliseconds.
-        /// </value>
-        public int? ExpireAfter { get; set; }
-
-        /// <summary>
-        /// Gets or sets (optional) storage provider that will be used to read and write the bot's state.
-        /// </summary>
-        /// <value>
-        /// Storage provider.
-        /// </value>
-        public IStorage Storage { get; set; }
 
         /// <summary>
         /// Run a dialog purely by processing an activity and getting the result. 
@@ -192,13 +193,14 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </remarks>
         /// <param name="activity">activity to process.</param>
         /// <param name="state">state to use.</param>
+        /// <param name="cancellationToken">cancelation token.</param>
         /// <returns>result of the running the logic against the activity.</returns>
-        public async Task<DialogManagerResult> RunAsync(Activity activity, PersistedState state = null)
+        public async Task<DialogManagerResult> RunAsync(Activity activity, PersistedState state = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Initialize context object
             var adapter = new DialogManagerAdapter();
             var context = new TurnContext(adapter, activity);
-            var result = await this.OnTurnAsync(context, state).ConfigureAwait(false);
+            var result = await this.OnTurnAsync(context, state, cancellationToken).ConfigureAwait(false);
             result.Activities = adapter.Activities.ToArray();
             return result;
         }

@@ -49,9 +49,5 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         /// <value>Additional options for use with a prompt validator.</value>
         public object Validations { get; set; }
-
-        public ITemplate<Activity> PromptTemplate { get; set; }
-
-        public ITemplate<Activity> RetryPromptTemplate { get; set; }
     }
 }

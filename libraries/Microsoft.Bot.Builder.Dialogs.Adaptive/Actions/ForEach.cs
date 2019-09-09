@@ -2,6 +2,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -16,7 +17,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// <summary>
     /// Executes a set of actions once for each item in an in-memory list or collection.
     /// </summary>
-    public class Foreach : DialogAction, IDialogDependencies
+    public class Foreach : DialogAction
     {
         private Expression listProperty;
 
@@ -45,9 +46,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
         // Actions to be run for each of items.
         [JsonProperty("actions")]
-        public List<IDialog> Actions { get; set; } = new List<IDialog>();
+        public List<Dialog> Actions { get; set; } = new List<Dialog>();
 
-        public override List<IDialog> ListDependencies()
+        public override IEnumerable<Dialog> GetDependencies()
         {
             return this.Actions;
         }

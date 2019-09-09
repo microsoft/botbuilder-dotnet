@@ -1,4 +1,5 @@
-﻿using System;
+﻿#pragma warning disable SA1401 // Fields should be private
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +7,7 @@ using Microsoft.Bot.Builder.Expressions;
 
 namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
 {
-    public class Generator
+    public partial class Generator
     {
         public Random Rand;
 
@@ -541,102 +542,5 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
 
             return result;
         }
-
-        public class WeightedChoice<T>
-        {
-            public double Weight = 0.0;
-            public T Choice = default(T);
-        }
-
-        public class SimpleValues
-        {
-            public int Int = 1;
-            public double Double = 2.0;
-            public string String = "3";
-            public object Object = null;
-
-            public SimpleValues()
-            {
-            }
-
-            public SimpleValues(int integer)
-            {
-                Int = integer;
-            }
-
-            public SimpleValues(double number)
-            {
-                Double = number;
-            }
-
-            public SimpleValues(object obj)
-            {
-                Object = obj;
-            }
-            
-            public static bool Test(SimpleValues obj, int? value) => value.HasValue && obj.Int == value;
-
-            public static bool Test(SimpleValues obj, double? value) => value.HasValue && obj.Double == value;
-
-            public static bool Test(SimpleValues obj, string value) => value != null && obj.String == value;
-
-            public static bool Test(SimpleValues obj, object other) => other != null && obj.Object.Equals(other);
-
-            public bool Test(int? value) => value.HasValue && Int == value;
-
-            public bool Test(double? value) => value.HasValue && Double == value;
-
-            public bool Test(string value) => value != null && String == value;
-
-            public bool Test(SimpleValues value) => Int == value.Int && Double == value.Double && String == value.String && Object.Equals(value.Object);
-        }
-    }
-
-    public class Comparison
-    {
-        public string Type;
-        public object Value;
-
-        public Comparison(string type, object value)
-        {
-            Type = type;
-            Value = value;
-        }
-    }
-
-    public class ExpressionInfo
-    {
-        public Expression Expression;
-        public Dictionary<string, Comparison> Bindings = new Dictionary<string, Comparison>();
-        public List<Quantifier> Quantifiers = new List<Quantifier>();
-
-        public ExpressionInfo(Expression expression)
-        {
-            Expression = expression;
-        }
-
-        public ExpressionInfo(Expression expression, string name, object value, string type)
-        {
-            Expression = expression;
-            Bindings.Add(name, new Comparison(type, value));
-        }
-
-        public ExpressionInfo(Expression expression, Dictionary<string, Comparison> bindings, List<Quantifier> quantifiers = null)
-        {
-            Expression = expression;
-            Bindings = bindings;
-            if (quantifiers != null)
-            {
-                Quantifiers = quantifiers;
-            }
-        }
-
-        public override string ToString() => Expression.ToString();
-    }
-
-    public class TriggerInfo
-    {
-        public Expression Trigger;
-        public Dictionary<string, object> Bindings = new Dictionary<string, object>();
     }
 }

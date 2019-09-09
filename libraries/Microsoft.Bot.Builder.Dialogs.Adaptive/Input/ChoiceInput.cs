@@ -233,9 +233,4 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             return choices;
         }
     }
-
-    public class ChoiceInputOptions : InputDialogOptions
-    {
-        public List<Choice> Choices { get; set; }
-    }
 }

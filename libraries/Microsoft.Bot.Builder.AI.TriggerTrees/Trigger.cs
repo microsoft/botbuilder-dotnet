@@ -10,10 +10,12 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
     /// </summary>
     public class Trigger
     {
+#pragma warning disable SA1401 // Fields should be private
         /// <summary>
         /// Original trigger expression.
         /// </summary>
         public Expression OriginalExpression;
+#pragma warning restore SA1401 // Fields should be private
 
         private readonly TriggerTree _tree;
         private readonly IEnumerable<Quantifier> _quantifiers;
