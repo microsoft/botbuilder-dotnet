@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
                 jsonObject = refResolver.ResolveAsync(jsonObject).GetAwaiter().GetResult();
             }
 
-            //jsonObject["id"] = jsonObject["id"] ?? jsonObject["$id"];
+            // jsonObject["id"] = jsonObject["id"] ?? jsonObject["$id"];
 
             var typeName = jsonObject["$type"]?.ToString();
             if (typeName == null)

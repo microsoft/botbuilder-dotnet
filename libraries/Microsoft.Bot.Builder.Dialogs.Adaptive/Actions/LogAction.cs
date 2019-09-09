@@ -4,6 +4,8 @@
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.LanguageGeneration;
+using Microsoft.Bot.Builder.LanguageGeneration.Templates;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
@@ -31,7 +33,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// LG expression to log.
         /// </value>
         [JsonProperty("text")]
-        public ITextTemplate Text { get; set; }
+        public ITemplate<string> Text { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether a TraceActivity will be sent in addition to console log.

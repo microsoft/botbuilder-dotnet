@@ -13,7 +13,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
     public class ImportResolver
     {
+#pragma warning disable SA1401 // Fields should be private
         public static ImportResolverDelegate FileResolver = (filePath, id) =>
+#pragma warning restore SA1401 // Fields should be private
         {
             // import paths are in resource files which can be executed on multiple OS environments
             // normalize to map / & \ in importPath -> OSPath

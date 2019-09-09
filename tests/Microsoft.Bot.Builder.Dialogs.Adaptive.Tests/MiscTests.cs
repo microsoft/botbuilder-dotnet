@@ -11,6 +11,8 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
+using Microsoft.Bot.Builder.LanguageGeneration;
+using Microsoft.Bot.Builder.LanguageGeneration.Templates;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -30,7 +32,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 {
                     new OnBeginDialog()
                     {
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             new TextInput()
                             {
@@ -42,7 +44,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     },
                     new OnIntent("CancelIntent")
                     {
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             new ConfirmInput()
                             {
@@ -53,11 +55,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             {
                                 Condition = "conversation.cancelConfirmation == true",
                                 Actions = new List<IDialog>()
+
                                 {
                                     new SendActivity("canceling"),
                                     new EndDialog()
                                 },
-                                ElseActions = new List<IDialog>()
+                                ElseActions = new List<Dialog>()
                                 {
                                     new SendActivity("notcanceling")
                                 }
@@ -72,7 +75,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 {
                     Intents = new List<IntentPattern>()
                     {
-                        new IntentPattern("HelpIntent", "(?i)help" ),
+                        new IntentPattern("HelpIntent", "(?i)help"),
                         new IntentPattern("CancelIntent", "(?i)cancel"),
                     }
                 }
@@ -105,7 +108,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 {
                     new OnBeginDialog()
                     {
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             new TextInput() { Prompt = new ActivityTemplate("Hello, what is your name?"), OutputBinding = "user.name", AllowInterruptions = AllowInterruptions.Always, Value = "user.name" },
                             new SendActivity("Hello {user.name}, nice to meet you!"),
@@ -116,7 +119,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     },
                     new OnIntent("SetName", new List<string>() { "name" })
                     {
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             new SetProperty()
                             {
@@ -155,6 +158,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .UseState(userState, convoState)
                 .UseResourceExplorer(resourceExplorer)
                 .UseLanguageGeneration(resourceExplorer)
+                .UseAdaptiveDialogs()
                 .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
 
             DialogManager dm = new DialogManager(dialog);

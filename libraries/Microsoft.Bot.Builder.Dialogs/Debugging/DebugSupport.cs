@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         public static IDebugger GetDebugger(this DialogContext context) =>
             context.Context.GetDebugger();
 
-        public static async Task DebuggerStepAsync(this DialogContext context, IDialog dialog, string more, CancellationToken cancellationToken)
+        public static async Task DebuggerStepAsync(this DialogContext context, Dialog dialog, string more, CancellationToken cancellationToken)
         {
             await context.GetDebugger().StepAsync(context, dialog, more, cancellationToken).ConfigureAwait(false);
         }

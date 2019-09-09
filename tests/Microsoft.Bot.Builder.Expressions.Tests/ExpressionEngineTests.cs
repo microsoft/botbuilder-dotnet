@@ -1,4 +1,6 @@
-﻿using System;
+﻿#pragma warning disable SA1401 // Fields should be private
+#pragma warning disable SA1124 // Do not use regions
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Microsoft.Bot.Builder.Expressions.Parser;
@@ -599,6 +601,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("lastIndexOf(newGuid(), '-')", 23),
             Test("lastIndexOf(hello, '-')", -1),
             Test("length(newGuid())", 36),
+
             #endregion
 
             #region  Object manipulation and construction functions

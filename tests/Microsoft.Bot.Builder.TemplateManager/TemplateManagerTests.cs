@@ -233,32 +233,5 @@ namespace Microsoft.Bot.Builder.TemplateManager.Tests
                 .Send("activityTemplate").AssertReply("(Activity)default: joe")
                 .StartTestAsync();
         }
-
-        [TestMethod]
-        public async Task TemplateManagerMiddleware_Declarative()
-        {
-            TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
-                                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()))
-                                .Use(new TemplateManagerMiddleware()
-                                {
-                                    Renderers =
-                                    {
-                                        new DictionaryRenderer(templates1),
-                                        new DictionaryRenderer(templates2)
-                                    }
-                                });
-
-            await new TestFlow(adapter, async (context, cancellationToken) =>
-            {
-                var templateId = context.Activity.AsMessageActivity().Text.Trim();
-                var templateActivity = TemplateManager.CreateTemplateActivity(templateId, new { name = "joe" });
-                await context.SendActivityAsync(templateActivity);
-            })
-                .Send("stringTemplate")
-                    .AssertReply("default: joe")
-                .Send("activityTemplate")
-                    .AssertReply("(Activity)default: joe")
-                .StartTestAsync();
-        }
     }
 }

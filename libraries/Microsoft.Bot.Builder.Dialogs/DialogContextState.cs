@@ -1,33 +1,15 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Expressions;
 using Microsoft.Bot.Builder.Expressions.Parser;
-using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
-    /// <summary>
-    /// Defines the shape of the state object returned by calling DialogContext.State.ToJson().
-    /// </summary>
-    public class DialogContextVisibleState
-    {
-        [JsonProperty(PropertyName = "user")]
-        public IDictionary<string, object> User { get; set; }
-
-        [JsonProperty(PropertyName = "conversation")]
-        public IDictionary<string, object> Conversation { get; set; }
-
-        [JsonProperty(PropertyName = "dialog")]
-        public IDictionary<string, object> Dialog { get; set; }
-    }
-
     public class DialogContextState : IDictionary<string, object>
     {
         /// <summary>

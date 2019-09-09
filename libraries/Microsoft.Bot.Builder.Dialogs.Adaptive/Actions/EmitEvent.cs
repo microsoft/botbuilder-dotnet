@@ -46,20 +46,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             }
         }
 
-        //public string ResultProperty
-        //{
-        //    get
-        //    {
-        //        return OutputBinding;
-        //    }
-
-        //    set
-        //    {
-        //        InputBindings[DialogContextState.DIALOG_VALUE] = value;
-        //        OutputBinding = value;
-        //    }
-        //}
-
         protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (options is CancellationToken)

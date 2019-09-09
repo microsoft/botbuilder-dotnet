@@ -20,6 +20,7 @@ using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Expressions.Parser;
+using Microsoft.Bot.Builder.LanguageGeneration.Templates;
 using Microsoft.Bot.Schema;
 using static Microsoft.Bot.Builder.Dialogs.Debugging.Source;
 
@@ -80,8 +81,8 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                 {
                     var name = Path.GetFileNameWithoutExtension(Path.GetFileNameWithoutExtension(resource.Id));
                     choiceInput.Choices.Add(new Choice(name));
-                    var dialog = DeclarativeTypeLoader.Load<IDialog>(resource, this.resourceExplorer, DebugSupport.SourceRegistry);
-                    handleChoice.Cases.Add(new Case($"{name}", new List<IDialog>() { dialog }));
+                    var dialog = DeclarativeTypeLoader.Load<Dialog>(resource, this.resourceExplorer, DebugSupport.SourceRegistry);
+                    handleChoice.Cases.Add(new Case($"{name}", new List<Dialog>() { dialog }));
                 }
                 catch (SyntaxErrorException err)
                 {
@@ -96,7 +97,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             choiceInput.Style = ListStyle.Auto;
             rootDialog.Events.Add(new OnBeginDialog()
             {
-                Actions = new List<IDialog>()
+                Actions = new List<Dialog>()
                 {
                     choiceInput,
                     new SendActivity("# Running {conversation.dialogChoice}.main.dialog"),
