@@ -141,38 +141,5 @@ namespace Microsoft.Bot.Builder.Tests
                 CancellationToken.None);
             return activity;
         }
-
-        private class MockAdapter : BotFrameworkAdapter
-        {
-            private const string BotIdentityKey = "BotIdentity";
-
-            public MockAdapter(
-                ICredentialProvider credentialProvider,
-                IChannelProvider channelProvider = null,
-                RetryPolicy connectorClientRetryPolicy = null,
-                HttpClient customHttpClient = null,
-                IMiddleware middleware = null,
-                ILogger logger = null)
-                : base(credentialProvider, channelProvider, connectorClientRetryPolicy, customHttpClient, middleware, logger)
-            {
-            }
-
-            public async override Task CreateConversationAsync(string channelId, string serviceUrl, MicrosoftAppCredentials credentials, ConversationParameters conversationParameters, BotCallbackHandler callback, CancellationToken cancellationToken)
-            {
-                // Create a conversation update activity to represent the result.
-                var eventActivity = Activity.CreateEventActivity();
-                eventActivity.Name = "CreateConversation";
-                eventActivity.ChannelId = channelId;
-                eventActivity.ServiceUrl = serviceUrl;
-                eventActivity.Id = conversationParameters.Activity.Id ?? Guid.NewGuid().ToString("n");
-                eventActivity.Conversation = new ConversationAccount(id: Guid.NewGuid().ToString(), tenantId: conversationParameters.TenantId);
-                eventActivity.ChannelData = conversationParameters.ChannelData;
-                eventActivity.Recipient = conversationParameters.Bot;
-
-                await RunPipelineAsync(new TurnContext(this, conversationParameters.Activity), callback, cancellationToken).ConfigureAwait(false);
-
-                return;
-            }
-        }
     }
 }
