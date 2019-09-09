@@ -13,6 +13,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Rest.TransientFaultHandling;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using Moq.Protected;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Tests
@@ -44,12 +45,44 @@ namespace Microsoft.Bot.Builder.Tests
         [TestMethod]
         public async Task CreateConversastionOverloadProperlySetsTenantId()
         {
-            var mockClaims = new Mock<ClaimsIdentity>();
+            // Arrange
+            const string ActivityIdName = "ActivityId";
+            const string ActivityIdValue = "SendActivityId";
+            const string ConversationIdName = "Id";
+            const string ConversationIdValue = "NewConversationId";
+            const string TenantIdValue = "theTenantId";
+            const string EventActivityName = "CreateConversation";
+
+            Func<Task<HttpResponseMessage>> createResponseMessage = async () =>
+            {
+                var response = new HttpResponseMessage(System.Net.HttpStatusCode.OK);
+                response.Content = new StringContent(new JObject { { ActivityIdName, ActivityIdValue }, { ConversationIdName, ConversationIdValue } }.ToString());
+                return response;
+            };
+
             var mockCredentialProvider = new Mock<ICredentialProvider>();
+            var mockHttpMessageHandler = new Mock<HttpMessageHandler>();
+            mockHttpMessageHandler.Protected()
+                .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
+                .Returns((HttpRequestMessage request, CancellationToken cancellationToken) => createResponseMessage());
 
-            var sut = new MockAdapter(mockCredentialProvider.Object);
+            var httpClient = new HttpClient(mockHttpMessageHandler.Object);
 
-            var activity = await ProcessActivity(Channels.Msteams, "theTenantId", null);
+            var adapter = new BotFrameworkAdapter(mockCredentialProvider.Object, customHttpClient: httpClient);
+
+            var activity = new Activity("test")
+            {
+                ChannelId = Channels.Msteams,
+                ServiceUrl = "https://fake.service.url",
+                ChannelData = new JObject
+                {
+                    ["tenant"] = new JObject
+                    { ["id"] = TenantIdValue },
+                },
+                Conversation = new ConversationAccount
+                { TenantId = TenantIdValue },
+            };
+
             var parameters = new ConversationParameters()
             {
                 Activity = new Activity()
@@ -57,17 +90,8 @@ namespace Microsoft.Bot.Builder.Tests
                     ChannelData = activity.ChannelData,
                 },
             };
-            var reference = new ConversationReference()
-            {
-                ActivityId = activity.Id,
-                Bot = activity.Recipient,
-                ChannelId = activity.ChannelId,
-                Conversation = activity.Conversation,
-                ServiceUrl = activity.ServiceUrl,
-                User = activity.From,
-            };
-
-            var credentials = new MicrosoftAppCredentials(string.Empty, string.Empty);
+            var reference = activity.GetConversationReference();
+            var credentials = new MicrosoftAppCredentials(string.Empty, string.Empty, httpClient);
 
             Activity newActivity = null;
 
@@ -77,8 +101,15 @@ namespace Microsoft.Bot.Builder.Tests
                 return Task.CompletedTask;
             }
 
-            await sut.CreateConversationAsync(activity.ChannelId, activity.ServiceUrl, credentials, parameters, UpdateParameters, reference, new CancellationToken());
-            Assert.AreEqual("theTenantId", (newActivity.ChannelData as JToken)["tenant"]["id"]);
+            // Act
+            await adapter.CreateConversationAsync(activity.ChannelId, activity.ServiceUrl, credentials, parameters, UpdateParameters, reference, new CancellationToken());
+
+            // Assert - all values set correctly
+            Assert.AreEqual(TenantIdValue, JObject.FromObject(newActivity.ChannelData)["tenant"]["tenantId"]);
+            Assert.AreEqual(ActivityIdValue, newActivity.Id);
+            Assert.AreEqual(ConversationIdValue, newActivity.Conversation.Id);
+            Assert.AreEqual(TenantIdValue, newActivity.Conversation.TenantId);
+            Assert.AreEqual(EventActivityName, newActivity.Name);
         }
 
         private static async Task<IActivity> ProcessActivity(string channelId, string channelDataTenantId, string conversationTenantId)
@@ -97,10 +128,10 @@ namespace Microsoft.Bot.Builder.Tests
                     ChannelData = new JObject
                     {
                         ["tenant"] = new JObject
-                            { ["id"] = channelDataTenantId },
+                        { ["id"] = channelDataTenantId },
                     },
                     Conversation = new ConversationAccount
-                        { TenantId = conversationTenantId },
+                    { TenantId = conversationTenantId },
                 },
                 (context, token) =>
                 {
