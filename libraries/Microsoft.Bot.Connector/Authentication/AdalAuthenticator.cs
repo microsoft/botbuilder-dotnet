@@ -149,15 +149,12 @@ namespace Microsoft.Bot.Connector.Authentication
             }
             catch (SemaphoreFullException)
             {
-                // We should not be hitting this, but if we do hit it everything will keep working.
+                // We should not be hitting this after switching to SemaphoreSlim, but if we do hit it everything will keep working.
                 // Logging to have clear knowledge of whether this is happening.
                 logger?.LogWarning("Attempted to release a full semaphore.");
             }
-            catch (Exception)
-            {
-                // Any exception other than SemaphoreFullException should be thrown right away
-                throw;
-            }
+
+            // Any exception other than SemaphoreFullException should be thrown right away
         }
 
         private RetryParams HandleAdalException(Exception ex, int currentRetryCount)
