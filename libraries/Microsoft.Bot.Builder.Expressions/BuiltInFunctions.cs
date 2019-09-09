@@ -684,14 +684,11 @@ namespace Microsoft.Bot.Builder.Expressions
             object result = null;
             string error = null;
 
-            try
+            (result, error) = state.GetValue("callstack");
+
+            if (error != null)
             {
-                result = state.GetValue("callstack");
-            }
-            catch (Exception e)
-            {
-                error = e.Message;
-                return (result, error);
+                return (null, error);
             }
 
             if (result != null)
@@ -741,7 +738,7 @@ namespace Microsoft.Bot.Builder.Expressions
 
         // Try to accumulate the path from an Accessor or Element
         // return the accumulated path and the expression left unable to accumulate
-        private static (string path, Expression left) TryAccumulatePath(Expression expression, IMemoryScope state)
+        private static (string path, Expression left, string error) TryAccumulatePath(Expression expression, IMemoryScope state)
         {
             string path = string.Empty;
             var left = expression;
@@ -759,11 +756,11 @@ namespace Microsoft.Bot.Builder.Expressions
                     var (value, error) = left.Children[1].TryEvaluate(state);
                     if (error != null)
                     {
-                        throw new Exception(error);
+                        return (null, null, error);
                     }
                     if (!(value is int || value is string))
                     {
-                        throw new Exception($"{left.Children[1].ToString()} dones't return a int or string");
+                        return (null, null, $"{left.Children[1].ToString()} dones't return a int or string");
                     }
 
                     path = (string)((Constant)left.Children[0].Children[0]).Value + $"[{value}]" + "." + path;
@@ -782,38 +779,34 @@ namespace Microsoft.Bot.Builder.Expressions
                 path = null;
             }
 
-            return (path, left);
+            return (path, left, null);
         }
 
         private static (object value, string error) Accessor(Expression expression, IMemoryScope state)
         {
-            object value = null;
-            try
-            {
-                var (path, left) = TryAccumulatePath(expression, state);
-                if (left == null)
-                {
-                    // fully converted to path
-                    value = state.GetValue(path);
-                }
-                else
-                {
-                    // stop at somewhere
-                    var (newScope, error) = left.TryEvaluate(state);
-                    if (error != null)
-                    {
-                        return (null, error);
-                    }
+            var (path, left, error) = TryAccumulatePath(expression, state);
 
-                    value = new SimpleObjectScope(newScope).GetValue(path);
-                }
-            }
-            catch (Exception e)
+            if (error != null)
             {
-                return (null, e.Message);
+                return (null, error);
             }
 
-            return (value, null);
+            if (left == null)
+            {
+                // fully converted to path, so we just delegate to memory scope
+                return state.GetValue(path);
+            }
+            else
+            {
+                // stop at somewhere, so we figure out what's left
+                var (newScope, err) = left.TryEvaluate(state);
+                if (err != null)
+                {
+                    return (null, err);
+                }
+
+                return new SimpleObjectScope(newScope).GetValue(path);
+            }
         }
 
         private static (object value, string error) GetProperty(Expression expression, IMemoryScope state)
@@ -974,35 +967,10 @@ namespace Microsoft.Bot.Builder.Expressions
         {
             object value = null;
 
-            // if children 0 is Accessor, we will try to accumalate path
+            // if children 0 is Accessor, we will try to evaluate like an accessor, which will accumlate path first
             if (expression.Children[0].Type == ExpressionType.Accessor)
             {
-                try
-                {
-                    var (path, left) = TryAccumulatePath(expression, state);
-                    if (left == null)
-                    {
-                        // fully converted to path
-                        value = state.GetValue(path);
-                    }
-                    else
-                    {
-                        // stop at somewhere
-                        var (newScope, error) = left.TryEvaluate(state);
-                        if (error != null)
-                        {
-                            return (null, error);
-                        }
-
-                        value = new SimpleObjectScope(newScope).GetValue(path);
-                    }
-                }
-                catch (Exception e)
-                {
-                    return (null, e.Message);
-                }
-
-                return (value, null);
+                return Accessor(expression, state);
             }
             else
             {
@@ -1039,22 +1007,27 @@ namespace Microsoft.Bot.Builder.Expressions
 
         private static (object value, string error) SetPathToValue(Expression expr, IMemoryScope state)
         {
-            try
-            {
-                var (path, left) = TryAccumulatePath(expr.Children[0], state);
-                if (left != null)
-                {
-                    // the expression can't be fully merged as a path
-                    return (null, $"{expr.Children[0].ToString()} is not a valid path to set value");
-                }
 
-                var (value, error) = expr.Children[1].TryEvaluate(state);
-                return (state.SetValue(path, value), null);
-            }
-            catch (Exception e)
+            var (path, left, error) = TryAccumulatePath(expr.Children[0], state);
+
+            if (error != null)
             {
-                return (null, e.Message);
+                return (null, error);
             }
+
+            if (left != null)
+            {
+                // the expression can't be fully merged as a path
+                return (null, $"{expr.Children[0].ToString()} is not a valid path to set value");
+            }
+
+            var (value, err) = expr.Children[1].TryEvaluate(state);
+            if (err != null)
+            {
+                return (null, err);
+            }
+
+            return state.SetValue(path, value);
         }
 
         private static object ResolveValue(object obj)

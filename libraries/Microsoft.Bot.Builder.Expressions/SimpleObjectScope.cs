@@ -17,16 +17,15 @@ namespace Microsoft.Bot.Builder.Expressions
             this.scope = scope;
         }
 
-        public object GetValue(string path)
+        public (object value, string error) GetValue(string path)
         {
             var parts = path.Split(".[]".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-
             object value = null;
-            string error = null;
-
             var curScope = scope;
+
             foreach (string part in parts)
             {
+                string error = null;
                 if (int.TryParse(part, out var idx))
                 {
                     (value, error) = AccessIndex(curScope, idx);
@@ -38,11 +37,11 @@ namespace Microsoft.Bot.Builder.Expressions
 
                 if (error != null)
                 {
-                    throw new Exception(error);
+                    return (null, error);
                 }
                 curScope = value;
             }
-            return value;
+            return (value, null);
         }
 
         // In this simple object scope, we don't allow you to set a path in which some parts in middle don't exist
@@ -50,14 +49,15 @@ namespace Microsoft.Bot.Builder.Expressions
         // if you set dialog.a.b = x, but dialog.a don't exist, this will result in an error
         // because we can't and shouldn't smart create structure in the middle
         // you can implement a customzied Scope that support such behavior
-        public object SetValue(string path, object value)
+        public (object value, string error) SetValue(string path, object value)
         {
             var parts = path.Split(".[]".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
 
             var curScope = scope;
             string error = null;
 
-            for (int i = 0; i < parts.Length - 1; i++)
+            // find the 2nd last value, ie, the container
+            for (var i = 0; i < parts.Length - 1; i++)
             {
                 if (int.TryParse(parts[i], out var index))
                 {
@@ -70,13 +70,13 @@ namespace Microsoft.Bot.Builder.Expressions
 
                 if (error != null)
                 {
-                    throw new Exception(error);
+                    return (null, error);
                 }
             }
 
             if (curScope == null)
             {
-                throw new Exception($"Some parts in the middle of path doesn't exist: {path}");
+                return (null, $"Some parts in the middle of path doesn't exist: {path}");
             }
 
             // set the last value
@@ -91,7 +91,7 @@ namespace Microsoft.Bot.Builder.Expressions
 
                     if (idx > li.Count)
                     {
-                        throw new Exception($"{idx} index out of range");
+                        error = $"{idx} index out of range";
                     }
                     else if (idx == li.Count)
                     {
@@ -105,7 +105,12 @@ namespace Microsoft.Bot.Builder.Expressions
                 }
                 else
                 {
-                    throw new Exception($"set value for an index to a non-list object");
+                    error = $"set value for an index to a non-list object";
+                }
+
+                if (error != null)
+                {
+                    return (null, error);
                 }
             }
             else
@@ -113,7 +118,7 @@ namespace Microsoft.Bot.Builder.Expressions
                 SetProperty(curScope, parts.Last(), value);
             }
 
-            return ResolveValue(value);
+            return (ResolveValue(value), null);
         }
 
         private (object value, string error) AccessProperty(object instance, string property)

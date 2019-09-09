@@ -15,17 +15,17 @@ namespace Microsoft.Bot.Builder.Expressions
             this.scopeMap = scopeMap;
         }
 
-        public object GetValue(string path)
+        public (object value, string error) GetValue(string path)
         {
             var prefix = path.Split('.')[0];
             if (scopeMap.TryGetValue(prefix, out var scope))
             {
                 return scope.GetValue(path.Substring(prefix.Length+1)); // +1 to swallow the "."
             }
-            return null;
+            return (null, $"path not exists at {path}");
         }
 
-        public object SetValue(string path, object value)
+        public (object value, string error) SetValue(string path, object value)
         {
             throw new NotImplementedException();
         }

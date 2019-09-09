@@ -2,12 +2,20 @@
 {
     public interface IMemoryScope
     {
-        // resolve a value for a given path, it can be a simple indenfiter like "a"
-        // or a combined path like "a.b", "a.b[2]", "a.b[2].c"
-        // what's inside [] is guranteed to be a int number or a string
-        object GetValue(string path);
+        /// <summary>
+        /// Resolve a value for a given path, it can be a simple indenfiter like "a",
+        /// a combined path like "a.b", "a.b[2]", "a.b[2].c", inside [] is guranteed to be a int number or a string.
+        /// </summary>
+        /// <param name="path">memory path.</param>
+        /// <returns> resovled value and error messsage if any. </returns>
+        (object value, string error) GetValue(string path);
 
-        // set a value to a given path
-        object SetValue(string path, object value);
+        /// <summary>
+        /// Set a value to a given path.
+        /// </summary>
+        /// <param name="path">memory path.</param>
+        /// <param name="value">value to set.</param>
+        /// <returns>value set and error message if any.</returns>
+        (object value, string error) SetValue(string path, object value);
     }
 }
