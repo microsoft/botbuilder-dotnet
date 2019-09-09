@@ -33,7 +33,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Loaders
 
                     foreach (var dialogJObj in dialogs)
                     {
-                        var innerDialog = dialogJObj.ToObject<IDialog>(serializer);
+                        var innerDialog = dialogJObj.ToObject<Dialog>(serializer);
                         dialog.AddDialog(innerDialog);
                     }
                 }

@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// <value>
         /// Actions to add to the plan when the rule is activated.
         /// </value>
-        List<IDialog> Actions { get; }
+        List<Dialog> Actions { get; }
 
         /// <summary>
         /// Get the expression for this rule.

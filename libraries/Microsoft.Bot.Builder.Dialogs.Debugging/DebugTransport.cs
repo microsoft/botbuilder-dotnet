@@ -14,7 +14,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 {
     public abstract class DebugTransport
     {
+#pragma warning disable SA1401 // Fields should be private
         protected readonly ILogger logger;
+#pragma warning restore SA1401 // Fields should be private
 
         private const string Prefix = @"Content-Length: ";
         private static readonly Encoding Encoding = Encoding.ASCII;

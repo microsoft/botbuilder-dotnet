@@ -17,7 +17,7 @@ set branch=4.Future
 rem Update .schema 
 :update
 echo Updating .schema files and building sdk.schema for branch %branch%
-bf dialog:merge ../libraries/**/*.schema -u -b %branch% -o sdk.schema
+bf dialog:merge ../libraries/**/*.schema -u -b %branch% -o sdk.schema %2 %3 %4
 echo *** Schema files will not be available until branch %current% is merged into %branch% ***
 
 :done

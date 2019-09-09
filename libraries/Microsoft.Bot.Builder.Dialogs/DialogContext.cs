@@ -15,8 +15,6 @@ namespace Microsoft.Bot.Builder.Dialogs
 {
     public class DialogContext
     {
-        private List<string> activeTags = new List<string>();
-
         /// <summary>
         /// Initializes a new instance of the <see cref="DialogContext"/> class.
         /// </summary>
@@ -100,7 +98,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <value>
         /// The current dialog stack.
         /// </value>
-        public IList<DialogInstance> Stack { get; private set; }
+        public List<DialogInstance> Stack { get; private set; }
 
         /// <summary>
         /// Gets current active scoped state with (user|conversation|dialog|settings scopes).
@@ -161,69 +159,6 @@ namespace Microsoft.Bot.Builder.Dialogs
                 }
 
                 return instance;
-            }
-        }
-
-        /// <summary>
-        /// Gets a list of all `Dialog.tags` that are currently on the dialog stack.
-        /// Any duplicate tags are removed from the returned list and the order of the tag reflects the
-        /// order of the dialogs on the stack.
-        /// The returned list will also include any tags applied as "globalTags". These tags are
-        /// retrieved by calling context.TurnState.get('globalTags')` and will therefore need to be
-        /// assigned for every turn of conversation using context.TurnState.set('globalTags', ['myTag'])`.
-        /// </summary>
-        /// <value>
-        /// Returns a list of all `Dialog.tags` that are currently on the dialog stack.
-        /// Any duplicate tags are removed from the returned list and the order of the tag reflects the
-        /// order of the dialogs on the stack.
-        /// The returned list will also include any tags applied as "globalTags". These tags are
-        /// retrieved by calling context.TurnState.get('globalTags')` and will therefore need to be
-        /// assigned for every turn of conversation using context.TurnState.set('globalTags', ['myTag'])`.
-        /// </value>
-        public List<string> ActiveTags
-        {
-            get
-            {
-                // Cache tags on first request
-                if (activeTags == null)
-                {
-                    // Get parent tags that are active
-                    if (Parent != null)
-                    {
-                        activeTags = Parent.ActiveTags;
-                    }
-                    else
-                    {
-                        activeTags = Context.TurnState.Get<List<string>>("globalTags") ?? new List<string>();
-                    }
-                }
-
-                // Add tags for current dialog stack
-                foreach (var instance in Stack)
-                {
-                    var dialog = FindDialog(instance.Id);
-
-                    if (dialog != null && dialog.Tags.Any())
-                    {
-                        activeTags = activeTags.Union(dialog.Tags).ToList();
-                    }
-                }
-
-                return activeTags;
-            }
-        }
-
-        /// <summary>
-        /// Gets the current dialog state for the active dialog.
-        /// </summary>
-        /// <value>
-        /// The current dialog state for the active dialog.
-        /// </value>
-        public Dictionary<string, object> DialogState
-        {
-            get
-            {
-                return ActiveDialog?.State as Dictionary<string, object>;
             }
         }
 
@@ -312,7 +247,6 @@ namespace Microsoft.Bot.Builder.Dialogs
             };
 
             Stack.Insert(0, instance);
-            activeTags = null;
 
             // take the bindings (dialog.xxx => dialog.yyy)
             foreach (var property in bindings)
@@ -428,7 +362,6 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             // End the active dialog
             await EndActiveDialogAsync(DialogReason.EndCalled, result).ConfigureAwait(false);
-            activeTags = null;
 
             // Resume parent dialog
             if (ActiveDialog != null)
@@ -466,8 +399,6 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 throw new ArgumentException($"{nameof(eventValue)} cannot be a cancellation token");
             }
-
-            activeTags = null;
 
             if (Stack.Any() || Parent != null)
             {
@@ -568,7 +499,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         /// <param name="dialogId">dialog id to find.</param>
         /// <returns>dialog with that id.</returns>
-        public IDialog FindDialog(string dialogId)
+        public Dialog FindDialog(string dialogId)
         {
             if (this.Dialogs != null)
             {
@@ -649,7 +580,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </summary>
         /// <param name="dialog">The dialog to be tested.</param>
         /// <returns>Whether the passed dialog should inherit dialog-level state.</returns>
-        protected virtual bool ShouldInheritState(IDialog dialog)
+        protected virtual bool ShouldInheritState(Dialog dialog)
         {
             return dialog is DialogAction;
         }
@@ -716,15 +647,6 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 return state;
             }
-        }
-
-        public class DialogEvents
-        {
-            public const string BeginDialog = "beginDialog";
-            public const string RepromptDialog = "repromptDialog";
-            public const string CancelDialog = "cancelDialog";
-            public const string ActivityReceived = "activityReceived";
-            public const string Error = "error";
         }
     }
 }

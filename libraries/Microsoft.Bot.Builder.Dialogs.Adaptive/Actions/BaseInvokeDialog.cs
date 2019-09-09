@@ -2,6 +2,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using Microsoft.Bot.Builder.Expressions.Parser;
 using Newtonsoft.Json.Linq;
@@ -43,7 +44,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <summary>
         /// Gets or sets the dialog to call.
         /// </summary>
-        public IDialog Dialog { get; set; }
+        public Dialog Dialog { get; set; }
 
         /// <summary>
         /// Gets or sets the property from memory to pass to the calling dialog and to set the return value to.
@@ -65,14 +66,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             }
         }
 
-        public override List<IDialog> ListDependencies()
+        public override IEnumerable<Dialog> GetDependencies()
         {
             if (Dialog != null)
             {
-                return new List<IDialog>() { Dialog };
+                yield return Dialog;
             }
 
-            return new List<IDialog>();
+            yield break;
         }
 
         protected override string OnComputeId()
@@ -80,7 +81,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             return $"{this.GetType().Name}[{Dialog?.Id ?? this.dialogIdToCall}:{this.BindingPath()}]";
         }
 
-        protected IDialog ResolveDialog(DialogContext dc)
+        protected Dialog ResolveDialog(DialogContext dc)
         {
             if (this.Dialog != null)
             {

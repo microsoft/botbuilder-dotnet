@@ -1,6 +1,6 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
-    "$role": "unionType(Microsoft.IDialog)",
+    "$role": "unionType(Microsoft.Dialog)",
     "title": "Log Action",
     "description": "This is a action which writes to console.log and optional creates a TraceActivity around a text binding",
     "type": "object",

@@ -13,6 +13,7 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Expressions;
 using Microsoft.Bot.Builder.Expressions.Parser;
+using Microsoft.Bot.Builder.LanguageGeneration;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json.Linq;
 using static Microsoft.Bot.Builder.Dialogs.Debugging.DebugSupport;
@@ -198,7 +199,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
         }
 
-        public void AddDialogs(IEnumerable<IDialog> dialogs)
+        public void AddDialogs(IEnumerable<Dialog> dialogs)
         {
             foreach (var dialog in dialogs)
             {
@@ -413,14 +414,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
         }
 
-        protected async Task<bool> EndCurrentActionAsync(SequenceContext sequenceContext, CancellationToken cancellationToken = default(CancellationToken))
+        protected Task<bool> EndCurrentActionAsync(SequenceContext sequenceContext, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (sequenceContext.Actions.Any())
             {
                 sequenceContext.Actions.RemoveAt(0);
             }
 
-            return false;
+            return Task.FromResult(false);
         }
 
         protected async Task<DialogTurnResult> OnEndOfActionsAsync(SequenceContext sequenceContext, CancellationToken cancellationToken = default(CancellationToken))
