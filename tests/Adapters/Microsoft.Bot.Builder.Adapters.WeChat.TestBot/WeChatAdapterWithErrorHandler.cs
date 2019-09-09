@@ -2,16 +2,14 @@
 // Licensed under the MIT License.
 
 using System;
-using Microsoft.Bot.Builder.Integration.AspNet.Core;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Bot.Builder.Adapters.WeChat.TestBot
 {
-    public class AdapterWithErrorHandler : WeChatHttpAdapter
+    public class WeChatAdapterWithErrorHandler : WeChatHttpAdapter
     {
-        public AdapterWithErrorHandler(WeChatSettings settings, IStorage storage, IHostedService queuedHostedService, ILogger<WeChatHttpAdapter> logger, ConversationState conversationState = null)
-            : base(settings, storage, queuedHostedService)
+        public WeChatAdapterWithErrorHandler(WeChatSettings settings, IStorage storage, IBackgroundTaskQueue taskQueue, ILogger logger = null, ConversationState conversationState = null, UserState userState = null)
+            : base(settings, storage, taskQueue, logger)
         {
             OnTurnError = async (turnContext, exception) =>
             {
@@ -36,6 +34,8 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.TestBot
                     }
                 }
             };
+
+            this.Use(new AutoSaveStateMiddleware(conversationState, userState));
         }
     }
 }

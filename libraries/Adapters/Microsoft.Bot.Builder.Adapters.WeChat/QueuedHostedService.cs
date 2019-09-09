@@ -8,19 +8,19 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
-namespace Microsoft.Bot.Builder.Adapters.WeChat.Extensions
+namespace Microsoft.Bot.Builder.Adapters.WeChat
 {
     public class QueuedHostedService : BackgroundService
     {
         private readonly ILogger _logger;
 
-        public QueuedHostedService(IBackgroundTaskQueue backgroundTaskQueue = null, ILogger logger = null)
+        public QueuedHostedService(IBackgroundTaskQueue backgroundTaskQueue, ILogger logger = null)
         {
-            TaskQueue = backgroundTaskQueue ?? new BackgroundTaskQueue();
+            TaskQueue = backgroundTaskQueue;
             _logger = logger ?? NullLogger.Instance;
         }
 
-        public IBackgroundTaskQueue TaskQueue { get; set; }
+        public IBackgroundTaskQueue TaskQueue { get; }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {

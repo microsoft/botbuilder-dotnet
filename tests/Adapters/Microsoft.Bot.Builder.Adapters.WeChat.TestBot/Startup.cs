@@ -41,8 +41,9 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.TestBot
             services.AddSingleton<WeChatSettings>(wechatSettings);
 
             // Configure hosted serivce.
-            services.AddSingleton<QueuedHostedService>();
-            services.AddSingleton<AdapterWithErrorHandler>();
+            services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
+            services.AddHostedService<QueuedHostedService>();
+            services.AddSingleton<WeChatAdapterWithErrorHandler>();
 
             // The Dialog that will be run by the bot.
             services.AddSingleton<MainDialog>();

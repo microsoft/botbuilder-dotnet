@@ -12,7 +12,6 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Bot.Builder.Adapters.WeChat.Extensions;
 using Microsoft.Bot.Builder.Adapters.WeChat.Helpers;
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema;
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Requests;
@@ -37,19 +36,19 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         private readonly WeChatClient _wechatClient;
         private readonly ILogger _logger;
         private readonly WeChatSettings _settings;
-        private readonly QueuedHostedService _backgroundService;
+        private readonly IBackgroundTaskQueue _taskQueue;
 
         public WeChatHttpAdapter(
                     WeChatSettings settings,
                     IStorage storage,
-                    QueuedHostedService backgroundService = null,
+                    IBackgroundTaskQueue taskQueue = null,
                     ILogger logger = null)
         {
             _settings = settings;
             _wechatClient = new WeChatClient(settings, storage, logger);
             _wechatMessageMapper = new WeChatMessageMapper(_wechatClient, settings.UploadTemporaryMedia, logger);
             _logger = logger ?? NullLogger.Instance;
-            _backgroundService = backgroundService;
+            _taskQueue = taskQueue;
         }
 
         /// <summary>
@@ -325,12 +324,12 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                         if (!_settings.PassiveResponseMode)
                         {
                             // Running a background task, Get bot response and parse it from activity to WeChat response message
-                            if (_backgroundService == null)
+                            if (_taskQueue == null)
                             {
-                                throw new NullReferenceException("BackgroundService can not be null.");
+                                throw new NullReferenceException("Background task queue can not be null.");
                             }
 
-                            _backgroundService.TaskQueue.QueueBackgroundWorkItem(async (ct) =>
+                            _taskQueue.QueueBackgroundWorkItem(async (ct) =>
                             {
                                 await ProcessBotResponse(activities, activity.From.Id).ConfigureAwait(false);
                             });

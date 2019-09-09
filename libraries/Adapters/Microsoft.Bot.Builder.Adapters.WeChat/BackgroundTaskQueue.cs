@@ -6,7 +6,7 @@ using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Microsoft.Bot.Builder.Adapters.WeChat.Extensions
+namespace Microsoft.Bot.Builder.Adapters.WeChat
 {
     public class BackgroundTaskQueue : IBackgroundTaskQueue, IDisposable
     {

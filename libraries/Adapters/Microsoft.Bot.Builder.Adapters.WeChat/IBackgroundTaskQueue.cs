@@ -5,7 +5,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Microsoft.Bot.Builder.Adapters.WeChat.Extensions
+namespace Microsoft.Bot.Builder.Adapters.WeChat
 {
     public interface IBackgroundTaskQueue
     {

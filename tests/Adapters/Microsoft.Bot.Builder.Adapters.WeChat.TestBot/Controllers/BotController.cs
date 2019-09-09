@@ -15,12 +15,12 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.TestBot
     public class BotController : ControllerBase
     {
         private readonly IBot _bot;
-        private readonly WeChatHttpAdapter _wechatHttpAdapter;
+        private readonly WeChatAdapterWithErrorHandler _wechatAdapter;
 
-        public BotController(IBot bot, WeChatHttpAdapter wechatAdapter)
+        public BotController(IBot bot, WeChatAdapterWithErrorHandler wechatAdapter)
         {
             _bot = bot;
-            _wechatHttpAdapter = wechatAdapter;
+            _wechatAdapter = wechatAdapter;
         }
 
         [HttpGet("/WeChat")]
@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.TestBot
         {
             // Delegate the processing of the HTTP POST to the adapter.
             // The adapter will invoke the bot.
-            await _wechatHttpAdapter.ProcessAsync(Request, Response, _bot, postModel, false);
+            await _wechatAdapter.ProcessAsync(Request, Response, _bot, postModel, false);
         }
     }
 }
