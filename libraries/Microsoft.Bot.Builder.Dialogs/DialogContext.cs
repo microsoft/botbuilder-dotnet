@@ -7,12 +7,14 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
+using Microsoft.Bot.Builder.Dialogs.Memory;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
 using static Microsoft.Bot.Builder.Dialogs.Debugging.DebugSupport;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
+    [System.Diagnostics.DebuggerDisplay("{GetType().Name}[{ActiveDialog?.Id}]")]
     public class DialogContext
     {
         /// <summary>
@@ -21,51 +23,29 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="dialogs">Parent dialog set.</param>
         /// <param name="parentDialogContext">Parent dialog state.</param>
         /// <param name="state">Current dialog state.</param>
-        /// <param name="conversationState">Context for the current turn of conversation with the user.</param>
-        /// <param name="userState">Context for the user state.</param>
-        /// <param name="settings">Settings state.</param>
         public DialogContext(
-            DialogSet dialogs, 
-            DialogContext parentDialogContext, 
-            DialogState state, 
-            IDictionary<string, object> conversationState = null, 
-            IDictionary<string, object> userState = null, 
-            IDictionary<string, object> settings = null)
+            DialogSet dialogs,
+            DialogContext parentDialogContext,
+            DialogState state)
+            : this(dialogs, parentDialogContext.Context, state)
         {
-            Dialogs = dialogs;
             Parent = parentDialogContext ?? throw new ArgumentNullException(nameof(parentDialogContext));
-            Context = Parent.Context;
-            Stack = state.DialogStack;
-            settings = settings ?? Configuration.LoadSettings(Context.TurnState.Get<IConfiguration>());
-            conversationState = conversationState ?? new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
-            userState = userState ?? new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
-            if (!Context.TurnState.TryGetValue("TurnStateMap", out object turnState))
-            {
-                turnState = new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
-                Context.TurnState["TurnStateMap"] = turnState;
-            }
-
-            State = new DialogContextState(this, settings: settings, userState: userState, conversationState: conversationState, turnState: turnState as Dictionary<string, object>);
-            State.SetValue(DialogContextState.TURN_ACTIVITY, Context.Activity);
         }
 
-        public DialogContext(DialogSet dialogs, ITurnContext turnContext, DialogState state, IDictionary<string, object> conversationState = null, IDictionary<string, object> userState = null, IDictionary<string, object> settings = null)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DialogContext"/> class from Turn context.
+        /// </summary>
+        /// <param name="dialogs">dialogset </param>
+        /// <param name="turnContext">turn context</param>
+        /// <param name="state">dialogState</param>
+        public DialogContext(DialogSet dialogs, ITurnContext turnContext, DialogState state)
         {
-            Parent = null;
             Dialogs = dialogs ?? throw new ArgumentNullException(nameof(dialogs));
             Context = turnContext ?? throw new ArgumentNullException(nameof(turnContext));
             Stack = state.DialogStack;
-            settings = settings ?? Configuration.LoadSettings(Context.TurnState.Get<IConfiguration>());
-            conversationState = conversationState ?? new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
-            userState = userState ?? new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
-            if (!Context.TurnState.TryGetValue("TurnStateMap", out object turnState))
-            {
-                turnState = new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
-                Context.TurnState["TurnStateMap"] = turnState;
-            }
+            State = new DialogStateManager(this);
 
-            State = new DialogContextState(this, settings: settings, userState: userState, conversationState: conversationState, turnState: turnState as Dictionary<string, object>);
-            State.SetValue(DialogContextState.TURN_ACTIVITY, Context.Activity);
+            State.SetValue(TurnPath.ACTIVITY, Context.Activity);
         }
 
         /// <summary>
@@ -106,7 +86,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <value>
         /// Current active scoped state with (user|conversation|dialog|settings scopes).
         /// </value>
-        public DialogContextState State { get; private set; }
+        public DialogStateManager State { get; private set; }
 
         /// <summary>
         /// Gets dialog context for child if there is an active child.
@@ -198,10 +178,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 var bindingKey = binding.Key;
                 var bindingValue = binding.Value;
 
-                if (State.TryGetValue<object>(bindingValue, out var value))
-                {
-                    bindings[bindingKey] = JToken.FromObject(value);
-                }
+                bindings[bindingKey] = State.GetValue<JToken>(bindingValue);
             }
 
             // Check for inherited state
@@ -264,11 +241,11 @@ namespace Microsoft.Bot.Builder.Dialogs
             // set dialog result
             if (ShouldInheritState(dialog))
             {
-                State.SetValue(DialogContextState.STEP_OPTIONS_PROPERTY, options);
+                State.SetValue(DialogPath.STEPOPTIONS, options);
             }
             else
             {
-                State.SetValue(DialogContextState.DIALOG_OPTIONS, options);
+                State.SetValue(DialogPath.OPTIONS, options);
             }
 
             // Call dialogs BeginAsync() method.
@@ -391,8 +368,8 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The dialog context.</returns>
         public async Task<DialogTurnResult> CancelAllDialogsAsync(
-            string eventName = DialogEvents.CancelDialog, 
-            object eventValue = null, 
+            string eventName = DialogEvents.CancelDialog,
+            object eventValue = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
             if (eventValue is CancellationToken)
@@ -459,7 +436,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             // End the current dialog and giving the reason.
             await EndActiveDialogAsync(DialogReason.ReplaceCalled, cancellationToken: cancellationToken).ConfigureAwait(false);
 
-            this.State.Turn["__repeatDialogId"] = dialogId;
+            this.State.SetValue("turn.__repeatDialogId", dialogId);
 
             // Start replacement dialog
             return await BeginDialogAsync(dialogId, options, cancellationToken).ConfigureAwait(false);

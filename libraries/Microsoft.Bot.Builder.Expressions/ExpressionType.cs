@@ -145,9 +145,5 @@ namespace Microsoft.Bot.Builder.Expressions
 
         // Regular expression
         public const string IsMatch = "isMatch";
-
-        // short hand functions
-        public const string SimpleEntity = "simpleEntity";
-        public const string CallstackScope = "callstackScope";
     }
 }

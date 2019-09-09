@@ -35,10 +35,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             : base(
                   dc.Dialogs, 
                   turnContext: dc.Context, 
-                  state: new DialogState(dc.Stack), 
-                  conversationState: dc.State.Conversation, 
-                  userState: dc.State.User, 
-                  settings: dc.State.Settings)
+                  state: new DialogState(dc.Stack))
         {
             _parentWaterfall = parentWaterfall;
             _nextCalled = false;

@@ -25,10 +25,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            object originalOptions;
-            bool originalOptionsFound = dc.State.Dialog.TryGetValue("options", out originalOptions);
+            object originalOptions = dc.State.GetValue<object>(DialogPath.OPTIONS);
 
-            options = options == null ? originalOptions : ObjectPath.Merge(options, originalOptions ?? new object());
+            if (options == null)
+            {
+                options = originalOptions;
+            }
+            else if (originalOptions != null)
+            {
+                options = ObjectPath.Merge(options, originalOptions);
+            }
+
             return await RepeatParentDialogAsync(dc, options, cancellationToken).ConfigureAwait(false);
         }
 

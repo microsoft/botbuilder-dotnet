@@ -672,42 +672,6 @@ namespace Microsoft.Bot.Builder.Expressions
             return eval;
         }
 
-        /// <summary>
-        /// Walk dialog callstack looking for property.
-        /// </summary>
-        /// <param name="expression">Filter expression.</param>
-        /// <param name="state">Object containing the dialog callstack to search.</param>
-        /// <returns>The property.</returns>
-        private static (object value, string error) CallstackScope(Expression expression, object state)
-        {
-            // get callstack collection?
-            var (result, error) = AccessProperty(state, "callstack");
-            if (result != null)
-            {
-                var items = (IEnumerable<object>)result;
-                object property = null;
-
-                // Check for a match??
-                (property, error) = expression.Children[0].TryEvaluate(state);
-                if (property != null && error == null)
-                {
-                    foreach (var item in items)
-                    {
-                        // get property off of item
-                        (result, error) = AccessProperty(item, property.ToString());
-
-                        // if not null
-                        if (error == null && result != null)
-                        {
-                            // return it
-                            return (result, null);
-                        }
-                    }
-                }
-            }
-            return (null, error);
-        }
-
         private static void ValidateAccessor(Expression expression)
         {
             var children = expression.Children;
@@ -3269,25 +3233,6 @@ namespace Microsoft.Bot.Builder.Expressions
                         }),
                     ReturnType.Boolean,
                     ValidateIsMatch),
-
-                // Shorthand functions
-                new ExpressionEvaluator(ExpressionType.CallstackScope, CallstackScope, ReturnType.Object, ValidateUnary),
-                new ExpressionEvaluator(
-                    ExpressionType.SimpleEntity,
-                    Apply(args =>
-                    {
-                        var result = args[0];
-
-                        // fix issue: https://github.com/microsoft/botbuilder-dotnet/issues/1969
-                        while (TryParseList(result, out IList list) && list.Count >= 1)
-                        {
-                            result = list[0];
-                        }
-
-                        return result;
-                    }),
-                    ReturnType.Object,
-                    ValidateUnary),
             };
 
             var lookup = new Dictionary<string, ExpressionEvaluator>();

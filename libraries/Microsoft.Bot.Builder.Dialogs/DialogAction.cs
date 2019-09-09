@@ -77,13 +77,14 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             var targetDialogId = dc.Parent.ActiveDialog.Id;
 
-            var repeatedIds = dc.State.GetValue<List<string>>("__repeatedIds", new List<string>());
+            var repeatedIds = dc.State.GetValue<List<string>>("dialog.__repeatedIds", () => new List<string>());
             if (repeatedIds.Contains(targetDialogId))
             {
                 throw new ArgumentException($"Recursive loop detected, {targetDialogId} cannot be repeated twice in one turn.");
             }
 
             repeatedIds.Add(targetDialogId);
+            dc.State.SetValue("dialog.__repeatedIds", repeatedIds);
 
             var turnResult = await dc.Parent.ReplaceDialogAsync(dc.Parent.ActiveDialog.Id, options, cancellationToken).ConfigureAwait(false);
             turnResult.ParentEnded = true;

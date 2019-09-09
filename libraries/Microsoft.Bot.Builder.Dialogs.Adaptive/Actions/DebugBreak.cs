@@ -33,7 +33,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             try
             {
                 // Get stepCount from memory
-                var stepCount = dc.State.GetValue<int>("turn.stepCount", 0);
+                var stepCount = dc.State.GetValue<int>(TurnPath.STEPCOUNT, () => 0);
 
                 // Compute path
                 var path = string.Empty;

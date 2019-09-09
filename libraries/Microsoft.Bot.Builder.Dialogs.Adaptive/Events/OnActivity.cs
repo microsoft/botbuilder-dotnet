@@ -46,7 +46,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
         {
             // add constraints for activity type
             return Expression.AndExpression(
-                factory.Parse($"turn.dialogEvent.value.type == '{this.Type}'"),
+                factory.Parse($"{TurnPath.DIALOGEVENT}.value.type == '{this.Type}'"),
                 base.BuildExpression(factory));
         }
 

@@ -126,7 +126,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
             set
             {
-                InputBindings[DialogContextState.DIALOG_VALUE] = value;
+                InputBindings[DialogPath.VALUE] = value;
                 OutputBinding = value;
             }
         }
@@ -139,7 +139,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             }
 
             var op = OnInitializeOptions(dc, options);
-            dc.State.SetValue(DialogContextState.DIALOG_OPTIONS, op);
+            dc.State.SetValue(DialogPath.OPTIONS, op);
             dc.State.SetValue(TURN_COUNT_PROPERTY, 0);
             dc.State.SetValue(INPUT_PROPERTY, null);
 
@@ -167,14 +167,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 return Dialog.EndOfTurn;
             }
 
-            var stepCount = dc.State.GetValue<int>(DialogContextState.TURN_STEPCOUNT, 0);
+            var stepCount = dc.State.GetValue<int>(TurnPath.STEPCOUNT, () => 0);
 
             if (stepCount > 0)
             {
                 return await this.PromptUser(dc, InputState.Missing).ConfigureAwait(false);
             }
 
-            var turnCount = dc.State.GetValue<int>(TURN_COUNT_PROPERTY, 0);
+            var turnCount = dc.State.GetValue<int>(TURN_COUNT_PROPERTY, () => 0);
 
             // Perform base recognition
             var state = await this.RecognizeInput(dc);
@@ -359,23 +359,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             // If AlwaysPrompt is set to false, try to get the Property value first.
             if (!string.IsNullOrEmpty(this.Property) && !this.AlwaysPrompt)
             {
-                input = dc.State.GetValue(this.Property, null);
+                input = dc.State.GetValue<object>(this.Property);
             }
 
             if (this.Value != null)
             {
-                input = dc.State.GetValue(this.value, null);
+                input = dc.State.GetValue<object>(this.Value);
             }
 
             if (input == null)
             {
                 var turnCount = dc.State.GetValue<int>(TURN_COUNT_PROPERTY);
-                var processInput = dc.State.GetValue<bool>(PROCESS_INPUT_PROPERTY, false);
+                var processInput = dc.State.GetBoolValue(PROCESS_INPUT_PROPERTY, false);
 
                 // Go down this path only if the user has not requested to re-process user input via turn.processInput = true.
                 if (turnCount == 0 && !processInput)
                 {
-                    input = dc.State.GetValue<object>(DialogContextState.DIALOG_VALUE, null);
+                    input = dc.State.GetValue<object>(DialogPath.VALUE, () => null);
                 }
                 else
                 {

@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
             : base(
                 events: new List<string>()
                 {
-                AdaptiveEvents.BeginDialog
+                    AdaptiveEvents.BeginDialog
                 },
                 actions: actions,
                 constraint: constraint,

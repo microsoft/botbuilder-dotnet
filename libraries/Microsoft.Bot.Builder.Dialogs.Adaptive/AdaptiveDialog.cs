@@ -180,7 +180,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             {
                 // We need to mockup a DialogContext so that we can call RepromptDialog
                 // for the active step
-                var stepDc = new DialogContext(_dialogs, turnContext, state.Actions[0], new Dictionary<string, object>(), new Dictionary<string, object>());
+                var stepDc = new DialogContext(_dialogs, turnContext, state.Actions[0]);
                 await stepDc.RepromptDialogAsync(cancellationToken).ConfigureAwait(false);
             }
         }
@@ -247,7 +247,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         protected async Task<bool> ProcessEventAsync(SequenceContext sequenceContext, DialogEvent dialogEvent, bool preBubble, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Save into turn
-            sequenceContext.State.SetValue(DialogContextState.TURN_DIALOGEVENT, dialogEvent);
+            sequenceContext.State.SetValue(TurnPath.DIALOGEVENT, dialogEvent);
 
             // Look for triggered evt
             var handled = await this.QueueFirstMatchAsync(sequenceContext, dialogEvent, preBubble, cancellationToken).ConfigureAwait(false);
@@ -277,11 +277,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                             // Recognize utterance
                             var recognized = await this.OnRecognize(sequenceContext, cancellationToken).ConfigureAwait(false);
 
-                            sequenceContext.State.SetValue(DialogContextState.TURN_RECOGNIZED, recognized);
+                            sequenceContext.State.SetValue(TurnPath.RECOGNIZED, recognized);
 
                             var (name, score) = recognized.GetTopScoringIntent();
-                            sequenceContext.State.SetValue(DialogContextState.TURN_TOPINTENT, name);
-                            sequenceContext.State.SetValue(DialogContextState.TURN_TOPSCORE, score);
+                            sequenceContext.State.SetValue(TurnPath.TOPINTENT, name);
+                            sequenceContext.State.SetValue(TurnPath.TOPSCORE, score);
 
                             if (this.Recognizer != null)
                             {
@@ -385,8 +385,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 // Increment turns step count
                 // This helps dialogs being resumed from an interruption to determine if they
                 // should re-prompt or not.
-                var stepCount = sequenceContext.State.GetValue<int>(DialogContextState.TURN_STEPCOUNT, 0);
-                sequenceContext.State.SetValue(DialogContextState.TURN_STEPCOUNT, stepCount + 1);
+                var stepCount = sequenceContext.State.GetValue<int>(TurnPath.STEPCOUNT, () => 0);
+                sequenceContext.State.SetValue(TurnPath.STEPCOUNT, stepCount + 1);
 
                 // Is the step waiting for input or were we cancelled?
                 if (result.Status == DialogTurnStatus.Waiting || this.GetUniqueInstanceId(sequenceContext) != instanceId)

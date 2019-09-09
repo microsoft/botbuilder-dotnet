@@ -63,9 +63,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             if (dc is SequenceContext planning)
             {
                 // SetProperty evaluates the "Value" expression and returns it as the result of the dialog
-                if (dc.State.TryGetValue<object>(this.value, out object value))
+                var (value, valueError) = this.value.TryEvaluate(dc.State);
+                if (valueError == null)
                 {
-                    dc.State.SetValue(property, value);
+                    dc.State.SetValue(this.Property, value);
 
                     var sc = dc as SequenceContext;
 
@@ -87,7 +88,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
         protected override string OnComputeId()
         {
-            return $"SetProperty[{this.Property.ToString() ?? string.Empty}]";
+            return $"SetProperty[{this.Property ?? string.Empty}]";
         }
     }
 }

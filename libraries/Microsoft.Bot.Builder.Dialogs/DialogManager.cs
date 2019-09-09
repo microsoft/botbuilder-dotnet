@@ -8,7 +8,9 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Dialogs.Memory;
 using Microsoft.Bot.Schema;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using static Microsoft.Bot.Builder.Dialogs.DialogContext;
@@ -260,14 +262,17 @@ namespace Microsoft.Bot.Builder.Dialogs
                 dialogState = (DialogState)newState.ConversationState[DIALOGS];
             }
 
+            var namedScopes = MemoryScope.GetScopesMemory(context);
+            namedScopes[ScopePath.USER] = newState.UserState;
+            namedScopes[ScopePath.CONVERSATION] = newState.ConversationState;
+            namedScopes[ScopePath.TURN] = new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
+            namedScopes[ScopePath.SETTINGS] = Configuration.LoadSettings(context.TurnState.Get<IConfiguration>()) ?? new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
+
             // Create DialogContext
             var dc = new DialogContext(
                 this.dialogSet,
                 context,
-                dialogState,
-                conversationState: newState.ConversationState,
-                userState: newState.UserState,
-                settings: null);
+                dialogState);
 
             DialogTurnResult turnResult = null;
             if (dc.ActiveDialog == null)

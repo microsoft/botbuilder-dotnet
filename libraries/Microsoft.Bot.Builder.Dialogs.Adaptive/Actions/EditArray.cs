@@ -119,7 +119,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// The result of the action.
         /// </value>
         [JsonProperty("resultProperty")]
-        public string ResultProperty 
+        public string ResultProperty
         {
             get { return resultProperty?.ToString(); }
             set { this.resultProperty = (value != null) ? new ExpressionEngine().Parse(value) : null; }
@@ -155,7 +155,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new Exception($"EditArray: \"{ChangeType}\" operation couldn't be performed because the arrayProperty wasn't specified.");
             }
 
-            var array = dc.State.GetValue<JArray>(this.arrayProperty, new JArray());
+            var array = dc.State.GetValue<JArray>(this.ArrayProperty, () => new JArray());
 
             object item = null;
             object result = null;
@@ -210,11 +210,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                     break;
             }
 
-            dc.State.SetValue(this.arrayProperty, array);
+            dc.State.SetValue(this.ArrayProperty, array);
 
             if (ResultProperty != null)
             {
-                dc.State.SetValue(resultProperty, result);
+                dc.State.SetValue(this.ResultProperty, result);
             }
 
             return await dc.EndDialogAsync(result);

@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("a+b*"),
             Test("fun(a, b, c"),
             Test("func(A,b,b,)"),
-            Test("a.#title"),
+            // Test("a.#title"),
             Test("\"hello'"),
             Test("'hello'.length()"), // not supported currently
             Test("user.lists.{dialog.listName}")
@@ -340,12 +340,6 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("jPath(jsonStr,'$..Products[?(@.Price >= 100)].Name')"), // no matched node
            #endregion
 
-            #region  Short Hand Expression
-            Test("%.xxx"), // not supported shorthand pattern
-            Test("@[city]"), // city is not provided.
-            Test("@[0]"), // entities is not a collection.
-            #endregion
-
             #region Memory access test
             Test("getProperty(bag, 1)"), // second param should be string
             Test("Accessor(1)"), // first param should be string
@@ -363,7 +357,6 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             #endregion
 
             #region SetPathToValue tests
-            Test("setPathToValue(@foo, 3)"), // Cannot set simple entities
             Test("setPathToValue(2+3, 4)"), // Not a real path
             Test("setPathToValue(a)") // Missing value
             #endregion

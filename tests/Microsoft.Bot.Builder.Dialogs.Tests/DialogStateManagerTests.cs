@@ -1,21 +1,26 @@
 ﻿#pragma warning disable SA1402 // File may only contain a single type
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Events;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
+using Microsoft.Bot.Builder.Dialogs.Memory;
+using Microsoft.Bot.Builder.Expressions.Parser;
 using Microsoft.Bot.Builder.LanguageGeneration;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json.Linq;
 
-namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
+namespace Microsoft.Bot.Builder.Dialogs.Tests
 {
     [TestClass]
-    public class DialogContextStateTests
+    public class DialogStateManagerTests
     {
         private Foo foo = new Foo()
         {
@@ -33,177 +38,224 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         public TestContext TestContext { get; set; }
 
         [TestMethod]
-        public async Task DialogContextState_SimpleValues()
+        public void TestSimpleValues()
         {
-            var dialog = new AdaptiveDialog("test");
             var dialogs = new DialogSet();
-            dialogs.Add(dialog);
             var dc = new DialogContext(dialogs, new TurnContext(new TestAdapter(), new Schema.Activity()), (DialogState)new DialogState());
-            await dc.BeginDialogAsync(dialog.Id);
-            DialogContextState state = new DialogContextState(
-                dc: dc,
-                settings: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase),
-                userState: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase),
-                conversationState: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase),
-                turnState: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase));
+            DialogStateManager state = new DialogStateManager(dc);
 
             // simple value types
             state.SetValue("UseR.nuM", 15);
             state.SetValue("uSeR.NuM", 25);
-            Assert.IsTrue(state.HasValue("user.num"), "should have the value");
             Assert.AreEqual(25, state.GetValue<int>("user.num"));
 
             state.SetValue("UsEr.StR", "string1");
             state.SetValue("usER.STr", "string2");
-            Assert.IsTrue(state.HasValue("user.str"), "should have the value");
             Assert.AreEqual("string2", state.GetValue<string>("USer.str"));
 
             // simple value types
             state.SetValue("ConVErsation.nuM", 15);
             state.SetValue("ConVErSation.NuM", 25);
-            Assert.IsTrue(state.HasValue("conversation.num"), "should have the value");
             Assert.AreEqual(25, state.GetValue<int>("conversation.num"));
 
             state.SetValue("ConVErsation.StR", "string1");
             state.SetValue("CoNVerSation.STr", "string2");
-            Assert.IsTrue(state.HasValue("conversation.str"), "should have the value");
             Assert.AreEqual("string2", state.GetValue<string>("conversation.str"));
 
             // simple value types
             state.SetValue("tUrn.nuM", 15);
             state.SetValue("turN.NuM", 25);
-            Assert.IsTrue(state.HasValue("turn.num"), "should have the value");
             Assert.AreEqual(25, state.GetValue<int>("turn.num"));
 
             state.SetValue("tuRn.StR", "string1");
             state.SetValue("TuRn.STr", "string2");
-            Assert.IsTrue(state.HasValue("turn.str"), "should have the value");
             Assert.AreEqual("string2", state.GetValue<string>("turn.str"));
         }
 
         [TestMethod]
-        public async Task DialogContextState_ComplexValuePaths()
+        public void TestComplexValuePaths()
         {
-            var dialog = new AdaptiveDialog("test");
             var dialogs = new DialogSet();
-            dialogs.Add(dialog);
             var dc = new DialogContext(dialogs, new TurnContext(new TestAdapter(), new Schema.Activity()), (DialogState)new DialogState());
-            await dc.BeginDialogAsync(dialog.Id);
-            DialogContextState state = new DialogContextState(
-                dc: dc,
-                settings: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase),
-                userState: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase),
-                conversationState: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase),
-                turnState: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase));
+            DialogStateManager state = new DialogStateManager(dc);
 
             // complex type paths
             state.SetValue("UseR.fOo", foo);
-            Assert.IsTrue(state.HasValue("user.foo.SuBname.name"), "should have the value");
-            state.TryGetValue<string>("user.foo.SuBname.name", out var val);
-            Assert.AreEqual("bob", val);
+            Assert.AreEqual("bob", state.GetValue<string>("user.foo.SuBname.name"));
 
             // complex type paths
             state.SetValue("ConVerSation.FOo", foo);
-            Assert.IsTrue(state.HasValue("conversation.foo.SuBname.name"), "should have the value");
-            state.TryGetValue<string>("conversation.foo.SuBname.name", out val);
-            Assert.AreEqual("bob", val);
+            Assert.AreEqual("bob", state.GetValue<string>("conversation.foo.SuBname.name"));
 
             // complex type paths
             state.SetValue("TurN.fOo", foo);
-            Assert.IsTrue(state.HasValue("TuRN.foo.SuBname.name"), "should have the value");
-            state.TryGetValue<string>("TuRN.foo.SuBname.name", out val);
-            Assert.AreEqual("bob", val);
+            Assert.AreEqual("bob", state.GetValue<string>("TuRN.foo.SuBname.name"));
         }
 
         [TestMethod]
-        public async Task DialogContextState_ComplexExpressions()
+        public void TestComplexPathExpressions()
         {
-            var dialog = new AdaptiveDialog("test");
             var dialogs = new DialogSet();
-            dialogs.Add(dialog);
             var dc = new DialogContext(dialogs, new TurnContext(new TestAdapter(), new Schema.Activity()), (DialogState)new DialogState());
-            await dc.BeginDialogAsync(dialog.Id);
-            DialogContextState state = new DialogContextState(
-                dc: dc,
-                settings: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase),
-                userState: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase),
-                conversationState: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase),
-                turnState: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase));
+            DialogStateManager state = new DialogStateManager(dc);
 
             // complex type paths
             state.SetValue("user.name", "joe");
-            state.SetValue("conversation[user.name]", "test");
-            var value = state.GetValue("conversation.joe");
+            state.SetValue("conversation.stuff[user.name]", "test");
+            var value = state.GetValue<string>("conversation.stuff.joe");
             Assert.AreEqual("test", value, "complex set should set");
-            value = state.GetValue("conversation[user.name]");
+            value = state.GetValue<string>("conversation.stuff[user.name]");
             Assert.AreEqual("test", value, "complex get should get");
         }
 
         [TestMethod]
-        public async Task DialogContextState_GetValue()
+        public void TestGetValue()
         {
-            var dialog = new AdaptiveDialog("test");
             var dialogs = new DialogSet();
-            dialogs.Add(dialog);
             var dc = new DialogContext(dialogs, new TurnContext(new TestAdapter(), new Schema.Activity()), (DialogState)new DialogState());
-            await dc.BeginDialogAsync(dialog.Id);
-            DialogContextState state = new DialogContextState(
-                dc: dc,
-                settings: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase),
-                userState: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase),
-                conversationState: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase),
-                turnState: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase));
+            DialogStateManager state = new DialogStateManager(dc);
 
             // complex type paths
-#pragma warning disable CS0168 // The variable 'val' is declared but never used
-            object val;
-#pragma warning restore CS0168 // The variable 'val' is declared but never used
-            string value;
             state.SetValue("user.name", "joe");
-            Assert.AreEqual("joe", state.GetValue("user.name"));
             Assert.AreEqual("joe", state.GetValue<string>("user.name"));
-            Assert.IsTrue(state.TryGetValue<string>("user.name", out value));
-            Assert.AreEqual("joe", value);
+            Assert.AreEqual("joe", state.GetValue<string>("user.name"));
 
-            Assert.AreEqual("default", state.GetValue("user.xxx", "default"));
-            Assert.AreEqual("default", state.GetValue<string>("user.xxx", "default"));
-            Assert.IsFalse(state.TryGetValue<string>("user.xxx", out value));
-            Assert.AreEqual(null, value);
+            Assert.AreEqual(null, state.GetValue<string>("user.xxx"));
+            Assert.AreEqual("default", state.GetValue<string>("user.xxx", () => "default"));
         }
 
         [TestMethod]
-        public async Task DialogContextState_ComplexTypes()
+        public void TestGetValueT()
         {
-            var dialog = new AdaptiveDialog("test");
             var dialogs = new DialogSet();
-            dialogs.Add(dialog);
             var dc = new DialogContext(dialogs, new TurnContext(new TestAdapter(), new Schema.Activity()), (DialogState)new DialogState());
-            await dc.BeginDialogAsync(dialog.Id);
-            DialogContextState state = new DialogContextState(
-                dc: dc,
-                settings: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase),
-                userState: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase),
-                conversationState: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase),
-                turnState: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase));
+            DialogStateManager state = new DialogStateManager(dc);
 
             // complex type paths
             state.SetValue("UseR.fOo", foo);
-            Assert.IsTrue(state.HasValue("user.foo"), "should have the value");
             Assert.AreEqual(state.GetValue<Foo>("user.foo").SubName.Name, "bob");
 
             // complex type paths
             state.SetValue("ConVerSation.FOo", foo);
-            Assert.IsTrue(state.HasValue("conversation.foo"), "should have the value");
             Assert.AreEqual(state.GetValue<Foo>("conversation.foo").SubName.Name, "bob");
 
             // complex type paths
             state.SetValue("TurN.fOo", foo);
-            Assert.IsTrue(state.HasValue("turn.foo"), "should have the value");
             Assert.AreEqual(state.GetValue<Foo>("turn.foo").SubName.Name, "bob");
         }
 
         [TestMethod]
-        public async Task DialogContextState_TurnStateMappings()
+        public void TestHashResolver()
+        {
+            var dialogs = new DialogSet();
+            var dc = new DialogContext(dialogs, new TurnContext(new TestAdapter(), new Schema.Activity()), (DialogState)new DialogState());
+            DialogStateManager state = new DialogStateManager(dc);
+            ExpressionEngine engine = new ExpressionEngine();
+
+            // test HASH
+            state.SetValue($"turn.recognized.intents.test", "intent1");
+            state.SetValue($"#test2", "intent2");
+
+            Assert.AreEqual("intent1", engine.Parse("turn.recognized.intents.test").TryEvaluate(state).value);
+            Assert.AreEqual("intent1", engine.Parse("#test").TryEvaluate(state).value);
+            Assert.AreEqual("intent2", engine.Parse("turn.recognized.intents.test2").TryEvaluate(state).value);
+            Assert.AreEqual("intent2", engine.Parse("#test2").TryEvaluate(state).value);
+        }
+
+        [TestMethod]
+        public void TestEntityResolvers()
+        {
+            var dialogs = new DialogSet();
+            var dc = new DialogContext(dialogs, new TurnContext(new TestAdapter(), new Schema.Activity()), (DialogState)new DialogState());
+            DialogStateManager state = new DialogStateManager(dc);
+            ExpressionEngine engine = new ExpressionEngine();
+
+            // test @ and @@
+            var testEntities = new string[] { "entity1", "entity2" };
+            var testEntities2 = new string[] { "entity3", "entity4" };
+            state.SetValue($"turn.recognized.entities.test", testEntities);
+            state.SetValue($"@@test2", testEntities2);
+
+            Assert.AreEqual(testEntities.First(), engine.Parse("turn.recognized.entities.test[0]").TryEvaluate(state).value);
+            Assert.AreEqual(testEntities.First(), engine.Parse("@test").TryEvaluate(state).value);
+            Assert.IsTrue(testEntities.SequenceEqual(((JArray)engine.Parse("turn.recognized.entities.test").TryEvaluate(state).value).ToObject<string[]>()));
+            Assert.IsTrue(testEntities.SequenceEqual(((JArray)engine.Parse("@@test").TryEvaluate(state).value).ToObject<string[]>()));
+
+            Assert.AreEqual(testEntities2.First(), engine.Parse("turn.recognized.entities.test2[0]").TryEvaluate(state).value);
+            Assert.AreEqual(testEntities2.First(), engine.Parse("@test2").TryEvaluate(state).value);
+            Assert.IsTrue(testEntities2.SequenceEqual(((JArray)engine.Parse("turn.recognized.entities.test2").TryEvaluate(state).value).ToObject<string[]>()));
+            Assert.IsTrue(testEntities2.SequenceEqual(((JArray)engine.Parse("@@test2").TryEvaluate(state).value).ToObject<string[]>()));
+        }
+
+        [TestMethod]
+        public async Task TestDialogResolvers()
+        {
+            var d2 = new AdaptiveDialog("d2")
+            {
+                Events = new List<IOnEvent>()
+                {
+                    new OnBeginDialog()
+                    {
+                        Actions = new List<Dialog>()
+                        {
+                            new SetProperty() { Property = "$bbb", Value = "'bbb'" },
+                            new SendActivity("{$bbb}"),
+                            new SendActivity("{dialog.options.test}"),
+                            new SendActivity("{%test}"),
+                        }
+                    }
+                }
+            };
+
+            var testDialog = new AdaptiveDialog("testDialog")
+            {
+                AutoEndDialog = false,
+                Events = new List<IOnEvent>()
+                {
+                    new OnBeginDialog()
+                    {
+                        Actions = new List<Dialog>()
+                        {
+                            new SetProperty() { Property = "dialog.xyz", Value = "'dialog'" },
+                            new SendActivity("{dialog.xyz}"),
+                            new SendActivity("{$xyz}"),
+                            new SetProperty() { Property = "$aaa", Value = "'d1'" },
+                            new SendActivity("{dialog.aaa}"),
+                            new SendActivity("{$aaa}"),
+                            new SetProperty() { Property = "$aaa", Value = "'d1-test'" },
+                            new SendActivity("{dialog.aaa}"),
+                            new SendActivity("{$aaa}"),
+                            new BeginDialog(d2.Id)
+                            {
+                                Options = new { test = "123" }
+                            }
+                        }
+                    }
+                }
+            };
+
+            testDialog.AddDialog(d2);
+
+            await CreateFlow(testDialog)
+                    .SendConversationUpdate()
+
+                        // d1
+                        .AssertReply("dialog")
+                        .AssertReply("dialog")
+                        .AssertReply("d1")
+                        .AssertReply("d1")
+                        .AssertReply("d1-test")
+                        .AssertReply("d1-test")
+
+                        // d2
+                        .AssertReply("bbb")
+                        .AssertReply("123")
+                        .AssertReply("123")
+                    .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task TestBuiltInTurnProperties()
         {
             var testDialog = new AdaptiveDialog("testDialog")
             {
@@ -259,7 +311,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
-        public async Task DialogContextState_DialogCommandScope()
+        public async Task TestDialogCommandScope()
         {
             var testDialog = new AdaptiveDialog("testDialog")
             {
@@ -297,23 +349,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
-        public async Task DialogContextState_InputBinding()
+        public async Task TestInputBinding()
         {
             var d2 = new AdaptiveDialog("d2")
             {
                 InputBindings = new Dictionary<string, string>() { { "dialog.name", "$name" } },
                 Events = new List<IOnEvent>()
-                                    {
-                                        new OnBeginDialog()
-                                        {
-                                            Actions = new List<Dialog>()
-                                            {
-                                                new SendActivity("nested d2 {$name}"),
-                                                new SetProperty() { Property = "dialog.name", Value = "'testDialogd2'" },
-                                                new SendActivity("nested d2 {$name}"),
-                                            }
-                                        }
-                                    }
+                {
+                    new OnBeginDialog()
+                    {
+                        Actions = new List<Dialog>()
+                        {
+                            new SendActivity("nested d2 {$name}"),
+                            new SetProperty() { Property = "dialog.name", Value = "'testDialogd2'" },
+                            new SendActivity("nested d2 {$name}"),
+                        }
+                    }
+                }
             };
 
             var testDialog = new AdaptiveDialog("testDialog")
@@ -328,6 +380,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         {
                             new SetProperty() { Property = "dialog.name", Value = "'testDialog'" },
                             new SendActivity("{dialog.name}"),
+                            new DebugBreak(),
                             new AdaptiveDialog("d1")
                             {
                                 InputBindings = new Dictionary<string, string>() { { "dialog.name", "$name" } },
@@ -338,14 +391,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                     {
                                         Actions = new List<Dialog>()
                                         {
-                                            new SendActivity("nested d1 {$name}"),
+                                            new SendActivity("nested d1 {dialog.name}"),
                                             new SetProperty() { Property = "dialog.name", Value = "'testDialogd1'" },
-                                            new SendActivity("nested d1 {$name}"),
+                                            new SendActivity("nested d1 {dialog.name}"),
                                         }
                                     }
                                 }
                             },
-                            new BeginDialog(d2.Id)
+                            new SendActivity("{dialog.name}"),
+                            //new BeginDialog(d2.Id)
                         }
                     }
                 }
@@ -358,13 +412,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         .AssertReply("testDialog")
                         .AssertReply("nested d1 testDialog")
                         .AssertReply("nested d1 testDialogd1")
-                        .AssertReply("nested d2 testDialog")
-                        .AssertReply("nested d2 testDialogd2")
+                        .AssertReply("testDialog")
+                    //.AssertReply("nested d2 testDialog")
+                    //.AssertReply("nested d2 testDialogd2")
                     .StartTestAsync();
         }
 
         [TestMethod]
-        public async Task DialogContextState_OutputBinding()
+        public async Task TestOutputBinding()
         {
             var d2 = new AdaptiveDialog("d2")
             {
@@ -464,90 +519,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     .StartTestAsync();
         }
 
-        [TestMethod]
-        public async Task DialogContextState_CallstackScope()
-        {
-            var d3 = new AdaptiveDialog("d3")
-            {
-                Events = new List<IOnEvent>()
-                                                        {
-                                                            new OnBeginDialog()
-                                                            {
-                                                                Actions = new List<Dialog>()
-                                                                {
-                                                                    new SetProperty() { Property = "$zzz", Value = "'zzz'" },
-                                                                    new SetProperty() { Property = "$aaa", Value = "'d3'" },
-                                                                    new SendActivity("{$aaa}"),
-                                                                    new SendActivity("{$zzz}"),
-                                                                    new SendActivity("{$bbb}"),
-                                                                    new SendActivity("{$xyz}"),
-                                                                }
-                                                            }
-                                                        }
-            };
-
-            var d2 = new AdaptiveDialog("d2")
-            {
-                Events = new List<IOnEvent>()
-                                    {
-                                        new OnBeginDialog()
-                                        {
-                                            Actions = new List<Dialog>()
-                                            {
-                                                new SetProperty() { Property = "$bbb", Value = "'bbb'" },
-                                                new SendActivity("{$aaa}"),
-                                                new SendActivity("{$xyz}"),
-                                                new SendActivity("{$bbb}"),
-                                                new BeginDialog(d3.Id)
-                                            }
-                                        }
-                                    }
-            };
-            d2.AddDialog(d3);
-
-            var testDialog = new AdaptiveDialog("testDialog")
-            {
-                AutoEndDialog = false,
-                Events = new List<IOnEvent>()
-                {
-                    new OnBeginDialog()
-                    {
-                        Actions = new List<Dialog>()
-                        {
-                            new SetProperty() { Property = "dialog.xyz", Value = "'xyz'" },
-                            new SetProperty() { Property = "$aaa", Value = "'d1'" },
-                            new SendActivity("{dialog.xyz}"),
-                            new SendActivity("{$xyz}"),
-                            new SendActivity("{$aaa}"),
-                            new BeginDialog(d2.Id)
-                        }
-                    }
-                }
-            };
-
-            testDialog.AddDialog(d2);
-
-            await CreateFlow(testDialog)
-                    .SendConversationUpdate()
-
-                        // d1
-                        .AssertReply("xyz")
-                        .AssertReply("xyz")
-                        .AssertReply("d1")
-
-                        // d2
-                        .AssertReply("d1")
-                        .AssertReply("xyz")
-                        .AssertReply("bbb")
-
-                        // d3
-                        .AssertReply("d3")
-                        .AssertReply("zzz")
-                        .AssertReply("bbb")
-                        .AssertReply("xyz")
-                    .StartTestAsync();
-        }
-
         private TestFlow CreateFlow(AdaptiveDialog dialog, ConversationState convoState = null, UserState userState = null, bool sendTrace = false)
         {
             TypeFactory.Configuration = new ConfigurationBuilder().Build();
@@ -590,3 +561,4 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         public Bar SubName { get; set; }
     }
 }
+
