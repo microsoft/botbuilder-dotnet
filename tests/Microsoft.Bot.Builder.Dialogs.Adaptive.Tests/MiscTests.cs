@@ -54,8 +54,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             new IfCondition()
                             {
                                 Condition = "conversation.cancelConfirmation == true",
-                                Actions = new List<IDialog>()
-
+                                Actions = new List<Dialog>()
                                 {
                                     new SendActivity("canceling"),
                                     new EndDialog()
