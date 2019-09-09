@@ -14,6 +14,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <param name="template">template or [templateId].</param>
         /// <param name="data">data to bind to.</param>
         /// <returns>text.</returns>
-        Task<string> Generate(ITurnContext turnContext, string template, object data);
+        Task<object> Generate(ITurnContext turnContext, string template, object data);
     }
 }

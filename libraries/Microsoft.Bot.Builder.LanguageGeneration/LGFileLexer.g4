@@ -60,12 +60,20 @@ DASH
   : '-' {expectKeywords = true;} -> pushMode(TEMPLATE_BODY_MODE)
   ;
 
+LEFT_SQUARE_BRACKET
+  : '[' -> pushMode(STRUCTURED_TEMPLATE_BODY_MODE)
+  ;
+
+RIGHT_SQUARE_BRACKET
+  : ']'
+  ;
+
 IMPORT_DESC
-  : '[' .*? ']'
+  : '[' ~[\r\n]*? ']'
   ;
 
 IMPORT_PATH
-  : '(' .*? ')'
+  : '(' ~[\r\n]*? ')'
   ;
 
 INVALID_TOKEN_DEFAULT_MODE
@@ -167,4 +175,22 @@ TEXT_SEPARATOR
 
 TEXT
   : ~[\t\r\n{}[\]()]+?  { ignoreWS = false; expectKeywords = false;}
+  ;
+
+mode STRUCTURED_TEMPLATE_BODY_MODE;
+
+STRUCTURED_COMMENTS
+  : ('>'|'$') ~[\r\n]* '\r'?'\n' -> skip
+  ;
+
+STRUCTURED_NEWLINE
+  : '\r'? '\n'
+  ;
+
+STRUCTURED_TEMPLATE_BODY_END
+  : RIGHT_SQUARE_BRACKET -> popMode
+  ;
+
+STRUCTURED_CONTENT
+  : ~[\t\r\n[\]]+
   ;

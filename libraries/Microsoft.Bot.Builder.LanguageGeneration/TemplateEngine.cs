@@ -94,7 +94,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <param name="templateName">Template name to be evaluated.</param>
         /// <param name="scope">The state visible in the evaluation.</param>
         /// <returns>Evaluate result.</returns>
-        public string EvaluateTemplate(string templateName, object scope = null)
+        public object EvaluateTemplate(string templateName, object scope = null)
         {
             var evaluator = new Evaluator(Templates, this.expressionEngine);
             return evaluator.EvaluateTemplate(templateName, scope);
@@ -125,7 +125,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <param name="inlineStr">inline string which will be evaluated.</param>
         /// <param name="scope">scope object or JToken.</param>
         /// <returns>Evaluate result.</returns>
-        public string Evaluate(string inlineStr, object scope = null)
+        public object Evaluate(string inlineStr, object scope = null)
         {
             // wrap inline string with "# name and -" to align the evaluation process
             var fakeTemplateId = "__temp__";

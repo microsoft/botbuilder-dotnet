@@ -24,23 +24,23 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             {
                 if (turnContext.Activity.Text.ToLower() == "hi")
                 {
-                    await turnContext.SendActivityAsync(engine.EvaluateTemplate("GreetingTemplate", null));
+                    await turnContext.SendActivityAsync(engine.EvaluateTemplate("GreetingTemplate", null).ToString());
                 }
                 else if (turnContext.Activity.Text.ToLower().Contains("marco"))
                 {
-                    await turnContext.SendActivityAsync(engine.EvaluateTemplate("WordGameReply", new { GameName = "MarcoPolo" }));
+                    await turnContext.SendActivityAsync(engine.EvaluateTemplate("WordGameReply", new { GameName = "MarcoPolo" }).ToString());
                 }
                 else if (turnContext.Activity.Text.ToLower().Contains("what time is it"))
                 {
-                    await turnContext.SendActivityAsync(engine.EvaluateTemplate("TimeOfDayExmple", new { timeOfDay = "morning" }));
+                    await turnContext.SendActivityAsync(engine.EvaluateTemplate("TimeOfDayExmple", new { timeOfDay = "morning" }).ToString());
                 }
                 else if (turnContext.Activity.Text.ToLower().Contains("multi"))
                 {
-                    await turnContext.SendActivityAsync(engine.EvaluateTemplate("MultiLineExample", null));
+                    await turnContext.SendActivityAsync(engine.EvaluateTemplate("MultiLineExample", null).ToString());
                 }
                 else if (turnContext.Activity.Text.ToLower().Contains("card"))
                 {
-                    HeroCard card = JsonConvert.DeserializeObject<HeroCard>(engine.EvaluateTemplate("CardExample", null));
+                    HeroCard card = JsonConvert.DeserializeObject<HeroCard>(engine.EvaluateTemplate("CardExample", null).ToString());
                     var reply = turnContext.Activity.CreateReply();
                     reply.Attachments = new List<Attachment>();
                     reply.Attachments.Add(card.ToAttachment());
@@ -56,11 +56,11 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                         low = "33"
                     };
 
-                    await turnContext.SendActivityAsync(engine.EvaluateTemplate("WeatherForecast", temp));
+                    await turnContext.SendActivityAsync(engine.EvaluateTemplate("WeatherForecast", temp).ToString());
                 }
                 else
                 {
-                    await turnContext.SendActivityAsync(engine.EvaluateTemplate("EchoTemplate", turnContext));
+                    await turnContext.SendActivityAsync(engine.EvaluateTemplate("EchoTemplate", turnContext).ToString());
                 }
             }
             else if (turnContext.Activity.Type == ActivityTypes.ConversationUpdate)
@@ -71,7 +71,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                     {
                         if (member.Id != turnContext.Activity.Recipient.Id)
                         {
-                            await turnContext.SendActivityAsync(engine.EvaluateTemplate("WelcomeTemplate", null));
+                            await turnContext.SendActivityAsync(engine.EvaluateTemplate("WelcomeTemplate", null).ToString());
                         }
                     }
                 }

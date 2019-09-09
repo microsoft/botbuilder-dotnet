@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration.Generators
         /// <param name="template">The template.</param>
         /// <param name="data">data to bind to.</param>
         /// <returns>The generator.</returns>
-        public async Task<string> Generate(ITurnContext turnContext, string template, object data)
+        public async Task<object> Generate(ITurnContext turnContext, string template, object data)
         {
             // see if we have any locales that match
             var targetLocale = turnContext.Activity.Locale?.ToLower() ?? string.Empty;

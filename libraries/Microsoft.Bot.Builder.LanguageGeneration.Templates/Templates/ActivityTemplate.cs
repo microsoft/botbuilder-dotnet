@@ -55,8 +55,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration.Templates
                         data: data).ConfigureAwait(false);
                     if (result != null)
                     {
-                        message.Text = result;
-                        message.Speak = result;
+                        message.Text = result.ToString();
+                        message.Speak = result.ToString();
                     }
                 }
 
