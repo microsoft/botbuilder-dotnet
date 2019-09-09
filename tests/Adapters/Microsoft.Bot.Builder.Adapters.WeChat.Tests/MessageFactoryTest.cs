@@ -4,7 +4,6 @@
 using System.Xml.Linq;
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Requests;
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema.Requests.Events;
-using Microsoft.Bot.Builder.Adapters.WeChat.Tests.TestUtilities;
 using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
 

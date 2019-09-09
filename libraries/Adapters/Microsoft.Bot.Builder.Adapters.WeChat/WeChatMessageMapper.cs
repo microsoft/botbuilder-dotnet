@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Net.Http;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using AdaptiveCards;
 using AdaptiveCards.Rendering.Html;
@@ -21,6 +22,12 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.MarkedNet;
 
+#if SIGNASSEMBLY
+[assembly: InternalsVisibleTo("Microsoft.Bot.Builder.Adapters.WeChat.Tests, PublicKey=0024000004800000940000000602000000240000525341310004000001000100b5fc90e7027f67871e773a8fde8938c81dd402ba65b9201d60593e96c492651e889cc13f1415ebb53fac1131ae0bd333c5ee6021672d9718ea31a8aebd0da0072f25d87dba6fc90ffd598ed4da35e44c398c454307e8e33b8426143daec9f596836f97c8f74750e5975c64e2189f45def46b2a2b1247adc3652bf5c308055da9")]
+#else
+[assembly: InternalsVisibleTo("Microsoft.Bot.Builder.Adapters.WeChat.Tests")]
+#endif
+
 namespace Microsoft.Bot.Builder.Adapters.WeChat
 {
     /// <summary>
@@ -30,7 +37,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
     /// WeChat message mapper will help create the bot activity and WeChat response.
     /// When deal with the media attachments or cards, mapper will upload the data first to aquire the acceptable media url.
     /// </remarks>
-    public class WeChatMessageMapper
+    internal class WeChatMessageMapper
     {
         /// <summary>
         /// Key of content source url.
@@ -75,7 +82,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// </summary>
         /// <param name="wechatRequest">WeChat request message.</param>
         /// <returns>Activity.</returns>
-        public async Task<IActivity> ToConnectorMessage(IRequestMessageBase wechatRequest)
+        public async Task<Activity> ToConnectorMessage(IRequestMessageBase wechatRequest)
         {
             var activity = CreateActivity(wechatRequest);
             if (wechatRequest is TextRequest textRequest)
@@ -527,31 +534,6 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         }
 
         /// <summary>
-        /// Get fixed media type before upload media to WeChat, ensure upload successful.
-        /// </summary>
-        /// <param name="type">The type of the media, typically it should be a mime type.</param>
-        /// <returns>The fixed media type WeChat supported.</returns>
-        private static string GetFixedMeidaType(string type)
-        {
-            if (type.IndexOf(MediaTypes.Image, StringComparison.InvariantCultureIgnoreCase) >= 0)
-            {
-                type = MediaTypes.Image;
-            }
-
-            if (type.IndexOf(MediaTypes.Video, StringComparison.InvariantCultureIgnoreCase) >= 0)
-            {
-                type = MediaTypes.Video;
-            }
-
-            if (type.IndexOf(MediaTypes.Voice, StringComparison.InvariantCultureIgnoreCase) >= 0)
-            {
-                type = MediaTypes.Voice;
-            }
-
-            return type;
-        }
-
-        /// <summary>
         /// Process all types of general attachment.
         /// </summary>
         /// <param name="activity">The message activity.</param>
@@ -932,7 +914,6 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
             }
 
             name = name ?? new Guid().ToString();
-            contentType = GetFixedMeidaType(contentType);
 
             return new AttachmentData(contentType, name, bytesData, bytesData);
         }

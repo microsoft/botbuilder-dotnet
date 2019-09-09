@@ -29,11 +29,21 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema
         public string MessageSignature { get; set; }
 
         /// <summary>
+        /// Gets or Sets echo string from WeChat message request.
+        /// </summary>
+        /// <value>
+        /// Echo string from WeChat message request.
+        /// </value>
+        [FromQuery(Name = "echostr")]
+        public string EchoString { get; set; }
+
+        /// <summary>
         /// Gets or Sets timestamp.
         /// </summary>
         /// <value>
         /// Timestamp of the request parameter.
         /// </value>
+        [FromQuery(Name = "timestamp")]
         public string Timestamp { get; set; }
 
         /// <summary>
@@ -42,32 +52,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Schema
         /// <value>
         /// Nonce of the request parameter.
         /// </value>
+        [FromQuery(Name = "nonce")]
         public string Nonce { get; set; }
-
-        /// <summary>
-        /// Gets or Sets token.
-        /// </summary>
-        /// <value>
-        /// Token from the request parameter.
-        /// </value>
-        public string Token { get; set; }
-
-        /// <summary>
-        /// Gets or Sets endcoding aes key.
-        /// </summary>
-        /// <value>
-        /// EncodingAESKey from appsetings.
-        /// EncodingAESKey fixed length of 43 characters, a-z, A-Z, 0-9 a total of 62 characters selected
-        /// https://open.weixin.qq.com/cgi-bin/showdocument?action=dir_list&t=resource/res_list&verify=1&id=open1419318479&token=&lang=en_US.
-        /// </value>
-        public string EncodingAesKey { get; set; }
-
-        /// <summary>
-        /// Gets or Sets WeChat app id.
-        /// </summary>
-        /// <value>
-        /// WeChat app id.
-        /// </value>
-        public string AppId { get; set; }
     }
 }

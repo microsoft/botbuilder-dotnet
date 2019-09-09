@@ -7,7 +7,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema;
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema.JsonResults;
-using Microsoft.Bot.Builder.Adapters.WeChat.Tests.TestUtilities;
 using Xunit;
 
 namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests
@@ -34,11 +33,17 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests
             },
         };
 
+        private readonly WeChatSettings settings = new WeChatSettings()
+        {
+            AppId = "wx77f941c869071d99",
+            AppSecret = "secret",
+        };
+
         [Fact]
         public async Task SendRequestTest()
         {
             var storage = new MemoryStorage();
-            var mockClient = new WeChatClient("wx77f941c869071d99", "secret", storage);
+            var mockClient = new WeChatClient(settings, storage);
             await mockClient.SendHttpRequestAsync(HttpMethod.Get, "https://dev.botframework.com");
             await mockClient.SendHttpRequestAsync(HttpMethod.Get, "https://dev.botframework.com", "mockdata", "testToken");
         }
@@ -47,7 +52,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests
         public async Task SendRequestTimeoutTest()
         {
             var storage = new MemoryStorage();
-            var mockClient = new WeChatClient("wx77f941c869071d99", "secret", storage);
+            var mockClient = new WeChatClient(settings, storage);
             await mockClient.SendHttpRequestAsync(HttpMethod.Get, "https://dev.botframework.com", timeout: 1000);
             Thread.Sleep(1500);
         }
@@ -56,7 +61,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests
         public async Task GetAccessTokenTest()
         {
             var storage = new MemoryStorage();
-            var mockClient = new MockWeChatClient("wx77f941c869071d99", "secret", storage);
+            var mockClient = new MockWeChatClient(settings, storage);
             await mockClient.SendHttpRequestAsync(HttpMethod.Get, "https://dev.botframework.com");
             var tokenResult = await mockClient.GetAccessTokenAsync();
             Assert.Equal("testToken", tokenResult);
@@ -66,7 +71,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests
         public async Task UploadMediaTest()
         {
             var storage = new MemoryStorage();
-            var mockClient = new MockWeChatClient("wx77f941c869071d99", "secret", storage);
+            var mockClient = new MockWeChatClient(settings, storage);
             var mockAttachemntData = MockDataUtility.GetMockAttachmentData();
             var result1 = await mockClient.UploadMediaAsync(mockAttachemntData, true, 10000) as UploadTemporaryMediaResult;
             var result2 = await mockClient.UploadMediaAsync(mockAttachemntData, true, 10000) as UploadTemporaryMediaResult;

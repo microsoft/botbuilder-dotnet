@@ -3,11 +3,7 @@
 
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Bot.Builder.Adapters.WeChat.Helpers;
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema;
-using Microsoft.Bot.Builder.Integration.AspNet.Core;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.Extensions.Configuration;
 
 namespace Microsoft.Bot.Builder.Adapters.WeChat.TestBot
 {
@@ -18,47 +14,22 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.TestBot
     [ApiController]
     public class BotController : ControllerBase
     {
-        private readonly IBotFrameworkHttpAdapter _adapter;
         private readonly IBot _bot;
-        private readonly IWeChatHttpAdapter _wechatHttpAdapter;
-        private readonly string _token;
+        private readonly WeChatHttpAdapter _wechatHttpAdapter;
 
-        public BotController(IBotFrameworkHttpAdapter adapter, IBot bot, IWeChatHttpAdapter wechatAdapter, IConfiguration configuration)
+        public BotController(IBot bot, WeChatHttpAdapter wechatAdapter)
         {
-            _adapter = adapter;
             _bot = bot;
             _wechatHttpAdapter = wechatAdapter;
-            _token = configuration.GetSection("WeChatSetting").GetSection("Token").Value;
         }
 
-        [HttpPost]
-        public async Task PostAsync()
-        {
-            // Delegate the processing of the HTTP POST to the adapter.
-            // The adapter will invoke the bot.
-            await _adapter.ProcessAsync(Request, Response, _bot);
-        }
-
+        [HttpGet("/WeChat")]
         [HttpPost("/WeChat")]
         public async Task PostWeChatAsync([FromQuery] SecretInfo postModel)
         {
             // Delegate the processing of the HTTP POST to the adapter.
             // The adapter will invoke the bot.
             await _wechatHttpAdapter.ProcessAsync(Request, Response, _bot, postModel, false);
-        }
-
-        // GET: api/messages
-        [HttpGet("/WeChat")]
-        public ActionResult Get(string echostr, [FromQuery] SecretInfo postModel)
-        {
-            if (VerificationHelper.VerifySignature(postModel.WebhookSignature, postModel.Timestamp, postModel.Nonce, _token))
-            {
-                return Content(echostr);
-            }
-            else
-            {
-                return Content("Failed:" + postModel.WebhookSignature);
-            }
         }
     }
 }

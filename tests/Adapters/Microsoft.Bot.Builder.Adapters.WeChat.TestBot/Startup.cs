@@ -5,8 +5,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Bot.Builder.Adapters.WeChat.Extensions;
-using Microsoft.Bot.Builder.Integration.AspNet.Core;
-using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -28,12 +26,6 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.TestBot
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
-            // Create the credential provider to be used with the Bot Framework Adapter.
-            services.AddSingleton<ICredentialProvider, ConfigurationCredentialProvider>();
-
-            // Create the Bot Framework Adapter with error handling enabled.
-            services.AddSingleton<IBotFrameworkHttpAdapter, AdapterWithErrorHandler>();
-
             // Create the storage we'll be using for User and Conversation state. (Memory is great for testing purposes.)
             services.AddSingleton<IStorage, MemoryStorage>();
 
@@ -42,27 +34,15 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.TestBot
 
             // Create the Conversation state. (Used by the Dialog system itself.)
             services.AddSingleton<ConversationState>();
-            services.AddSingleton(sp =>
-            {
-                var userState = sp.GetService<UserState>();
-                var conversationState = sp.GetService<ConversationState>();
-                return new BotStateSet(userState, conversationState);
-            });
 
-            // Configure background task queue and hosted serivce.
-            services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
-            services.AddHostedService<QueuedHostedService>();
-            services.AddSingleton<IWeChatHttpAdapter>(sp =>
-            {
-                var userState = sp.GetService<UserState>();
-                var conversationState = sp.GetService<ConversationState>();
-                var backgroundTaskQueue = sp.GetService<IBackgroundTaskQueue>();
-                var hostedService = sp.GetService<IHostedService>();
-                var storage = sp.GetService<IStorage>();
-                var adapter = new WeChatHttpAdapter(Configuration, storage, backgroundTaskQueue, hostedService);
-                adapter.Use(new AutoSaveStateMiddleware(userState, conversationState));
-                return adapter;
-            });
+            // Load WeChat settings.
+            var wechatSettings = new WeChatSettings();
+            Configuration.Bind("WeChatSettings", wechatSettings);
+            services.AddSingleton<WeChatSettings>(wechatSettings);
+
+            // Configure hosted serivce.
+            services.AddSingleton<QueuedHostedService>();
+            services.AddSingleton<AdapterWithErrorHandler>();
 
             // The Dialog that will be run by the bot.
             services.AddSingleton<MainDialog>();

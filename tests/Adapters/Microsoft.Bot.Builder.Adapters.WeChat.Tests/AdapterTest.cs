@@ -5,7 +5,6 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Builder.Adapters.WeChat.Extensions;
-using Microsoft.Bot.Builder.Adapters.WeChat.Tests.TestUtilities;
 using Moq;
 using Newtonsoft.Json;
 using Xunit;
@@ -21,8 +20,8 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests
         {
             var storage = new MemoryStorage();
             var taskQueue = new BackgroundTaskQueue();
-            testAdapter = new WeChatHttpAdapter(MockDataUtility.MockConfiguration(), storage, taskQueue, new QueuedHostedService(taskQueue));
-            testAdapterUseTempMedia = new WeChatHttpAdapter(MockDataUtility.MockConfiguration(false), storage, taskQueue, new QueuedHostedService(taskQueue));
+            testAdapter = new WeChatHttpAdapter(MockDataUtility.MockWeChatSettings(), storage, new QueuedHostedService(taskQueue));
+            testAdapterUseTempMedia = new WeChatHttpAdapter(MockDataUtility.MockWeChatSettings(false), storage, new QueuedHostedService(taskQueue));
         }
 
         [Fact]

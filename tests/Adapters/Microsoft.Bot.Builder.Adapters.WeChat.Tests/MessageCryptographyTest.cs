@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using Microsoft.Bot.Builder.Adapters.WeChat.Tests.TestUtilities;
 using Xunit;
 
 namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests
@@ -23,7 +22,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests
         [Fact]
         public void EncodingAESKeyTest()
         {
-            var result = Assert.Throws<ArgumentException>(() => new MessageCryptography(MockDataUtility.SecretInfoAESKeyError));
+            var result = Assert.Throws<ArgumentException>(() => new MessageCryptography(MockDataUtility.SecretInfoAesKeyError, MockDataUtility.WeChatSettingsAesKeyError));
             Assert.Equal("Invalid EncodingAESKey.\r\nParameter name: secretInfo", result.Message);
         }
 

@@ -6,21 +6,18 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema;
 using Microsoft.Bot.Builder.Adapters.WeChat.Schema.JsonResults;
-using Microsoft.Bot.Builder.Adapters.WeChat.Tests.TestUtilities;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests
 {
-    public class MockWeChatClient : WeChatClient
+    internal class MockWeChatClient : WeChatClient
     {
         public MockWeChatClient(
-            string appId,
-            string appSecret,
+            WeChatSettings settings,
             IStorage storage,
-            ILogger logger = null,
-            IAttachmentHash attachmentHash = null)
-            : base(appId, appSecret, storage, logger, attachmentHash)
+            ILogger logger = null)
+            : base(settings, storage, logger)
         {
         }
 

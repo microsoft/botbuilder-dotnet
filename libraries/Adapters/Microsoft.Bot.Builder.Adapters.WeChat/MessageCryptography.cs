@@ -28,16 +28,17 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// Initializes a new instance of the <see cref="MessageCryptography"/> class.
         /// </summary>
         /// <param name="secretInfo">The secret info provide by WeChat.</param>
-        public MessageCryptography(SecretInfo secretInfo)
+        /// <param name="settings">The WeChat settings.</param>
+        public MessageCryptography(SecretInfo secretInfo, WeChatSettings settings)
         {
-            if (string.IsNullOrEmpty(secretInfo.EncodingAesKey) || secretInfo.EncodingAesKey.Length != 43)
+            if (string.IsNullOrEmpty(settings.EncodingAesKey) || settings.EncodingAesKey.Length != 43)
             {
                 throw new ArgumentException("Invalid EncodingAESKey.", nameof(secretInfo));
             }
 
-            _token = secretInfo.Token;
-            _appId = secretInfo.AppId;
-            _encodingAesKey = secretInfo.EncodingAesKey;
+            _token = settings.Token;
+            _appId = settings.AppId;
+            _encodingAesKey = settings.EncodingAesKey;
             _msgSignature = secretInfo.MessageSignature;
             _timestamp = secretInfo.Timestamp;
             _nonce = secretInfo.Nonce;
@@ -60,7 +61,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
             var root = doc.FirstChild ?? throw new ArgumentException("Invalid post data.", nameof(postData));
             var encryptMessage = root["Encrypt"]?.InnerText ?? root["encrypt"]?.InnerText ?? throw new ArgumentException("Invalid post data, no encrypted field.", nameof(postData));
 
-            if (!VerificationHelper.VerifySignature(_msgSignature, _token, _timestamp, _nonce, encryptMessage))
+            if (!VerificationHelper.VerifySignature(_msgSignature, _timestamp, _nonce, _token, encryptMessage))
             {
                 throw new UnauthorizedAccessException("Signature verification failed.");
             }

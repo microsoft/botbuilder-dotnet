@@ -3,15 +3,15 @@
 
 using System;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
-using Microsoft.Bot.Connector.Authentication;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Bot.Builder.Adapters.WeChat.TestBot
 {
-    public class AdapterWithErrorHandler : BotFrameworkHttpAdapter
+    public class AdapterWithErrorHandler : WeChatHttpAdapter
     {
-        public AdapterWithErrorHandler(ICredentialProvider credentialProvider, ILogger<BotFrameworkHttpAdapter> logger, ConversationState conversationState = null)
-            : base(credentialProvider)
+        public AdapterWithErrorHandler(WeChatSettings settings, IStorage storage, IHostedService queuedHostedService, ILogger<WeChatHttpAdapter> logger, ConversationState conversationState = null)
+            : base(settings, storage, queuedHostedService)
         {
             OnTurnError = async (turnContext, exception) =>
             {

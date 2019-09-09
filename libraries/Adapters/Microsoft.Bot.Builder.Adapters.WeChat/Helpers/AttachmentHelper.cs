@@ -3,7 +3,6 @@
 
 using System;
 using System.Linq;
-using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Adapters.WeChat.Helpers
 {
