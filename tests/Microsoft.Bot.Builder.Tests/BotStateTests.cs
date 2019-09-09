@@ -756,6 +756,20 @@ namespace Microsoft.Bot.Builder.Tests
             Assert.AreEqual("test-value", json["test-name"]["Value"].ToString());
         }
 
+        [TestMethod]
+        [Description("Should not throw when forcing without cached state")]
+        public async Task State_ForceIsNoOpWithoutCachedBotState()
+        {
+            // Arrange
+            var dictionary = new Dictionary<string, JObject>();
+
+            var userState = new UserState(new MemoryStorage(dictionary));
+            var context = TestUtilities.CreateEmptyContext();
+
+            // Act
+            await userState.SaveChangesAsync(context, true);
+        }
+
         public class TypedObject
         {
             public string Name { get; set; }
