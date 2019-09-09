@@ -81,8 +81,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
         {
             try
             {
+                // converts Resolution Values containing "end" (e.g. utterance "last") in numeric values.
                 var value = match.Resolution.Value.Replace("end", list.Count.ToString());
-                DataTable dt = new DataTable();
+                var dt = new DataTable();
                 var result = (int)dt.Compute(value, string.Empty);
 
                 var index = result - 1;
