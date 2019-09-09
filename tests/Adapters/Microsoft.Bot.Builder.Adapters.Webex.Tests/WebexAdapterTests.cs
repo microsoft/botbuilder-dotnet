@@ -193,7 +193,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
             var httpRequest = new Mock<HttpRequest>();
             httpRequest.SetupGet(req => req.Body).Returns(stream);
             httpRequest.Setup(req => req.Headers.ContainsKey(It.IsAny<string>())).Returns(true);
-            httpRequest.SetupGet(req => req.Headers[It.IsAny<string>()]).Returns("0DAE6B9150DA80E6049E81B9DC5AF3D57831AC60");
+            httpRequest.SetupGet(req => req.Headers[It.IsAny<string>()]).Returns("61E7F071CE5C9FA21C773E7D6E9C6FF3B8A21F80");
 
             var httpResponse = new Mock<HttpResponse>();
             var bot = new Mock<IBot>();
@@ -224,7 +224,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
             var httpRequest = new Mock<HttpRequest>();
             httpRequest.SetupGet(req => req.Body).Returns(stream);
             httpRequest.Setup(req => req.Headers.ContainsKey(It.IsAny<string>())).Returns(true);
-            httpRequest.SetupGet(req => req.Headers[It.IsAny<string>()]).Returns("1F8A7273D461C5517505A7A7551609FDF45CBF7B");
+            httpRequest.SetupGet(req => req.Headers[It.IsAny<string>()]).Returns("9C32875928D2901E0BE90AEDDF4063174E25BB4E");
 
             var httpResponse = new Mock<HttpResponse>();
             var bot = new Mock<IBot>();

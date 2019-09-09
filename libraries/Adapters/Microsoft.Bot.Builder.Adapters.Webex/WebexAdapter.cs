@@ -87,7 +87,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task<Webhook> RegisterWebhookSubscriptionAsync(string webhookPath, WebhookList webhookList)
         {
-            var webHookName = _config.WebhookName ?? "Botkit Firehose";
+            var webHookName = _config.WebhookName ?? "Webex Firehose";
 
             string hookId = null;
 

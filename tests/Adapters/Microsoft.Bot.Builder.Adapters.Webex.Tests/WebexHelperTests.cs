@@ -119,6 +119,22 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         }
 
         [Fact]
+        public void DecryptedMessageToActivity_With_Html_Should_Return_Activity_When_Match()
+        {
+            var serializedPerson = "{\"id\":\"/ciscospark://us/PEOPLE/different_id\"}";
+            WebexHelper.Identity = JsonConvert.DeserializeObject<Person>(serializedPerson);
+
+            var message =
+                JsonConvert.DeserializeObject<Message>(
+                    File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\MessageHtml.json"));
+
+            var activity = WebexHelper.DecryptedMessageToActivity(message);
+
+            Assert.Equal(message.Id, activity.Id);
+            Assert.Equal(message.Html, activity.Text);
+        }
+
+        [Fact]
         public void HandleMessageAttachments_Should_Fail_With_MoreThanOne_Attachment()
         {
             var message = JsonConvert.DeserializeObject<Message>(File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\MessageAttachments.json"));

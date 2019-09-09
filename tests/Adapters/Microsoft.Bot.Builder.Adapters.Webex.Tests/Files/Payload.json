@@ -1,6 +1,6 @@
 {
   "id": "test_id",
-  "name": "Botkit Firehose",
+  "name": "Webex Firehose",
   "resource": "messages",
   "event": "created",
   "filter": null,

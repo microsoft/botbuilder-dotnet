@@ -17,7 +17,7 @@
     },
     {
       "id": "test_webhook_id2",
-      "name": "Botkit Firehose",
+      "name": "Webex Firehose",
       "targetUrl": "https://contoso.com/api/messages",
       "resource": "all",
       "event": "all",
