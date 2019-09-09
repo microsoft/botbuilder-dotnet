@@ -6,11 +6,11 @@
     "type": "object",
     "additionalProperties": false,
     "properties": {
-        "kb-ID": {
+        "knowledgebase-ID": {
             "type": "string",
             "title": "Knowledgebase Id",
-            "description": "Kb ID of your QnA Maker KB.",
-            "default": "settings.qna.kbid"
+            "description": "Knowledgebase ID of your QnA Maker Knowledgebase.",
+            "default": "settings.qna.knowledgebaseid"
         },
         "endpointKey": {
             "type": "string",
@@ -20,7 +20,7 @@
         },
         "hostname": {
             "type": "string",
-            "title": "Host",
+            "title": "Hostname",
             "description": "Hostname for your QnA Maker service.",
             "default": "settings.qna.hostname",
             "examples": [
