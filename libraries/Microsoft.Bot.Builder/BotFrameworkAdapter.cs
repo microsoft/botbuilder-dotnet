@@ -965,8 +965,8 @@ namespace Microsoft.Bot.Builder
             // NOTE: we can't do async operations inside of a AddOrUpdate, so we split access pattern
             string appPassword = await _credentialProvider.GetAppPasswordAsync(appId).ConfigureAwait(false);
             appCredentials = (_channelProvider != null && _channelProvider.IsGovernment()) ?
-                new MicrosoftGovernmentAppCredentials(appId, appPassword, _httpClient) :
-                new MicrosoftAppCredentials(appId, appPassword, _httpClient);
+                new MicrosoftGovernmentAppCredentials(appId, appPassword, _httpClient, _logger) :
+                new MicrosoftAppCredentials(appId, appPassword, _httpClient, _logger);
             _appCredentialMap[appId] = appCredentials;
             return appCredentials;
         }
