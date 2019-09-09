@@ -1,14 +1,14 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
-    "$role": "unionType(Microsoft.IDialog)",
+    "$role": "unionType(Microsoft.Dialog)",
     "title": "QnAMaker Action",
     "description": "This represents an action which is driven by a call to QnAMaker.ai knowledge base",
     "type": "object",
     "additionalProperties": false,
     "properties": {
-        "knowledgebase-ID": {
+        "knowledgebaseID": {
             "type": "string",
-            "title": "Knowledgebase Id",
+            "title": "Knowledgebase ID",
             "description": "Knowledgebase ID of your QnA Maker Knowledgebase.",
             "default": "settings.qna.knowledgebaseid"
         },
@@ -28,7 +28,7 @@
             ]
         },
         "threshold": {
-            "type": "float",
+            "type": "number",
             "title": "Threshold",
             "description": "Threshold score to filter results.",
             "default": 0.3
@@ -47,10 +47,10 @@
         }
     },
     "required": [
-        "Kb-ID",
+        "knowledgebaseID",
         "endpointKey",
         "hostname",
         "threshold",
         "noAnswer"
-    ]      
+    ]
 }
