@@ -2,6 +2,7 @@
 {
     public class TurnPath
     {
+        public const string LASTRESULT = "turn.lastresult";
         public const string ACTIVITY = "turn.activity";
         public const string RECOGNIZED = "turn.recognized";
         public const string TOPINTENT = "turn.recognized.intent";

@@ -560,6 +560,9 @@ namespace Microsoft.Bot.Builder.Dialogs
 
                 // Pop dialog off stack
                 Stack.RemoveAt(0);
+
+                // set Turn.LastResult to result
+                this.State.SetValue(TurnPath.LASTRESULT, result);
             }
         }
 

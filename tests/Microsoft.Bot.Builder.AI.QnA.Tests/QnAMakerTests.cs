@@ -1381,11 +1381,11 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                             new QnAMakerDialog(qnamaker: qna),
                             new IfCondition()
                             {
-                                    Condition = "turn.LastResult == false",
-                                    Actions = new List<Dialog>()
-                                    {
-                                        new SendActivity("I didn't understand that.")
-                                    }
+                                Condition = "turn.LastResult == false",
+                                Actions = new List<Dialog>()
+                                {
+                                    new SendActivity("I didn't understand that.")
+                                }
                             }
                         }
                     }
