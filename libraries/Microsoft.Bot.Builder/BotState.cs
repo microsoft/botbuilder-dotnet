@@ -113,7 +113,7 @@ namespace Microsoft.Bot.Builder
             }
 
             var cachedState = turnContext.TurnState.Get<CachedBotState>(_contextServiceKey);
-            if (force || (cachedState != null && cachedState.IsChanged()))
+            if (cachedState != null && (force || cachedState.IsChanged()))
             {
                 var key = GetStorageKey(turnContext);
                 var changes = new Dictionary<string, object>
