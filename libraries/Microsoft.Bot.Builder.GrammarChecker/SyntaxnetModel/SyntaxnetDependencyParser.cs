@@ -1,13 +1,12 @@
-﻿namespace Microsoft.Bot.Builder.GrammarChecker.SyntaxnetModule
-{
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Linq;
-    using System.Runtime.InteropServices;
-    using Microsoft.Bot.Builder.GrammarChecker.SyntaxFeatures;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Runtime.InteropServices;
+using Microsoft.Bot.Builder.GrammarChecker.SyntaxFeatures;
 
-    public class SyntaxnetModule : ISyntaxModule
+namespace Microsoft.Bot.Builder.GrammarChecker.SyntaxnetModel
+{
+    public class SyntaxnetDependencyParser : IDependencyParser
     {
         [DllImport(@"Lib\syntaxnet.dll", EntryPoint = "InitializeSyntaxnet", CharSet = CharSet.Unicode)]
         private static extern bool InitializeSyntaxnet(IntPtr pSyntax, [MarshalAs(UnmanagedType.LPStr)] string strModelDirectory);
@@ -33,65 +32,66 @@
 
         private IntPtr pSyntax;
 
-        public SyntaxnetModule()
-        {
-            this.pSyntax = IntPtr.Zero;
-        }
-
-        ~SyntaxnetModule()
-        {
-            DeleteSyntaxnet();
-        }
-
-        public bool InitSyntaxModule(string path = "")
+        public SyntaxnetDependencyParser(string path = "")
         {
             this.pSyntax = CreateSyntaxnet();
-            string modelDirectory = Path.Combine(path, "SyntaxnetModule/ModelData").Replace(@"\", "/");
+            string modelDirectory = Path.Combine(path, "SyntaxnetModel/ModelData").Replace(@"\", "/");
 
-            return InitializeSyntaxnet(this.pSyntax, modelDirectory);
+            InitializeSyntaxnet(this.pSyntax, modelDirectory);
         }
 
-        public void Dispose()
+        ~SyntaxnetDependencyParser()
         {
             DeleteSyntaxnet();
         }
 
-        public bool PosTagging(string sentence, out List<object> tags)
+        public List<DependencyFeature> DependencyParsing(List<PosFeature> posFeatures)
         {
-            tags = new List<object>();
             if (this.pSyntax == IntPtr.Zero)
             {
-                return false;
-            }
-            
-            var responsePtr = DoPosTagging(this.pSyntax, sentence);
-            if (responsePtr != IntPtr.Zero)
-            {
-                var posStr = Marshal.PtrToStringAnsi(responsePtr);
-                tags = posStr.Split('\n').ToList<object>();
-                FreeSyntaxResult(responsePtr);
-            }
-            else
-            {
-                return false;
+                throw new Exception("Syntaxnet model engine is null");
             }
 
-            return true;
-        }
-
-        public bool DependencyParsing(List<object> tags, out List<DependencyFeature> depFeatures)
-        {
-            depFeatures = new List<DependencyFeature>();
-            if (this.pSyntax == IntPtr.Zero)
+            var tags = new List<string>();
+            foreach (var posFeature in posFeatures)
             {
-                return false;
+                var subTagStr = "_";
+                if (posFeature.VerbPosTag != VerbPosTag.OTHER)
+                {
+                    subTagStr = posFeature.VerbPosTag.ToString();
+                }
+                else if (posFeature.AdjPosTag != AdjectivePosTag.OTHER)
+                {
+                    subTagStr = posFeature.AdjPosTag.ToString();
+                }
+                else if (posFeature.NounPosTag != NounPosTag.OTHER)
+                {
+                    subTagStr = posFeature.NounPosTag.ToString();
+                }
+                else if (posFeature.PronPosTag != PronPosTag.OTHER)
+                {
+                    subTagStr = posFeature.PronPosTag.ToString();
+                }
+                else if (posFeature.NumPosTag != NumPosTag.OTHER)
+                {
+                    subTagStr = posFeature.NumPosTag.ToString();
+                }
+                else if (posFeature.OtherSubTag != string.Empty)
+                {
+                    subTagStr = posFeature.OtherSubTag;
+                }
+
+                var basicTagStr = posFeature.OtherBasicTag != string.Empty ? posFeature.OtherBasicTag : posFeature.BasicPosTag.ToString();
+
+                tags.Add($"{posFeature.WordIndex + 1}\t{posFeature.WordText}\t_\t{basicTagStr}\t{subTagStr}\t_\t0\t_\t_\t_");
             }
 
             var responsePtr = DoDependencyParsing(this.pSyntax, string.Join("\n", tags.ToArray()));
             if (responsePtr != IntPtr.Zero)
             {
+                var depFeatures = new List<DependencyFeature>();
                 var strDepFeatures = Marshal.PtrToStringAnsi(responsePtr);
-                var syntaxnetWords = SyntaxnetResultAnalyzer.Analysis(strDepFeatures);
+                var syntaxnetWords = Analysis(strDepFeatures);
                 for (int idx = 0; idx < syntaxnetWords.Count; idx++)
                 {
                     var feature = new DependencyFeature();
@@ -100,16 +100,18 @@
                     {
                         // for verb, will find subject word index
                         // for noun, will find number modifier index
-                        if (syntaxnetWords[feature.WordIndex].WordPOS.Equals(POSTag.VERB))
+                        if (syntaxnetWords[feature.WordIndex].WordPOS.Equals(BasicPosTag.VERB))
                         {
                             feature.SubjectIndex = FindVerbSubjectIndex(syntaxnetWords, feature.WordIndex);
                         }
-                        else if (syntaxnetWords[feature.WordIndex].WordPOS.Equals(POSTag.NOUN))
+                        else if (syntaxnetWords[feature.WordIndex].WordPOS.Equals(BasicPosTag.NOUN))
                         {
                             feature.NumericModifierIndex = FindNumberModifier(syntaxnetWords, feature.WordIndex);
                         }
 
-                        feature.PosTag = syntaxnetWords[feature.WordIndex].WordPOS;
+                        feature.PosFeature.BasicPosTag = syntaxnetWords[feature.WordIndex].WordPOS;
+                        feature.PosFeature.NounPosTag = syntaxnetWords[feature.WordIndex].NounPosTag;
+
                         depFeatures.Add(feature);
                     }
                     else
@@ -119,13 +121,85 @@
                 }
 
                 FreeSyntaxResult(responsePtr);
+
+                return depFeatures;
             }
             else
             {
-                return false;
+                throw new Exception("Syntaxnet dependency parsing failed");
+            }
+        }
+
+        private List<SyntaxnetWord> Analysis(string strInput)
+        {
+            var syntaxnetWords = new List<SyntaxnetWord>();
+            if (strInput.Length == 0)
+            {
+                return syntaxnetWords;
             }
 
-            return true;
+            var words = new List<string>(strInput.Split('\n'));
+            if (words.Count == 0)
+            {
+                return syntaxnetWords;
+            }
+
+            foreach (string word in words)
+            {
+                var synWord = new SyntaxnetWord();
+                var features = new List<string>(word.Split('\t'));
+
+                if (features.Count != 10)
+                {
+                    continue;
+                }
+
+                int wordIdx = -1;
+                if (int.TryParse(features[0], out wordIdx))
+                {
+                    synWord.WordIndex = wordIdx - 1;
+                }
+                else
+                {
+                    throw new Exception("Parse syntaxnet word index error");
+                }
+
+                int wordHead = -1;
+                if (int.TryParse(features[6], out wordHead))
+                {
+                    synWord.WordHead = wordHead - 1;
+                }
+                else
+                {
+                    throw new Exception("Parse syntaxnet word head error");
+                }
+
+                var posTagStr = features[3];
+                BasicPosTag posTag;
+                if (Enum.TryParse(posTagStr, true, out posTag))
+                {
+                    synWord.WordPOS = posTag;
+                }
+
+                var subPosTagStr = features[4];
+                NounPosTag nounTag;
+                if (Enum.TryParse(subPosTagStr, true, out nounTag))
+                {
+                    synWord.NounPosTag = nounTag;
+                }
+
+                var depTagStr = features[7];
+                DependencyTag depTag;
+                if (Enum.TryParse(depTagStr, true, out depTag))
+                {
+                    synWord.WordDependency = depTag;
+                }
+
+                synWord.Word = features[1];
+                syntaxnetWords.Add(synWord);
+            }
+
+            return syntaxnetWords;
         }
 
         private int FindVerbSubjectIndex(
@@ -275,13 +349,13 @@
 
             bool isValid = false;
 
-            if (syntaxWords[wordIndex].WordPOS.Equals(POSTag.NUM))
+            if (syntaxWords[wordIndex].WordPOS.Equals(BasicPosTag.NUM))
             {
                 isValid = true;
             }
 
-            if (syntaxWords[wordIndex].WordPOS.Equals(POSTag.NOUN)
-                || syntaxWords[wordIndex].WordPOS.Equals(POSTag.PRON))
+            if (syntaxWords[wordIndex].WordPOS.Equals(BasicPosTag.NOUN)
+                || syntaxWords[wordIndex].WordPOS.Equals(BasicPosTag.PRON))
             {
                 isValid = true;
             }

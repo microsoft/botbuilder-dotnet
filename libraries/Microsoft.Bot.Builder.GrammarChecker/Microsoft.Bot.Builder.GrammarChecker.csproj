@@ -36,31 +36,31 @@
     <None Update="Lib\tensorflow.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="SyntaxnetModule\ModelData\context.pbtxt">
+    <None Update="SyntaxnetModel\ModelData\context.pbtxt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="SyntaxnetModule\ModelData\fine-to-universal.map">
+    <None Update="SyntaxnetModel\ModelData\fine-to-universal.map">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="SyntaxnetModule\ModelData\label-map">
+    <None Update="SyntaxnetModel\ModelData\label-map">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="SyntaxnetModule\ModelData\parser\export.pb">
+    <None Update="SyntaxnetModel\ModelData\parser\export.pb">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="SyntaxnetModule\ModelData\prefix-table">
+    <None Update="SyntaxnetModel\ModelData\prefix-table">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="SyntaxnetModule\ModelData\suffix-table">
+    <None Update="SyntaxnetModel\ModelData\suffix-table">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="SyntaxnetModule\ModelData\tag-map">
+    <None Update="SyntaxnetModel\ModelData\tag-map">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="SyntaxnetModule\ModelData\tagger\export.pb">
+    <None Update="SyntaxnetModel\ModelData\tagger\export.pb">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="SyntaxnetModule\ModelData\word-map">
+    <None Update="SyntaxnetModel\ModelData\word-map">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

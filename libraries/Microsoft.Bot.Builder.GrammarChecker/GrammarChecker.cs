@@ -6,15 +6,17 @@ using Microsoft.Bot.Builder.GrammarChecker.SyntaxFeatures;
 
 namespace Microsoft.Bot.Builder.GrammarChecker
 {
-    public class Checker
+    public class GrammarChecker : IGrammarChecker
     {
-        private ISyntaxModule syntaxModule;
-        private Transducer transducer;
+        private IPosTagger posTagger;
+        private IDependencyParser dependencyParser;
+        private ICorrector corrector;
 
-        public Checker(ISyntaxModule syntaxModule)
+        public GrammarChecker(IPosTagger posTagger, IDependencyParser dependencyParser, ICorrector corrector)
         {
-            this.syntaxModule = syntaxModule;
-            this.transducer = new Transducer();
+            this.posTagger = posTagger;
+            this.dependencyParser = dependencyParser;
+            this.corrector = corrector;
         }
         
         public string CheckText(string text)
@@ -74,28 +76,18 @@ namespace Microsoft.Bot.Builder.GrammarChecker
             return text;
         }
 
-        private List<object> PosTagging(string sentence)
+        private List<PosFeature> PosTagging(string sentence)
         {
-            List<object> tagObjects;
+            var posFeatures = posTagger.PosTagging(sentence);
 
-            if (!syntaxModule.PosTagging(sentence, out tagObjects))
-            {
-                throw new Exception("pos tagging failed.");
-            }
-
-            return tagObjects;
+            return posFeatures;
         }
 
-        private List<DependencyFeature> DependencyParsing(List<object> tags)
+        private List<DependencyFeature> DependencyParsing(List<PosFeature> posFeatures)
         {
-            List<DependencyFeature> depObjects;
+            var depFeatures = dependencyParser.DependencyParsing(posFeatures);
 
-            if (!syntaxModule.DependencyParsing(tags, out depObjects))
-            {
-                throw new Exception("dependency parsing failed.");
-            }
-
-            return depObjects;
+            return depFeatures;
         }
 
         private List<string> CorrectWords(List<string> words, List<DependencyFeature> depFeatures)
@@ -110,33 +102,45 @@ namespace Microsoft.Bot.Builder.GrammarChecker
                     {
                         correctingInfo.WordIndex = depFeature.WordIndex;
 
-                        words[correctingInfo.WordIndex] = this.transducer.CorrectElisionWord(
+                        words[correctingInfo.WordIndex] = this.corrector.CorrectElisionWord(
                             words[correctingInfo.WordIndex], 
                             words[correctingInfo.WordIndex + 1], 
                             correctingInfo);
                     }
-                    else if (depFeature.PosTag.Equals(POSTag.VERB) && depFeature.SubjectIndex != -1)
+                    else if (depFeature.PosFeature.BasicPosTag.Equals(BasicPosTag.VERB) && depFeature.SubjectIndex != -1)
                     {
                         correctingInfo.WordIndex = depFeature.WordIndex;
                         correctingInfo.VerbInfo.ReferencePosition = depFeature.SubjectIndex;
 
                         var number = Number.None;
-                        if (this.transducer.IsNumber(words[depFeature.SubjectIndex], out number))
+                        if (this.corrector.IsNumber(words[depFeature.SubjectIndex], out number))
                         {
                             correctingInfo.VerbInfo.SubjectNumber = number;
                         }
 
-                        words[correctingInfo.WordIndex] = this.transducer.CorrectVerbWord(words[correctingInfo.WordIndex], words, correctingInfo);
+                        if (depFeatures[depFeature.SubjectIndex].PosFeature.NounPosTag == NounPosTag.NN
+                            || depFeatures[depFeature.SubjectIndex].PosFeature.NounPosTag == NounPosTag.NNP)
+                        {
+                            correctingInfo.VerbInfo.SubjectNumberFromPosTagging = Number.Singular;
+                        }
+
+                        if (depFeatures[depFeature.SubjectIndex].PosFeature.NounPosTag == NounPosTag.NNS
+                            || depFeatures[depFeature.SubjectIndex].PosFeature.NounPosTag == NounPosTag.NNPS)
+                        {
+                            correctingInfo.VerbInfo.SubjectNumberFromPosTagging = Number.Plural;
+                        }
+
+                        words[correctingInfo.WordIndex] = this.corrector.CorrectVerbWord(words[correctingInfo.WordIndex], words, correctingInfo);
                     }
-                    else if (depFeature.PosTag.Equals(POSTag.NOUN) && depFeature.NumericModifierIndex != -1)
+                    else if (depFeature.PosFeature.BasicPosTag.Equals(BasicPosTag.NOUN) && depFeature.NumericModifierIndex != -1)
                     {
                         var number = Number.None;
-                        if (this.transducer.IsNumber(words[depFeature.NumericModifierIndex], out number))
+                        if (this.corrector.IsNumber(words[depFeature.NumericModifierIndex], out number))
                         {
                             correctingInfo.WordIndex = depFeature.WordIndex;
                             correctingInfo.NumberInfo.Feature = number;
 
-                            words[correctingInfo.WordIndex] = this.transducer.CorrectNounWord(words[correctingInfo.WordIndex], correctingInfo);
+                            words[correctingInfo.WordIndex] = this.corrector.CorrectNounWord(words[correctingInfo.WordIndex], correctingInfo);
                         }
                     }
                 }

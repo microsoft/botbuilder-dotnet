@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -7,7 +6,7 @@ using Microsoft.Bot.Builder.GrammarChecker.CorrectingInfos;
 
 namespace Microsoft.Bot.Builder.GrammarChecker
 {
-    public class Transducer
+    public class Corrector : ICorrector
     {
         private Dictionary<string, string> sg_pl_n;
         private Dictionary<string, string> pl_sg_n;
@@ -24,7 +23,7 @@ namespace Microsoft.Bot.Builder.GrammarChecker
         private HashSet<string> englishOrdinalDict;
         private HashSet<string> englishNameDict;
 
-        public Transducer()
+        public Corrector()
         {
             // noun dictionary
             sg_pl_n = new Dictionary<string, string>();
@@ -145,7 +144,10 @@ namespace Microsoft.Bot.Builder.GrammarChecker
             {
                 correctingInfo.VerbInfo.Feature = SubjectVerb.Singular;
             }
-            else if (plural_n.Contains(ref_word.ToLower()) || plural_pn.Contains(ref_word.ToLower()) || correctingInfo.VerbInfo.SubjectNumber == Number.Plural)
+            else if (plural_n.Contains(ref_word.ToLower())
+                || plural_pn.Contains(ref_word.ToLower())
+                || correctingInfo.VerbInfo.SubjectNumber == Number.Plural
+                || correctingInfo.VerbInfo.SubjectNumberFromPosTagging == Number.Plural)
             {
                 correctingInfo.VerbInfo.Feature = SubjectVerb.Plural;
             }
