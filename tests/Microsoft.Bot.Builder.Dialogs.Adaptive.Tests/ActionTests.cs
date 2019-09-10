@@ -1336,7 +1336,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 ItemsProperty = "dialog.todo",
                                 Actions = new List<Dialog>()
                                 {
-                                    new SendActivity("index is: {dialog.index} and value is: {dialog.value}")
+                                    new SendActivity("index is: {dialog.foreach.index} and value is: {dialog.foreach.value}")
                                 }
                             }
                         }
@@ -1418,16 +1418,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             {
                                 ItemsProperty = "dialog.todo",
                                 PageSize = 3,
-                                //ValueProperty = "dialog.page",
                                 Actions = new List<Dialog>()
                                 {
                                     new SendActivity("This page have 3 items"),
                                     new Foreach()
                                     {
-                                        ItemsProperty = "dialog.page",
+                                        ItemsProperty = "dialog.foreach.page",
                                         Actions = new List<Dialog>()
                                         {
-                                            new SendActivity("index is: {dialog.index} and value is: {dialog.value}")
+                                            new SendActivity("index is: {dialog.foreach.index} and value is: {dialog.foreach.value}")
                                         }
                                     }
                                 }

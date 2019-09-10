@@ -20,8 +20,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// </summary>
     public class ForeachPage : DialogAction
     {
-        private const string FOREACH_INDEX = "dialog.foreach.i";
-        private const string FOREACH_VALUE = "dialog.foreach.value";
+        private const string FOREACH_PAGE = "dialog.foreach.page";
 
         [JsonConstructor]
         public ForeachPage([CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
@@ -62,7 +61,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 if (options != null && options is ForeachPageOptions)
                 {
                     var opt = options as ForeachPageOptions;
-                    itemsProperty = opt.List;
+                    itemsProperty = opt.Items;
                     offset = opt.Offset;
                     pageSize = opt.PageSize;
                 }
@@ -72,14 +71,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                     pageSize = this.PageSize;
                 }
 
-                var (itemList, error) = itemsProperty.TryEvaluate(dc.State);
+                var (items, error) = itemsProperty.TryEvaluate(dc.State);
                 if (error == null)
                 {
-                    var page = this.GetPage(itemList, offset, pageSize);
+                    var page = this.GetPage(items, offset, pageSize);
 
                     if (page.Count() > 0)
                     {
-                        dc.State.SetValue(FOREACH_VALUE, page);
+                        dc.State.SetValue(FOREACH_PAGE, page);
                         var changes = new ActionChangeList()
                         {
                             ChangeType = ActionChangeType.InsertActions,
@@ -93,7 +92,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                             DialogId = this.Id,
                             Options = new ForeachPageOptions()
                             {
-                                List = itemsProperty,
+                                Items = itemsProperty,
                                 Offset = offset + pageSize,
                                 PageSize = pageSize
                             }
@@ -142,7 +141,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
         public class ForeachPageOptions
         {
-            public Expression List { get; set; }
+            public Expression Items { get; set; }
 
             public int Offset { get; set; }
 

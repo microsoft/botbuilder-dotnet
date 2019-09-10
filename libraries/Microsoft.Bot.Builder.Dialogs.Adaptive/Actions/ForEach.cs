@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// </summary>
     public class Foreach : DialogAction
     {
-        private const string INDEX = "dialog.foreach.i";
+        private const string INDEX = "dialog.foreach.index";
         private const string VALUE = "dialog.foreach.value";
 
         [JsonConstructor]
