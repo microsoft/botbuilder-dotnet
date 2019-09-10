@@ -1,0 +1,56 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
+    "$role": "unionType(Microsoft.Dialog)",
+    "title": "QnAMaker Action",
+    "description": "This represents an action which is driven by a call to QnAMaker.ai knowledge base",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "knowledgeBaseId": {
+            "type": "string",
+            "title": "KnowledgeBase Id",
+            "description": "KnowledgeBase Id of your QnA Maker KnowledgeBase.",
+            "default": "settings.qna.knowledgebaseid"
+        },
+        "endpointKey": {
+            "type": "string",
+            "title": "Endpoint Key",
+            "description": "Endpoint key for the QnA Maker KB.",
+            "default": "settings.qna.endpointkey"
+        },
+        "hostname": {
+            "type": "string",
+            "title": "Hostname",
+            "description": "Hostname for your QnA Maker service.",
+            "default": "settings.qna.hostname",
+            "examples": [
+                "https://yourserver.azurewebsites.net/qnamaker"
+            ]
+        },
+        "threshold": {
+            "type": "number",
+            "title": "Threshold",
+            "description": "Threshold score to filter results.",
+            "default": 0.3
+        },
+        "strictFilterProperty": {
+            "$role": "expression",
+            "title": "Strict Filter Property",
+            "description": "Memory property that holds strict filters to use when calling the QnA Maker KB.",
+            "default": "dialog.qna.strictFilters"
+        },
+        "noAnswer": {
+            "$type": "Microsoft.IActivityTemplate",
+            "title": "Initial Prompt",
+            "description": "Default answer to return when none found in KB.",
+            "default": "Sorry, I did not find an answer."
+        }
+    },
+    "required": [
+        "knowledgeBaseId",
+        "endpointKey",
+        "hostname",
+        "threshold",
+        "noAnswer"
+    ]
+}
