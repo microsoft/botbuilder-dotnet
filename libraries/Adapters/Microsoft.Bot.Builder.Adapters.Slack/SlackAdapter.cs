@@ -6,12 +6,10 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 using System.Net;
-using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
@@ -126,75 +124,6 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         }
 
         /// <summary>
-        /// Formats a BotBuilder activity into an outgoing Slack message.
-        /// </summary>
-        /// <param name="activity">A BotBuilder Activity object.</param>
-        /// <returns>A Slack message object with {text, attachments, channel, thread ts} as well as any fields found in activity.channelData.</returns>
-        public NewSlackMessage ActivityToSlack(Activity activity)
-        {
-            NewSlackMessage message = new NewSlackMessage();
-
-            if (activity.Timestamp != null)
-            {
-                message.ts = activity.Timestamp.Value.DateTime;
-            }
-
-            message.text = activity.Text;
-
-            foreach (Microsoft.Bot.Schema.Attachment att in activity.Attachments)
-            {
-                SlackAPI.Attachment newAttachment = new SlackAPI.Attachment()
-                {
-                    author_name = att.Name,
-                    thumb_url = att.ThumbnailUrl,
-                };
-                message.attachments.Add(newAttachment);
-            }
-
-            message.channel = activity.Conversation.Id;
-
-            if (activity.Conversation.Properties["thread_ts"].ToString() != string.Empty)
-            {
-                message.ThreadTS = activity.Conversation.Properties["thread_ts"].ToString();
-            }
-
-            // if channelData is specified, overwrite any fields in message object
-            if (activity.ChannelData != null)
-            {
-                try
-                {
-                    // Try a straight up cast
-                    message = activity.ChannelData as NewSlackMessage;
-                }
-                catch (InvalidCastException)
-                {
-                    foreach (var property in message.GetType().GetFields())
-                    {
-                        string name = property.Name;
-                        var value = (activity.ChannelData as dynamic)[name];
-                        if (value != null)
-                        {
-                            message.GetType().GetField(name).SetValue(message, value);
-                        }
-                    }
-                }
-            }
-
-            // should this message be sent as an ephemeral message
-            if (message.Ephemeral != null)
-            {
-                message.user = activity.Recipient.Id;
-            }
-
-            if (message.IconUrl != null || message.icons?.status_emoji != null || message.username != null)
-            {
-                message.AsUser = false;
-            }
-
-            return message;
-        }
-
-        /// <summary>
         /// Standard BotBuilder adapter method to send a message from the bot to the messaging API.
         /// </summary>
         /// <param name="turnContext">A TurnContext representing the current incoming message and environment.</param>
@@ -209,7 +138,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
                 Activity activity = activities[i];
                 if (activity.Type == ActivityTypes.Message)
                 {
-                    NewSlackMessage message = this.ActivityToSlack(activity);
+                    NewSlackMessage message = SlackHelper.ActivityToSlack(activity);
 
                     try
                     {
@@ -266,7 +195,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         {
             if (activity.Id != null && activity.Conversation != null)
             {
-                NewSlackMessage message = this.ActivityToSlack(activity);
+                NewSlackMessage message = SlackHelper.ActivityToSlack(activity);
                 SlackTaskClient slack = await this.GetAPIAsync(activity);
                 var results = await slack.UpdateAsync(activity.Timestamp.ToString(), activity.ChannelId, message.text);
                 if (!results.ok)
@@ -346,7 +275,11 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
                     await response.WriteAsync(text);
                 }
 
-                if (this.VerifySignature(request, response))
+                if (!SlackHelper.VerifySignature(options.ClientSigningSecret, request))
+                {
+                    response.StatusCode = 401;
+                }
+                else
                 {
                     if (slackEvent.payload != null)
                     {
@@ -545,41 +478,6 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
                     throw new Exception("Missing Slack API credentials! Provide clientId, clientSecret, scopes and redirectUri as part of the SlackAdapter options.");
                 }
             }
-        }
-
-        /// <summary>
-        /// Verify the signature of an incoming webhook request as originating from Slack.
-        /// </summary>
-        /// <returns>If signature is valid, returns true. Otherwise, sends a 401 error status via http response and then returns false.</returns>
-        private bool VerifySignature(HttpRequest request, HttpResponse response)
-        {
-            if (this.options.ClientSigningSecret != null && request.Body != null)
-            {
-                var timestamp = request.Headers;
-                var body = request.Body;
-
-                object[] signature = { "v0", timestamp.ToString(), body.ToString() };
-
-                string baseString = string.Join(":", signature);
-
-                var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(this.options.ClientSigningSecret));
-
-                var hash = "v0=" + hmac.ComputeHash(Encoding.UTF8.GetBytes(baseString));
-
-                var retrievedSignature = request.Headers["X-Slack-Signature"];
-
-                // Compare the hash of the computed signature with the retrieved signature with a secure hmac compare function
-                bool signatureIsValid = string.Equals(hash, retrievedSignature);
-
-                // replace direct compare with the hmac result
-                if (!signatureIsValid)
-                {
-                    response.StatusCode = 401;
-                    return false;
-                }
-            }
-
-            return true;
         }
     }
 }
