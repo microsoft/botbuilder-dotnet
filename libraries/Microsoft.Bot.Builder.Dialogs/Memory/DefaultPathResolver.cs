@@ -19,6 +19,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         /// <returns>true if it will resolve the path.</returns>
         public virtual bool Matches(string path)
         {
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+
             return true;
         }
 

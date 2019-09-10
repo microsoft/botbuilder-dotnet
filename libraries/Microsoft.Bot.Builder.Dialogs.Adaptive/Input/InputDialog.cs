@@ -128,7 +128,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 var input = dc.State.GetValue<object>(VALUE_PROPERTY);
                 
                 // set output property
-                dc.State.SetValue(this.Property, input);
+                if (!String.IsNullOrEmpty(this.Property))
+                {
+                    dc.State.SetValue(this.Property, input);
+                }
+
                 return await dc.EndDialogAsync(input).ConfigureAwait(false);
             }
             else if (this.MaxTurnCount == null || turnCount < this.MaxTurnCount)

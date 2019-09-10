@@ -44,6 +44,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
             new AtAtPathResolver(),
             new AtPathResolver(),
             new PercentPathResolver(),
+            new DefaultPathResolver()
         };
 
         /// <summary>
