@@ -33,6 +33,9 @@
     <None Update="Lib\syntaxnet.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Lib\tensorflow.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="SyntaxnetModule\ModelData\context.pbtxt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
