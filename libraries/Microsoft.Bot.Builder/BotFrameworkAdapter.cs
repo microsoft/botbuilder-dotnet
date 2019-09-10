@@ -827,14 +827,12 @@ namespace Microsoft.Bot.Builder
         {
             if (reference.Conversation != null)
             {
-                var typeOfDynamic = reference.Conversation.GetType();
-                var tenantProperty = typeOfDynamic.GetProperty("tenantId");
-                var tenantId = tenantProperty?.GetValue(reference.Conversation, null);
+                var tenantId = reference.Conversation.TenantId;
 
                 if (tenantId != null)
                 {
                     // Putting tenantId in channelData is a temporary solution while we wait for the Teams API to be updated
-                    conversationParameters.ChannelData = new { tenant = new { tenantId= tenantId.ToString() } };
+                    conversationParameters.ChannelData = new { tenant = new { tenantId = tenantId.ToString() } };
 
                     // Permanent solution is to put tenantId in parameters.tenantId
                     conversationParameters.TenantId = tenantId.ToString();
@@ -966,8 +964,8 @@ namespace Microsoft.Bot.Builder
             // NOTE: we can't do async operations inside of a AddOrUpdate, so we split access pattern
             string appPassword = await _credentialProvider.GetAppPasswordAsync(appId).ConfigureAwait(false);
             appCredentials = (_channelProvider != null && _channelProvider.IsGovernment()) ?
-                new MicrosoftGovernmentAppCredentials(appId, appPassword, _httpClient) :
-                new MicrosoftAppCredentials(appId, appPassword, _httpClient);
+                new MicrosoftGovernmentAppCredentials(appId, appPassword, _httpClient, _logger) :
+                new MicrosoftAppCredentials(appId, appPassword, _httpClient, _logger);
             _appCredentialMap[appId] = appCredentials;
             return appCredentials;
         }

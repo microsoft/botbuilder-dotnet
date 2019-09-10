@@ -12,8 +12,20 @@ using Newtonsoft.Json.Linq;
 namespace Microsoft.Bot.Builder
 {
     /// <summary>
-    /// Reads and writes state for your bot to storage.
+    /// Defines a state management object and automates the reading and writing of associated state
+    /// properties to a storage layer.
     /// </summary>
+    /// <remarks>
+    /// Each state management object defines a scope for a storage layer.
+    ///
+    /// State properties are created within a state management scope, and the Bot Framework
+    /// defines these scopes:
+    /// <see cref="ConversationState"/>, <see cref="UserState"/>, and <see cref="PrivateConversationState"/>.
+    ///
+    /// You can define additional scopes for your bot.
+    /// </remarks>
+    /// <seealso cref="IStorage"/>
+    /// <seealso cref="IStatePropertyAccessor{T}"/>
     public abstract class BotState : IPropertyManager
     {
         private readonly string _contextServiceKey;
@@ -22,8 +34,16 @@ namespace Microsoft.Bot.Builder
         /// <summary>
         /// Initializes a new instance of the <see cref="BotState"/> class.
         /// </summary>
-        /// <param name="storage">The storage provider to use.</param>
-        /// <param name="contextServiceKey">the key for caching on the context services dictionary.</param>
+        /// <param name="storage">The storage layer this state management object will use to store
+        /// and retrieve state.</param>
+        /// <param name="contextServiceKey">The key for the state cache for this <see cref="BotState"/>.</param>
+        /// <remarks>This constructor creates a state management object and associated scope.
+        /// The object uses <paramref name="storage"/> to persist state property values.
+        /// The object uses the <paramref name="contextServiceKey"/> to cache state within the context for each turn.
+        /// </remarks>
+        /// <exception cref="ArgumentNullException"><paramref name="storage"/> or <paramref name="contextServiceKey"/>
+        /// is <c>null</c>.</exception>
+        /// <seealso cref="ITurnContext"/>
         public BotState(IStorage storage, string contextServiceKey)
         {
             _storage = storage ?? throw new ArgumentNullException(nameof(storage));
@@ -31,11 +51,13 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
-        /// Create a property definition and register it with this BotState.
+        /// Creates a named state property within the scope of a <see cref="BotState"/> and returns
+        /// an accessor for the property.
         /// </summary>
-        /// <typeparam name="T">type of property.</typeparam>
-        /// <param name="name">name of the property.</param>
-        /// <returns>The created state property accessor.</returns>
+        /// <typeparam name="T">The value type of the property.</typeparam>
+        /// <param name="name">The name of the property.</param>
+        /// <returns>An accessor for the property.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="name"/> is <c>null</c>.</exception>
         public IStatePropertyAccessor<T> CreateProperty<T>(string name)
         {
             if (string.IsNullOrWhiteSpace(name))
@@ -47,13 +69,15 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
-        /// Reads in  the current state object and caches it in the context object for this turm.
+        /// Populates the state cache for this <see cref="BotState"/> from the storage layer.
         /// </summary>
         /// <param name="turnContext">The context object for this turn.</param>
-        /// <param name="force">Optional. True to bypass the cache.</param>
+        /// <param name="force">Optional, <c>true</c> to overwrite any existing state cache;
+        /// or <c>false</c> to load state from storage only if the cache doesn't already exist.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="turnContext"/> is <c>null</c>.</exception>
         public virtual async Task LoadAsync(ITurnContext turnContext, bool force = false, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (turnContext == null)
@@ -72,13 +96,15 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
-        /// If it has changed, writes to storage the state object that is cached in the current context object for this turn.
+        /// Writes the state cache for this <see cref="BotState"/> to the storage layer.
         /// </summary>
         /// <param name="turnContext">The context object for this turn.</param>
-        /// <param name="force">Optional. True to save state to storage whether or not there are changes.</param>
+        /// <param name="force">Optional, <c>true</c> to save the state cache to storage;
+        /// or <c>false</c> to save state to storage only if a property in the cache has changed.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="turnContext"/> is <c>null</c>.</exception>
         public virtual async Task SaveChangesAsync(ITurnContext turnContext, bool force = false, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (turnContext == null)
@@ -87,7 +113,7 @@ namespace Microsoft.Bot.Builder
             }
 
             var cachedState = turnContext.TurnState.Get<CachedBotState>(_contextServiceKey);
-            if (force || (cachedState != null && cachedState.IsChanged()))
+            if (cachedState != null && (force || cachedState.IsChanged()))
             {
                 var key = GetStorageKey(turnContext);
                 var changes = new Dictionary<string, object>
@@ -101,12 +127,17 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
-        /// Clears any state currently stored in this state scope.
+        /// Clears the state cache for this <see cref="BotState"/>.
         /// </summary>
         /// <param name="turnContext">The context object for this turn.</param>
-        /// <param name="cancellationToken">cancellation token.</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        /// <remarks>NOTE: that SaveChangesAsync must be called in order for the cleared state to be persisted to the underlying store.</remarks>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <remarks>This method clears the state cache in the turn context. Call
+        /// <see cref="SaveChangesAsync(ITurnContext, bool, CancellationToken)"/> to persist this
+        /// change in the storage layer.
+        /// </remarks>
+        /// <exception cref="ArgumentNullException"><paramref name="turnContext"/> is <c>null</c>.</exception>
         public virtual Task ClearStateAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (turnContext == null)
@@ -121,11 +152,13 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
-        /// Delete any state currently stored in this state scope.
+        /// Deletes any state in storage and the cache for this <see cref="BotState"/>.
         /// </summary>
         /// <param name="turnContext">The context object for this turn.</param>
-        /// <param name="cancellationToken">cancellation token.</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A task that represents the work queued to execute.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="turnContext"/> is <c>null</c>.</exception>
         public virtual async Task DeleteAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (turnContext == null)
@@ -144,10 +177,11 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
-        /// Returns a copy of the raw cached data from the TurnContext, this can be used for tracing scenarios.
+        /// Gets a copy of the raw cached data for this <see cref="BotState"/> from the turn context.
         /// </summary>
         /// <param name="turnContext">The context object for this turn.</param>
         /// <returns>A JSON representation of the cached state.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="turnContext"/> is <c>null</c>.</exception>
         public JToken Get(ITurnContext turnContext)
         {
             if (turnContext == null)
@@ -168,15 +202,17 @@ namespace Microsoft.Bot.Builder
         protected abstract string GetStorageKey(ITurnContext turnContext);
 
         /// <summary>
-        /// Gets a property from the state cache in the turn context.
+        /// Gets the value of a property from the state cache for this <see cref="BotState"/>.
         /// </summary>
-        /// <typeparam name="T">The property type.</typeparam>
+        /// <typeparam name="T">The value type of the property.</typeparam>
         /// <param name="turnContext">The context object for this turn.</param>
-        /// <param name="propertyName">The name of the property to get.</param>
+        /// <param name="propertyName">The name of the property.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>If the task is successful, the result contains the property value.</remarks>
+        /// <exception cref="ArgumentNullException"><paramref name="turnContext"/> or
+        /// <paramref name="propertyName"/> is <c>null</c>.</exception>
         protected Task<T> GetPropertyValueAsync<T>(ITurnContext turnContext, string propertyName, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (turnContext == null)
@@ -197,13 +233,15 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
-        /// Deletes a property from the state cache in the turn context.
+        /// Deletes a property from the state cache for this <see cref="BotState"/>.
         /// </summary>
         /// <param name="turnContext">The context object for this turn.</param>
-        /// <param name="propertyName">The name of the property to delete.</param>
+        /// <param name="propertyName">The name of the property.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="turnContext"/> or
+        /// <paramref name="propertyName"/> is <c>null</c>.</exception>
         protected Task DeletePropertyValueAsync(ITurnContext turnContext, string propertyName, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (turnContext == null)
@@ -222,7 +260,7 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
-        /// Set the value of a property in the state cache in the turn context.
+        /// Sets the value of a property in the state cache for this <see cref="BotState"/>.
         /// </summary>
         /// <param name="turnContext">The context object for this turn.</param>
         /// <param name="propertyName">The name of the property to set.</param>
@@ -230,6 +268,8 @@ namespace Microsoft.Bot.Builder
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="turnContext"/> or
+        /// <paramref name="propertyName"/> is <c>null</c>.</exception>
         protected Task SetPropertyValueAsync(ITurnContext turnContext, string propertyName, object value, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (turnContext == null)

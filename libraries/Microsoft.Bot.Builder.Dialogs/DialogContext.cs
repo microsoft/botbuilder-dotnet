@@ -93,8 +93,9 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>If the task is successful, the result indicates whether the dialog is still
         /// active after the turn has been processed by the dialog.</remarks>
-        /// <seealso cref="PromptAsync(string, PromptOptions, CancellationToken)"/>
         /// <seealso cref="EndDialogAsync(object, CancellationToken)"/>
+        /// <seealso cref="PromptAsync(string, PromptOptions, CancellationToken)"/>
+        /// <seealso cref="Dialog.BeginDialogAsync(DialogContext, object, CancellationToken)"/>
         public async Task<DialogTurnResult> BeginDialogAsync(string dialogId, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (string.IsNullOrEmpty(dialogId))
@@ -136,6 +137,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <remarks>If the task is successful, the result indicates whether the dialog is still
         /// active after the turn has been processed by the dialog.</remarks>
         /// <seealso cref="BeginDialogAsync(string, object, CancellationToken)"/>
+        /// <seealso cref="Prompt{T}.BeginDialogAsync(DialogContext, object, CancellationToken)"/>
         public async Task<DialogTurnResult> PromptAsync(string dialogId, PromptOptions options, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (string.IsNullOrEmpty(dialogId))
@@ -152,16 +154,20 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// Continues execution of the active dialog, if there is one, by passing the current <see cref="DialogContext"/> to
-        /// the active dialog's <see cref="Dialog.ContinueDialogAsync(DialogContext, CancellationToken)"/> method.
-        /// Check the <see cref="TurnContext.Responded"/> property after the call completes
-        /// to determine if the active dialog sent a reply message to the user.
+        /// Continues execution of the active dialog, if there is one, by passing the current
+        /// <see cref="DialogContext"/> to the active dialog's
+        /// <see cref="Dialog.ContinueDialogAsync(DialogContext, CancellationToken)"/> method.
         /// </summary>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>If the task is successful, the result indicates whether the dialog is still
-        /// active after the turn has been processed by the dialog.</remarks>
+        /// active after the turn has been processed by the dialog.
+        ///
+        /// Check the <see cref="TurnContext.Responded"/> property after the call completes
+        /// to determine if the active dialog sent a reply message to the user.
+        /// </remarks>
+        /// <seealso cref="Dialog.ContinueDialogAsync(DialogContext, CancellationToken)"/>
         public async Task<DialogTurnResult> ContinueDialogAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
             // Check for a dialog on the stack
@@ -184,8 +190,9 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// Ends a dialog by popping it off the stack and returns an optional result to the dialog's logical parent,
-        /// which is the next dialog on the stack, or the bot's turn handler if this was the last dialog on the stack.
+        /// Ends a dialog by popping it off the stack and returns an optional result to the dialog's
+        /// logical parent, which is the next dialog on the stack, or the bot's turn handler if this
+        /// was the last dialog on the stack.
         /// </summary>
         /// <param name="result">Optional, result to pass to the parent context.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
@@ -205,6 +212,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <seealso cref="BeginDialogAsync(string, object, CancellationToken)"/>
         /// <seealso cref="PromptAsync(string, PromptOptions, CancellationToken)"/>
         /// <seealso cref="ReplaceDialogAsync(string, object, CancellationToken)"/>
+        /// <seealso cref="Dialog.EndDialogAsync(ITurnContext, DialogInstance, DialogReason, CancellationToken)"/>
         public async Task<DialogTurnResult> EndDialogAsync(object result = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             await EndActiveDialogAsync(DialogReason.EndCalled, cancellationToken).ConfigureAwait(false);
@@ -229,19 +237,21 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// Deletes any existing dialog stack, thus cancelling all dialogs on the stack.
+        /// Cancels all dialogs on the dialog stack.
         /// </summary>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
-        /// <remarks>If the task is successful, the result indicates that dialogs were cancelled after the
-        /// turn was processed by the dialog.
+        /// <remarks>If the task is successful, the result indicates that dialogs were canceled after the
+        /// turn was processed by the dialog or that the stack was already empty.
         ///
         /// In general, the parent context is the dialog or bot turn handler that started the dialog.
         /// If the parent is a dialog, the stack calls the parent's
-        /// <see cref="Dialog.ResumeDialogAsync(DialogContext, DialogReason, object, CancellationToken)"/> method to
-        /// return a result to the parent dialog. If the parent dialog does not implement `ResumeDialogAsyn`,
-        /// then the parent will end, too, and the result passed to the next parent context.</remarks>
+        /// <see cref="Dialog.ResumeDialogAsync(DialogContext, DialogReason, object, CancellationToken)"/>
+        /// method to return a result to the parent dialog. If the parent dialog does not implement
+        /// `ResumeDialogAsync`, then the parent will end, too, and the result is passed to the next
+        /// parent context.</remarks>
+        /// <seealso cref="EndDialogAsync(object, CancellationToken)"/>
         public async Task<DialogTurnResult> CancelAllDialogsAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
             if (Stack.Any())
@@ -263,9 +273,10 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// Searches the current <see cref="DialogSet"/> and its parents for a <see cref="Dialog"/> by its ID.
         /// </summary>
         /// <param name="dialogId">ID of the dialog to search for.</param>
-        /// <returns>The first dialog found that matches the <paramref name="dialogId"/>.</returns>
-        /// <remarks>If the dialog cannot be found within the current dialog set, the parent
-        /// <see cref="DialogContext"/> will be searched if there is one.</remarks>
+        /// <returns>The first dialog found that matches the <paramref name="dialogId"/>; or
+        /// <c>null</c> if no such dialog is found.</returns>
+        /// <remarks>If the dialog is not found within the current dialog set, then the parent
+        /// <see cref="DialogContext"/>, if there is one, is searched.</remarks>
         public Dialog FindDialog(string dialogId)
         {
             var dialog = Dialogs.Find(dialogId);
@@ -288,6 +299,8 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>If the task is successful, the result indicates whether the dialog is still
         /// active after the turn has been processed by the dialog.</remarks>
+        /// <seealso cref="BeginDialogAsync(string, object, CancellationToken)"/>
+        /// <seealso cref="EndDialogAsync(object, CancellationToken)"/>
         public async Task<DialogTurnResult> ReplaceDialogAsync(string dialogId, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             // End the current dialog and giving the reason.
@@ -298,12 +311,14 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// Calls the currently active dialog's <see cref="Dialog.RepromptDialogAsync(ITurnContext, DialogInstance, CancellationToken)"/>,
-        /// if there is one. Used with prompt dialogs that have a reprompt behavior.
+        /// Calls the currently active dialog's
+        /// <see cref="Dialog.RepromptDialogAsync(ITurnContext, DialogInstance, CancellationToken)"/>
+        /// method. Used with dialogs that implement a re-prompt behavior.
         /// </summary>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
+        /// <seealso cref="Dialog.RepromptDialogAsync(ITurnContext, DialogInstance, CancellationToken)"/>
         public async Task RepromptDialogAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
             // Check for a dialog on the stack

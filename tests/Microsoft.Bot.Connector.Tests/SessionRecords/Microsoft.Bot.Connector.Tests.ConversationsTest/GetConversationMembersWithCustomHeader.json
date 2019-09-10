@@ -4,7 +4,7 @@
       "RequestUri": "/v3/conversations",
       "EncodedRequestUri": "L3YzL2NvbnZlcnNhdGlvbnM=",
       "RequestMethod": "POST",
-      "RequestBody": "{\r\n  \"bot\": {\r\n    \"id\": \"B21UTEF8S:T03CWQ0QB\"\r\n  },\r\n  \"members\": [\r\n    {\r\n      \"id\": \"U19KH8EHJ:T03CWQ0QB\"\r\n    }\r\n  ]\r\n}",
+      "RequestBody": "{\r\n  \"bot\": {\r\n    \"id\": \"BKGSYSTFG:TKGSUQHQE\"\r\n  },\r\n  \"members\": [\r\n    {\r\n      \"id\": \"UK8CH2281:TKGSUQHQE\"\r\n    }\r\n  ]\r\n}",
       "RequestHeaders": {
         "Content-Type": [
           "application/json; charset=utf-8"
@@ -13,15 +13,13 @@
           "125"
         ],
         "User-Agent": [
-          "FxVersion/4.7.2600.0",
-          "OSName/Windows10Enterprise",
-          "OSVersion/6.3.16299",
-          "Microsoft.Bot.Connector.ConnectorClient/0.0.0.0",
-          "Microsoft-BotFramework/4.0",
-          "(BotBuilder .Net/0.0.0.0)"
+          "FxVersion/4.6.27617.04",
+          "OSName/Windows",
+          "OSVersion/Microsoft.Windows.10.0.18362.",
+          "Microsoft.Bot.Connector.ConnectorClient/4.0.0.0"
         ]
       },
-      "ResponseBody": "{\r\n  \"id\": \"B21UTEF8S:T03CWQ0QB:D2369CT7C\"\r\n}",
+      "ResponseBody": "{\r\n  \"id\": \"BKGSYSTFG:TKGSUQHQE:DKE8NUG92\"\r\n}",
       "ResponseHeaders": {
         "Content-Length": [
           "45"
@@ -32,49 +30,47 @@
         "Expires": [
           "-1"
         ],
-        "Pragma": [
-          "no-cache"
-        ],
-        "Request-Context": [
-          "appId=cid-v1:6814484e-c0d5-40ea-9dba-74ff29ca4f62"
-        ],
-        "Strict-Transport-Security": [
-          "max-age=31536000"
-        ],
         "Cache-Control": [
           "no-cache"
         ],
-        "Date": [
-          "Mon, 22 Jan 2018 17:11:08 GMT"
+        "Pragma": [
+          "no-cache"
         ],
         "Server": [
           "Microsoft-IIS/10.0"
         ],
-        "X-Powered-By": [
-          "ASP.NET"
+        "x-ms-request-id": [
+          "|5847d09e50484a4fb467853af644f522.3642c80f_"
+        ],
+        "Strict-Transport-Security": [
+          "max-age=31536000"
+        ],
+        "Date": [
+          "Tue, 02 Jul 2019 19:11:42 GMT"
         ]
       },
       "StatusCode": 200
     },
     {
-      "RequestUri": "/v3/conversations/B21UTEF8S:T03CWQ0QB:D2369CT7C/members",
-      "EncodedRequestUri": "L3YzL2NvbnZlcnNhdGlvbnMvQjIxVVRFRjhTJTNBVDAzQ1dRMFFCJTNBRDIzNjlDVDdDL21lbWJlcnM=",
+      "RequestUri": "/v3/conversations/BKGSYSTFG%3ATKGSUQHQE%3ADKE8NUG92/members",
+      "EncodedRequestUri": "L3YzL2NvbnZlcnNhdGlvbnMvQktHU1lTVEZHJTNBVEtHU1VRSFFFJTNBREtFOE5VRzkyL21lbWJlcnM=",
       "RequestMethod": "GET",
       "RequestBody": "",
       "RequestHeaders": {
+        "customHeader": [
+          "customValue"
+        ],
         "User-Agent": [
-          "FxVersion/4.7.2600.0",
-          "OSName/Windows10Enterprise",
-          "OSVersion/6.3.16299",
-          "Microsoft.Bot.Connector.ConnectorClient/0.0.0.0",
-          "Microsoft-BotFramework/4.0",
-          "(BotBuilder .Net/0.0.0.0)"
+          "FxVersion/4.6.27617.04",
+          "OSName/Windows",
+          "OSVersion/Microsoft.Windows.10.0.18362.",
+          "Microsoft.Bot.Connector.ConnectorClient/4.0.0.0"
         ]
       },
-      "ResponseBody": "[\r\n  {\r\n    \"id\": \"B21UTEF8S:T03CWQ0QB\",\r\n    \"name\": \"botbuilder-pc-bot\"\r\n  },\r\n  {\r\n    \"id\": \"U19KH8EHJ:T03CWQ0QB\",\r\n    \"name\": \"pc\"\r\n  }\r\n]",
+      "ResponseBody": "[\r\n  {\r\n    \"id\": \"BKGSYSTFG:TKGSUQHQE\",\r\n    \"name\": \"vmicricbot\"\r\n  },\r\n  {\r\n    \"id\": \"UK8CH2281:TKGSUQHQE\",\r\n    \"name\": \"v-micric\"\r\n  }\r\n]",
       "ResponseHeaders": {
         "Content-Length": [
-          "144"
+          "143"
         ],
         "Content-Type": [
           "application/json; charset=utf-8"
@@ -82,26 +78,23 @@
         "Expires": [
           "-1"
         ],
-        "Pragma": [
-          "no-cache"
-        ],
-        "Request-Context": [
-          "appId=cid-v1:6814484e-c0d5-40ea-9dba-74ff29ca4f62"
-        ],
-        "Strict-Transport-Security": [
-          "max-age=31536000"
-        ],
         "Cache-Control": [
           "no-cache"
         ],
-        "Date": [
-          "Mon, 22 Jan 2018 17:11:09 GMT"
+        "Pragma": [
+          "no-cache"
         ],
         "Server": [
           "Microsoft-IIS/10.0"
         ],
-        "X-Powered-By": [
-          "ASP.NET"
+        "x-ms-request-id": [
+          "|80caead8a18388438c4f5ce84a16313b.e7f43297_"
+        ],
+        "Strict-Transport-Security": [
+          "max-age=31536000"
+        ],
+        "Date": [
+          "Tue, 02 Jul 2019 19:11:42 GMT"
         ]
       },
       "StatusCode": 200

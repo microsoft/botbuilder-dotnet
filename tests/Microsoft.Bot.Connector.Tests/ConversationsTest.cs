@@ -232,8 +232,8 @@ namespace Microsoft.Bot.Connector.Tests
             {
                 var conversation = await client.Conversations.CreateConversationAsync(createMessage);
                 var ex = await Assert.ThrowsAsync<ErrorResponseException>(() => client.Conversations.GetConversationMembersAsync(string.Concat(conversation.Id, "M")));
-                Assert.Equal("ServiceError", ex.Body.Error.Code);
-                Assert.Contains("The specified channel was not found", ex.Body.Error.Message);
+                Assert.Equal("BadArgument", ex.Body.Error.Code);
+                Assert.Contains("Slack API error", ex.Body.Error.Message);
             });
         }
 
@@ -465,8 +465,8 @@ namespace Microsoft.Bot.Connector.Tests
             {
                 var conversation = await client.Conversations.CreateConversationAsync(createMessage);
                 var ex = await Assert.ThrowsAsync<ErrorResponseException>(() => client.Conversations.SendToConversationAsync(conversationId: string.Concat(conversation.Id, "M"), activity: activity));
-                Assert.Equal("ServiceError", ex.Body.Error.Code);
-                Assert.Contains("The specified channel was not found", ex.Body.Error.Message);
+                Assert.Equal("BadArgument", ex.Body.Error.Code);
+                Assert.Contains("Slack API error", ex.Body.Error.Message);
             });
         }
 
@@ -495,8 +495,7 @@ namespace Microsoft.Bot.Connector.Tests
                     Text = "TEST Send to Conversation",
                 };
                 var ex = await Assert.ThrowsAsync<ErrorResponseException>(() => client.Conversations.SendToConversationAsync(conversationId: string.Concat(conversation.Id, "M"), activity: activity));
-                Assert.Equal("MissingProperty", ex.Body.Error.Code);
-                Assert.Equal("The bot referenced by the 'from' field is unrecognized", ex.Body.Error.Message);
+                Assert.Equal("Operation returned an invalid status code 'Forbidden'", ex.Message);
             });
         }
 
@@ -698,8 +697,8 @@ namespace Microsoft.Bot.Connector.Tests
             {
                 var conversation = await client.Conversations.CreateConversationAsync(createMessage);
                 var ex = await Assert.ThrowsAsync<ErrorResponseException>(() => client.Conversations.GetActivityMembersAsync(string.Concat(conversation.Id, "M"), conversation.ActivityId));
-                Assert.Equal("ServiceError", ex.Body.Error.Code);
-                Assert.Contains("The specified channel was not found", ex.Body.Error.Message);
+                Assert.Equal("BadArgument", ex.Body.Error.Code);
+                Assert.Contains("Slack API error", ex.Body.Error.Message);
             });
         }
 
@@ -874,8 +873,8 @@ namespace Microsoft.Bot.Connector.Tests
                 var conversation = await client.Conversations.CreateConversationAsync(createMessage);
                 var response = await client.Conversations.SendToConversationAsync(conversationId: conversation.Id, activity: activity);
                 var ex = await Assert.ThrowsAsync<ErrorResponseException>(() => client.Conversations.ReplyToActivityAsync(string.Concat(conversation.Id, "M"), response.Id, reply));
-                Assert.Equal("ServiceError", ex.Body.Error.Code);
-                Assert.Contains("The specified channel was not found", ex.Body.Error.Message);
+                Assert.Equal("BadArgument", ex.Body.Error.Code);
+                Assert.Contains("Slack API error", ex.Body.Error.Message);
             });
         }
 

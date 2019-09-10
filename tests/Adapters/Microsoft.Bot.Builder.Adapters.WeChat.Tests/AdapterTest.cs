@@ -20,8 +20,8 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests
         {
             var storage = new MemoryStorage();
             var taskQueue = new BackgroundTaskQueue();
-            testAdapter = new WeChatHttpAdapter(MockDataUtility.MockWeChatSettings(), storage, new QueuedHostedService(taskQueue));
-            testAdapterUseTempMedia = new WeChatHttpAdapter(MockDataUtility.MockWeChatSettings(false), storage, new QueuedHostedService(taskQueue));
+            testAdapter = new WeChatHttpAdapter(MockDataUtility.MockWeChatSettings(), storage, taskQueue);
+            testAdapterUseTempMedia = new WeChatHttpAdapter(MockDataUtility.MockWeChatSettings(false), storage, taskQueue);
         }
 
         [Fact]
