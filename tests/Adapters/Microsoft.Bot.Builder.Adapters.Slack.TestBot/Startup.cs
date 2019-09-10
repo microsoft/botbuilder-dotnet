@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Bot.Builder.Adapters.Slack.TestBot.Bots;
 using Microsoft.Bot.Connector.Authentication;
-using Microsoft.BotBuilder.Adapters.Slack;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 

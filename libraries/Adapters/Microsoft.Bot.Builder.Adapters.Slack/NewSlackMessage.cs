@@ -3,7 +3,7 @@
 
 using SlackAPI.WebSocketMessages;
 
-namespace Microsoft.BotBuilder.Adapters.Slack
+namespace Microsoft.Bot.Builder.Adapters.Slack
 {
     /// <summary>
     /// Message to send to Slack.

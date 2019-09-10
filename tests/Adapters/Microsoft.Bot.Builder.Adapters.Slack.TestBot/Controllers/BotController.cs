@@ -5,7 +5,6 @@
 
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.BotBuilder.Adapters.Slack;
 
 namespace Microsoft.Bot.Builder.Adapters.Slack.TestBot.Controllers
 {
@@ -28,8 +27,6 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.TestBot.Controllers
         {
             this.adapter = adapter;
             this.bot = bot;
-
-            // adapter.Use(new SlackEventMiddleware());
         }
 
         /// <summary>

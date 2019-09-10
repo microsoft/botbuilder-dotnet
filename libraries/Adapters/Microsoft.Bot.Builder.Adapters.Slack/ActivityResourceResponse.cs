@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.Bot.Schema;
 
-namespace Microsoft.BotBuilder.Adapters.Slack
+namespace Microsoft.Bot.Builder.Adapters.Slack
 {
     /// <summary>
     /// Extends ResourceResponse with ActivityID and Conversation properties.

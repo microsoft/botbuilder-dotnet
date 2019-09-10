@@ -17,7 +17,7 @@ using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 using SlackAPI;
 
-namespace Microsoft.BotBuilder.Adapters.Slack
+namespace Microsoft.Bot.Builder.Adapters.Slack
 {
     public class SlackAdapter : BotAdapter, IBotFrameworkHttpAdapter
     {

@@ -4,7 +4,7 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace Microsoft.BotBuilder.Adapters.Slack
+namespace Microsoft.Bot.Builder.Adapters.Slack
 {
     public class SlackDialog
     {

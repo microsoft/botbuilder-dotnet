@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using Microsoft.BotBuilder.Adapters.Slack;
 
 namespace Microsoft.Bot.Builder.Adapters.Slack.TestBot
 {
