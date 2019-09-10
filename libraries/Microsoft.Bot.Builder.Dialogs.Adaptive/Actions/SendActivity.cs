@@ -54,10 +54,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         {
             if (Activity is ActivityTemplate at)
             {
-                return $"SendActivity({Ellipsis(at.Template.Trim(), 30)})";
+                return $"{this.GetType().Name}({Ellipsis(at.Template.Trim(), 30)})";
             }
 
-            return $"SendActivity('{Ellipsis(Activity?.ToString().Trim(), 30)}')";
+            return $"{this.GetType().Name}('{Ellipsis(Activity?.ToString().Trim(), 30)}')";
         }
 
         private static string Ellipsis(string text, int length)

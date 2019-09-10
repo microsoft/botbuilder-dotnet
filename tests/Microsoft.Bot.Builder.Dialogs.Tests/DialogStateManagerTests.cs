@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
@@ -13,6 +14,7 @@ using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
 using Microsoft.Bot.Builder.Dialogs.Memory;
 using Microsoft.Bot.Builder.Expressions.Parser;
 using Microsoft.Bot.Builder.LanguageGeneration;
+using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Linq;
@@ -36,6 +38,100 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         };
 
         public TestContext TestContext { get; set; }
+
+        [TestMethod]
+        public void TestMemoryScopeNullChecks()
+        {
+            var dialogs = new DialogSet();
+            var dc = new DialogContext(dialogs, new TurnContext(new TestAdapter(), new Schema.Activity()), (DialogState)new DialogState());
+            DialogStateManager state = new DialogStateManager(dc);
+
+            foreach (var memoryScope in DialogStateManager.MemoryScopes)
+            {
+                try
+                {
+                    memoryScope.GetMemory(null);
+                    Assert.Fail($"Should have thrown exception with null for {memoryScope.Name}");
+                }
+                catch (ArgumentNullException)
+                {
+                }
+
+                try
+                {
+                    memoryScope.SetMemory(null, new object());
+                    Assert.Fail($"Should have thrown exception with null dc for SetMemory {memoryScope.Name}");
+                }
+                catch (ArgumentNullException)
+                {
+                }
+
+                try
+                {
+                    memoryScope.SetMemory(dc, null);
+                    Assert.Fail($"Should have thrown exception with null memory for SetMemory {memoryScope.Name}");
+                }
+                catch (ArgumentNullException)
+                {
+                }
+            }
+        }
+
+        [TestMethod]
+        public void TestPathResolverNullChecks()
+        {
+            var dialogs = new DialogSet();
+            var dc = new DialogContext(dialogs, new TurnContext(new TestAdapter(), new Schema.Activity()), (DialogState)new DialogState());
+            DialogStateManager state = new DialogStateManager(dc);
+
+            foreach (var resolver in DialogStateManager.PathResolvers)
+            {
+                try
+                {
+                    resolver.Matches(null);
+                    Assert.Fail($"Should have thrown exception with null for matches() {resolver.GetType().Name}");
+                }
+                catch (ArgumentNullException)
+                {
+                }
+
+                try
+                {
+                    resolver.TryGetValue(null, "test", out object value);
+                    Assert.Fail($"Should have thrown exception with null dc for TryGetValue() {resolver.GetType().Name}");
+                }
+                catch (ArgumentNullException)
+                {
+                }
+
+                try
+                {
+                    resolver.TryGetValue(dc, null, out object value);
+                    Assert.Fail($"Should have thrown exception with null path for TryGetValue() {resolver.GetType().Name}");
+                }
+                catch (ArgumentNullException)
+                {
+                }
+
+                try
+                {
+                    resolver.RemoveValue(null, null);
+                    Assert.Fail($"Should have thrown exception with null dc for RemovePath() {resolver.GetType().Name}");
+                }
+                catch (ArgumentNullException)
+                {
+                }
+
+                try
+                {
+                    resolver.RemoveValue(dc, null);
+                    Assert.Fail($"Should have thrown exception with null path for RemovePath() {resolver.GetType().Name}");
+                }
+                catch (ArgumentNullException)
+                {
+                }
+            }
+        }
 
         [TestMethod]
         public void TestSimpleValues()
@@ -93,6 +189,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         }
 
         [TestMethod]
+        [Ignore] // NOTE: This needs to be revisited
         public void TestComplexPathExpressions()
         {
             var dialogs = new DialogSet();
@@ -116,9 +213,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             DialogStateManager state = new DialogStateManager(dc);
 
             // complex type paths
-            state.SetValue("user.name", "joe");
-            Assert.AreEqual("joe", state.GetValue<string>("user.name"));
-            Assert.AreEqual("joe", state.GetValue<string>("user.name"));
+            state.SetValue("user.name.first", "joe");
+            Assert.AreEqual("joe", state.GetValue<string>("user.name.first"));
 
             Assert.AreEqual(null, state.GetValue<string>("user.xxx"));
             Assert.AreEqual("default", state.GetValue<string>("user.xxx", () => "default"));
@@ -349,11 +445,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         }
 
         [TestMethod]
-        public async Task TestInputBinding()
+        public async Task TestNestedContainerDialogs()
         {
             var d2 = new AdaptiveDialog("d2")
             {
-                InputBindings = new Dictionary<string, string>() { { "dialog.name", "$name" } },
                 Events = new List<IOnEvent>()
                 {
                     new OnBeginDialog()
@@ -361,7 +456,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                         Actions = new List<Dialog>()
                         {
                             new SendActivity("nested d2 {$name}"),
-                            new SetProperty() { Property = "dialog.name", Value = "'testDialogd2'" },
+                            new SetProperty() { Property = "$name", Value = "'testDialogd2'" },
                             new SendActivity("nested d2 {$name}"),
                         }
                     }
@@ -378,28 +473,30 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     {
                         Actions = new List<Dialog>()
                         {
-                            new SetProperty() { Property = "dialog.name", Value = "'testDialog'" },
+                            new SetProperty() { Property = "$name", Value = "'testDialog'" },
+                            new SendActivity("{$name}"),
                             new SendActivity("{dialog.name}"),
-                            new DebugBreak(),
                             new AdaptiveDialog("d1")
                             {
-                                InputBindings = new Dictionary<string, string>() { { "dialog.name", "$name" } },
-
                                 Events = new List<IOnEvent>()
                                 {
                                     new OnBeginDialog()
                                     {
                                         Actions = new List<Dialog>()
                                         {
-                                            new SendActivity("nested d1 {dialog.name}"),
-                                            new SetProperty() { Property = "dialog.name", Value = "'testDialogd1'" },
-                                            new SendActivity("nested d1 {dialog.name}"),
+                                            new SendActivity("nested {$name}"),
+                                            //new SetProperty() { Property = "$name", Value = "'$name'" },
+                                            //new SendActivity("nested {$name}"),
+                                            //new SendActivity("nested {dialog.name}"),
+                                            //new SetProperty() { Property = "dialog.name", Value = "'dialog.name'" },
+                                            //new SendActivity("nested {dialog.name}"),
                                         }
                                     }
                                 }
                             },
+                            new SendActivity("{$name}"),
                             new SendActivity("{dialog.name}"),
-                            //new BeginDialog(d2.Id)
+                            // new BeginDialog(d2.Id)
                         }
                     }
                 }
@@ -410,112 +507,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             await CreateFlow(testDialog)
                     .SendConversationUpdate()
                         .AssertReply("testDialog")
-                        .AssertReply("nested d1 testDialog")
-                        .AssertReply("nested d1 testDialogd1")
                         .AssertReply("testDialog")
-                    //.AssertReply("nested d2 testDialog")
-                    //.AssertReply("nested d2 testDialogd2")
-                    .StartTestAsync();
-        }
-
-        [TestMethod]
-        public async Task TestOutputBinding()
-        {
-            var d2 = new AdaptiveDialog("d2")
-            {
-                InputBindings = new Dictionary<string, string>() { { "$zzz", "dialog.name" } },
-                DefaultResultProperty = "$zzz",
-
-                // test output binding from adaptive dialog
-                OutputBinding = "dialog.name",
-                Events = new List<IOnEvent>()
-                {
-                    new OnBeginDialog()
-                    {
-                        Actions = new List<Dialog>()
-                        {
-                            new SendActivity("nested begindialog {$zzz}"),
-                            new SetProperty() { Property = "dialog.zzz", Value = "'newName2'" },
-                            new SendActivity("nested begindialog {$zzz}"),
-                        }
-                    }
-                }
-            };
-            var d3 = new AdaptiveDialog("d3")
-            {
-                InputBindings = new Dictionary<string, string>() { { "$qqq", "dialog.name" } },
-                DefaultResultProperty = "$qqq",
-                Events = new List<IOnEvent>()
-                                    {
-                                        new OnBeginDialog()
-                                        {
-                                            Actions = new List<Dialog>()
-                                            {
-                                                new SendActivity("nested begindialog2 {$qqq}"),
-                                                new SetProperty() { Property = "dialog.qqq", Value = "'newName3'" },
-                                                new SendActivity("nested begindialog2 {$qqq}"),
-                                            }
-                                        }
-                                    }
-            };
-
-            var testDialog = new AdaptiveDialog("testDialog")
-            {
-                AutoEndDialog = false,
-                Events = new List<IOnEvent>()
-                {
-                    new OnBeginDialog()
-                    {
-                        Actions = new List<Dialog>()
-                        {
-                            new SetProperty() { Property = "dialog.name", Value = "'testDialog'" },
-                            new SendActivity("{dialog.name}"),
-                            new AdaptiveDialog("d1")
-                            {
-                                InputBindings = new Dictionary<string, string>() { { "$xxx", "dialog.name" } },
-                                OutputBinding = "dialog.name",
-                                DefaultResultProperty = "$xxx",
-                                Events = new List<IOnEvent>()
-                                {
-                                    new OnBeginDialog()
-                                    {
-                                        Actions = new List<Dialog>()
-                                        {
-                                            new SendActivity("nested dialogCommand {$xxx}"),
-                                            new SetProperty() { Property = "dialog.xxx", Value = "'newName'" },
-                                            new SendActivity("nested dialogCommand {$xxx}"),
-                                        }
-                                    }
-                                }
-                            },
-                            new SendActivity("{dialog.name}"),
-                            new BeginDialog(d2.Id),
-                            new SendActivity("{dialog.name}"),
-                            new BeginDialog(d3.Id)
-                            {
-                                // test output binding from beginDialog
-                                OutputBinding = "dialog.name"
-                            },
-                            new SendActivity("{dialog.name}"),
-                        }
-                    }
-                }
-            };
-            testDialog.AddDialog(d2);
-            testDialog.AddDialog(d3);
-
-            await CreateFlow(testDialog)
-                    .SendConversationUpdate()
+                        .AssertReply("nested testDialog")
+                        .AssertReply("nested $name")
+                        .AssertReply("nested $name")
+                        .AssertReply("nested dialog.name")
+                        .AssertReply("nested dialog.name")
                         .AssertReply("testDialog")
-                        .AssertReply("nested dialogCommand testDialog")
-                        .AssertReply("nested dialogCommand newName")
-                        .AssertReply("newName")
-                        .AssertReply("nested begindialog newName")
-                        .AssertReply("nested begindialog newName2")
-                        .AssertReply("newName2")
-                        .AssertReply("nested begindialog2 newName2")
-                        .AssertReply("nested begindialog2 newName3")
-                        .AssertReply("newName3")
+                        .AssertReply("testDialog")
+                    // .AssertReply("nested d2 testDialog")
+                    // .AssertReply("nested d2 testDialogd2")
                     .StartTestAsync();
         }
 

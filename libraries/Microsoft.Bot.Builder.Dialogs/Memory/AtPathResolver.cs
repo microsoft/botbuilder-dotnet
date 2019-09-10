@@ -17,6 +17,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
 
         public override bool Matches(string path)
         {
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+
             // override to make sure it doesn't match @@
             path = path.Trim();
             return path.StartsWith("@") && !path.StartsWith("@@");

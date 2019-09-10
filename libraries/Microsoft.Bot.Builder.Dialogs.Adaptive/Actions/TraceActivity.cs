@@ -39,7 +39,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         public string ValueType { get; set; }
 
         /// <summary>
-        /// Gets or sets property binding to memory to send as the value. 
+        /// Gets or sets value expression to send as the value. 
         /// </summary>
         /// <value>
         /// Property binding to memory to send as the value. 
@@ -60,18 +60,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             }
             else
             {
-                value = JObject.FromObject(dc.State);
+                value = dc.State.GetMemorySnapshot();
             }
 
-            var traceActivity = Activity.CreateTraceActivity(this.Name, valueType: this.ValueType, value: value);
+            var traceActivity = Activity.CreateTraceActivity(this.Name ?? "Trace", valueType: this.ValueType ?? "State", value: value);
             await dc.Context.SendActivityAsync(traceActivity, cancellationToken).ConfigureAwait(false);
-
             return await dc.EndDialogAsync(traceActivity, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         protected override string OnComputeId()
         {
-            return $"TraceActivity({Name})";
+            return $"{this.GetType().Name}({Name})";
         }
     }
 }

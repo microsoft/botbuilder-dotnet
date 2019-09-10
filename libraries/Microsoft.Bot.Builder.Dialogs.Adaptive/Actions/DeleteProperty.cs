@@ -32,11 +32,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         }
 
         /// <summary>
-        /// Gets or sets property to path to remove Example: user.age will remove "age" from "user".
+        /// Gets or sets property path to remove.
         /// </summary>
-        /// <value>
-        /// Property to path to remove Example: user.age will remove "age" from "user".
-        /// </value>
+        /// <example>
+        /// user.age will remove "age" from "user".
+        /// </example>
         public string Property { get; set; }
 
         protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))

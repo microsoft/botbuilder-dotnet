@@ -15,14 +15,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
         public string DefaultLocale { get; set; } = null;
 
-        protected override string OnComputeId()
-        {
-            return $"DateTimeInput[{BindingPath()}]";
-        }
-
         protected override Task<InputState> OnRecognizeInput(DialogContext dc)
         {
-            var input = dc.State.GetValue<object>(INPUT_PROPERTY);
+            var input = dc.State.GetValue<object>(VALUE_PROPERTY);
 
             var culture = GetCulture(dc);
             var results = DateTimeRecognizer.RecognizeDateTime(input.ToString(), culture);
@@ -36,7 +31,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                     result.Add(ReadResolution(value));
                 }
 
-                dc.State.SetValue(INPUT_PROPERTY, result);
+                dc.State.SetValue(VALUE_PROPERTY, result);
             }
             else
             {

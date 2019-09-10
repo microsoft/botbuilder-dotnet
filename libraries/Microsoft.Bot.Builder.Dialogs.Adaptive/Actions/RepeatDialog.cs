@@ -38,10 +38,5 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             return await RepeatParentDialogAsync(dc, options, cancellationToken).ConfigureAwait(false);
         }
-
-        protected override string OnComputeId()
-        {
-            return $"RepeatDialog({BindingPath()})";
-        }
     }
 }

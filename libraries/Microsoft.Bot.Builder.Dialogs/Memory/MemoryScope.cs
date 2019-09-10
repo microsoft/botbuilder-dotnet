@@ -43,6 +43,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         /// <returns>memory for the scope</returns>
         public virtual object GetMemory(DialogContext dc)
         {
+            if (dc == null)
+            {
+                throw new ArgumentNullException(nameof(dc));
+            }
+
             var scopesMemory = GetScopesMemory(dc.Context);
             if (!scopesMemory.TryGetValue(this.Name, out object memory))
             {
@@ -60,6 +65,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         /// <param name="memory">memory</param>
         public virtual void SetMemory(DialogContext dc, object memory)
         {
+            if (dc == null)
+            {
+                throw new ArgumentNullException(nameof(dc));
+            }
+
+            if (memory == null)
+            {
+                throw new ArgumentNullException(nameof(memory));
+            }
+
             var namedScopes = GetScopesMemory(dc.Context);
             namedScopes[this.Name] = memory;
         }

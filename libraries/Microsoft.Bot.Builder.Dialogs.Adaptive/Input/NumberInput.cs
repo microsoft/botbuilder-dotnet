@@ -36,14 +36,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
         public NumberOutputFormat OutputFormat { get; set; } = NumberOutputFormat.Float;
 
-        protected override string OnComputeId()
-        {
-            return $"NumberInput[{BindingPath()}]";
-        }
-
         protected override Task<InputState> OnRecognizeInput(DialogContext dc)
         {
-            var input = dc.State.GetValue<object>(INPUT_PROPERTY);
+            var input = dc.State.GetValue<object>(VALUE_PROPERTY);
 
             var culture = GetCulture(dc);
             var results = NumberRecognizer.RecognizeNumber(input.ToString(), culture);
@@ -70,10 +65,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             {
                 case NumberOutputFormat.Float:
                 default:
-                    dc.State.SetValue(INPUT_PROPERTY, input);
+                    dc.State.SetValue(VALUE_PROPERTY, input);
                     break;
                 case NumberOutputFormat.Integer:
-                    dc.State.SetValue(INPUT_PROPERTY, Math.Floor((float)input));
+                    dc.State.SetValue(VALUE_PROPERTY, Math.Floor((float)input));
                     break;
             }
 

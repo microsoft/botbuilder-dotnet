@@ -116,32 +116,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         public ResponseTypes ResponseType { get; set; } = ResponseTypes.Json;
 
         /// <summary>
-        /// Gets or sets the property to store the HTTP response in. 
+        /// Gets or sets the property expression to store the HTTP response in. 
         /// </summary>
         /// <remarks>
         /// The result will have 4 properties from the http response: 
         /// [statusCode|reasonPhrase|content|headers]
         /// If the content is json it will be an deserialized object, otherwise it will be a string.
         /// </remarks>
-        /// <value>
-        /// Property from the HTTP response.
-        /// </value>
-        public string Property
-        {
-            get
-            {
-                return OutputBinding;
-            }
-
-            set
-            {
-                OutputBinding = value;
-            }
-        }
+        public string ResultProperty { get; set; }
 
         protected override string OnComputeId()
         {
-            return $"HttpRequest[{Method} {Url}]";
+            return $"{this.GetType().Name}[{Method} {Url}]";
         }
 
         protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
@@ -293,6 +279,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             // Write Trace Activity for the http request and response values
             await dc.Context.TraceActivityAsync("HttpRequest", (object)traceInfo, valueType: "Microsoft.HttpRequest", label: this.Id).ConfigureAwait(false);
+
+            if (this.ResultProperty != null)
+            {
+                dc.State.SetValue(this.ResultProperty, requestResult);
+            }
 
             // return the actionResult as the result of this operation
             return await dc.EndDialogAsync(result: requestResult, cancellationToken: cancellationToken);

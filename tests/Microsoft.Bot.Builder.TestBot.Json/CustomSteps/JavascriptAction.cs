@@ -73,7 +73,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
 
         protected override string OnComputeId()
         {
-            return $"{nameof(JavascriptAction)}({this.script.GetHashCode()})";
+            return $"{this.GetType().Name}({this.script.GetHashCode()})";
         }
 
         private void LoadScript(string value)

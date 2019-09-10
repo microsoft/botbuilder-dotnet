@@ -20,7 +20,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// </summary>
     public class ForeachPage : DialogAction
     {
-        private Expression listProperty;
+        private const string FOREACH_INDEX = "dialog.foreach.i";
+        private const string FOREACH_VALUE = "dialog.foreach.value";
 
         [JsonConstructor]
         public ForeachPage([CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
@@ -30,19 +31,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         }
 
         // Expression used to compute the list that should be enumerated.
-        [JsonProperty("listProperty")]
-        public string ListProperty
-        {
-            get { return listProperty?.ToString(); }
-            set { this.listProperty = (value != null) ? new ExpressionEngine().Parse(value) : null; }
-        }
+        [JsonProperty("itemsProperty")]
+        public string ItemsProperty { get; set; }
 
         [JsonProperty("pageSize")]
         public int PageSize { get; set; } = 10;
-
-        // In-memory property that will contain the current items value. Defaults to `dialog.value`.
-        [JsonProperty("valueProperty")]
-        public string ValueProperty { get; set; } = DialogPath.VALUE;
 
         // Actions to be run for each of items.
         [JsonProperty("actions")]
@@ -63,13 +56,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             // Ensure planning context
             if (dc is SequenceContext sc)
             {
-                Expression listProperty = null;
+                Expression itemsProperty = new ExpressionEngine().Parse(this.ItemsProperty);
                 int offset = 0;
                 int pageSize = 0;
                 if (options != null && options is ForeachPageOptions)
                 {
                     var opt = options as ForeachPageOptions;
-                    listProperty = opt.List;
+                    itemsProperty = opt.List;
                     offset = opt.Offset;
                     pageSize = opt.PageSize;
                 }
@@ -79,19 +72,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                     pageSize = this.PageSize;
                 }
 
-                if (listProperty == null)
-                {
-                    listProperty = new ExpressionEngine().Parse(this.ListProperty);
-                }
-
-                var (itemList, error) = listProperty.TryEvaluate(dc.State);
+                var (itemList, error) = itemsProperty.TryEvaluate(dc.State);
                 if (error == null)
                 {
                     var page = this.GetPage(itemList, offset, pageSize);
 
                     if (page.Count() > 0)
                     {
-                        dc.State.SetValue(this.ValueProperty, page);
+                        dc.State.SetValue(FOREACH_VALUE, page);
                         var changes = new ActionChangeList()
                         {
                             ChangeType = ActionChangeType.InsertActions,
@@ -105,7 +93,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                             DialogId = this.Id,
                             Options = new ForeachPageOptions()
                             {
-                                List = listProperty,
+                                List = itemsProperty,
                                 Offset = offset + pageSize,
                                 PageSize = pageSize
                             }
@@ -124,7 +112,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
         protected override string OnComputeId()
         {
-            return $"{nameof(Foreach)}({this.ListProperty})";
+            return $"{this.GetType().Name}({this.ItemsProperty})";
         }
 
         private List<object> GetPage(object list, int index, int pageSize)
@@ -133,7 +121,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             int end = index + pageSize;
             if (list != null && list.GetType() == typeof(JArray))
             {
-                for (int i = index;  i < end && i < JArray.FromObject(list).Count; i++)
+                for (int i = index; i < end && i < JArray.FromObject(list).Count; i++)
                 {
                     page.Add(JArray.FromObject(list)[i]);
                 }

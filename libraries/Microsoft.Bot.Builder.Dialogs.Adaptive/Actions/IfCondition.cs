@@ -29,26 +29,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         }
 
         /// <summary>
-        /// Gets or sets condition expression against memory. Example: "user.age > 18".
+        /// Gets or sets the memory expression. 
         /// </summary>
-        /// <value>
-        /// Condition expression against memory.
-        /// </value>
+        /// <example>
+        /// "user.age > 18".
+        /// </example>
         [JsonProperty("condition")]
         public string Condition
         {
-            get
-            {
-                return condition?.ToString();
-            }
-
-            set
-            {
-                lock (this)
-                {
-                    condition = value != null ? new ExpressionEngine().Parse(value) : null;
-                }
-            }
+            get { return condition?.ToString(); }
+            set { condition = value != null ? new ExpressionEngine().Parse(value) : null; }
         }
 
         [JsonProperty("actions")]
@@ -112,7 +102,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         protected override string OnComputeId()
         {
             var idList = Actions.Select(s => s.Id);
-            return $"{nameof(IfCondition)}({this.Condition}|{string.Join(",", idList)})";
+            return $"{this.GetType().Name}({this.Condition}|{string.Join(",", idList)})";
         }
     }
 }

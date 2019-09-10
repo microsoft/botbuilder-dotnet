@@ -1378,10 +1378,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                     {
                         Actions = new List<Dialog>()
                         {
-                            new QnAMakerDialog(qnamaker: qna)
-                            {
-                                OutputBinding = "turn.LastResult"
-                            },
+                            new QnAMakerDialog(qnamaker: qna),
                             new IfCondition()
                             {
                                     Condition = "turn.LastResult == false",

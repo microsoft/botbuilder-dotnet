@@ -146,7 +146,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
         protected override string OnComputeId()
         {
-            return $"Switch({this.Condition})";
+            return $"{this.GetType().Name}({this.Condition})";
         }
     }
 }

@@ -98,10 +98,5 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             return await Task.FromResult(false).ConfigureAwait(false);
         }
-
-        protected override string OnComputeId()
-        {
-            return $"TextPrompt[{this.BindingPath()}]";
-        }
     }
 }

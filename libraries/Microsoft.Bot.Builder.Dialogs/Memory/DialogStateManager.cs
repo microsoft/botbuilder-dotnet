@@ -63,13 +63,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
 
         public ICollection<string> Keys => MemoryScopes.Select(ms => ms.Name).ToList();
 
-        public ICollection<object> Values => throw new NotImplementedException();
+        public ICollection<object> Values => MemoryScopes.Cast<object>().ToList();
 
-        public int Count => throw new NotImplementedException();
+        public int Count => MemoryScopes.Count;
 
-        public bool IsReadOnly => throw new NotImplementedException();
+        public bool IsReadOnly => true;
 
-        public object this[string key] { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public object this[string key] { get => this.GetValue<object>(key, () => null); set => this.SetValue(key, value); }
 
         /// <summary>
         /// Get MemoryScope by name
@@ -78,6 +78,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         /// <returns>memoryscope</returns>
         public static MemoryScope GetMemoryScope(string name)
         {
+            if (name == null)
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+
             return MemoryScopes.FirstOrDefault(ms => String.Compare(ms.Name, name, ignoreCase: true) == 0);
         }
 
@@ -91,7 +96,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         /// <returns>true if found, false if not</returns>
         public bool TryGetValue<T>(string pathExpression, out T value)
         {
-            return this.FindResolver(pathExpression)
+            return this.FindResolver(pathExpression ?? throw new ArgumentNullException(nameof(pathExpression)))
                 .TryGetValue<T>(this.dialogContext, pathExpression, out value);
         }
 
@@ -105,7 +110,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         /// <returns>result or null if the path is not valid</returns>
         public T GetValue<T>(string pathExpression, Func<T> defaultValue = null)
         {
-            if (this.TryGetValue<T>(pathExpression, out T value))
+            if (this.TryGetValue<T>(pathExpression ?? throw new ArgumentNullException(nameof(pathExpression)), out T value))
             {
                 return value;
             }
@@ -121,7 +126,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         /// <returns>value or null if path is not valid</returns>
         public int GetIntValue(string pathExpression, int defaultValue = 0)
         {
-            if (this.TryGetValue<int>(pathExpression, out int value))
+            if (this.TryGetValue<int>(pathExpression ?? throw new ArgumentNullException(nameof(pathExpression)), out int value))
             {
                 return value;
             }
@@ -137,7 +142,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         /// <returns>bool or null if path is not valid</returns>
         public bool GetBoolValue(string pathExpression, bool defaultValue = false)
         {
-            if (this.TryGetValue<bool>(pathExpression, out bool value))
+            if (this.TryGetValue<bool>(pathExpression ?? throw new ArgumentNullException(nameof(pathExpression)), out bool value))
             {
                 return value;
             }
@@ -157,7 +162,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
                 throw new Exception($"{pathExpression} = You can't pass an unresolved Task to SetValue");
             }
 
-            this.FindResolver(pathExpression)
+            this.FindResolver(pathExpression ?? throw new ArgumentNullException(nameof(pathExpression)))
                 .SetValue(this.dialogContext, pathExpression, value);
         }
 
@@ -167,7 +172,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         /// <param name="pathExpression">path to remove the leaf property</param>
         public void RemoveValue(string pathExpression)
         {
-            this.FindResolver(pathExpression)
+            this.FindResolver(pathExpression ?? throw new ArgumentNullException(nameof(pathExpression)))
                 .RemoveValue(this.dialogContext, pathExpression);
         }
 
@@ -186,7 +191,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
 
             return result;
         }
-        
+
         public void Add(string key, object value)
         {
             this.SetValue(key, value);
@@ -225,7 +230,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
 
         public void CopyTo(KeyValuePair<string, object>[] array, int arrayIndex)
         {
-            throw new NotImplementedException();
+            foreach (var ms in MemoryScopes)
+            {
+                array[arrayIndex++] = new KeyValuePair<string, object>(ms.Name, ms);
+            }
         }
 
         public bool Remove(KeyValuePair<string, object> item)
@@ -235,12 +243,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
 
         public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
         {
-            return MemoryScopes.Select(ms => new KeyValuePair<string, object>(ms.Name, ms.GetMemory(this.dialogContext))).GetEnumerator();
+            foreach (var ms in MemoryScopes)
+            {
+                yield return new KeyValuePair<string, object>(ms.Name, ms);
+            }
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return MemoryScopes.Select(ms => new KeyValuePair<string, object>(ms.Name, ms.GetMemory(this.dialogContext))).GetEnumerator();
+            foreach (var ms in MemoryScopes)
+            {
+                yield return new KeyValuePair<string, object>(ms.Name, ms);
+            }
         }
 
         private IPathResolver FindResolver(string path)

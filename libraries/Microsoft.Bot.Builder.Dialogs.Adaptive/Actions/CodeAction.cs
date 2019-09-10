@@ -33,7 +33,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
         protected override string OnComputeId()
         {
-            return $"CodeAction({codeHandler.ToString()})";
+            return $"{this.GetType().Name}({codeHandler.ToString()})";
         }
     }
 }

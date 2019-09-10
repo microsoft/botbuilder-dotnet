@@ -266,7 +266,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                     new TextInput()
                                     {
                                         Prompt = new ActivityTemplate("Hello, what is your name?"),
-                                        OutputBinding = "user.name"
+                                        Property = "user.name"
                                     }
                                 }
                             },
@@ -1936,7 +1936,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             new BeginDialog("ageDialog")
                             {
                                 Options = options,
-                                Property = "$age"
+                                ResultProperty= "$age"
                             },
                             new SendActivity("Hello {$name}, you are {$age} years old!")
                         }
@@ -1959,7 +1959,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             },
                             new EndDialog()
                             {
-                                ResultProperty = "$age"
+                                Property = "$age",
+                                Value = "$age"
                             }
                         }
                     }

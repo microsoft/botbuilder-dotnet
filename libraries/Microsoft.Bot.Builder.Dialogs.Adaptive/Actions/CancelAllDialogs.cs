@@ -5,6 +5,7 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Expressions.Parser;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
@@ -24,17 +25,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <summary>
         /// Gets or sets event name. 
         /// </summary>
-        /// <value>
-        /// Event name. 
-        /// </value>
         public string EventName { get; set; }
 
         /// <summary>
-        /// Gets or sets event value.
+        /// Gets or sets value expression for EventValue
         /// </summary>
-        /// <value>
-        /// Event value.
-        /// </value>
         public string EventValue { get; set; }
 
         protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
@@ -44,12 +39,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            return await CancelAllParentDialogsAsync(dc, eventName: EventName ?? "cancelDialog", eventValue: EventValue, cancellationToken: cancellationToken).ConfigureAwait(false);
-        }
+            object eventValue = null;
+            if (this.EventValue != null)
+            {
+                eventValue = new ExpressionEngine().Parse(this.EventValue).TryEvaluate(dc.State);
+            }
 
-        protected override string OnComputeId()
-        {
-            return "CancelDialog()";
+            return await CancelAllParentDialogsAsync(dc, eventName: EventName ?? "cancelDialog", eventValue: eventValue, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
     }
 }

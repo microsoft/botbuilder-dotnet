@@ -23,24 +23,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         }
 
         /// <summary>
-        /// Gets or sets bidirectional property for input and output.  Example: user.age will be passed in, and user.age will be set when the dialog completes.
+        /// Gets or sets property path to initialize.
         /// </summary>
-        /// <value>
-        /// Property for input and output.
-        /// </value>
-        public string Property
-        {
-            get
-            {
-                return OutputBinding;
-            }
-
-            set
-            {
-                InputBindings[DialogPath.VALUE] = value;
-                OutputBinding = value;
-            }
-        }
+        public string Property { get; set; }
 
         /// <summary>
         ///  Gets or sets type, either Array or Object.
@@ -80,7 +65,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
         protected override string OnComputeId()
         {
-            return $"InitProperty[${this.Property.ToString() ?? string.Empty}]";
+            return $"{this.GetType().Name}[${this.Property.ToString() ?? string.Empty}]";
         }
     }
 }

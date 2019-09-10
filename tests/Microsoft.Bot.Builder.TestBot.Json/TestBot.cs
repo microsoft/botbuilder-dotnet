@@ -64,7 +64,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             var choiceInput = new ChoiceInput()
             {
                 Prompt = new ActivityTemplate("What declarative sample do you want to run?"),
-                OutputBinding = "conversation.dialogChoice",
+                Property = "conversation.dialogChoice",
                 AlwaysPrompt = true,
                 Choices = new List<Choice>()
             };

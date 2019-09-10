@@ -32,6 +32,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         /// <returns>true if value is found, false ifnot</returns>
         public virtual bool TryGetValue<T>(DialogContext dc, string path, out T value)
         {
+            if (dc == null)
+            {
+                throw new ArgumentNullException(nameof(dc));
+            }
+
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+
             path = this.TransformPath(path);
             var memoryScope = this.ResolveMemoryScope(dc, ref path);
             var memory = memoryScope.GetMemory(dc);
@@ -45,6 +55,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         /// <param name="path">path to use.</param>
         public virtual void RemoveValue(DialogContext dc, string path)
         {
+            if (dc == null)
+            {
+                throw new ArgumentNullException(nameof(dc));
+            }
+
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+
             path = this.TransformPath(path);
             var memoryScope = this.ResolveMemoryScope(dc, ref path);
             var memory = memoryScope.GetMemory(dc);
@@ -59,6 +79,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         /// <param name="value">value</param>
         public virtual void SetValue(DialogContext dc, string path, object value)
         {
+            if (dc == null)
+            {
+                throw new ArgumentNullException(nameof(dc));
+            }
+
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+
             path = this.TransformPath(path);
             var memoryScope = this.ResolveMemoryScope(dc, ref path);
             if (path == string.Empty)
@@ -79,6 +109,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         /// <returns>transformed path</returns>
         protected virtual string TransformPath(string path)
         {
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+
             return path;
         }
 
@@ -90,6 +125,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         /// <returns>memoryscope</returns>
         protected virtual MemoryScope ResolveMemoryScope(DialogContext dc, ref string path)
         {
+            if (dc == null)
+            {
+                throw new ArgumentNullException(nameof(dc));
+            }
+
             string scope = path;
             var index = path.IndexOf(".");
             if (index > 0)

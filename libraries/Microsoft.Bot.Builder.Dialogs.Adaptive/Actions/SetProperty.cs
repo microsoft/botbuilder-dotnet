@@ -17,7 +17,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     public class SetProperty : DialogAction
     {
         private Expression value;
-        private Expression property;
 
         [JsonConstructor]
         public SetProperty([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
@@ -27,29 +26,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         }
 
         /// <summary>
-        /// Gets or sets value expression.
+        /// Gets or sets property path to put the value in.
         /// </summary>
-        /// <value>
-        /// Value expression.
-        /// </value>
+        [JsonProperty("property")]
+        public string Property { get; set; }
+
+        /// <summary>
+        /// Gets or sets the expression to get the value to put into property path.
+        /// </summary>
         [JsonProperty("value")]
         public string Value
         {
             get { return value?.ToString(); }
             set { this.value = (value != null) ? new ExpressionEngine().Parse(value) : null; }
-        }
-
-        /// <summary>
-        /// Gets or sets property to put the value in.
-        /// </summary>
-        /// <value>
-        /// Property to put the value in.
-        /// </value>
-        [JsonProperty("property")]
-        public string Property 
-        {
-            get { return property?.ToString(); }
-            set { this.property = (value != null) ? new ExpressionEngine().Parse(value) : null; }
         }
 
         protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
@@ -88,7 +77,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
         protected override string OnComputeId()
         {
-            return $"SetProperty[{this.Property ?? string.Empty}]";
+            return $"{this.GetType().Name}[{this.Property ?? string.Empty}]";
         }
     }
 }

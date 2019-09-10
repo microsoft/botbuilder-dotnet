@@ -336,10 +336,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         {
             if (DebugSupport.SourceRegistry.TryGetValue(this, out var range))
             {
-                return $"AdaptiveDialog({Path.GetFileName(range.Path)}:{range.Start.LineIndex})";
+                return $"{this.GetType().Name}({Path.GetFileName(range.Path)}:{range.Start.LineIndex})";
             }
 
-            return $"AdaptiveDialog[{this.BindingPath()}]";
+            return $"{this.GetType().Name}[]";
         }
 
         protected async Task<DialogTurnResult> ContinueActionsAsync(DialogContext dc, object options, CancellationToken cancellationToken)

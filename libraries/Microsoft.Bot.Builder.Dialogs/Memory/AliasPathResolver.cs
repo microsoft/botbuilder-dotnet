@@ -22,11 +22,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
 
         public override bool Matches(string path)
         {
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+
             return path.Trim().StartsWith(this.alias);
         }
 
         protected override string TransformPath(string path)
         {
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+
             var start = path.IndexOf(this.alias);
             if (start >= 0)
             {

@@ -219,11 +219,6 @@ namespace Microsoft.Bot.Builder.Dialogs
             return outerDc.EndDialogAsync(result, cancellationToken);
         }
 
-        protected override string OnComputeId()
-        {
-            return $"component[{this.BindingPath()}]";
-        }
-
         private DialogContext CreateInnerDc(ITurnContext context, DialogInstance instance)
         {
             DialogState state;

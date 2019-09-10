@@ -171,16 +171,6 @@ namespace Microsoft.Bot.Builder.Dialogs
                     " For example, if subclassing a ComponentDialog you can call AddDialog() within your constructor.");
             }
 
-            // Process dialogs input bindings
-            var bindings = new JObject();
-            foreach (var binding in dialog.InputBindings)
-            {
-                var bindingKey = binding.Key;
-                var bindingValue = binding.Value;
-
-                bindings[bindingKey] = State.GetValue<JToken>(bindingValue);
-            }
-
             // Check for inherited state
             // Local stack references are positive numbers and negative numbers are references on the
             // parents stack.
@@ -224,19 +214,6 @@ namespace Microsoft.Bot.Builder.Dialogs
             };
 
             Stack.Insert(0, instance);
-
-            // take the bindings (dialog.xxx => dialog.yyy)
-            foreach (var property in bindings)
-            {
-                // make sure the key is a dialog property this is only used for dialog bindings
-                if (!property.Key.StartsWith("$") && !property.Key.ToLower().StartsWith("dialog."))
-                {
-                    throw new ArgumentOutOfRangeException($"{property.Key} is not a dialog property");
-                }
-
-                // Set the dialog property in the current state to the value from the bindings
-                State.SetValue(property.Key, property.Value);
-            }
 
             // set dialog result
             if (ShouldInheritState(dialog))
@@ -583,12 +560,6 @@ namespace Microsoft.Bot.Builder.Dialogs
 
                 // Pop dialog off stack
                 Stack.RemoveAt(0);
-
-                // Process dialogs output binding
-                if (!string.IsNullOrEmpty(dialog?.OutputBinding) && result != null)
-                {
-                    this.State.SetValue(dialog.OutputBinding, result);
-                }
             }
         }
 
