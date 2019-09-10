@@ -321,24 +321,22 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                     try
                     {
                         var activities = responses.ContainsKey(key) ? responses[key] : new List<Activity>();
-                        if (!_settings.PassiveResponseMode)
-                        {
-                            // Running a background task, Get bot response and parse it from activity to WeChat response message
-                            if (_taskQueue == null)
-                            {
-                                throw new NullReferenceException("Background task queue can not be null.");
-                            }
-
-                            _taskQueue.QueueBackgroundWorkItem(async (ct) =>
-                            {
-                                await ProcessBotResponse(activities, activity.From.Id).ConfigureAwait(false);
-                            });
-                            return null;
-                        }
-                        else
+                        if (_settings.PassiveResponseMode)
                         {
                             return await ProcessBotResponse(activities, activity.From.Id).ConfigureAwait(false);
                         }
+
+                        // Running a background task, Get bot response and parse it from activity to WeChat response message
+                        if (_taskQueue == null)
+                        {
+                            throw new NullReferenceException("Background task queue can not be null.");
+                        }
+
+                        _taskQueue.QueueBackgroundWorkItem(async (ct) =>
+                        {
+                            await ProcessBotResponse(activities, activity.From.Id).ConfigureAwait(false);
+                        });
+                        return null;
                     }
                     catch (Exception e)
                     {

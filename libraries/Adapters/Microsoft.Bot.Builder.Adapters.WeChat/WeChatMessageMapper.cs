@@ -581,9 +581,9 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// <returns>A new instance of News create by hero card.</returns>
         private async Task<News> CreateNewsFromHeroCard(IMessageActivity activity, HeroCard heroCard)
         {
-            if (heroCard.Tap == null)
+            if (heroCard.Images == null || heroCard.Images.Count == 0)
             {
-                throw new ArgumentException("Tap action is required.", nameof(heroCard));
+                throw new ArgumentException("Image is required for news.", nameof(heroCard));
             }
 
             var news = new News
@@ -592,14 +592,14 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 Description = heroCard.Subtitle,
                 Content = heroCard.Text,
                 Title = heroCard.Title,
-                ShowCoverPicture = heroCard.Images?.Count > 0 ? "1" : "0",
+                ShowCoverPicture = "0",
 
                 // Hero card don't have original url, but it's required by WeChat.
                 // Let user use openurl action as tap action instead.
-                ContentSourceUrl = heroCard.Tap.Value.ToString(),
+                ContentSourceUrl = heroCard.Tap?.Value.ToString() ?? heroCard.Images.FirstOrDefault().Url,
             };
 
-            foreach (var image in heroCard.Images ?? new List<CardImage>())
+            foreach (var image in heroCard.Images)
             {
                 // MP news image is required and can not be a temporary media.
                 var mediaMessage = await MediaContentToWeChatResponse(activity, image.Alt, image.Url, MediaTypes.Image).ConfigureAwait(false);
@@ -915,6 +915,10 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
 
             name = name ?? new Guid().ToString();
 
+            // should be lower by WeChat.
+#pragma warning disable CA1308
+            contentType = contentType.ToLowerInvariant();
+#pragma warning restore CA1308
             return new AttachmentData(contentType, name, bytesData, bytesData);
         }
     }
