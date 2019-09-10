@@ -115,6 +115,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
                 try
                 {
+                    resolver.SetValue(null, "test", 1);
+                    Assert.Fail($"Should have thrown exception with null dc for SetValue() {resolver.GetType().Name}");
+                }
+                catch (ArgumentNullException)
+                {
+                }
+
+                try
+                {
+                    resolver.SetValue(dc, null, 1);
+                    Assert.Fail($"Should have thrown exception with null dc for SetValue() {resolver.GetType().Name}");
+                }
+                catch (ArgumentNullException)
+                {
+                }
+
+                try
+                {
                     resolver.RemoveValue(null, null);
                     Assert.Fail($"Should have thrown exception with null dc for RemovePath() {resolver.GetType().Name}");
                 }
