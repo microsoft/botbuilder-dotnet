@@ -28,7 +28,7 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.StreamingExtensions
 {
     /// <summary>
-    /// Used to process incoming requests sent over an <see cref="IStreamingTransport"/> and adhering to the Bot Framework Protocol v3 with Streaming Extensions.
+    /// Used to process incoming requests sent over an IStreamingTransport and adhering to the Bot Framework Protocol v3 with Streaming Extensions.
     /// </summary>
     public class DirectLineAdapter : BotFrameworkAdapter, IRequestHandler, IBotFrameworkHttpAdapter
     {
@@ -71,13 +71,15 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
         /// <param name="onTurnError">Optional function to perform on turn errors.</param>
         /// <param name="bot">The <see cref="IBot"/> to be used for all requests to this handler.</param>
         /// <param name="middlewareSet">An optional set of middleware to register with the bot.</param>
-        public DirectLineAdapter(Func<ITurnContext, Exception, Task> onTurnError, IBot bot, IList<IMiddleware> middlewareSet = null)
+        /// <param name="logger">Optional logger.</param>
+        public DirectLineAdapter(Func<ITurnContext, Exception, Task> onTurnError, IBot bot, IList<IMiddleware> middlewareSet = null, ILogger logger = null)
             : base(new SimpleCredentialProvider())
         {
             this.OnTurnError = onTurnError;
             _bot = bot ?? throw new ArgumentNullException(nameof(bot));
             _middlewareSet = middlewareSet ?? new List<IMiddleware>();
             _userAgent = GetUserAgent();
+            _logger = logger ?? NullLogger.Instance;
         }
 
         /// <summary>
@@ -89,14 +91,16 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
         /// <param name="onTurnError">Optional function to perform on turn errors.</param>
         /// <param name="serviceProvider">The service collection containing the registered IBot type.</param>
         /// <param name="middlewareSet">An optional set of middleware to register with the bot.</param>
-        public DirectLineAdapter(Func<ITurnContext, Exception, Task> onTurnError, IServiceProvider serviceProvider, IList<IMiddleware> middlewareSet = null)
+        /// <param name="logger">Optional Logger.</param>
+        public DirectLineAdapter(Func<ITurnContext, Exception, Task> onTurnError, IServiceProvider serviceProvider, IList<IMiddleware> middlewareSet = null, ILogger logger = null)
              : base(new SimpleCredentialProvider())
         {
                 this.OnTurnError = onTurnError;
                 _services = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
                 _middlewareSet = middlewareSet ?? new List<IMiddleware>();
                 _userAgent = GetUserAgent();
-            }
+                _logger = logger ?? NullLogger.Instance;
+        }
 
         /// <summary>
         /// Process the initial request to establish a long lived connection via a streaming server.
@@ -134,9 +138,9 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
             {
                 var socket = await httpRequest.HttpContext.WebSockets.AcceptWebSocketAsync().ConfigureAwait(false);
                 _transportServer = new WebSocketServer(socket, this);
-                _httpClient = new StreamingHttpClient(_transportServer, _logger);
+                _httpClient = new StreamingHttpClient(this._transportServer, _logger);
 
-                await _transportServer.StartAsync().ConfigureAwait(false);
+                await this._transportServer.StartAsync().ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -156,6 +160,7 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
         {
             _transportServer = new NamedPipeServer(pipeName, this);
             _httpClient = new StreamingHttpClient(_transportServer, _logger);
+            _claimsIdentity = new ClaimsIdentity();
 
             return _transportServer.StartAsync();
         }

@@ -16,29 +16,31 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
     public class StreamingHttpClient : HttpClient
     {
         private IStreamingTransportServer _server;
-        private ILogger _logger;
+        private readonly ILogger _logger;
 
         public StreamingHttpClient(IStreamingTransportServer server, ILogger logger = null)
         {
             this._server = server;
-            _logger = logger != null ? logger : NullLogger.Instance;
+            this._logger = logger ?? NullLogger.Instance;
         }
 
-        public override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken = default)
         {
-            var streamingRequest = new StreamingRequest();
-            streamingRequest.Path = request.RequestUri.OriginalString.Substring(request.RequestUri.OriginalString.IndexOf("/v3"));
-            streamingRequest.Verb = request.Method.ToString();
+            var streamingRequest = new StreamingRequest
+            {
+                Path = request.RequestUri.OriginalString.Substring(request.RequestUri.OriginalString.IndexOf("/v3")),
+                Verb = request.Method.ToString(),
+            };
             streamingRequest.SetBody(request.Content);
 
-            return await SendRequestAsync<HttpResponseMessage>(streamingRequest, cancellationToken).ConfigureAwait(false);
+            return await this.SendRequestAsync<HttpResponseMessage>(streamingRequest, cancellationToken).ConfigureAwait(false);
         }
 
-        private async Task<T> SendRequestAsync<T>(StreamingRequest request, CancellationToken cancellation = default(CancellationToken))
+        private async Task<T> SendRequestAsync<T>(StreamingRequest request, CancellationToken cancellation = default)
         {
             try
             {
-                var serverResponse = await _server.SendAsync(request, cancellation).ConfigureAwait(false);
+                var serverResponse = await this._server.SendAsync(request, cancellation).ConfigureAwait(false);
 
                 if (serverResponse.StatusCode == (int)HttpStatusCode.OK)
                 {
@@ -47,10 +49,10 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                this._logger.LogError(ex.Message);
             }
 
-            return default(T);
+            return default;
         }
     }
 }
