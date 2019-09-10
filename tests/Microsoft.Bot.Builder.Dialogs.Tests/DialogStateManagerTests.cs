@@ -134,6 +134,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         }
 
         [TestMethod]
+        public void TestPathResolverMatch()
+        {
+            var dialogs = new DialogSet();
+            var dc = new DialogContext(dialogs, new TurnContext(new TestAdapter(), new Schema.Activity()), (DialogState)new DialogState());
+            DialogStateManager state = new DialogStateManager(dc);
+
+            foreach (var resolver in DialogStateManager.PathResolvers.Where(p => p.GetType() != typeof(DefaultPathResolver)))
+            {
+                Assert.IsFalse(resolver.Matches(string.Empty), "shouldn't match empty");
+            }
+
+            Assert.IsTrue(DialogStateManager.PathResolvers.First(p => p.GetType() == typeof(DefaultPathResolver)).Matches(string.Empty), "should match empty");
+        }
+
+        [TestMethod]
         public void TestSimpleValues()
         {
             var dialogs = new DialogSet();
