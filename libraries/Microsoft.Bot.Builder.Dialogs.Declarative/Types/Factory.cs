@@ -12,6 +12,8 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Loaders;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Plugins;
+using Microsoft.Bot.Builder.Dialogs.Form;
+using Microsoft.Bot.Builder.Dialogs.Form.Events;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -179,6 +181,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
             Register("Microsoft.MultiLanguageRecognizer", typeof(MultiLanguageRecognizer));
 
             Register("Microsoft.AdaptiveDialog", typeof(AdaptiveDialog));
+
+            // Form
+            Register("Microsoft.FormDialog", typeof(FormDialog));
+            Register("Microsoft.OnAsk", typeof(OnAsk));
+            Register("Microsoft.OnChooseSlot", typeof(OnChooseSlot));
+            Register("Microsoft.OnChooseSlotValue", typeof(OnChooseSlotValue));
+            Register("Microsoft.OnClarifySlotValue", typeof(OnClarifySlotValue));
+            Register("Microsoft.OnClearSlot", typeof(OnClearSlot));
+            Register("Microsoft.OnNextFormEvent", typeof(OnNextFormEvent));
+            Register("Microsoft.OnSetSlot", typeof(OnSetSlot));
         }
 
         private static void EnsureConfig()

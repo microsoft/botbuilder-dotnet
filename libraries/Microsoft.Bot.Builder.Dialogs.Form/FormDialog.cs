@@ -17,30 +17,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
     public class FormDialog : AdaptiveDialog
     {
         // TODO: This should be wired up to be declarative for the selector and for the schemas
-        public FormDialog(DialogSchema inputSchema, DialogSchema outputSchema)
+        public FormDialog(DialogSchema schema)
         {
-            InputSchema = inputSchema;
-            OutputSchema = outputSchema;
+            Schema = schema;
             Selector = new FormSelector(new MostSpecificSelector
             {
                 Selector = new FirstSelector()
             });
-
-            if (outputSchema.Schema["type"].Value<string>() != "object")
-            {
-                throw new ArgumentException("Forms must be an object schema.");
-            }
         }
 
-        public DialogSchema InputSchema { get; }
-
-        public DialogSchema OutputSchema { get; }
+        public DialogSchema Schema { get; }
 
         protected override async Task<bool> ProcessEventAsync(SequenceContext sequenceContext, DialogEvent dialogEvent, bool preBubble, CancellationToken cancellationToken = default(CancellationToken))
         {
             var handled = false;
             // Save into turn
-            sequenceContext.State.SetValue(DialogContextState.TURN_SCHEMA, this.OutputSchema);
+            sequenceContext.State.SetValue(DialogContextState.TURN_SCHEMA, this.Schema);
             if (preBubble)
             {
                 switch (dialogEvent.Name)
@@ -229,7 +221,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
         private IReadOnlyList<SlotEntityInfo> Candidates(Dictionary<string, List<EntityInfo>> entities)
         {
             var candidates = new List<SlotEntityInfo>();
-            foreach (var slot in OutputSchema.Property.Children)
+            foreach (var slot in Schema.Property.Children)
             {
                 foreach (var mapping in slot.Mappings)
                 {
@@ -345,7 +337,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
 
         private Queues SlotQueues(string path, Dictionary<PropertySchema, Queues> slotToQueues)
         {
-            var prop = OutputSchema.PathToSchema(path);
+            var prop = Schema.PathToSchema(path);
             if (!slotToQueues.TryGetValue(prop, out var slotQueues))
             {
                 slotQueues = new Queues();

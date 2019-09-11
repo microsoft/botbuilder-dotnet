@@ -19,9 +19,8 @@ using static Microsoft.Bot.Builder.Dialogs.Debugging.DebugSupport;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 {
-
     /// <summary>
-    /// The Adaptive Dialog models conversation using events and events to adapt dynamicaly to changing conversation flow
+    /// The Adaptive Dialog models conversation using events and events to adapt dynamicaly to changing conversation flow.
     /// </summary>
     public class AdaptiveDialog : DialogContainer
     {
@@ -36,7 +35,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         public IStatePropertyAccessor<Dictionary<string, object>> UserState { get; set; }
 
         /// <summary>
-        /// Recognizer for processing incoming user input
+        /// Recognizer for processing incoming user input.
         /// </summary>
         public IRecognizer Recognizer { get; set; }
 

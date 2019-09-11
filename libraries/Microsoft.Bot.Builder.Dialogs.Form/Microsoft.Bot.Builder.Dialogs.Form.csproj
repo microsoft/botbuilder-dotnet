@@ -21,7 +21,6 @@
 
   <ItemGroup>
     <Folder Include="Schemas\Actions\" />
-    <Folder Include="Schemas\Events\" />
   </ItemGroup>
 
 </Project>

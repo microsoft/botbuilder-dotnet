@@ -1,5 +1,5 @@
 {
-    "$schema": "https: //raw.githubusercontent.com/Microsoft/botbuilder-dotnet/4.Future/schemas/componentSchema.schema",
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
     "$role": "unionType(Microsoft.IDialog)",
     "title": "Form Dialog",
     "description": "Configures a data driven dialog via a schema and a collection of mapping rules.",
@@ -10,21 +10,12 @@
         },
         {
             "properties": {
-                "form": {
+                "schema": {
                     "$comment": "Eventually we should allow at least some subset of JSON schema here.",
-                    "$ref": "https://raw.githubusercontent.com/Microsoft/botbuilder-tools/V.Future/packages/DialogSchema/src/dialogSchema.schema",
                     "title": "The form schema to be filled in.",
                     "additionalProperties": true
-                },
-                "mappings": {
-                    "type": "array",
-                    "description": "Rules for mapping entities to slots.",
-                    "items": {
-                        "$type": "Microsoft.IRule"
-                    }
                 }
             }
         }
     ]
-
 }

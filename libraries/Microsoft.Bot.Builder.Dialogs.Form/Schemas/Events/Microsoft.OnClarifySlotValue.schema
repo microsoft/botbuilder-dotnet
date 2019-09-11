@@ -1,0 +1,7 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
+    "$ref": "../../../Microsoft.Bot.Builder.Dialogs.Adaptive/Schemas/Events/Microsoft.OnEvent.schema#",
+    "$role": "unionType(Microsoft.IOnEvent)",
+    "title": "Form ClarifySlotValue Event",
+    "description": "This defines the actions to take when a ClarifySlotValue event is raised"
+}
