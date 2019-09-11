@@ -104,7 +104,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Connector.Tea
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Teams", "libraries\Microsoft.Bot.Builder.Teams\Microsoft.Bot.Builder.Teams.csproj", "{56230F58-02EF-4C88-9C28-BE37B8A4D074}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Adapter", "Adapter", "{A6539B8D-3806-4E21-9DFE-11AEC075D2E3}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Adapters", "Adapters", "{A6539B8D-3806-4E21-9DFE-11AEC075D2E3}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Adapters.Slack.TestBot", "tests\Adapters\Microsoft.Bot.Builder.Adapters.Slack.TestBot\Microsoft.Bot.Builder.Adapters.Slack.TestBot.csproj", "{80F144D5-1F0C-4FE5-9A78-94A5ABA8215B}"
 EndProject
