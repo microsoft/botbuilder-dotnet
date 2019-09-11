@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
 {
     public class SlackDialog
     {
-        private DialogData data;
+        private DialogData _data;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SlackDialog"/> class.
@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// <param name="elements">An array of dialog elements.</param>
         public SlackDialog(string title, string callbackId, string submitLabel, List<DialogElement> elements)
         {
-            this.data = new DialogData()
+            _data = new DialogData()
             {
                 Title = title,
                 CallbackId = callbackId,
@@ -35,7 +35,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// <param name="value">Value for state.</param>
         public void SetState(string value)
         {
-            this.data.State = value;
+            _data.State = value;
         }
 
         /// <summary>
@@ -44,7 +44,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// <param name="set">Set true to have Slack notify you with a `dialog_cancellation` event if a user cancels the dialog without submitting.</param>
         public void SetNotifyOnCancel(bool set)
         {
-            this.data.NotifyOnCancel = set;
+            _data.NotifyOnCancel = set;
         }
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// <param name="value">Value for title.</param>
         public void SetTitle(string value)
         {
-            this.data.Title = value;
+            _data.Title = value;
         }
 
         /// <summary>
@@ -62,7 +62,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// <param name="value">Value for the callback_id.</param>
         public void SetCallbackId(string value)
         {
-            this.data.CallbackId = value;
+            _data.CallbackId = value;
         }
 
         /// <summary>
@@ -71,7 +71,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// <param name="value">Value for the button label.</param>
         public void SetSubmitLabel(string value)
         {
-            this.data.SubmitLabel = value;
+            _data.SubmitLabel = value;
         }
 
         /// <summary>
@@ -93,7 +93,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
                 element = (DialogElement)options;
             }
 
-            this.data.Elements.Add(element);
+            _data.Elements.Add(element);
         }
 
         /// <summary>
@@ -122,7 +122,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
                 element = (DialogElement)options;
             }
 
-            this.data.Elements.Add(element);
+            _data.Elements.Add(element);
         }
 
         /// <summary>
@@ -192,7 +192,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
                 element = (DialogElement)options;
             }
 
-            this.data.Elements.Add(element);
+            _data.Elements.Add(element);
         }
 
         /// <summary>
@@ -221,7 +221,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
                 element = (DialogElement)options;
             }
 
-            this.data.Elements.Add(element);
+            _data.Elements.Add(element);
         }
 
         /// <summary>
@@ -250,7 +250,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
                 element = (DialogElement)options;
             }
 
-            this.data.Elements.Add(element);
+            _data.Elements.Add(element);
         }
 
         /// <summary>
@@ -259,7 +259,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// <returns>The JSON encoded string.</returns>
         public string AsString()
         {
-            return JsonConvert.ToString(this.data.ToString());
+            return JsonConvert.ToString(_data.ToString());
         }
 
         /// <summary>
@@ -268,7 +268,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// <returns>The data.</returns>
         public DialogData AsObject()
         {
-            return this.data;
+            return _data;
         }
     }
 }
