@@ -58,6 +58,38 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
         }
 
         [TestMethod]
+        public async Task QnAMakerAction_Test1()
+        {
+            TypeFactory.Configuration = new ConfigurationBuilder().Build();
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Q11\",\"top\":1,\"strictFilters\":[],\"metadataBoost\":[],\"scoreThreshold\":0.3}")
+                .Respond("application/json", GetResponse("QnaMaker_TopNAnswer.json"));
+            mockHttp.When(HttpMethod.Post, GetTrainRequestUrl())
+                .Respond(HttpStatusCode.NoContent, "application/json", "{ }");
+            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Q12\",\"top\":1,\"strictFilters\":[],\"metadataBoost\":[],\"scoreThreshold\":0.3}")
+               .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswer_WhenNoAnswerFoundInKb.json"));
+
+            var rootDialog = CreateQnAMakerActionDialog(mockHttp);
+
+            var suggestionList = new List<string> { "Q1", "Q2", "Q3" };
+            var suggestionActivity = CardHelper.GetSuggestionsCard(suggestionList, "Did you mean:", "None of the above.");
+
+            await CreateFlow(rootDialog)
+            .Send("Q11")
+                .AssertReply(suggestionActivity)
+            .Send("Q1")
+                .AssertReply("A1")
+            .StartTestAsync();
+
+            await CreateFlow(rootDialog)
+            .Send("Q11")
+                .AssertReply(suggestionActivity)
+            .Send("Q12")
+                .AssertReply("No QnAMaker answers found.")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
         public async Task QnAMakerDialog_NoAnswers()
         {
             TypeFactory.Configuration = new ConfigurationBuilder().Build();
@@ -1387,6 +1419,54 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                                     {
                                         new SendActivity("I didn't understand that.")
                                     }
+                            }
+                        }
+                    }
+                }
+            };
+
+            var rootDialog = new AdaptiveDialog("root")
+            {
+                Events = new List<IOnEvent>()
+                {
+                    new OnBeginDialog()
+                    {
+                        Actions = new List<IDialog>()
+                        {
+                            new BeginDialog(outerDialog.Id)
+                        }
+                    },
+                    new Dialogs.Adaptive.Events.OnDialogEvent()
+                    {
+                        Events = new List<string>() { "UnhandledUnknownIntent" },
+                        Actions = new List<IDialog>()
+                        {
+                            new EditArray(),
+                            new SendActivity("magenta")
+                        }
+                    }
+                }
+            };
+            rootDialog.AddDialog(outerDialog);
+            return rootDialog;
+        }
+
+        private AdaptiveDialog CreateQnAMakerActionDialog(MockHttpMessageHandler mockHttp)
+        {
+            var client = new HttpClient(mockHttp);
+
+            var outerDialog = new AdaptiveDialog("outer")
+            {
+                AutoEndDialog = false,
+                Events = new List<IOnEvent>()
+                {
+                    new OnUnknownIntent()
+                    {
+                        Actions = new List<IDialog>()
+                        {
+                            new QnAMakerAction(kbId: _knowlegeBaseId, hostName: _hostname, endpointKey: _endpointKey, httpClient: client)
+                            {
+                                OutputBinding = "turn.LastResult"
                             }
                         }
                     }
