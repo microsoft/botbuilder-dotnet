@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
                 },
                 actions: actions,
                 constraint: constraint,
-                callerPath: callerPath, 
+                callerPath: callerPath,
                 callerLine: callerLine)
         {
         }

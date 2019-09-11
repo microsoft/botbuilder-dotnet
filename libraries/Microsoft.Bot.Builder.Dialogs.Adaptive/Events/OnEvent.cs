@@ -109,7 +109,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
         /// </summary>
         /// <param name="planning">Context.</param>
         /// <returns>A <see cref="Task"/> with plan change list.</returns>
-        public async virtual Task<List<ActionChangeList>> OnExecuteAsync(SequenceContext planning)
+        public virtual async Task<List<ActionChangeList>> OnExecuteAsync(SequenceContext planning)
         {
             return await Task.FromResult(new List<ActionChangeList>()
             {

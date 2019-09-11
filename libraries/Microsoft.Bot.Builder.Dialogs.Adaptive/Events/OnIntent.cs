@@ -23,9 +23,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
                 events: new List<string>() { AdaptiveEvents.RecognizedIntent },
                 actions: actions,
                 constraint: constraint,
-                callerPath: callerPath, 
+                callerPath: callerPath,
                 callerLine: callerLine)
-            {
+        {
             Intent = intent ?? null;
             Entities = entities ?? new List<string>();
         }

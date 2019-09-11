@@ -1,15 +1,9 @@
 ﻿// Licensed under the MIT License.
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Expressions;
-using Microsoft.Bot.Builder.Expressions.Parser;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
@@ -56,7 +50,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             {
                 expression = Expression.ConstantExpression(b);
             }
-            else 
+            else
             {
                 expression = Expression.ConstantExpression(Value);
             }

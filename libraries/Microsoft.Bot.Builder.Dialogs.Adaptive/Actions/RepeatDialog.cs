@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     public class RepeatDialog : DialogAction
     {
         [JsonConstructor]
-        public RepeatDialog([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0) 
+        public RepeatDialog([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base()
         {
             this.RegisterSourceLocation(callerPath, callerLine);

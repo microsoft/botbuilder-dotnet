@@ -6,7 +6,7 @@ using Microsoft.Recognizers.Text;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
 {
-    public abstract class EntityRecognizer 
+    public abstract class EntityRecognizer
     {
         public EntityRecognizer()
         {

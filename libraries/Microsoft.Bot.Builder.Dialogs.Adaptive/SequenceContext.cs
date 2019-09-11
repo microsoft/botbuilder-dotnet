@@ -3,12 +3,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
-using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 {
@@ -81,7 +79,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             {
                 // Clear current change list
                 this.Context.TurnState[changeKey] = null;
-                
+
                 // Apply each queued set of changes
                 foreach (var change in changes)
                 {

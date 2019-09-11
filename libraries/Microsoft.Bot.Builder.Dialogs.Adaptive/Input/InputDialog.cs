@@ -7,12 +7,10 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Choices;
-using Microsoft.Bot.Builder.Expressions;
 using Microsoft.Bot.Builder.Expressions.Parser;
 using Microsoft.Bot.Builder.LanguageGeneration;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
-using static Microsoft.Bot.Builder.Dialogs.DialogContext;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 {
@@ -86,7 +84,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             if (state == InputState.Valid)
             {
                 var input = dc.State.GetValue<object>(VALUE_PROPERTY);
-                
+
                 // set property
                 dc.State.SetValue(this.Property, input);
 
@@ -126,9 +124,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             if (state == InputState.Valid)
             {
                 var input = dc.State.GetValue<object>(VALUE_PROPERTY);
-                
+
                 // set output property
-                if (!String.IsNullOrEmpty(this.Property))
+                if (!string.IsNullOrEmpty(this.Property))
                 {
                     dc.State.SetValue(this.Property, input);
                 }

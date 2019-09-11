@@ -1,13 +1,11 @@
 ﻿// Licensed under the MIT License.
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using Microsoft.Bot.Builder.Expressions;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
 {
@@ -22,7 +20,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
                 events: new List<string>() { AdaptiveEvents.ActivityReceived },
                 actions: actions,
                 constraint: constraint,
-                callerPath: callerPath, 
+                callerPath: callerPath,
                 callerLine: callerLine)
         {
             Type = type;

@@ -46,7 +46,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             {
                 // Try to parse value based on type
                 var text = results[0].Resolution["value"].ToString();
-                    
+
                 if (float.TryParse(text, out var value))
                 {
                     input = value;

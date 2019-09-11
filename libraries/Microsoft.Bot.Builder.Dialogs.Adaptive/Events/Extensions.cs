@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
     /// </summary>
     public static partial class Extensions
     {
-        public static async Task DebuggerStepAsync(this DialogContext context, IOnEvent rule, DialogEvent dialogEvent,  CancellationToken cancellationToken)
+        public static async Task DebuggerStepAsync(this DialogContext context, IOnEvent rule, DialogEvent dialogEvent, CancellationToken cancellationToken)
         {
             var more = dialogEvent.Name;
             await context.GetDebugger().StepAsync(context, rule, more, cancellationToken).ConfigureAwait(false);
