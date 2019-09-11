@@ -49,14 +49,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                         {
                             var queues = Queues.Read(sequenceContext);
                             var entities = NormalizeEntities(sequenceContext);
-                            if (entities.Any())
-                            {
-                                var newQueues = new Queues();
-                                AssignEntities(entities, newQueues);
-                                queues.Merge(newQueues);
-                                CombineOldSlotMappings(queues, entities.First().Value.First().Turn);
-                                queues.Write(sequenceContext);
-                            }
+                            var utterance = sequenceContext.Context.Activity?.AsMessageActivity()?.Text;
+                            // Build in the whole utterance as a string
+                            entities["string"] = new List<EntityInfo> { new EntityInfo { Coverage = 1.0, Start = 0, End = utterance.Length, Name = "string", Score = 0.0, Type = "string", Entity = utterance, Text = utterance } };
+                            var newQueues = new Queues();
+                            AssignEntities(entities, newQueues);
+                            queues.Merge(newQueues);
+                            CombineOldSlotMappings(queues, entities.First().Value.First().Turn);
+                            queues.Write(sequenceContext);
 
                             handled = await base.ProcessEventAsync(sequenceContext, dialogEvent, preBubble, cancellationToken);
                         }
@@ -73,6 +73,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                             else if (queues.Set.Any())
                             {
                                 var evt = new DialogEvent() { Name = FormEvents.SetSlot, Value = queues.Set.Dequeue(), Bubble = false };
+                                handled = await this.ProcessEventAsync(sequenceContext, dialogEvent: evt, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
+                            }
+                            else if (queues.Unknown.Any())
+                            {
+                                var evt = new DialogEvent() { Name = FormEvents.UnknownEntity, Value = queues.Unknown.Dequeue(), Bubble = false };
                                 handled = await this.ProcessEventAsync(sequenceContext, dialogEvent: evt, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
                             }
                             else if (queues.SlotChoices.Any())

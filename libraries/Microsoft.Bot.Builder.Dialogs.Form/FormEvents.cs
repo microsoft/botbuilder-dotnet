@@ -15,5 +15,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
         public const string FillForm = "fillForm";
         public const string NextFormEvent = "nextFormEvent";
         public const string SetSlot = "setSlot";
+        public const string UnknownEntity = "unknownEntity";
     }
 }
