@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Recognizers.Text.Number;
+using Microsoft.Recognizers.Text.NumberWithUnit;
 
 namespace Microsoft.Bot.Builder.Dialogs.Choices
 {
@@ -137,5 +138,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
                     },
                 }).ToList();
         }
+
+        private static List<ModelResult<FoundChoice>> RecognizeNumberWithUnit(string utterance, string culture)
+        {
+            var model = new NumberWithUnitRecognizer(culture).GetCurrencyModel(culture);
+            var result = model.Parse(utterance);
+            return result.Select(r =>
+                new ModelResult<FoundChoice>
+                {
+                    Start = r.Start,
+                    End = r.End,
+                    Text = r.Text,
+                    Resolution = new FoundChoice
+                    {
+                        Value = r.Resolution["value"].ToString(),
+                    },
+                }).ToList();
+        }
+
+        private static AbstractNumberWithUnitModel GetNumberWithUnitModel
     }
 }
