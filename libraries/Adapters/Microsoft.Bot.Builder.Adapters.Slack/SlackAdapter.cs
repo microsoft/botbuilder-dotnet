@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
     public class SlackAdapter : BotAdapter, IBotFrameworkHttpAdapter
     {
         private readonly ISlackAdapterOptions options;
-        private readonly SlackTaskClient slack;
+        private readonly SlackClientWrapper _slackClient;
         private readonly string slackOAuthURL = "https://slack.com/oauth/authorize?client_id=";
         private string identity;
 
@@ -50,7 +50,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
                 throw new Exception(warning + Environment.NewLine + "Required: include a verificationToken or clientSigningSecret to verify incoming Events API webhooks");
             }
 
-            this.slack = new SlackTaskClient(this.options.BotToken);
+            this._slackClient = new SlackClientWrapper(this.options.BotToken);
             this.LoginWithSlack().Wait();
         }
 
@@ -60,11 +60,11 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// </summary>
         /// <param name="activity">An Activity object.</param>
         /// <returns>Returns an instance of the Slack API.</returns>
-        public async Task<SlackTaskClient> GetAPIAsync(Activity activity)
+        public async Task<SlackClientWrapper> GetAPIAsync(Activity activity)
         {
-            if (this.slack != null)
+            if (this._slackClient != null)
             {
-                return this.slack;
+                return this._slackClient;
             }
 
             if (activity.Conversation.Properties["team"] == null)
@@ -73,7 +73,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
             }
 
             var token = await this.options.GetTokenForTeam(activity.Conversation.Properties["team"].ToString());
-            return string.IsNullOrEmpty(token) ? new SlackTaskClient(token) : throw new Exception("Missing credentials for team.");
+            return string.IsNullOrEmpty(token) ? new SlackClientWrapper(token) : throw new Exception("Missing credentials for team.");
         }
 
         /// <summary>
@@ -142,7 +142,6 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
 
                     try
                     {
-                        SlackTaskClient slack = await this.GetAPIAsync(turnContext.Activity);
                         SlackResponse responseInString;
 
                         var data = new NameValueCollection();
@@ -196,7 +195,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
             if (activity.Id != null && activity.Conversation != null)
             {
                 NewSlackMessage message = SlackHelper.ActivityToSlack(activity);
-                SlackTaskClient slack = await this.GetAPIAsync(activity);
+                SlackClientWrapper slack = await this.GetAPIAsync(activity);
                 var results = await slack.UpdateAsync(activity.Timestamp.ToString(), activity.ChannelId, message.text);
                 if (!results.ok)
                 {
@@ -225,7 +224,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         {
             if (reference.ActivityId != null && reference.Conversation != null)
             {
-                SlackTaskClient slack = await this.GetAPIAsync(turnContext.Activity);
+                SlackClientWrapper slack = await this.GetAPIAsync(turnContext.Activity);
                 var results = await slack.DeleteMessageAsync(reference.ChannelId, turnContext.Activity.Timestamp.Value.DateTime);
             }
             else
@@ -468,7 +467,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         {
             if (this.options.BotToken != null)
             {
-                AuthTestResponse response = await this.slack.TestAuthAsync();
+                AuthTestResponse response = await this._slackClient.TestAuthAsync();
                 this.identity = response.user_id;
             }
             else
