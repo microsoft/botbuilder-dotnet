@@ -10,7 +10,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.TestBot
     public class ConfigurationSlackAdapterOptions : SimpleSlackAdapterOptions
     {
         public ConfigurationSlackAdapterOptions(IConfiguration configuration)
-             : base(configuration["VerificationToken"], configuration["BotToken"])
+             : base(configuration["VerificationToken"], configuration["BotToken"], configuration["SigningSecret"])
         {
         }
     }

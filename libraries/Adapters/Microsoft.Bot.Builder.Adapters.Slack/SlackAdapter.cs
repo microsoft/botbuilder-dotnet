@@ -34,7 +34,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         {
             this.options = options;
 
-            if (this.options.VerificationToken != null && this.options.ClientSigningSecret != null)
+            if (string.IsNullOrEmpty(this.options.VerificationToken) && string.IsNullOrEmpty(this.options.ClientSigningSecret))
             {
                 string warning =
                     "****************************************************************************************" +
@@ -265,7 +265,8 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
                 // Create an Activity based on the incoming message from Slack.
                 // There are a few different types of event that Slack might send.
                 StreamReader sr = new StreamReader(request.Body);
-                dynamic slackEvent = JsonConvert.DeserializeObject(sr.ReadToEnd());
+                var body = sr.ReadToEnd();
+                dynamic slackEvent = JsonConvert.DeserializeObject(body);
 
                 if (slackEvent.type == "url_verification")
                 {
@@ -275,7 +276,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
                     await response.WriteAsync(text);
                 }
 
-                if (!SlackHelper.VerifySignature(options.ClientSigningSecret, request))
+                if (!SlackHelper.VerifySignature(options.ClientSigningSecret, request, body))
                 {
                     response.StatusCode = 401;
                 }

@@ -85,21 +85,24 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// </summary>
         /// <param name="secret">The local stored secret.</param>
         /// <param name="request">The <see cref="HttpRequest"/> with the signature.</param>
+        /// <param name="body">The raw body of the request.</param>
         /// <returns>The result of the comparison between the signature in the request and hashed secret.</returns>
-        public static bool VerifySignature(string secret, HttpRequest request)
+        public static bool VerifySignature(string secret, HttpRequest request, string body)
         {
-            var timestamp = request.Headers;
-            var body = request.Body;
+            string baseString;
 
-            object[] signature = { "v0", timestamp.ToString(), body.ToString() };
+            var timestamp = request.Headers["X-Slack-Request-Timestamp"];
 
-            var baseString = string.Join(":", signature);
+            object[] signature = { "v0", timestamp.ToString(), body };
+            baseString = string.Join(":", signature);
 
             using (var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(secret)))
             {
-                var hash = "v0=" + hmac.ComputeHash(Encoding.UTF8.GetBytes(baseString));
+                var hashArray = hmac.ComputeHash(Encoding.UTF8.GetBytes(baseString));
 
-                var retrievedSignature = request.Headers["X-Slack-Signature"];
+                var hash = string.Concat("v0=", BitConverter.ToString(hashArray).Replace("-", string.Empty)).ToUpperInvariant();
+
+                var retrievedSignature = request.Headers["X-Slack-Signature"].ToString().ToUpperInvariant();
 
                 return hash == retrievedSignature;
             }

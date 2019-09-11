@@ -8,10 +8,11 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.TestBot
         {
         }
 
-        public SimpleSlackAdapterOptions(string verificationToken, string botToken)
+        public SimpleSlackAdapterOptions(string verificationToken, string botToken, string signingSecret)
         {
             this.VerificationToken = verificationToken;
             this.BotToken = botToken;
+            this.ClientSigningSecret = signingSecret;
         }
 
         public string VerificationToken { get; set; }
