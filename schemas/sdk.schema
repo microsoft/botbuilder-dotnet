@@ -862,10 +862,10 @@
                         "title": "Options"
                     }
                 },
-                "property": {
+                "resultProperty": {
                     "$role": "expression",
                     "title": "Property",
-                    "description": "The property to bind to the dialog and store the result in",
+                    "description": "The property to store the result in",
                     "examples": [
                         "user.name"
                     ],
@@ -2483,16 +2483,16 @@
                         "Clear"
                     ]
                 },
-                "arrayProperty": {
+                "itemsProperty": {
                     "$role": "expression",
-                    "title": "Array Property",
-                    "description": "Memory expression of the array to manipulate.",
+                    "title": "Items Property",
+                    "description": "Memory expression of the collection of items to manipulate.",
                     "type": "string"
                 },
                 "resultProperty": {
                     "$role": "expression",
                     "title": "Result Property",
-                    "description": "Memory expression of the result of this action.",
+                    "description": "The path expression to store the result of the action.",
                     "type": "string"
                 },
                 "value": {
@@ -2741,7 +2741,15 @@
                 },
                 "property": {
                     "$role": "expression",
-                    "description": "Specifies a path to memory should be returned as the result to the calling dialog.",
+                    "description": "Specifies a path to memory where the result of the value should be stored.",
+                    "examples": [
+                        "dialog.name"
+                    ],
+                    "type": "string"
+                },
+                "value": {
+                    "$role": "expression",
+                    "description": "Specifies a value expression for the result to be returned to the caller.",
                     "examples": [
                         "dialog.name"
                     ],
@@ -3041,10 +3049,10 @@
                         "type": "string"
                     }
                 },
-                "listProperty": {
+                "itemsProperty": {
                     "$role": "expression",
-                    "title": "ListProperty",
-                    "description": "Expression to evaluate.",
+                    "title": "Items Property",
+                    "description": "Property path expression to the collection of items.",
                     "examples": [
                         "user.todoList"
                     ],
@@ -3058,20 +3066,6 @@
                         "$type": "Microsoft.Dialog",
                         "$ref": "#/definitions/Microsoft.Dialog"
                     }
-                },
-                "indexProperty": {
-                    "$role": "expression",
-                    "title": "Index Property",
-                    "description": "The memory path which refers to the index of the item",
-                    "default": "dialog.index",
-                    "type": "string"
-                },
-                "valueProperty": {
-                    "$role": "expression",
-                    "title": "Value Property",
-                    "description": "The memory path which refers to the value of the item",
-                    "default": "dialog.value",
-                    "type": "string"
                 }
             },
             "additionalProperties": false,
@@ -3090,7 +3084,7 @@
                 {
                     "title": "Type",
                     "required": [
-                        "listProperty",
+                        "itemsProperty",
                         "actions",
                         "$type"
                     ]
@@ -3147,10 +3141,10 @@
                         "type": "string"
                     }
                 },
-                "listProperty": {
+                "itemsProperty": {
                     "$role": "expression",
-                    "title": "ListProperty",
-                    "description": "Expression to evaluate.",
+                    "title": "Items Property",
+                    "description": "Property path expression to the collection of items.",
                     "examples": [
                         "user.todoList"
                     ],
@@ -3170,13 +3164,6 @@
                     "title": "Page Size",
                     "description": "The page size",
                     "default": 10
-                },
-                "valueProperty": {
-                    "$role": "expression",
-                    "title": "Value Property",
-                    "description": "The memory path which refers to the value of the item",
-                    "default": "dialog.value",
-                    "type": "string"
                 }
             },
             "additionalProperties": false,
@@ -3195,7 +3182,7 @@
                 {
                     "title": "Type",
                     "required": [
-                        "listProperty",
+                        "itemsProperty",
                         "actions",
                         "$type"
                     ]
@@ -3383,9 +3370,9 @@
                     "description": "The body to send in the HTTP call  (supports data binding)",
                     "additionalProperties": true
                 },
-                "property": {
+                "resultProperty": {
                     "$role": "expression",
-                    "title": "Property",
+                    "title": "Result Property",
                     "description": "The property to store the result of the HTTP call in. The result will have 4 properties from the http response: statusCode|reasonPhrase|content|headers.  If the content is json it will be an deserialized object, otherwise it will be a string",
                     "examples": [
                         "dialog.contosodata"
@@ -3733,7 +3720,7 @@
                 "property": {
                     "$role": "expression",
                     "title": "Property",
-                    "description": "The property to set the value of",
+                    "description": "The property path to initialize",
                     "examples": [
                         "user.age"
                     ],
@@ -6442,14 +6429,6 @@
                         "type": "string",
                         "title": "Options"
                     }
-                },
-                "property": {
-                    "$role": "expression",
-                    "description": "The property to bind to the dialog and store the result in",
-                    "examples": [
-                        "user.name"
-                    ],
-                    "type": "string"
                 }
             },
             "additionalProperties": false,
@@ -6604,7 +6583,7 @@
                 "property": {
                     "$role": "expression",
                     "title": "Property",
-                    "description": "The property to set the value of",
+                    "description": "The property path to set the value",
                     "examples": [
                         "user.age"
                     ],

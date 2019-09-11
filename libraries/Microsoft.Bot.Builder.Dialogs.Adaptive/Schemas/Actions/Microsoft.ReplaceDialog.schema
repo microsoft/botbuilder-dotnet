@@ -23,13 +23,6 @@
                         "type": "string",
                         "title": "Options"
                     }
-                },
-                "property": {
-                    "$role": "expression",
-                    "description": "The property to bind to the dialog and store the result in",
-                    "examples": [
-                        "user.name"
-                    ]
                 }
             }
         }

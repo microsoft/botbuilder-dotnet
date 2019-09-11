@@ -10,10 +10,10 @@
         },
         {
             "properties": {
-                "listProperty": {
+                "itemsProperty": {
                     "$role": "expression",
-                    "title": "ListProperty",
-                    "description": "Expression to evaluate.",
+                    "title": "Items Property",
+                    "description": "Property path expression to the collection of items.",
                     "examples": [
                         "user.todoList"
                     ]
@@ -31,16 +31,10 @@
                     "title": "Page Size",
                     "description": "The page size",
                     "default": 10
-                },
-                "valueProperty": {
-                    "$role": "expression",
-                    "title": "Value Property",
-                    "description": "The memory path which refers to the value of the item",
-                    "default": "dialog.value"
                 }
             },
             "required": [
-                "listProperty",
+                "itemsProperty",
                 "actions"
             ]
         }

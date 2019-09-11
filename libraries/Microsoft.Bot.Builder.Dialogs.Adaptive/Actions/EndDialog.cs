@@ -37,13 +37,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         }
 
         /// <summary>
-        /// Gets or sets property path to put the value in.
+        /// Gets or sets a path to memory where the result of the value should be stored.
         /// </summary>
         [JsonProperty("property")]
         public string Property { get; set; }
 
         /// <summary>
-        /// Gets or sets the expression to get the value to put into property path.
+        /// Gets or sets a value expression for the result to be returned to the caller
         /// </summary>
         [JsonProperty("value")]
         public string Value
