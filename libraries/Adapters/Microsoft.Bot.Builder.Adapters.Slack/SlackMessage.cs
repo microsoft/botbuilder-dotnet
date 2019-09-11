@@ -39,10 +39,10 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         public string Username { get; set; }
 
         /// <summary>
-        /// Gets or sets the BotID property.
+        /// Gets or sets the BotId property.
         /// </summary>
         /// <value>The botId of the message.</value>
-        public string BotID { get; set; }
+        public string BotId { get; set; }
 
         /// <summary>
         /// Gets or sets the ThreadTS property.
