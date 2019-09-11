@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
             return await this.SendRequestAsync<HttpResponseMessage>(streamingRequest, cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<T> SendRequestAsync<T>(StreamingRequest request, CancellationToken cancellation = default)
+        private async Task<T> SendRequestAsync<T>(StreamingRequest request, CancellationToken cancellation = default)
         {
             try
             {
