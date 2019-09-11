@@ -100,7 +100,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
             }
 
             var hookUrl = "https://" + _config.PublicAddress + webhookPath;
-            Webhook webhook = null;
+            Webhook webhook;
 
             if (hookId != null)
             {
@@ -185,7 +185,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                     }
                 }
 
-                string responseId = null;
+                string responseId;
 
                 if (activity.Attachments != null && activity.Attachments.Count > 0)
                 {
@@ -328,9 +328,9 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
 
                 var data = JsonConvert.SerializeObject(extraData);
 
-                var datajson = JsonConvert.DeserializeObject<AttachmentActionData>(data);
+                var jsongData = JsonConvert.DeserializeObject<AttachmentActionData>(data);
 
-                var decryptedMessage = await _webexClient.GetAttachmentActionAsync(datajson.Id, _config.AccessToken).ConfigureAwait(false);
+                var decryptedMessage = await _webexClient.GetAttachmentActionAsync(jsongData.Id, _config.AccessToken).ConfigureAwait(false);
 
                 activity = WebexHelper.AttachmentActionToActivity(decryptedMessage);
             }
