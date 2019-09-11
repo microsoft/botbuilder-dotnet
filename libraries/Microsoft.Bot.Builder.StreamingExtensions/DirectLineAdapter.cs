@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -322,6 +323,111 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
             }
         }
 
+        public override async Task<ResourceResponse[]> SendActivitiesAsync(ITurnContext turnContext, Activity[] activities, CancellationToken cancellationToken)
+        {
+            if(!(_httpClient is StreamingHttpClient))
+            {
+                return await base.SendActivitiesAsync(turnContext, activities, cancellationToken);
+            }
+
+            if (turnContext == null)
+            {
+                throw new ArgumentNullException(nameof(turnContext));
+            }
+
+            if (activities == null)
+            {
+                throw new ArgumentNullException(nameof(activities));
+            }
+
+            var responses = new ResourceResponse[activities.Length];
+
+            /*
+             * NOTE: we're using for here (vs. foreach) because we want to simultaneously index into the
+             * activities array to get the activity to process as well as use that index to assign
+             * the response to the responses array and this is the most cost effective way to do that.
+             */
+            for (var index = 0; index < activities.Length; index++)
+            {
+                var activity = activities[index] ?? throw new ArgumentNullException("Found null activity in SendActivitiesAsync.");
+                var response = default(ResourceResponse);
+                _logger.LogInformation($"Sending activity.  ReplyToId: {activity.ReplyToId}");
+
+                if (activity.Type == ActivityTypesEx.Delay)
+                {
+                    // The Activity Schema doesn't have a delay type build in, so it's simulated
+                    // here in the Bot. This matches the behavior in the Node connector.
+                    var delayMs = (int)activity.Value;
+                    await Task.Delay(delayMs, cancellationToken).ConfigureAwait(false);
+
+                    // No need to create a response. One will be created below.
+                }
+                else if (activity.Type == ActivityTypesEx.InvokeResponse)
+                {
+                    turnContext.TurnState.Add(InvokeResponseKey, activity);
+
+                    // No need to create a response. One will be created below.
+                }
+                else if (activity.Type == ActivityTypes.Trace && activity.ChannelId != "emulator")
+                {
+                    // if it is a Trace activity we only send to the channel if it's the emulator.
+                }
+
+                string requestPath;
+                if (!string.IsNullOrWhiteSpace(activity.ReplyToId) && activity.ReplyToId.Length >= 1)
+                {
+                    requestPath = $"/v3/conversations/{activity.Conversation?.Id}/activities/{activity.ReplyToId}";
+                }
+                else
+                {
+                    requestPath = $"/v3/conversations/{activity.Conversation?.Id}/activities";
+                }
+
+                var streamAttachments = UpdateAttachmentStreams(activity);
+                var request = StreamingRequest.CreatePost(requestPath);
+                request.SetBody(activity);
+                if (streamAttachments != null)
+                {
+                    foreach (var attachment in streamAttachments)
+                    {
+                        request.AddStream(attachment);
+                    }
+                }
+
+                try
+                {
+                    var serverResponse = await _transportServer.SendAsync(request, cancellationToken).ConfigureAwait(false);
+
+                    if (serverResponse.StatusCode == (int)HttpStatusCode.OK)
+                    {
+                        response = serverResponse.ReadBodyAsJson<ResourceResponse>();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    this._logger.LogError(ex.Message);
+                }
+
+                // If No response is set, then default to a "simple" response. This can't really be done
+                // above, as there are cases where the ReplyTo/SendTo methods will also return null
+                // (See below) so the check has to happen here.
+
+                // Note: In addition to the Invoke / Delay / Activity cases, this code also applies
+                // with Skype and Teams with regards to typing events.  When sending a typing event in
+                // these _channels they do not return a RequestResponse which causes the bot to blow up.
+                // https://github.com/Microsoft/botbuilder-dotnet/issues/460
+                // bug report : https://github.com/Microsoft/botbuilder-dotnet/issues/465
+                if (response == null)
+                {
+                    response = new ResourceResponse(activity.Id ?? string.Empty);
+                }
+
+                responses[index] = response;
+            }
+
+            return responses;
+        }
+
         /// <summary>
         /// Primary adapter method for processing activities sent from channel.
         /// Creates a turn context and runs the middleware pipeline for an incoming activity.
@@ -404,7 +510,28 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
             return connectorClient;
         }
 
-        private async Task<bool> AuthCheck(HttpRequest httpRequest)
+    private IEnumerable<HttpContent> UpdateAttachmentStreams(Activity activity)
+    {
+        if (activity == null || activity.Attachments == null)
+        {
+            return null;
+        }
+
+        var streamAttachments = activity.Attachments.Where(a => a.Content is Stream);
+        if (streamAttachments.Any())
+        {
+            activity.Attachments = activity.Attachments.Where(a => !(a.Content is Stream)).ToList();
+            return streamAttachments.Select(streamAttachment =>
+            {
+                var streamContent = new StreamContent(streamAttachment.Content as Stream);
+                streamContent.Headers.TryAddWithoutValidation("Content-Type", streamAttachment.ContentType);
+                return streamContent;
+            });
+        }
+
+        return null;
+    }
+    private async Task<bool> AuthCheck(HttpRequest httpRequest)
         {
             try
             {
