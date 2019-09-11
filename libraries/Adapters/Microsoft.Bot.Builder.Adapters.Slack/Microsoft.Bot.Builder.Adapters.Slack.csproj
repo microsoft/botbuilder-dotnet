@@ -9,7 +9,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <RootNamespace>Microsoft.BotBuilder.Adapters.Slack</RootNamespace>
+    <RootNamespace>Microsoft.Bot.Builder.Adapters.Slack</RootNamespace>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU' ">
