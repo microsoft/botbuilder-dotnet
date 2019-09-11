@@ -17,10 +17,10 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <param name="webhookName">A name for the webhook subscription.</param>
         public WebexAdapterOptions(string accessToken, string publicAddress, string secret, string webhookName = null)
         {
-            this.AccessToken = accessToken;
-            this.PublicAddress = publicAddress;
-            this.Secret = secret;
-            this.WebhookName = webhookName;
+            AccessToken = accessToken;
+            PublicAddress = publicAddress;
+            Secret = secret;
+            WebhookName = webhookName;
         }
 
         /// <summary>

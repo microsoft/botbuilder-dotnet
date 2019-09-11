@@ -135,7 +135,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
             }
 
             var hookUrl = "https://" + _config.PublicAddress + webhookPath;
-            Webhook webhook = null;
+            Webhook webhook;
 
             if (hookId != null)
             {
@@ -167,7 +167,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                 }
 
                 // transform activity into the webex message format
-                var personIdOrEmail = string.Empty;
+                string personIdOrEmail;
 
                 if (activity.GetChannelData<WebhookEventData>()?.MessageData.PersonEmail != null)
                 {
@@ -298,7 +298,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
             }
 
             WebhookEventData payload;
-            string json = null;
+            string json;
 
             using (var bodyStream = new StreamReader(request.Body))
             {

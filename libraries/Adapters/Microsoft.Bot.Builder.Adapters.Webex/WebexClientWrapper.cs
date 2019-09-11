@@ -120,7 +120,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <returns>The attachment action details.</returns>
         public virtual async Task<Message> GetAttachmentActionAsync(string actionId, string token)
         {
-            Message result = null;
+            Message result;
 
             var url = $"{ActionsUrl}/{actionId}";
 
@@ -230,7 +230,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <returns>The created <see cref="Webhook"/>.</returns>
         public virtual async Task<Webhook> CreateAdaptiveCardsWebhookAsync(string name, Uri targetUri, EventType type, string secret, string token)
         {
-            Webhook result = null;
+            Webhook result;
 
             var url = WebhookUrl;
             var data = new NameValueCollection
@@ -265,7 +265,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <returns>The created <see cref="Webhook"/>.</returns>
         public virtual async Task<Webhook> UpdateAdaptiveCardsWebhookAsync(string webhookId, string name, Uri targetUri, string secret, string token)
         {
-            Webhook result = null;
+            Webhook result;
 
             var url = $"{WebhookUrl}/{webhookId}";
             var data = new NameValueCollection

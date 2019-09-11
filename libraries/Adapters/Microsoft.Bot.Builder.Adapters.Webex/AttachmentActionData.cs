@@ -48,11 +48,11 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         public string Created { get; set; }
 
         /// <summary>
-        /// Gets or sets the action's inputs.
+        /// Gets the action's inputs.
         /// </summary>
         /// <value>
         /// The action's inputs.
         /// </value>
-        public Dictionary<string, string> Inputs { get; set; }
+        public Dictionary<string, string> Inputs { get; } = new Dictionary<string, string>();
     }
 }

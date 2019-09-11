@@ -63,13 +63,13 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         public string Markdown { get; set; }
 
         /// <summary>
-        /// Gets or sets the URI to a binary file to be posted into the room. Only one file is allowed per message.
+        /// Gets the URI to a binary file to be posted into the room. Only one file is allowed per message.
         /// </summary>
         /// <value>
         /// The URI to a binary file to be posted into the room.
         /// </value>
         [JsonProperty(PropertyName = "files")]
-        public IList<Uri> Files { get; set; }
+        public IList<Uri> Files { get; } = new List<Uri>();
 
         /// <summary>
         /// Gets or sets the content attachments to attach to the message.
