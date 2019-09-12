@@ -23,6 +23,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
 
         public PropertySchema Property { get; }
 
+        public static DialogSchema ReadSchema(string path)
+            => new DialogSchema(JsonConvert.DeserializeObject<JObject>(File.ReadAllText(path)));
+
         public PropertySchema PathToSchema(string path)
         {
             var property = Property;

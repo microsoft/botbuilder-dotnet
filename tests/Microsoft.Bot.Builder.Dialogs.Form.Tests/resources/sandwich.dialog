@@ -1,0 +1,15 @@
+{
+    "$schema": "../../../schemas/sdk.schema",
+    "$type":"Microsoft.FormDialog",
+    "events": [
+        {
+            "$type":"Microsoft.OnAsk",
+            "constraint": "!dialog.Meat",
+            "actions": [
+                {
+                    "$type": 
+                }
+            ]
+        }
+    ]
+}

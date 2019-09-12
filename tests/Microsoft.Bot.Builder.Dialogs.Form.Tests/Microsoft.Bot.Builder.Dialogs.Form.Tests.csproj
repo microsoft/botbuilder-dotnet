@@ -34,4 +34,6 @@
     </None>
   </ItemGroup>
 
+  <ProjectExtensions><VisualStudio><UserProperties resources_4sandwich_1dialog__JsonSchema="http://json.schemastore.org/2.0.0-csd.2.beta.2018-10-10.json" /></VisualStudio></ProjectExtensions>
+
 </Project>

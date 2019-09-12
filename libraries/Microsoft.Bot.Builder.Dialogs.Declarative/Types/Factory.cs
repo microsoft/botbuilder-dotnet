@@ -183,7 +183,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
             Register("Microsoft.AdaptiveDialog", typeof(AdaptiveDialog));
 
             // Form
-            Register("Microsoft.FormDialog", typeof(FormDialog));
+            Register("Microsoft.FormDialog", typeof(FormDialog), new FormDialogLoader());
             Register("Microsoft.OnAsk", typeof(OnAsk));
             Register("Microsoft.OnChooseSlot", typeof(OnChooseSlot));
             Register("Microsoft.OnChooseSlotValue", typeof(OnChooseSlotValue));

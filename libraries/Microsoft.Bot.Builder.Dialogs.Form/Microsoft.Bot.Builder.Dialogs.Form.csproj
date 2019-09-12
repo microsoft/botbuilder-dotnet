@@ -5,6 +5,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Schemas\Actions\**" />
+    <EmbeddedResource Remove="Schemas\Actions\**" />
+    <None Remove="Schemas\Actions\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
   </ItemGroup>
 
@@ -17,10 +23,6 @@
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\..\..\..\..\..\..\Program Files\dotnet\sdk\NuGetFallbackFolder\newtonsoft.json\11.0.2\lib\netstandard2.0\Newtonsoft.Json.dll</HintPath>
     </Reference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Schemas\Actions\" />
   </ItemGroup>
 
 </Project>
