@@ -3,17 +3,16 @@
 
 using System;
 using System.Collections.Generic;
-using Microsoft.Bot.Builder.Dialogs.Memory;
 
-namespace Microsoft.Bot.Builder.Dialogs
+namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
 {
     /// <summary>
-    /// DialogMemoryScope doesn't store data in TurnState but instead maps "dialog" -> dc.ActiveDialog.State
+    /// DialogMemoryScope maps "this" -> dc.ActiveDialog.State
     /// </summary>
-    public class DialogMemoryScope : MemoryScope
+    public class ThisMemoryScope : MemoryScope
     {
-        public DialogMemoryScope()
-            : base(ScopePath.DIALOG)
+        public ThisMemoryScope()
+            : base(ScopePath.THIS)
         {
         }
 

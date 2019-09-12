@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// <summary>
     /// Conditional branch.
     /// </summary>
-    public class IfCondition : DialogAction
+    public class IfCondition : Dialog, IDialogDependencies
     {
         private Expression condition;
 
@@ -46,14 +46,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         [JsonProperty("elseActions")]
         public List<Dialog> ElseActions { get; set; } = new List<Dialog>();
 
-        public override IEnumerable<Dialog> GetDependencies()
+        public virtual IEnumerable<Dialog> GetDependencies()
         {
             var combined = new List<Dialog>(Actions);
             combined.AddRange(ElseActions);
             return combined;
         }
 
-        protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (options is CancellationToken)
             {

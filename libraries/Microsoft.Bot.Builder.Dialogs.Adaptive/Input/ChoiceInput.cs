@@ -137,7 +137,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         protected override Task<InputState> OnRecognizeInput(DialogContext dc)
         {
             var input = dc.State.GetValue<object>(VALUE_PROPERTY);
-            var options = dc.State.GetValue<ChoiceInputOptions>(DialogPath.OPTIONS);
+            var options = dc.State.GetValue<ChoiceInputOptions>(ThisPath.OPTIONS);
 
             var choices = options.Choices;
 

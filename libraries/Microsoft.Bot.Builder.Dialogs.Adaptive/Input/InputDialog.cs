@@ -17,15 +17,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
     public abstract class InputDialog : Dialog
     {
 #pragma warning disable SA1310 // Field should not contain underscore.
-        public const string TURN_COUNT_PROPERTY = "dialog.turnCount";
-        public const string VALUE_PROPERTY = "turn.value";
+        protected const string TURN_COUNT_PROPERTY = "this.turnCount";
+        protected const string VALUE_PROPERTY = "this.value";
 
         // This property can be set by user's code to indicate that the input should re-process incoming user utterance. 
         // Designed to be a bool property. So user's code can set this to 'true' to signal the input to re-process incoming user utterance.
-        public const string PROCESS_INPUT_PROPERTY = "turn.processInput";
+        protected const string PROCESS_INPUT_PROPERTY = "turn.processInput";
 #pragma warning restore SA1310 // Field should not contain underscore.
-        private const string PersistedOptions = "options";
-        private const string PersistedState = "state";
 
         public bool AlwaysPrompt { get; set; } = false;
 
@@ -77,7 +75,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             }
 
             var op = OnInitializeOptions(dc, options);
-            dc.State.SetValue(DialogPath.OPTIONS, op);
+            dc.State.SetValue(ThisPath.OPTIONS, op);
             dc.State.SetValue(TURN_COUNT_PROPERTY, 0);
 
             var state = this.AlwaysPrompt ? InputState.Missing : await this.RecognizeInput(dc);
@@ -322,7 +320,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 // Go down this path only if the user has not requested to re-process user input via turn.processInput = true.
                 if (turnCount == 0 && !processInput)
                 {
-                    input = dc.State.GetValue<object>(DialogPath.VALUE, () => null);
+                    input = dc.State.GetValue<object>(VALUE_PROPERTY, () => null);
                 }
                 else
                 {

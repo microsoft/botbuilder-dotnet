@@ -17,7 +17,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// <summary>
     /// Lets you modify an array in memory.
     /// </summary>
-    public class EditArray : DialogAction
+    public class EditArray : Dialog
     {
         private Expression value;
         private Expression itemsProperty;
@@ -129,12 +129,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             set { this.value = (value != null) ? new ExpressionEngine().Parse(value) : null; }
         }
 
-        protected override string OnComputeId()
-        {
-            return $"{this.GetType().Name}[{ChangeType + ": " + ItemsProperty}]";
-        }
-
-        protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (options is CancellationToken)
             {
@@ -209,6 +204,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             }
 
             return await dc.EndDialogAsync(result);
+        }
+
+        protected override string OnComputeId()
+        {
+            return $"{this.GetType().Name}[{ChangeType + ": " + ItemsProperty}]";
         }
 
         private void EnsureValue()

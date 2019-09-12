@@ -10,13 +10,6 @@
         },
         {
             "properties": {
-                "property": {
-                    "$role": "expression",
-                    "description": "Specifies a path to memory where the result of the value should be stored.",
-                    "examples": [
-                        "dialog.name"
-                    ]
-                },
                 "value": {
                     "$role": "expression",
                     "description": "Specifies a value expression for the result to be returned to the caller.",

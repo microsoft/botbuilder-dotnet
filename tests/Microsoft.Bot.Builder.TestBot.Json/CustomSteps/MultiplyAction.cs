@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
     /// <summary>
     /// Custom command which takes takes 2 data bound arguments (arg1 and arg2) and multiplies them returning that as a databound result.
     /// </summary>
-    public class MultiplyAction : DialogAction
+    public class MultiplyAction : Dialog
     {
         [JsonConstructor]
         public MultiplyAction([CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
@@ -40,7 +40,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
         [JsonProperty("resultProperty")]
         public string ResultProperty { get; set; }
 
-        protected override Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
+        public override Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             var engine = new ExpressionEngine();
             var (arg1, err1) = engine.Parse(Arg1).TryEvaluate(dc.State);

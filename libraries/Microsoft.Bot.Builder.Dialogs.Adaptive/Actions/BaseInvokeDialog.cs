@@ -11,7 +11,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// <summary>
     /// Action which calls another dialog.
     /// </summary>
-    public abstract class BaseInvokeDialog : DialogAction
+    public abstract class BaseInvokeDialog : Dialog, IDialogDependencies
     {
         // Expression for dialogId to call (allowing dynamic expression)
         private string dialogIdToCall;
@@ -40,7 +40,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// </summary>
         public Dialog Dialog { get; set; }
 
-        public override IEnumerable<Dialog> GetDependencies()
+        public virtual IEnumerable<Dialog> GetDependencies()
         {
             if (Dialog != null)
             {

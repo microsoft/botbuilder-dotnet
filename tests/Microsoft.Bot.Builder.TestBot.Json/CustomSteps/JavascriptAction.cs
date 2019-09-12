@@ -10,7 +10,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.TestBot.Json
 {
-    public class JavascriptAction : DialogAction
+    public class JavascriptAction : Dialog
     {
         private ScriptEngine scriptEngine;
         private string script;
@@ -48,7 +48,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             get { return script; } set { LoadScript(value); }
         }
 
-        protected override Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
+        public override Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             // map state into json
             dynamic payload = new JObject();

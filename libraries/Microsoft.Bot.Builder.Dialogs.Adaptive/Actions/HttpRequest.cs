@@ -10,6 +10,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Expressions.Parser;
 using Microsoft.Bot.Builder.LanguageGeneration.Templates;
 using Microsoft.Bot.Builder.TraceExtensions;
 using Microsoft.Bot.Schema;
@@ -22,7 +23,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// <summary>
     /// Action for performing an HttpRequest.
     /// </summary>
-    public class HttpRequest : DialogAction
+    public class HttpRequest : Dialog
     {
         private static readonly HttpClient Client = new HttpClient();
 
@@ -123,12 +124,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// </remarks>
         public string ResultProperty { get; set; }
 
-        protected override string OnComputeId()
-        {
-            return $"{this.GetType().Name}[{Method} {Url}]";
-        }
-
-        protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (options is CancellationToken)
             {
@@ -287,6 +283,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             return await dc.EndDialogAsync(result: requestResult, cancellationToken: cancellationToken);
         }
 
+        protected override string OnComputeId()
+        {
+            return $"{this.GetType().Name}[{Method} {Url}]";
+        }
+
         private async Task ReplaceJTokenRecursively(DialogContext dc, JToken token)
         {
             switch (token.Type)
@@ -314,16 +315,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 default:
                     if (token.Type == JTokenType.String)
                     {
-                        var temp = await new TextTemplate(token.ToString()).BindToData(dc.Context, dc.State);
-                        if ((temp.StartsWith("{") && temp.EndsWith("}")) || (temp.StartsWith("[") && temp.EndsWith("]")))
+                        var text = token.ToString();
+
+                        // if it is a "{bindingpath}" then run through expression engine and treat as a value
+                        if (text.StartsWith("{") && text.EndsWith("}"))
                         {
-                            // try parse with json                        
-                            var jtoken = JToken.Parse(temp);
-                            token.Replace(jtoken);
+                            text = text.Trim('{', '}');
+                            var (val, error) = new ExpressionEngine().Parse(text).TryEvaluate(dc.State);
+                            token.Replace(new JValue(val));
                         }
                         else
                         {
-                            token.Replace(temp);
+                            // use text template binding to bind in place to a string
+                            var temp = await new TextTemplate(text).BindToData(dc.Context, dc.State);
+                            token.Replace(new JValue(temp));
                         }
                     }
 

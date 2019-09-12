@@ -120,14 +120,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     var traceActivity = (ITraceActivity)activity;
                     Assert.AreEqual(ActivityTypes.Trace, traceActivity.Type, "type doesn't match");
                     Assert.AreEqual("user", traceActivity.ValueType, "ValueType doesn't match");
-                    Assert.AreEqual("frank", (string)((dynamic)traceActivity.Value).name, "Value doesn't match");
+                    dynamic value = traceActivity.Value;
+                    Assert.AreEqual("frank", (string)value["name"], "Value doesn't match");
                 })
                 .AssertReply((activity) =>
                 {
                     var traceActivity = (ITraceActivity)activity;
                     Assert.AreEqual(ActivityTypes.Trace, traceActivity.Type, "type doesn't match");
                     Assert.AreEqual("memory", traceActivity.ValueType, "ValueType doesn't match");
-                    Assert.AreEqual("frank", (string)((dynamic)traceActivity.Value).user.name, "Value doesn't match");
+                    dynamic value = traceActivity.Value;
+                    Assert.AreEqual("frank", (string)value["user"]["name"], "Value doesn't match");
                 })
                 .StartTestAsync();
         }
@@ -344,7 +346,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                     Property = "user.name",
                                     Validations = new List<string>()
                                     {
-                                        "turn.value.Length > 3"
+                                        "this.value.Length > 3"
                                     }
                                 }
                             }
@@ -714,7 +716,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             OutputFormat = NumberOutputFormat.Integer,
                             Validations = new List<string>()
                             {
-                                "turn.value > 0 && turn.value < 150"
+                                "this.value > 0 && this.value < 150"
                             }
                         },
                         new SendActivity("I have your age as {user.userProfile.Age}."),
@@ -786,7 +788,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                     Property = "user.name",
                                     Validations = new List<string>()
                                     {
-                                        "turn.value.Length > 3"
+                                        "this.value.Length > 3"
                                     }
                                 }
                             }

@@ -1,11 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-#pragma warning disable SA1402 // File may only contain a single type
 using System;
 using System.Collections.Generic;
 
-namespace Microsoft.Bot.Builder.Dialogs.Memory
+namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
 {
     /// <summary>
     /// MemoryScope represents a named memory scope stored in TurnState["MemoryScopes"]

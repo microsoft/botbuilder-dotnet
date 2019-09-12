@@ -11,7 +11,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// <summary>
     /// Class which allows you to edit the current actions. 
     /// </summary>
-    public class EditActions : DialogAction
+    public class EditActions : Dialog, IDialogDependencies
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="EditActions"/> class.
@@ -43,12 +43,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         [JsonProperty("changeType")]
         public ActionChangeType ChangeType { get; set; }
 
-        public override IEnumerable<Dialog> GetDependencies()
+        public virtual IEnumerable<Dialog> GetDependencies()
         {
             return this.Actions;
         }
 
-        protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (dc is SequenceContext sc)
             {

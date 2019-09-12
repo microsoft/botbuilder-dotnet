@@ -16,6 +16,7 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
 using Microsoft.Bot.Builder.Dialogs.Memory;
+using Microsoft.Bot.Builder.Dialogs.Memory.Scopes;
 using Microsoft.Bot.Builder.LanguageGeneration;
 using Microsoft.Bot.Builder.LanguageGeneration.Templates;
 using Microsoft.Extensions.Configuration;
@@ -29,12 +30,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         public TestContext TestContext { get; set; }
 
         [TestMethod]
-        public void SimpleMemoryScopes()
+        public void SimpleMemoryScopesTest()
         {
             var dc = new DialogContext(new DialogSet(), new TurnContext(new TestAdapter(), new Schema.Activity()), (DialogState)new DialogState());
             var dsm = new DialogStateManager(dc);
 
-            foreach (var memoryScope in DialogStateManager.MemoryScopes.Where(ms => !(ms is DialogMemoryScope)))
+            foreach (var memoryScope in DialogStateManager.MemoryScopes.Where(ms => !(ms is ThisMemoryScope || ms is DialogMemoryScope)))
             {
                 var memory = memoryScope.GetMemory(dc);
                 Assert.IsNotNull(memory, "should get memory without any set");
@@ -48,7 +49,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         }
 
         [TestMethod]
-        public async Task DialogMemoryScope()
+        public async Task DialogMemoryScopeTest()
         {
             var storage = new MemoryStorage();
             var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
@@ -92,7 +93,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
     {
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            foreach (var scope in DialogStateManager.MemoryScopes.Select(ms => ms.Name))
+            foreach (var scope in DialogStateManager.MemoryScopes.Where(ms => !(ms is DialogMemoryScope)).Select(ms => ms.Name))
             {
                 var path = $"{scope}.test";
                 Assert.IsNull(dc.State.GetValue<string>(path), $"{path} should be null");
@@ -113,7 +114,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             ValidateSetValue(dc, "#test", "turn.recognized.intents.test");
-            ValidateSetValue(dc, "%test", "dialog.options.test");
             ValidateSetValue(dc, "$test", "dialog.test");
             ValidateSetValue(dc, "@test", "turn.recognized.entities.test[0]", entities);
             dc.State.RemoveValue("turn.recognized.entities");
@@ -122,7 +122,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.AreEqual("test2", dc.State.GetValue<string[]>("@@test")[1]);
 
             ValidateRemoveValue(dc, "#test", "turn.recognized.intents.test");
-            ValidateRemoveValue(dc, "%test", "dialog.options.test");
             ValidateRemoveValue(dc, "$test", "dialog.test");
             ValidateValue(dc, "@test", "turn.recognized.entities.test[0]");
             ValidateRemoveValue(dc, "@@test", "turn.recognized.entities.test");

@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Microsoft.Bot.Builder.Dialogs.Memory
+namespace Microsoft.Bot.Builder.Dialogs.Memory.PathResolvers
 {
     /// <summary>
     /// Maps @ => turn.recognized.entitites.xxx[0].
@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         {
         }
 
-        public override bool Matches(string path)
+        public override string TransformPath(string path)
         {
             if (path == null)
             {
@@ -24,7 +24,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
 
             // override to make sure it doesn't match @@
             path = path.Trim();
-            return path.StartsWith("@") && !path.StartsWith("@@");
+            if (path.StartsWith("@") && !path.StartsWith("@@"))
+            {
+                return base.TransformPath(path);
+            }
+            return path;
         }
     }
 }

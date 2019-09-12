@@ -220,7 +220,6 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
         public static IEnumerable<object[]> Data => new[]
         {
             #region SetPathToProperty test
-            // TODO: We should support this.
             Test("setPathToValue(path.simple, 3) + path.simple", 6),
             Test("setPathToValue(path.simple, 5) + path.simple", 10),
             Test("setPathToValue(path.array[0], 7) + path.array[0]", 14),
@@ -231,6 +230,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("setPathToValue(path.overwrite[0], 3) + setPathToValue(path.overwrite, 4) + path.overwrite", 11),
             Test("setPathToValue(path.overwrite.prop, 3) + setPathToValue(path.overwrite, 4) + path.overwrite", 11),
             Test("setPathToValue(path.overwrite.prop, 3) + setPathToValue(path.overwrite[0], 4) + path.overwrite[0]", 11),
+            Test("setPathToValue(path.x.y.z, null)", null),
             #endregion
 
             #region Operators test

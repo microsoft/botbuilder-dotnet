@@ -6,6 +6,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Dialogs.Memory.PathResolvers;
+using Microsoft.Bot.Builder.Dialogs.Memory.Scopes;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Memory
@@ -17,8 +19,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
     /// </summary>
     public class DialogStateManager : IDictionary<string, object>
     {
-        private static IPathResolver defaultPathResolver = new DefaultPathResolver();
-
         private readonly DialogContext dialogContext;
 
         public DialogStateManager(DialogContext dc)
@@ -38,8 +38,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
             new HashPathResolver(),
             new AtAtPathResolver(),
             new AtPathResolver(),
-            new PercentPathResolver(),
-            new DefaultPathResolver()
         };
 
         /// <summary>
@@ -54,7 +52,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
              new MemoryScope(ScopePath.CONVERSATION),
              new MemoryScope(ScopePath.TURN),
              new MemoryScope(ScopePath.SETTINGS),
-             new DialogMemoryScope()
+             new DialogMemoryScope(),
+             new ThisMemoryScope()
         };
 
         public ICollection<string> Keys => MemoryScopes.Select(ms => ms.Name).ToList();
@@ -83,17 +82,69 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         }
 
         /// <summary>
+        /// ResolveMemoryScope will find the MemoryScope for root part of path and adjust path to be subpath
+        /// </summary>
+        /// <param name="path">incoming path will be resolved to scope and adjusted to subpath</param>
+        /// <returns>memoryscope</returns>
+        public virtual MemoryScope ResolveMemoryScope(ref string path)
+        {
+            string scope = path;
+            var index = path.IndexOf(".");
+            if (index > 0)
+            {
+                scope = path.Substring(0, index);
+                var memoryScope = DialogStateManager.GetMemoryScope(scope);
+                if (memoryScope != null)
+                {
+                    path = path.Substring(index + 1);
+                    return memoryScope;
+                }
+            }
+
+            // could be User[foo] path 
+            index = path.IndexOf("[");
+            if (index > 0)
+            {
+                scope = path.Substring(0, index);
+                path = path.Substring(index);
+                return DialogStateManager.GetMemoryScope(scope) ?? throw new ArgumentOutOfRangeException(GetBadScopeMessage(path));
+            }
+            else
+            {
+                path = string.Empty;
+                return DialogStateManager.GetMemoryScope(scope) ?? throw new ArgumentOutOfRangeException(GetBadScopeMessage(path));
+            }
+        }
+
+        /// <summary>
+        /// Transform the path using the registered PathTransformers
+        /// </summary>
+        /// <param name="path">path</param>
+        /// <returns>transformed paths</returns>
+        public virtual string TransformPath(string path)
+        {
+            foreach (var pathResolver in PathResolvers)
+            {
+                path = pathResolver.TransformPath(path);
+            }
+
+            return path;
+        }
+
+        /// <summary>
         /// Get the value from memory using path expression (NOTE: This always returns clone of value)
         /// </summary>
         /// <remarks>This always returns a CLONE of the memory, any modifications to the result of this will not be affect memory</remarks>
         /// <typeparam name="T">the value type to return</typeparam>
-        /// <param name="pathExpression">path expression to use</param>
+        /// <param name="path">path expression to use</param>
         /// <param name="value">value</param>
         /// <returns>true if found, false if not</returns>
-        public bool TryGetValue<T>(string pathExpression, out T value)
+        public bool TryGetValue<T>(string path, out T value)
         {
-            return this.FindResolver(pathExpression ?? throw new ArgumentNullException(nameof(pathExpression)))
-                .TryGetValue<T>(this.dialogContext, pathExpression, out value);
+            path = this.TransformPath(path ?? throw new ArgumentNullException(nameof(path)));
+            var memoryScope = this.ResolveMemoryScope(ref path);
+            var memory = memoryScope.GetMemory(this.dialogContext);
+            return ObjectPath.TryGetValue<T>(memory, path, out value);
         }
 
         /// <summary>
@@ -149,27 +200,38 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         /// <summary>
         /// Set memory to value
         /// </summary>
-        /// <param name="pathExpression">path to memory</param>
+        /// <param name="path">path to memory</param>
         /// <param name="value">object to set</param>
-        public void SetValue(string pathExpression, object value)
+        public void SetValue(string path, object value)
         {
             if (value is Task)
             {
-                throw new Exception($"{pathExpression} = You can't pass an unresolved Task to SetValue");
+                throw new Exception($"{path} = You can't pass an unresolved Task to SetValue");
             }
 
-            this.FindResolver(pathExpression ?? throw new ArgumentNullException(nameof(pathExpression)))
-                .SetValue(this.dialogContext, pathExpression, value);
+            path = this.TransformPath(path ?? throw new ArgumentNullException(nameof(path)));
+            var memoryScope = this.ResolveMemoryScope(ref path);
+            if (path == string.Empty)
+            {
+                memoryScope.SetMemory(this.dialogContext, value);
+            }
+            else
+            {
+                var memory = memoryScope.GetMemory(this.dialogContext);
+                ObjectPath.SetValue(memory, path, value);
+            }
         }
 
         /// <summary>
         /// Remove property from memory
         /// </summary>
-        /// <param name="pathExpression">path to remove the leaf property</param>
-        public void RemoveValue(string pathExpression)
+        /// <param name="path">path to remove the leaf property</param>
+        public void RemoveValue(string path)
         {
-            this.FindResolver(pathExpression ?? throw new ArgumentNullException(nameof(pathExpression)))
-                .RemoveValue(this.dialogContext, pathExpression);
+            path = this.TransformPath(path ?? throw new ArgumentNullException(nameof(path)));
+            var memoryScope = this.ResolveMemoryScope(ref path);
+            var memory = memoryScope.GetMemory(this.dialogContext);
+            ObjectPath.RemoveProperty(memory, path);
         }
 
         /// <summary>
@@ -253,9 +315,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
             }
         }
 
-        private IPathResolver FindResolver(string path)
+        private static string GetBadScopeMessage(string path)
         {
-            return PathResolvers.FirstOrDefault(resolver => resolver.Matches(path)) ?? defaultPathResolver;
+            return $"'{path}' does not match memory scopes:{string.Join(",", DialogStateManager.MemoryScopes.Select(ms => ms.Name))}";
         }
     }
 }

@@ -3,12 +3,12 @@
 
 using System;
 
-namespace Microsoft.Bot.Builder.Dialogs.Memory
+namespace Microsoft.Bot.Builder.Dialogs.Memory.PathResolvers
 {
     /// <summary>
     /// Maps aliasXXX -> path.xxx ($foo => dialog.foo).
     /// </summary>
-    public class AliasPathResolver : DefaultPathResolver
+    public class AliasPathResolver : IPathResolver
     {
         private string alias;
         private string prefix;
@@ -21,17 +21,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
             this.postfix = postfix ?? string.Empty;
         }
 
-        public override bool Matches(string path)
-        {
-            if (path == null)
-            {
-                throw new ArgumentNullException(nameof(path));
-            }
-
-            return path.Trim().StartsWith(this.alias);
-        }
-
-        protected override string TransformPath(string path)
+        public virtual string TransformPath(string path)
         {
             if (path == null)
             {
@@ -42,7 +32,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
             if (start >= 0)
             {
                 // $xxx -> path.xxx
-                return $"{this.prefix}{path.Substring(start + alias.Length)}{this.postfix}";
+                return $"{this.prefix}{path.Substring(start + alias.Length)}{this.postfix}".TrimEnd('.');
             }
 
             return path;

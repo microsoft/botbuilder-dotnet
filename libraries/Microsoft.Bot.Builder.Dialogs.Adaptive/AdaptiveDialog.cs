@@ -122,13 +122,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             var state = activeDialogState[ADAPTIVE_KEY] as AdaptiveDialogState;
 
             // Persist options to dialog state
-            state.Options = options ?? new Dictionary<string, object>();
+            dc.State.SetValue(ThisPath.OPTIONS, options);
 
-            // Initialize 'result' with any initial value
-            if (state.Options.GetType() == typeof(Dictionary<string, object>) && (state.Options as Dictionary<string, object>).ContainsKey("value"))
-            {
-                state.Result = state.Options["value"];
-            }
+            //// Initialize 'result' with any initial value
+            //if (state.Options.GetType() == typeof(Dictionary<string, object>) && (state.Options as Dictionary<string, object>).ContainsKey("value"))
+            //{
+            //    state.Result = state.Options["value"];
+            //}
 
             // Evaluate events and queue up step changes
             var dialogEvent = new DialogEvent()

@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// <summary>
     /// This command ends the current turn without ending the dialog.
     /// </summary>
-    public class EndTurn : DialogAction
+    public class EndTurn : Dialog
     {
         [JsonConstructor]
         public EndTurn([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
@@ -22,14 +22,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             this.RegisterSourceLocation(callerPath, callerLine);
         }
 
-        protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
+        public override Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (options is CancellationToken)
             {
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            return await Task.FromResult(Dialog.EndOfTurn);
+            return Task.FromResult(Dialog.EndOfTurn);
         }
     }
 }

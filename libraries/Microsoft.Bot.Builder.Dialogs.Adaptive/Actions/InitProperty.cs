@@ -13,7 +13,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// <summary>
     /// Sets a property with the result of evaluating a value expression.
     /// </summary>
-    public class InitProperty : DialogAction
+    public class InitProperty : Dialog
     {
         [JsonConstructor]
         public InitProperty([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
@@ -35,7 +35,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// </value>
         public string Type { get; set; }
 
-        protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (options is CancellationToken)
             {

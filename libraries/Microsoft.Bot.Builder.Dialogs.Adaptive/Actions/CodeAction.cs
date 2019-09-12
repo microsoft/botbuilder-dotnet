@@ -10,7 +10,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
     using CodeActionHandler = System.Func<Microsoft.Bot.Builder.Dialogs.DialogContext, object, System.Threading.Tasks.Task<Microsoft.Bot.Builder.Dialogs.DialogTurnResult>>;
 
-    public class CodeAction : DialogAction
+    public class CodeAction : Dialog
     {
         private readonly CodeActionHandler codeHandler;
 
@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             this.codeHandler = codeHandler ?? throw new ArgumentNullException(nameof(codeHandler));
         }
 
-        protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (options is CancellationToken)
             {

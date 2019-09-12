@@ -5,7 +5,7 @@
         public const string USER = "user";
         public const string CONVERSATION = "conversation";
         public const string DIALOG = "dialog";
-        public const string PARENT = "parent";
+        public const string THIS = "this";
         public const string SETTINGS = "settings";
         public const string TURN = "turn";
     }

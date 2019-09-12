@@ -13,7 +13,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// <summary>
     /// Command to cancel all of the current dialogs by emitting an event which must be caught to prevent cancelation from propagating.
     /// </summary>
-    public class CancelAllDialogs : DialogAction
+    public class CancelAllDialogs : Dialog
     {
         [JsonConstructor]
         public CancelAllDialogs([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
@@ -32,7 +32,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// </summary>
         public string EventValue { get; set; }
 
-        protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (options is CancellationToken)
             {
@@ -45,7 +45,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 eventValue = new ExpressionEngine().Parse(this.EventValue).TryEvaluate(dc.State);
             }
 
-            return await CancelAllParentDialogsAsync(dc, eventName: EventName ?? "cancelDialog", eventValue: eventValue, cancellationToken: cancellationToken).ConfigureAwait(false);
+            if (dc.Parent == null)
+            {
+                return await dc.CancelAllDialogsAsync(EventName, eventValue, cancellationToken).ConfigureAwait(false);
+            }
+            else
+            {
+                var turnResult = await dc.Parent.CancelAllDialogsAsync(EventName, eventValue, cancellationToken).ConfigureAwait(false);
+                turnResult.ParentEnded = true;
+                return turnResult;
+            }
         }
     }
 }

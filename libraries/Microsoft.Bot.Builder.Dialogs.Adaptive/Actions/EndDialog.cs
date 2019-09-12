@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// <summary>
     /// Command to end the current dialog, returning the resultProperty as the result of the dialog.
     /// </summary>
-    public class EndDialog : DialogAction
+    public class EndDialog : Dialog
     {
         private Expression value;
 
@@ -24,22 +24,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         {
             this.RegisterSourceLocation(callerPath, callerLine);
 
-            if (!string.IsNullOrEmpty(property))
-            {
-                this.Property = property;
-            }
-
             if (!string.IsNullOrEmpty(value))
             {
                 this.Value = value;
             }
         }
-
-        /// <summary>
-        /// Gets or sets a path to memory where the result of the value should be stored.
-        /// </summary>
-        [JsonProperty("property")]
-        public string Property { get; set; }
 
         /// <summary>
         /// Gets or sets a value expression for the result to be returned to the caller
@@ -51,26 +40,44 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             set { this.value = (value != null) ? new ExpressionEngine().Parse(value) : null; }
         }
 
-        protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (options is CancellationToken)
             {
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            if (this.Value != null && this.Property != null)
+            if (this.Value != null)
             {
                 var (result, error) = this.value.TryEvaluate(dc.State);
-                dc.State.SetValue(this.Property, result);
                 return await EndParentDialogAsync(dc, result, cancellationToken).ConfigureAwait(false);
             }
 
             return await EndParentDialogAsync(dc, result: null, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
+        protected async Task<DialogTurnResult> EndParentDialogAsync(DialogContext dc, object result = null, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (result is CancellationToken)
+            {
+                throw new ArgumentException($"{nameof(result)} cannot be a cancellation token");
+            }
+
+            if (dc.Parent != null)
+            {
+                var turnResult = await dc.Parent.EndDialogAsync(result, cancellationToken).ConfigureAwait(false);
+                turnResult.ParentEnded = true;
+                return turnResult;
+            }
+            else
+            {
+                return await dc.EndDialogAsync(result, cancellationToken).ConfigureAwait(false);
+            }
+        }
+
         protected override string OnComputeId()
         {
-            return $"{this.GetType().Name}({this.Property ?? string.Empty})";
+            return $"{this.GetType().Name}({this.Value ?? string.Empty})";
         }
     }
 }
