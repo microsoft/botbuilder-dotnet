@@ -77,7 +77,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return result.TrimEnd('\r', '\n');
         }
 
-        private string ExtractName(LGFileParser.TemplateDefinitionContext parseTree) => parseTree.templateNameLine().templateName().GetText();
+        private string ExtractName(LGFileParser.TemplateDefinitionContext parseTree)
+        {
+            var name = parseTree.templateNameLine().templateName()?.GetText();
+            return name ?? string.Empty;
+        }
 
         private List<string> ExtractParameters(LGFileParser.TemplateDefinitionContext parseTree)
         {
