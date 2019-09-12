@@ -62,7 +62,14 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
         {
             _credentialProvider = credentialProvider;
             _channelProvider = channelProvider;
-            _logger = logger;
+            if (logger != null)
+            {
+                _logger = logger;
+            }
+            else
+            {
+                _logger = NullLogger.Instance;
+            }
         }
 
         /// <summary>
@@ -93,7 +100,7 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
             OnTurnError = onTurnError;
             _bot = bot ?? throw new ArgumentNullException(nameof(bot));
             _userAgent = GetUserAgent();
-            if (logger == null)
+            if (logger != null)
             {
                 _logger = logger;
             }
@@ -136,6 +143,11 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
             _userAgent = GetUserAgent();
         }
 
+        /// <summary>
+        ///  Initializes a new instance of the <see cref="DirectLineAdapter"/> class for processing HTTP requests.
+        /// </summary>
+        /// <param name="configuration"> The configuration containing credential and channel provider details for this adapter. </param>
+        /// <param name="logger">The ILogger implementation this adapter should use.</param>
         protected DirectLineAdapter(IConfiguration configuration, ILogger<BotFrameworkHttpAdapter> logger = null)
              : base(new ConfigurationCredentialProvider(configuration), new ConfigurationChannelProvider(configuration), customHttpClient: null, middleware: null, logger: logger)
         {
@@ -186,7 +198,11 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
         /// <returns>A response created by the BotAdapter to be sent to the client that originated the request.</returns>
         public async Task<StreamingResponse> ProcessRequestAsync(ReceiveRequest request, ILogger logger, object context = null, CancellationToken cancellationToken = default)
         {
-            logger = logger ?? NullLogger.Instance;
+            // If a specific logger is passed in, use it for this request. Otherwise use the adapter's logger.
+            if (logger == null)
+            {
+                logger = _logger;
+            }
 
             var response = new StreamingResponse();
 
