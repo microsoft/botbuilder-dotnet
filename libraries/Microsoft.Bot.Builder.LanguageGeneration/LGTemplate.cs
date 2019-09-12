@@ -64,17 +64,36 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </value>
         public LGFileParser.TemplateDefinitionContext ParseTree { get; }
 
+        public override string ToString() => $"[{Name}]\"{Body}\"";
+
         private string ExtractBody(LGFileParser.TemplateDefinitionContext parseTree)
         {
-            var originText = parseTree.templateBody()?.GetText();
-            if (originText == null)
+            var result = string.Empty;
+            var originTextBody = parseTree.templateBody();
+            if (originTextBody == null)
             {
                 return null;
             }
 
-            var eof = "<EOF>";
-            var result = originText.EndsWith(eof) ? originText.Substring(0, originText.Length - eof.Length) : originText;
-            return result.TrimEnd('\r', '\n');
+            if (originTextBody is LGFileParser.NormalBodyContext normalTemplateBody)
+            {
+                // remove error template string
+                var templateStrings = normalTemplateBody.normalTemplateBody().templateString();
+                foreach (var templateString in templateStrings)
+                {
+                    var normalTemplateString = templateString.normalTemplateString();
+                    if (normalTemplateString != null)
+                    {
+                        result += normalTemplateString.GetText() + "\r\n";
+                    }
+                }
+            }
+            else
+            {
+                result += originTextBody.GetText();
+            }
+
+            return RemoveNewLine(result);
         }
 
         private string ExtractName(LGFileParser.TemplateDefinitionContext parseTree)
@@ -92,6 +111,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
 
             return new List<string>();
+        }
+
+        private string RemoveNewLine(string input)
+        {
+            var eof = "<EOF>";
+            var result = input.EndsWith(eof) ? input.Substring(0, input.Length - eof.Length) : input;
+            return result.TrimEnd('\r', '\n');
         }
     }
 }

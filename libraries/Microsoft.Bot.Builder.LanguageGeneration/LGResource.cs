@@ -146,6 +146,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return resourcesFound.ToList();
         }
 
+        public override string ToString()
+        {
+            return $"{Id} Templates[{Templates.Count}] Imports[{Imports.Count}]";
+        }
+
         /// <summary>
         /// Resolve imported LG resources from a start resource.
         /// All the imports will be visited and resolved to LGResouce list.
@@ -185,20 +190,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 throw new Exception("index out of range.");
             }
 
-            for (var i=0; i< startIndex; i++)
-            {
-                destList.Add(originList[i].Trim());
-            }
+            destList.AddRange(originList.Take(startIndex).Select(u => u.Trim()));
 
             if (!string.IsNullOrEmpty(replaceString))
             {
                 destList.Add(replaceString);
             }
 
-            for (var i = endIndex + 1; i< originList.Length; i++)
-            {
-                destList.Add(originList[i].Trim());
-            }
+            destList.AddRange(originList.Skip(endIndex + 1).Take(originList.Length - endIndex - 1).Select(u => u.Trim()));
 
             return string.Join("\r\n", destList);
         }
