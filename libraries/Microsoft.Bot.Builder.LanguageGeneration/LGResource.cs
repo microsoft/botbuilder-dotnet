@@ -14,17 +14,17 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </summary>
         /// <param name="templates">The lg templates.</param>
         /// <param name="imports">The lg imports.</param>
-        /// <param name="originContent">origin lg content.</param>
+        /// <param name="originalContent">original lg content.</param>
         /// <param name="id">The id of the lg source.</param>
-        public LGResource(IList<LGTemplate> templates, IList<LGImport> imports, string originContent, string id = "")
+        public LGResource(IList<LGTemplate> templates, IList<LGImport> imports, string originalContent, string id = "")
         {
             Templates = templates;
             Imports = imports;
             Id = id;
-            OriginContent = originContent;
+            OriginalContent = originalContent;
         }
 
-        public string OriginContent { get; set; }
+        public string OriginalContent { get; set; }
 
         /// <summary>
         /// Gets or sets id of this lg source.
@@ -67,7 +67,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var startLine = template.ParseTree.templateBody().Start.Line - 1;
             var stopLine = template.ParseTree.templateBody().Stop.Line - 1;
 
-            var currentContent = ReplaceContent(OriginContent, startLine, stopLine, templateBody);
+            var currentContent = ReplaceContent(OriginalContent, startLine, stopLine, templateBody);
             return LGParser.Parse(currentContent);
         }
 
@@ -85,7 +85,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 throw new Exception($"template {templateName} already exists.");
             }
 
-            string currentContent = OriginContent + "\r\n# " + templateName + "\r\n" + templateBody + "\r\n";
+            var currentContent = $"{OriginalContent}\r\n# {templateName}\r\n{templateBody}\r\n";
             return LGParser.Parse(currentContent);
         }
 
@@ -105,7 +105,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var startLine = template.ParseTree.Start.Line - 1;
             var stopLine = template.ParseTree.Stop.Line - 1;
 
-            var currentContent = ReplaceContent(OriginContent, startLine, stopLine, string.Empty);
+            var currentContent = ReplaceContent(OriginalContent, startLine, stopLine, null);
             return LGParser.Parse(currentContent);
         }
 
