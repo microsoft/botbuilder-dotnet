@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var templates = ExtractLGTemplates(fileContext, id);
             var imports = ExtractLGImports(fileContext, id);
 
-            return new LGResource(templates, imports, id);
+            return new LGResource(templates, imports, content, id);
         }
 
         /// <summary>
