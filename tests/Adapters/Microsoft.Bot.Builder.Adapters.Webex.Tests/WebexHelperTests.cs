@@ -3,6 +3,7 @@
 
 using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Schema;
@@ -73,9 +74,9 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
 
             var webexApi = new Mock<WebexClientWrapper>();
             webexApi.SetupAllProperties();
-            webexApi.Setup(x => x.GetMessageAsync(It.IsAny<string>(), default)).Returns(Task.FromResult(message));
+            webexApi.Setup(x => x.GetMessageAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(message));
 
-            var actualMessage = await WebexHelper.GetDecryptedMessageAsync(payload, webexApi.Object.GetMessageAsync);
+            var actualMessage = await WebexHelper.GetDecryptedMessageAsync(payload, webexApi.Object.GetMessageAsync, new CancellationToken());
 
             Assert.Equal(message.Id, actualMessage.Id);
         }
