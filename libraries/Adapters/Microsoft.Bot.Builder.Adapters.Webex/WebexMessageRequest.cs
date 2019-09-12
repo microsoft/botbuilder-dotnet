@@ -79,5 +79,14 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// </value>
         [JsonProperty(PropertyName = "attachments")]
         public object Attachments { get; set; }
+
+        /// <summary>
+        /// Checks if Files property should be serialized or not.
+        /// </summary>
+        /// <returns>True if there are files in the array to be serialized, false if there aren't.</returns>
+        public bool ShouldSerializeFiles()
+        {
+            return Files.Count > 0;
+        }
     }
 }

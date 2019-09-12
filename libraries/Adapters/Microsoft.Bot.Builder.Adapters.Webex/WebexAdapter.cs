@@ -91,7 +91,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task<Webhook> RegisterWebhookSubscriptionAsync(string webhookPath, WebhookList webhookList, CancellationToken? cancellationToken = null)
         {
-            var webHookName = _config.WebhookName ?? "Webex Firehose";
+            var webHookName = string.IsNullOrEmpty(_config.WebhookName) ? "Webex Firehose" : _config.WebhookName;
 
             string hookId = null;
 
@@ -127,7 +127,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task<Webhook> RegisterAdaptiveCardsWebhookSubscriptionAsync(string webhookPath, WebhookList webhookList, CancellationToken cancellationToken)
         {
-            var webHookName = _config.WebhookName ?? "Webex AttachmentActions";
+            var webHookName = string.IsNullOrEmpty(_config.WebhookName) ? "Webex AttachmentActions" : $"{_config.WebhookName}_AttachmentActions)";
 
             string hookId = null;
 
