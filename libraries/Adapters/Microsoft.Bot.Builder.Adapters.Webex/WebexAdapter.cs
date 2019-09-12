@@ -65,7 +65,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <returns>A list of webhook subscriptions.</returns>
         public async Task<WebhookList> ListWebhookSubscriptionsAsync(CancellationToken? cancellationToken = null)
         {
-           return await _webexClient.ListWebhooksAsync(cancellationToken).ConfigureAwait(false);
+            return await _webexClient.ListWebhooksAsync(cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -83,17 +83,19 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         }
 
         /// <summary>
-        /// Register a webhook subscription with Webex Teams to start receiving message events.
+        /// Register webhook subscriptions to start receiving message events and adaptive cards events.
         /// </summary>
         /// <param name="webhookPath">The path of the webhook endpoint like '/api/messages'.</param>
         /// <param name="webhookList">List of webhook subscriptions associated with the application.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public async Task<Webhook> RegisterWebhookSubscriptionAsync(string webhookPath, WebhookList webhookList, CancellationToken? cancellationToken = null)
+        /// <returns>An array of registered <see cref="Webhook"/>.</returns>
+        public async Task<Webhook[]> RegisterWebhookSubscriptionsAsync(string webhookPath, WebhookList webhookList, CancellationToken cancellationToken)
         {
             var webHookName = string.IsNullOrWhiteSpace(_config.WebhookName) ? "Webex Firehose" : _config.WebhookName;
+            var webHookCardsName = string.IsNullOrWhiteSpace(_config.WebhookName) ? "Webex AttachmentActions" : $"{_config.WebhookName}_AttachmentActions)";
 
             string hookId = null;
+            string hookCardsId = null;
 
             for (var i = 0; i < webhookList.ItemCount; i++)
             {
@@ -101,9 +103,34 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                 {
                     hookId = webhookList.Items[i].Id;
                 }
+                else if (webhookList.Items[i].Name == webHookCardsName)
+                {
+                    hookCardsId = webhookList.Items[i].Id;
+                }
             }
 
             var hookUrl = "https://" + _config.PublicAddress + webhookPath;
+
+            Webhook webhook;
+            Webhook cardsWebhook;
+
+            webhook = await RegisterWebhookSubscriptionAsync(hookId, webHookName, hookUrl, cancellationToken).ConfigureAwait(false);
+
+            cardsWebhook = await RegisterAdaptiveCardsWebhookSubscriptionAsync(hookCardsId, webHookCardsName, hookUrl, cancellationToken).ConfigureAwait(false);
+
+            return new Webhook[] { webhook, cardsWebhook };
+        }
+
+        /// <summary>
+        /// Register a webhook subscription with Webex Teams to start receiving message events.
+        /// </summary>
+        /// <param name="hookId">The id of the webhook to be registered.</param>
+        /// <param name="webHookName">The name of the webhook to be registered.</param>
+        /// <param name="hookUrl">The Url of the webhook.</param>
+        /// <param name="cancellationToken">A cancellation token for the task.</param>
+        /// <returns>The registered <see cref="Webhook"/>.</returns>
+        public async Task<Webhook> RegisterWebhookSubscriptionAsync(string hookId, string webHookName, string hookUrl, CancellationToken cancellationToken)
+        {
             Webhook webhook;
 
             if (hookId != null)
@@ -119,27 +146,15 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         }
 
         /// <summary>
-        /// Register a webhook subscription with Webex Teams to start receiving message events.
+        /// Register a webhook subscription with Webex Teams to start receiving events related to adaptive cards.
         /// </summary>
-        /// <param name="webhookPath">The path of the webhook endpoint like '/api/messages'.</param>
-        /// <param name="webhookList">List of webhook subscriptions associated with the application.</param>
+        /// <param name="hookId">The id of the webhook to be registered.</param>
+        /// <param name="webHookName">The name of the webhook to be registered.</param>
+        /// <param name="hookUrl">The Url of the webhook.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public async Task<Webhook> RegisterAdaptiveCardsWebhookSubscriptionAsync(string webhookPath, WebhookList webhookList, CancellationToken cancellationToken)
+        public async Task<Webhook> RegisterAdaptiveCardsWebhookSubscriptionAsync(string hookId, string webHookName, string hookUrl, CancellationToken cancellationToken)
         {
-            var webHookName = string.IsNullOrWhiteSpace(_config.WebhookName) ? "Webex AttachmentActions" : $"{_config.WebhookName}_AttachmentActions)";
-
-            string hookId = null;
-
-            for (var i = 0; i < webhookList.ItemCount; i++)
-            {
-                if (webhookList.Items[i].Name == webHookName)
-                {
-                    hookId = webhookList.Items[i].Id;
-                }
-            }
-
-            var hookUrl = "https://" + _config.PublicAddress + webhookPath;
             Webhook webhook;
 
             if (hookId != null)
