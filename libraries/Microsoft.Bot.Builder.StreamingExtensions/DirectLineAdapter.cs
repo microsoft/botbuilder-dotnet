@@ -111,15 +111,20 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
         /// <param name="bot">The <see cref="IBot"/> to be used for all requests to this handler.</param>
         /// <param name="pipeName">The name of the named pipe to use when creating the server.</param>
         /// <param name="logger">The ILogger implementation this adapter should use.</param>
-        public DirectLineAdapter(Func<ITurnContext, Exception, Task> onTurnError, IBot bot, string pipeName = DefaultPipeName, ILogger<BotFrameworkHttpAdapter> logger = null)
+        public DirectLineAdapter(Func<ITurnContext, Exception, Task> onTurnError, IBot bot, string pipeName = null, ILogger<BotFrameworkHttpAdapter> logger = null)
              : base(new SimpleCredentialProvider())
         {
+            if (string.IsNullOrWhiteSpace(pipeName))
+            {
+                pipeName = DefaultPipeName;
+            }
+
             OnTurnError = onTurnError;
             _bot = bot ?? throw new ArgumentNullException(nameof(bot));
             _transportServer = new NamedPipeServer(pipeName, this);
             _httpClient = new StreamingHttpClient(_transportServer, _logger);
             _claimsIdentity = new ClaimsIdentity();
-            if (logger == null)
+            if (logger != null)
             {
                 _logger = logger;
             }
