@@ -929,9 +929,9 @@ namespace Microsoft.Bot.Builder.Expressions
         }
 
         // Expected is null if expecting an object or the desired offset in a list.
-        // parentPath is true when setting intermediate paths, and false at the root to apply the value
-        // x.y.z => parentPath will be true when procesing x.y so that path is initialized, and false when assigning value to z
-        private static (object, string) SetPathToValue(Expression path, int? expected, object value, object state, bool parentPath=false)
+        // intermediatePath is true when setting intermediate paths, and false at the root to apply the value
+        // x.y.z => intermediatePath will be true when procesing x.y so that path is initialized, and false when assigning value to leaf node z
+        private static (object, string) SetPathToValue(Expression path, int? expected, object value, object state, bool intermediatePath = false)
         {
             object result = null;
             string error;
@@ -946,7 +946,7 @@ namespace Microsoft.Bot.Builder.Expressions
                     var iindex = index as int?;
                     if (children.Count() == 2)
                     {
-                        (instance, error) = SetPathToValue(children[path.Type == ExpressionType.Accessor ? 1 : 0], iindex, null, state, parentPath: true);
+                        (instance, error) = SetPathToValue(children[path.Type == ExpressionType.Accessor ? 1 : 0], iindex, null, state, intermediatePath: true);
                     }
                     else
                     {
@@ -956,7 +956,7 @@ namespace Microsoft.Bot.Builder.Expressions
                     {
                         if (index is string propName)
                         {
-                            if (!parentPath)
+                            if (!intermediatePath)
                             {
                                 // if !InitPath then we are on the leaf property path and we always set the value regardless off it's value (null or not)
                                 result = SetProperty(instance, propName, value);
