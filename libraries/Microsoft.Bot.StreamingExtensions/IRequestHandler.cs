@@ -20,6 +20,6 @@ namespace Microsoft.Bot.StreamingExtensions
         /// <param name="context">Optional context to process the request within.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>A <see cref="Task"/> that will produce a <see cref="StreamingResponse"/> on successful completion.</returns>
-        Task<StreamingResponse> ProcessRequestAsync(ReceiveRequest request, ILogger<IRequestHandler> logger, object context = null, CancellationToken cancellationToken = default(CancellationToken));
+        Task<StreamingResponse> ProcessRequestAsync(ReceiveRequest request, ILogger logger, object context = null, CancellationToken cancellationToken = default(CancellationToken));
     }
 }

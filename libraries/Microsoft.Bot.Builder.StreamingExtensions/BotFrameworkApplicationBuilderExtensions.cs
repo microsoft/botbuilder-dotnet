@@ -5,6 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Bot.Builder.Integration.AspNet.Core;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Bot.Builder.StreamingExtensions
 {
@@ -18,18 +20,19 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
         /// Throws <see cref="ArgumentNullException"/> if application is null.
         /// </summary>
         /// <param name="applicationBuilder">The application builder that defines the bot's pipeline.<see cref="IApplicationBuilder"/>.</param>
-        /// <param name="middlewareSet">The set of middleware the bot executes on each turn. <see cref="MiddlewareSet"/>.</param>
-        /// <param name="onTurnError">Callback to execute when an error occurs while executing the pipeline.</param>
+        /// <param name="onTurnError">Optional function to perform on turn errors.</param>
+        /// <param name="pipeName">The name of the named pipe to use when creating the server.</param>
+        /// <param name="logger">The ILogger implementation this adapter should use.</param>
         /// <returns>A reference to this instance after the operation has completed.</returns>
-        public static IApplicationBuilder UseBotFrameworkNamedPipe(this IApplicationBuilder applicationBuilder, IList<IMiddleware> middlewareSet = null, Func<ITurnContext, Exception, Task> onTurnError = null)
+        public static IApplicationBuilder UseBotFrameworkNamedPipe(this IApplicationBuilder applicationBuilder, Func<ITurnContext, Exception, Task> onTurnError, string pipeName = null, ILogger<BotFrameworkHttpAdapter> logger = null)
         {
             if (applicationBuilder == null)
             {
                 throw new ArgumentNullException(nameof(applicationBuilder));
             }
 
-            var adapter = new DirectLineAdapter(onTurnError, applicationBuilder.ApplicationServices, middlewareSet);
-            adapter.ConnectNamedPipe();
+            var bot = applicationBuilder.ApplicationServices.GetService(typeof(IBot)) as IBot;
+            (applicationBuilder.ApplicationServices.GetService(typeof(IBotFrameworkHttpAdapter)) as DirectLineAdapter).CreateAdapterListeningOnNamedPipe(onTurnError, bot, pipeName, logger);
 
             return applicationBuilder;
         }
