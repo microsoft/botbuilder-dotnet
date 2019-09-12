@@ -48,12 +48,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         {
                             new ConfirmInput()
                             {
-                                Property = "conversation.cancelConfirmation",
+                                Property = "conversation.addTodo.cancelConfirmation",
                                 Prompt = new ActivityTemplate("cancel?")
                             },
                             new IfCondition()
                             {
-                                Condition = "conversation.cancelConfirmation == true",
+                                Condition = "conversation.addTodo.cancelConfirmation == true",
                                 Actions = new List<Dialog>()
                                 {
                                     new SendActivity("canceling"),

@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Builder.Expressions
     /// <param name="expression">Expression to evaluate.</param>
     /// <param name="state">Global state information.</param>
     /// <returns>Value and error string that is non-null if there is an error.</returns>
-    public delegate (object value, string error) EvaluateExpressionDelegate(Expression expression, IMemoryScope state);
+    public delegate (object value, string error) EvaluateExpressionDelegate(Expression expression, object state);
 
     /// <summary>
     /// Delegate to lookup function information from the type.
@@ -104,7 +104,7 @@ namespace Microsoft.Bot.Builder.Expressions
         /// <param name="expression">Expression to evaluate.</param>
         /// <param name="state">Global state information.</param>
         /// <returns>Value and error string that is non-null if there is an error.</returns>
-        public (object value, string error) TryEvaluate(Expression expression, IMemoryScope state)
+        public (object value, string error) TryEvaluate(Expression expression, object state)
             => _evaluator(expression, state);
 
         /// <summary>
