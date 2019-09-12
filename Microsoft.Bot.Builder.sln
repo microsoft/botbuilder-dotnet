@@ -104,6 +104,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Connector.Tea
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Teams", "libraries\Microsoft.Bot.Builder.Teams\Microsoft.Bot.Builder.Teams.csproj", "{56230F58-02EF-4C88-9C28-BE37B8A4D074}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Teams.Tests", "tests\Microsoft.Bot.Builder.Teams.Tests\Microsoft.Bot.Builder.Teams.Tests.csproj", "{6EB0FEBB-DB84-44C8-9C5B-FD3D3D187A4F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Connector.Teams.Tests", "tests\Microsoft.Bot.Connector.Teams.Tests\Microsoft.Bot.Connector.Teams.Tests.csproj", "{D9C6FA68-340F-4338-8158-3BCBF10F320D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Schema.Teams.Tests", "tests\Microsoft.Bot.Schema.Teams.Tests\Microsoft.Bot.Schema.Teams.Tests.csproj", "{A67CCC9B-3B0D-4E3D-A111-6D8A85FAA35B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug - NuGet Packages|Any CPU = Debug - NuGet Packages|Any CPU
@@ -369,6 +375,24 @@ Global
 		{56230F58-02EF-4C88-9C28-BE37B8A4D074}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{56230F58-02EF-4C88-9C28-BE37B8A4D074}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{56230F58-02EF-4C88-9C28-BE37B8A4D074}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6EB0FEBB-DB84-44C8-9C5B-FD3D3D187A4F}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{6EB0FEBB-DB84-44C8-9C5B-FD3D3D187A4F}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
+		{6EB0FEBB-DB84-44C8-9C5B-FD3D3D187A4F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6EB0FEBB-DB84-44C8-9C5B-FD3D3D187A4F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6EB0FEBB-DB84-44C8-9C5B-FD3D3D187A4F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6EB0FEBB-DB84-44C8-9C5B-FD3D3D187A4F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D9C6FA68-340F-4338-8158-3BCBF10F320D}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{D9C6FA68-340F-4338-8158-3BCBF10F320D}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
+		{D9C6FA68-340F-4338-8158-3BCBF10F320D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D9C6FA68-340F-4338-8158-3BCBF10F320D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D9C6FA68-340F-4338-8158-3BCBF10F320D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D9C6FA68-340F-4338-8158-3BCBF10F320D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A67CCC9B-3B0D-4E3D-A111-6D8A85FAA35B}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{A67CCC9B-3B0D-4E3D-A111-6D8A85FAA35B}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
+		{A67CCC9B-3B0D-4E3D-A111-6D8A85FAA35B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A67CCC9B-3B0D-4E3D-A111-6D8A85FAA35B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A67CCC9B-3B0D-4E3D-A111-6D8A85FAA35B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A67CCC9B-3B0D-4E3D-A111-6D8A85FAA35B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -422,6 +446,9 @@ Global
 		{1F8ACA9B-7721-4D83-8545-6EE449B3A100} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
 		{630CF216-BA97-4128-8563-214660B153DC} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
 		{56230F58-02EF-4C88-9C28-BE37B8A4D074} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
+		{6EB0FEBB-DB84-44C8-9C5B-FD3D3D187A4F} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
+		{D9C6FA68-340F-4338-8158-3BCBF10F320D} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
+		{A67CCC9B-3B0D-4E3D-A111-6D8A85FAA35B} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7173C9F3-A7F9-496E-9078-9156E35D6E16}
