@@ -28,7 +28,6 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <param name="endpoint">QnA Maker endpoint details.</param>
         /// <param name="options">QnA Maker options.</param>
         /// <param name="httpClient">Http client.</param>
-        /// <param name="logPersonalInformation">Log personal Information.</param>
         public GenerateAnswerUtils(IBotTelemetryClient telemetryClient, QnAMakerEndpoint endpoint, QnAMakerOptions options, HttpClient httpClient)
         {
             this.telemetryClient = telemetryClient;
@@ -163,6 +162,9 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 {
                     hydratedOptions.MetadataBoost = queryOptions.MetadataBoost;
                 }
+
+                hydratedOptions.Context = queryOptions.Context;
+                hydratedOptions.QnAId = queryOptions.QnAId;
             }
 
             return hydratedOptions;
@@ -179,6 +181,8 @@ namespace Microsoft.Bot.Builder.AI.QnA
                     strictFilters = options.StrictFilters,
                     metadataBoost = options.MetadataBoost,
                     scoreThreshold = options.ScoreThreshold,
+                    context = options.Context,
+                    qnaId = options.QnAId,
                 }, Formatting.None);
 
             var httpRequestHelper = new HttpRequestUtils(httpClient);
@@ -200,6 +204,8 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 Top = options.Top,
                 StrictFilters = options.StrictFilters,
                 MetadataBoost = options.MetadataBoost,
+                Context = options.Context,
+                QnAId = options.QnAId,
             };
             var traceActivity = Activity.CreateTraceActivity(QnAMaker.QnAMakerName, QnAMaker.QnAMakerTraceType, traceInfo, QnAMaker.QnAMakerTraceLabel);
             await turnContext.SendActivityAsync(traceActivity).ConfigureAwait(false);

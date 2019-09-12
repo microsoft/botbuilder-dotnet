@@ -16,6 +16,25 @@ using Moq;
 
 namespace Microsoft.Bot.Connector.Tests
 {
+    /// <summary>
+    /// WORKING WITH THESE TESTS
+    ///   To run mocked and without recording:
+    ///       1. Set HttpRecorderMode to Playback
+    ///
+    ///   To run live or unmocked:
+    ///       1. Set HttpRecorderMode to None
+    ///       2. Set the following properties (all must be valid):
+    ///           * ClientId (appId)
+    ///           * ClientSecret (appPass)
+    ///           * UserId (from slack)
+    ///           * BotId (from slack)
+    ///       3. Ensure the appId has Slack channel enabled and you've installed the bot in Slack
+    ///
+    ///    To re-record:
+    ///      1. All from live/unmocked, except set HttpRecorderMode to Record.
+    ///      2. Once done recording, copy recording sessions from ...Microsoft.Bot.Connector.Tests\bin\Debug\netcoreapp2.1\SessionRecords
+    ///             to ...Microsoft.Bot.Connector.Tests\SessionRecords.
+    /// </summary>
     public class BaseTest
     {
         private readonly HttpRecorderMode mode = HttpRecorderMode.Playback;
@@ -24,12 +43,15 @@ namespace Microsoft.Bot.Connector.Tests
 
         public BaseTest()
         {
-            if (mode == HttpRecorderMode.Record)
+            if (mode == HttpRecorderMode.Record || mode == HttpRecorderMode.None)
             {
                 var credentials = new MicrosoftAppCredentials(ClientId, ClientSecret);
                 var task = credentials.GetTokenAsync();
                 task.Wait();
                 this.token = task.Result;
+
+                // Helpful for generating recordings when debugging locally
+                Environment.SetEnvironmentVariable("AZURE_TEST_MODE", mode.ToString());
             }
             else
             {
@@ -50,9 +72,9 @@ namespace Microsoft.Bot.Connector.Tests
 
         protected string ClientSecret { get; private set; } = "[MSAPP_PASSWORD]";
 
-        protected string UserId { get; private set; } = "U19KH8EHJ:T03CWQ0QB";
+        protected string UserId { get; private set; } = "UK8CH2281:TKGSUQHQE";
 
-        protected string BotId { get; private set; } = "B21UTEF8S:T03CWQ0QB";
+        protected string BotId { get; private set; } = "BKGSYSTFG:TKGSUQHQE";
 
         private string ClassName => GetType().FullName;
 
@@ -123,7 +145,7 @@ namespace Microsoft.Bot.Connector.Tests
 
         public async Task UseOAuthClientFor(Func<OAuthClient, Task> doTest, string className = null, [CallerMemberName] string methodName = null)
         {
-            using (MockContext context = MockContext.Start(className ?? ClassName, methodName))
+            using (var context = MockContext.Start(className ?? ClassName, methodName))
             {
                 HttpMockServer.Initialize(className ?? ClassName, methodName, mode);
                 using (var oauthClient = new OAuthClient(new Uri(AuthenticationConstants.OAuthUrl), new BotAccessTokenStub(token), handlers: HttpMockServer.CreateInstance()))

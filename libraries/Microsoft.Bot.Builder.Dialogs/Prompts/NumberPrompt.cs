@@ -102,7 +102,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 var message = turnContext.Activity.AsMessageActivity();
                 var culture = turnContext.Activity.Locale ?? DefaultLocale ?? English;
-                var results = NumberRecognizer.RecognizeNumber(message.Text, culture);
+                var results = NumberRecognizer.RecognizeNumber(message.Text, culture, NumberOptions.SuppressExtendedTypes);
                 if (results.Count > 0)
                 {
                     // Try to parse value based on type

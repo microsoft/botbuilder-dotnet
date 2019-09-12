@@ -218,7 +218,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
-        /// <para>Not all channels support this operation. For channels that don't, this call may throw an exception.</para></remarks>
+        /// <para>Not all channels support this operation. For channels that don\'t, this call may throw an exception.</para>
         /// <seealso cref="OnDeleteActivity(DeleteActivityHandler)"/>
         /// <seealso cref="DeleteActivityAsync(ConversationReference, CancellationToken)"/>
         /// <seealso cref="SendActivitiesAsync(IActivity[], CancellationToken)"/>

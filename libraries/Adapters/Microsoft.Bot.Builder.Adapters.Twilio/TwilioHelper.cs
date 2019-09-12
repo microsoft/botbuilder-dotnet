@@ -30,11 +30,12 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
     internal static class TwilioHelper
     {
         /// <summary>
-        /// Formats a BotBuilder activity into an outgoing Twilio SMS message.
+        /// Creates Twilio SMS message options object from a Bot Framework <see cref="Activity"/>.
         /// </summary>
-        /// <param name="activity">A BotBuilder Activity object.</param>
-        /// <param name="twilioNumber">The assigned Twilio phone number.</param>
-        /// <returns>A Message's options object with {body, from, to, mediaUrl}.</returns>
+        /// <param name="activity">The activity.</param>
+        /// <param name="twilioNumber">The Twilio phone number assigned to the bot.</param>
+        /// <returns>The Twilio message options object.</returns>
+        /// <seealso cref="TwilioAdapter.SendActivitiesAsync(ITurnContext, Activity[], System.Threading.CancellationToken)"/>
         public static CreateMessageOptions ActivityToTwilio(Activity activity, string twilioNumber)
         {
             if (activity == null || string.IsNullOrWhiteSpace(twilioNumber))
@@ -60,12 +61,15 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         }
 
         /// <summary>
-        /// Processes a HTTP request into an Activity.
+        /// Creates a Bot Framework <see cref="Activity"/> from an HTTP request that contains a Twilio message.
         /// </summary>
-        /// <param name="httpRequest">A httpRequest object.</param>
-        /// <param name="validationUrl">The URL to check the validation against.</param>
+        /// <param name="httpRequest">The HTTP request.</param>
+        /// <param name="validationUrl">Optional validation URL to override the automatically
+        /// generated URL signature used to validate incoming requests.</param>
         /// <param name="authToken">The authentication token for the Twilio app.</param>
-        /// <returns>The Activity obtained from the httpRequest object.</returns>
+        /// <returns>The activity object.</returns>
+        /// <seealso cref="TwilioAdapter.ProcessAsync(HttpRequest, HttpResponse, IBot, System.Threading.CancellationToken)"/>
+        /// <seealso cref="ITwilioAdapterOptions.ValidationUrl"/>
         public static Activity RequestToActivity(HttpRequest httpRequest, string validationUrl, string authToken)
         {
             if (httpRequest == null)
@@ -108,12 +112,14 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         }
 
         /// <summary>
-        /// Validates a request as coming from Twilio.
+        /// Validates an HTTP request as coming from Twilio.
         /// </summary>
         /// <param name="httpRequest">The request to validate.</param>
-        /// <param name="body">The stringified body payload of the request.</param>
-        /// <param name="validationUrl">The URL to check the validation against.</param>
+        /// <param name="body">The request payload, as key-value pairs.</param>
+        /// <param name="validationUrl">Optional validation URL to override the automatically
+        /// generated URL signature used to validate incoming requests.</param>
         /// <param name="authToken">The authentication token for the Twilio app.</param>
+        /// <exception cref="AuthenticationException">Validation failed.</exception>
         private static void ValidateRequest(HttpRequest httpRequest, Dictionary<string, string> body, string validationUrl, string authToken)
         {
             var twilioSignature = httpRequest.Headers["x-twilio-signature"];
@@ -126,22 +132,26 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         }
 
         /// <summary>
-        /// Extracts attachments (if any) from a twilio message and returns them in an Attachments array.
+        /// Gets attachments from a Twilio message.
         /// </summary>
         /// <param name="numMedia">The number of media items to pull from the message body.</param>
-        /// <param name="message">A dictionary containing the twilio message elements.</param>
+        /// <param name="message">A dictionary containing the Twilio message elements.</param>
         /// <returns>An Attachments array with the converted attachments.</returns>
         private static List<Attachment> GetMessageAttachments(int numMedia, Dictionary<string, string> message)
         {
             var attachments = new List<Attachment>();
             for (var i = 0; i < numMedia; i++)
             {
-                var attachment = new Attachment()
+                // Ensure MediaContentType and MediaUrl are present before adding the attachment
+                if (message.ContainsKey($"MediaContentType{i}") && message.ContainsKey($"MediaUrl{i}"))
                 {
-                    ContentType = message[$"MediaContentType{i}"],
-                    ContentUrl = message[$"MediaUrl{i}"],
-                };
-                attachments.Add(attachment);
+                    var attachment = new Attachment()
+                    {
+                        ContentType = message[$"MediaContentType{i}"],
+                        ContentUrl = message[$"MediaUrl{i}"],
+                    };
+                    attachments.Add(attachment);
+                }
             }
 
             return attachments;

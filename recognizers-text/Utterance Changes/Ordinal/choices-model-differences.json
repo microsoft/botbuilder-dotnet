@@ -1,0 +1,22 @@
+[
+    {
+       "input":"the second to last",
+       "was":[
+          {
+             "Text":"second",
+             "Start":4,
+             "End":9,
+             "TypeName":"choice",
+             "Resolution":{
+                "Value":"",
+                "Index":1,
+                "Score":1.0,
+                "Synonym":null
+             }
+          }
+       ],
+       "now":[
+ 
+       ]
+    }
+ ]
