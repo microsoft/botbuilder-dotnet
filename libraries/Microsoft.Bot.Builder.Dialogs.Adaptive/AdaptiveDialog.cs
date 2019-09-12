@@ -124,12 +124,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             // Persist options to dialog state
             dc.State.SetValue(ThisPath.OPTIONS, options);
 
-            //// Initialize 'result' with any initial value
-            //if (state.Options.GetType() == typeof(Dictionary<string, object>) && (state.Options as Dictionary<string, object>).ContainsKey("value"))
-            //{
-            //    state.Result = state.Options["value"];
-            //}
-
             // Evaluate events and queue up step changes
             var dialogEvent = new DialogEvent()
             {
