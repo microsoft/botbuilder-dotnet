@@ -263,8 +263,11 @@ namespace Microsoft.Bot.Builder.Expressions
         /// <see cref="System.Collections.IDictionary"/> otherwise reflection is used to access property and then indexer.
         /// </param>
         /// <returns>Computed value and an error string.  If the string is non-null, then there was an evaluation error.</returns>
-        public (object value, string error) TryEvaluate(object state)
+        public (object value, string error) TryEvaluate(IMemoryScope state)
             => Evaluator.TryEvaluate(this, state);
+
+        public (object value, string error) TryEvaluate(object state)
+            => Evaluator.TryEvaluate(this, new SimpleObjectScope(state));
 
         public override string ToString()
         {

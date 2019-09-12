@@ -19,6 +19,14 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
 
         private readonly object scope = new Dictionary<string, object>
         {
+            {
+                "path", new Dictionary<string, object>()
+                {
+                    {
+                        "array", new List<int>() {1}
+                    }
+                }
+            },
             { "one", 1.0 },
             { "two", 2.0 },
             { "hello", "hello" },
@@ -222,17 +230,13 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             #region SetPathToProperty test
             // TODO: We should support this.
             // Test("@@['c' + 'ity']", "Seattle"),
-            Test("setPathToValue(@@blah.woof, 1+2) + @@blah.woof", 6),
+            
+            Test("setPathToValue(@@blah, 1+2) + @@blah", 6),
             Test("setPathToValue(path.simple, 3) + path.simple", 6),
             Test("setPathToValue(path.simple, 5) + path.simple", 10),
             Test("setPathToValue(path.array[0], 7) + path.array[0]", 14),
             Test("setPathToValue(path.array[1], 9) + path.array[1]", 18),
-            Test("setPathToValue(path.darray[2][0], 11) + path.darray[2][0]", 22),
-            Test("setPathToValue(path.darray[2][3].foo, 13) + path.darray[2][3].foo)", 26),
-            Test("setPathToValue(path.overwrite, 3) + setPathToValue(path.overwrite[0], 4) + path.overwrite[0]", 11),
-            Test("setPathToValue(path.overwrite[0], 3) + setPathToValue(path.overwrite, 4) + path.overwrite", 11),
-            Test("setPathToValue(path.overwrite.prop, 3) + setPathToValue(path.overwrite, 4) + path.overwrite", 11),
-            Test("setPathToValue(path.overwrite.prop, 3) + setPathToValue(path.overwrite[0], 4) + path.overwrite[0]", 11),
+            
             #endregion
 
             #region Operators test
