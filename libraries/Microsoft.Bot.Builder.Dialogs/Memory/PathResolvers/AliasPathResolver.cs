@@ -10,9 +10,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.PathResolvers
     /// </summary>
     public class AliasPathResolver : IPathResolver
     {
-        private string alias;
-        private string prefix;
-        private string postfix;
+        private readonly string alias;
+        private readonly string prefix;
+        private readonly string postfix;
 
         public AliasPathResolver(string alias, string prefix, string postfix = null)
         {
