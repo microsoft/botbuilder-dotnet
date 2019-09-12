@@ -710,14 +710,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         {
                             Prompt = new ActivityTemplate("Please enter your age."),
                             UnrecognizedPrompt = new ActivityTemplate("The value entered must be greater than 0 and less than 150."),
-                            Property = "user.Age",
+                            Property = "user.userProfile.Age",
                             OutputFormat = NumberOutputFormat.Integer,
                             Validations = new List<string>()
                             {
                                 "turn.value > 0 && turn.value < 150"
                             }
                         },
-                        new SendActivity("I have your age as {user.Age}."),
+                        new SendActivity("I have your age as {user.userProfile.Age}."),
                     })
             });
 
