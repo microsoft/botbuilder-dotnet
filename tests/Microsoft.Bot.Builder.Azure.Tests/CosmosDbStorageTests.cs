@@ -532,7 +532,7 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 await storage.WriteAsync(changes, CancellationToken.None);
 
                 // Should throw DocumentClientException: Cross partition query is required but disabled
-                await Assert.ThrowsExceptionAsync<DocumentClientException>(async () => await storage.ReadAsync<StoreItem>(new string[] { DocumentId }, CancellationToken.None));
+                await Assert.ThrowsExceptionAsync<InvalidOperationException>(async () => await storage.ReadAsync<StoreItem>(new string[] { DocumentId }, CancellationToken.None));
             }
         }
 

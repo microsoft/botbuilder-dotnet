@@ -8,7 +8,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
-using Microsoft.Azure.Documents.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
@@ -199,8 +198,6 @@ namespace Microsoft.Bot.Builder.Azure
         /// <seealso cref="WriteAsync(IDictionary{string, object}, CancellationToken)"/>
         public async Task<IDictionary<string, object>> ReadAsync(string[] keys, CancellationToken cancellationToken)
         {
-            FeedOptions options = null;
-
             if (keys == null)
             {
                 throw new ArgumentNullException(nameof(keys));
@@ -215,35 +212,35 @@ namespace Microsoft.Bot.Builder.Azure
             // Ensure Initialization has been run
             await InitializeAsync().ConfigureAwait(false);
 
-            if (!string.IsNullOrEmpty(this._partitionKey))
-            {
-                options = new FeedOptions() { PartitionKey = new PartitionKey(this._partitionKey) };
-            }
-
             var storeItems = new Dictionary<string, object>(keys.Length);
 
-            var parameterSequence = string.Join(",", Enumerable.Range(0, keys.Length).Select(i => $"@id{i}"));
-            var parameterValues = keys.Select((key, ix) => new SqlParameter($"@id{ix}", CosmosDbKeyEscape.EscapeKey(key)));
-            var querySpec = new SqlQuerySpec
+            foreach (string key in keys)
             {
-                QueryText = $"SELECT c.id, c.realId, c.document, c._etag FROM c WHERE c.id in ({parameterSequence})",
-                Parameters = new SqlParameterCollection(parameterValues),
-            };
-
-            var query = _client.CreateDocumentQuery<DocumentStoreItem>(_collectionLink, querySpec, options).AsDocumentQuery();
-            while (query.HasMoreResults)
-            {
-                foreach (var doc in await query.ExecuteNextAsync<DocumentStoreItem>(cancellationToken).ConfigureAwait(false))
+                DocumentResponse<DocumentStoreItem> doc = null;
+                try
                 {
-                    var item = doc.Document.ToObject(typeof(object), _jsonSerializer);
-                    if (item is IStoreItem storeItem)
+                    var options = this._partitionKey == null || this._partitionKey.Equals(string.Empty) ? null : new RequestOptions { PartitionKey = new PartitionKey(this._partitionKey) };
+                    var docLink = UriFactory.CreateDocumentUri(this._databaseId, this._collectionId, CosmosDbKeyEscape.EscapeKey(key));
+                    doc = await this._client.ReadDocumentAsync<DocumentStoreItem>(docLink, options).ConfigureAwait(false);
+                }
+                catch (DocumentClientException ex)
+                {
+                    if (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
                     {
-                        storeItem.ETag = doc.ETag;
+                        continue;
                     }
 
-                    // doc.Id cannot be used since it is escaped, read it from RealId property instead
-                    storeItems.Add(doc.ReadlId, item);
+                    throw ex;
                 }
+
+                var item = doc.Document.Document.ToObject(typeof(object), _jsonSerializer);
+                if (item is IStoreItem storeItem)
+                {
+                    storeItem.ETag = doc.Document.ETag;
+                }
+
+                // doc.Id cannot be used since it is escaped, read it from RealId property instead
+                storeItems.Add(doc.Document.ReadlId, item);
             }
 
             return storeItems;
