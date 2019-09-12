@@ -68,9 +68,9 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <param name="token">Access Token for authorization.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>The created message id.</returns>
-        public virtual async Task<string> CreateMessageWithAttachmentsAsync(string toPersonOrEmail, string text, IList<Attachment> attachments, string token, CancellationToken? cancellationToken = null)
+        public virtual async Task<string> CreateMessageWithAttachmentsAsync(string toPersonOrEmail, string text, IList<Attachment> attachments, string token, CancellationToken cancellationToken)
         {
-            Message result = null;
+            Message result;
             var url = MessageUrl;
 
             var attachmentsContent = new List<object>();
@@ -102,17 +102,35 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
             newStream.Write(bytes, 0, bytes.Length);
             newStream.Close();
 
-            var response = await http.GetResponseAsync().ConfigureAwait(false);
-
-            var stream = response.GetResponseStream();
-
-            using (var sr = new StreamReader(stream))
+            using (cancellationToken.Register(() => http.Abort(), useSynchronizationContext: false))
             {
-                var content = sr.ReadToEnd();
-                result = JsonConvert.DeserializeObject<Message>(content);
-            }
+                try
+                {
+                    var response = await http.GetResponseAsync().ConfigureAwait(false);
 
-            return result.Id;
+                    var stream = response.GetResponseStream();
+
+                    using (var sr = new StreamReader(stream))
+                    {
+                        var content = sr.ReadToEnd();
+                        result = JsonConvert.DeserializeObject<Message>(content);
+                    }
+
+                    return result.Id;
+                }
+                catch (WebException ex)
+                {
+                    // WebException is thrown when request.Abort() is called,
+                    // but there may be many other reasons
+                    if (cancellationToken.IsCancellationRequested)
+                    {
+                        throw new OperationCanceledException(ex.Message, ex, cancellationToken);
+                    }
+
+                    // cancellation hasn't been requested, rethrow the original WebException
+                    throw;
+                }
+            }
         }
 
         /// <summary>
@@ -122,7 +140,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <param name="token">Access Token for authorization.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>The attachment action details.</returns>
-        public virtual async Task<Message> GetAttachmentActionAsync(string actionId, string token, CancellationToken? cancellationToken = null)
+        public virtual async Task<Message> GetAttachmentActionAsync(string actionId, string token, CancellationToken cancellationToken)
         {
             Message result;
 
@@ -133,17 +151,35 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
             http.Headers.Add("Authorization", "Bearer " + token);
             http.Method = "GET";
 
-            var response = await http.GetResponseAsync().ConfigureAwait(false);
-
-            var stream = response.GetResponseStream();
-
-            using (var sr = new StreamReader(stream))
+            using (cancellationToken.Register(() => http.Abort(), useSynchronizationContext: false))
             {
-                var content = sr.ReadToEnd();
-                result = JsonConvert.DeserializeObject<Message>(content);
-            }
+                try
+                {
+                    var response = await http.GetResponseAsync().ConfigureAwait(false);
 
-            return result;
+                    var stream = response.GetResponseStream();
+
+                    using (var sr = new StreamReader(stream))
+                    {
+                        var content = sr.ReadToEnd();
+                        result = JsonConvert.DeserializeObject<Message>(content);
+                    }
+
+                    return result;
+                }
+                catch (WebException ex)
+                {
+                    // WebException is thrown when request.Abort() is called,
+                    // but there may be many other reasons
+                    if (cancellationToken.IsCancellationRequested)
+                    {
+                        throw new OperationCanceledException(ex.Message, ex, cancellationToken);
+                    }
+
+                    // cancellation hasn't been requested, rethrow the original WebException
+                    throw;
+                }
+            }
         }
 
         /// <summary>
@@ -236,11 +272,11 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <param name="token">Access Token for authorization.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>The created <see cref="Webhook"/>.</returns>
-        public virtual async Task<Webhook> CreateAdaptiveCardsWebhookAsync(string name, Uri targetUri, EventType type, string secret, string token, CancellationToken? cancellationToken = null)
+        public virtual async Task<Webhook> CreateAdaptiveCardsWebhookAsync(string name, Uri targetUri, EventType type, string secret, string token, CancellationToken cancellationToken)
         {
             Webhook result;
-
             var url = WebhookUrl;
+
             var data = new NameValueCollection
             {
                 ["name"] = name,
@@ -254,12 +290,30 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
             {
                 client.Headers[HttpRequestHeader.Authorization] = "Bearer " + token;
 
-                var response = await client.UploadValuesTaskAsync(new Uri(url), "POST", data).ConfigureAwait(false);
+                using (cancellationToken.Register(() => client.CancelAsync(), useSynchronizationContext: false))
+                {
+                    try
+                    {
+                        var response = await client.UploadValuesTaskAsync(new Uri(url), "POST", data).ConfigureAwait(false);
 
-                result = JsonConvert.DeserializeObject<Webhook>(Encoding.ASCII.GetString(response));
+                        result = JsonConvert.DeserializeObject<Webhook>(Encoding.ASCII.GetString(response));
+
+                        return result;
+                    }
+                    catch (WebException ex)
+                    {
+                        // WebException is thrown when request.Abort() is called,
+                        // but there may be many other reasons
+                        if (cancellationToken.IsCancellationRequested)
+                        {
+                            throw new OperationCanceledException(ex.Message, ex, cancellationToken);
+                        }
+
+                        // cancellation hasn't been requested, rethrow the original WebException
+                        throw;
+                    }
+                }
             }
-
-            return result;
         }
 
         /// <summary>
@@ -272,7 +326,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <param name="token">Access Token for authorization.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>The created <see cref="Webhook"/>.</returns>
-        public virtual async Task<Webhook> UpdateAdaptiveCardsWebhookAsync(string webhookId, string name, Uri targetUri, string secret, string token, CancellationToken? cancellationToken = null)
+        public virtual async Task<Webhook> UpdateAdaptiveCardsWebhookAsync(string webhookId, string name, Uri targetUri, string secret, string token, CancellationToken cancellationToken)
         {
             Webhook result;
 
@@ -290,12 +344,30 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
             {
                 client.Headers[HttpRequestHeader.Authorization] = "Bearer " + token;
 
-                var response = await client.UploadValuesTaskAsync(new Uri(url), "PUT", data).ConfigureAwait(false);
+                using (cancellationToken.Register(() => client.CancelAsync(), useSynchronizationContext: false))
+                {
+                    try
+                    {
+                        var response = await client.UploadValuesTaskAsync(new Uri(url), "PUT", data).ConfigureAwait(false);
 
-                result = JsonConvert.DeserializeObject<Webhook>(Encoding.ASCII.GetString(response));
+                        result = JsonConvert.DeserializeObject<Webhook>(Encoding.ASCII.GetString(response));
+
+                        return result;
+                    }
+                    catch (WebException ex)
+                    {
+                        // WebException is thrown when request.Abort() is called,
+                        // but there may be many other reasons
+                        if (cancellationToken.IsCancellationRequested)
+                        {
+                            throw new OperationCanceledException(ex.Message, ex, cancellationToken);
+                        }
+
+                        // cancellation hasn't been requested, rethrow the original WebException
+                        throw;
+                    }
+                }
             }
-
-            return result;
         }
 
         /// <summary>

@@ -125,7 +125,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <param name="webhookList">List of webhook subscriptions associated with the application.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public async Task<Webhook> RegisterAdaptiveCardsWebhookSubscriptionAsync(string webhookPath, WebhookList webhookList, CancellationToken? cancellationToken = null)
+        public async Task<Webhook> RegisterAdaptiveCardsWebhookSubscriptionAsync(string webhookPath, WebhookList webhookList, CancellationToken cancellationToken)
         {
             var webHookName = _config.WebhookName ?? "Webex AttachmentActions";
 

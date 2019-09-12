@@ -3,6 +3,7 @@
 //
 // Generated with Bot Builder V4 SDK Template for Visual Studio EchoBot v4.3.0
 
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -73,7 +74,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.TestBot
 
             // await _adapter.ResetWebhookSubscriptionsAsync(webhookList);
             await _adapter.RegisterWebhookSubscriptionAsync("/api/messages", webhookList);
-            await _adapter.RegisterAdaptiveCardsWebhookSubscriptionAsync("/api/messages", webhookList);
+            await _adapter.RegisterAdaptiveCardsWebhookSubscriptionAsync("/api/messages", webhookList, default);
         }
     }
 }
