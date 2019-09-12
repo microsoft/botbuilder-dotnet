@@ -1,0 +1,24 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
+    "$role": "unionType(Microsoft.IDialog)",
+    "title": "Send Activity to Ask a question",
+    "description": "This is an action which sends an activity to the user when a response is expected",
+    "type": "object",
+    "allOf": [
+        {
+            "$ref": "../../../Microsoft.Bot.Builder.Dialogs.Adaptive/Schemas/Actions/Microsoft.SendActivity.schema"
+        },
+        {
+            "properties": {
+                "expectedSlots": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "title": "Expected Slots",
+                    "description": "Slots expected to be filled by entities from the user"
+                }
+            }
+        }
+    ]
+}

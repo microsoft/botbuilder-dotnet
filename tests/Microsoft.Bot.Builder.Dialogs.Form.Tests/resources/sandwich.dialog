@@ -1,15 +1,21 @@
 {
-    "$schema": "../../../schemas/sdk.schema",
-    "$type":"Microsoft.FormDialog",
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/chrimc/map/schemas/sdk.schema",
+    "$type": "Microsoft.FormDialog",
+    "schema": "./sandwich-schema.json",
     "events": [
         {
-            "$type":"Microsoft.OnAsk",
+            "$type": "Microsoft.OnAsk",
             "constraint": "!dialog.Meat",
             "actions": [
                 {
-                    "$type": 
+                    "$type":"Microsoft.SendActivity",
+                    "activity": "[askMeat]"
                 }
             ]
+        },
+        {
+            "$type":"Microsoft.OnClarifySlotValue",
+
         }
     ]
 }

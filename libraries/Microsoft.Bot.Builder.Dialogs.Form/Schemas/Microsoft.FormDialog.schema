@@ -20,10 +20,9 @@
                         },
                         {
                             "type": "string",
-                            "title":  "String pointing to schema file."
+                            "title": "String pointing to schema file."
                         }
                     ]
-
                 }
             }
         }

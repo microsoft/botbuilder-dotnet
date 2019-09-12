@@ -11,6 +11,11 @@
             "$ref": "#/definitions/Microsoft.AdaptiveDialog"
         },
         {
+            "title": "Microsoft.Ask",
+            "description": "This is an action which sends an activity to the user when a response is expected",
+            "$ref": "#/definitions/Microsoft.Ask"
+        },
+        {
             "title": "Microsoft.AttachmentInput",
             "description": "This represents a dialog which gathers an attachment such as image or music",
             "$ref": "#/definitions/Microsoft.AttachmentInput"
@@ -429,6 +434,92 @@
                     "items": {
                         "$type": "Microsoft.IOnEvent",
                         "$ref": "#/definitions/Microsoft.IOnEvent"
+                    }
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$type"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.Ask": {
+            "$role": "unionType(Microsoft.IDialog)",
+            "title": "Send Activity to Ask a question",
+            "description": "This is an action which sends an activity to the user when a response is expected",
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.Ask"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "id": {
+                    "type": "string",
+                    "title": "Id",
+                    "description": "(Optional) id for the dialog",
+                    "examples": [
+                        "Dialog2"
+                    ]
+                },
+                "tags": {
+                    "type": "array",
+                    "title": "Tags",
+                    "description": "Tags are optional strings that you can use to organize components",
+                    "examples": [
+                        "input",
+                        "confirmation"
+                    ],
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "activity": {
+                    "$type": "Microsoft.IActivityTemplate",
+                    "title": "Activity",
+                    "description": "Activity to send to the user",
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                },
+                "expectedSlots": {
+                    "type": "array",
+                    "title": "Expected Slots",
+                    "description": "Slots expected to be filled by entities from the user",
+                    "items": {
+                        "type": "string"
                     }
                 }
             },
@@ -2594,9 +2685,18 @@
                     }
                 },
                 "schema": {
-                    "$comment": "Eventually we should allow at least some subset of JSON schema here.",
-                    "title": "The form schema to be filled in.",
-                    "additionalProperties": true
+                    "anyOf": [
+                        {
+                            "$comment": "Eventually we should allow at least some subset of JSON schema here.",
+                            "title": "The form schema to be filled in.",
+                            "type": "object",
+                            "additionalProperties": true
+                        },
+                        {
+                            "type": "string",
+                            "title": "String pointing to schema file."
+                        }
+                    ]
                 }
             },
             "additionalProperties": false,
@@ -2770,6 +2870,11 @@
                     "title": "Microsoft.AdaptiveDialog",
                     "description": "Configures a data driven dialog via a collection of actions/dialogs.",
                     "$ref": "#/definitions/Microsoft.AdaptiveDialog"
+                },
+                {
+                    "title": "Microsoft.Ask",
+                    "description": "This is an action which sends an activity to the user when a response is expected",
+                    "$ref": "#/definitions/Microsoft.Ask"
                 },
                 {
                     "title": "Microsoft.AttachmentInput",

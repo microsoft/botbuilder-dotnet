@@ -175,8 +175,6 @@ $Cheese:gouda=
 $Cheese:no cheese=
 - without cheese
 
-
-
 $Confirmation:yes=
 - yes
 - yeah
@@ -200,6 +198,7 @@ $Confirmation:no=
 $Meat:turkey=
 
 $Meat:ham=
+- pork
 
 $Meat:pulled pork=
 - pork
