@@ -421,7 +421,7 @@ namespace Microsoft.Bot.Builder.Expressions
         /// <param name="state">Global state.</param>
         /// <param name="verify">Optional function to verify each child's result.</param>
         /// <returns>List of child values or error message.</returns>
-        public static (IReadOnlyList<dynamic>, string error) EvaluateChildren(Expression expression, IMemoryScope state, VerifyExpression verify = null)
+        public static (IReadOnlyList<dynamic>, string error) EvaluateChildren(Expression expression, object state, VerifyExpression verify = null)
         {
             var args = new List<dynamic>();
             object value;
@@ -678,19 +678,10 @@ namespace Microsoft.Bot.Builder.Expressions
         /// <param name="expression">Filter expression.</param>
         /// <param name="state">Object containing the dialog callstack to search.</param>
         /// <returns>The property.</returns>
-        private static (object value, string error) CallstackScope(Expression expression, IMemoryScope state)
+        private static (object value, string error) CallstackScope(Expression expression, object state)
         {
             // get callstack collection?
-            object result = null;
-            string error = null;
-
-            (result, error) = state.GetValue("callstack");
-
-            if (error != null)
-            {
-                return (null, error);
-            }
-
+            var (result, error) = AccessProperty(state, "callstack");
             if (result != null)
             {
                 var items = (IEnumerable<object>)result;
@@ -736,80 +727,28 @@ namespace Microsoft.Bot.Builder.Expressions
             }
         }
 
-        // Try to accumulate the path from an Accessor or Element
-        // return the accumulated path and the expression left unable to accumulate
-        private static (string path, Expression left, string error) TryAccumulatePath(Expression expression, IMemoryScope state)
+        private static (object value, string error) Accessor(Expression expression, object state)
         {
-            string path = string.Empty;
-            var left = expression;
-
-            // get path from Accessor or Element+Accessor
-            while (left != null)
+            object value = null;
+            string error = null;
+            object instance;
+            var children = expression.Children;
+            if (children.Length == 2)
             {
-                if (left.Type == ExpressionType.Accessor)
-                {
-                    path = (string)((Constant)left.Children[0]).Value + "." + path;
-                    left = left.Children.Length == 2 ? left.Children[1] : null;
-                }
-                else if (left.Type == ExpressionType.Element && left.Children[0].Type == ExpressionType.Accessor)
-                {
-                    var (value, error) = left.Children[1].TryEvaluate(state);
-                    if (error != null)
-                    {
-                        return (null, null, error);
-                    }
-                    if (!(value is int || value is string))
-                    {
-                        return (null, null, $"{left.Children[1].ToString()} dones't return a int or string");
-                    }
-
-                    path = (string)((Constant)left.Children[0].Children[0]).Value + $"[{value}]" + "." + path;
-                    left = left.Children[0].Children.Length == 2 ? left.Children[0].Children[1] : null;
-                }
-                else
-                {
-                    break;
-                }
-            }
-
-            path = path.TrimEnd('.');
-
-            if (string.IsNullOrEmpty(path))
-            {
-                path = null;
-            }
-
-            return (path, left, null);
-        }
-
-        private static (object value, string error) Accessor(Expression expression, IMemoryScope state)
-        {
-            var (path, left, error) = TryAccumulatePath(expression, state);
-
-            if (error != null)
-            {
-                return (null, error);
-            }
-
-            if (left == null)
-            {
-                // fully converted to path, so we just delegate to memory scope
-                return state.GetValue(path);
+                (instance, error) = children[1].TryEvaluate(state);
             }
             else
             {
-                // stop at somewhere, so we figure out what's left
-                var (newScope, err) = left.TryEvaluate(state);
-                if (err != null)
-                {
-                    return (null, err);
-                }
-
-                return new SimpleObjectScope(newScope).GetValue(path);
+                instance = state;
             }
+            if (error == null && children[0] is Constant cnst && cnst.ReturnType == ReturnType.String)
+            {
+                (value, error) = AccessProperty(instance, (string)cnst.Value);
+            }
+            return (value, error);
         }
 
-        private static (object value, string error) GetProperty(Expression expression, IMemoryScope state)
+        private static (object value, string error) GetProperty(Expression expression, object state)
         {
             object value = null;
             string error;
@@ -963,71 +902,170 @@ namespace Microsoft.Bot.Builder.Expressions
             return (value, error);
         }
 
-        private static (object value, string error) ExtractElement(Expression expression, IMemoryScope state)
+        private static (object value, string error) ExtractElement(Expression expression, object state)
         {
             object value = null;
-
-            // if children 0 is Accessor, we will try to evaluate like an accessor, which will accumlate path first
-            if (expression.Children[0].Type == ExpressionType.Accessor)
+            string error;
+            var instance = expression.Children[0];
+            var index = expression.Children[1];
+            object inst;
+            (inst, error) = instance.TryEvaluate(state);
+            if (error == null)
             {
-                return Accessor(expression, state);
+                object idxValue;
+                (idxValue, error) = index.TryEvaluate(state);
+                if (error == null)
+                {
+                    if (idxValue is int idx)
+                    {
+                        (value, error) = AccessIndex(inst, idx);
+                    }
+                    else if (idxValue is string idxStr)
+                    {
+                        (value, error) = AccessProperty(inst, idxStr);
+                    }
+                    else
+                    {
+                        error = $"Could not coerce {index}<{idxValue.GetType()}> to an int or string";
+                    }
+                }
+            }
+            return (value, error);
+        }
+
+        private static bool CanBeModified(object value, string property, int? expected)
+        {
+            var modifiable = false;
+            if (expected.HasValue)
+            {
+                // Modifiable list
+                modifiable = TryParseList(value, out var _);
             }
             else
             {
-                // otherwise, fallback to a normal evalution
-                string error = null;
-                var instance = expression.Children[0];
-                var index = expression.Children[1];
-                object inst;
-                (inst, error) = instance.TryEvaluate(state);
+                // Modifiable object
+                modifiable = value is IDictionary<string, object>
+                    || value is IDictionary
+                    || value is JObject;
+                if (!modifiable)
+                {
+                    var type = value.GetType();
+                    var prop = type.GetProperties().Where(p => p.Name.ToLower() == property).SingleOrDefault();
+                    modifiable = prop != null;
+                }
+            }
+            return modifiable;
+        }
+
+        // Expected is null if expecting an object or the desired offset in a list.
+        // Value is null except at the root
+        private static (object, string) SetPathToValue(Expression path, int? expected, object value, object state)
+        {
+            object result = null;
+            string error;
+            object instance;
+            object index;
+            var children = path.Children;
+            if (path.Type == ExpressionType.Accessor || path.Type == ExpressionType.Element)
+            {
+                (index, error) = children[path.Type == ExpressionType.Accessor ? 0 : 1].TryEvaluate(state);
                 if (error == null)
                 {
-                    object idxValue;
-                    (idxValue, error) = index.TryEvaluate(state);
+                    var iindex = index as int?;
+                    if (children.Count() == 2)
+                    {
+                        (instance, error) = SetPathToValue(children[path.Type == ExpressionType.Accessor ? 1 : 0], iindex, null, state);
+                    }
+                    else
+                    {
+                        instance = state;
+                    }
                     if (error == null)
                     {
-                        if (idxValue is int idx)
+                        if (index is string propName)
                         {
-                            (value, error) = AccessIndex(inst, idx);
+                            if (value != null)
+                            {
+                                result = SetProperty(instance, propName, value);
+                            }
+                            else
+                            {
+                                (result, error) = AccessProperty(instance, propName);
+                                if (error != null || result == null || !CanBeModified(result, propName, expected))
+                                {
+                                    // Create new value for parents to use
+                                    if (expected.HasValue)
+                                    {
+                                        result = SetProperty(instance, propName, new List<object>(expected.Value + 1));
+                                    }
+                                    else
+                                    {
+                                        result = SetProperty(instance, propName, new Dictionary<string, object>());
+                                    }
+                                }
+                            }
                         }
-                        else if (idxValue is string idxStr)
+                        else if (iindex.HasValue)
                         {
-                            (value, error) = AccessProperty(inst, idxStr);
+                            // Child instance should be a list already because we passed down the iindex.
+                            if (TryParseList(instance, out IList list))
+                            {
+                                if (list.Count <= iindex.Value)
+                                {
+                                    // Extend list.
+                                    while (list.Count <= iindex.Value)
+                                    {
+                                        list.Add(null);
+                                    }
+                                }
+
+                                // Assign value or expected list size or object
+                                if (list is JArray arr)
+                                {
+                                    result = value != null ? JToken.FromObject(value)
+                                        : (expected.HasValue ? (object)new JArray() : new JObject());
+                                    arr[iindex.Value] = (JToken)result;
+                                }
+                                else
+                                {
+                                    result = value ?? (expected.HasValue ? (object)new List<object>(expected.Value + 1) : (object)new Dictionary<string, object>());
+                                    list[iindex.Value] = result;
+                                }
+                            }
+                            else
+                            {
+                                error = $"{children[0]} is not a list.";
+                            }
                         }
                         else
                         {
-                            error = $"Could not coerce {index}<{idxValue.GetType()}> to an int or string";
+                            error = $"{children[0]} is not a valid path";
                         }
                     }
                 }
-                return (value, error);
             }
+            else
+            {
+                error = $"{path} is not a path that can be set to a value.";
+            }
+
+            return (result, error);
         }
 
-
-        private static (object value, string error) SetPathToValue(Expression expr, IMemoryScope state)
+        private static (object value, string error) SetPathToValue(Expression expr, object state)
         {
-
-            var (path, left, error) = TryAccumulatePath(expr.Children[0], state);
-
-            if (error != null)
+            var path = expr.Children[0];
+            var valueExpr = expr.Children[1];
+            var (value, error) = valueExpr.TryEvaluate(state);
+            if (error == null)
             {
-                return (null, error);
+                (_, error) = SetPathToValue(path, null, value, state);
+                if (error != null)
+                {
+                    value = null;
+                }
             }
-
-            if (left != null)
-            {
-                // the expression can't be fully merged as a path
-                return (null, $"{expr.Children[0].ToString()} is not a valid path to set value");
-            }
-
-            var (value, err) = expr.Children[1].TryEvaluate(state);
-            if (err != null)
-            {
-                return (null, err);
-            }
-
-            return state.SetValue(path, value);
+            return (value, error);
         }
 
         private static object ResolveValue(object obj)
@@ -1120,7 +1158,7 @@ namespace Microsoft.Bot.Builder.Expressions
             return result;
         }
 
-        private static (object value, string error) And(Expression expression, IMemoryScope state)
+        private static (object value, string error) And(Expression expression, object state)
         {
             object result = false;
             string error = null;
@@ -1150,7 +1188,7 @@ namespace Microsoft.Bot.Builder.Expressions
             return (result, error);
         }
 
-        private static (object value, string error) Or(Expression expression, IMemoryScope state)
+        private static (object value, string error) Or(Expression expression, object state)
         {
             object result = false;
             string error = null;
@@ -1174,7 +1212,7 @@ namespace Microsoft.Bot.Builder.Expressions
             return (result, error);
         }
 
-        private static (object value, string error) Not(Expression expression, IMemoryScope state)
+        private static (object value, string error) Not(Expression expression, object state)
         {
             object result;
             string error;
@@ -1191,7 +1229,7 @@ namespace Microsoft.Bot.Builder.Expressions
             return (result, error);
         }
 
-        private static (object value, string error) If(Expression expression, IMemoryScope state)
+        private static (object value, string error) If(Expression expression, object state)
         {
             object result;
             string error;
@@ -1208,7 +1246,7 @@ namespace Microsoft.Bot.Builder.Expressions
             return (result, error);
         }
 
-        private static (object value, string error) Substring(Expression expression, IMemoryScope state)
+        private static (object value, string error) Substring(Expression expression, object state)
         {
             object result = null;
             string error;
@@ -1264,7 +1302,7 @@ namespace Microsoft.Bot.Builder.Expressions
             return (result, error);
         }
 
-        private static (object value, string error) Foreach(Expression expression, IMemoryScope state)
+        private static (object value, string error) Foreach(Expression expression, object state)
         {
             object result = null;
             string error;
@@ -1285,14 +1323,13 @@ namespace Microsoft.Bot.Builder.Expressions
                         {
                             { iteratorName, AccessIndex(ilist, idx).value },
                         };
-                        var newScope = new Dictionary<string, IMemoryScope>
+                        var newScope = new Dictionary<string, object>
                         {
                             { "$global", state },
-                            { "$local", new SimpleObjectScope(local) },
+                            { "$local", local },
                         };
 
-                        (var r, var e) = expression.Children[2].TryEvaluate(new ComposedObjectScope(newScope));
-
+                        (var r, var e) = expression.Children[2].TryEvaluate(newScope);
                         if (e != null)
                         {
                             return (null, e);
@@ -1309,7 +1346,7 @@ namespace Microsoft.Bot.Builder.Expressions
             return (result, error);
         }
 
-        private static (object value, string error) Where(Expression expression, IMemoryScope state)
+        private static (object value, string error) Where(Expression expression, object state)
         {
             object result = null;
             string error;
@@ -1330,15 +1367,13 @@ namespace Microsoft.Bot.Builder.Expressions
                         {
                             { iteratorName, AccessIndex(ilist, idx).value },
                         };
-
-                        var newScope = new Dictionary<string, IMemoryScope>
+                        var newScope = new Dictionary<string, object>
                         {
                             { "$global", state },
-                            { "$local", new SimpleObjectScope(local) },
+                            { "$local", local },
                         };
 
-                        (var r, var e) = expression.Children[2].TryEvaluate(new ComposedObjectScope(newScope));
-
+                        (var r, var e) = expression.Children[2].TryEvaluate(newScope);
                         if (e != null)
                         {
                             return (null, e);
@@ -2052,7 +2087,7 @@ namespace Microsoft.Bot.Builder.Expressions
         }
 
         // collection functions
-        private static (object value, string error) Skip(Expression expression, IMemoryScope state)
+        private static (object value, string error) Skip(Expression expression, object state)
         {
             object result = null;
             string error;
@@ -2097,7 +2132,7 @@ namespace Microsoft.Bot.Builder.Expressions
             return (result, error);
         }
 
-        private static (object, string) Take(Expression expression, IMemoryScope state)
+        private static (object, string) Take(Expression expression, object state)
         {
             object result = null;
             string error;
@@ -2155,7 +2190,7 @@ namespace Microsoft.Bot.Builder.Expressions
             return (result, error);
         }
 
-        private static (object, string) SubArray(Expression expression, IMemoryScope state)
+        private static (object, string) SubArray(Expression expression, object state)
         {
             object result = null;
             string error;
