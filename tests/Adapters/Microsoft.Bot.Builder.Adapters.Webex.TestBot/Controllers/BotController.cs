@@ -3,6 +3,7 @@
 //
 // Generated with Bot Builder V4 SDK Template for Visual Studio EchoBot v4.3.0
 
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 
@@ -22,8 +23,6 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.TestBot.Controllers
         {
             _adapter = adapter;
             _bot = bot;
-
-            adapter.GetIdentityAsync().Wait();
         }
 
         [HttpPost]
@@ -31,7 +30,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.TestBot.Controllers
         {
             // Delegate the processing of the HTTP POST to the adapter.
             // The adapter will invoke the bot.
-            await _adapter.ProcessAsync(Request, Response, _bot);
+            await _adapter.ProcessAsync(Request, Response, _bot, new CancellationToken());
         }
     }
 }

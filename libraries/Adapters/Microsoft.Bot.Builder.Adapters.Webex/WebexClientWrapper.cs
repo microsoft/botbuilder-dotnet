@@ -39,12 +39,12 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
 
             if (string.IsNullOrWhiteSpace(_config.AccessToken))
             {
-                throw new Exception("AccessToken required to create controller");
+                throw new ArgumentException(nameof(config.AccessToken));
             }
 
             if (_config.PublicAddress == null)
             {
-                throw new Exception("PublicAddress parameter required to receive webhooks");
+                throw new ArgumentException(nameof(config.PublicAddress));
             }
         }
 
