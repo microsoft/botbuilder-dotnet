@@ -9,7 +9,7 @@ using Microsoft.Bot.Builder.Expressions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive.TriggerHandlers
 {
     /// <summary>
     /// Rule triggered when a message is received and the recognized intents and entities match a

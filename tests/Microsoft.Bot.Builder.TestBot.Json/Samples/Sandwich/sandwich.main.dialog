@@ -3,7 +3,7 @@
     "autoEndDialog": false,
     "generator": "sandwich.lg",
     "recognizer": "OrderSandwichApp.lu",
-    "events": [
+    "triggers": [
         {
             "$type": "Microsoft.OnIntent",
             "actions": [
@@ -11,11 +11,11 @@
                     "$comment": "**** Primary ordering dialog ****",
                     "$type": "Microsoft.AdaptiveDialog",
                     "recognizer":  "OrderSandwichApp.lu",
-                    "events": [
+                    "triggers": [
                         {
                             "$comment": "**** Start of slot mapping over conversation.order as frame ****",
                             "$type": "Microsoft.OnDialogEvent",
-                            "events": [
+                            "triggers": [
                                 "recognizedIntent"
                             ],
                             "constraint": "@meat && ignore(!turn.setmeat)",
@@ -44,7 +44,7 @@
                         },
                         {
                             "$type": "Microsoft.OnDialogEvent",
-                            "events": [
+                            "triggers": [
                                 "recognizedIntent"
                             ],
                             "constraint": "@cheese && ignore(!turn.setcheese)",
@@ -72,7 +72,7 @@
                         },
                         {
                             "$type": "Microsoft.OnDialogEvent",
-                            "events": [
+                            "triggers": [
                                 "recognizedIntent"
                             ],
                             "constraint": "@bread && ignore(!turn.setbread)",
@@ -100,7 +100,7 @@
                         },
                         {
                             "$type": "Microsoft.OnDialogEvent",
-                            "events": [
+                            "triggers": [
                                 "recognizedIntent"
                             ],
                             "constraint": "@topping && ignore(!turn.settopping)",
@@ -128,7 +128,7 @@
                         },
                         {
                             "$type": "Microsoft.OnDialogEvent",
-                            "events": [
+                            "triggers": [
                                 "recognizedIntent"
                             ],
                             "constraint": "@confirmation && ignore(!turn.setconfirmation)",
@@ -157,7 +157,7 @@
                         {
                             "$comment": "**** This is the start of prompts ****",
                             "$type": "Microsoft.OnDialogEvent",
-                            "events": [
+                            "triggers": [
                                 "recognizedIntent"
                             ],
                             "constraint": "!conversation.order.meat && !conversation.order.bread",
@@ -170,7 +170,7 @@
                         },
                         {
                             "$type": "Microsoft.OnDialogEvent",
-                            "events": [
+                            "triggers": [
                                 "recognizedIntent"
                             ],
                             "constraint": "conversation.order.meat && conversation.order.bread && !conversation.order.cheese && !conversation.order.topping",
@@ -183,7 +183,7 @@
                         },
                         {
                             "$type": "Microsoft.OnDialogEvent",
-                            "events": [
+                            "triggers": [
                                 "recognizedIntent"
                             ],
                             "constraint": "!conversation.order.confirmation && conversation.order.meat && conversation.order.bread && conversation.order.cheese && conversation.order.topping",
@@ -197,7 +197,7 @@
                         {
                             "$type": "Microsoft.OnDialogEvent",
                             "$comment": "Should update this to use actual http with failure.",
-                            "events": [
+                            "triggers": [
                                 "recognizedIntent"
                             ],
                             "constraint": "conversation.order.confirmation == 'yes' && !conversation.order.alldone",
@@ -215,7 +215,7 @@
                         },
                         {
                             "$type": "Microsoft.OnDialogEvent",
-                            "events": [
+                            "triggers": [
                                 "recognizedIntent"
                             ],
                             "constraint": "conversation.order.confirmation == 'no'",
@@ -237,7 +237,7 @@
                         {
                             "$type": "Microsoft.OnDialogEvent",
                             "$comment": "This is the kind of thing we should build in a default for.",
-                            "events": [
+                            "triggers": [
                                 "recognizedIntent"
                             ],
                             "actions": [
@@ -249,7 +249,7 @@
                         },
                         {
                             "$type": "Microsoft.OnDialogEvent",
-                            "events": [
+                            "triggers": [
                                 "recognizedIntent"
                             ],
                             "constraint": "conversation.order.meat && conversation.order.cheese && !conversation.order.bread && !conversation.order.topping",
@@ -262,7 +262,7 @@
                         },
                         {
                             "$type": "Microsoft.OnDialogEvent",
-                            "events": [
+                            "triggers": [
                                 "recognizedIntent"
                             ],
                             "constraint": "!conversation.order.meat && conversation.order.bread",
@@ -276,7 +276,7 @@
                         {
                             "$comment": "*** Ideally these would be a generic template event against any slot value. ***",
                             "$type": "Microsoft.OnDialogEvent",
-                            "events": [
+                            "triggers": [
                                 "recognizedIntent"
                             ],
                             "constraint": "!conversation.order.meat",
@@ -292,7 +292,7 @@
                         },
                         {
                             "$type": "Microsoft.OnDialogEvent",
-                            "events": [
+                            "triggers": [
                                 "recognizedIntent"
                             ],
                             "constraint": "!conversation.order.cheese",
@@ -305,7 +305,7 @@
                         },
                         {
                             "$type": "Microsoft.OnDialogEvent",
-                            "events": [
+                            "triggers": [
                                 "recognizedIntent"
                             ],
                             "constraint": "!conversation.order.bread",
@@ -318,7 +318,7 @@
                         },
                         {
                             "$type": "Microsoft.OnDialogEvent",
-                            "events": [
+                            "triggers": [
                                 "recognizedIntent"
                             ],
                             "constraint": "!conversation.order.topping",
@@ -392,7 +392,7 @@
         },
         {
             "$type": "Microsoft.OnDialogEvent",
-            "events": [
+            "triggers": [
                 "beginDialog"
             ],
             "actions": [
