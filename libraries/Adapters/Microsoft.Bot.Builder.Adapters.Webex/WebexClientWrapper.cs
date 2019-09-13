@@ -6,9 +6,11 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 using System.Net;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 using Thrzn41.WebexTeams;
@@ -23,6 +25,47 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         private const string ActionsUrl = "https://api.ciscospark.com/v1/attachment/actions";
 
         private TeamsAPIClient _api;
+        private readonly WebexAdapterOptions _config;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WebexClientWrapper"/> class.
+        /// Creates a Webex Client Wrapper. See <see cref="WebexAdapterOptions"/> for a full definition of the allowed parameters.
+        /// </summary>
+        /// <param name="config">An object containing API credentials, a webhook verification token and other options.</param>
+        /// <param name="webexClient">A Webex API interface.</param>
+        public WebexClientWrapper(WebexAdapterOptions config)
+        {
+            _config = config ?? throw new ArgumentNullException(nameof(config));
+
+            if (string.IsNullOrWhiteSpace(_config.AccessToken))
+            {
+                throw new Exception("AccessToken required to create controller");
+            }
+
+            if (_config.PublicAddress == null)
+            {
+                throw new Exception("PublicAddress parameter required to receive webhooks");
+            }
+        }
+
+        /// <summary>
+        /// Gets the identity of the bot.
+        /// </summary>
+        /// <value>
+        /// The identity of the bot.
+        /// </value>
+        public Person Identity { get; private set; }
+
+        /// <summary>
+        /// Initializes the Webex Client.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        public async Task InitAsync()
+        {
+            CreateClient(_config.AccessToken);
+
+            await RegisterWebhookSubscriptionsAsync().ConfigureAwait(false);
+        }
 
         /// <summary>
         /// Creates a Webex client by supplying the access token.
@@ -31,6 +74,152 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         public virtual void CreateClient(string accessToken)
         {
             _api = TeamsAPI.CreateVersion1Client(accessToken);
+        }
+
+        /// <summary>
+        /// Load the bot's identity via the WebEx API.
+        /// MUST be called by BotBuilder bots in order to filter messages sent by the bot.
+        /// </summary>
+        /// <param name="cancellationToken">A cancellation token for the task.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        public async Task GetIdentityAsync(CancellationToken cancellationToken)
+        {
+            await GetMeAsync(cancellationToken).ContinueWith(
+                task => { Identity = task.Result; }, TaskScheduler.Current).ConfigureAwait(false);
+
+            var id = Identity.Id;
+        }
+
+        /// <summary>
+        /// Lists all webhook subscriptions currently associated with this application.
+        /// </summary>
+        /// <param name="cancellationToken">A cancellation token for the task.</param>
+        /// <returns>A list of webhook subscriptions.</returns>
+        public async Task<WebhookList> ListWebhookSubscriptionsAsync(CancellationToken cancellationToken)
+        {
+            return await ListWebhooksAsync(cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Clears out and resets the list of webhook subscriptions.
+        /// </summary>
+        /// <param name="cancellationToken">A cancellation token for the task.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        public async Task ResetWebhookSubscriptionsAsync(CancellationToken cancellationToken)
+        {
+            var webhookList = await ListWebhooksAsync(cancellationToken).ConfigureAwait(false);
+
+            for (var i = 0; i < webhookList.ItemCount; i++)
+            {
+                await DeleteWebhookAsync(webhookList.Items[i], cancellationToken).ConfigureAwait(false);
+            }
+        }
+
+        /// <summary>
+        /// Register webhook subscriptions to start receiving message events and adaptive cards events.
+        /// </summary>
+        /// <param name="webhookPath">The path of the webhook endpoint like '/api/messages'.</param>
+        /// <param name="cancellationToken">A cancellation token for the task.</param>
+        /// <returns>An array of registered <see cref="Webhook"/>.</returns>
+        public async Task<Webhook[]> RegisterWebhookSubscriptionsAsync(string webhookPath = "api/messages", CancellationToken cancellationToken = default)
+        {
+            var webHookName = string.IsNullOrWhiteSpace(_config.WebhookName) ? "Webex Firehose" : _config.WebhookName;
+            var webHookCardsName = string.IsNullOrWhiteSpace(_config.WebhookName) ? "Webex AttachmentActions" : $"{_config.WebhookName}_AttachmentActions)";
+
+            var webhookList = await ListWebhooksAsync(cancellationToken).ConfigureAwait(false);
+
+            string webhookId = null;
+            string webhookCardsId = null;
+
+            for (var i = 0; i < webhookList.ItemCount; i++)
+            {
+                if (webhookList.Items[i].Name == webHookName)
+                {
+                    webhookId = webhookList.Items[i].Id;
+                }
+                else if (webhookList.Items[i].Name == webHookCardsName)
+                {
+                    webhookCardsId = webhookList.Items[i].Id;
+                }
+            }
+
+            var webhookUrl = new Uri(_config.PublicAddress + webhookPath);
+
+            var webhook = await RegisterWebhookSubscriptionAsync(webhookId, webHookName, webhookUrl, cancellationToken).ConfigureAwait(false);
+            var cardsWebhook = await RegisterAdaptiveCardsWebhookSubscriptionAsync(webhookCardsId, webHookCardsName, webhookUrl, cancellationToken).ConfigureAwait(false);
+
+            return new[] { webhook, cardsWebhook };
+        }
+
+        /// <summary>
+        /// Register a webhook subscription with Webex Teams to start receiving message events.
+        /// </summary>
+        /// <param name="hookId">The id of the webhook to be registered.</param>
+        /// <param name="webHookName">The name of the webhook to be registered.</param>
+        /// <param name="webhookUrl">The Uri of the webhook.</param>
+        /// <param name="cancellationToken">A cancellation token for the task.</param>
+        /// <returns>The registered <see cref="Webhook"/>.</returns>
+        public async Task<Webhook> RegisterWebhookSubscriptionAsync(string hookId, string webHookName, Uri webhookUrl, CancellationToken cancellationToken)
+        {
+            Webhook webhook;
+
+            if (hookId != null)
+            {
+                webhook = await UpdateWebhookAsync(hookId, webHookName, webhookUrl, _config.Secret, cancellationToken).ConfigureAwait(false);
+            }
+            else
+            {
+                webhook = await CreateWebhookAsync(webHookName, webhookUrl, EventResource.All, EventType.All, null, _config.Secret, cancellationToken).ConfigureAwait(false);
+            }
+
+            return webhook;
+        }
+
+        /// <summary>
+        /// Register a webhook subscription with Webex Teams to start receiving events related to adaptive cards.
+        /// </summary>
+        /// <param name="hookId">The id of the webhook to be registered.</param>
+        /// <param name="webHookName">The name of the webhook to be registered.</param>
+        /// <param name="webhookUrl">The Uri of the webhook.</param>
+        /// <param name="cancellationToken">A cancellation token for the task.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        public async Task<Webhook> RegisterAdaptiveCardsWebhookSubscriptionAsync(string hookId, string webHookName, Uri webhookUrl, CancellationToken cancellationToken)
+        {
+            Webhook webhook;
+
+            if (hookId != null)
+            {
+                webhook = await UpdateAdaptiveCardsWebhookAsync(hookId, webHookName, webhookUrl, _config.Secret, _config.AccessToken, cancellationToken).ConfigureAwait(false);
+            }
+            else
+            {
+                webhook = await CreateAdaptiveCardsWebhookAsync(webHookName, webhookUrl, EventType.All, _config.Secret, _config.AccessToken, cancellationToken).ConfigureAwait(false);
+            }
+
+            return webhook;
+        }
+
+        /// <summary>
+        /// Validates the local secret against the one obtained from the request header.
+        /// </summary>
+        /// <param name="request">The <see cref="HttpRequest"/> with the signature.</param>
+        /// <param name="json">The serialized payload to be use for comparison.</param>
+        /// <returns>The result of the comparison between the signature in the request and hashed json.</returns>
+        public virtual bool ValidateSignature(HttpRequest request, string json)
+        {
+            var signature = request.Headers.ContainsKey("x-spark-signature")
+                ? request.Headers["x-spark-signature"].ToString().ToUpperInvariant()
+                : throw new Exception("HttpRequest is missing \"x-spark-signature\"");
+
+#pragma warning disable CA5350 // Webex API uses SHA1 as cryptographic algorithm.
+            using (var hmac = new HMACSHA1(Encoding.UTF8.GetBytes(_config.Secret)))
+            {
+                var hashArray = hmac.ComputeHash(Encoding.UTF8.GetBytes(json));
+                var hash = BitConverter.ToString(hashArray).Replace("-", string.Empty).ToUpperInvariant();
+
+                return signature == hash;
+            }
+#pragma warning restore CA5350 // Webex API uses SHA1 as cryptographic algorithm.
         }
 
         /// <summary>
@@ -65,10 +254,9 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <param name="toPersonOrEmail">Id or email of message recipient.</param>
         /// <param name="text">Text of the message.</param>
         /// <param name="attachments">List of attachments attached to the message.</param>
-        /// <param name="token">Access Token for authorization.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>The created message id.</returns>
-        public virtual async Task<string> CreateMessageWithAttachmentsAsync(string toPersonOrEmail, string text, IList<Attachment> attachments, string token, CancellationToken cancellationToken)
+        public virtual async Task<string> CreateMessageWithAttachmentsAsync(string toPersonOrEmail, string text, IList<Attachment> attachments, CancellationToken cancellationToken)
         {
             Message result;
             var url = MessageUrl;
@@ -89,7 +277,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
 
             var http = (HttpWebRequest)WebRequest.Create(new Uri(url));
             http.PreAuthenticate = true;
-            http.Headers.Add("Authorization", "Bearer " + token);
+            http.Headers.Add("Authorization", "Bearer " + _config.AccessToken);
             http.Accept = "application/json";
             http.ContentType = "application/json";
             http.Method = "POST";
@@ -137,10 +325,9 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// Shows details for a attachment action, by ID.
         /// </summary>
         /// <param name="actionId">A unique identifier for the attachment action.</param>
-        /// <param name="token">Access Token for authorization.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>The attachment action details.</returns>
-        public virtual async Task<Message> GetAttachmentActionAsync(string actionId, string token, CancellationToken cancellationToken)
+        public virtual async Task<Message> GetAttachmentActionAsync(string actionId, CancellationToken cancellationToken)
         {
             Message result;
 
@@ -148,7 +335,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
 
             var http = (HttpWebRequest)WebRequest.Create(new Uri(url));
             http.PreAuthenticate = true;
-            http.Headers.Add("Authorization", "Bearer " + token);
+            http.Headers.Add("Authorization", "Bearer " + _config.AccessToken);
             http.Method = "GET";
 
             using (cancellationToken.Register(() => http.Abort(), useSynchronizationContext: false))

@@ -25,30 +25,6 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
     internal static class WebexHelper
     {
         /// <summary>
-        /// Validates the local secret against the one obtained from the request header.
-        /// </summary>
-        /// <param name="secret">The local stored secret.</param>
-        /// <param name="request">The <see cref="HttpRequest"/> with the signature.</param>
-        /// <param name="json">The serialized payload to be use for comparison.</param>
-        /// <returns>The result of the comparison between the signature in the request and hashed json.</returns>
-        public static bool ValidateSignature(string secret, HttpRequest request, string json)
-        {
-            var signature = request.Headers.ContainsKey("x-spark-signature")
-                ? request.Headers["x-spark-signature"].ToString().ToUpperInvariant()
-                : throw new Exception("HttpRequest is missing \"x-spark-signature\"");
-
-            #pragma warning disable CA5350 // Webex API uses SHA1 as cryptographic algorithm.
-            using (var hmac = new HMACSHA1(Encoding.UTF8.GetBytes(secret)))
-            {
-                var hashArray = hmac.ComputeHash(Encoding.UTF8.GetBytes(json));
-                var hash = BitConverter.ToString(hashArray).Replace("-", string.Empty).ToUpperInvariant();
-
-                return signature == hash;
-            }
-            #pragma warning restore CA5350 // Webex API uses SHA1 as cryptographic algorithm.
-        }
-
-        /// <summary>
         /// Creates a <see cref="Activity"/> using the body of a request.
         /// </summary>
         /// <param name="payload">The payload obtained from the body of the request.</param>
