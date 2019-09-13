@@ -73,7 +73,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.TestBot
             var webhookList = await _adapter.ListWebhookSubscriptionsAsync();
 
             // await _adapter.ResetWebhookSubscriptionsAsync(webhookList);
-            await _adapter.RegisterWebhookSubscriptionsAsync("api/messages", webhookList, default);
+            await _adapter.RegisterWebhookSubscriptionsAsync();
         }
     }
 }

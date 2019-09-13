@@ -331,12 +331,13 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
 
             var webexApi = new Mock<WebexClientWrapper>();
             webexApi.SetupAllProperties();
+            webexApi.Setup(x => x.ListWebhooksAsync(It.IsAny<CancellationToken>())).Returns(Task.FromResult(webhookList));
             webexApi.Setup(x => x.UpdateWebhookAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(webhookList.Items[1]));
             webexApi.Setup(x => x.UpdateAdaptiveCardsWebhookAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(webhookList.Items[0]));
 
             var webexAdapter = new WebexAdapter(options, webexApi.Object);
 
-            var webhook = await webexAdapter.RegisterWebhookSubscriptionsAsync("/api/messages", webhookList, new CancellationToken());
+            var webhook = await webexAdapter.RegisterWebhookSubscriptionsAsync();
 
             Assert.Equal(webhookList.Items[0].Id, webhook[1].Id);
             Assert.Equal(webhookList.Items[1].Id, webhook[0].Id);
@@ -355,12 +356,13 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
 
             var webexApi = new Mock<WebexClientWrapper>();
             webexApi.SetupAllProperties();
+            webexApi.Setup(x => x.ListWebhooksAsync(It.IsAny<CancellationToken>())).Returns(Task.FromResult(webhookList));
             webexApi.Setup(x => x.CreateWebhookAsync(It.IsAny<string>(), It.IsAny<Uri>(), It.IsAny<EventResource>(), It.IsAny<EventType>(), It.IsAny<IEnumerable<EventFilter>>(), It.IsAny<string>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(webhook));
             webexApi.Setup(x => x.CreateAdaptiveCardsWebhookAsync(It.IsAny<string>(), It.IsAny<Uri>(), It.IsAny<EventType>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(webhook));
 
             var webexAdapter = new WebexAdapter(options, webexApi.Object);
 
-            var actualWebhook = await webexAdapter.RegisterWebhookSubscriptionsAsync("/api/messages", webhookList, new CancellationToken());
+            var actualWebhook = await webexAdapter.RegisterWebhookSubscriptionsAsync();
 
             Assert.Equal(webhook.Id, actualWebhook[0].Id);
             Assert.Equal(webhook.Name, actualWebhook[0].Name);

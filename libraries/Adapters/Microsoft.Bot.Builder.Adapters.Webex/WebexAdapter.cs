@@ -61,7 +61,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// </summary>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A list of webhook subscriptions.</returns>
-        public async Task<WebhookList> ListWebhookSubscriptionsAsync(CancellationToken? cancellationToken = null)
+        public async Task<WebhookList> ListWebhookSubscriptionsAsync(CancellationToken cancellationToken = default)
         {
             return await _webexClient.ListWebhooksAsync(cancellationToken).ConfigureAwait(false);
         }
@@ -84,39 +84,36 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// Register webhook subscriptions to start receiving message events and adaptive cards events.
         /// </summary>
         /// <param name="webhookPath">The path of the webhook endpoint like '/api/messages'.</param>
-        /// <param name="webhookList">List of webhook subscriptions associated with the application.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>An array of registered <see cref="Webhook"/>.</returns>
-        public async Task<Webhook[]> RegisterWebhookSubscriptionsAsync(string webhookPath, WebhookList webhookList, CancellationToken cancellationToken)
+        public async Task<Webhook[]> RegisterWebhookSubscriptionsAsync(string webhookPath = "api/messages", CancellationToken cancellationToken = default)
         {
             var webHookName = string.IsNullOrWhiteSpace(_config.WebhookName) ? "Webex Firehose" : _config.WebhookName;
             var webHookCardsName = string.IsNullOrWhiteSpace(_config.WebhookName) ? "Webex AttachmentActions" : $"{_config.WebhookName}_AttachmentActions)";
 
-            string hookId = null;
-            string hookCardsId = null;
+            var webhookList = await ListWebhookSubscriptionsAsync().ConfigureAwait(false);
+
+            string webhookId = null;
+            string webhookCardsId = null;
 
             for (var i = 0; i < webhookList.ItemCount; i++)
             {
                 if (webhookList.Items[i].Name == webHookName)
                 {
-                    hookId = webhookList.Items[i].Id;
+                    webhookId = webhookList.Items[i].Id;
                 }
                 else if (webhookList.Items[i].Name == webHookCardsName)
                 {
-                    hookCardsId = webhookList.Items[i].Id;
+                    webhookCardsId = webhookList.Items[i].Id;
                 }
             }
 
-            var hookUrl = _config.PublicAddress + webhookPath;
+            var webhookUrl = new Uri(_config.PublicAddress + webhookPath);
 
-            Webhook webhook;
-            Webhook cardsWebhook;
+            var webhook = await RegisterWebhookSubscriptionAsync(webhookId, webHookName, webhookUrl, cancellationToken).ConfigureAwait(false);
+            var cardsWebhook = await RegisterAdaptiveCardsWebhookSubscriptionAsync(webhookCardsId, webHookCardsName, webhookUrl, cancellationToken).ConfigureAwait(false);
 
-            webhook = await RegisterWebhookSubscriptionAsync(hookId, webHookName, hookUrl, cancellationToken).ConfigureAwait(false);
-
-            cardsWebhook = await RegisterAdaptiveCardsWebhookSubscriptionAsync(hookCardsId, webHookCardsName, hookUrl, cancellationToken).ConfigureAwait(false);
-
-            return new Webhook[] { webhook, cardsWebhook };
+            return new[] { webhook, cardsWebhook };
         }
 
         /// <summary>
@@ -124,20 +121,20 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// </summary>
         /// <param name="hookId">The id of the webhook to be registered.</param>
         /// <param name="webHookName">The name of the webhook to be registered.</param>
-        /// <param name="hookUrl">The Url of the webhook.</param>
+        /// <param name="webhookUrl">The Uri of the webhook.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>The registered <see cref="Webhook"/>.</returns>
-        public async Task<Webhook> RegisterWebhookSubscriptionAsync(string hookId, string webHookName, string hookUrl, CancellationToken cancellationToken)
+        public async Task<Webhook> RegisterWebhookSubscriptionAsync(string hookId, string webHookName, Uri webhookUrl, CancellationToken cancellationToken)
         {
             Webhook webhook;
 
             if (hookId != null)
             {
-                webhook = await _webexClient.UpdateWebhookAsync(hookId, webHookName, new Uri(hookUrl), _config.Secret, cancellationToken).ConfigureAwait(false);
+                webhook = await _webexClient.UpdateWebhookAsync(hookId, webHookName, webhookUrl, _config.Secret, cancellationToken).ConfigureAwait(false);
             }
             else
             {
-                webhook = await _webexClient.CreateWebhookAsync(webHookName, new Uri(hookUrl), EventResource.All, EventType.All, null, _config.Secret, cancellationToken).ConfigureAwait(false);
+                webhook = await _webexClient.CreateWebhookAsync(webHookName, webhookUrl, EventResource.All, EventType.All, null, _config.Secret, cancellationToken).ConfigureAwait(false);
             }
 
             return webhook;
@@ -148,20 +145,20 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// </summary>
         /// <param name="hookId">The id of the webhook to be registered.</param>
         /// <param name="webHookName">The name of the webhook to be registered.</param>
-        /// <param name="hookUrl">The Url of the webhook.</param>
+        /// <param name="webhookUrl">The Uri of the webhook.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public async Task<Webhook> RegisterAdaptiveCardsWebhookSubscriptionAsync(string hookId, string webHookName, string hookUrl, CancellationToken cancellationToken)
+        public async Task<Webhook> RegisterAdaptiveCardsWebhookSubscriptionAsync(string hookId, string webHookName, Uri webhookUrl, CancellationToken cancellationToken)
         {
             Webhook webhook;
 
             if (hookId != null)
             {
-                webhook = await _webexClient.UpdateAdaptiveCardsWebhookAsync(hookId, webHookName, new Uri(hookUrl), _config.Secret, _config.AccessToken, cancellationToken).ConfigureAwait(false);
+                webhook = await _webexClient.UpdateAdaptiveCardsWebhookAsync(hookId, webHookName, webhookUrl, _config.Secret, _config.AccessToken, cancellationToken).ConfigureAwait(false);
             }
             else
             {
-                webhook = await _webexClient.CreateAdaptiveCardsWebhookAsync(webHookName, new Uri(hookUrl), EventType.All, _config.Secret, _config.AccessToken, cancellationToken).ConfigureAwait(false);
+                webhook = await _webexClient.CreateAdaptiveCardsWebhookAsync(webHookName, webhookUrl, EventType.All, _config.Secret, _config.AccessToken, cancellationToken).ConfigureAwait(false);
             }
 
             return webhook;
