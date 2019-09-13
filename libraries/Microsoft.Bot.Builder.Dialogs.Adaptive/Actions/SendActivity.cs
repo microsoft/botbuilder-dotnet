@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// <summary>
     /// Send an activity back to the user.
     /// </summary>
-    public class SendActivity : DialogAction
+    public class SendActivity : Dialog
     {
         public SendActivity(Activity activity, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
@@ -38,7 +38,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// </value>
         public ITemplate<Activity> Activity { get; set; }
 
-        protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (options is CancellationToken)
             {
@@ -54,10 +54,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         {
             if (Activity is ActivityTemplate at)
             {
-                return $"SendActivity({Ellipsis(at.Template.Trim(), 30)})";
+                return $"{this.GetType().Name}({Ellipsis(at.Template.Trim(), 30)})";
             }
 
-            return $"SendActivity('{Ellipsis(Activity?.ToString().Trim(), 30)}')";
+            return $"{this.GetType().Name}('{Ellipsis(Activity?.ToString().Trim(), 30)}')";
         }
 
         private static string Ellipsis(string text, int length)

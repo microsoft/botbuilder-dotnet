@@ -8,14 +8,14 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
-    public class DebugBreak : DialogAction
+    public class DebugBreak : Dialog
     {
         public DebugBreak([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
             this.RegisterSourceLocation(callerPath, callerLine);
         }
 
-        protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             DebugDump(dc);
 
@@ -33,7 +33,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             try
             {
                 // Get stepCount from memory
-                var stepCount = dc.State.GetValue<int>("turn.stepCount", 0);
+                var stepCount = dc.State.GetValue<int>(TurnPath.STEPCOUNT, () => 0);
 
                 // Compute path
                 var path = string.Empty;

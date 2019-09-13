@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Text.RegularExpressions;
 using Microsoft.Recognizers.Text;
-using Microsoft.Recognizers.Text.Sequence;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 

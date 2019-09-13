@@ -65,30 +65,8 @@ namespace Microsoft.Bot.Builder.Dialogs
                 return false;
             }
 
-            if (val is JToken)
-            {
-                value = ((JToken)val).ToObject<T>();
-                return true;
-            }
-            else if (val is T)
-            {
-                value = (T)val;
-                return true;
-            }
-            else
-            {
-                try
-                {
-                    value = (T)Convert.ChangeType(val, typeof(T));
-                    return true;
-                }
-                catch (Exception)
-                {
-                    // we don't know what type it is?
-                }
-            }
-
-            return false;
+            value = MapTo<T>(val);
+            return true;
         }
 
         public static bool HasValue(object obj, string pathExpression)
@@ -116,13 +94,24 @@ namespace Microsoft.Bot.Builder.Dialogs
             return defaultValue;
         }
 
-        public static bool TryGetValue<T>(object o, string pathExpression, out T value)
+        public static bool TryGetValue<T>(object obj, string pathExpression, out T value)
         {
             value = default(T);
+
+            if (obj == null)
+            {
+                return false;
+            }
 
             if (pathExpression == null)
             {
                 return false;
+            }
+
+            if (pathExpression == string.Empty)
+            {
+                value = MapTo<T>(obj);
+                return true;
             }
 
             // if JPath expression
@@ -130,28 +119,28 @@ namespace Microsoft.Bot.Builder.Dialogs
             if (pathExpression.StartsWith("$."))
             {
                 // jpath
-                if (o != null && o.GetType() == typeof(JArray))
+                if (obj != null && obj.GetType() == typeof(JArray))
                 {
                     int index = 0;
-                    if (int.TryParse(pathExpression, out index) && index < JArray.FromObject(o).Count)
+                    if (int.TryParse(pathExpression, out index) && index < JArray.FromObject(obj).Count)
                     {
-                        result = JArray.FromObject(o)[index];
+                        result = JArray.FromObject(obj)[index];
                     }
                 }
-                else if (o != null && o is JObject)
+                else if (obj != null && obj is JObject)
                 {
-                    result = ((JObject)o).SelectToken(pathExpression);
+                    result = ((JObject)obj).SelectToken(pathExpression);
                 }
                 else
                 {
-                    result = JToken.FromObject(o).SelectToken(pathExpression);
+                    result = JToken.FromObject(obj).SelectToken(pathExpression);
                 }
             }
             else
             {
                 // normal expression
                 var exp = new ExpressionEngine().Parse(pathExpression);
-                return TryGetValue<T>(o, exp, out value);
+                return TryGetValue<T>(obj, exp, out value);
             }
 
             return false;
@@ -300,6 +289,34 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             return (Type)Activator.CreateInstance(type);
+        }
+
+        private static T MapTo<T>(object val)
+        {
+            if (val is T)
+            {
+                return (T)val;
+            }
+            else if (typeof(T) == typeof(JArray))
+            {
+                return (T)(object)JArray.FromObject(val);
+            }
+            else if (typeof(T) == typeof(JObject))
+            {
+                return (T)(object)JObject.FromObject(val);
+            }
+            else if (typeof(T) == typeof(JToken))
+            {
+                return (T)(object)JToken.FromObject(val);
+            }
+            else if (val is JToken)
+            {
+                return ((JToken)val).ToObject<T>();
+            }
+            else
+            {
+                return (T)Convert.ChangeType(val, typeof(T));
+            }
         }
     }
 }

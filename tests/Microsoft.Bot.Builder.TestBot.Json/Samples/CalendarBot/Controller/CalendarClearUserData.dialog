@@ -29,12 +29,12 @@
         {
           "$type": "Microsoft.EditArray",
           "changeType": "Clear",
-          "arrayProperty": "user.meetings"
+          "itemsProperty": "user.meetings"
         },
         {
           "$type": "Microsoft.EditArray",
           "changeType": "Clear",
-          "arrayProperty": "user.attendees"
+          "itemsProperty": "user.attendees"
         },
         {
           "$type": "Microsoft.SetProperty",

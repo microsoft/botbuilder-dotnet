@@ -67,7 +67,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
 
             foreach (var evt in Events)
             {
-                expressions.Add(factory.Parse($"turn.dialogEvent.name == '{evt}'"));
+                expressions.Add(factory.Parse($"{TurnPath.DIALOGEVENT}.name == '{evt}'"));
             }
 
             return Expression.AndExpression(Expression.OrExpression(expressions.ToArray()), base.BuildExpression(factory));

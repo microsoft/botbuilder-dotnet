@@ -3,7 +3,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Linq;
 
-namespace Microsoft.Bot.Builder.Dialogs.Composition
+namespace Microsoft.Bot.Builder.Dialogs.Tests
 {
     [TestClass]
     public class ObjectExtensionsTests

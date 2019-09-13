@@ -1378,17 +1378,14 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                     {
                         Actions = new List<Dialog>()
                         {
-                            new QnAMakerDialog(qnamaker: qna)
-                            {
-                                OutputBinding = "turn.LastResult"
-                            },
+                            new QnAMakerDialog(qnamaker: qna),
                             new IfCondition()
                             {
-                                    Condition = "turn.LastResult == false",
-                                    Actions = new List<Dialog>()
-                                    {
-                                        new SendActivity("I didn't understand that.")
-                                    }
+                                Condition = "turn.LastResult == false",
+                                Actions = new List<Dialog>()
+                                {
+                                    new SendActivity("I didn't understand that.")
+                                }
                             }
                         }
                     }

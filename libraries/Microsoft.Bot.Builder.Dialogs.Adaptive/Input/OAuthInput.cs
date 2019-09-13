@@ -49,24 +49,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         public int Timeout { get; set; } = 900000;
 
         /// <summary>
-        /// Gets or sets the property from memory to pass to the calling dialog and to set the return value to.
+        /// Gets or sets the memory property to use for token result.
         /// </summary>
-        /// <value>
-        /// The property from memory to pass to the calling dialog and to set the return value to.
-        /// </value>
-        public string Property
-        {
-            get
-            {
-                return OutputBinding;
-            }
-
-            set
-            {
-                InputBindings[DialogContextState.DIALOG_VALUE] = value;
-                OutputBinding = value;
-            }
-        }
+        public string TokenProperty { get; set; }
 
         /// <summary>
         /// Called when a prompt dialog is pushed onto the dialog stack and is being activated.
@@ -128,6 +113,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             var output = await adapter.GetUserTokenAsync(dc.Context, ConnectionName, null, cancellationToken).ConfigureAwait(false);
             if (output != null)
             {
+                if (this.TokenProperty != null)
+                {
+                    dc.State.SetValue(this.TokenProperty, output);
+                }
+
                 // Return token
                 return await dc.EndDialogAsync(output, cancellationToken).ConfigureAwait(false);
             }
@@ -168,6 +158,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
             if (hasTimedOut)
             {
+                if (this.TokenProperty != null)
+                {
+                    dc.State.SetValue(this.TokenProperty, null);
+                }
+
                 // if the token fetch request times out, complete the prompt with no result.
                 return await dc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
@@ -190,6 +185,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 // Return recognized value or re-prompt
                 if (isValid)
                 {
+                    if (this.TokenProperty != null)
+                    {
+                        dc.State.SetValue(this.TokenProperty, recognized.Value);
+                    }
+
                     return await dc.EndDialogAsync(recognized.Value, cancellationToken).ConfigureAwait(false);
                 }
                 else
@@ -239,11 +239,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
             // Sign out user
             await adapter.SignOutUserAsync(turnContext, ConnectionName, turnContext.Activity?.From?.Id, cancellationToken).ConfigureAwait(false);
-        }
-
-        protected override string OnComputeId()
-        {
-            return $"OAuthPrompt[{this.BindingPath()}]";
         }
 
         private async Task SendOAuthCardAsync(ITurnContext turnContext, IMessageActivity prompt, CancellationToken cancellationToken = default(CancellationToken))

@@ -10,9 +10,9 @@
         },
         {
             "properties": {
-                "property": {
+                "value": {
                     "$role": "expression",
-                    "description": "Specifies a path to memory should be returned as the result to the calling dialog.",
+                    "description": "Specifies a value expression for the result to be returned to the caller.",
                     "examples": [
                         "dialog.name"
                     ]

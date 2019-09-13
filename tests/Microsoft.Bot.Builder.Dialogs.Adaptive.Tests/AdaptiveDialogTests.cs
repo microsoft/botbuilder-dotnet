@@ -266,7 +266,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                     new TextInput()
                                     {
                                         Prompt = new ActivityTemplate("Hello, what is your name?"),
-                                        OutputBinding = "user.name"
+                                        Property = "user.name"
                                     }
                                 }
                             },
@@ -1435,10 +1435,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 AllowInterruptions = AllowInterruptions.Always,
                                 Validations = new List<string>()
                                 {
-                                    "int(turn.value) >= 1",
-                                    "int(turn.value) <= 150"
+                                    "int(this.value) >= 1",
+                                    "int(this.value) <= 150"
                                 },
-                                InvalidPrompt = new ActivityTemplate("Sorry. {turn.value} does not work. I'm looking for a value between 1-150. What is your age?")
+                                InvalidPrompt = new ActivityTemplate("Sorry. {this.value} does not work. I'm looking for a value between 1-150. What is your age?")
                             },
                             new SendActivity("I have {user.age} as your age")
                         }
@@ -1504,10 +1504,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 AllowInterruptions = AllowInterruptions.NotRecognized,
                                 Validations = new List<string>()
                                 {
-                                    "int(turn.value) >= 1",
-                                    "int(turn.value) <= 150"
+                                    "int(this.value) >= 1",
+                                    "int(this.value) <= 150"
                                 },
-                                InvalidPrompt = new ActivityTemplate("Sorry. {turn.value} does not work. I'm looking for a value between 1-150. What is your age?")
+                                InvalidPrompt = new ActivityTemplate("Sorry. {this.value} does not work. I'm looking for a value between 1-150. What is your age?")
                             },
                             new SendActivity("I have {user.age} as your age")
                         }
@@ -1818,10 +1818,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 AllowInterruptions = AllowInterruptions.Never,
                                 Validations = new List<string>()
                                 {
-                                    "int(turn.value) >= 1",
-                                    "int(turn.value) <= 150"
+                                    "int(this.value) >= 1",
+                                    "int(this.value) <= 150"
                                 },
-                                InvalidPrompt = new ActivityTemplate("Sorry. {turn.value} does not work. I'm looking for a value between 1-150. What is your age?")
+                                InvalidPrompt = new ActivityTemplate("Sorry. {this.value} does not work. I'm looking for a value between 1-150. What is your age?")
                             },
                             new SendActivity("I have {user.age} as your age")
                         }
@@ -1936,7 +1936,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             new BeginDialog("ageDialog")
                             {
                                 Options = options,
-                                Property = "$age"
+                                ResultProperty = "$age"
                             },
                             new SendActivity("Hello {$name}, you are {$age} years old!")
                         }
@@ -1959,7 +1959,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             },
                             new EndDialog()
                             {
-                                ResultProperty = "$age"
+                                Value = "$age"
                             }
                         }
                     }

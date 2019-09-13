@@ -14,7 +14,6 @@
                 {
                     "$type": "Microsoft.TextInput",
                     "prompt": "OK, please enter the title of your todo.",
-                    "value": "@title",
                     "property": "dialog.todo"
                 },
                 {
@@ -31,7 +30,7 @@
                 {
                     "$type": "Microsoft.EditArray",
                     "changeType": "Push",
-                    "arrayProperty": "user.todos",
+                    "itemsProperty": "user.todos",
                     "value": "dialog.todo"
                 },
                 {

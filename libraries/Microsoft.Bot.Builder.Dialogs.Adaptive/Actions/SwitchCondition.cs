@@ -2,7 +2,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -17,7 +16,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// <summary>
     /// Conditional branch with multiple cases.
     /// </summary>
-    public class SwitchCondition : DialogAction
+    public class SwitchCondition : Dialog, IDialogDependencies
     {
         private Dictionary<string, Expression> caseExpressions = null;
 
@@ -56,7 +55,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// </summary>
         public List<Case> Cases { get; set; } = new List<Case>();
 
-        public override IEnumerable<Dialog> GetDependencies()
+        public virtual IEnumerable<Dialog> GetDependencies()
         {
             var dialogs = new List<Dialog>();
             if (this.Default != null)
@@ -75,7 +74,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             return dialogs;
         }
 
-        protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (options is CancellationToken)
             {
@@ -146,7 +145,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
         protected override string OnComputeId()
         {
-            return $"Switch({this.Condition})";
+            return $"{this.GetType().Name}({this.Condition})";
         }
     }
 }

@@ -10,10 +10,10 @@
         },
         {
             "properties": {
-                "listProperty": {
+                "itemsProperty": {
                     "$role": "expression",
-                    "title": "ListProperty",
-                    "description": "Expression to evaluate.",
+                    "title": "Items Property",
+                    "description": "Property path expression to the collection of items.",
                     "examples": [
                         "user.todoList"
                     ]
@@ -25,22 +25,10 @@
                     },
                     "title": "Actions",
                     "description": "Actions to execute"
-                },
-                "indexProperty": {
-                    "$role": "expression",
-                    "title": "Index Property",
-                    "description": "The memory path which refers to the index of the item",
-                    "default": "dialog.index"
-                },
-                "valueProperty": {
-                    "$role": "expression",
-                    "title": "Value Property",
-                    "description": "The memory path which refers to the value of the item",
-                    "default": "dialog.value"
                 }
             },
             "required": [
-                "listProperty",
+                "itemsProperty",
                 "actions"
             ]
         }

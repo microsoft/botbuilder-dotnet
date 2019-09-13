@@ -35,7 +35,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 new OnUnknownIntent(
                     new List<Dialog>()
                     {
-                        new TextInput() { Prompt = new ActivityTemplate("Hello, what is your name?"),  OutputBinding = "user.name" },
+                        new TextInput() { Prompt = new ActivityTemplate("Hello, what is your name?"), Property = "user.name" },
                         new SendActivity("Hello {user.name}, nice to meet you!"),
                     })
             });
@@ -120,14 +120,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     var traceActivity = (ITraceActivity)activity;
                     Assert.AreEqual(ActivityTypes.Trace, traceActivity.Type, "type doesn't match");
                     Assert.AreEqual("user", traceActivity.ValueType, "ValueType doesn't match");
-                    Assert.AreEqual("frank", (string)((dynamic)traceActivity.Value).name, "Value doesn't match");
+                    dynamic value = traceActivity.Value;
+                    Assert.AreEqual("frank", (string)value["name"], "Value doesn't match");
                 })
                 .AssertReply((activity) =>
                 {
                     var traceActivity = (ITraceActivity)activity;
                     Assert.AreEqual(ActivityTypes.Trace, traceActivity.Type, "type doesn't match");
                     Assert.AreEqual("memory", traceActivity.ValueType, "ValueType doesn't match");
-                    Assert.AreEqual("frank", (string)((dynamic)traceActivity.Value).user.name, "Value doesn't match");
+                    dynamic value = traceActivity.Value;
+                    Assert.AreEqual("frank", (string)value["user"]["name"], "Value doesn't match");
                 })
                 .StartTestAsync();
         }
@@ -149,7 +151,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 new TextInput()
                                 {
                                     Prompt = new ActivityTemplate("Hello, what is your name?"),
-                                    OutputBinding = "user.name"
+                                    Property = "user.name"
                                 },
                                 new SendActivity("Hello {user.name}, nice to meet you!")
                             },
@@ -344,7 +346,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                     Property = "user.name",
                                     Validations = new List<string>()
                                     {
-                                        "turn.value.Length > 3"
+                                        "this.value.Length > 3"
                                     }
                                 }
                             }
@@ -714,7 +716,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             OutputFormat = NumberOutputFormat.Integer,
                             Validations = new List<string>()
                             {
-                                "turn.value > 0 && turn.value < 150"
+                                "this.value > 0 && this.value < 150"
                             }
                         },
                         new SendActivity("I have your age as {user.userProfile.Age}."),
@@ -749,7 +751,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         new DateTimeInput()
                         {
                             Prompt = new ActivityTemplate("Please enter a date."),
-                            Value = "user.date",
                             Property = "user.date",
                         },
                         new SendActivity("You entered {user.date[0].Value}"),
@@ -787,7 +788,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                     Property = "user.name",
                                     Validations = new List<string>()
                                     {
-                                        "turn.value.Length > 3"
+                                        "this.value.Length > 3"
                                     }
                                 }
                             }
@@ -949,7 +950,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 new TextInput()
                                 {
                                     Prompt = new ActivityTemplate("Hello, what is your name?"),
-                                    OutputBinding = "user.name"
+                                    Property = "user.name"
                                 }
                             }
                         },
@@ -1006,7 +1007,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                     new TextInput()
                                     {
                                         Prompt = new ActivityTemplate("Hello, what is your name?"),
-                                        OutputBinding = "user.name"
+                                        Property = "user.name"
                                     }
                                 }
                             },
@@ -1198,7 +1199,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     {
                         Actions = new List<Dialog>()
                         {
-                            new TextInput() { Prompt = new ActivityTemplate("Hello, what is your name?"), OutputBinding = "user.name", Value = "user.name" },
+                            new TextInput() { Prompt = new ActivityTemplate("Hello, what is your name?"), Property = "user.name" },
                             new SendActivity("Hello {user.name}, nice to meet you!"),
                             new EndTurn(),
                             new RepeatDialog()
@@ -1313,31 +1314,31 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
                             new EditArray()
                             {
-                                ArrayProperty = "dialog.todo",
+                                ItemsProperty = "dialog.todo",
                                 ChangeType = EditArray.ArrayChangeType.Push,
                                 Value = "1"
                             },
 
                             new EditArray()
                             {
-                                ArrayProperty = "dialog.todo",
+                                ItemsProperty = "dialog.todo",
                                 ChangeType = EditArray.ArrayChangeType.Push,
                                 Value = "2"
                             },
 
                             new EditArray()
                             {
-                                ArrayProperty = "dialog.todo",
+                                ItemsProperty = "dialog.todo",
                                 ChangeType = EditArray.ArrayChangeType.Push,
                                 Value = "3"
                             },
 
                             new Foreach()
                             {
-                                ListProperty = "dialog.todo",
+                                ItemsProperty = "dialog.todo",
                                 Actions = new List<Dialog>()
                                 {
-                                    new SendActivity("index is: {dialog.index} and value is: {dialog.value}")
+                                    new SendActivity("index is: {dialog.foreach.index} and value is: {dialog.foreach.value}")
                                 }
                             }
                         }
@@ -1375,60 +1376,59 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
                             new EditArray()
                             {
-                                ArrayProperty = "dialog.todo",
+                                ItemsProperty = "dialog.todo",
                                 ChangeType = EditArray.ArrayChangeType.Push,
                                 Value = "1"
                             },
 
                             new EditArray()
                             {
-                                ArrayProperty = "dialog.todo",
+                                ItemsProperty = "dialog.todo",
                                 ChangeType = EditArray.ArrayChangeType.Push,
                                 Value = "2"
                             },
 
                             new EditArray()
                             {
-                                ArrayProperty = "dialog.todo",
+                                ItemsProperty = "dialog.todo",
                                 ChangeType = EditArray.ArrayChangeType.Push,
                                 Value = "3"
                             },
 
                             new EditArray()
                             {
-                                ArrayProperty = "dialog.todo",
+                                ItemsProperty = "dialog.todo",
                                 ChangeType = EditArray.ArrayChangeType.Push,
                                 Value = "4"
                             },
 
                             new EditArray()
                             {
-                                ArrayProperty = "dialog.todo",
+                                ItemsProperty = "dialog.todo",
                                 ChangeType = EditArray.ArrayChangeType.Push,
                                 Value = "5"
                             },
 
                             new EditArray()
                             {
-                                ArrayProperty = "dialog.todo",
+                                ItemsProperty = "dialog.todo",
                                 ChangeType = EditArray.ArrayChangeType.Push,
                                 Value = "6"
                             },
 
                             new ForeachPage()
                             {
-                                ListProperty = "dialog.todo",
+                                ItemsProperty = "dialog.todo",
                                 PageSize = 3,
-                                ValueProperty = "dialog.page",
                                 Actions = new List<Dialog>()
                                 {
                                     new SendActivity("This page have 3 items"),
                                     new Foreach()
                                     {
-                                        ListProperty = "dialog.page",
+                                        ItemsProperty = "dialog.foreach.page",
                                         Actions = new List<Dialog>()
                                         {
-                                            new SendActivity("index is: {dialog.index} and value is: {dialog.value}")
+                                            new SendActivity("index is: {dialog.foreach.index} and value is: {dialog.foreach.value}")
                                         }
                                     }
                                 }

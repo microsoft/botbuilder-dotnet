@@ -21,7 +21,7 @@
                 {
                     "$type": "Microsoft.EditArray",
                     "changeType": "Remove",
-                    "arrayProperty": "user.todos",
+                    "itemsProperty": "user.todos",
                     "value": "dialog.todo",
                     "resultProperty": "dialog.removed"
                 },

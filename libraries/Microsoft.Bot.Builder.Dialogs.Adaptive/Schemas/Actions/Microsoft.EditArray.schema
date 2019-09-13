@@ -26,15 +26,15 @@
                         "Clear"
                     ]
                 },
-                "arrayProperty": {
+                "itemsProperty": {
                     "$role": "expression",
-                    "title": "Array Property",
-                    "description": "Memory expression of the array to manipulate."
+                    "title": "Items Property",
+                    "description": "Memory expression of the collection of items to manipulate."
                 },
                 "resultProperty": {
                     "$role": "expression",
                     "title": "Result Property",
-                    "description": "Memory expression of the result of this action."
+                    "description": "The path expression to store the result of the action."
                 },
                 "value": {
                     "$role": "expression",

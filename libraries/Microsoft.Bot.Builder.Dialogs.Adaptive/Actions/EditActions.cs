@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -12,7 +11,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// <summary>
     /// Class which allows you to edit the current actions. 
     /// </summary>
-    public class EditActions : DialogAction
+    public class EditActions : Dialog, IDialogDependencies
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="EditActions"/> class.
@@ -44,12 +43,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         [JsonProperty("changeType")]
         public ActionChangeType ChangeType { get; set; }
 
-        public override IEnumerable<Dialog> GetDependencies()
+        public virtual IEnumerable<Dialog> GetDependencies()
         {
             return this.Actions;
         }
 
-        protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (dc is SequenceContext sc)
             {
@@ -84,7 +83,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         protected override string OnComputeId()
         {
             var idList = Actions.Select(s => s.Id);
-            return $"{nameof(EditActions)}({this.ChangeType}|{string.Join(",", idList)})";
+            return $"{this.GetType().Name}[{this.ChangeType}|{string.Join(",", idList)}]";
         }
     }
 }

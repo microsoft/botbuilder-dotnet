@@ -9,13 +9,12 @@
                 {
                     "$type": "Microsoft.TextInput",
                     "prompt": "Hello, what is your name?",
-                    "outputBinding": "user.name"
+                    "property": "user.name"
                 },
                 {
                     "$type": "Microsoft.TraceActivity",
                     "valueType": "memory",
-                    "value": "user",
-                    "valueProperty": "user"
+                    "value": "user"
                 },
                 {
                     "$type": "Microsoft.LogAction",

@@ -18,20 +18,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
         public string Name => CodeModel.NameFor(Item) + (More != null ? ":" + More : string.Empty);
 
-        public object Data
-        {
-            get
-            {
-                var state = DialogContext.State;
-                return new
-                {
-                    user = state.User,
-                    conversation = state.Conversation,
-                    dialog = DialogContext.ActiveDialog != null ? state.Dialog : null,
-                    turn = state.Turn,
-                };
-            }
-        }
+        public object Data => DialogContext.State.GetMemorySnapshot();
 
         private ICodeModel CodeModel { get; }
 
