@@ -4,10 +4,13 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
+using Microsoft.Recognizers.Text;
 using Microsoft.Recognizers.Text.Number;
+using Microsoft.Recognizers.Text.NumberWithUnit;
 using static Microsoft.Recognizers.Text.Culture;
 
 namespace Microsoft.Bot.Builder.Dialogs
@@ -102,7 +105,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 var message = turnContext.Activity.AsMessageActivity();
                 var culture = turnContext.Activity.Locale ?? DefaultLocale ?? English;
-                var results = NumberRecognizer.RecognizeNumber(message.Text, culture, NumberOptions.SuppressExtendedTypes);
+                var results = RecognizeNumberWithUnit(message.Text, culture);
                 if (results.Count > 0)
                 {
                     // Try to parse value based on type
@@ -151,6 +154,17 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             return Task.FromResult(result);
+        }
+
+        private static List<ModelResult> RecognizeNumberWithUnit(string utterance, string culture)
+        {
+            var number = NumberRecognizer.RecognizeNumber(utterance, culture, NumberOptions.SuppressExtendedTypes);
+            var currency = NumberWithUnitRecognizer.RecognizeCurrency(utterance, culture);
+            var age = NumberWithUnitRecognizer.RecognizeAge(utterance, culture);
+            var temperature = NumberWithUnitRecognizer.RecognizeTemperature(utterance, culture);
+            var dimension = NumberWithUnitRecognizer.RecognizeDimension(utterance, culture);
+
+            return number.Any() ? number : currency.Any() ? currency : age.Any() ? age : temperature.Any() ? temperature : dimension;
         }
     }
 }
