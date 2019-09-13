@@ -70,14 +70,16 @@ namespace Microsoft.Bot.Builder.AI.QnA
             
             // Storing the context info
             stepContext.Values[CurrentQuery] = stepContext.Context.Activity.Text;
+
             // -Check if previous context is present, if yes then put it with the query
             // -Check for id if query is present in reverse index
 
             var response = await _services.GetAnswersAsync(stepContext.Context, qnaMakerOptions).ConfigureAwait(false);
-
+            
             // TODO: Take this value from GetAnswerResponse 
             var isActiveLearningEnabled = true;
             var filteredResponse = response;
+            stepContext.Values[QnAData] = new List<QueryResult>(filteredResponse);
 
             if (isActiveLearningEnabled)
             {
@@ -108,7 +110,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
         private async Task<DialogTurnResult> CallTrain(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            var trainResponses = stepContext.Result as List<QueryResult>;
+            var trainResponses = stepContext.Values[QnAData] as List<QueryResult>;
             var currentQuery = stepContext.Values[CurrentQuery] as string;
 
             var reply = stepContext.Context.Activity.Text;
@@ -181,7 +183,6 @@ namespace Microsoft.Bot.Builder.AI.QnA
             }
 
             // -Clean previous id, query and reverse index
-
             return await stepContext.EndDialogAsync().ConfigureAwait(false);
         }
     }
