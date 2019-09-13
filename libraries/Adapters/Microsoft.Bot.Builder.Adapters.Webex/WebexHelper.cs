@@ -25,14 +25,6 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
     internal static class WebexHelper
     {
         /// <summary>
-        /// Gets or sets the identity of the bot.
-        /// </summary>
-        /// <value>
-        /// The identity of the bot.
-        /// </value>
-        public static Person Identity { get; set; }
-
-        /// <summary>
         /// Validates the local secret against the one obtained from the request header.
         /// </summary>
         /// <param name="secret">The local stored secret.</param>
@@ -60,8 +52,9 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// Creates a <see cref="Activity"/> using the body of a request.
         /// </summary>
         /// <param name="payload">The payload obtained from the body of the request.</param>
+        /// <param name="identity">The identity of the bot.</param>
         /// <returns>An <see cref="Activity"/> object.</returns>
-        public static Activity PayloadToActivity(WebhookEventData payload)
+        public static Activity PayloadToActivity(WebhookEventData payload, Person identity)
         {
             if (payload == null)
             {
@@ -83,7 +76,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                 },
                 Recipient = new ChannelAccount
                 {
-                    Id = Identity.Id,
+                    Id = identity.Id,
                 },
                 ChannelData = payload,
                 Type = ActivityTypes.Event,
@@ -118,8 +111,9 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// Converts a decrypted <see cref="Message"/> into an <see cref="Activity"/>.
         /// </summary>
         /// <param name="decryptedMessage">The decrypted message obtained from the body of the request.</param>
+        /// <param name="identity">The identity of the bot.</param>
         /// <returns>An <see cref="Activity"/> object.</returns>
-        public static Activity DecryptedMessageToActivity(Message decryptedMessage)
+        public static Activity DecryptedMessageToActivity(Message decryptedMessage, Person identity)
         {
             if (decryptedMessage == null)
             {
@@ -142,7 +136,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                 },
                 Recipient = new ChannelAccount
                 {
-                    Id = Identity.Id,
+                    Id = identity.Id,
                 },
                 Text = !string.IsNullOrEmpty(decryptedMessage.Text) ? decryptedMessage.Text : string.Empty,
                 ChannelData = decryptedMessage,
@@ -150,7 +144,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
             };
 
             // this is the bot speaking
-            if (activity.From.Id == Identity.Id)
+            if (activity.From.Id == identity.Id)
             {
                 activity.Type = ActivityTypes.Event;
             }
@@ -158,11 +152,11 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
             if (decryptedMessage.HasHtml)
             {
                 // strip the mention & HTML from the message
-                var pattern = new Regex($"^(<p>)?<spark-mention .*?data-object-id=\"{Identity.Id}\".*?>.*?</spark-mention>", RegexOptions.IgnoreCase | RegexOptions.Multiline);
+                var pattern = new Regex($"^(<p>)?<spark-mention .*?data-object-id=\"{identity.Id}\".*?>.*?</spark-mention>", RegexOptions.IgnoreCase | RegexOptions.Multiline);
                 if (!decryptedMessage.Html.Equals(pattern))
                 {
                     // this should look like ciscospark://us/PEOPLE/<id string>
-                    var match = Regex.Match(Identity.Id, "/ciscospark://.*/(.*)", RegexOptions.IgnoreCase | RegexOptions.Multiline);
+                    var match = Regex.Match(identity.Id, "/ciscospark://.*/(.*)", RegexOptions.IgnoreCase | RegexOptions.Multiline);
                     if (match.Captures.Count > 0)
                     {
                         pattern = new Regex(
@@ -177,7 +171,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
             }
             else
             {
-                var pattern = new Regex("^" + Identity.DisplayName + "\\s+");
+                var pattern = new Regex("^" + identity.DisplayName + "\\s+");
                 activity.Text = activity.Text.Replace(pattern.ToString(), string.Empty);
             }
 
@@ -193,8 +187,9 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// Converts a decrypted related to an attachment action into an <see cref="Activity"/>.
         /// </summary>
         /// <param name="decryptedMessage">The decrypted message obtained from the body of the request.</param>
+        /// <param name="identity">The identity of the bot.</param>
         /// <returns>An <see cref="Activity"/> object.</returns>
-        public static Activity AttachmentActionToActivity(Message decryptedMessage)
+        public static Activity AttachmentActionToActivity(Message decryptedMessage, Person identity)
         {
             if (decryptedMessage == null)
             {
@@ -221,7 +216,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                 },
                 Recipient = new ChannelAccount
                 {
-                    Id = Identity.Id,
+                    Id = identity.Id,
                 },
                 Text = !string.IsNullOrEmpty(decryptedMessage.Text) ? decryptedMessage.Text : string.Empty,
                 Value = messageExtraData.Inputs,

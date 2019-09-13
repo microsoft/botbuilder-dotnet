@@ -18,7 +18,8 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
 {
     public class WebexAdapterTests
     {
-        private Uri _testPublicAddress = new Uri("http://contoso.com");
+        private readonly Uri _testPublicAddress = new Uri("http://contoso.com");
+        private readonly Person _identity = JsonConvert.DeserializeObject<Person>(File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\Person.json"));
 
         [Fact]
         public void Constructor_Should_Fail_With_Null_Config()
@@ -100,16 +101,15 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         {
             var options = new WebexAdapterOptions("Test", _testPublicAddress, "Test");
 
-            var person = JsonConvert.DeserializeObject<Person>(File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\Person.json"));
-
             var webexApi = new Mock<WebexClientWrapper>();
             webexApi.SetupAllProperties();
-            webexApi.Setup(x => x.GetMeAsync(It.IsAny<CancellationToken>())).Returns(Task.FromResult(person));
+            webexApi.Setup(x => x.GetMeAsync(It.IsAny<CancellationToken>())).Returns(Task.FromResult(_identity));
 
             var webexAdapter = new WebexAdapter(options, webexApi.Object);
+
             await webexAdapter.GetIdentityAsync(new CancellationToken());
 
-            Assert.Equal(person.Id, WebexHelper.Identity.Id);
+            Assert.Equal(_identity.Id, webexAdapter.Identity.Id);
         }
 
         [Fact]
@@ -167,10 +167,9 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
             var stream = new MemoryStream(Encoding.UTF8.GetBytes(payload.ToString()));
             var call = false;
 
-            WebexHelper.Identity = JsonConvert.DeserializeObject<Person>(File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\Person.json"));
-
             var webexApi = new Mock<WebexClientWrapper>();
             webexApi.SetupAllProperties();
+            webexApi.Setup(x => x.GetMeAsync(It.IsAny<CancellationToken>())).Returns(Task.FromResult(_identity));
             webexApi.Setup(x => x.GetMessageAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(message));
 
             var webexAdapter = new WebexAdapter(options, webexApi.Object);
@@ -197,9 +196,12 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         {
             var options = new WebexAdapterOptions("Test", _testPublicAddress, "Test");
 
-            var webexAdapter = new WebexAdapter(options, new Mock<WebexClientWrapper>().Object);
+            var webexApi = new Mock<WebexClientWrapper>();
+            webexApi.SetupAllProperties();
+            webexApi.Setup(x => x.GetMeAsync(It.IsAny<CancellationToken>())).Returns(Task.FromResult(_identity));
 
-            WebexHelper.Identity = JsonConvert.DeserializeObject<Person>(File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\Person.json"));
+            var webexAdapter = new WebexAdapter(options, webexApi.Object);
+
             var payload = File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\Payload2.json");
             var stream = new MemoryStream(Encoding.UTF8.GetBytes(payload.ToString()));
             var call = false;
@@ -226,9 +228,12 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         {
             var options = new WebexAdapterOptions("Test", _testPublicAddress, "Test");
 
-            var webexAdapter = new WebexAdapter(options, new Mock<WebexClientWrapper>().Object);
+            var webexApi = new Mock<WebexClientWrapper>();
+            webexApi.SetupAllProperties();
+            webexApi.Setup(x => x.GetMeAsync(It.IsAny<CancellationToken>())).Returns(Task.FromResult(_identity));
 
-            WebexHelper.Identity = JsonConvert.DeserializeObject<Person>(File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\Person.json"));
+            var webexAdapter = new WebexAdapter(options, webexApi.Object);
+
             var payload = File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\Payload2.json");
             var stream = new MemoryStream(Encoding.UTF8.GetBytes(payload.ToString()));
 
@@ -256,10 +261,9 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
             var stream = new MemoryStream(Encoding.UTF8.GetBytes(payload.ToString()));
             var call = false;
 
-            WebexHelper.Identity = JsonConvert.DeserializeObject<Person>(File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\Person.json"));
-
             var webexApi = new Mock<WebexClientWrapper>();
             webexApi.SetupAllProperties();
+            webexApi.Setup(x => x.GetMeAsync(new CancellationToken())).Returns(Task.FromResult(_identity));
             webexApi.Setup(x => x.GetAttachmentActionAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(message));
 
             var webexAdapter = new WebexAdapter(options, webexApi.Object);
@@ -276,7 +280,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
                 call = true;
             });
 
-            await webexAdapter.ProcessAsync(httpRequest.Object, httpResponse.Object, bot.Object, default);
+            await webexAdapter.ProcessAsync(httpRequest.Object, httpResponse.Object, bot.Object, new CancellationToken());
 
             Assert.True(call);
         }

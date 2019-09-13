@@ -45,15 +45,25 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         }
 
         /// <summary>
+        /// Gets the identity of the bot.
+        /// </summary>
+        /// <value>
+        /// The identity of the bot.
+        /// </value>
+        public Person Identity { get; private set; }
+
+        /// <summary>
         /// Load the bot's identity via the WebEx API.
         /// MUST be called by BotBuilder bots in order to filter messages sent by the bot.
         /// </summary>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public async Task GetIdentityAsync(CancellationToken? cancellationToken = null)
+        public async Task GetIdentityAsync(CancellationToken cancellationToken)
         {
             await _webexClient.GetMeAsync(cancellationToken).ContinueWith(
-                task => { WebexHelper.Identity = task.Result; }, TaskScheduler.Current).ConfigureAwait(false);
+                task => { Identity = task.Result; }, TaskScheduler.Current).ConfigureAwait(false);
+
+            var id = Identity.Id;
         }
 
         /// <summary>
@@ -312,6 +322,8 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                 throw new ArgumentNullException(nameof(bot));
             }
 
+            await GetIdentityAsync(cancellationToken).ConfigureAwait(false);
+
             WebhookEventData payload;
             string json;
 
@@ -335,7 +347,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
             {
                 var decryptedMessage = await WebexHelper.GetDecryptedMessageAsync(payload, _webexClient.GetMessageAsync, cancellationToken).ConfigureAwait(false);
 
-                activity = WebexHelper.DecryptedMessageToActivity(decryptedMessage);
+                activity = WebexHelper.DecryptedMessageToActivity(decryptedMessage, Identity);
             }
             else if (payload.Resource.Name == "attachmentActions" && payload.EventType == EventType.Created)
             {
@@ -347,11 +359,11 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
 
                 var decryptedMessage = await _webexClient.GetAttachmentActionAsync(jsongData.Id, _config.AccessToken, cancellationToken).ConfigureAwait(false);
 
-                activity = WebexHelper.AttachmentActionToActivity(decryptedMessage);
+                activity = WebexHelper.AttachmentActionToActivity(decryptedMessage, Identity);
             }
             else
             {
-                activity = WebexHelper.PayloadToActivity(payload);
+                activity = WebexHelper.PayloadToActivity(payload, Identity);
             }
 
             using (var context = new TurnContext(this, activity))
