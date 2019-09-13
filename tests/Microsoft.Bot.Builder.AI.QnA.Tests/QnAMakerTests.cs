@@ -88,6 +88,13 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             .Send("Q12")
                 .AssertReply("No QnAMaker answers found.")
             .StartTestAsync();
+
+            await CreateFlow(rootDialog)
+            .Send("Q11")
+                .AssertReply(suggestionActivity)
+            .Send("None of the above.")
+                .AssertReply("Thanks for the feedback.")
+            .StartTestAsync();
         }
 
         [TestMethod]
