@@ -17,6 +17,14 @@ namespace Microsoft.Bot.StreamingExtensions.Transport
         event DisconnectedEventHandler Disconnected;
 
         /// <summary>
+        /// Gets or sets the Id of this transport server.
+        /// </summary>
+        /// <value>
+        /// The ID of this transport server, useful for making sure responses are sent over the correct transport.
+        /// </value>
+        int Id { get; set; }
+
+        /// <summary>
         /// Used to establish the connection used by this server and begin listening for incoming messages.
         /// </summary>
         /// <returns>A <see cref="Task"/> to handle the server listen operation.</returns>

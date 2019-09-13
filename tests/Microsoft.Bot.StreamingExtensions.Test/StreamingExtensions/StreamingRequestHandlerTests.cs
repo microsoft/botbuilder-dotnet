@@ -24,7 +24,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.StreamingExtensions
         [TestMethod]
         public void StreamingRequestHandler_NullOnTurnError_Ok()
         {
-            var s = new DirectLineAdapter(null, new MockBot());
+            var s = new DirectLineAdapter(null, new MockBot(), null);
             Assert.IsNotNull(s);
         }
 

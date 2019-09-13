@@ -28,6 +28,8 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
             this._logger = logger ?? NullLogger.Instance;
         }
 
+        public int TransportId => _server.Id;
+
         public override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken = default)
         {
             var streamingRequest = new StreamingRequest

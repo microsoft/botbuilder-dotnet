@@ -3,6 +3,7 @@
 
 using System;
 using System.IO.Pipes;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.StreamingExtensions.Payloads;
@@ -68,6 +69,14 @@ namespace Microsoft.Bot.StreamingExtensions.Transport.NamedPipes
         /// A boolean value indicating whether or not this server is currently connected.
         /// </value>
         public bool IsConnected => _sender.IsConnected && _receiver.IsConnected;
+
+        /// <summary>
+        /// Gets or sets the Id for this Named Pipe Server.
+        /// </summary>
+        /// <value>
+        /// The Id for this Named Pipe Server.
+        /// </value>
+        public int Id { get; set; }
 
         /// <summary>
         /// Used to establish the connection used by this server and begin listening for incoming messages.
