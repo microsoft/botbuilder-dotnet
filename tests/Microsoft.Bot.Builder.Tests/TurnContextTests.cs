@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Connector;
+using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Rest;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -292,6 +293,39 @@ namespace Microsoft.Bot.Builder.Tests
         }
 
         [TestMethod]
+        public async Task UpdateActivityWithBotFrameworkAdapter()
+        {
+            const string ACTIVITY_ID = "activity ID";
+            const string CONVERSATION_ID = "conversation ID";
+
+            var foundActivity = false;
+
+            var a = new BotFrameworkAdapter(new SimpleCredentialProvider());
+            var c = new TurnContext(a, new Activity(conversation: new ConversationAccount(id: CONVERSATION_ID)));
+
+            InitializeTurnContext(c);
+
+            c.OnUpdateActivity((context, activity, next) =>
+            {
+                Assert.IsNotNull(activity);
+                Assert.IsTrue(activity.Id == ACTIVITY_ID);
+                Assert.IsTrue(activity.Conversation.Id == CONVERSATION_ID);
+                foundActivity = true;
+                return next();
+            });
+
+            var message = MessageFactory.Text("test text");
+
+            message.Id = ACTIVITY_ID;
+
+            var updateResult = await c.UpdateActivityAsync(message);
+
+            Assert.IsTrue(foundActivity);
+
+            c.Dispose();
+        }
+
+        [TestMethod]
         public async Task CallOnUpdateBeforeDelivery()
         {
             bool foundActivity = false;
@@ -387,6 +421,35 @@ namespace Microsoft.Bot.Builder.Tests
             var c = new TurnContext(a, TestMessage.Message());
             await c.DeleteActivityAsync("12345");
             Assert.IsTrue(deleteCalled);
+        }
+
+        [TestMethod]
+        public async Task DeleteActivityWithBotFrameworkAdapter()
+        {
+            const string ACTIVITY_ID = "activity ID";
+            const string CONVERSATION_ID = "conversation ID";
+
+            var deleteCalled = false;
+
+            var a = new BotFrameworkAdapter(new SimpleCredentialProvider());
+            var c = new TurnContext(a, new Activity(conversation: new ConversationAccount(id: CONVERSATION_ID)));
+
+            InitializeTurnContext(c);
+
+            c.OnDeleteActivity((context, reference, next) =>
+            {
+                Assert.IsNotNull(reference);
+                Assert.IsTrue(reference.ActivityId == ACTIVITY_ID);
+                Assert.IsTrue(reference.Conversation.Id == CONVERSATION_ID);
+                deleteCalled = true;
+                return next();
+            });
+
+            await c.DeleteActivityAsync(ACTIVITY_ID);
+
+            Assert.IsTrue(deleteCalled);
+
+            c.Dispose();
         }
 
         [TestMethod]
@@ -561,5 +624,12 @@ namespace Microsoft.Bot.Builder.Tests
                     break;
             }
         }
+
+        private static void InitializeTurnContext(TurnContext c) =>
+            c.TurnState.Add<IConnectorClient>(
+                new ConnectorClient(
+                    new Uri("https://example.org"),
+                    MicrosoftAppCredentials.Empty,
+                    new TestHttpClient()));
     }
 }
