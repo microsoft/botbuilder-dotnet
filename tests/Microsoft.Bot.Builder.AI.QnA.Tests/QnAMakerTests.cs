@@ -1464,7 +1464,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 {
                     new OnUnknownIntent()
                     {
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             new QnAMakerAction(kbId: _knowlegeBaseId, hostName: _hostname, endpointKey: _endpointKey, httpClient: client)
                             {
@@ -1481,7 +1481,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 {
                     new OnBeginDialog()
                     {
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             new BeginDialog(outerDialog.Id)
                         }
@@ -1489,7 +1489,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                     new Dialogs.Adaptive.Events.OnDialogEvent()
                     {
                         Events = new List<string>() { "UnhandledUnknownIntent" },
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             new EditArray(),
                             new SendActivity("magenta")
