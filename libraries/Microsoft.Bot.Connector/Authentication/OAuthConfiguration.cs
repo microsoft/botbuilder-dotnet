@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Microsoft.Bot.Connector.Authentication
+﻿namespace Microsoft.Bot.Connector.Authentication
 {
     /// <summary>
     /// Configuration for OAuth client credential authentication.

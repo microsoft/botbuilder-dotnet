@@ -14,11 +14,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// </summary>
     public class EndDialog : DialogAction
     {
-        /// <summary>
-        /// Gets or sets the property to return as the result ending the dialog.
-        /// </summary>
-        public string ResultProperty { get; set; } = "dialog.result";
-
         [JsonConstructor]
         public EndDialog(string resultProperty = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base()
@@ -30,6 +25,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 ResultProperty = resultProperty;
             }
         }
+
+        /// <summary>
+        /// Gets or sets the property to return as the result ending the dialog.
+        /// </summary>
+        /// <value>
+        /// The property to return as the result ending the dialog.
+        /// </value>
+        public string ResultProperty { get; set; } = "dialog.result";
 
         protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {

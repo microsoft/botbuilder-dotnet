@@ -9,26 +9,6 @@ using Microsoft.Bot.Builder.Expressions.Parser;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
-    public class AnalyzerResult
-    {
-        public AnalyzerResult(List<string> variables = null, List<string> templateReferences = null)
-        {
-            this.Variables = (variables ?? new List<string>()).Distinct().ToList();
-            this.TemplateReferences = (templateReferences ?? new List<string>()).Distinct().ToList();
-        }
-
-        public List<string> Variables { get; set; }
-
-        public List<string> TemplateReferences { get; set; }
-
-        public AnalyzerResult Union(AnalyzerResult outputItem)
-        {
-            this.Variables = this.Variables.Union(outputItem.Variables).ToList();
-            this.TemplateReferences = this.TemplateReferences.Union(outputItem.TemplateReferences).ToList();
-            return this;
-        }
-    }
-
     public class Analyzer : LGFileParserBaseVisitor<AnalyzerResult>
     {
         private readonly Dictionary<string, LGTemplate> templateMap;
@@ -37,11 +17,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         private Stack<EvaluationTarget> evaluationTargetStack = new Stack<EvaluationTarget>();
 
-        public Analyzer(List<LGTemplate> templates)
+        public Analyzer(List<LGTemplate> templates, ExpressionEngine expressionEngine)
         {
             Templates = templates;
             templateMap = templates.ToDictionary(t => t.Name);
-            _expressionParser = new ExpressionEngine(new GetMethodExtensions(new Evaluator(this.Templates, null)).GetMethodX);
+
+            // create an evaluator to leverage it's customized function look up for checking
+            var evaluator = new Evaluator(Templates, expressionEngine);
+            this._expressionParser = evaluator.ExpressionEngine;
         }
 
         public List<LGTemplate> Templates { get; }

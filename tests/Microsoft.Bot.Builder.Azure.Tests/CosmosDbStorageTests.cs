@@ -195,31 +195,6 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             Assert.IsTrue(wasCalled, "The Connection Policy Configurator was not called.");
         }
 
-        private Mock<IDocumentClient> GetDocumentClient()
-        {
-            var mock = new Mock<IDocumentClient>();
-
-            mock.Setup(client => client.CreateDatabaseIfNotExistsAsync(It.IsAny<Database>(), It.IsAny<RequestOptions>()))
-                .ReturnsAsync(() =>
-                {
-                    var database = new Database();
-                    database.SetPropertyValue("SelfLink", "dummyDB_SelfLink");
-                    return new ResourceResponse<Database>(database);
-                });
-
-            mock.Setup(client => client.CreateDocumentCollectionIfNotExistsAsync(It.IsAny<Uri>(), It.IsAny<DocumentCollection>(), It.IsAny<RequestOptions>()))
-                .ReturnsAsync(() =>
-                {
-                    var documentCollection = new DocumentCollection();
-                    documentCollection.SetPropertyValue("SelfLink", "dummyDC_SelfLink");
-                    return new ResourceResponse<DocumentCollection>(documentCollection);
-                });
-
-            mock.Setup(client => client.ConnectionPolicy).Returns(new ConnectionPolicy());
-
-            return mock;
-        }
-
         [TestMethod]
         public async Task Database_Creation_Request_Options_Should_Be_Used()
         {
@@ -600,6 +575,31 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 CosmosDBEndpoint = new Uri(CosmosServiceEndpoint),
                 DatabaseId = CosmosDatabaseName,
             };
+        }
+
+        private Mock<IDocumentClient> GetDocumentClient()
+        {
+            var mock = new Mock<IDocumentClient>();
+
+            mock.Setup(client => client.CreateDatabaseIfNotExistsAsync(It.IsAny<Database>(), It.IsAny<RequestOptions>()))
+                .ReturnsAsync(() =>
+                {
+                    var database = new Database();
+                    database.SetPropertyValue("SelfLink", "dummyDB_SelfLink");
+                    return new ResourceResponse<Database>(database);
+                });
+
+            mock.Setup(client => client.CreateDocumentCollectionIfNotExistsAsync(It.IsAny<Uri>(), It.IsAny<DocumentCollection>(), It.IsAny<RequestOptions>()))
+                .ReturnsAsync(() =>
+                {
+                    var documentCollection = new DocumentCollection();
+                    documentCollection.SetPropertyValue("SelfLink", "dummyDC_SelfLink");
+                    return new ResourceResponse<DocumentCollection>(documentCollection);
+                });
+
+            mock.Setup(client => client.ConnectionPolicy).Returns(new ConnectionPolicy());
+
+            return mock;
         }
 
         internal class StoreItem : IStoreItem

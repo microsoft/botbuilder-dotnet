@@ -4,10 +4,7 @@
 // Generated with Bot Builder V4 SDK Template for Visual Studio EchoBot v4.3.0
 
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 
 namespace Microsoft.Bot.Builder.TestBot.Json.Controllers
@@ -19,13 +16,13 @@ namespace Microsoft.Bot.Builder.TestBot.Json.Controllers
     [ApiController]
     public class BotController : ControllerBase
     {
-        private readonly IBotFrameworkHttpAdapter Adapter;
-        private readonly IBot Bot;
+        private readonly IBotFrameworkHttpAdapter adapter;
+        private readonly IBot bot;
 
         public BotController(IBotFrameworkHttpAdapter adapter, IBot bot)
         {
-            Adapter = adapter;
-            Bot = bot;
+            this.adapter = adapter;
+            this.bot = bot;
         }
 
         [HttpPost]
@@ -33,7 +30,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json.Controllers
         {
             // Delegate the processing of the HTTP POST to the adapter.
             // The adapter will invoke the bot.
-            await Adapter.ProcessAsync(Request, Response, Bot);
+            await adapter.ProcessAsync(Request, Response, bot);
         }
     }
 }

@@ -1,57 +1,36 @@
-﻿using System;
+﻿#pragma warning disable SA1402 // File may only contain a single type
+using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Events;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Events;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
-using Microsoft.Bot.Builder.Expressions;
-using Microsoft.Bot.Builder.Expressions.Parser;
 using Microsoft.Bot.Builder.LanguageGeneration;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Diagnostics.Tracing;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 {
-    public class Bar
-    {
-        public string Name { get; set; }
-        public int Age { get; set; }
-        public bool cool { get; set; }
-    }
-
-    public class Foo
-    {
-        public string Name { get; set; }
-
-        public int Age { get; set; }
-
-        public bool cool { get; set; }
-
-        public Bar SubName { get; set; }
-    }
-
     [TestClass]
     public class DialogContextStateTests
     {
-        public TestContext TestContext { get; set; }
-
         private Foo foo = new Foo()
         {
             Name = "Tom",
             Age = 15,
-            cool = true,
+            Cool = true,
             SubName = new Bar()
             {
                 Name = "bob",
                 Age = 122,
-                cool = false
+                Cool = false
             }
         };
+
+        public TestContext TestContext { get; set; }
 
         [TestMethod]
         public async Task DialogContextState_SimpleValues()
@@ -61,12 +40,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             dialogs.Add(dialog);
             var dc = new DialogContext(dialogs, new TurnContext(new TestAdapter(), new Schema.Activity()), (DialogState)new DialogState());
             await dc.BeginDialogAsync(dialog.Id);
-            DialogContextState state = new DialogContextState(dc: dc,
+            DialogContextState state = new DialogContextState(
+                dc: dc,
                 settings: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase),
                 userState: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase),
                 conversationState: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase),
                 turnState: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase));
-
 
             // simple value types
             state.SetValue("UseR.nuM", 15);
@@ -110,12 +89,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             dialogs.Add(dialog);
             var dc = new DialogContext(dialogs, new TurnContext(new TestAdapter(), new Schema.Activity()), (DialogState)new DialogState());
             await dc.BeginDialogAsync(dialog.Id);
-            DialogContextState state = new DialogContextState(dc: dc,
+            DialogContextState state = new DialogContextState(
+                dc: dc,
                 settings: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase),
                 userState: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase),
                 conversationState: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase),
                 turnState: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase));
-
 
             // complex type paths
             state.SetValue("UseR.fOo", foo);
@@ -144,12 +123,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             dialogs.Add(dialog);
             var dc = new DialogContext(dialogs, new TurnContext(new TestAdapter(), new Schema.Activity()), (DialogState)new DialogState());
             await dc.BeginDialogAsync(dialog.Id);
-            DialogContextState state = new DialogContextState(dc: dc,
+            DialogContextState state = new DialogContextState(
+                dc: dc,
                 settings: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase),
                 userState: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase),
                 conversationState: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase),
                 turnState: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase));
-
 
             // complex type paths
             state.SetValue("user.name", "joe");
@@ -168,12 +147,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             dialogs.Add(dialog);
             var dc = new DialogContext(dialogs, new TurnContext(new TestAdapter(), new Schema.Activity()), (DialogState)new DialogState());
             await dc.BeginDialogAsync(dialog.Id);
-            DialogContextState state = new DialogContextState(dc: dc,
+            DialogContextState state = new DialogContextState(
+                dc: dc,
                 settings: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase),
                 userState: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase),
                 conversationState: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase),
                 turnState: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase));
-
 
             // complex type paths
 #pragma warning disable CS0168 // The variable 'val' is declared but never used
@@ -182,12 +161,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             string value;
             state.SetValue("user.name", "joe");
             Assert.AreEqual("joe", state.GetValue("user.name"));
-            Assert.AreEqual("joe", state.GetValue<String>("user.name"));
+            Assert.AreEqual("joe", state.GetValue<string>("user.name"));
             Assert.IsTrue(state.TryGetValue<string>("user.name", out value));
             Assert.AreEqual("joe", value);
 
             Assert.AreEqual("default", state.GetValue("user.xxx", "default"));
-            Assert.AreEqual("default", state.GetValue<String>("user.xxx", "default"));
+            Assert.AreEqual("default", state.GetValue<string>("user.xxx", "default"));
             Assert.IsFalse(state.TryGetValue<string>("user.xxx", out value));
             Assert.AreEqual(null, value);
         }
@@ -200,12 +179,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             dialogs.Add(dialog);
             var dc = new DialogContext(dialogs, new TurnContext(new TestAdapter(), new Schema.Activity()), (DialogState)new DialogState());
             await dc.BeginDialogAsync(dialog.Id);
-            DialogContextState state = new DialogContextState(dc: dc,
+            DialogContextState state = new DialogContextState(
+                dc: dc,
                 settings: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase),
                 userState: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase),
                 conversationState: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase),
                 turnState: new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase));
-
 
             // complex type paths
             state.SetValue("UseR.fOo", foo);
@@ -223,26 +202,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             Assert.AreEqual(state.GetValue<Foo>("turn.foo").SubName.Name, "bob");
         }
 
-        private TestFlow CreateFlow(AdaptiveDialog dialog, ConversationState convoState = null, UserState userState = null, bool sendTrace = false)
-        {
-            TypeFactory.Configuration = new ConfigurationBuilder().Build();
-            var resourceExplorer = new ResourceExplorer();
-
-            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName), sendTrace)
-                .Use(new RegisterClassMiddleware<ResourceExplorer>(resourceExplorer))
-                .UseLanguageGeneration(resourceExplorer)
-                .Use(new RegisterClassMiddleware<IStorage>(new MemoryStorage()))
-                .Use(new AutoSaveStateMiddleware(userState ?? new UserState(new MemoryStorage()), convoState ?? new ConversationState(new MemoryStorage())))
-                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
-
-            var dm = new DialogManager(dialog);
-
-            return new TestFlow((TestAdapter)adapter, async (turnContext, cancellationToken) =>
-            {
-                await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
-            });
-        }
-
         [TestMethod]
         public async Task DialogContextState_TurnStateMappings()
         {
@@ -251,23 +210,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 AutoEndDialog = false,
                 Recognizer = new RegexRecognizer()
                 {
-                    Intents = new Dictionary<string, string>()
+                    Intents = new List<IntentPattern>()
                     {
-                        { "IntentNumber1", "intent1" },
-                        { "NameIntent", ".*name is (?<name>.*)" }
+                        new IntentPattern("IntentNumber1", "intent1"),
+                        new IntentPattern("NameIntent", ".*name is (?<name>.*)"),
                     }
                 },
                 Events = new List<IOnEvent>()
                 {
                     new OnBeginDialog()
                     {
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             new SendActivity("{turn.activity.text}"),
                         }
                     },
-                    new OnIntent(intent: "IntentNumber1",
-                        actions:new List<IDialog>()
+                    new OnIntent(
+                        intent: "IntentNumber1",
+                        actions: new List<Dialog>()
                         {
                             new SendActivity("{turn.activity.text}"),
                             new SendActivity("{turn.recognized.intent}"),
@@ -275,8 +235,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             new SendActivity("{turn.recognized.text}"),
                             new SendActivity("{turn.recognized.intents.intentnumber1.score}"),
                         }),
-                    new OnIntent(intent: "NameIntent",
-                        actions:new List<IDialog>()
+                    new OnIntent(
+                        intent: "NameIntent",
+                        actions: new List<Dialog>()
                         {
                             new SendActivity("{turn.recognized.entities.name[0]}"),
                         }),
@@ -307,8 +268,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 {
                     new OnBeginDialog()
                     {
-
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             new SetProperty()
                             {
@@ -318,8 +278,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             new SendActivity("{dialog.name}"),
                             new IfCondition()
                             {
-                                Condition= "{dialog.name} == 'testDialog'",
-                                Actions = new List<IDialog>()
+                                Condition = "dialog.name == 'testDialog'",
+                                Actions = new List<Dialog>()
                                 {
                                     new SendActivity("nested dialogCommand {dialog.name}")
                                 }
@@ -346,7 +306,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                     {
                                         new OnBeginDialog()
                                         {
-                                            Actions = new List<IDialog>()
+                                            Actions = new List<Dialog>()
                                             {
                                                 new SendActivity("nested d2 {$name}"),
                                                 new SetProperty() { Property = "dialog.name", Value = "'testDialogd2'" },
@@ -364,7 +324,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 {
                     new OnBeginDialog()
                     {
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             new SetProperty() { Property = "dialog.name", Value = "'testDialog'" },
                             new SendActivity("{dialog.name}"),
@@ -376,7 +336,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 {
                                     new OnBeginDialog()
                                     {
-                                        Actions = new List<IDialog>()
+                                        Actions = new List<Dialog>()
                                         {
                                             new SendActivity("nested d1 {$name}"),
                                             new SetProperty() { Property = "dialog.name", Value = "'testDialogd1'" },
@@ -410,13 +370,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             {
                 InputBindings = new Dictionary<string, string>() { { "$zzz", "dialog.name" } },
                 DefaultResultProperty = "$zzz",
+
                 // test output binding from adaptive dialog
                 OutputBinding = "dialog.name",
                 Events = new List<IOnEvent>()
                 {
                     new OnBeginDialog()
                     {
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             new SendActivity("nested begindialog {$zzz}"),
                             new SetProperty() { Property = "dialog.zzz", Value = "'newName2'" },
@@ -433,7 +394,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                     {
                                         new OnBeginDialog()
                                         {
-                                            Actions = new List<IDialog>()
+                                            Actions = new List<Dialog>()
                                             {
                                                 new SendActivity("nested begindialog2 {$qqq}"),
                                                 new SetProperty() { Property = "dialog.qqq", Value = "'newName3'" },
@@ -450,7 +411,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 {
                     new OnBeginDialog()
                     {
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             new SetProperty() { Property = "dialog.name", Value = "'testDialog'" },
                             new SendActivity("{dialog.name}"),
@@ -463,7 +424,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 {
                                     new OnBeginDialog()
                                     {
-                                        Actions = new List<IDialog>()
+                                        Actions = new List<Dialog>()
                                         {
                                             new SendActivity("nested dialogCommand {$xxx}"),
                                             new SetProperty() { Property = "dialog.xxx", Value = "'newName'" },
@@ -512,7 +473,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                                         {
                                                             new OnBeginDialog()
                                                             {
-                                                                Actions = new List<IDialog>()
+                                                                Actions = new List<Dialog>()
                                                                 {
                                                                     new SetProperty() { Property = "$zzz", Value = "'zzz'" },
                                                                     new SetProperty() { Property = "$aaa", Value = "'d3'" },
@@ -531,7 +492,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                     {
                                         new OnBeginDialog()
                                         {
-                                            Actions = new List<IDialog>()
+                                            Actions = new List<Dialog>()
                                             {
                                                 new SetProperty() { Property = "$bbb", Value = "'bbb'" },
                                                 new SendActivity("{$aaa}"),
@@ -551,7 +512,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 {
                     new OnBeginDialog()
                     {
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             new SetProperty() { Property = "dialog.xyz", Value = "'xyz'" },
                             new SetProperty() { Property = "$aaa", Value = "'d1'" },
@@ -568,14 +529,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             await CreateFlow(testDialog)
                     .SendConversationUpdate()
+
                         // d1
                         .AssertReply("xyz")
                         .AssertReply("xyz")
                         .AssertReply("d1")
+
                         // d2
                         .AssertReply("d1")
                         .AssertReply("xyz")
                         .AssertReply("bbb")
+
                         // d3
                         .AssertReply("d3")
                         .AssertReply("zzz")
@@ -584,5 +548,45 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     .StartTestAsync();
         }
 
+        private TestFlow CreateFlow(AdaptiveDialog dialog, ConversationState convoState = null, UserState userState = null, bool sendTrace = false)
+        {
+            TypeFactory.Configuration = new ConfigurationBuilder().Build();
+            var resourceExplorer = new ResourceExplorer();
+
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName), sendTrace)
+                .Use(new RegisterClassMiddleware<ResourceExplorer>(resourceExplorer))
+                .UseAdaptiveDialogs()
+                .UseLanguageGeneration(resourceExplorer)
+                .Use(new RegisterClassMiddleware<IStorage>(new MemoryStorage()))
+                .Use(new AutoSaveStateMiddleware(userState ?? new UserState(new MemoryStorage()), convoState ?? new ConversationState(new MemoryStorage())))
+                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+
+            var dm = new DialogManager(dialog);
+
+            return new TestFlow((TestAdapter)adapter, async (turnContext, cancellationToken) =>
+            {
+                await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
+            });
+        }
+    }
+
+    public class Bar
+    {
+        public string Name { get; set; }
+
+        public int Age { get; set; }
+
+        public bool Cool { get; set; }
+    }
+
+    public class Foo
+    {
+        public string Name { get; set; }
+
+        public int Age { get; set; }
+
+        public bool Cool { get; set; }
+
+        public Bar SubName { get; set; }
     }
 }

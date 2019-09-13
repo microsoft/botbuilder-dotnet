@@ -10,22 +10,24 @@ namespace Microsoft.Bot.Builder.Tests
     [TestClass]
     public class FileTranscriptTests : TranscriptBaseTests
     {
-        public static string Folder { get { return Path.Combine(Path.GetTempPath(), nameof(FileTranscriptTests)); } }
+        public FileTranscriptTests()
+            : base()
+        {
+            this.Store = new FileTranscriptLogger(Folder);
+        }
+
+        public static string Folder
+        {
+            get { return Path.Combine(Path.GetTempPath(), nameof(FileTranscriptTests)); }
+        }
 
         [ClassInitialize]
-
         public static void ClassInitialize(TestContext context)
         {
             if (Directory.Exists(Folder))
             {
                 Directory.Delete(Folder, true);
             }
-        }
-
-        public FileTranscriptTests()
-            : base()
-        {
-            this.Store = new FileTranscriptLogger(Folder);
         }
 
         [TestMethod]

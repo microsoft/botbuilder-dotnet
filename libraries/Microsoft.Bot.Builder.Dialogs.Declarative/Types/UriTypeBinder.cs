@@ -2,8 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 using Newtonsoft.Json.Serialization;
 
 namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
@@ -29,6 +27,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
             {
                 return type;
             }
+
             return base.BindToType(assemblyName, typeName);
         }
     }

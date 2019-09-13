@@ -4,11 +4,25 @@
     "autoEndDialog": false,
     "recognizer": {
         "$type": "Microsoft.RegexRecognizer",
-        "intents": {
-            "JokeIntent": "(?i)joke",
-            "FortuneTellerIntent": "(?i)fortune|future",
-            "CancelIntent": "(?i)cancel"
-        }
+        "intents": [
+            {
+                "$type": "Microsoft.IntentPattern",
+                "intent": "JokeIntent",
+                "pattern": "(?i)joke"
+
+            },
+            {
+                "$type": "Microsoft.IntentPattern",
+                "intent": "FortuneTellerIntent",
+                "pattern": "(?i)fortune|future"
+
+            },
+            {
+                "$type": "Microsoft.IntentPattern",
+                "intent": "CancelIntent",
+                "pattern": "(?i)cancel"
+            }
+        ]
     },
     "events": [
         {

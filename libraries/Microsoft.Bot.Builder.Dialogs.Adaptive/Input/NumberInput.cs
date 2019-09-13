@@ -4,28 +4,37 @@
 using System;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text.Number;
 using static Microsoft.Recognizers.Text.Culture;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 {
+    /// <summary>
+    /// What format to output the number in.
+    /// </summary>
     public enum NumberOutputFormat
     {
+        /// <summary>
+        /// Floating point.
+        /// </summary>
         Float,
+
+        /// <summary>
+        /// Long.
+        /// </summary>
         Integer
     }
 
     public class NumberInput : InputDialog
     {
-        public string DefaultLocale { get; set; } = null;
-
-        public NumberOutputFormat OutputFormat { get; set; } = NumberOutputFormat.Float;
-
         public NumberInput([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
             this.RegisterSourceLocation(callerPath, callerLine);
         }
+
+        public string DefaultLocale { get; set; } = null;
+
+        public NumberOutputFormat OutputFormat { get; set; } = NumberOutputFormat.Float;
 
         protected override string OnComputeId()
         {

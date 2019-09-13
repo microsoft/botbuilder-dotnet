@@ -17,7 +17,7 @@
             "type": "array",
             "description": "Sequence of actions or dialogs to execute",
             "items": {
-                "$type": "Microsoft.IDialog"
+                "$type": "Microsoft.Dialog"
             }
         }
     },

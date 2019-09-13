@@ -5,11 +5,26 @@
     "autoEndDialog": false,
     "recognizer": {
         "$type": "Microsoft.RegexRecognizer",
-        "intents": {
-            "Test": "test",
-            "TextInput": "textinput",
-            "End": "end"
-        }
+        "intents": [
+            {
+
+                "$type": "Microsoft.IntentPattern",
+                "intent": "Test",
+                "pattern": "test" 
+            },
+            {
+
+                "$type": "Microsoft.IntentPattern",
+                "intent": "TextInput",
+                "pattern": "textinput" 
+            },
+            {
+
+                "$type": "Microsoft.IntentPattern",
+                "intent": "End",
+                "pattern": "end"
+            }
+        ]
     },
     "events": [
         {

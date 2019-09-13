@@ -2,19 +2,15 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
 using System;
-using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
     /// <summary>
-    /// This command ends the current turn without ending the dialog
+    /// This command ends the current turn without ending the dialog.
     /// </summary>
     public class EndTurn : DialogAction
     {
@@ -38,8 +34,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-
-            return Dialog.EndOfTurn;
+            return await Task.FromResult(Dialog.EndOfTurn);
         }
     }
 }

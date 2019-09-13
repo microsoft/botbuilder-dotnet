@@ -6,7 +6,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
@@ -19,68 +18,39 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
     public delegate void ResourceChangedEventHandler(IResource[] resources);
 
     /// <summary>
-    /// Class which gives standard access to file based resources
+    /// Class which gives standard access to file based resources.
     /// </summary>
     public class ResourceExplorer : IDisposable
     {
         private List<IResourceProvider> resourceProviders = new List<IResourceProvider>();
 
-        private CancellationTokenSource CancelReloadToken = new CancellationTokenSource();
+        private CancellationTokenSource cancelReloadToken = new CancellationTokenSource();
         private ConcurrentBag<IResource> changedResources = new ConcurrentBag<IResource>();
 
         public ResourceExplorer()
         {
         }
 
-        public IEnumerable<IResourceProvider> ResourceProviders { get { return this.resourceProviders; } }
-
+        /// <summary>
+        /// Event which fires when a resource is changed.
+        /// </summary>
         public event ResourceChangedEventHandler Changed;
 
-        public ResourceExplorer AddResourceProvider(IResourceProvider resourceProvider)
+        /// <summary>
+        /// Gets the resource providers.
+        /// </summary>
+        public IEnumerable<IResourceProvider> ResourceProviders
         {
-            resourceProvider.Changed += ResourceProvider_Changed;
-
-            if (this.resourceProviders.Any(r => r.Id == resourceProvider.Id))
-            {
-                throw new ArgumentException($"{resourceProvider.Id} has already been added as a resource");
-            }
-
-            this.resourceProviders.Add(resourceProvider);
-            return this;
-        }
-
-        private void ResourceProvider_Changed(IResource[] resources)
-        {
-            if (this.Changed != null)
-            {
-                foreach (var resource in resources)
-                {
-                    changedResources.Add(resource);
-                }
-
-                lock (CancelReloadToken)
-                {
-                    CancelReloadToken.Cancel();
-                    CancelReloadToken = new CancellationTokenSource();
-                    Task.Delay(1000, CancelReloadToken.Token)
-                        .ContinueWith(t =>
-                        {
-                            if (t.IsCanceled)
-                                return;
-                            var changed = changedResources.ToArray();
-                            changedResources = new ConcurrentBag<IResource>();
-                            this.Changed(changed);
-                        }).ContinueWith(t => t.Status);
-                }
-            }
+            get { return this.resourceProviders; }
         }
 
         /// <summary>
-        /// Add a .csproj as resource (adding the project, referenced projects and referenced packages)
+        /// Add a .csproj as resource (adding the project, referenced projects and referenced packages).
         /// </summary>
-        /// <param name="manager"></param>
-        /// <param name="projectFile"></param>
-        /// <returns></returns>
+        /// <param name="projectFile">Project file.</param>
+        /// <param name="ignoreFolders">Folders to ignore.</param>
+        /// <param name="monitorChanges">Whether to track changes.</param>
+        /// <returns>A new <see cref="ResourceExplorer"/>.</returns>
         public static ResourceExplorer LoadProject(string projectFile, string[] ignoreFolders = null, bool monitorChanges = true)
         {
             var explorer = new ResourceExplorer();
@@ -92,9 +62,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                 projectFile = Directory.EnumerateFiles(projectFile, "*.*proj").FirstOrDefault();
                 if (projectFile == null)
                 {
-                    throw new ArgumentNullException(nameof(projectFile));
+                    explorer.AddFolder(Path.GetDirectoryName(projectFile));
+                    return explorer;
                 }
             }
+
             string projectFolder = Path.GetDirectoryName(projectFile);
 
             XmlDocument xmlDoc = new XmlDocument();
@@ -121,6 +93,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                     explorer.AddResourceProvider(new FolderResourceProvider(path, includeSubFolders: true, monitorChanges: monitorChanges));
                 }
             }
+
             var packages = Path.GetFullPath("packages");
             var relativePackagePath = Path.Combine(@"..", "packages");
             while (!Directory.Exists(packages) && Path.GetDirectoryName(packages) != Path.GetPathRoot(packages))
@@ -131,6 +104,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                     throw new ArgumentNullException("Can't find packages folder");
                 }
             }
+
             var pathResolver = new PackagePathResolver(packages);
 
             // add nuget package references
@@ -139,7 +113,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                 string packageName = node.Attributes["Include"]?.Value;
                 string version = node.Attributes["Version"]?.Value;
                 NuGetVersion nugetVersion;
-                if (!String.IsNullOrEmpty(packageName) && !String.IsNullOrEmpty(version) && NuGetVersion.TryParse(version, out nugetVersion))
+                if (!string.IsNullOrEmpty(packageName) && !string.IsNullOrEmpty(version) && NuGetVersion.TryParse(version, out nugetVersion))
                 {
                     var package = new PackageIdentity(packageName, nugetVersion);
                     var folder = Path.Combine(packages, PathUtils.NormalizePath(pathResolver.GetPackageDirectoryName(package)));
@@ -153,11 +127,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
             return explorer;
         }
 
+        public ResourceExplorer AddResourceProvider(IResourceProvider resourceProvider)
+        {
+            resourceProvider.Changed += ResourceProvider_Changed;
+
+            if (this.resourceProviders.Any(r => r.Id == resourceProvider.Id))
+            {
+                throw new ArgumentException($"{resourceProvider.Id} has already been added as a resource");
+            }
+
+            this.resourceProviders.Add(resourceProvider);
+            return this;
+        }
+
         /// <summary>
-        /// get resources of a given type
+        /// Get resources of a given type.
         /// </summary>
-        /// <param name="fileExtension"></param>
-        /// <returns></returns>
+        /// <param name="fileExtension">File extension filter.</param>
+        /// <returns>The resources.</returns>
         public IEnumerable<IResource> GetResources(string fileExtension)
         {
             foreach (var resourceProvider in this.resourceProviders)
@@ -170,10 +157,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         }
 
         /// <summary>
-        /// Get resource by filename
+        /// Get resource by filename.
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
+        /// <param name="id">The file name.</param>
+        /// <returns>The resource.</returns>
         public IResource GetResource(string id)
         {
             foreach (var resourceProvider in this.resourceProviders)
@@ -184,6 +171,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                     return resource;
                 }
             }
+
             return null;
         }
 
@@ -194,6 +182,35 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                 if (resource is IDisposable disposable)
                 {
                     disposable.Dispose();
+                }
+            }
+        }
+
+        private void ResourceProvider_Changed(IResource[] resources)
+        {
+            if (this.Changed != null)
+            {
+                foreach (var resource in resources)
+                {
+                    changedResources.Add(resource);
+                }
+
+                lock (cancelReloadToken)
+                {
+                    cancelReloadToken.Cancel();
+                    cancelReloadToken = new CancellationTokenSource();
+                    Task.Delay(1000, cancelReloadToken.Token)
+                        .ContinueWith(t =>
+                        {
+                            if (t.IsCanceled)
+                            {
+                                return;
+                            }
+
+                            var changed = changedResources.ToArray();
+                            changedResources = new ConcurrentBag<IResource>();
+                            this.Changed(changed);
+                        }).ContinueWith(t => t.Status);
                 }
             }
         }

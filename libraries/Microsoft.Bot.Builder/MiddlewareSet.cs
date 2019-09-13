@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
@@ -56,6 +55,16 @@ namespace Microsoft.Bot.Builder
             await ReceiveActivityInternalAsync(turnContext, callback, 0, cancellationToken).ConfigureAwait(false);
         }
 
+        public IEnumerator<IMiddleware> GetEnumerator()
+        {
+            return this._middleware.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return this._middleware.GetEnumerator();
+        }
+
         private Task ReceiveActivityInternalAsync(ITurnContext turnContext, BotCallbackHandler callback, int nextMiddlewareIndex, CancellationToken cancellationToken)
         {
             // Check if we're at the end of the middleware list yet
@@ -82,16 +91,6 @@ namespace Microsoft.Bot.Builder
                 turnContext,
                 (ct) => ReceiveActivityInternalAsync(turnContext, callback, nextMiddlewareIndex + 1, ct),
                 cancellationToken);
-        }
-
-        public IEnumerator<IMiddleware> GetEnumerator()
-        {
-            return this._middleware.GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return this._middleware.GetEnumerator();
         }
     }
 }

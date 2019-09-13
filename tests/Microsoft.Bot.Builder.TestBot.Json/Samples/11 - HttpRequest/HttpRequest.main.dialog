@@ -50,7 +50,7 @@
                 },
                 {
                     "$type": "Microsoft.SendActivity",
-                    "activity": "Done! You have added a pet named \"{dialog.postResponse.name}\" with id \"{dialog.postResponse.id}\""
+                    "activity": "Done! You have added a pet named \"{dialog.postResponse.content.name}\" with id \"{dialog.postResponse.content.id}\""
                 },
                 {
                     "$type": "Microsoft.TextInput",
@@ -65,7 +65,7 @@
                 },
                 {
                     "$type": "Microsoft.SendActivity",
-                    "activity": "Great! I found your pet named \"{dialog.getResponse.name}\""
+                    "activity": "Great! I found your pet named \"{dialog.getResponse.content.name}\""
                 }
             ]
         }

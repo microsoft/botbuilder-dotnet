@@ -6,11 +6,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Tests.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
+using Microsoft.Bot.Builder.LanguageGeneration;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -20,15 +22,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
     [TestClass]
     public class JsonLoadTests
     {
+        private static ResourceExplorer resourceExplorer;
+
         private readonly string samplesDirectory = PathUtils.NormalizePath(@"..\..\..\..\..\tests\Microsoft.Bot.Builder.TestBot.Json\Samples\");
 
-        private static ResourceExplorer resourceExplorer;
+        public TestContext TestContext { get; set; }
 
         [ClassInitialize]
         public static void ClassInitialize(TestContext context)
         {
             TypeFactory.Configuration = new ConfigurationBuilder().AddInMemoryCollection().Build();
-            TypeFactory.RegisterAdaptiveTypes();
+            DeclarativeTypeLoader.AddComponent(new AdaptiveComponentRegistration());
+            DeclarativeTypeLoader.AddComponent(new LanguageGenerationComponentRegistration());
             TypeFactory.Register("Microsoft.RuleRecognizer", typeof(RuleRecognizer));
             string projPath = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, PathUtils.NormalizePath($@"..\..\..\..\..\tests\Microsoft.Bot.Builder.TestBot.Json\Microsoft.Bot.Builder.TestBot.Json.csproj")));
             resourceExplorer = ResourceExplorer.LoadProject(projPath);
@@ -39,8 +44,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         {
             resourceExplorer.Dispose();
         }
-
-        public TestContext TestContext { get; set; }
 
         [TestMethod]
         public async Task JsonDialogLoad_Actions()
@@ -184,7 +187,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         public async Task JsonDialogLoad_BeginDialog()
         {
             await BuildTestFlow("BeginDialog.main.dialog")
-            .Send(new Activity(ActivityTypes.ConversationUpdate,
+            .Send(new Activity(
+                ActivityTypes.ConversationUpdate,
                 membersAdded: new List<ChannelAccount>() { new ChannelAccount("bot", "Bot") }))
             .SendConversationUpdate()
                 .AssertReply("Hello, I'm Zoidberg. What is your name?")
@@ -313,13 +317,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
                 .UseStorage(storage)
                 .UseState(userState, convoState)
                 .UseResourceExplorer(resourceExplorer)
+                .UseAdaptiveDialogs()
                 .UseLanguageGeneration(resourceExplorer)
                 .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
 
             var resource = resourceExplorer.GetResource(resourceName);
             if (resource == null)
+            {
                 throw new Exception($"Resource[{resourceName}] not found");
-            var dialog = DeclarativeTypeLoader.Load<IDialog>(resource, resourceExplorer, DebugSupport.SourceRegistry);
+            }
+
+            var dialog = DeclarativeTypeLoader.Load<Dialog>(resource, resourceExplorer, DebugSupport.SourceRegistry);
             DialogManager dm = new DialogManager(dialog);
 
             return new TestFlow(adapter, async (turnContext, cancellationToken) =>

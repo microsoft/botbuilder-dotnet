@@ -24,51 +24,6 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
         private List<Trigger> _triggers = new List<Trigger>();
         private List<Node> _specializations = new List<Node>();
 
-#if Count
-        private static int _count = 0;
-#endif
-
-        /// <summary>
-        /// Gets all of the most specific triggers that contain the <see cref="Clause"/> in this node.
-        /// </summary>
-        public IReadOnlyList<Trigger> Triggers => _triggers;
-
-        /// <summary>
-        /// Gets all triggers that contain the <see cref="Clause"/> in this node. 
-        /// </summary>
-        /// <remarks>
-        /// Triggers only contain the most specific trigger, so if this node 
-        /// is Pred(A) and there was a rule R1: Pred(A) -> A1 and R2: Pred(A) v Pred(B) -> A2
-        /// then the second trigger would be in AllTriggers, but not Triggers because it 
-        /// is more general.
-        /// </remarks>
-        public IReadOnlyList<Trigger> AllTriggers => _allTriggers;
-
-        /// <summary>
-        /// Gets specialized children of this node.
-        /// </summary>
-        public IReadOnlyList<Node> Specializations => _specializations;
-
-        /// <summary>
-        /// Gets the logical conjunction this node represents.
-        /// </summary>
-        public Clause Clause { get; }
-
-        /// <summary>
-        /// Expression to evaluate for node.
-        /// </summary>
-        public Expression Expression { get; }
-
-        /// <summary>
-        /// The tree this node is found in.
-        /// </summary>
-        public TriggerTree Tree { get; }
-
-
-#if TraceTree
-        public static bool ShowTrace = true;
-#endif
-
         internal Node(Clause clause, TriggerTree tree, Trigger trigger = null)
         {
             // In order to debug:
@@ -111,6 +66,77 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
             }
         }
 
+        private enum Operation
+        {
+            None,
+            Found,
+            Added,
+            Removed,
+            Inserted
+        }
+
+#if Count
+        private static int _count = 0;
+#endif
+
+        /// <summary>
+        /// Gets all of the most specific triggers that contain the <see cref="Clause"/> in this node.
+        /// </summary>
+        /// <value>
+        /// All of the most specific triggers that contain the <see cref="Clause"/> in this node.
+        /// </value>
+        public IReadOnlyList<Trigger> Triggers => _triggers;
+
+        /// <summary>
+        /// Gets all triggers that contain the <see cref="Clause"/> in this node. 
+        /// </summary>
+        /// <remarks>
+        /// Triggers only contain the most specific trigger, so if this node 
+        /// is Pred(A) and there was a rule R1: Pred(A) -> A1 and R2: Pred(A) v Pred(B) -> A2
+        /// then the second trigger would be in AllTriggers, but not Triggers because it 
+        /// is more general.
+        /// </remarks>
+        /// <value>
+        /// All triggers that contain the <see cref="Clause"/> in this node. 
+        /// </value>
+        public IReadOnlyList<Trigger> AllTriggers => _allTriggers;
+
+        /// <summary>
+        /// Gets specialized children of this node.
+        /// </summary>
+        /// <value>
+        /// Specialized children of this node.
+        /// </value>
+        public IReadOnlyList<Node> Specializations => _specializations;
+
+        /// <summary>
+        /// Gets the logical conjunction this node represents.
+        /// </summary>
+        /// <value>
+        /// The logical conjunction this node represents.
+        /// </value>
+        public Clause Clause { get; }
+
+        /// <summary>
+        /// Gets expression to evaluate for node.
+        /// </summary>
+        /// <value>
+        /// Expression to evaluate for node.
+        /// </value>
+        public Expression Expression { get; }
+
+        /// <summary>
+        /// Gets the tree this node is found in.
+        /// </summary>
+        /// <value>
+        /// The tree this node is found in.
+        /// </value>
+        public TriggerTree Tree { get; }
+
+#if TraceTree
+        public static bool ShowTrace = true;
+#endif
+
         public override string ToString()
         {
             var builder = new StringBuilder();
@@ -122,6 +148,14 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
             => Clause.ToString(builder, indent);
 
         /// <summary>
+        /// Identify the relationship between two nodes.
+        /// </summary>
+        /// <param name="other">Node to compare against.</param>
+        /// <returns>Relationship between this node and the other.</returns>
+        public RelationshipType Relationship(Node other)
+            => Clause.Relationship(other.Clause, Tree.Comparers);
+
+        /// <summary>
         /// Return the most specific matches below this node.
         /// </summary>
         /// <param name="state">Frame to evaluate against.</param>
@@ -131,23 +165,6 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
             var matches = new List<Node>();
             Matches(state, matches, new Dictionary<Node, bool>());
             return matches;
-        }
-
-        /// <summary>
-        /// Identify the relationship between two nodes.
-        /// </summary>
-        /// <param name="other"></param>
-        /// <returns>Relationship between this node and the other.</returns>
-        public RelationshipType Relationship(Node other)
-            => Clause.Relationship(other.Clause, Tree.Comparers);
-
-        private enum Operation
-        {
-            None,
-            Found,
-            Added,
-            Removed,
-            Inserted
         }
 
 #pragma warning disable IDE0022
@@ -461,7 +478,6 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                     foreach (var removal in removals)
                     {
                         // Don't need to add back because specialization already has them
-
                         _specializations.Remove(removal);
 #if TraceTree
                         if (Node.ShowTrace)
@@ -487,6 +503,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                 Debug.Assert(CheckInvariants(), "bad invariants");
 #endif
             }
+
             return added;
         }
 
@@ -495,6 +512,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
             if (!visited.Contains(this))
             {
                 visited.Add(this);
+
                 // Remove from allTriggers and triggers
                 if (_allTriggers.Remove(trigger))
                 {
@@ -531,6 +549,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                                     break;
                                 }
                             }
+
                             if (add)
                             {
 #if TraceTree

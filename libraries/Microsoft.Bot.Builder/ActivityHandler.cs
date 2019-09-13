@@ -64,7 +64,7 @@ namespace Microsoft.Bot.Builder
 
         /// <summary>
         /// Invoked when a message activity is received from the user when the base behavior of
-        /// <see cref="OnTurnAsync(ITurnContext{IConversationUpdateActivity}, CancellationToken)"/> is used.
+        /// <see cref="OnTurnAsync(ITurnContext, CancellationToken)"/> is used.
         /// If overridden, this could potentially contain conversational logic.
         /// By default, this method does nothing.
         /// </summary>
@@ -79,7 +79,7 @@ namespace Microsoft.Bot.Builder
 
         /// <summary>
         /// Invoked when a conversation update activity is received from the channel when the base behavior of
-        /// <see cref="OnTurnAsync(ITurnContext{IConversationUpdateActivity}, CancellationToken)"/> is used.
+        /// <see cref="OnTurnAsync(ITurnContext, CancellationToken)"/> is used.
         /// Conversation update activities are useful when it comes to responding to users being added to or removed from the conversation.
         /// For example, a bot could respond to a user being added by greeting the user.
         /// By default, this method will call <see cref="OnMembersAddedAsync(IList{ChannelAccount}, ITurnContext{IConversationUpdateActivity}, CancellationToken)"/>
@@ -144,7 +144,7 @@ namespace Microsoft.Bot.Builder
 
         /// <summary>
         /// Invoked when an event activity is received from the connector when the base behavior of
-        /// <see cref="OnTurnAsync(ITurnContext{IConversationUpdateActivity}, CancellationToken)"/> is used.
+        /// <see cref="OnTurnAsync(ITurnContext, CancellationToken)"/> is used.
         /// Message reactions correspond to the user adding a 'like' or 'sad' etc. (often an emoji) to a
         /// previously sent activity. Message reactions are only supported by a few channels.
         /// The activity that the message reaction corresponds to is indicated in the replyToId property.
@@ -196,7 +196,7 @@ namespace Microsoft.Bot.Builder
 
         /// <summary>
         /// Invoked when an event activity is received from the connector when the base behavior of
-        /// <see cref="OnTurnAsync(ITurnContext{IConversationUpdateActivity}, CancellationToken)"/> is used.
+        /// <see cref="OnTurnAsync(ITurnContext, CancellationToken)"/> is used.
         /// Event activities can be used to communicate many different things.
         /// By default, this method will call <see cref="OnTokenResponseEventAsync(ITurnContext{IEventActivity}, CancellationToken)"/> if the
         /// activity's name is <c>tokens/response</c> or <see cref="OnEventAsync(ITurnContext{IEventActivity}, CancellationToken)"/> otherwise.
@@ -218,7 +218,7 @@ namespace Microsoft.Bot.Builder
 
         /// <summary>
         /// Invoked when a <c>tokens/response</c> event is received when the base behavior of
-        /// <see cref="OnEventActivityAsync(ITurnContext{IConversationUpdateActivity}, CancellationToken)"/> is used.
+        /// <see cref="OnEventActivityAsync(ITurnContext{IEventActivity}, CancellationToken)"/> is used.
         /// If using an <c>OAuthPrompt</c>, override this method to forward this <see cref="Activity"/> to the current dialog.
         /// By default, this method does nothing.
         /// </summary>
@@ -233,7 +233,7 @@ namespace Microsoft.Bot.Builder
 
         /// <summary>
         /// Invoked when an event other than <c>tokens/response</c> is received when the base behavior of
-        /// <see cref="OnEventActivityAsync(ITurnContext{IConversationUpdateActivity}, CancellationToken)"/> is used.
+        /// <see cref="OnEventActivityAsync(ITurnContext{IEventActivity}, CancellationToken)"/> is used.
         /// This method could optionally be overridden if the bot is meant to handle miscellaneous events.
         /// By default, this method does nothing.
         /// </summary>
@@ -248,7 +248,7 @@ namespace Microsoft.Bot.Builder
 
         /// <summary>
         /// Invoked when an activity other than a message, conversation update, or event is received when the base behavior of
-        /// <see cref="OnTurnAsync(ITurnContext{IConversationUpdateActivity}, CancellationToken)"/> is used.
+        /// <see cref="OnTurnAsync(ITurnContext, CancellationToken)"/> is used.
         /// If overridden, this could potentially respond to any of the other activity types like
         /// <see cref="ActivityTypes.ContactRelationUpdate"/> or <see cref="ActivityTypes.EndOfConversation"/>.
         /// By default, this method does nothing.

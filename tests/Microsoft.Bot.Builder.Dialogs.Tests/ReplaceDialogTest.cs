@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
@@ -15,16 +16,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public async Task ReplaceDialogNoBranchAsync()
         {
-            var conversationState = new ConversationState(new MemoryStorage());
-            var dialogStateAccessor = conversationState.CreateProperty<DialogState>("dialogState");
-
-            var adapter = new TestAdapter();
             var dialog = new FirstDialog();
 
-            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            var storage = new MemoryStorage();
+            var userState = new UserState(storage);
+            var conversationState = new ConversationState(storage);
+            var adapter = new TestAdapter()
+                .UseStorage(storage)
+                .UseState(userState, conversationState);
+            var dialogManager = new DialogManager(dialog);
+
+            await new TestFlow((TestAdapter)adapter, async (turnContext, cancellationToken) =>
             {
-                await dialog.RunAsync(turnContext, dialogStateAccessor, cancellationToken);
-                await conversationState.SaveChangesAsync(turnContext, false, cancellationToken);
+                await dialogManager.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
             })
             .Send("hello")
             .AssertReply("prompt one")
@@ -40,16 +44,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public async Task ReplaceDialogBranchAsync()
         {
-            var conversationState = new ConversationState(new MemoryStorage());
-            var dialogStateAccessor = conversationState.CreateProperty<DialogState>("dialogState");
-
-            var adapter = new TestAdapter();
             var dialog = new FirstDialog();
+            var storage = new MemoryStorage();
+            var userState = new UserState(storage);
+            var conversationState = new ConversationState(storage);
+            var adapter = new TestAdapter()
+                .UseStorage(storage)
+                .UseState(userState, conversationState);
+            var dialogManager = new DialogManager(dialog);
 
-            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            await new TestFlow((TestAdapter)adapter, async (turnContext, cancellationToken) =>
             {
-                await dialog.RunAsync(turnContext, dialogStateAccessor, cancellationToken);
-                await conversationState.SaveChangesAsync(turnContext, false, cancellationToken);
+                await dialogManager.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
             })
             .Send("hello")
             .AssertReply("prompt one")
@@ -67,21 +73,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public async Task ReplaceDialogTelemetryClientNotNull()
         {
-            var conversationState = new ConversationState(new MemoryStorage());
-            var dialogStateAccessor = conversationState.CreateProperty<DialogState>("dialogState");
             var botTelemetryClient = new Mock<IBotTelemetryClient>();
-            var adapter = new TestAdapter();
-            var dialog = new FirstDialog()
-            {
-                TelemetryClient = botTelemetryClient.Object,
-            };
+            var dialog = new FirstDialog();
+            var storage = new MemoryStorage();
+            var userState = new UserState(storage);
+            var conversationState = new ConversationState(storage);
+            var adapter = new TestAdapter()
+                .UseStorage(storage)
+                .UseState(userState, conversationState);
+            var dialogManager = new DialogManager(dialog);
 
-            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            await new TestFlow((TestAdapter)adapter, async (turnContext, cancellationToken) =>
             {
-                await dialog.RunAsync(turnContext, dialogStateAccessor, cancellationToken);
-                await conversationState.SaveChangesAsync(turnContext, false, cancellationToken);
+                await dialogManager.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
 
-                Assert.AreEqual(dialog.TelemetryClient, botTelemetryClient.Object);
+                Assert.IsNotNull(dialog.TelemetryClient);
             })
             .Send("hello")
             .StartTestAsync();

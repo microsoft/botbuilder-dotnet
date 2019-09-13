@@ -52,6 +52,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Include="**/*.dialog" />
+    <Content Include="schemas/**/*.json" />
+    <Content Include="**/*.lg" />
+    <Content Include="**/*.lu" />
+    <Content Include="**/*.schema" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="Debugger\**" />
     <EmbeddedResource Remove="Debugger\**" />
     <None Remove="Debugger\**" />
@@ -70,12 +78,6 @@
     <ProjectReference Include="..\Microsoft.Bot.Builder.Dialogs\Microsoft.Bot.Builder.Dialogs.csproj" />
     <ProjectReference Include="..\Microsoft.Bot.Builder.Expressions.Parser\Microsoft.Bot.Builder.Expressions.Parser.csproj" />
     <ProjectReference Include="..\Microsoft.Bot.Builder\Microsoft.Bot.Builder.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="System">
-      <HintPath>System</HintPath>
-    </Reference>
   </ItemGroup>
 
 </Project>

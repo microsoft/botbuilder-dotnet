@@ -7,6 +7,9 @@ using System.Linq;
 
 namespace Microsoft.Bot.Builder.Expressions
 {
+    /// <summary>
+    /// Extension methods for detecting or value testing of various types.
+    /// </summary>
     public static partial class Extensions
     {
         /// <summary>

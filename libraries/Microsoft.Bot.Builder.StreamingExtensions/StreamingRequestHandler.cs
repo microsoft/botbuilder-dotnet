@@ -38,8 +38,6 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
 
         private IStreamingTransportServer _transportServer;
 
-        public string UserAgent { get; private set; }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="StreamingRequestHandler"/> class.
         /// The StreamingRequestHandler serves as a translation layer between the transport layer and bot adapter.
@@ -76,6 +74,8 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
             _middlewareSet = middlewareSet ?? new List<IMiddleware>();
             UserAgent = GetUserAgent();
         }
+
+        public string UserAgent { get; private set; }
 
         /// <summary>
         /// Connects the handler to a WebSocket server and begins listening for incoming requests.

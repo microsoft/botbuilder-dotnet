@@ -2,14 +2,19 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Net.Cache;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.LanguageGeneration.Templates;
+using Microsoft.Bot.Builder.TraceExtensions;
 using Microsoft.Bot.Schema;
-using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
@@ -17,11 +22,27 @@ using Newtonsoft.Json.Linq;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
     /// <summary>
-    /// Action for HttpRequests
+    /// Action for performing an HttpRequest.
     /// </summary>
     public class HttpRequest : DialogAction
     {
-        private static readonly HttpClient client = new HttpClient();
+        private static readonly HttpClient Client = new HttpClient();
+
+        public HttpRequest(HttpMethod method, string url, string inputProperty, Dictionary<string, string> headers = null, JObject body = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        {
+            this.RegisterSourceLocation(callerPath, callerLine);
+            this.Method = method;
+            this.Url = url ?? throw new ArgumentNullException(nameof(url));
+            this.Headers = headers;
+            this.Body = body;
+        }
+
+        [JsonConstructor]
+        public HttpRequest([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+            : base()
+        {
+            this.RegisterSourceLocation(callerPath, callerLine);
+        }
 
         public enum ResponseTypes
         {
@@ -46,25 +67,36 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             Activities
         }
 
+        /// <summary>
+        /// Http methods.
+        /// </summary>
         public enum HttpMethod
         {
+            /// <summary>
+            /// Http GET.
+            /// </summary>
+            /// 
             GET,
+
+            /// <summary>
+            /// Http POST.
+            /// </summary>
             POST,
+
+            /// <summary>
+            /// Http PATCH.
+            /// </summary>
             PATCH,
+
+            /// <summary>
+            /// Http PUT.
+            /// </summary>
             PUT,
+
+            /// <summary>
+            /// Http DELETE.
+            /// </summary>
             DELETE
-        }
-
-        [JsonConstructor]
-        public HttpRequest([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
-            : base()
-        {
-            this.RegisterSourceLocation(callerPath, callerLine);
-        }
-
-        protected override string OnComputeId()
-        {
-            return $"HttpRequest[{Method} {Url}]";
         }
 
         [JsonConverter(typeof(StringEnumConverter))]
@@ -84,8 +116,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         public ResponseTypes ResponseType { get; set; } = ResponseTypes.Json;
 
         /// <summary>
-        /// Property which is bidirectional property for input and output.  Example: user.age will be passed in, and user.age will be set when the dialog completes
+        /// Gets or sets the property to store the HTTP response in. 
         /// </summary>
+        /// <remarks>
+        /// The result will have 4 properties from the http response: 
+        /// [statusCode|reasonPhrase|content|headers]
+        /// If the content is json it will be an deserialized object, otherwise it will be a string.
+        /// </remarks>
+        /// <value>
+        /// Property from the HTTP response.
+        /// </value>
         public string Property
         {
             get
@@ -95,19 +135,167 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             set
             {
-                InputBindings[DialogContextState.DIALOG_VALUE] = value;
                 OutputBinding = value;
             }
         }
 
-        public HttpRequest(HttpMethod method, string url, string property, Dictionary<string, string> headers = null, JObject body = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        protected override string OnComputeId()
         {
-            this.RegisterSourceLocation(callerPath, callerLine);
-            this.Method = method;
-            this.Url = url ?? throw new ArgumentNullException(nameof(url));
-            this.Property = property;
-            this.Headers = headers;
-            this.Body = body;
+            return $"HttpRequest[{Method} {Url}]";
+        }
+
+        protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (options is CancellationToken)
+            {
+                throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
+            }
+
+            // Single command running with a copy of the original data
+            Client.DefaultRequestHeaders.Clear();
+
+            JToken instanceBody = null;
+            if (this.Body != null)
+            {
+                instanceBody = (JToken)this.Body.DeepClone();
+            }
+
+            var instanceHeaders = Headers == null ? null : new Dictionary<string, string>(Headers);
+            var instanceUrl = this.Url;
+
+            instanceUrl = await new TextTemplate(this.Url).BindToData(dc.Context, dc.State).ConfigureAwait(false);
+
+            // Bind each string token to the data in state
+            if (instanceBody != null)
+            {
+                await ReplaceJTokenRecursively(dc, instanceBody);
+            }
+
+            // Set headers
+            if (instanceHeaders != null)
+            {
+                foreach (var unit in instanceHeaders)
+                {
+                    Client.DefaultRequestHeaders.Add(
+                        await new TextTemplate(unit.Key).BindToData(dc.Context, dc.State),
+                        await new TextTemplate(unit.Value).BindToData(dc.Context, dc.State));
+                }
+            }
+
+            dynamic traceInfo = new JObject();
+
+            traceInfo.request = new JObject();
+            traceInfo.request.method = this.Method.ToString();
+            traceInfo.request.url = instanceUrl;
+
+            HttpResponseMessage response = null;
+
+            switch (this.Method)
+            {
+                case HttpMethod.POST:
+                    if (instanceBody == null)
+                    {
+                        response = await Client.PostAsync(instanceUrl, null);
+                    }
+                    else
+                    {
+                        var postContent = new StringContent(instanceBody.ToString(), Encoding.UTF8, "application/json");
+                        traceInfo.request.content = instanceBody.ToString();
+                        traceInfo.request.headers = JObject.FromObject(postContent?.Headers.ToDictionary(t => t.Key, t => (object)t.Value?.FirstOrDefault()));
+                        response = await Client.PostAsync(instanceUrl, postContent);
+                    }
+
+                    break;
+
+                case HttpMethod.PATCH:
+                    if (instanceBody == null)
+                    {
+                        var request = new HttpRequestMessage(new System.Net.Http.HttpMethod("PATCH"), instanceUrl);
+                        response = await Client.SendAsync(request);
+                    }
+                    else
+                    {
+                        var request = new HttpRequestMessage(new System.Net.Http.HttpMethod("PATCH"), instanceUrl);
+                        request.Content = new StringContent(instanceBody.ToString(), Encoding.UTF8, "application/json");
+                        traceInfo.request.content = instanceBody.ToString();
+                        traceInfo.request.headers = JObject.FromObject(request.Content.Headers.ToDictionary(t => t.Key, t => (object)t.Value?.FirstOrDefault()));
+                        response = await Client.SendAsync(request);
+                    }
+
+                    break;
+
+                case HttpMethod.PUT:
+                    if (instanceBody == null)
+                    {
+                        response = await Client.PutAsync(instanceUrl, null);
+                    }
+                    else
+                    {
+                        var putContent = new StringContent(instanceBody.ToString(), Encoding.UTF8, "application/json");
+                        traceInfo.request.content = instanceBody.ToString();
+                        traceInfo.request.headers = JObject.FromObject(putContent.Headers.ToDictionary(t => t.Key, t => (object)t.Value?.FirstOrDefault()));
+                        response = await Client.PutAsync(instanceUrl, putContent);
+                    }
+
+                    break;
+
+                case HttpMethod.DELETE:
+                    response = await Client.DeleteAsync(instanceUrl);
+                    break;
+
+                case HttpMethod.GET:
+                    response = await Client.GetAsync(instanceUrl);
+                    break;
+            }
+
+            Result requestResult = new Result(response.Headers)
+            {
+                StatusCode = (int)response.StatusCode,
+                ReasonPhrase = response.ReasonPhrase,
+            };
+
+            object content = (object)await response.Content.ReadAsStringAsync();
+
+            switch (this.ResponseType)
+            {
+                case ResponseTypes.Activity:
+                    var activity = JsonConvert.DeserializeObject<Activity>((string)content);
+                    requestResult.Content = JObject.FromObject(activity);
+                    await dc.Context.SendActivityAsync(activity, cancellationToken: cancellationToken).ConfigureAwait(false);
+                    break;
+
+                case ResponseTypes.Activities:
+                    var activities = JsonConvert.DeserializeObject<Activity[]>((string)content);
+                    requestResult.Content = JObject.FromObject(activities);
+                    await dc.Context.SendActivitiesAsync(activities, cancellationToken: cancellationToken).ConfigureAwait(false);
+                    break;
+
+                case ResponseTypes.Json:
+                    // Try set with JOjbect for further retreiving
+                    try
+                    {
+                        content = JToken.Parse((string)content);
+                    }
+                    catch
+                    {
+                        content = content.ToString();
+                    }
+
+                    requestResult.Content = content;
+                    break;
+
+                case ResponseTypes.None:
+                default:
+                    break;
+            }
+
+            traceInfo.response = JObject.FromObject(requestResult);
+
+            // Write Trace Activity for the http request and response values
+            await dc.Context.TraceActivityAsync("HttpRequest", (object)traceInfo, valueType: "Microsoft.HttpRequest", label: this.Id).ConfigureAwait(false);
+
+            // return the actionResult as the result of this operation
+            return await dc.EndDialogAsync(result: requestResult, cancellationToken: cancellationToken);
         }
 
         private async Task ReplaceJTokenRecursively(DialogContext dc, JToken token)
@@ -153,128 +341,48 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                     break;
             }
         }
-
-        protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
+ 
+        /// <summary>
+        /// Result data of the the http operation.
+        /// </summary>
+        public class Result
         {
-            if (options is CancellationToken)
+            public Result()
             {
-                throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            // Single command running with a copy of the original data
-            client.DefaultRequestHeaders.Clear();
-
-            JToken instanceBody = null;
-            if (this.Body != null)
+            public Result(HttpHeaders headers)
             {
-                instanceBody = (JToken)this.Body.DeepClone();
+                this.Headers = headers.ToDictionary(t => t.Key, t => t.Value.First());
             }
 
-            var instanceHeaders = Headers == null ? null : new Dictionary<string, string>(Headers);
-            var instanceUrl = this.Url;
+            /// <summary>
+            /// Gets or sets the status code from the response to the http operation.
+            /// </summary>
+            /// <value>Response status code.</value>
+            [JsonProperty("statusCode")]
+            public int StatusCode { get; set; }
 
-            instanceUrl = await new TextTemplate(this.Url).BindToData(dc.Context, dc.State).ConfigureAwait(false);
+            /// <summary>
+            /// Gets or sets the reason phrase from the response to the http operation.
+            /// </summary>
+            /// <value>Response reason phrase.</value>
+            [JsonProperty("reasonPhrase")]
+            public string ReasonPhrase { get; set; }
 
-            // Bind each string token to the data in state
-            if (instanceBody != null)
-            {
-                await ReplaceJTokenRecursively(dc, instanceBody);
-            }
+            /// <summary>
+            /// Gets the headers from the response to the http operation.
+            /// </summary>
+            /// <value>Response headers.</value>
+            [JsonProperty("headers")]
+            public Dictionary<string, string> Headers { get; } = new Dictionary<string, string>();
 
-            // Set headers
-            if (instanceHeaders != null)
-            {
-                foreach (var unit in instanceHeaders)
-                {
-                    client.DefaultRequestHeaders.Add(
-                        await new TextTemplate(unit.Key).BindToData(dc.Context, dc.State),
-                        await new TextTemplate(unit.Value).BindToData(dc.Context, dc.State));
-                }
-            }
-
-            HttpResponseMessage response = null;
-
-            switch (this.Method)
-            {
-                case HttpMethod.POST:
-                    if (instanceBody == null)
-                    {
-                        response = await client.PostAsync(instanceUrl, null);
-                    }
-                    else
-                    {
-                        response = await client.PostAsync(instanceUrl, new StringContent(instanceBody.ToString(), Encoding.UTF8, "application/json"));
-                    }
-
-                    break;
-
-                case HttpMethod.PATCH:
-                    if (instanceBody == null)
-                    {
-                        var request = new HttpRequestMessage(new System.Net.Http.HttpMethod("PATCH"), instanceUrl);
-                        response = await client.SendAsync(request);
-                    }
-                    else
-                    {
-                        var request = new HttpRequestMessage(new System.Net.Http.HttpMethod("PATCH"), instanceUrl);
-                        request.Content = new StringContent(instanceBody.ToString(), Encoding.UTF8, "application/json");
-                        response = await client.SendAsync(request);
-                    }
-
-                    break;
-
-                case HttpMethod.PUT:
-                    if (instanceBody == null)
-                    {
-                        response = await client.PutAsync(instanceUrl, null);
-                    }
-                    else
-                    {
-                        response = await client.PutAsync(instanceUrl, new StringContent(instanceBody.ToString(), Encoding.UTF8, "application/json"));
-                    }
-
-                    break;
-
-                case HttpMethod.DELETE:
-                    response = await client.DeleteAsync(instanceUrl);
-                    break;
-
-                case HttpMethod.GET:
-                    response = await client.GetAsync(instanceUrl);
-                    break;
-            }
-
-            object result = (object)await response.Content.ReadAsStringAsync();
-
-            switch (this.ResponseType)
-            {
-                case ResponseTypes.Activity:
-                    var activity = JsonConvert.DeserializeObject<Activity>((string)result);
-                    await dc.Context.SendActivityAsync(activity, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return await dc.EndDialogAsync(cancellationToken: cancellationToken);
-
-                case ResponseTypes.Activities:
-                    var activities = JsonConvert.DeserializeObject<Activity[]>((string)result);
-                    await dc.Context.SendActivitiesAsync(activities, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return await dc.EndDialogAsync(cancellationToken: cancellationToken);
-
-                case ResponseTypes.Json:
-                    // Try set with JOjbect for further retreiving
-                    try
-                    {
-                        result = JToken.Parse((string)result);
-                    }
-                    catch
-                    {
-                        result = result.ToString();
-                    }
-
-                    return await dc.EndDialogAsync(result, cancellationToken: cancellationToken);
-
-                case ResponseTypes.None:
-                default:
-                    return await dc.EndDialogAsync(cancellationToken: cancellationToken);
-            }
+            /// <summary>
+            /// Gets or sets the content body from the response to the http operation.
+            /// </summary>
+            /// <value>Response content body.</value>
+            [JsonProperty("content")]
+            public object Content { get; set; }
         }
     }
 }

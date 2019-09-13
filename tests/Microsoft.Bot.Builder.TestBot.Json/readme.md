@@ -26,7 +26,7 @@ represent a bot sample.
 - In the constructor, replace the line below with the name / path to your selected sample. The line below illustrates how to set up for sample 8:
 
 ```
-rootDialog = CognitiveLoader.Load<IDialog>(File.ReadAllText(@"Samples\Planning 8 - ExternalLanguage\main.dialog"));
+rootDialog = CognitiveLoader.Load<Dialog>(File.ReadAllText(@"Samples\Planning 8 - ExternalLanguage\main.dialog"));
 ```
 
 

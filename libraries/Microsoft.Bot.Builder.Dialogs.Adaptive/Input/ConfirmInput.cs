@@ -29,6 +29,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             { Chinese, (new Choice("是的"), new Choice("不"), new ChoiceFactoryOptions("， ", " 要么 ",  "， 要么 ", true)) },
         };
 
+        public ConfirmInput([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        {
+            this.RegisterSourceLocation(callerPath, callerLine);
+        }
+
         public string DefaultLocale { get; set; } = null;
 
         public ListStyle Style { get; set; } = ListStyle.Auto;
@@ -36,11 +41,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         public ChoiceFactoryOptions ChoiceOptions { get; set; } = null;
 
         public List<Choice> ConfirmChoices { get; set; } = null;
-
-        public ConfirmInput([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
-        {
-            this.RegisterSourceLocation(callerPath, callerLine);
-        }
 
         protected override string OnComputeId()
         {

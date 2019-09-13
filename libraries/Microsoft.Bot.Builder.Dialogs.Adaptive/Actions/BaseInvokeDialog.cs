@@ -4,33 +4,54 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Expressions.Parser;
-using Microsoft.Bot.Schema;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
     /// <summary>
     /// Action which calls another dialog.
+    /// </summary>
     public abstract class BaseInvokeDialog : DialogAction
     {
+        // Expression for dialogId to call (allowing dynamic expression)
+        private string dialogIdToCall;
+
+        public BaseInvokeDialog(string dialogIdToCall = null, string property = null, IDictionary<string, string> bindingOptions = null)
+            : base()
+        {
+            this.dialogIdToCall = dialogIdToCall;
+
+            if (bindingOptions != null)
+            {
+                this.Options = bindingOptions;
+            }
+
+            if (!string.IsNullOrEmpty(property))
+            {
+                Property = property;
+            }
+        }
+
         /// <summary>
         /// Gets or sets configurable options for the dialog. 
         /// </summary>
+        /// <value>
+        /// Configurable options for the dialog. 
+        /// </value>
         public object Options { get; set; } = new JObject();
 
         /// <summary>
-        /// Gets or sets the dialog ID to call.
+        /// Gets or sets the dialog to call.
         /// </summary>
-        public string DialogId { get; set; }
+        public Dialog Dialog { get; set; }
 
         /// <summary>
-        /// The property from memory to pass to the calling dialog and to set the return value to.
+        /// Gets or sets the property from memory to pass to the calling dialog and to set the return value to.
         /// </summary>
+        /// <value>
+        /// The property from memory to pass to the calling dialog and to set the return value to.
+        /// </value>
         public string Property
         {
             get
@@ -45,42 +66,30 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             }
         }
 
-        public BaseInvokeDialog(string dialogIdToCall = null, string property = null, IDictionary<string, string> bindingOptions = null)
-            : base()
+        public override IEnumerable<Dialog> GetDependencies()
         {
-            this.DialogId = dialogIdToCall;
-
-            if (bindingOptions != null)
+            if (Dialog != null)
             {
-                this.Options = bindingOptions;
+                yield return Dialog;
             }
 
-            if (!string.IsNullOrEmpty(property))
-            {
-                Property = property;
-            }
-        }
-
-        public override List<IDialog> ListDependencies()
-        {
-            return new List<IDialog>();
+            yield break;
         }
 
         protected override string OnComputeId()
         {
-            return $"{this.GetType().Name}[{DialogId}:{this.BindingPath()}]";
+            return $"{this.GetType().Name}[{Dialog?.Id ?? this.dialogIdToCall}:{this.BindingPath()}]";
         }
 
-        protected IDialog ResolveDialog(DialogContext dc)
+        protected Dialog ResolveDialog(DialogContext dc)
         {
-            var (result, error) = new ExpressionEngine().Parse(this.DialogId).TryEvaluate(dc.State);
-            if (error != null)
+            if (this.Dialog != null)
             {
-                throw new Exception(error);
+                return this.Dialog;
             }
 
-            var dialogId = (string)result ?? this.DialogId ?? throw new Exception($"{this.GetType().Name} requires a dialog to be called.");
-            return dc.FindDialog(dialogId);
+            var dialogId = this.dialogIdToCall ?? throw new Exception($"{this.GetType().Name} requires a dialog to be called.");
+            return dc.FindDialog(dialogId) ?? throw new Exception($"{dialogId} not found.");
         }
 
         protected object BindOptions(DialogContext dc, object options)

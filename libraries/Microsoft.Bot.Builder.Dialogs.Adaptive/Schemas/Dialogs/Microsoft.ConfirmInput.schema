@@ -1,6 +1,6 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
-    "$role": "unionType(Microsoft.IDialog)",
+    "$role": "unionType(Microsoft.Dialog)",
     "title": "ConfirmInput Dialog",
     "description": "This represents a dialog which gathers a yes/no style responses",
     "type": "object",

@@ -1,22 +1,18 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Events;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
-using Microsoft.Bot.Builder.Dialogs.Declarative;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
 using Microsoft.Bot.Schema;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.FileSystemGlobbing.Internal.Patterns;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
 {
     [TestClass]
     public class RegexRecognizerTests
@@ -28,11 +24,34 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             var recognizer = new RegexRecognizer()
             {
-                Intents = new Dictionary<string, string>()
-                 {
-                     { "codeIntent", "(?<code>[a-z][0-9])" },
-                     { "colorIntent", "(?<color>(red|orange|yellow|green|blue|indigo|violet))" }
-                 }
+                Intents = new List<IntentPattern>()
+                {
+                     new IntentPattern("codeIntent", "(?<code>[a-z][0-9])"),
+                     new IntentPattern("colorIntent", "(?i)(color|colour)"),
+                },
+                Entities = new EntityRecognizerSet()
+                {
+                    new AgeEntityRecognizer(),
+                    new ConfirmationEntityRecognizer(),
+                    new CurrencyEntityRecognizer(),
+                    new DateTimeEntityRecognizer(),
+                    new DimensionEntityRecognizer(),
+                    new EmailEntityRecognizer(),
+                    new GuidEntityRecognizer(),
+                    new HashtagEntityRecognizer(),
+                    new IpEntityRecognizer(),
+                    new MentionEntityRecognizer(),
+                    new NumberEntityRecognizer(),
+                    new NumberRangeEntityRecognizer(),
+                    new OrdinalEntityRecognizer(),
+                    new PercentageEntityRecognizer(),
+                    new PhoneNumberEntityRecognizer(),
+                    new TemperatureEntityRecognizer(),
+                    new UrlEntityRecognizer(),
+                    new RegexEntityRecognizer() { Name = "color", Pattern = "(?i)(red|green|blue|purple|orange|violet|white|black)" },
+                    new RegexEntityRecognizer() { Name = "backgroundColor", Pattern = "(?i)(back|background) {color}" },
+                    new RegexEntityRecognizer() { Name = "foregroundColor", Pattern = "(?i)(foreground|front) {color}" },
+                }
             };
             var tc = CreateContext("intent a1 b2");
 
@@ -50,7 +69,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             Assert.AreEqual("a1", (string)entities.code[0], "should find a1");
             Assert.AreEqual("b2", (string)entities.code[1], "should find b2");
 
-            tc = CreateContext("red and orange");
+            tc = CreateContext("I would like color red and orange");
+
             // intent assertions
             result = await recognizer.RecognizeAsync(tc, CancellationToken.None);
             Assert.AreEqual(1, result.Intents.Count, "Should recognize one intent");

@@ -10,6 +10,9 @@ lexer grammar LGFileLexer;
 // 3. we only use very basic boolen variables, and basic predidates
 //    so it would be very little effort to translate to other languages
 
+@parser::header {#pragma warning disable 3021} // Disable StyleCop warning CS3021 re CLSCompliant attribute in generated files.
+@lexer::header {#pragma warning disable 3021} // Disable StyleCop warning CS3021 re CLSCompliant attribute in generated files.
+
 @lexer::members {
   bool ignoreWS = true;      // usually we ignore whitespace, but inside template, whitespace is significant
   bool expectKeywords = false; // whether we are expecting IF/ELSEIF/ELSE

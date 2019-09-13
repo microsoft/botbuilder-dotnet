@@ -1,21 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using static Microsoft.Bot.Builder.Dialogs.Debugging.Source;
 
 namespace Microsoft.Bot.Builder.Dialogs.Debugging
 {
-    public static partial class DebugSupport
+    /// <summary>
+    /// Debugger support for <see cref="ITurnContext"/>, <see cref="DialogContext"/>. 
+    /// </summary>
+    public static class DebugSupport
     {
-        public static IRegistry SourceRegistry { get; set; } = NullRegistry.Instance;
-
         public interface IDebugger
         {
             Task StepAsync(DialogContext context, object item, string more, CancellationToken cancellationToken);
         }
+
+        public static IRegistry SourceRegistry { get; set; } = NullRegistry.Instance;
 
         public static IDebugger GetDebugger(this ITurnContext context) =>
             context.TurnState.Get<IDebugger>() ?? NullDebugger.Instance;
@@ -23,7 +22,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         public static IDebugger GetDebugger(this DialogContext context) =>
             context.Context.GetDebugger();
 
-        public static async Task DebuggerStepAsync(this DialogContext context, IDialog dialog, string more, CancellationToken cancellationToken)
+        public static async Task DebuggerStepAsync(this DialogContext context, Dialog dialog, string more, CancellationToken cancellationToken)
         {
             await context.GetDebugger().StepAsync(context, dialog, more, cancellationToken).ConfigureAwait(false);
         }

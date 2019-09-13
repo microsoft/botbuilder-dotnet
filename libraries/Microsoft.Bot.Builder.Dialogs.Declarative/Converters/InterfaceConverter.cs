@@ -11,7 +11,8 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
 {
-    public class InterfaceConverter<T> : JsonConverter where T : class
+    public class InterfaceConverter<T> : JsonConverter 
+        where T : class
     {
         private readonly IRefResolver refResolver;
         private readonly Source.IRegistry registry;
@@ -41,7 +42,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
                 jsonObject = refResolver.ResolveAsync(jsonObject).GetAwaiter().GetResult();
             }
 
-            //jsonObject["id"] = jsonObject["id"] ?? jsonObject["$id"];
+            // jsonObject["id"] = jsonObject["id"] ?? jsonObject["$id"];
 
             var typeName = jsonObject["$type"]?.ToString();
             if (typeName == null)

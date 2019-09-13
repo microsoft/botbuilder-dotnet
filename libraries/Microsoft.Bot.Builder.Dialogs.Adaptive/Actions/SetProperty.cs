@@ -8,12 +8,11 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Expressions;
 using Microsoft.Bot.Builder.Expressions.Parser;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
     /// <summary>
-    /// Sets a property with the result of evaluating a value expression
+    /// Sets a property with the result of evaluating a value expression.
     /// </summary>
     public class SetProperty : DialogAction
     {
@@ -21,24 +20,31 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         private Expression property;
 
         [JsonConstructor]
-        public SetProperty([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0) : base()
+        public SetProperty([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+            : base()
         {
             this.RegisterSourceLocation(callerPath, callerLine);
         }
 
         /// <summary>
-        /// Value expression
+        /// Gets or sets value expression.
         /// </summary>
+        /// <value>
+        /// Value expression.
+        /// </value>
         [JsonProperty("value")]
         public string Value
         {
             get { return value?.ToString(); }
-            set {this.value = (value != null) ? new ExpressionEngine().Parse(value) : null; }
+            set { this.value = (value != null) ? new ExpressionEngine().Parse(value) : null; }
         }
 
         /// <summary>
-        /// Property to put the value in
+        /// Gets or sets property to put the value in.
         /// </summary>
+        /// <value>
+        /// Property to put the value in.
+        /// </value>
         [JsonProperty("property")]
         public string Property 
         {

@@ -14,7 +14,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
     {
         public TestContext TestContext { get; set; }
 
-
         [TestMethod]
         [DataRow(null, Culture.Dutch, "(1) Ja of (2) Nee", "Ja", "1")]
         [DataRow(null, Culture.Dutch, "(1) Ja of (2) Nee", "Nee", "0")]

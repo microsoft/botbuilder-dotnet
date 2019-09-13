@@ -1,6 +1,6 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
-    "$role": "unionType(Microsoft.IDialog)",
+    "$role": "unionType(Microsoft.Dialog)",
     "title": "Trace Activity Action",
     "description": "This is a action which sends an TraceActivity to the transcript",
     "type": "object",

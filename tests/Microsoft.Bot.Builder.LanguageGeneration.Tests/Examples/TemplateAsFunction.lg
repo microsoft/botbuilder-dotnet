@@ -19,5 +19,5 @@
 - {length('ms')}
 
 # dupNameWithBuiltinFunc
-- {builtin.length('ms')}
+- {prebuilt.length('ms')}
 

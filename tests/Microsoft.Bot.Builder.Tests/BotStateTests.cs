@@ -355,7 +355,6 @@ namespace Microsoft.Bot.Builder.Tests
         [TestMethod]
         public async Task State_DoNOTRememberContextState()
         {
-
             var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
 
             await new TestFlow(adapter, (context, cancellationToken) =>

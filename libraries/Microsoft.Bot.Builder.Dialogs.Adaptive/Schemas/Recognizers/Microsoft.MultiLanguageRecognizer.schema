@@ -6,7 +6,7 @@
     "type": "object",
     "properties": {
         "languagePolicy": {
-            "$type": "Microsoft.ILanguagePolicy",
+            "$type": "Microsoft.LanguagePolicy",
             "type": "object",
             "title": "Language Policy",
             "description": "Defines languages to try per language."

@@ -1,6 +1,6 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
-    "$role": "unionType(Microsoft.IDialog)",
+    "$role": "unionType(Microsoft.Dialog)",
     "title": "Set Property Action",
     "description": "This action allows you to set memory to the value of an expression",
     "type": "object",

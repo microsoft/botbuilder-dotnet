@@ -10,17 +10,13 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
     /// <summary>
-    /// Deletes a property from memory
+    /// Deletes a property from memory.
     /// </summary>
     public class DeleteProperty : DialogAction
     {
-        /// <summary>
-        /// Property to path to remove Example: user.age will remove "age" from "user"
-        /// </summary>
-        public string Property { get; set; }
-
         [JsonConstructor]
-        public DeleteProperty([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0) : base()
+        public DeleteProperty([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+            : base()
         {
             this.RegisterSourceLocation(callerPath, callerLine);
         }
@@ -34,6 +30,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 this.Property = property;
             }
         }
+
+        /// <summary>
+        /// Gets or sets property to path to remove Example: user.age will remove "age" from "user".
+        /// </summary>
+        /// <value>
+        /// Property to path to remove Example: user.age will remove "age" from "user".
+        /// </value>
+        public string Property { get; set; }
 
         protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {

@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.LanguageGeneration;
-using System.IO;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
@@ -14,11 +11,6 @@ namespace Microsoft.Bot.Builder.TestBot.Json
     public class TestBotLG : IBot
     {
         private readonly TemplateEngine engine;
-
-        private string GetLGResourceFile(string fileName)
-        {
-            return PathUtils.NormalizePath(AppContext.BaseDirectory.Substring(0, AppContext.BaseDirectory.IndexOf("bin")) + "LG\\" + fileName);
-        }
 
         public TestBotLG(TestBotAccessors accessors)
         {
@@ -88,6 +80,11 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             {
                 await turnContext.SendActivityAsync($"{turnContext.Activity.Type} event detected");
             }
+        }
+
+        private string GetLGResourceFile(string fileName)
+        {
+            return PathUtils.NormalizePath(AppContext.BaseDirectory.Substring(0, AppContext.BaseDirectory.IndexOf("bin")) + "LG\\" + fileName);
         }
     }
 }

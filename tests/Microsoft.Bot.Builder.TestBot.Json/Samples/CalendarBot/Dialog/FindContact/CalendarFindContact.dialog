@@ -12,7 +12,7 @@
         },
         {
           "$type": "Microsoft.IfCondition",
-          "condition": "!contains({user.email}, '@')",
+          "condition": "!contains(user.email, '@')",
           "actions": [
             "CalendarFindSingleContact"
           ]

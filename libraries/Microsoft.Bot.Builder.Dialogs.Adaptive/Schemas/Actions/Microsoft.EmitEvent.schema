@@ -1,6 +1,6 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
-    "$role": "unionType(Microsoft.IDialog)",
+    "$role": "unionType(Microsoft.Dialog)",
     "title": "Emit Event Action",
     "description": "This is a action which allows you to emit an event",
     "type": "object",

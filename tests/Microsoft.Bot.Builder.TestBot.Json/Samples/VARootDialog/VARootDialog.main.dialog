@@ -4,63 +4,88 @@
     "autoEndDialog": false,
     "recognizer": {
         "$type": "Microsoft.RegexRecognizer",
-      "intents": {
-        "ToDoIntent": "(?i)todo",
-        "EmailIntent": "(?i)email",
-        "CalendarIntent": "(?i)meeting",
-        "HelpIntent": "(?i)help",
-        "CancelIntent":"(?i)cancel"
-      }
+        "intents": [
+            {
+
+                "$type": "Microsoft.IntentPattern",
+                "intent": "ToDoIntent",
+                "pattern": "(?i)todo" 
+            },
+            {
+
+                "$type": "Microsoft.IntentPattern",
+                "intent": "EmailIntent",
+                "pattern": "(?i)email" 
+            },
+            {
+
+                "$type": "Microsoft.IntentPattern",
+                "intent": "CalendarIntent",
+                "pattern": "(?i)meeting" 
+            },
+            {
+
+                "$type": "Microsoft.IntentPattern",
+                "intent": "HelpIntent",
+                "pattern": "(?i)help" 
+            },
+            {
+
+                "$type": "Microsoft.IntentPattern",
+                "intent": "CancelIntent",
+                "pattern": "(?i)cancel"
+            }
+        ]
     },
-  "events": [
-    {
-      "$type": "Microsoft.OnIntent",
-      "intent": "ToDoIntent",
-      "actions": [
-        "ToDoBot.main"
-      ]
-    },
-    {
-      "$type": "Microsoft.OnIntent",
-      "intent": "EmailIntent",
-      "actions": [
-        "EmailBot.main"
-      ]
-    },
-    {
-      "$type": "Microsoft.OnIntent",
-      "intent": "CalendarIntent",
-      "actions": [
-        "CalendarBot.main"
-      ]
-    },
-    {
-      "$type": "Microsoft.OnIntent",
-      "intent": "HelpIntent",
-      "actions": [
+    "events": [
         {
-          "$type": "Microsoft.SendActivity",
-          "activity": "[help]"
-        }
-      ]
-    },
-    {
-      "$type": "Microsoft.OnIntent",
-      "intent": "CancelIntent",
-      "actions": [
+            "$type": "Microsoft.OnIntent",
+            "intent": "ToDoIntent",
+            "actions": [
+                "ToDoBot.main"
+            ]
+        },
         {
-          "$type": "Microsoft.EndDialog"
-        }
-      ]
-    },
-    {
-      "$type": "Microsoft.OnUnknownIntent",
-      "actions": [
+            "$type": "Microsoft.OnIntent",
+            "intent": "EmailIntent",
+            "actions": [
+                "EmailBot.main"
+            ]
+        },
         {
-          "$type": "Microsoft.SendActivity",
-          "activity": "Hi, I am VA bot, you can try show/send email, add/delete todos."
+            "$type": "Microsoft.OnIntent",
+            "intent": "CalendarIntent",
+            "actions": [
+                "CalendarBot.main"
+            ]
+        },
+        {
+            "$type": "Microsoft.OnIntent",
+            "intent": "HelpIntent",
+            "actions": [
+                {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "[help]"
+                }
+            ]
+        },
+        {
+            "$type": "Microsoft.OnIntent",
+            "intent": "CancelIntent",
+            "actions": [
+                {
+                    "$type": "Microsoft.EndDialog"
+                }
+            ]
+        },
+        {
+            "$type": "Microsoft.OnUnknownIntent",
+            "actions": [
+                {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "Hi, I am VA bot, you can try show/send email, add/delete todos."
+                }
+            ]
         }
-      ]
-    }
-  ]
+    ]
 }

@@ -23,7 +23,21 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Prompts\BasicPrompt.cs" />
+    <Content Include="**/*.dialog" />
+    <Content Include="**/*.lg" />
+    <Content Include="**/*.lu" />
+    <Content Include="**/*.schema" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Templating\**" />
+    <Content Remove="Templating\**" />
+    <EmbeddedResource Remove="Templating\**" />
+    <None Remove="Templating\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Schemas\Microsoft.IRecognizer.schema" />
   </ItemGroup>
 
   <ItemGroup>

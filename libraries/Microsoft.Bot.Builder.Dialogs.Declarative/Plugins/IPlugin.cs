@@ -10,8 +10,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Plugins
     public interface IPlugin
     {
         string SchemaUri { get; }
+
         Type Type { get; }
+
         ICustomDeserializer Loader { get; }
+
         Task Load();
     }
 }

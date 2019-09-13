@@ -97,7 +97,7 @@ namespace Microsoft.Bot.Builder.Azure
                             updatedActivity.Type = ActivityTypes.Message; // fixup original type (should be Message)
                             updatedActivity.LocalTimestamp = originalActivity.LocalTimestamp;
                             updatedActivity.Timestamp = originalActivity.Timestamp;
-                            await logActivity(updatedActivity, blob);
+                            await LogActivity(updatedActivity, blob).ConfigureAwait(false);
                         }
 
                         return;
@@ -109,6 +109,7 @@ namespace Microsoft.Bot.Builder.Azure
                         if (blob != null)
                         {
                             var originalActivity = JsonConvert.DeserializeObject<Activity>(await blob.DownloadTextAsync().ConfigureAwait(false));
+
                             // tombstone the original message
                             var tombstonedActivity = new Activity()
                             {
@@ -125,7 +126,7 @@ namespace Microsoft.Bot.Builder.Azure
                                 ReplyToId = originalActivity.ReplyToId,
                             };
 
-                            await logActivity(tombstonedActivity, blob);
+                            await LogActivity(tombstonedActivity, blob).ConfigureAwait(false);
                         }
 
                         return;
@@ -134,27 +135,9 @@ namespace Microsoft.Bot.Builder.Azure
                 default:
                     var blobName = GetBlobName(activity);
                     var blobReference = this.Container.Value.GetBlockBlobReference(blobName);
-                    await logActivity(activity, blobReference);
+                    await LogActivity(activity, blobReference).ConfigureAwait(false);
                     return;
             }
-        }
-
-        private static async Task logActivity(IActivity activity, CloudBlockBlob blobReference)
-        {
-            blobReference.Properties.ContentType = "application/json";
-            blobReference.Metadata["Id"] = activity.Id;
-            blobReference.Metadata["FromId"] = activity.From.Id;
-            blobReference.Metadata["RecipientId"] = activity.Recipient.Id;
-            blobReference.Metadata["Timestamp"] = activity.Timestamp.Value.ToString("O");
-            using (var blobStream = await blobReference.OpenWriteAsync().ConfigureAwait(false))
-            {
-                using (var jsonWriter = new JsonTextWriter(new StreamWriter(blobStream)))
-                {
-                    _jsonSerializer.Serialize(jsonWriter, activity);
-                }
-            }
-
-            await blobReference.SetMetadataAsync().ConfigureAwait(false);
         }
 
         /// <summary>
@@ -337,48 +320,22 @@ namespace Microsoft.Bot.Builder.Azure
             while (token != null);
         }
 
-        private async Task<CloudBlockBlob> FindActivityBlob(IActivity activity)
+        private static async Task LogActivity(IActivity activity, CloudBlockBlob blobReference)
         {
-            var dirName = GetDirName(activity.ChannelId, activity.Conversation.Id);
-            var dir = this.Container.Value.GetDirectoryReference(dirName);
-            BlobContinuationToken token = null;
-            List<CloudBlockBlob> blobs = new List<CloudBlockBlob>();
-            do
+            blobReference.Properties.ContentType = "application/json";
+            blobReference.Metadata["Id"] = activity.Id;
+            blobReference.Metadata["FromId"] = activity.From.Id;
+            blobReference.Metadata["RecipientId"] = activity.Recipient.Id;
+            blobReference.Metadata["Timestamp"] = activity.Timestamp.Value.ToString("O");
+            using (var blobStream = await blobReference.OpenWriteAsync().ConfigureAwait(false))
             {
-                var segment = await dir.ListBlobsSegmentedAsync(false, BlobListingDetails.Metadata, 50, token, null, null).ConfigureAwait(false);
-                foreach (var blob in segment.Results.Cast<CloudBlockBlob>())
+                using (var jsonWriter = new JsonTextWriter(new StreamWriter(blobStream)))
                 {
-                    blob.Metadata.TryGetValue("Id", out string Id);
-                    if (!string.IsNullOrEmpty(Id))
-                    {
-                        if (Id == activity.Id)
-                        {
-                            return blob;
-                        }
-                    }
-                    else
-                    {
-                        // we have to read full activity as it's an old blob
-                        var entry = JsonConvert.DeserializeObject<Activity>(await blob.DownloadTextAsync().ConfigureAwait(false));
-                        blob.Metadata["Id"] = entry.Id;
-
-                        // update metadata with Id so we don't have to download again.  This effectively "patches" old metadata records
-                        await blob.SetMetadataAsync().ConfigureAwait(false);
-                        if (entry.Id == activity.Id)
-                        {
-                            return blob;
-                        }
-                    }
-                }
-
-                if (segment.ContinuationToken != null)
-                {
-                    token = segment.ContinuationToken;
+                    _jsonSerializer.Serialize(jsonWriter, activity);
                 }
             }
-            while (token != null);
 
-            return null;
+            await blobReference.SetMetadataAsync().ConfigureAwait(false);
         }
 
         private static string GetBlobName(IActivity activity)
@@ -411,6 +368,50 @@ namespace Microsoft.Bot.Builder.Azure
         {
             // Blob Name rules: case-sensitive any url char
             return Uri.EscapeDataString(key);
+        }
+
+        private async Task<CloudBlockBlob> FindActivityBlob(IActivity activity)
+        {
+            var dirName = GetDirName(activity.ChannelId, activity.Conversation.Id);
+            var dir = this.Container.Value.GetDirectoryReference(dirName);
+            BlobContinuationToken token = null;
+            List<CloudBlockBlob> blobs = new List<CloudBlockBlob>();
+            do
+            {
+                var segment = await dir.ListBlobsSegmentedAsync(false, BlobListingDetails.Metadata, 50, token, null, null).ConfigureAwait(false);
+                foreach (var blob in segment.Results.Cast<CloudBlockBlob>())
+                {
+                    blob.Metadata.TryGetValue("Id", out string id);
+                    if (!string.IsNullOrEmpty(id))
+                    {
+                        if (id == activity.Id)
+                        {
+                            return blob;
+                        }
+                    }
+                    else
+                    {
+                        // we have to read full activity as it's an old blob
+                        var entry = JsonConvert.DeserializeObject<Activity>(await blob.DownloadTextAsync().ConfigureAwait(false));
+                        blob.Metadata["Id"] = entry.Id;
+
+                        // update metadata with Id so we don't have to download again.  This effectively "patches" old metadata records
+                        await blob.SetMetadataAsync().ConfigureAwait(false);
+                        if (entry.Id == activity.Id)
+                        {
+                            return blob;
+                        }
+                    }
+                }
+
+                if (segment.ContinuationToken != null)
+                {
+                    token = segment.ContinuationToken;
+                }
+            }
+            while (token != null);
+
+            return null;
         }
     }
 }

@@ -11,6 +11,8 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
+using Microsoft.Bot.Builder.LanguageGeneration;
+using Microsoft.Bot.Builder.LanguageGeneration.Templates;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -21,29 +23,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
     {
         public TestContext TestContext { get; set; }
 
-        private TestFlow CreateFlow(AdaptiveDialog dialog, bool sendTrace = false)
-        {
-            TypeFactory.Configuration = new ConfigurationBuilder().Build();
-            var resourceExplorer = new ResourceExplorer();
-            var storage = new MemoryStorage();
-            var convoState = new ConversationState(storage);
-            var userState = new UserState(storage);
-            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName), sendTrace);
-            adapter
-                .UseStorage(storage)
-                .UseState(userState, convoState)
-                .UseResourceExplorer(resourceExplorer)
-                .UseLanguageGeneration(resourceExplorer)
-                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
-
-            DialogManager dm = new DialogManager(dialog);
-
-            return new TestFlow(adapter, async (turnContext, cancellationToken) =>
-            {
-                await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
-            });
-        }
-
         [TestMethod]
         public async Task IfCondition_EndDialog()
         {
@@ -53,7 +32,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 {
                     new OnBeginDialog()
                     {
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             new TextInput()
                             {
@@ -65,7 +44,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     },
                     new OnIntent("CancelIntent")
                     {
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             new ConfirmInput()
                             {
@@ -75,15 +54,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             new IfCondition()
                             {
                                 Condition = "conversation.addTodo.cancelConfirmation == true",
-                                Actions = new List<IDialog>()
+                                Actions = new List<Dialog>()
                                 {
                                     new SendActivity("canceling"),
                                     new EndDialog()
                                 },
-                                ElseActions = new List<IDialog>()
+                                ElseActions = new List<Dialog>()
                                 {
                                     new SendActivity("notcanceling")
                                 }
+
                                 // We do not need to specify an else block here since if user said no,
                                 // the control flow will automatically return to the last active step (if any)
                             }
@@ -92,10 +72,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 },
                 Recognizer = new RegexRecognizer()
                 {
-                    Intents = new Dictionary<string, string>()
+                    Intents = new List<IntentPattern>()
                     {
-                        { "HelpIntent", "(?i)help" },
-                        { "CancelIntent", "(?i)cancel" }
+                        new IntentPattern("HelpIntent", "(?i)help"),
+                        new IntentPattern("CancelIntent", "(?i)cancel"),
                     }
                 }
             };
@@ -118,18 +98,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 AutoEndDialog = false,
                 Recognizer = new RegexRecognizer()
                 {
-                    Intents = new Dictionary<string, string>()
+                    Intents = new List<IntentPattern>()
                     {
-                        {  "SetName", @"my name is (?<name>.*)" }
+                        new IntentPattern("SetName", @"my name is (?<name>.*)"),
                     }
                 },
                 Events = new List<IOnEvent>()
                 {
                     new OnBeginDialog()
                     {
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
-                            new TextInput() { Prompt = new ActivityTemplate("Hello, what is your name?"), OutputBinding = "user.name", AllowInterruptions = AllowInterruptions.Always, Value = "user.name"},
+                            new TextInput() { Prompt = new ActivityTemplate("Hello, what is your name?"), OutputBinding = "user.name", AllowInterruptions = AllowInterruptions.Always, Value = "user.name" },
                             new SendActivity("Hello {user.name}, nice to meet you!"),
                             new NumberInput() { Prompt = new ActivityTemplate("What is your age?"), OutputBinding = "user.age" },
                             new SendActivity("{user.age} is a good age to be!"),
@@ -138,7 +118,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     },
                     new OnIntent("SetName", new List<string>() { "name" })
                     {
-                        Actions = new List<IDialog>()
+                        Actions = new List<Dialog>()
                         {
                             new SetProperty()
                             {
@@ -148,7 +128,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         }
                     }
                 }
-
             };
 
             await CreateFlow(testDialog)
@@ -163,6 +142,30 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     .AssertReply("15 is a good age to be!")
                     .AssertReply("your name is Joe!")
                 .StartTestAsync();
+        }
+
+        private TestFlow CreateFlow(AdaptiveDialog dialog, bool sendTrace = false)
+        {
+            TypeFactory.Configuration = new ConfigurationBuilder().Build();
+            var resourceExplorer = new ResourceExplorer();
+            var storage = new MemoryStorage();
+            var convoState = new ConversationState(storage);
+            var userState = new UserState(storage);
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName), sendTrace);
+            adapter
+                .UseStorage(storage)
+                .UseState(userState, convoState)
+                .UseResourceExplorer(resourceExplorer)
+                .UseLanguageGeneration(resourceExplorer)
+                .UseAdaptiveDialogs()
+                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+
+            DialogManager dm = new DialogManager(dialog);
+
+            return new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
+            });
         }
     }
 }

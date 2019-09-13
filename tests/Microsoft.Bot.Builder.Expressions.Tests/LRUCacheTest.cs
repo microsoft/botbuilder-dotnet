@@ -1,10 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using System.Runtime.InteropServices.ComTypes;
-using System.Security.Cryptography.X509Certificates;
-using System.Threading;
 using System.Threading.Tasks;
-using Antlr4.Runtime.Atn;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.Builder.Expressions.Tests
@@ -55,7 +50,8 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             var fib9999 = 1242044891;
             var fib100000 = 2132534333;
             var maxIdx = 10000;
-            for (int i = 2; i <= maxIdx; i++){
+            for (int i = 2; i <= maxIdx; i++)
+            {
                 cache.TryGet(i - 2,  out var prev2);
                 cache.TryGet(i - 1, out var prev1);
                 cache.Set(i, prev1 + prev2);
@@ -63,7 +59,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
 
             Assert.IsFalse(cache.TryGet(9998, out var result));
 
-            Assert.IsTrue(cache.TryGet(maxIdx-1, out result));
+            Assert.IsTrue(cache.TryGet(maxIdx - 1, out result));
             Assert.AreEqual(result, fib9999);
 
             Assert.IsTrue(cache.TryGet(maxIdx, out result));
@@ -110,8 +106,9 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             var numOfOps = 1000;
             for (var i = 0; i < numOfThreads; i++)
             {
-                tasks.Add(Task.Run(() => storeElement(cache, numOfOps, i)));
+                tasks.Add(Task.Run(() => StoreElement(cache, numOfOps, i)));
             }
+
             await Task.WhenAll(tasks);
 
             for (var i = numOfOps - numOfThreads; i < numOfOps; i++)
@@ -120,11 +117,11 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             }
         }
 
-        public void storeElement(LRUCache<int,int> cache, int numOfOps, int idx)
+        public void StoreElement(LRUCache<int, int> cache, int numOfOps, int idx)
         {
-            for(int i = 0; i < numOfOps; i++)
+            for (int i = 0; i < numOfOps; i++)
             {
-                var key =  i;
+                var key = i;
                 var value = i;
                 cache.Set(key, value);
             }

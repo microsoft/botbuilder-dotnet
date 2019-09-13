@@ -1,22 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Runtime.InteropServices;
-using System.Text;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
     /// <summary>
     /// Delegate for resolving resource id of imported lg file.
     /// </summary>
-    /// <param name="sourceId">The id or path of source file</param>
+    /// <param name="sourceId">The id or path of source file.</param>
     /// <param name="resourceId">Resource id to resolve.</param>
     /// <returns>Resolved resource content and unique id.</returns>
     public delegate (string content, string id) ImportResolverDelegate(string sourceId, string resourceId);
 
     public class ImportResolver
     {
+#pragma warning disable SA1401 // Fields should be private
         public static ImportResolverDelegate FileResolver = (filePath, id) =>
+#pragma warning restore SA1401 // Fields should be private
         {
             // import paths are in resource files which can be executed on multiple OS environments
             // normalize to map / & \ in importPath -> OSPath

@@ -20,29 +20,20 @@ namespace Microsoft.Bot.Builder.TemplateManager
         }
 
         /// <summary>
-        /// Template Renderers
+        /// Gets or sets template Renderers.
         /// </summary>
+        /// <value>
+        /// Template Renderers.
+        /// </value>
         public List<ITemplateRenderer> Renderers { get; set; } = new List<ITemplateRenderer>();
 
         /// <summary>
-        /// Language fallback policy
+        /// Gets or sets language fallback policy.
         /// </summary>
+        /// <value>
+        /// Language fallback policy.
+        /// </value>
         public List<string> LanguageFallback { get; set; } = new List<string>();
-
-        /// <summary>
-        /// Add a template engine for binding templates
-        /// </summary>
-        /// <param name="renderer">Data for binding templates.</param>
-        /// <returns>Reurns a template manager.</returns>
-        public TemplateManager Register(ITemplateRenderer renderer)
-        {
-            if (!this.Renderers.Contains(renderer))
-            {
-
-                this.Renderers.Add(renderer);
-            }
-            return this;
-        }
 
         public static Activity CreateTemplateActivity(string templateId, object data)
         {
@@ -55,6 +46,21 @@ namespace Microsoft.Bot.Builder.TemplateManager
                     Data = data,
                 },
             };
+        }
+
+        /// <summary>
+        /// Add a template engine for binding templates.
+        /// </summary>
+        /// <param name="renderer">Data for binding templates.</param>
+        /// <returns>Reurns a template manager.</returns>
+        public TemplateManager Register(ITemplateRenderer renderer)
+        {
+            if (!this.Renderers.Contains(renderer))
+            {
+                this.Renderers.Add(renderer);
+            }
+
+            return this;
         }
 
         /// <summary>
@@ -79,7 +85,7 @@ namespace Microsoft.Bot.Builder.TemplateManager
         /// <summary>
         /// Send a reply with the template.
         /// </summary>
-        /// <param name="turnContext">The context of the turn.</param>
+        /// <param name="turnContext">Context for the current turn of conversation.</param>
         /// <param name="templateId">Id of the template.</param>
         /// <param name="data">Data to render the template.</param>
         /// <returns>Task.</returns>
@@ -101,7 +107,7 @@ namespace Microsoft.Bot.Builder.TemplateManager
         /// <summary>
         /// Render the template.
         /// </summary>
-        /// <param name="turnContext">Context turn.</param>
+        /// <param name="turnContext">Context for the current turn of conversation.</param>
         /// <param name="language">Template language.</param>
         /// <param name="templateId">The id of the template.</param>
         /// <param name="data">Data to render the tempplate with.</param>

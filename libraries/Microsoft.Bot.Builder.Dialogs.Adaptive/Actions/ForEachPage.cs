@@ -2,12 +2,12 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Expressions;
 using Microsoft.Bot.Builder.Expressions.Parser;
 using Newtonsoft.Json;
@@ -18,9 +18,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// <summary>
     /// Executes a set of actions once for each item in an in-memory list or collection.
     /// </summary>
-    public class ForeachPage : DialogAction, IDialogDependencies
+    public class ForeachPage : DialogAction
     {
         private Expression listProperty;
+
+        [JsonConstructor]
+        public ForeachPage([CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
+            : base()
+        {
+            this.RegisterSourceLocation(sourceFilePath, sourceLineNumber);
+        }
 
         // Expression used to compute the list that should be enumerated.
         [JsonProperty("listProperty")]
@@ -39,13 +46,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
         // Actions to be run for each of items.
         [JsonProperty("actions")]
-        public List<IDialog> Actions { get; set; } = new List<IDialog>();
+        public List<Dialog> Actions { get; set; } = new List<Dialog>();
 
-        [JsonConstructor]
-        public ForeachPage([CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
-            : base()
+        public override IEnumerable<Dialog> GetDependencies()
         {
-            this.RegisterSourceLocation(sourceFilePath, sourceLineNumber);
+            return this.Actions;
         }
 
         protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
@@ -64,9 +69,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 if (options != null && options is ForeachPageOptions)
                 {
                     var opt = options as ForeachPageOptions;
-                    listProperty = opt.list;
-                    offset = opt.offset;
-                    pageSize = opt.pageSize;
+                    listProperty = opt.List;
+                    offset = opt.Offset;
+                    pageSize = opt.PageSize;
                 }
 
                 if (pageSize == 0)
@@ -100,9 +105,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                             DialogId = this.Id,
                             Options = new ForeachPageOptions()
                             {
-                                list = listProperty,
-                                offset = offset + pageSize,
-                                pageSize = pageSize
+                                List = listProperty,
+                                Offset = offset + pageSize,
+                                PageSize = pageSize
                             }
                         });
                         sc.QueueChanges(changes);
@@ -115,6 +120,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             {
                 throw new Exception("`Foreach` should only be used in the context of an adaptive dialog.");
             }
+        }
+
+        protected override string OnComputeId()
+        {
+            return $"{nameof(Foreach)}({this.ListProperty})";
         }
 
         private List<object> GetPage(object list, int index, int pageSize)
@@ -138,23 +148,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                     }
                 }
             }
-            return page;
-        }
-        protected override string OnComputeId()
-        {
-            return $"{nameof(Foreach)}({this.ListProperty})";
-        }
 
-        public override List<IDialog> ListDependencies()
-        {
-            return this.Actions;
+            return page;
         }
 
         public class ForeachPageOptions
         {
-            public Expression list { get; set; }
-            public int offset { get; set; }
-            public int pageSize { get; set; }
+            public Expression List { get; set; }
+
+            public int Offset { get; set; }
+
+            public int PageSize { get; set; }
         }
     }
 }

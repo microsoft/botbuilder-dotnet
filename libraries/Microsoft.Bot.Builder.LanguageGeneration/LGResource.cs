@@ -49,13 +49,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <summary>
         /// Override the Equals function for LGResource comparison.
         /// </summary>
-        /// <param name="obj">The LGResource object.</param>
+        /// <param name="obj">The <see cref="LGResource"/> object.</param>
         /// <returns>True if the ids are same.</returns>
         public override bool Equals(object obj)
         {
-            if (obj is LGResource lgResourceObj)
+            if (obj is LGResource lgresourceObj)
             {
-                return this.Id.Equals(lgResourceObj.Id);
+                return this.Id.Equals(lgresourceObj.Id);
             }
 
             return false;

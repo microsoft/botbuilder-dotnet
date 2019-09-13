@@ -3,12 +3,32 @@
   "$type": "Microsoft.AdaptiveDialog",
   "recognizer": {
     "$type": "Microsoft.RegexRecognizer",
-    "intents": {
-      "ForwardEmailIntent": "(?i)forward",
-      "ReplyEmailIntent": "(?i)reply",
-      "ShowNextPageIntent": "(?i)next page",
-      "ShowEmailIntent": "(?i)show"
-    }
+    "intents": [
+        {
+
+            "$type": "Microsoft.IntentPattern",
+            "intent": "ForwardEmailIntent",
+            "pattern": "(?i)forward" 
+        },
+        {
+
+            "$type": "Microsoft.IntentPattern",
+            "intent": "ReplyEmailIntent",
+            "pattern": "(?i)reply" 
+        },
+        {
+
+            "$type": "Microsoft.IntentPattern",
+            "intent": "ShowNextPageIntent",
+            "pattern": "(?i)next page" 
+        },
+        {
+
+            "$type": "Microsoft.IntentPattern",
+            "intent": "ShowEmailIntent",
+            "pattern": "(?i)show"
+        }
+    ]
   },
   "events": [
     {

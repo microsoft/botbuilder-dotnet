@@ -1,18 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Configuration.Tests
 {
     [TestClass]
     public class ConnectionTests
     {
-        private string TestBotFileName = NormalizePath(@"..\..\..\test.bot");
+        private string testBotFileName = NormalizePath(@"..\..\..\test.bot");
 
         public static string NormalizePath(string ambigiousPath)
         {
@@ -31,7 +29,7 @@ namespace Microsoft.Bot.Configuration.Tests
         [TestMethod]
         public async Task ConnectAssignsUniqueIds()
         {
-            var config = await BotConfiguration.LoadAsync(TestBotFileName);
+            var config = await BotConfiguration.LoadAsync(testBotFileName);
             var config2 = new BotConfiguration();
             foreach (var service in config.Services)
             {
@@ -50,7 +48,7 @@ namespace Microsoft.Bot.Configuration.Tests
         [TestMethod]
         public async Task FindServices()
         {
-            var config = await BotConfiguration.LoadAsync(TestBotFileName);
+            var config = await BotConfiguration.LoadAsync(testBotFileName);
             Assert.IsNotNull(config.FindServiceByNameOrId("3"), "Should find by id");
             Assert.IsNotNull(config.FindServiceByNameOrId("testInsights"), "Should find by name");
             Assert.IsNotNull(config.FindService("3"), "Should find by id");
@@ -68,7 +66,7 @@ namespace Microsoft.Bot.Configuration.Tests
         [TestMethod]
         public async Task DisconnectServicesById()
         {
-            var config = await BotConfiguration.LoadAsync(TestBotFileName);
+            var config = await BotConfiguration.LoadAsync(testBotFileName);
             var config2 = new BotConfiguration();
             foreach (var service in config.Services)
             {
@@ -88,7 +86,7 @@ namespace Microsoft.Bot.Configuration.Tests
         [TestMethod]
         public async Task DisconnectServicesByNameOrId_UsingId()
         {
-            var config = await BotConfiguration.LoadAsync(TestBotFileName);
+            var config = await BotConfiguration.LoadAsync(testBotFileName);
             var config2 = new BotConfiguration();
             foreach (var service in config.Services)
             {
@@ -108,7 +106,7 @@ namespace Microsoft.Bot.Configuration.Tests
         [TestMethod]
         public async Task DisconnectByNameOrId_UsingName()
         {
-            var config = await BotConfiguration.LoadAsync(TestBotFileName);
+            var config = await BotConfiguration.LoadAsync(testBotFileName);
             var config2 = new BotConfiguration();
             foreach (var service in config.Services)
             {
@@ -128,7 +126,7 @@ namespace Microsoft.Bot.Configuration.Tests
         [TestMethod]
         public async Task DisconnectService_UsingNameAndType()
         {
-            var config = await BotConfiguration.LoadAsync(TestBotFileName);
+            var config = await BotConfiguration.LoadAsync(testBotFileName);
             var config2 = new BotConfiguration();
             foreach (var service in config.Services)
             {
@@ -154,7 +152,7 @@ namespace Microsoft.Bot.Configuration.Tests
         public async Task DisconnectByNameOrId_UsingName_WithDuplicates()
         {
             // We have a least one duplicate name in the config.
-            var config = await BotConfiguration.LoadAsync(TestBotFileName);
+            var config = await BotConfiguration.LoadAsync(testBotFileName);
             var config2 = new BotConfiguration();
             var uniqueNames = new List<string>();
             var duplicatedNames = new List<string>();

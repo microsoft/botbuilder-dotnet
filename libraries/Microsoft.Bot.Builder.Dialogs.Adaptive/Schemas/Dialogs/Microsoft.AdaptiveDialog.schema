@@ -1,6 +1,6 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
-    "$role": "unionType(Microsoft.IDialog)",
+    "$role": "unionType(Microsoft.Dialog)",
     "title": "Adaptive Dialog",
     "description": "Configures a data driven dialog via a collection of actions/dialogs.",
     "type": "object",
@@ -31,7 +31,7 @@
                     "description": "Configured recognizer to generate intent and entites from user utterance"
                 },
                 "generator": {
-                    "$type": "Microsoft.ILanguageGenerator",
+                    "$type": "Microsoft.LanguageGenerator",
                     "title": "Language Generator",
                     "description": "Language generator to use for this dialog. (aka: LG file)"
                 },

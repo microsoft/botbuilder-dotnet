@@ -2,22 +2,20 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
 using System;
-using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Dialogs;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 {
-    using CodeActionHandler = Func<DialogContext, object, Task<DialogTurnResult>>;
+    using CodeActionHandler = System.Func<Microsoft.Bot.Builder.Dialogs.DialogContext, object, System.Threading.Tasks.Task<Microsoft.Bot.Builder.Dialogs.DialogTurnResult>>;
 
     public class CodeAction : DialogAction
     {
         private readonly CodeActionHandler codeHandler;
 
-        public CodeAction(CodeActionHandler codeHandler, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0) : base()
+        public CodeAction(CodeActionHandler codeHandler, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+            : base()
         {
             this.RegisterSourceLocation(callerPath, callerLine);
             this.codeHandler = codeHandler ?? throw new ArgumentNullException(nameof(codeHandler));

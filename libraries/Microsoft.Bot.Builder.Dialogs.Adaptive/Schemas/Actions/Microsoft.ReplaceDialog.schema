@@ -1,6 +1,6 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
-    "$role": "unionType(Microsoft.IDialog)",
+    "$role": "unionType(Microsoft.Dialog)",
     "type": "object",
     "title": "Replace Dialog",
     "description": "This is a action which replaces the current dialog with the target dialog",
@@ -10,10 +10,10 @@
         },
         {
             "properties": {
-                "dialogId": {
-                    "$role": "expression",
-                    "title": "Dialog Id",
-                    "description": "The Id the dialog to call."
+                "dialog": {
+                    "$type": "Microsoft.Dialog",
+                    "title": "Dialog",
+                    "description": "This is the dialog to switch to."
                 },
                 "options": {
                     "type": "object",

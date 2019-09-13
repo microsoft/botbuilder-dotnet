@@ -21,15 +21,14 @@
     <Summary>This library implements C# classes for building bots using Microsoft Cognitive services.</Summary>
   </PropertyGroup>
 
-	<ItemGroup>
-	  <None Remove="Microsoft.QnAMakerDialog.schema" />
-	</ItemGroup>
+  <ItemGroup>
+    <Content Include="**/*.dialog" />
+    <Content Include="**/*.lg" />
+    <Content Include="**/*.lu" />
+    <Content Include="**/*.schema" />
+  </ItemGroup>
 
-	<ItemGroup>
-	  <Content Include="Microsoft.QnAMakerDialog.schema" />
-	</ItemGroup>
-
-	<ItemGroup>
+  <ItemGroup>
     <PackageReference Include="AsyncUsageAnalyzers" Version="1.0.0-alpha003" PrivateAssets="all" />
     <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(PackageVersion)' == '' " Version="4.0.0-local" />
     <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(PackageVersion)' != '' " Version="$(PackageVersion)" />

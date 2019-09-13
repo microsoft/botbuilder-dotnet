@@ -1,10 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Threading;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -13,223 +7,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
     // https://github.com/Microsoft/debug-adapter-protocol/blob/gh-pages/debugAdapterProtocol.json
     public static class Protocol
     {
-        public abstract class Message
-        {
-            public int seq { get; set; }
-            public string type { get; set; }
-            [JsonExtensionData]
-            public JObject Rest { get; set; }
-        }
-
-        public class Request : Message
-        {
-            public string command { get; set; }
-            public override string ToString() => command;
-        }
-
-        public class Request<Arguments> : Request
-        {
-            public Arguments arguments { get; set; }
-        }
-        public class Attach
-        {
-        }
-        public class Launch
-        {
-        }
-        public class Initialize
-        {
-            public string clientID { get; set; }
-            public string clientName { get; set; }
-            public string adapterID { get; set; }
-            public string pathFormat { get; set; }
-            public bool linesStartAt1 { get; set; }
-            public bool columnsStartAt1 { get; set; }
-            public bool supportsVariableType { get; set; }
-            public bool supportsVariablePaging { get; set; }
-            public bool supportsRunInTerminalRequest { get; set; }
-            public string locale { get; set; }
-        }
-
-        public class SetBreakpoints
-        {
-            public Source source { get; set; }
-            public SourceBreakpoint[] breakpoints { get; set; }
-            public bool sourceModified { get; set; }
-        }
-        public class SetFunctionBreakpoints
-        {
-            public FunctionBreakpoint[] breakpoints { get; set; }
-        }
-        public class SetExceptionBreakpoints
-        {
-            public string[] filters { get; set; }
-        }
-        public class Threads
-        {
-        }
-        public class Capabilities
-        {
-            public bool supportsConfigurationDoneRequest { get; set; }
-            public bool supportsSetVariable { get; set; }
-            public bool supportsEvaluateForHovers { get; set; }
-            public bool supportsFunctionBreakpoints { get; set; }
-            public ExceptionBreakpointFilter[] exceptionBreakpointFilters { get; set; }
-            public bool supportTerminateDebuggee { get; set; }
-            public bool supportsTerminateRequest { get; set; }
-        }
-        public class ExceptionBreakpointFilter
-        {
-            public string filter { get; set; }
-            public string label { get; set; }
-            public bool @default { get; set; }
-        }
-        public abstract class PerThread
-        {
-            public ulong threadId { get; set; }
-        }
-        public class StackTrace : PerThread
-        {
-            public int? startFrame { get; set; }
-            public int? levels { get; set; }
-        }
-        public class Continue : PerThread
-        {
-        }
-        public class Pause : PerThread
-        {
-        }
-        public class Next : PerThread
-        {
-        }
-        public class Scopes
-        {
-            public ulong frameId { get; set; }
-        }
-        public class Variables
-        {
-            public ulong variablesReference { get; set; }
-        }
-        public class SetVariable
-        {
-            public ulong variablesReference { get; set; }
-            public string name { get; set; }
-            public string value { get; set; }
-        }
-        public class Evaluate
-        {
-            public ulong frameId { get; set; }
-            public string expression { get; set; }
-        }
-        public class ConfigurationDone
-        {
-        }
-        public class Disconnect
-        {
-            public bool restart { get; set; }
-            public bool terminateDebuggee { get; set; }
-        }
-        public class Terminate
-        {
-            public bool restart { get; set; }
-        }
-        public class Event : Message
-        {
-            public Event(int seq, string @event)
-            {
-                this.seq = seq;
-                this.type = "event";
-                this.@event = @event;
-            }
-            public string @event { get; set; }
-            public static Event<Body> From<Body>(int seq, string @event, Body body) => new Event<Body>(seq, @event) { body = body };
-        }
-        public class Event<Body> : Event
-        {
-            public Event(int seq, string @event)
-                : base(seq, @event)
-            {
-            }
-            public Body body { get; set; }
-        }
-
-        public class Response : Message
-        {
-            public Response(int seq, Request request)
-            {
-                this.seq = seq;
-                this.type = "response";
-                this.request_seq = request.seq;
-                this.success = true;
-                this.command = request.command;
-            }
-            public int request_seq { get; set; }
-            public bool success { get; set; }
-            public string message { get; set; }
-            public string command { get; set; }
-            public static Response<Body> From<Body>(int seq, Request request, Body body) => new Response<Body>(seq, request) { body = body };
-            public static Response<string> Fail(int seq, Request request, string message) => new Response<string>(seq, request) { body = message, message = message, success = false };
-        }
-
-        public class Response<Body> : Response
-        {
-            public Response(int seq, Request request)
-                : base(seq, request)
-            {
-            }
-            public Body body { get; set; }
-        }
-
-        public abstract class Reference
-        {
-            public ulong id { get; set; }
-        }
-
-        public class Range : Reference
-        {
-            public Source source { get; set; }
-            public int? line { get; set; }
-            public int? column { get; set; }
-            public int? endLine { get; set; }
-            public int? endColumn { get; set; }
-        }
-
-        public class Breakpoint : Range
-        {
-            public bool verified { get; set; }
-            public string message { get; set; }
-        }
-
-        public class StackFrame : Range
-        {
-            public string name { get; set; }
-        }
-
-        public sealed class Thread : Reference
-        {
-            public string name { get; set; }
-        }
-
-        public sealed class Source
-        {
-            public Source(string path)
-            {
-                this.name = Path.GetFileName(path);
-                this.path = path;
-            }
-
-            public string name { get; set; }
-            public string path { get; set; }
-        }
-        public sealed class SourceBreakpoint
-        {
-            public int line { get; set; }
-        }
-        public sealed class FunctionBreakpoint
-        {
-            public string name { get; set; }
-        }
-
         public static Request Parse(JToken token)
         {
             switch ((string)token["type"])
@@ -259,9 +36,296 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                         case "disconnect": return token.ToObject<Request<Disconnect>>();
                         default: return token.ToObject<Request>();
                     }
+
                 default:
                     throw new NotImplementedException();
             }
+        }
+
+        public abstract class Message
+        {
+            public int Seq { get; set; }
+
+            public string Type { get; set; }
+
+            [JsonExtensionData]
+            public JObject Rest { get; set; }
+        }
+
+        public class Request : Message
+        {
+            public string Command { get; set; }
+
+            public override string ToString() => Command;
+        }
+
+        public class Request<TArguments> : Request
+        {
+            public TArguments Arguments { get; set; }
+        }
+
+        public class Attach
+        {
+        }
+
+        public class Launch
+        {
+        }
+
+        public class Initialize
+        {
+            public string ClientID { get; set; }
+
+            public string ClientName { get; set; }
+
+            public string AdapterID { get; set; }
+
+            public string PathFormat { get; set; }
+
+            public bool LinesStartAt1 { get; set; }
+
+            public bool ColumnsStartAt1 { get; set; }
+
+            public bool SupportsVariableType { get; set; }
+
+            public bool SupportsVariablePaging { get; set; }
+
+            public bool SupportsRunInTerminalRequest { get; set; }
+
+            public string Locale { get; set; }
+        }
+
+        public class SetBreakpoints
+        {
+            public Source Source { get; set; }
+
+            public SourceBreakpoint[] Breakpoints { get; set; }
+
+            public bool SourceModified { get; set; }
+        }
+
+        public class SetFunctionBreakpoints
+        {
+            public FunctionBreakpoint[] Breakpoints { get; set; }
+        }
+
+        public class SetExceptionBreakpoints
+        {
+            public string[] Filters { get; set; }
+        }
+
+        public class Threads
+        {
+        }
+
+        public class Capabilities
+        {
+            public bool SupportsConfigurationDoneRequest { get; set; }
+
+            public bool SupportsSetVariable { get; set; }
+
+            public bool SupportsEvaluateForHovers { get; set; }
+
+            public bool SupportsFunctionBreakpoints { get; set; }
+
+            public ExceptionBreakpointFilter[] ExceptionBreakpointFilters { get; set; }
+
+            public bool SupportTerminateDebuggee { get; set; }
+
+            public bool SupportsTerminateRequest { get; set; }
+        }
+
+        public class ExceptionBreakpointFilter
+        {
+            public string Filter { get; set; }
+
+            public string Label { get; set; }
+
+            public bool Default { get; set; }
+        }
+
+        public abstract class PerThread
+        {
+            public ulong ThreadId { get; set; }
+        }
+
+        public class StackTrace : PerThread
+        {
+            public int? StartFrame { get; set; }
+
+            public int? Levels { get; set; }
+        }
+
+        public class Continue : PerThread
+        {
+        }
+
+        public class Pause : PerThread
+        {
+        }
+
+        public class Next : PerThread
+        {
+        }
+
+        public class Scopes
+        {
+            public ulong FrameId { get; set; }
+        }
+
+        public class Variables
+        {
+            public ulong VariablesReference { get; set; }
+        }
+
+        public class SetVariable
+        {
+            public ulong VariablesReference { get; set; }
+
+            public string Name { get; set; }
+
+            public string Value { get; set; }
+        }
+
+        public class Evaluate
+        {
+            public ulong FrameId { get; set; }
+
+            public string Expression { get; set; }
+        }
+
+        public class ConfigurationDone
+        {
+        }
+
+        public class Disconnect
+        {
+            public bool Restart { get; set; }
+
+            public bool TerminateDebuggee { get; set; }
+        }
+
+        public class Terminate
+        {
+            public bool Restart { get; set; }
+        }
+
+        public class Event : Message
+        {
+#pragma warning disable SA1300 // Should begin with an uppercase letter.
+            public Event(int seq, string @event)
+            {
+                this.Seq = seq;
+                this.Type = "event";
+                this.@event = @event;
+            }
+
+            public string @event { get; set; }
+#pragma warning restore SA1300 // Should begin with an uppercase letter.
+
+            public static Event<TBody> From<TBody>(int seq, string @event, TBody body) => new Event<TBody>(seq, @event) { Body = body };
+        }
+
+        public class Event<TBody> : Event
+        {
+            public Event(int seq, string @event)
+                : base(seq, @event)
+            {
+            }
+
+            public TBody Body { get; set; }
+        }
+
+        public class Response : Message
+        {
+            public Response(int seq, Request request)
+            {
+                this.Seq = seq;
+                this.Type = "response";
+                this.Request_seq = request.Seq;
+                this.Success = true;
+                this.Command = request.Command;
+            }
+
+            public int Request_seq { get; set; }
+
+            public bool Success { get; set; }
+
+            public string Message { get; set; }
+
+            public string Command { get; set; }
+
+            public static Response<TBody> From<TBody>(int seq, Request request, TBody body) => new Response<TBody>(seq, request) { Body = body };
+
+            public static Response<string> Fail(int seq, Request request, string message) => new Response<string>(seq, request) { Body = message, Message = message, Success = false };
+        }
+
+        public class Response<TBody> : Response
+        {
+            public Response(int seq, Request request)
+                : base(seq, request)
+            {
+            }
+
+            public TBody Body { get; set; }
+        }
+
+        public abstract class Reference
+        {
+            public ulong Id { get; set; }
+        }
+
+        public class Range : Reference
+        {
+            public Source Source { get; set; }
+
+            public int? Line { get; set; }
+
+            public int? Column { get; set; }
+
+            public int? EndLine { get; set; }
+
+            public int? EndColumn { get; set; }
+        }
+
+        public class Breakpoint : Range
+        {
+            public bool Verified { get; set; }
+
+            public string Message { get; set; }
+        }
+
+        public class StackFrame : Range
+        {
+            public string Name { get; set; }
+        }
+
+        public sealed class Thread : Reference
+        {
+            public string Name { get; set; }
+        }
+
+        public sealed class Source
+        {
+            public Source(string path)
+            {
+                this.Name = System.IO.Path.GetFileName(path);
+                this.Path = path;
+            }
+
+            public string Name { get; set; }
+
+            public string Path { get; set; }
+        }
+
+        public sealed class SourceBreakpoint
+        {
+            public int Line { get; set; }
+        }
+
+        public sealed class FunctionBreakpoint
+        {
+            public string Name { get; set; }
         }
     }
 }

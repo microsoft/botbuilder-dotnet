@@ -2,10 +2,8 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
@@ -28,7 +26,6 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <param name="endpoint">QnA Maker endpoint details.</param>
         /// <param name="options">QnA Maker options.</param>
         /// <param name="httpClient">Http client.</param>
-        /// <param name="logPersonalInformation">Log personal Information.</param>
         public GenerateAnswerUtils(IBotTelemetryClient telemetryClient, QnAMakerEndpoint endpoint, QnAMakerOptions options, HttpClient httpClient)
         {
             this.telemetryClient = telemetryClient;
@@ -42,6 +39,9 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <summary>
         /// Gets or sets qnA Maker options.
         /// </summary>
+        /// <value>
+        /// QnA Maker options.
+        /// </value>
         public QnAMakerOptions Options { get; set; }
 
         /// <summary>

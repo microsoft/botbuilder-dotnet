@@ -149,19 +149,19 @@ namespace Microsoft.Bot.Builder.Expressions
             }));
 
         /// <summary>
-        /// Construct and validate an Set a property expression to a value expression
+        /// Construct and validate an Set a property expression to a value expression.
         /// </summary>
-        /// <param name="property">property expression</param>
-        /// <param name="value">value expression</param>
+        /// <param name="property">property expression.</param>
+        /// <param name="value">value expression.</param>
         /// <returns>New expression.</returns>
         public static Expression SetPathToValue(Expression property, Expression value)
             => Expression.MakeExpression(ExpressionType.SetPathToValue, property, value);
 
         /// <summary>
-        /// Construct and validate an Set a property expression to a value expression
+        /// Construct and validate an Set a property expression to a value expression.
         /// </summary>
-        /// <param name="property">property expression</param>
-        /// <param name="value">value object</param>
+        /// <param name="property">property expression.</param>
+        /// <param name="value">value object.</param>
         /// <returns>New expression.</returns>
         public static Expression SetPathToValue(Expression property, object value)
         {
@@ -259,7 +259,8 @@ namespace Microsoft.Bot.Builder.Expressions
         /// Evaluate the expression.
         /// </summary>
         /// <param name="state">
-        /// Global state to evaluate accessor expressions against.  Can be <see cref="IDictionary{String}{Object}"/>, <see cref="IDictionary"/> otherwise reflection is used to access property and then indexer.
+        /// Global state to evaluate accessor expressions against.  Can be <see cref="System.Collections.Generic.IDictionary{String, Object}"/>,
+        /// <see cref="System.Collections.IDictionary"/> otherwise reflection is used to access property and then indexer.
         /// </param>
         /// <returns>Computed value and an error string.  If the string is non-null, then there was an evaluation error.</returns>
         public (object value, string error) TryEvaluate(object state)

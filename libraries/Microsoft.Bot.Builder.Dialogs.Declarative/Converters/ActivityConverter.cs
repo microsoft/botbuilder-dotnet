@@ -2,10 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
-using System.Text;
-using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -32,6 +28,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
                     Text = (string)reader.Value
                 };
             }
+
             return JToken.Load(reader).ToObject<Activity>();
         }
 

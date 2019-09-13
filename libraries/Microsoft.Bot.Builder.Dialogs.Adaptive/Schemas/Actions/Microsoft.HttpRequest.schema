@@ -1,6 +1,6 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
-    "$role": "unionType(Microsoft.IDialog)",
+    "$role": "unionType(Microsoft.Dialog)",
     "type": "object",
     "title": "Http Request",
     "description": "This is a action which replaces the current dialog with the target dialog",
@@ -44,7 +44,7 @@
                 "property": {
                     "$role": "expression",
                     "title": "Property",
-                    "description": "The property to store the result of the HTTP call in (as object or string)",
+                    "description": "The property to store the result of the HTTP call in. The result will have 4 properties from the http response: statusCode|reasonPhrase|content|headers.  If the content is json it will be an deserialized object, otherwise it will be a string",
                     "examples": [
                         "dialog.contosodata"
                     ]

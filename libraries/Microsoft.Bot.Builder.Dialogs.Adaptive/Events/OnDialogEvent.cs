@@ -14,11 +14,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
     /// </summary>
     public class OnDialogEvent : OnEvent
     {
+        [JsonConstructor]
+        public OnDialogEvent(List<string> events = null, List<IDialog> actions = null, string constraint = null, int priority = 0, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+     : base(constraint: constraint, actions: actions, callerPath: callerPath, callerLine: callerLine)
+        {
+            this.Events = events ?? new List<string>();
+            this.Actions = actions ?? new List<IDialog>();
+            this.Priority = priority;
+        }
         /// <summary>
         /// Gets or sets list of events to filter.
         /// </summary>
         /// <value>
-        /// List of events to filter.
+        /// List of events to filter. (Example: [BeginDialog,Error]
         /// </value>
         public List<string> Events { get; set; }
 
@@ -29,14 +37,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
         /// The relative priority of this event handler.
         /// </value>
         public int Priority { get; set; }
-
-        [JsonConstructor]
-        public OnDialogEvent(List<string> events = null, List<IDialog> actions = null, string constraint = null, int priority = 0, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
-            : base(constraint: constraint, actions: actions, callerPath: callerPath, callerLine: callerLine)
+        public override string GetIdentity()
         {
-            this.Events = events ?? new List<string>();
-            this.Actions = actions ?? new List<IDialog>();
-            this.Priority = priority;
+            return $"{this.GetType().Name}({string.Join(",", Events)})";
         }
 
         protected override ActionChangeList OnCreateChangeList(SequenceContext planning, object dialogOptions = null)
@@ -80,11 +83,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
                     Expression.OrExpression(expressions.ToArray()),
                     base.BuildExpression(factory))
                 : base.BuildExpression(factory);
-        }
-
-        public override string GetIdentity()
-        {
-            return $"{this.GetType().Name}({string.Join(",", Events)})";
         }
     }
 }

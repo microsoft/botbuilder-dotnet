@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
 {
     /// <summary>
-    /// File resource
+    /// File resource.
     /// </summary>
     public class FileResource : IResource
     {
@@ -24,7 +21,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
 
         public string Id { get; }
 
-        public string FullName { get { return this.path; } }
+        public string FullName
+        {
+            get { return this.path; }
+        }
 
         public async Task<Stream> OpenStreamAsync()
         {
@@ -57,9 +57,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         }
 
         /// <summary>
-        /// Get resource as atext
+        /// Get resource as a text.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>A <see cref="Task"/> with the string.</returns>
         public Task<string> ReadTextAsync()
         {
             if (this.textTask == null)
@@ -71,6 +71,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                     return await textReader.ReadToEndAsync().ConfigureAwait(false);
                 });
             }
+
             return this.textTask;
         }
 

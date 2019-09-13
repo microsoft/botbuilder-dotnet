@@ -6,25 +6,34 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.AI.QnA
 {
     /// <summary>
-    /// Active learning feedback record
+    /// Active learning feedback record.
     /// </summary>
     public class FeedbackRecord
     {
         /// <summary>
-        /// User id
+        /// Gets or sets user id.
         /// </summary>
+        /// <value>
+        /// User id.
+        /// </value>
         [JsonProperty("userId")]
         public string UserId { get; set; }
 
         /// <summary>
-        /// User question
+        /// Gets or sets user question.
         /// </summary>
+        /// <value>
+        /// User question.
+        /// </value>
         [JsonProperty("userQuestion")]
         public string UserQuestion { get; set; }
 
         /// <summary>
-        /// QnA Id
+        /// Gets or sets qnA Id.
         /// </summary>
+        /// <value>
+        /// QnA Id.
+        /// </value>
         [JsonProperty("qnaId")]
         public int QnaId { get; set; }
     }

@@ -1,10 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Hosting.Internal;
-using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
@@ -15,25 +10,30 @@ using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Builder.LanguageGeneration;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Bot.Builder.TestBot.Json
 {
     public class TestBotHttpAdapter : BotFrameworkHttpAdapter
     {
-        public TestBotHttpAdapter(ICredentialProvider credentialProvider,
-            IConfiguration configuration, ILogger<BotFrameworkHttpAdapter> logger,
-            IStorage storage, UserState userState, ConversationState conversationState, ResourceExplorer resourceExplorer)
+        public TestBotHttpAdapter(
+            ICredentialProvider credentialProvider,
+            IConfiguration configuration, 
+            ILogger<BotFrameworkHttpAdapter> logger,
+            IStorage storage, 
+            UserState userState, 
+            ConversationState conversationState, 
+            ResourceExplorer resourceExplorer)
             : base(credentialProvider)
         {
             this.UseStorage(storage);
             this.UseState(userState, conversationState);
-            this.UseResourceExplorer(resourceExplorer, () =>
+            this.UseResourceExplorer(resourceExplorer, new TypeRegistration[]
             {
-                TypeFactory.Register("Testbot.Multiply", typeof(MultiplyAction));
-                TypeFactory.Register("Testbot.JavascriptAction", typeof(JavascriptAction));
+                new TypeRegistration<MultiplyAction>("Testbot.Multiply"),
+                new TypeRegistration<JavascriptAction>("Testbot.JavascriptAction")
             });
+            this.UseAdaptiveDialogs();
             this.UseLanguageGeneration(resourceExplorer);
             this.UseDebugger(configuration.GetValue<int>("debugport", 4712), events: new Events<AdaptiveEvents>());
 
@@ -50,7 +50,6 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                 {
                     try
                     {
-
                         // Delete the conversationState for the current conversation to prevent the
                         // bot from getting stuck in a error-loop caused by being in a bad state.
                         // ConversationState should be thought of as similar to "cookie-state" in a Web pages.

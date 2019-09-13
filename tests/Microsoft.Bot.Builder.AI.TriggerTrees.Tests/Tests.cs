@@ -104,6 +104,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
                 {
                     memory.Add(binding.Key, binding.Value.Value);
                 }
+
                 var trigger = tree.AddTrigger(conjunction.Expression, conjunction.Bindings);
                 var matches = tree.Matches(memory);
                 triggers.Add(trigger);

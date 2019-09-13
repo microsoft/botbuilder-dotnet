@@ -8,7 +8,7 @@
     {
       "properties": {
         "prompt": {
-          "$type": "Microsoft.IActivityTemplate",
+          "$type": "Microsoft.ActivityTemplate",
           "title": "Initial Prompt",
           "description": "The message to send to as prompt for this input.",
           "examples": [
@@ -16,7 +16,7 @@
           ]
         },
         "unrecognizedPrompt": {
-          "$type": "Microsoft.IActivityTemplate",
+          "$type": "Microsoft.ActivityTemplate",
           "title": "Unrecognized Prompt",
           "description": "The message to send if the last input is not recognized.",
           "examples": [
@@ -24,11 +24,19 @@
           ]
         },
         "invalidPrompt": {
-          "$type": "Microsoft.IActivityTemplate",
+          "$type": "Microsoft.ActivityTemplate",
           "title": "Invalid Prompt",
           "description": "The message to send to when then input was not valid for the input type.",
           "examples": [
             "No date was recognized"
+          ]
+        },
+        "defaultValueResponse": {
+          "$type": "Microsoft.ActivityTemplate",
+          "title": "Default Value Response",
+          "description": "The message to send to when max turn count has been exceeded and the default value is selected as the value.",
+          "examples": [
+            "I didn't understand your responses, so I will just use the default value of 10.  Let me know if you want to change it."
           ]
         },
         "maxTurnCount": {

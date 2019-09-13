@@ -1,15 +1,8 @@
 ﻿// Licensed under the MIT License.
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Builder.Expressions;
-using Microsoft.Bot.Builder.Expressions.Parser;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
@@ -19,7 +12,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
     /// It will only trigger if and when 
     /// * it is the leaf dialog AND 
     /// * none of the parent dialogs handle the event 
-    /// This provides the parent dialogs the opportunity to handle global commands as fallback interruption
+    /// This provides the parent dialogs the opportunity to handle global commands as fallback interruption.
     /// </summary>
     public class OnUnknownIntent : OnDialogEvent
     {

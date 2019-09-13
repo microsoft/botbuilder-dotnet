@@ -1,30 +1,31 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
 {
     public interface IResourceProvider
     {
-        /// <summary>
-        /// id for the resource provider
-        /// </summary>
-        string Id { get; }
-
         event ResourceChangedEventHandler Changed;
 
         /// <summary>
-        /// Get resource by id
+        /// Gets id for the resource provider.
         /// </summary>
-        /// <param name="id">resource id</param>
-        /// <returns>resource</returns>
+        /// <value>
+        /// id for the resource provider.
+        /// </value>
+        string Id { get; }
+
+        /// <summary>
+        /// Get resource by id.
+        /// </summary>
+        /// <param name="id">Resource id.</param>
+        /// <returns>The resource.</returns>
         IResource GetResource(string id);
 
         /// <summary>
-        /// enumerate resources
+        /// enumerate resources.
         /// </summary>
-        /// <param name="extension"></param>
-        /// <returns></returns>
+        /// <param name="extension">Extension filter.</param>
+        /// <returns>The resources.</returns>
         IEnumerable<IResource> GetResources(string extension);
     }
 }

@@ -5,16 +5,56 @@
     "generator": "calendarBot.lg",
     "recognizer": {
         "$type": "Microsoft.RegexRecognizer",
-        "intents": {
-            "ShowMeetingIntent": "(?i)show meeting",
-            "CreateMeetingIntent": "(?i)create meeting",
-            "HelpIntent": "(?i)help",
-            "ShowNextPageIntent": "(?i)next page meeting",
-            "UpdateMeetingIntent": "(?i)update meeting",
-            "AcceptMeetingIntent": "(?i)accept meeting",
-            "DeclineMeetingIntent": "(?i)decline meeting",
-            "CancelIntent": "(?i)cancel"
-        }
+        "intents": [
+            {
+
+                "$type": "Microsoft.IntentPattern",
+                "intent": "ShowMeetingIntent",
+                "pattern": "(?i)show meeting"
+            },
+            {
+
+                "$type": "Microsoft.IntentPattern",
+                "intent": "CreateMeetingIntent",
+                "pattern": "(?i)create meeting"
+            },
+            {
+
+                "$type": "Microsoft.IntentPattern",
+                "intent": "HelpIntent",
+                "pattern": "(?i)help"
+            },
+            {
+
+                "$type": "Microsoft.IntentPattern",
+                "intent": "ShowNextPageIntent",
+                "pattern": "(?i)next page meeting"
+            },
+            {
+
+                "$type": "Microsoft.IntentPattern",
+                "intent": "UpdateMeetingIntent",
+                "pattern": "(?i)update meeting"
+            },
+            {
+
+                "$type": "Microsoft.IntentPattern",
+                "intent": "AcceptMeetingIntent",
+                "pattern": "(?i)accept meeting"
+            },
+            {
+
+                "$type": "Microsoft.IntentPattern",
+                "intent": "DeclineMeetingIntent",
+                "pattern": "(?i)decline meeting"
+            },
+            {
+
+                "$type": "Microsoft.IntentPattern",
+                "intent": "CancelIntent",
+                "pattern": "(?i)cancel"
+            }
+        ]
     },
     "events": [
         {

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-
-namespace Microsoft.Bot.Schema
+﻿namespace Microsoft.Bot.Schema
 {
     /// <summary>
     /// An activity by which a bot can log internal information into a logged conversation transcript.

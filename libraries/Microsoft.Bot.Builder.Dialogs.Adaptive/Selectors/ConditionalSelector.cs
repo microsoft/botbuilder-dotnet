@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Expressions;
@@ -27,7 +25,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
         public string Condition
         {
             get { return condition?.ToString(); }
-            set {this.condition = (value != null) ? new ExpressionEngine().Parse(value) : null; }
+            set { this.condition = (value != null) ? new ExpressionEngine().Parse(value) : null; }
         }
 
         /// <summary>

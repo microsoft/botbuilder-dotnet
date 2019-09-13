@@ -3,21 +3,24 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Events;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Events;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Expressions.Parser;
+using Microsoft.Bot.Builder.LanguageGeneration.Templates;
 using Microsoft.Bot.Schema;
 using static Microsoft.Bot.Builder.Dialogs.Debugging.Source;
 
@@ -45,6 +48,10 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             LoadDialogs();
         }
 
+        public override Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            return this.dialogManager.OnTurnAsync(turnContext, cancellationToken: cancellationToken);
+        }
 
         private void LoadDialogs()
         {
@@ -70,15 +77,27 @@ namespace Microsoft.Bot.Builder.TestBot.Json
 
             foreach (var resource in this.resourceExplorer.GetResources(".dialog").Where(r => r.Id.EndsWith(".main.dialog")))
             {
-                var name = Path.GetFileNameWithoutExtension(Path.GetFileNameWithoutExtension(resource.Id));
-                choiceInput.Choices.Add(new Choice(name));
-                var dialog = DeclarativeTypeLoader.Load<IDialog>(resource, this.resourceExplorer, DebugSupport.SourceRegistry);
-                handleChoice.Cases.Add(new Case($"{name}", new List<IDialog>() { dialog }));
+                try
+                {
+                    var name = Path.GetFileNameWithoutExtension(Path.GetFileNameWithoutExtension(resource.Id));
+                    choiceInput.Choices.Add(new Choice(name));
+                    var dialog = DeclarativeTypeLoader.Load<Dialog>(resource, this.resourceExplorer, DebugSupport.SourceRegistry);
+                    handleChoice.Cases.Add(new Case($"{name}", new List<Dialog>() { dialog }));
+                }
+                catch (SyntaxErrorException err)
+                {
+                    Trace.TraceError($"{err.Source}: Error: {err.Message}");
+                }
+                catch (Exception err)
+                {
+                    Trace.TraceError(err.Message);
+                }
             }
+
             choiceInput.Style = ListStyle.Auto;
             rootDialog.Events.Add(new OnBeginDialog()
             {
-                Actions = new List<IDialog>()
+                Actions = new List<Dialog>()
                 {
                     choiceInput,
                     new SendActivity("# Running {conversation.dialogChoice}.main.dialog"),
@@ -90,11 +109,6 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             this.dialogManager = new DialogManager(rootDialog);
 
             System.Diagnostics.Trace.TraceInformation("Done loading resources.");
-        }
-
-        public override Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            return this.dialogManager.OnTurnAsync(turnContext, cancellationToken: cancellationToken);
         }
     }
 }

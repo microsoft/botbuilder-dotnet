@@ -96,7 +96,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         protected override async Task<bool> OnPreBubbleEvent(DialogContext dc, DialogEvent e, CancellationToken cancellationToken)
         {
-            return false;
+            return await Task.FromResult(false).ConfigureAwait(false);
         }
 
         protected override string OnComputeId()

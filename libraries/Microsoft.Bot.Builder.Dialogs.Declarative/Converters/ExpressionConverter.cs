@@ -23,6 +23,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
             {
                 return new ExpressionEngine().Parse((string)reader.Value);
             }
+
             throw new JsonSerializationException("Expected string expression.");
         }
 
@@ -31,5 +32,4 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
             serializer.Serialize(writer, value);
         }
     }
-
 }

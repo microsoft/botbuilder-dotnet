@@ -1,6 +1,6 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
-    "$role": "unionType(Microsoft.IDialog)",
+    "$role": "unionType(Microsoft.Dialog)",
     "title": "If Condition Action",
     "description": "Action which conditionally decides which action to execute next.",
     "type": "object",
@@ -25,7 +25,7 @@
                 "actions": {
                     "type": "array",
                     "items": {
-                        "$type": "Microsoft.IDialog"
+                        "$type": "Microsoft.Dialog"
                     },
                     "title": "Actions",
                     "description": "Action to execute if condition is true."
@@ -33,7 +33,7 @@
                 "elseActions": {
                     "type": "array",
                     "items": {
-                        "$type": "Microsoft.IDialog"
+                        "$type": "Microsoft.Dialog"
                     },
                     "title": "Else Actions",
                     "description": "Action to execute if condition is false."

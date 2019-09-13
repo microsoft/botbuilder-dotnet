@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.RegularExpressions;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
@@ -10,12 +8,12 @@ namespace Microsoft.Bot.Builder.Expressions
 {
     public class CommonRegex
     {
-        private static readonly LRUCache<string, Regex> regexCache = new LRUCache<string, Regex>(15);
+        private static readonly LRUCache<string, Regex> RegexCache = new LRUCache<string, Regex>(15);
 
         public static Regex CreateRegex(string pattern)
         {
             Regex result;
-            if (!string.IsNullOrEmpty(pattern) && regexCache.TryGet(pattern, out var regex))
+            if (!string.IsNullOrEmpty(pattern) && RegexCache.TryGet(pattern, out var regex))
             {
                 result = regex;
             }
@@ -27,7 +25,7 @@ namespace Microsoft.Bot.Builder.Expressions
                 }
 
                 result = new Regex(pattern, RegexOptions.Compiled);
-                regexCache.Set(pattern, result);
+                RegexCache.Set(pattern, result);
             }
 
             return result;
@@ -59,12 +57,5 @@ namespace Microsoft.Bot.Builder.Expressions
 
             return parser.parse();
         }
-    }
-
-    internal class ErrorListener : BaseErrorListener
-    {
-        public static readonly ErrorListener Instance = new ErrorListener();
-
-        public override void SyntaxError([NotNull] IRecognizer recognizer, [Nullable] IToken offendingSymbol, int line, int charPositionInLine, [NotNull] string msg, [Nullable] RecognitionException e) => throw new Exception($"Regular expression is invalid.");
     }
 }

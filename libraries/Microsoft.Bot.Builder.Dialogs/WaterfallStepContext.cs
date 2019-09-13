@@ -17,15 +17,28 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// Initializes a new instance of the <see cref="WaterfallStepContext"/> class.
         /// Provides context for a turn of a waterfall dialog. Contains ITurnContext as property 'Context'.
         /// </summary>
-        /// <param name= "parent">The parent of the waterfall dialog.</param>
+        /// <param name= "parentWaterfall">The parent of the waterfall dialog.</param>
         /// <param name= "dc">The dialog's context.</param>
         /// <param name= "options">Any options to call the waterfall dialog with.</param>
         /// <param name= "values">A dictionary of values which will be persisted across all waterfall steps.</param>
         /// <param name= "index">The index of the current waterfall to execute.</param>
         /// <param name= "reason">The reason the waterfall step is being executed.</param>
         /// <param name= "result">Results returned by a dialog called in the previous waterfall step.</param>
-        internal WaterfallStepContext(WaterfallDialog parentWaterfall, DialogContext dc, object options, IDictionary<string, object> values, int index, DialogReason reason, object result = null)
-            : base(dc.Dialogs, turnContext: dc.Context, state: new DialogState(dc.Stack), conversationState: dc.State.Conversation, userState: dc.State.User, settings: dc.State.Settings)
+        internal WaterfallStepContext(
+            WaterfallDialog parentWaterfall, 
+            DialogContext dc, 
+            object options, 
+            IDictionary<string, object> values, 
+            int index, 
+            DialogReason reason, 
+            object result = null)
+            : base(
+                  dc.Dialogs, 
+                  turnContext: dc.Context, 
+                  state: new DialogState(dc.Stack), 
+                  conversationState: dc.State.Conversation, 
+                  userState: dc.State.User, 
+                  settings: dc.State.Settings)
         {
             _parentWaterfall = parentWaterfall;
             _nextCalled = false;

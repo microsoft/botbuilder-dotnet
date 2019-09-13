@@ -6,6 +6,9 @@ using System.Linq;
 
 namespace Microsoft.Bot.Builder.Expressions
 {
+    /// <summary>
+    /// Extension methods for manipulation of <see cref="Expression"/> values.
+    /// </summary>
     public static partial class Extensions
     {
         /// <summary>

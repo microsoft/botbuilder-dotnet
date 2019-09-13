@@ -3,18 +3,15 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Runtime.InteropServices;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Tests;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Auth;
-using Newtonsoft.Json;
 using Microsoft.WindowsAzure.Storage.Blob;
+using Newtonsoft.Json;
 using Activity = Microsoft.Bot.Schema.Activity;
 
 // These tests require Azure Storage Emulator v5.7
@@ -27,7 +24,6 @@ namespace Microsoft.Bot.Builder.Azure.Tests
     [TestCategory("Storage - BlobTranscripts")]
     public class AzureBlobTranscriptStoreTests : StorageBaseTests
     {
-
         private const string ConnectionString = @"AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;DefaultEndpointsProtocol=http;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10001/devstoreaccount1;TableEndpoint=http://127.0.0.1:10002/devstoreaccount1;";
         private const string ChannelId = "test";
 
@@ -51,11 +47,17 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             "21", "22", "23", "24", "25", "26", "27", "28", "29", "30",
         };
 
-        public string ContainerName { get { return TestContext.TestName.ToLower(); } }
+        public string ContainerName
+        {
+            get { return TestContext.TestName.ToLower(); }
+        }
 
         public TestContext TestContext { get; set; }
 
-        public AzureBlobTranscriptStore TranscriptStore { get { return new AzureBlobTranscriptStore(ConnectionString, ContainerName); } }
+        public AzureBlobTranscriptStore TranscriptStore
+        {
+            get { return new AzureBlobTranscriptStore(ConnectionString, ContainerName); }
+        }
 
         // These tests require Azure Storage Emulator v5.7
         [TestInitialize]
@@ -125,7 +127,6 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 
                 Assert.AreEqual(5, loggedActivities.Length);
             }
-
         }
 
         // These tests require Azure Storage Emulator v5.7
@@ -172,7 +173,6 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             if (CheckEmulator())
             {
-
                 for (var i = 0; i < ConversationSpecialIds.Length; i++)
                 {
                     var a = CreateActivity(i, i, ConversationSpecialIds);
@@ -191,7 +191,6 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             if (CheckEmulator())
             {
-
                 var cleanChanel = Guid.NewGuid().ToString();
 
                 var loggedPagedResult = new PagedResult<IActivity>();
@@ -244,7 +243,6 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             if (CheckEmulator())
             {
-
                 try
                 {
                     var a = CreateActivity(0, 0, LongId);
@@ -252,10 +250,11 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                     await TranscriptStore.LogActivityAsync(a);
                     Assert.Fail("Should have thrown ");
                 }
-                catch (StorageException err)
+                catch (StorageException)
                 {
                     return;
                 }
+
                 Assert.Fail("Should have thrown ");
             }
         }
@@ -287,7 +286,6 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             if (CheckEmulator())
             {
-
                 AzureBlobTranscriptStore store = null;
 
                 await Assert.ThrowsExceptionAsync<NullReferenceException>(async () =>
@@ -303,7 +301,6 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             if (CheckEmulator())
             {
-
                 var conversation = TestAdapter.CreateConversation(Guid.NewGuid().ToString("n"));
                 TestAdapter adapter = new TestAdapter(conversation)
                     .Use(new TranscriptLoggerMiddleware(TranscriptStore));
@@ -351,7 +348,6 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             if (CheckEmulator())
             {
-
                 var conversation = TestAdapter.CreateConversation(Guid.NewGuid().ToString("n"));
                 TestAdapter adapter = new TestAdapter(conversation)
                     .Use(new TranscriptLoggerMiddleware(TranscriptStore));
@@ -399,7 +395,6 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 var conversation = TestAdapter.CreateConversation(Guid.NewGuid().ToString("n"));
                 TestAdapter adapter = new TestAdapter(conversation)
                     .Use(new TranscriptLoggerMiddleware(TranscriptStore));
-                string conversationId = null;
                 Activity activityToUpdate = null;
                 await new TestFlow(adapter, async (context, cancellationToken) =>
                 {
@@ -432,12 +427,14 @@ namespace Microsoft.Bot.Builder.Azure.Tests
                 Assert.AreEqual("foo", pagedResult.Items[0].AsMessageActivity().Text);
                 Assert.AreEqual("new response", pagedResult.Items[1].AsMessageActivity().Text);
                 Assert.AreEqual("update", pagedResult.Items[2].AsMessageActivity().Text);
+
                 // Perform some queries
                 pagedResult = await TranscriptStore.GetTranscriptActivitiesAsync(conversation.ChannelId, conversation.Conversation.Id, null, DateTimeOffset.MinValue);
                 Assert.AreEqual(3, pagedResult.Items.Length);
                 Assert.AreEqual("foo", pagedResult.Items[0].AsMessageActivity().Text);
                 Assert.AreEqual("new response", pagedResult.Items[1].AsMessageActivity().Text);
                 Assert.AreEqual("update", pagedResult.Items[2].AsMessageActivity().Text);
+
                 // Perform some queries
                 pagedResult = await TranscriptStore.GetTranscriptActivitiesAsync(conversation.ChannelId, conversation.Conversation.Id, null, DateTimeOffset.MaxValue);
                 Assert.AreEqual(0, pagedResult.Items.Length);

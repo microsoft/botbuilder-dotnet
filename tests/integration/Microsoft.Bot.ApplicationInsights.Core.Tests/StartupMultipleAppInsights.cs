@@ -7,9 +7,7 @@ using Microsoft.Bot.Builder.ApplicationInsights;
 using Microsoft.Bot.Configuration;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
 
 namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
 {
