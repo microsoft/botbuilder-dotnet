@@ -210,8 +210,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
 
         private static void AssertResourceNull(ResourceExplorer explorer, string id)
         {
-            var dialog = explorer.GetResource(id);
-            Assert.IsNull(dialog, $"GetResource({id}) should return null");
+            try
+            {
+                var dialog = explorer.GetResource(id);
+                Assert.Fail($"GetResource({id}) should throw");
+            }
+            catch (ArgumentException err)
+            {
+                Assert.AreEqual(err.ParamName, id, "Should throw error with resource id in it");
+            }
+
             var dialogs = explorer.GetResources("dialog");
             Assert.IsFalse(dialogs.Where(d => d.Id == id).Any(), $"getResources({id}) should not return resource");
         }
