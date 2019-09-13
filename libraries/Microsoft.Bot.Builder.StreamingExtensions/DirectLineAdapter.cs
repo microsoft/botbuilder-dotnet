@@ -431,7 +431,7 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
 
                 try
                 {
-                    var serverResponse = await _transportServer.SendAsync(request, cancellationToken).ConfigureAwait(false);
+                    var serverResponse = await (_httpClient as StreamingHttpClient).SendAsync(request, cancellationToken).ConfigureAwait(false);
 
                     if (serverResponse.StatusCode == (int)HttpStatusCode.OK)
                     {
