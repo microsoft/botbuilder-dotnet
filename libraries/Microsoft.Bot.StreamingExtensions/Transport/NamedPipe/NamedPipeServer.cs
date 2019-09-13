@@ -76,7 +76,9 @@ namespace Microsoft.Bot.StreamingExtensions.Transport.NamedPipes
         /// <value>
         /// The Id for this Named Pipe Server.
         /// </value>
-        public int Id { get; set; }
+        public Guid Id { get; set; }
+
+        public string RemoteHost { get => _baseName; }
 
         /// <summary>
         /// Used to establish the connection used by this server and begin listening for incoming messages.

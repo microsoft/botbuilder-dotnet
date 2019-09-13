@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.WebSockets;
@@ -28,36 +29,36 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
             this._logger = logger ?? NullLogger.Instance;
         }
 
-        public int TransportId => _server.Id;
-
-        public override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken = default)
-        {
-            var streamingRequest = new StreamingRequest
-            {
-                Path = request.RequestUri.OriginalString.Substring(request.RequestUri.OriginalString.IndexOf("/v3")),
-                Verb = request.Method.ToString(),
-            };
-            streamingRequest.SetBody(request.Content);
-
-            return await this.SendRequestAsync<HttpResponseMessage>(streamingRequest, cancellationToken).ConfigureAwait(false);
-        }
-
         public void AddConnection(string pipeName, IRequestHandler requestHandler)
         {
             var server = new NamedPipeServer(pipeName, requestHandler);
-            _transportServers.Add(server.)
+            _transportServers.Add(server.Id, server);
+
+            // The task that begins with starting the server listening doesn't complete until the server stops listening, so we don't want to await it.
+            server.StartAsync();
+            server.Disconnected += Server_Disconnected;
         }
 
-        public void AddConnection(WebSocket socket, IRequestHandler requestHandler)
+        public void AddConnection(WebSocket socket, string connectionBaseUrl, IRequestHandler requestHandler)
         {
-            this._server = new WebSocketServer(socket, requestHandler);
+            var server = new WebSocketServer(socket, connectionBaseUrl, requestHandler);
+            _transportServers.Add(server.Id, server);
+
+            // The task that begins with starting the server listening doesn't complete until the server stops listening, so we don't want to await it.
+            server.StartAsync();
+            server.Disconnected += Server_Disconnected;
         }
 
+        /// <summary>
+        /// Attempts to find an existing connection by ID.
+        /// </summary>
+        /// <param name="id">The guid identifying the connection to find.</param>
+        /// <returns>A connection with the specified id if one exists, otherwise null.</returns>
         public IStreamingTransportServer GetConnection(Guid id)
         {
             try
             {
-                IStreamingTransportServer connection;
+                IStreamingTransportServer connection = null;
                 _transportServers.TryGetValue(id, out connection);
 
                 return connection;
@@ -70,7 +71,40 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
             }
         }
 
+        /// <summary>
+        /// Attempts to find an existing connection to an instance of the specified remote service.
+        /// Useful to avoid opening multiple connections to the same service for calls that do not
+        /// need to be bound to a specific connection.
+        /// </summary>
+        /// <param name="baseUrl">The base URL of the remote service to search for existing connections with.</param>
+        /// <returns>A connection if one exists, otherwise null.</returns>
+        public IStreamingTransportServer FindConnection(string baseUrl)
+        {
+            try
+            {
+                return _transportServers.Values.Where(x => x.RemoteHost.ToLowerInvariant() == baseUrl.ToLowerInvariant()).FirstOrDefault();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+
+                throw;
+            }
+        }
+
         public async Task<ReceiveResponse> SendAsync(StreamingRequest streamingRequest, CancellationToken cancellationToken = default) => await this._server.SendAsync(streamingRequest, cancellationToken).ConfigureAwait(false);
+
+        public override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken = default)
+        {
+            var streamingRequest = new StreamingRequest
+            {
+                Path = request.RequestUri.OriginalString.Substring(request.RequestUri.OriginalString.IndexOf("/v3")),
+                Verb = request.Method.ToString(),
+            };
+            streamingRequest.SetBody(request.Content);
+
+            return await this.SendRequestAsync<HttpResponseMessage>(streamingRequest, cancellationToken).ConfigureAwait(false);
+        }
 
         private async Task<T> SendRequestAsync<T>(StreamingRequest request, CancellationToken cancellation = default)
         {
@@ -89,6 +123,13 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
             }
 
             return default;
+        }
+
+        private void Server_Disconnected(object sender, DisconnectedEventArgs e)
+        {
+            var id = (sender as IStreamingTransportServer).Id;
+            _transportServers.Remove(id);
+            _logger.LogInformation("De-registered connection " + id + " after receiving disconnection event: " + e.Reason);
         }
     }
 }

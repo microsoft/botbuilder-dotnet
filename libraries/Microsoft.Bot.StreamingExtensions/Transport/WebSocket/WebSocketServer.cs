@@ -29,14 +29,16 @@ namespace Microsoft.Bot.StreamingExtensions.Transport.WebSockets
         /// Throws <see cref="ArgumentNullException"/> on null arguments.
         /// </summary>
         /// <param name="socket">The <see cref="WebSocket"/> of the underlying connection for this server to be built on top of.</param>
+        /// <param name="connectionBaseUrl"> The base URL of the remote service this server is connected to.</param>
         /// <param name="requestHandler">A <see cref="IRequestHandler"/> to process incoming messages received by this server.</param>
-        public WebSocketServer(WebSocket socket, IRequestHandler requestHandler)
+        public WebSocketServer(WebSocket socket, string connectionBaseUrl, IRequestHandler requestHandler)
         {
             if (socket == null)
             {
                 throw new ArgumentNullException(nameof(socket));
             }
 
+            RemoteHost = connectionBaseUrl;
             _websocketTransport = new WebSocketTransport(socket);
             _requestHandler = requestHandler ?? throw new ArgumentNullException(nameof(requestHandler));
             _requestManager = new RequestManager();
@@ -58,7 +60,9 @@ namespace Microsoft.Bot.StreamingExtensions.Transport.WebSockets
         /// <value>
         /// The Id for this Named Pipe Server.
         /// </value>
-        public int Id { get; set; }
+        public Guid Id { get; set; }
+
+        public string RemoteHost { get; }
 
         /// <summary>
         /// Gets a value indicating whether or not this server is currently connected.

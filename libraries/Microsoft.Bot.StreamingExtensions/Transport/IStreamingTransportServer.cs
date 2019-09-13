@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -22,7 +23,15 @@ namespace Microsoft.Bot.StreamingExtensions.Transport
         /// <value>
         /// The ID of this transport server, useful for making sure responses are sent over the correct transport.
         /// </value>
-        int Id { get; set; }
+        Guid Id { get; set; }
+
+        /// <summary>
+        /// Gets the base URL of the RemoteHost this server is connected to.
+        /// </summary>
+        /// <value>
+        /// The base URL of the RemoteHost this server is connected to.
+        /// </value>
+        string RemoteHost { get; }
 
         /// <summary>
         /// Used to establish the connection used by this server and begin listening for incoming messages.

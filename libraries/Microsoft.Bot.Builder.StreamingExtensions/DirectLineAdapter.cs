@@ -574,8 +574,8 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
             try
             {
                 var socket = await httpRequest.HttpContext.WebSockets.AcceptWebSocketAsync().ConfigureAwait(false);
-                _transportServer = new WebSocketServer(socket, this);
-                _httpClient = new StreamingHttpClient(_transportServer, _logger);
+                _httpClient = new StreamingHttpClient(_logger);
+                (_httpClient as StreamingHttpClient).AddConnection(socket, httpRequest.HttpContext.Request.PathBase.ToString(), this);
 
                 await _transportServer.StartAsync().ConfigureAwait(false);
             }
