@@ -159,12 +159,24 @@ namespace Microsoft.Bot.Builder.Dialogs
         private static List<ModelResult> RecognizeNumberWithUnit(string utterance, string culture)
         {
             var number = NumberRecognizer.RecognizeNumber(utterance, culture, NumberOptions.SuppressExtendedTypes);
-            var currency = NumberWithUnitRecognizer.RecognizeCurrency(utterance, culture);
-            var age = NumberWithUnitRecognizer.RecognizeAge(utterance, culture);
-            var temperature = NumberWithUnitRecognizer.RecognizeTemperature(utterance, culture);
-            var dimension = NumberWithUnitRecognizer.RecognizeDimension(utterance, culture);
 
-            return number.Any() ? number : currency.Any() ? currency : age.Any() ? age : temperature.Any() ? temperature : dimension;
+            if (number.Any())
+            {
+                // Result when it matches with a number recognizer
+                return number;
+            }
+            else
+            {
+                // Analyze every option for numberWithUnit
+                var results = new List<List<ModelResult>>();
+                results.Add(NumberWithUnitRecognizer.RecognizeCurrency(utterance, culture));
+                results.Add(NumberWithUnitRecognizer.RecognizeAge(utterance, culture));
+                results.Add(NumberWithUnitRecognizer.RecognizeTemperature(utterance, culture));
+                results.Add(NumberWithUnitRecognizer.RecognizeDimension(utterance, culture));
+
+                // Filter the options that returned nothing and return the one that matched
+                return results.FirstOrDefault(r => r.Any()) ?? new List<ModelResult>();
+            }
         }
     }
 }
