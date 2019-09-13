@@ -57,6 +57,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
                 catch (ArgumentException err)
                 {
                     Assert.IsTrue(err.Message.Contains("bogus"));
+                    Assert.AreEqual("bogus.dialog", err.ParamName);
                 }
                 catch (Exception err2)
                 {

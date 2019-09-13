@@ -95,7 +95,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
                     return fileResource;
                 }
 
-                throw new ArgumentException($"Could not find resource '{id}'");
+                throw new ArgumentException($"Could not find resource '{id}'", paramName: id);
             }
         }
 
