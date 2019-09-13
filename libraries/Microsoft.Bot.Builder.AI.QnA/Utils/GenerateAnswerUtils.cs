@@ -51,7 +51,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <param name="messageActivity">Message activity of the turn context.</param>
         /// <param name="options">The options for the QnA Maker knowledge base. If null, constructor option is used for this instance.</param>
         /// <returns>A list of answers for the user query, sorted in decreasing order of ranking score.</returns>
-        public async Task<QueryResult[]> GetAnswersAsync(ITurnContext turnContext, IMessageActivity messageActivity, QnAMakerOptions options)
+        public async Task<QueryResults> GetAnswersAsync(ITurnContext turnContext, IMessageActivity messageActivity, QnAMakerOptions options)
         {
             if (turnContext == null)
             {
@@ -73,12 +73,12 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
             var result = await QueryQnaServiceAsync((Activity)messageActivity, hydratedOptions).ConfigureAwait(false);
 
-            await EmitTraceInfoAsync(turnContext, (Activity)messageActivity, result, hydratedOptions).ConfigureAwait(false);
+            await EmitTraceInfoAsync(turnContext, (Activity)messageActivity, result.Answers, hydratedOptions).ConfigureAwait(false);
 
             return result;
         }
 
-        private static async Task<QueryResult[]> FormatQnaResultAsync(HttpResponseMessage response, QnAMakerOptions options)
+        private static async Task<QueryResults> FormatQnaResultAsync(HttpResponseMessage response, QnAMakerOptions options)
         {
             var jsonResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
@@ -89,9 +89,9 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 answer.Score = answer.Score / 100;
             }
 
-            var result = results.Answers.Where(answer => answer.Score > options.ScoreThreshold).ToArray();
+            results.Answers = results.Answers.Where(answer => answer.Score > options.ScoreThreshold).ToArray();
 
-            return result;
+            return results;
         }
 
         private static void ValidateOptions(QnAMakerOptions options)
@@ -170,7 +170,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
             return hydratedOptions;
         }
 
-        private async Task<QueryResult[]> QueryQnaServiceAsync(Activity messageActivity, QnAMakerOptions options)
+        private async Task<QueryResults> QueryQnaServiceAsync(Activity messageActivity, QnAMakerOptions options)
         {
             var requestUrl = $"{_endpoint.Host}/knowledgebases/{_endpoint.KnowledgeBaseId}/generateanswer";
             var jsonRequest = JsonConvert.SerializeObject(
