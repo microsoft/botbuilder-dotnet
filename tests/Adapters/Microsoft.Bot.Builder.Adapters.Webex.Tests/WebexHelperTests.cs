@@ -63,7 +63,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         [Fact]
         public async void GetDecryptedMessageAsync_Should_Return_Null_With_Null_Payload()
         {
-            Assert.Null(await WebexHelper.GetDecryptedMessageAsync(null, null));
+            Assert.Null(await WebexHelper.GetDecryptedMessageAsync(null, null, new CancellationToken()));
         }
 
         [Fact]

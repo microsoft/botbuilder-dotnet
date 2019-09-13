@@ -71,7 +71,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// </summary>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A list of webhook subscriptions.</returns>
-        public async Task<WebhookList> ListWebhookSubscriptionsAsync(CancellationToken cancellationToken = default)
+        public async Task<WebhookList> ListWebhookSubscriptionsAsync(CancellationToken cancellationToken)
         {
             return await _webexClient.ListWebhooksAsync(cancellationToken).ConfigureAwait(false);
         }
@@ -82,7 +82,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <param name="webhookList">List of webhook subscriptions to be deleted.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public async Task ResetWebhookSubscriptionsAsync(WebhookList webhookList, CancellationToken? cancellationToken = null)
+        public async Task ResetWebhookSubscriptionsAsync(WebhookList webhookList, CancellationToken cancellationToken)
         {
             for (var i = 0; i < webhookList.ItemCount; i++)
             {
@@ -101,7 +101,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
             var webHookName = string.IsNullOrWhiteSpace(_config.WebhookName) ? "Webex Firehose" : _config.WebhookName;
             var webHookCardsName = string.IsNullOrWhiteSpace(_config.WebhookName) ? "Webex AttachmentActions" : $"{_config.WebhookName}_AttachmentActions)";
 
-            var webhookList = await ListWebhookSubscriptionsAsync().ConfigureAwait(false);
+            var webhookList = await ListWebhookSubscriptionsAsync(cancellationToken).ConfigureAwait(false);
 
             string webhookId = null;
             string webhookCardsId = null;
@@ -305,7 +305,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <param name="bot">A bot with logic function in the form.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public async Task ProcessAsync(HttpRequest request, HttpResponse response, IBot bot, CancellationToken cancellationToken = default)
+        public async Task ProcessAsync(HttpRequest request, HttpResponse response, IBot bot, CancellationToken cancellationToken)
         {
             if (request == null)
             {

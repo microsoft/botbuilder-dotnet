@@ -41,7 +41,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <param name="files">List of files attached to the message.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>The created message id.</returns>
-        public virtual async Task<string> CreateMessageAsync(string toPersonOrEmail, string text, IList<Uri> files = null, CancellationToken? cancellationToken = null)
+        public virtual async Task<string> CreateMessageAsync(string toPersonOrEmail, string text, IList<Uri> files = null, CancellationToken cancellationToken = default)
         {
             var webexResponse = await _api.CreateDirectMessageAsync(toPersonOrEmail, text, files, cancellationToken: cancellationToken).ConfigureAwait(false);
 
@@ -54,7 +54,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <param name="messageId">The id of the message to be deleted.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public virtual async Task DeleteMessageAsync(string messageId, CancellationToken? cancellationToken = null)
+        public virtual async Task DeleteMessageAsync(string messageId, CancellationToken cancellationToken)
         {
             await _api.DeleteMessageAsync(messageId, cancellationToken).ConfigureAwait(false);
         }
@@ -187,7 +187,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// </summary>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>The <see cref="Person"/> object associated with the bot.</returns>
-        public virtual async Task<Person> GetMeAsync(CancellationToken? cancellationToken = null)
+        public virtual async Task<Person> GetMeAsync(CancellationToken cancellationToken)
         {
             var resultPerson = await _api.GetMeAsync(cancellationToken).ConfigureAwait(false);
 
@@ -199,7 +199,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// </summary>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>The <see cref="Person"/> object associated with the bot, from cache.</returns>
-        public virtual async Task<CachedPerson> GetMeFromCacheAsync(CancellationToken? cancellationToken = null)
+        public virtual async Task<CachedPerson> GetMeFromCacheAsync(CancellationToken cancellationToken)
         {
             var resultPerson = await _api.GetMeFromCacheAsync(cancellationToken).ConfigureAwait(false);
 
@@ -212,7 +212,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <param name="messageId">Id of the message to be recovered.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>The message's data.</returns>
-        public virtual async Task<Message> GetMessageAsync(string messageId, CancellationToken? cancellationToken = null)
+        public virtual async Task<Message> GetMessageAsync(string messageId, CancellationToken cancellationToken)
         {
             var message = await _api.GetMessageAsync(messageId, cancellationToken).ConfigureAwait(false);
 
@@ -225,7 +225,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <param name="webhook"><see cref="Webhook"/> to be activated.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>The Activated <see cref="Webhook"/>.</returns>
-        public virtual async Task<Webhook> ActivateWebhookAsync(Webhook webhook, CancellationToken? cancellationToken = null)
+        public virtual async Task<Webhook> ActivateWebhookAsync(Webhook webhook, CancellationToken cancellationToken)
         {
             var resultWebhook = await _api.ActivateWebhookAsync(webhook, cancellationToken).ConfigureAwait(false);
 
@@ -237,7 +237,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// </summary>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A list of Webhooks associated with the application.</returns>
-        public virtual async Task<WebhookList> ListWebhooksAsync(CancellationToken? cancellationToken = null)
+        public virtual async Task<WebhookList> ListWebhooksAsync(CancellationToken cancellationToken)
         {
             var webhookList = await _api.ListWebhooksAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
 
@@ -255,7 +255,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <param name="secret">Secret used to validate the webhook.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>The created <see cref="Webhook"/>.</returns>
-        public virtual async Task<Webhook> CreateWebhookAsync(string name, Uri targetUri, EventResource resource, EventType type, IEnumerable<EventFilter> filters, string secret, CancellationToken? cancellationToken = null)
+        public virtual async Task<Webhook> CreateWebhookAsync(string name, Uri targetUri, EventResource resource, EventType type, IEnumerable<EventFilter> filters, string secret, CancellationToken cancellationToken)
         {
             var resultWebhook = await _api.CreateWebhookAsync(name, targetUri, resource, type, null, secret, cancellationToken: cancellationToken).ConfigureAwait(false);
 
@@ -376,7 +376,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <param name="webhookId">The id of the Webhook to get.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>The requested Webhook.</returns>
-        public virtual async Task<Webhook> GetWebhookAsync(string webhookId, CancellationToken? cancellationToken = null)
+        public virtual async Task<Webhook> GetWebhookAsync(string webhookId, CancellationToken cancellationToken)
         {
             var resultWebhook = await _api.GetWebhookAsync(webhookId, cancellationToken).ConfigureAwait(false);
 
@@ -389,7 +389,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <param name="id">Id of the webhook to be deleted.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public virtual async Task DeleteWebhookAsync(Webhook id, CancellationToken? cancellationToken = null)
+        public virtual async Task DeleteWebhookAsync(Webhook id, CancellationToken cancellationToken)
         {
             await _api.DeleteWebhookAsync(id, cancellationToken).ConfigureAwait(false);
         }
@@ -403,7 +403,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <param name="secret">Secret used to validate the webhook.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>The updated <see cref="Webhook"/>.</returns>
-        public virtual async Task<Webhook> UpdateWebhookAsync(string webhookId, string name, Uri targetUri, string secret, CancellationToken? cancellationToken = null)
+        public virtual async Task<Webhook> UpdateWebhookAsync(string webhookId, string name, Uri targetUri, string secret, CancellationToken cancellationToken)
         {
             var resultWebhook = await _api.UpdateWebhookAsync(webhookId, name, targetUri, secret, cancellationToken: cancellationToken).ConfigureAwait(false);
 
@@ -417,7 +417,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <param name="teamId">The ID for the team with which this room is associated.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>The space created.</returns>
-        public virtual async Task<Space> CreateSpaceAsync(string title, string teamId = null, CancellationToken? cancellationToken = null)
+        public virtual async Task<Space> CreateSpaceAsync(string title, string teamId = null, CancellationToken cancellationToken = default)
         {
             var resultSpace = await _api.CreateSpaceAsync(title, teamId, cancellationToken).ConfigureAwait(false);
 
@@ -433,7 +433,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <param name="personIdType"><see cref="PersonIdType"/> for personIdOrEmail parameter.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>The resulting space membership.</returns>
-        public virtual async Task<SpaceMembership> CreateSpaceMembershipAsync(string spaceId, string personIdOrEmail, bool? isModerator = null, PersonIdType personIdType = PersonIdType.Detect, CancellationToken? cancellationToken = null)
+        public virtual async Task<SpaceMembership> CreateSpaceMembershipAsync(string spaceId, string personIdOrEmail, bool? isModerator = null, PersonIdType personIdType = PersonIdType.Detect, CancellationToken cancellationToken = default)
         {
             var resultSpaceMembership = await _api.CreateSpaceMembershipAsync(spaceId, personIdOrEmail, isModerator, personIdType, cancellationToken).ConfigureAwait(false);
 
@@ -446,7 +446,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <param name="spaceId">The id of the space to be deleted.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public virtual async Task DeleteSpaceAsync(string spaceId, CancellationToken? cancellationToken = null)
+        public virtual async Task DeleteSpaceAsync(string spaceId, CancellationToken cancellationToken)
         {
             await _api.DeleteSpaceAsync(spaceId, cancellationToken).ConfigureAwait(false);
         }
@@ -457,7 +457,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <param name="membershipId">The id of the membership to be deleted.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public virtual async Task DeleteSpaceMembershipAsync(string membershipId, CancellationToken? cancellationToken = null)
+        public virtual async Task DeleteSpaceMembershipAsync(string membershipId, CancellationToken cancellationToken)
         {
             await _api.DeleteSpaceMembershipAsync(membershipId, cancellationToken).ConfigureAwait(false);
         }
@@ -468,7 +468,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <param name="spaceId">The id of the space to be gotten.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>The space requested.</returns>
-        public virtual async Task<Space> GetSpaceAsync(string spaceId, CancellationToken? cancellationToken = null)
+        public virtual async Task<Space> GetSpaceAsync(string spaceId, CancellationToken cancellationToken)
         {
             var resultSpace = await _api.GetSpaceAsync(spaceId, cancellationToken).ConfigureAwait(false);
             return resultSpace.GetData(false);
@@ -480,7 +480,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <param name="membershipId">The id of the membership to get.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>The requested space membership.</returns>
-        public virtual async Task<SpaceMembership> GetSpaceMembershipAsync(string membershipId, CancellationToken? cancellationToken = null)
+        public virtual async Task<SpaceMembership> GetSpaceMembershipAsync(string membershipId, CancellationToken cancellationToken)
         {
             var resultSpaceMembership = await _api.GetSpaceMembershipAsync(membershipId, cancellationToken).ConfigureAwait(false);
 
@@ -496,7 +496,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <param name="max">Limit the maximum number of messages in the response.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A list of the spaces.</returns>
-        public virtual async Task<SpaceList> ListSpacesAsync(string teamId = null, SpaceType type = null, SpaceSortBy sortBy = null, int? max = null, CancellationToken? cancellationToken = null)
+        public virtual async Task<SpaceList> ListSpacesAsync(string teamId = null, SpaceType type = null, SpaceSortBy sortBy = null, int? max = null, CancellationToken cancellationToken = default)
         {
             var resultSpaceList = await _api.ListSpacesAsync(teamId, type, sortBy, max, cancellationToken).ConfigureAwait(false);
 
@@ -512,7 +512,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <param name="personIdType"><see cref="PersonIdType"/> for personIdOrEmail parameter.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>The space memberships list.</returns>
-        public virtual async Task<SpaceMembershipList> ListSpaceMembershipsAsync(string spaceId = null, string personIdOrEmail = null, int? max = null, PersonIdType personIdType = PersonIdType.Detect, CancellationToken? cancellationToken = null)
+        public virtual async Task<SpaceMembershipList> ListSpaceMembershipsAsync(string spaceId = null, string personIdOrEmail = null, int? max = null, PersonIdType personIdType = PersonIdType.Detect, CancellationToken cancellationToken = default)
         {
             var resultSpaceMembershipsList = await _api.ListSpaceMembershipsAsync(spaceId, personIdOrEmail, max, personIdType, cancellationToken).ConfigureAwait(false);
 
@@ -526,7 +526,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <param name="title">A user-friendly name for the space.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>The updated space.</returns>
-        public virtual async Task<Space> UpdateSpaceAsync(string spaceId, string title, CancellationToken? cancellationToken = null)
+        public virtual async Task<Space> UpdateSpaceAsync(string spaceId, string title, CancellationToken cancellationToken)
         {
             var resultSpace = await _api.UpdateSpaceAsync(spaceId, title, cancellationToken).ConfigureAwait(false);
 
@@ -540,7 +540,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <param name="isModerator">Set to true to make the person a space moderator.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>The updated space membership.</returns>
-        public virtual async Task<SpaceMembership> UpdateSpaceMembershipAsync(string membershipId, bool isModerator, CancellationToken? cancellationToken = null)
+        public virtual async Task<SpaceMembership> UpdateSpaceMembershipAsync(string membershipId, bool isModerator, CancellationToken cancellationToken)
         {
             var resultSpaceMembership = await _api.UpdateSpaceMembershipAsync(membershipId, isModerator, cancellationToken).ConfigureAwait(false);
 
@@ -553,7 +553,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <param name="name">A user-friendly name for the team.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>The created team.</returns>
-        public virtual async Task<Team> CreateTeamAsync(string name, CancellationToken? cancellationToken = null)
+        public virtual async Task<Team> CreateTeamAsync(string name, CancellationToken cancellationToken)
         {
             var resultTeam = await _api.CreateTeamAsync(name, cancellationToken).ConfigureAwait(false);
 
@@ -569,7 +569,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <param name="personIdType"><see cref="PersonIdType"/> for personIdOrEmail parameter.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>The team membership created.</returns>
-        public virtual async Task<TeamMembership> CreateTeamMembershipAsync(string teamId, string personIdOrEmail, bool? isModerator = null, PersonIdType personIdType = PersonIdType.Detect, CancellationToken? cancellationToken = null)
+        public virtual async Task<TeamMembership> CreateTeamMembershipAsync(string teamId, string personIdOrEmail, bool? isModerator = null, PersonIdType personIdType = PersonIdType.Detect, CancellationToken cancellationToken = default)
         {
             var resultTeamMembership = await _api.CreateTeamMembershipAsync(teamId, personIdOrEmail, isModerator, personIdType, cancellationToken).ConfigureAwait(false);
 
@@ -582,7 +582,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <param name="teamId">Team id to be deleted.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public virtual async Task DeleteTeamAsync(string teamId, CancellationToken? cancellationToken = null)
+        public virtual async Task DeleteTeamAsync(string teamId, CancellationToken cancellationToken)
         {
             await _api.DeleteTeamAsync(teamId, cancellationToken).ConfigureAwait(false);
         }
@@ -593,7 +593,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <param name="membershipId">Team Membership id to be deleted.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public virtual async Task DeleteTeamMembershipAsync(string membershipId, CancellationToken? cancellationToken = null)
+        public virtual async Task DeleteTeamMembershipAsync(string membershipId, CancellationToken cancellationToken)
         {
             await _api.DeleteTeamMembershipAsync(membershipId, cancellationToken).ConfigureAwait(false);
         }
@@ -604,7 +604,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <param name="teamId">Team id that the detail info is gotten.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>The requested team.</returns>
-        public virtual async Task<Team> GetTeamAsync(string teamId, CancellationToken? cancellationToken = null)
+        public virtual async Task<Team> GetTeamAsync(string teamId, CancellationToken cancellationToken)
         {
             var resultTeam = await _api.GetTeamAsync(teamId, cancellationToken).ConfigureAwait(false);
 
@@ -617,7 +617,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <param name="membershipId">Team Membership id that the detail info is gotten.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>The requested team membership.</returns>
-        public virtual async Task<TeamMembership> GetTeamMembershipAsync(string membershipId, CancellationToken? cancellationToken = null)
+        public virtual async Task<TeamMembership> GetTeamMembershipAsync(string membershipId, CancellationToken cancellationToken)
         {
             var resultTeamMembership = await _api.GetTeamMembershipAsync(membershipId, cancellationToken).ConfigureAwait(false);
 
@@ -631,7 +631,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <param name="max">Limit the maximum number of items in the response.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A list of team memberships.</returns>
-        public virtual async Task<TeamMembershipList> ListTeamMembershipsAsync(string teamId, int? max = null, CancellationToken? cancellationToken = null)
+        public virtual async Task<TeamMembershipList> ListTeamMembershipsAsync(string teamId, int? max = null, CancellationToken cancellationToken = default)
         {
             var resultTeamMembershipList = await _api.ListTeamMembershipsAsync(teamId, max, cancellationToken).ConfigureAwait(false);
 
@@ -644,7 +644,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <param name="max">Limit the maximum number of teams in the response.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A list of the teams.</returns>
-        public virtual async Task<TeamList> ListTeamsAsync(int? max = null, CancellationToken? cancellationToken = null)
+        public virtual async Task<TeamList> ListTeamsAsync(int? max = null, CancellationToken cancellationToken = default)
         {
             var resultTeamsList = await _api.ListTeamsAsync(max, cancellationToken).ConfigureAwait(false);
 
@@ -658,7 +658,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <param name="name">A user-friendly name for the team.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>The updated team.</returns>
-        public virtual async Task<Team> UpdateTeamAsync(string teamId, string name, CancellationToken? cancellationToken = null)
+        public virtual async Task<Team> UpdateTeamAsync(string teamId, string name, CancellationToken cancellationToken)
         {
             var resultTeam = await _api.UpdateTeamAsync(teamId, name, cancellationToken).ConfigureAwait(false);
 
@@ -672,7 +672,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <param name="isModerator">Set to true to make the person a team moderator.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>The updated team membership.</returns>
-        public virtual async Task<TeamMembership> UpdateTeamMembershipAsync(string membershipId, bool isModerator, CancellationToken? cancellationToken = null)
+        public virtual async Task<TeamMembership> UpdateTeamMembershipAsync(string membershipId, bool isModerator, CancellationToken cancellationToken)
         {
             var resultTeamMembership = await _api.UpdateTeamMembershipAsync(membershipId, isModerator, cancellationToken).ConfigureAwait(false);
 
@@ -685,7 +685,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <param name="fileUri">Uri of the file.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>The teams file data.</returns>
-        public virtual async Task<TeamsFileData> GetFileDataAsync(Uri fileUri, CancellationToken? cancellationToken = null)
+        public virtual async Task<TeamsFileData> GetFileDataAsync(Uri fileUri, CancellationToken cancellationToken)
         {
             var resultTeamsFileData = await _api.GetFileDataAsync(fileUri, cancellationToken).ConfigureAwait(false);
 
@@ -698,7 +698,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <param name="fileUri">Uri of the file.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>The teams file info.</returns>
-        public virtual async Task<TeamsFileInfo> GetFileInfoAsync(Uri fileUri, CancellationToken? cancellationToken = null)
+        public virtual async Task<TeamsFileInfo> GetFileInfoAsync(Uri fileUri, CancellationToken cancellationToken)
         {
             var resultTeamsFileInfo = await _api.GetFileInfoAsync(fileUri, cancellationToken).ConfigureAwait(false);
 
@@ -715,7 +715,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <param name="max">Limit the maximum number of messages in the response.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A list of the messages.</returns>
-        public virtual async Task<MessageList> ListMessagesAsync(string spaceId, string mentionedPeople = null, DateTime? before = null, string beforeMessage = null, int? max = null, CancellationToken? cancellationToken = null)
+        public virtual async Task<MessageList> ListMessagesAsync(string spaceId, string mentionedPeople = null, DateTime? before = null, string beforeMessage = null, int? max = null, CancellationToken cancellationToken = default)
         {
             var resultMessageList = await _api.ListMessagesAsync(spaceId, mentionedPeople, before, beforeMessage, max, cancellationToken).ConfigureAwait(false);
 
@@ -731,7 +731,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <param name="max">Limit the maximum number of people in the response.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A list with the requested people.</returns>
-        public virtual async Task<PersonList> ListPeopleAsync(string email = null, string displayName = null, IEnumerable<string> ids = null, int? max = null, CancellationToken? cancellationToken = null)
+        public virtual async Task<PersonList> ListPeopleAsync(string email = null, string displayName = null, IEnumerable<string> ids = null, int? max = null, CancellationToken cancellationToken = default)
         {
             var resultPersonList = await _api.ListPeopleAsync(email, displayName, ids, max, cancellationToken).ConfigureAwait(false);
 

@@ -97,7 +97,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <param name="decrypterFunc">The function used to decrypt the message.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A <see cref="Message"/> object.</returns>
-        public static async Task<Message> GetDecryptedMessageAsync(WebhookEventData payload, Func<string, CancellationToken?, Task<Message>> decrypterFunc, CancellationToken? cancellationToken = null)
+        public static async Task<Message> GetDecryptedMessageAsync(WebhookEventData payload, Func<string, CancellationToken, Task<Message>> decrypterFunc, CancellationToken cancellationToken)
         {
             if (payload == null)
             {
