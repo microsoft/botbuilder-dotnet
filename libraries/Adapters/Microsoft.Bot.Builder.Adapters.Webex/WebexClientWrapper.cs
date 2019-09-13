@@ -290,35 +290,17 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
             newStream.Write(bytes, 0, bytes.Length);
             newStream.Close();
 
-            using (cancellationToken.Register(() => http.Abort(), useSynchronizationContext: false))
+            var response = await http.GetResponseAsync().ConfigureAwait(false);
+
+            var stream = response.GetResponseStream();
+
+            using (var sr = new StreamReader(stream))
             {
-                try
-                {
-                    var response = await http.GetResponseAsync().ConfigureAwait(false);
-
-                    var stream = response.GetResponseStream();
-
-                    using (var sr = new StreamReader(stream))
-                    {
-                        var content = sr.ReadToEnd();
-                        result = JsonConvert.DeserializeObject<Message>(content);
-                    }
-
-                    return result.Id;
-                }
-                catch (WebException ex)
-                {
-                    // WebException is thrown when request.Abort() is called,
-                    // but there may be many other reasons
-                    if (cancellationToken.IsCancellationRequested)
-                    {
-                        throw new OperationCanceledException(ex.Message, ex, cancellationToken);
-                    }
-
-                    // cancellation hasn't been requested, rethrow the original WebException
-                    throw;
-                }
+                var content = sr.ReadToEnd();
+                result = JsonConvert.DeserializeObject<Message>(content);
             }
+
+            return result.Id;
         }
 
         /// <summary>
@@ -338,35 +320,17 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
             http.Headers.Add("Authorization", "Bearer " + _config.AccessToken);
             http.Method = "GET";
 
-            using (cancellationToken.Register(() => http.Abort(), useSynchronizationContext: false))
+            var response = await http.GetResponseAsync().ConfigureAwait(false);
+
+            var stream = response.GetResponseStream();
+
+            using (var sr = new StreamReader(stream))
             {
-                try
-                {
-                    var response = await http.GetResponseAsync().ConfigureAwait(false);
-
-                    var stream = response.GetResponseStream();
-
-                    using (var sr = new StreamReader(stream))
-                    {
-                        var content = sr.ReadToEnd();
-                        result = JsonConvert.DeserializeObject<Message>(content);
-                    }
-
-                    return result;
-                }
-                catch (WebException ex)
-                {
-                    // WebException is thrown when request.Abort() is called,
-                    // but there may be many other reasons
-                    if (cancellationToken.IsCancellationRequested)
-                    {
-                        throw new OperationCanceledException(ex.Message, ex, cancellationToken);
-                    }
-
-                    // cancellation hasn't been requested, rethrow the original WebException
-                    throw;
-                }
+                var content = sr.ReadToEnd();
+                result = JsonConvert.DeserializeObject<Message>(content);
             }
+
+            return result;
         }
 
         /// <summary>
@@ -477,29 +441,11 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
             {
                 client.Headers[HttpRequestHeader.Authorization] = "Bearer " + token;
 
-                using (cancellationToken.Register(() => client.CancelAsync(), useSynchronizationContext: false))
-                {
-                    try
-                    {
-                        var response = await client.UploadValuesTaskAsync(new Uri(url), "POST", data).ConfigureAwait(false);
+                var response = await client.UploadValuesTaskAsync(new Uri(url), "POST", data).ConfigureAwait(false);
 
-                        result = JsonConvert.DeserializeObject<Webhook>(Encoding.ASCII.GetString(response));
+                result = JsonConvert.DeserializeObject<Webhook>(Encoding.ASCII.GetString(response));
 
-                        return result;
-                    }
-                    catch (WebException ex)
-                    {
-                        // WebException is thrown when request.Abort() is called,
-                        // but there may be many other reasons
-                        if (cancellationToken.IsCancellationRequested)
-                        {
-                            throw new OperationCanceledException(ex.Message, ex, cancellationToken);
-                        }
-
-                        // cancellation hasn't been requested, rethrow the original WebException
-                        throw;
-                    }
-                }
+                return result;
             }
         }
 
@@ -531,29 +477,11 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
             {
                 client.Headers[HttpRequestHeader.Authorization] = "Bearer " + token;
 
-                using (cancellationToken.Register(() => client.CancelAsync(), useSynchronizationContext: false))
-                {
-                    try
-                    {
-                        var response = await client.UploadValuesTaskAsync(new Uri(url), "PUT", data).ConfigureAwait(false);
+                var response = await client.UploadValuesTaskAsync(new Uri(url), "PUT", data).ConfigureAwait(false);
 
-                        result = JsonConvert.DeserializeObject<Webhook>(Encoding.ASCII.GetString(response));
+                result = JsonConvert.DeserializeObject<Webhook>(Encoding.ASCII.GetString(response));
 
-                        return result;
-                    }
-                    catch (WebException ex)
-                    {
-                        // WebException is thrown when request.Abort() is called,
-                        // but there may be many other reasons
-                        if (cancellationToken.IsCancellationRequested)
-                        {
-                            throw new OperationCanceledException(ex.Message, ex, cancellationToken);
-                        }
-
-                        // cancellation hasn't been requested, rethrow the original WebException
-                        throw;
-                    }
-                }
+                return result;
             }
         }
 
