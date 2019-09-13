@@ -5,7 +5,6 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Schema;
 using Moq;
 using Newtonsoft.Json;
@@ -36,31 +35,6 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         }
 
         [Fact]
-        public void ValidateSignatureShouldFailWithMissingSignature()
-        {
-            var httpRequest = new Mock<HttpRequest>();
-            httpRequest.SetupAllProperties();
-            httpRequest.SetupGet(req => req.Headers[It.IsAny<string>()]).Returns(string.Empty);
-
-            Assert.Throws<Exception>(() =>
-            {
-                WebexHelper.ValidateSignature("test_secret", httpRequest.Object, "{}");
-            });
-        }
-
-        [Fact]
-        public void ValidateSignatureShouldReturnFalse()
-        {
-            var httpRequest = new Mock<HttpRequest>();
-            httpRequest.SetupAllProperties();
-            httpRequest.Setup(req => req.Headers.ContainsKey(It.IsAny<string>())).Returns(true);
-            httpRequest.SetupGet(req => req.Headers[It.IsAny<string>()]).Returns("wrong_signature");
-            httpRequest.Object.Body = Stream.Null;
-
-            Assert.False(WebexHelper.ValidateSignature("test_secret", httpRequest.Object, "{}"));
-        }
-
-        [Fact]
         public async void GetDecryptedMessageAsyncShouldReturnNullWithNullPayload()
         {
             Assert.Null(await WebexHelper.GetDecryptedMessageAsync(null, null, new CancellationToken()));
@@ -69,11 +43,12 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         [Fact]
         public async void GetDecryptedMessageAsyncShouldSucceed()
         {
+            var testOptions = new WebexAdapterOptions("Test", new Uri("http://contoso.com"), "Test");
             var payload = JsonConvert.DeserializeObject<WebhookEventData>(File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\Payload.json"));
 
             var message = JsonConvert.DeserializeObject<Message>(File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\Message.json"));
 
-            var webexApi = new Mock<WebexClientWrapper>();
+            var webexApi = new Mock<WebexClientWrapper>(testOptions);
             webexApi.SetupAllProperties();
             webexApi.Setup(x => x.GetMessageAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(message));
 

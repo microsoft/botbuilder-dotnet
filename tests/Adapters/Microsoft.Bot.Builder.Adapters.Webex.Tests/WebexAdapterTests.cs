@@ -18,45 +18,26 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
 {
     public class WebexAdapterTests
     {
-        private readonly Uri _testPublicAddress = new Uri("http://contoso.com");
+        private static readonly Uri _testPublicAddress = new Uri("http://contoso.com");
         private readonly Person _identity = JsonConvert.DeserializeObject<Person>(File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\Person.json"));
+        private readonly WebexAdapterOptions _testOptions = new WebexAdapterOptions("Test", _testPublicAddress, "Test");
 
         [Fact]
-        public void ConstructorShouldFailWithNullConfig()
+        public void ConstructorShouldFailWithNullClient()
         {
-            Assert.Throws<ArgumentNullException>(() => { new WebexAdapter(null, new Mock<WebexClientWrapper>().Object); });
-        }
-
-        [Fact]
-        public void ConstructorShouldFailWithNullAccessToken()
-        {
-            var options = new WebexAdapterOptions(null, _testPublicAddress, "Test");
-
-            Assert.Throws<Exception>(() => { new WebexAdapter(options, new Mock<WebexClientWrapper>().Object); });
-        }
-
-        [Fact]
-        public void ConstructorShouldFailWithNullPublicAddress()
-        {
-            var options = new WebexAdapterOptions("Test", null, "Test");
-
-            Assert.Throws<Exception>(() => { new WebexAdapter(options, new Mock<WebexClientWrapper>().Object); });
+            Assert.Throws<Exception>(() => { new WebexAdapter(null); });
         }
 
         [Fact]
         public void ConstructorWithArgumentsShouldSucceed()
         {
-            var options = new WebexAdapterOptions("Test", _testPublicAddress, "Test");
-
-            Assert.NotNull(new WebexAdapter(options, new Mock<WebexClientWrapper>().Object));
+            Assert.NotNull(new WebexAdapter(new Mock<WebexClientWrapper>(_testOptions).Object));
         }
 
         [Fact]
         public async void ContinueConversationAsyncShouldFailWithNullConversationReference()
         {
-            var options = new WebexAdapterOptions("Test", _testPublicAddress, "Test");
-
-            var webexAdapter = new WebexAdapter(options, new Mock<WebexClientWrapper>().Object);
+            var webexAdapter = new WebexAdapter(new Mock<WebexClientWrapper>(_testOptions).Object);
 
             Task BotsLogic(ITurnContext turnContext, CancellationToken cancellationToken)
             {
@@ -69,9 +50,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         [Fact]
         public async void ContinueConversationAsyncShouldFailWithNullLogic()
         {
-            var options = new WebexAdapterOptions("Test", _testPublicAddress, "Test");
-
-            var webexAdapter = new WebexAdapter(options, new Mock<WebexClientWrapper>().Object);
+            var webexAdapter = new WebexAdapter(new Mock<WebexClientWrapper>(_testOptions).Object);
             var conversationReference = new ConversationReference();
 
             await Assert.ThrowsAsync<ArgumentNullException>(async () => { await webexAdapter.ContinueConversationAsync(conversationReference, null, default); });
@@ -82,9 +61,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         {
             var callbackInvoked = false;
 
-            var options = new WebexAdapterOptions("Test", _testPublicAddress, "Test");
-
-            var webexAdapter = new WebexAdapter(options, new Mock<WebexClientWrapper>().Object);
+            var webexAdapter = new WebexAdapter(new Mock<WebexClientWrapper>(_testOptions).Object);
             var conversationReference = new ConversationReference();
             Task BotsLogic(ITurnContext turnContext, CancellationToken cancellationToken)
             {
@@ -97,27 +74,9 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         }
 
         [Fact]
-        public async void GetIdentityAsyncShouldSucceed()
-        {
-            var options = new WebexAdapterOptions("Test", _testPublicAddress, "Test");
-
-            var webexApi = new Mock<WebexClientWrapper>();
-            webexApi.SetupAllProperties();
-            webexApi.Setup(x => x.GetMeAsync(It.IsAny<CancellationToken>())).Returns(Task.FromResult(_identity));
-
-            var webexAdapter = new WebexAdapter(options, webexApi.Object);
-
-            await webexAdapter.GetIdentityAsync(new CancellationToken());
-
-            Assert.Equal(_identity.Id, webexAdapter.Identity.Id);
-        }
-
-        [Fact]
         public async void ProcessAsyncShouldFailWithNullHttpRequest()
         {
-            var options = new WebexAdapterOptions("Test", _testPublicAddress, "Test");
-
-            var webexAdapter = new WebexAdapter(options, new Mock<WebexClientWrapper>().Object);
+            var webexAdapter = new WebexAdapter(new Mock<WebexClientWrapper>(_testOptions).Object);
             var httpResponse = new Mock<HttpResponse>();
             var bot = new Mock<IBot>();
 
@@ -130,9 +89,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         [Fact]
         public async void ProcessAsyncShouldFailWithNullHttpResponse()
         {
-            var options = new WebexAdapterOptions("Test", _testPublicAddress, "Test");
-
-            var webexAdapter = new WebexAdapter(options, new Mock<WebexClientWrapper>().Object);
+            var webexAdapter = new WebexAdapter(new Mock<WebexClientWrapper>(_testOptions).Object);
             var httpRequest = new Mock<HttpRequest>();
             var bot = new Mock<IBot>();
 
@@ -145,9 +102,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         [Fact]
         public async void ProcessAsyncShouldFailWithNullBot()
         {
-            var options = new WebexAdapterOptions("Test", _testPublicAddress, "Test");
-
-            var webexAdapter = new WebexAdapter(options, new Mock<WebexClientWrapper>().Object);
+            var webexAdapter = new WebexAdapter(new Mock<WebexClientWrapper>(_testOptions).Object);
             var httpRequest = new Mock<HttpRequest>();
             var httpResponse = new Mock<HttpResponse>();
 
@@ -160,24 +115,21 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         [Fact]
         public async void ProcessAsyncWithEvenTypeCreatedShouldSucceed()
         {
-            var options = new WebexAdapterOptions("Test", _testPublicAddress, "Test");
-
             var message = JsonConvert.DeserializeObject<Message>(File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\Message.json"));
             var payload = File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\Payload.json");
             var stream = new MemoryStream(Encoding.UTF8.GetBytes(payload.ToString()));
             var call = false;
 
-            var webexApi = new Mock<WebexClientWrapper>();
+            var webexApi = new Mock<WebexClientWrapper>(_testOptions);
             webexApi.SetupAllProperties();
             webexApi.Setup(x => x.GetMeAsync(It.IsAny<CancellationToken>())).Returns(Task.FromResult(_identity));
+            webexApi.Setup(x => x.ValidateSignature(It.IsAny<HttpRequest>(), It.IsAny<string>())).Returns(true);
             webexApi.Setup(x => x.GetMessageAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(message));
 
-            var webexAdapter = new WebexAdapter(options, webexApi.Object);
+            var webexAdapter = new WebexAdapter(webexApi.Object);
 
             var httpRequest = new Mock<HttpRequest>();
             httpRequest.SetupGet(req => req.Body).Returns(stream);
-            httpRequest.Setup(req => req.Headers.ContainsKey(It.IsAny<string>())).Returns(true);
-            httpRequest.SetupGet(req => req.Headers[It.IsAny<string>()]).Returns("61E7F071CE5C9FA21C773E7D6E9C6FF3B8A21F80");
 
             var httpResponse = new Mock<HttpResponse>();
             var bot = new Mock<IBot>();
@@ -194,13 +146,12 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         [Fact]
         public async void ProcessAsyncWithEvenTypeUpdatedShouldSucceed()
         {
-            var options = new WebexAdapterOptions("Test", _testPublicAddress, "Test");
-
-            var webexApi = new Mock<WebexClientWrapper>();
+            var webexApi = new Mock<WebexClientWrapper>(_testOptions);
             webexApi.SetupAllProperties();
             webexApi.Setup(x => x.GetMeAsync(It.IsAny<CancellationToken>())).Returns(Task.FromResult(_identity));
+            webexApi.Setup(x => x.ValidateSignature(It.IsAny<HttpRequest>(), It.IsAny<string>())).Returns(true);
 
-            var webexAdapter = new WebexAdapter(options, webexApi.Object);
+            var webexAdapter = new WebexAdapter(webexApi.Object);
 
             var payload = File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\Payload2.json");
             var stream = new MemoryStream(Encoding.UTF8.GetBytes(payload.ToString()));
@@ -208,8 +159,6 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
 
             var httpRequest = new Mock<HttpRequest>();
             httpRequest.SetupGet(req => req.Body).Returns(stream);
-            httpRequest.Setup(req => req.Headers.ContainsKey(It.IsAny<string>())).Returns(true);
-            httpRequest.SetupGet(req => req.Headers[It.IsAny<string>()]).Returns("9C32875928D2901E0BE90AEDDF4063174E25BB4E");
 
             var httpResponse = new Mock<HttpResponse>();
             var bot = new Mock<IBot>();
@@ -226,13 +175,11 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         [Fact]
         public async void ProcessAsyncShouldFailWithNonMatchingSignature()
         {
-            var options = new WebexAdapterOptions("Test", _testPublicAddress, "Test");
-
-            var webexApi = new Mock<WebexClientWrapper>();
+            var webexApi = new Mock<WebexClientWrapper>(_testOptions);
             webexApi.SetupAllProperties();
             webexApi.Setup(x => x.GetMeAsync(It.IsAny<CancellationToken>())).Returns(Task.FromResult(_identity));
 
-            var webexAdapter = new WebexAdapter(options, webexApi.Object);
+            var webexAdapter = new WebexAdapter(webexApi.Object);
 
             var payload = File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\Payload2.json");
             var stream = new MemoryStream(Encoding.UTF8.GetBytes(payload.ToString()));
@@ -254,24 +201,21 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         [Fact]
         public async void ProcessAsyncWithAttachmentActionsShouldSucceed()
         {
-            var options = new WebexAdapterOptions("Test", _testPublicAddress, "Test");
-
             var message = JsonConvert.DeserializeObject<Message>(File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\MessageWithInputs.json"));
             var payload = File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\PayloadAttachmentActions.json");
             var stream = new MemoryStream(Encoding.UTF8.GetBytes(payload.ToString()));
             var call = false;
 
-            var webexApi = new Mock<WebexClientWrapper>();
+            var webexApi = new Mock<WebexClientWrapper>(_testOptions);
             webexApi.SetupAllProperties();
             webexApi.Setup(x => x.GetMeAsync(new CancellationToken())).Returns(Task.FromResult(_identity));
-            webexApi.Setup(x => x.GetAttachmentActionAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(message));
+            webexApi.Setup(x => x.ValidateSignature(It.IsAny<HttpRequest>(), It.IsAny<string>())).Returns(true);
+            webexApi.Setup(x => x.GetAttachmentActionAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(message));
 
-            var webexAdapter = new WebexAdapter(options, webexApi.Object);
+            var webexAdapter = new WebexAdapter(webexApi.Object);
 
             var httpRequest = new Mock<HttpRequest>();
             httpRequest.SetupGet(req => req.Body).Returns(stream);
-            httpRequest.Setup(req => req.Headers.ContainsKey(It.IsAny<string>())).Returns(true);
-            httpRequest.SetupGet(req => req.Headers[It.IsAny<string>()]).Returns("C5574DEF8B2CC967501C3547FA1E60B9457BF03E");
 
             var httpResponse = new Mock<HttpResponse>();
             var bot = new Mock<IBot>();
@@ -286,100 +230,9 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         }
 
         [Fact]
-        public async void ListWebhookSubscriptionsAsyncShouldSucceed()
-        {
-            var options = new WebexAdapterOptions("Test", _testPublicAddress, "Test");
-
-            var webhookList = JsonConvert.DeserializeObject<WebhookList>(File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\WebhookList.json"));
-
-            var webexApi = new Mock<WebexClientWrapper>();
-            webexApi.SetupAllProperties();
-            webexApi.Setup(x => x.ListWebhooksAsync(It.IsAny<CancellationToken>())).Returns(Task.FromResult(webhookList));
-
-            var webexAdapter = new WebexAdapter(options, webexApi.Object);
-
-            var actualList = await webexAdapter.ListWebhookSubscriptionsAsync(new CancellationToken());
-
-            Assert.Equal(webhookList.Items[0].Id, actualList.Items[0].Id);
-            Assert.Equal(webhookList.Items[1].Id, actualList.Items[1].Id);
-        }
-
-        [Fact]
-        public async void ResetWebhookSubscriptionsAsyncShouldSucceed()
-        {
-            var options = new WebexAdapterOptions("Test", _testPublicAddress, "Test");
-
-            var webhookList = JsonConvert.DeserializeObject<WebhookList>(File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\WebhookList.json"));
-            var deletedItems = 0;
-
-            var webexApi = new Mock<WebexClientWrapper>();
-            webexApi.SetupAllProperties();
-            webexApi.Setup(x => x.DeleteWebhookAsync(It.IsAny<Webhook>(), It.IsAny<CancellationToken>())).Callback(() =>
-            {
-                deletedItems++;
-            });
-
-            var webexAdapter = new WebexAdapter(options, webexApi.Object);
-
-            await webexAdapter.ResetWebhookSubscriptionsAsync(webhookList, new CancellationToken());
-
-            Assert.Equal(webhookList.ItemCount, deletedItems);
-        }
-
-        [Fact]
-        public async void RegisterWebhookSubscriptionsAsyncUpdateWebhookShouldSucceed()
-        {
-            var options = new WebexAdapterOptions("Test", _testPublicAddress, "Test");
-
-            var webhookList = JsonConvert.DeserializeObject<WebhookList>(File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\WebhookList.json"));
-
-            var webexApi = new Mock<WebexClientWrapper>();
-            webexApi.SetupAllProperties();
-            webexApi.Setup(x => x.ListWebhooksAsync(It.IsAny<CancellationToken>())).Returns(Task.FromResult(webhookList));
-            webexApi.Setup(x => x.UpdateWebhookAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(webhookList.Items[1]));
-            webexApi.Setup(x => x.UpdateAdaptiveCardsWebhookAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(webhookList.Items[0]));
-
-            var webexAdapter = new WebexAdapter(options, webexApi.Object);
-
-            var webhook = await webexAdapter.RegisterWebhookSubscriptionsAsync();
-
-            Assert.Equal(webhookList.Items[0].Id, webhook[1].Id);
-            Assert.Equal(webhookList.Items[1].Id, webhook[0].Id);
-        }
-
-        [Fact]
-        public async void RegisterWebhookSubscriptionAsyncCreateWebhookShouldSucceed()
-        {
-            var webhookName = "New_Webhook";
-
-            var options = new WebexAdapterOptions("Test", _testPublicAddress, "Test", webhookName);
-
-            var webhookList = JsonConvert.DeserializeObject<WebhookList>(File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\WebhookList.json"));
-            var webhook = JsonConvert.DeserializeObject<Webhook>(File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\Webhook.json"));
-            var webhookCards = JsonConvert.DeserializeObject<Webhook>(File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\WebhookAttachmentActions.json"));
-
-            var webexApi = new Mock<WebexClientWrapper>();
-            webexApi.SetupAllProperties();
-            webexApi.Setup(x => x.ListWebhooksAsync(It.IsAny<CancellationToken>())).Returns(Task.FromResult(webhookList));
-            webexApi.Setup(x => x.CreateWebhookAsync(It.IsAny<string>(), It.IsAny<Uri>(), It.IsAny<EventResource>(), It.IsAny<EventType>(), It.IsAny<IEnumerable<EventFilter>>(), It.IsAny<string>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(webhook));
-            webexApi.Setup(x => x.CreateAdaptiveCardsWebhookAsync(It.IsAny<string>(), It.IsAny<Uri>(), It.IsAny<EventType>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(webhook));
-
-            var webexAdapter = new WebexAdapter(options, webexApi.Object);
-
-            var actualWebhook = await webexAdapter.RegisterWebhookSubscriptionsAsync();
-
-            Assert.Equal(webhook.Id, actualWebhook[0].Id);
-            Assert.Equal(webhook.Name, actualWebhook[0].Name);
-            Assert.Equal(webhookCards.Id, actualWebhook[1].Id);
-            Assert.Equal(webhookCards.Name, actualWebhook[1].Name);
-        }
-
-        [Fact]
         public async void UpdateActivityAsyncShouldThrowNotSupportedException()
         {
-            var options = new WebexAdapterOptions("Test", _testPublicAddress, "Test");
-
-            var webexAdapter = new WebexAdapter(options, new Mock<WebexClientWrapper>().Object);
+            var webexAdapter = new WebexAdapter(new Mock<WebexClientWrapper>(_testOptions).Object);
 
             var activity = new Activity();
 
@@ -394,9 +247,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         [Fact]
         public async void SendActivitiesAsyncShouldFailWithActivityTypeNotMessage()
         {
-            var options = new WebexAdapterOptions("Test", _testPublicAddress, "Test");
-
-            var webexAdapter = new WebexAdapter(options, new Mock<WebexClientWrapper>().Object);
+            var webexAdapter = new WebexAdapter(new Mock<WebexClientWrapper>(_testOptions).Object);
             var activity = new Activity
             {
                 Type = ActivityTypes.Event,
@@ -415,15 +266,13 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         [Fact]
         public async void SendActivitiesAsyncNotNulltoPersonEmailShouldSucceed()
         {
-            var options = new WebexAdapterOptions("Test", _testPublicAddress, "Test");
-
             // Setup mocked Webex API client
             const string expectedResponseId = "Mocked Response Id";
-            var webexApi = new Mock<WebexClientWrapper>();
+            var webexApi = new Mock<WebexClientWrapper>(_testOptions);
             webexApi.Setup(x => x.CreateMessageAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IList<Uri>>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(expectedResponseId));
 
             // Create a new Webex Adapter with the mocked classes and get the responses
-            var webexAdapter = new WebexAdapter(options, webexApi.Object);
+            var webexAdapter = new WebexAdapter(webexApi.Object);
 
             var activity = new Mock<Activity>().SetupAllProperties();
             activity.Object.Type = "message";
@@ -441,15 +290,13 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         [Fact]
         public async void SendActivitiesAsyncShouldFailWithNulltoPersonEmail()
         {
-            var options = new WebexAdapterOptions("Test", _testPublicAddress, "Test");
-
             // Setup mocked Webex API client
             const string expectedResponseId = "Mocked Response Id";
-            var webexApi = new Mock<WebexClientWrapper>();
+            var webexApi = new Mock<WebexClientWrapper>(_testOptions);
             webexApi.Setup(x => x.CreateMessageAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IList<Uri>>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(expectedResponseId));
 
             // Create a new Webex Adapter with the mocked classes and get the responses
-            var webexAdapter = new WebexAdapter(options, webexApi.Object);
+            var webexAdapter = new WebexAdapter(webexApi.Object);
             var activity = new Mock<Activity>().SetupAllProperties();
             activity.Object.Type = "message";
             activity.Object.Text = "Hello, Bot!";
@@ -465,15 +312,13 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         [Fact]
         public async void SendActivitiesAsyncWithAttachmentShouldSucceed()
         {
-            var options = new WebexAdapterOptions("Test", _testPublicAddress, "Test");
-
             // Setup mocked Webex API client
             const string expectedResponseId = "Mocked Response Id";
-            var webexApi = new Mock<WebexClientWrapper>();
+            var webexApi = new Mock<WebexClientWrapper>(_testOptions);
             webexApi.Setup(x => x.CreateMessageAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IList<Uri>>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(expectedResponseId));
 
             // Create a new Webex Adapter with the mocked classes and get the responses
-            var webexAdapter = new WebexAdapter(options, webexApi.Object);
+            var webexAdapter = new WebexAdapter(webexApi.Object);
 
             var activity = new Mock<Activity>().SetupAllProperties();
             activity.Object.Type = "message";
@@ -495,13 +340,11 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         [Fact]
         public async void SendActivitiesAsyncWithAttachmentActionsShouldSucceed()
         {
-            var options = new WebexAdapterOptions("Test", _testPublicAddress, "Test");
-
             const string expectedResponseId = "Mocked Response Id";
-            var webexApi = new Mock<WebexClientWrapper>();
-            webexApi.Setup(x => x.CreateMessageWithAttachmentsAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IList<Attachment>>(), It.IsAny<string>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(expectedResponseId));
+            var webexApi = new Mock<WebexClientWrapper>(_testOptions);
+            webexApi.Setup(x => x.CreateMessageWithAttachmentsAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IList<Attachment>>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(expectedResponseId));
 
-            var webexAdapter = new WebexAdapter(options, webexApi.Object);
+            var webexAdapter = new WebexAdapter(webexApi.Object);
 
             var activity = new Mock<Activity>().SetupAllProperties();
             activity.Object.Type = "message";
@@ -522,14 +365,12 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         [Fact]
         public async void DeleteActivityAsyncWithActivityIdShouldSucceed()
         {
-            var options = new WebexAdapterOptions("Test", _testPublicAddress, "Test");
-
             var deletedMessages = 0;
 
-            var webexApi = new Mock<WebexClientWrapper>();
+            var webexApi = new Mock<WebexClientWrapper>(_testOptions);
             webexApi.Setup(x => x.DeleteMessageAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).Callback(() => { deletedMessages++; });
 
-            var webexAdapter = new WebexAdapter(options, webexApi.Object);
+            var webexAdapter = new WebexAdapter(webexApi.Object);
 
             var activity = new Activity();
 
