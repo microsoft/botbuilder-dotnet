@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
     [TestClass]
     public class ResourceTests
     {
-        private static JsonSerializerSettings jsonSerializerSettings = 
+        private static JsonSerializerSettings jsonSerializerSettings =
             new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore, Formatting = Formatting.Indented };
 
         public TestContext TestContext { get; set; }
@@ -39,6 +39,29 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
                 await AssertResourceType(path, explorer, "dialog");
                 var resources = explorer.GetResources("foo").ToArray();
                 Assert.AreEqual(0, resources.Length);
+            }
+        }
+
+        [TestMethod]
+        public void TestMissingResourceThrows()
+        {
+            var path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, PathUtils.NormalizePath(@"..\..\..")));
+            using (var explorer = new ResourceExplorer())
+            {
+                explorer.AddResourceProvider(new FolderResourceProvider(path));
+                try
+                {
+                    explorer.GetResource("bogus.dialog");
+                    Assert.Fail($"should have thrown exception");
+                }
+                catch (ArgumentException err)
+                {
+                    Assert.IsTrue(err.Message.Contains("bogus"));
+                }
+                catch (Exception err2)
+                {
+                    Assert.Fail($"Unknown exception {err2.GetType().Name} thrown");
+                }
             }
         }
 
