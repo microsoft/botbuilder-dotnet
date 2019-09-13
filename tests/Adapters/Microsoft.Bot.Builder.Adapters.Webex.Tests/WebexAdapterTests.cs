@@ -22,13 +22,13 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         private readonly Person _identity = JsonConvert.DeserializeObject<Person>(File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\Person.json"));
 
         [Fact]
-        public void Constructor_Should_Fail_With_Null_Config()
+        public void ConstructorShouldFailWithNullConfig()
         {
             Assert.Throws<ArgumentNullException>(() => { new WebexAdapter(null, new Mock<WebexClientWrapper>().Object); });
         }
 
         [Fact]
-        public void Constructor_Should_Fail_With_Null_AccessToken()
+        public void ConstructorShouldFailWithNullAccessToken()
         {
             var options = new WebexAdapterOptions(null, _testPublicAddress, "Test");
 
@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         }
 
         [Fact]
-        public void Constructor_Should_Fail_With_Null_PublicAddress()
+        public void ConstructorShouldFailWithNullPublicAddress()
         {
             var options = new WebexAdapterOptions("Test", null, "Test");
 
@@ -44,7 +44,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         }
 
         [Fact]
-        public void Constructor_WithArguments_Should_Succeed()
+        public void ConstructorWithArgumentsShouldSucceed()
         {
             var options = new WebexAdapterOptions("Test", _testPublicAddress, "Test");
 
@@ -52,7 +52,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         }
 
         [Fact]
-        public async void ContinueConversationAsync_Should_Fail_With_Null_ConversationReference()
+        public async void ContinueConversationAsyncShouldFailWithNullConversationReference()
         {
             var options = new WebexAdapterOptions("Test", _testPublicAddress, "Test");
 
@@ -67,7 +67,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         }
 
         [Fact]
-        public async void ContinueConversationAsync_Should_Fail_With_Null_Logic()
+        public async void ContinueConversationAsyncShouldFailWithNullLogic()
         {
             var options = new WebexAdapterOptions("Test", _testPublicAddress, "Test");
 
@@ -78,7 +78,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         }
 
         [Fact]
-        public async void ContinueConversationAsync_Should_Succeed()
+        public async void ContinueConversationAsyncShouldSucceed()
         {
             var callbackInvoked = false;
 
@@ -97,7 +97,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         }
 
         [Fact]
-        public async void GetIdentityAsync_Should_Succeed()
+        public async void GetIdentityAsyncShouldSucceed()
         {
             var options = new WebexAdapterOptions("Test", _testPublicAddress, "Test");
 
@@ -113,7 +113,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         }
 
         [Fact]
-        public async void ProcessAsync_Should_Fail_With_Null_HttpRequest()
+        public async void ProcessAsyncShouldFailWithNullHttpRequest()
         {
             var options = new WebexAdapterOptions("Test", _testPublicAddress, "Test");
 
@@ -128,7 +128,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         }
 
         [Fact]
-        public async void ProcessAsync_Should_Fail_With_Null_HttpResponse()
+        public async void ProcessAsyncShouldFailWithNullHttpResponse()
         {
             var options = new WebexAdapterOptions("Test", _testPublicAddress, "Test");
 
@@ -143,7 +143,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         }
 
         [Fact]
-        public async void ProcessAsync_Should_Fail_With_Null_Bot()
+        public async void ProcessAsyncShouldFailWithNullBot()
         {
             var options = new WebexAdapterOptions("Test", _testPublicAddress, "Test");
 
@@ -158,7 +158,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         }
 
         [Fact]
-        public async void ProcessAsync_With_EvenType_Created_Should_Succeed()
+        public async void ProcessAsyncWithEvenTypeCreatedShouldSucceed()
         {
             var options = new WebexAdapterOptions("Test", _testPublicAddress, "Test");
 
@@ -192,7 +192,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         }
 
         [Fact]
-        public async void ProcessAsync_With_EvenType_Updated_Should_Succeed()
+        public async void ProcessAsyncWithEvenTypeUpdatedShouldSucceed()
         {
             var options = new WebexAdapterOptions("Test", _testPublicAddress, "Test");
 
@@ -224,7 +224,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         }
 
         [Fact]
-        public async void ProcessAsync_Should_Fail_With_NonMatching_Signature()
+        public async void ProcessAsyncShouldFailWithNonMatchingSignature()
         {
             var options = new WebexAdapterOptions("Test", _testPublicAddress, "Test");
 
@@ -252,7 +252,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         }
 
         [Fact]
-        public async void ProcessAsync_With_AttachmentActions_Should_Succeed()
+        public async void ProcessAsyncWithAttachmentActionsShouldSucceed()
         {
             var options = new WebexAdapterOptions("Test", _testPublicAddress, "Test");
 
@@ -286,7 +286,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         }
 
         [Fact]
-        public async void ListWebhookSubscriptionsAsync_Should_Succeed()
+        public async void ListWebhookSubscriptionsAsyncShouldSucceed()
         {
             var options = new WebexAdapterOptions("Test", _testPublicAddress, "Test");
 
@@ -305,7 +305,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         }
 
         [Fact]
-        public async void ResetWebhookSubscriptionsAsync_Should_Succeed()
+        public async void ResetWebhookSubscriptionsAsyncShouldSucceed()
         {
             var options = new WebexAdapterOptions("Test", _testPublicAddress, "Test");
 
@@ -327,7 +327,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         }
 
         [Fact]
-        public async void RegisterWebhookSubscriptionsAsync_UpdateWebhook_Should_Succeed()
+        public async void RegisterWebhookSubscriptionsAsyncUpdateWebhookShouldSucceed()
         {
             var options = new WebexAdapterOptions("Test", _testPublicAddress, "Test");
 
@@ -348,7 +348,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         }
 
         [Fact]
-        public async void RegisterWebhookSubscriptionAsync_CreateWebhook_Should_Succeed()
+        public async void RegisterWebhookSubscriptionAsyncCreateWebhookShouldSucceed()
         {
             var webhookName = "New_Webhook";
 
@@ -375,7 +375,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         }
 
         [Fact]
-        public async void UpdateActivityAsync_Should_Throw_NotSupportedException()
+        public async void UpdateActivityAsyncShouldThrowNotSupportedException()
         {
             var options = new WebexAdapterOptions("Test", _testPublicAddress, "Test");
 
@@ -392,7 +392,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         }
 
         [Fact]
-        public async void SendActivitiesAsync_Should_Fail_With_ActivityType_Not_Message()
+        public async void SendActivitiesAsyncShouldFailWithActivityTypeNotMessage()
         {
             var options = new WebexAdapterOptions("Test", _testPublicAddress, "Test");
 
@@ -413,7 +413,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         }
 
         [Fact]
-        public async void SendActivitiesAsync_NotNull_toPersonEmail_Should_Succeed()
+        public async void SendActivitiesAsyncNotNulltoPersonEmailShouldSucceed()
         {
             var options = new WebexAdapterOptions("Test", _testPublicAddress, "Test");
 
@@ -439,7 +439,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         }
 
         [Fact]
-        public async void SendActivitiesAsync_Should_Fail_With_Null_toPersonEmail()
+        public async void SendActivitiesAsyncShouldFailWithNulltoPersonEmail()
         {
             var options = new WebexAdapterOptions("Test", _testPublicAddress, "Test");
 
@@ -463,7 +463,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         }
 
         [Fact]
-        public async void SendActivitiesAsync_With_Attachment_Should_Succeed()
+        public async void SendActivitiesAsyncWithAttachmentShouldSucceed()
         {
             var options = new WebexAdapterOptions("Test", _testPublicAddress, "Test");
 
@@ -493,7 +493,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         }
 
         [Fact]
-        public async void SendActivitiesAsync_With_AttachmentActions_Should_Succeed()
+        public async void SendActivitiesAsyncWithAttachmentActionsShouldSucceed()
         {
             var options = new WebexAdapterOptions("Test", _testPublicAddress, "Test");
 
@@ -520,7 +520,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         }
 
         [Fact]
-        public async void DeleteActivityAsync_With_ActivityId_Should_Succeed()
+        public async void DeleteActivityAsyncWithActivityIdShouldSucceed()
         {
             var options = new WebexAdapterOptions("Test", _testPublicAddress, "Test");
 
