@@ -34,12 +34,10 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                 throw new Exception("AccessToken required to create controller");
             }
 
-            if (string.IsNullOrWhiteSpace(_config.PublicAddress))
+            if (_config.PublicAddress == null)
             {
                 throw new Exception("PublicAddress parameter required to receive webhooks");
             }
-
-            _config.PublicAddress = new Uri(_config.PublicAddress).Host;
 
             _webexClient = webexClient ?? throw new Exception("Could not create the Webex Teams API client");
 
@@ -109,7 +107,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                 }
             }
 
-            var hookUrl = "https://" + _config.PublicAddress + webhookPath;
+            var hookUrl = _config.PublicAddress + webhookPath;
 
             Webhook webhook;
             Webhook cardsWebhook;

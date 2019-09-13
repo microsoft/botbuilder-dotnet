@@ -1,6 +1,8 @@
 ﻿// Copyright(c) Microsoft Corporation.All rights reserved.
 // Licensed under the MIT License.
 
+using System;
+
 namespace Microsoft.Bot.Builder.Adapters.Webex
 {
     /// <summary>
@@ -15,7 +17,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <param name="publicAddress">The root URL of the bot application.</param>
         /// <param name="secret">The secret used to validate incoming webhooks.</param>
         /// <param name="webhookName">A name for the webhook subscription.</param>
-        public WebexAdapterOptions(string accessToken, string publicAddress, string secret, string webhookName = null)
+        public WebexAdapterOptions(string accessToken, Uri publicAddress, string secret, string webhookName = null)
         {
             AccessToken = accessToken;
             PublicAddress = publicAddress;
@@ -36,10 +38,10 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         public string Secret { get; set; }
 
         /// <summary>
-        /// Gets or sets the root URL of your bot application. Something like 'https://mybot.com/'.
+        /// Gets or sets the root URI of your bot application. Something like 'https://mybot.com/'.
         /// </summary>
-        /// <value>the root URL of your bot application.</value>
-        public string PublicAddress { get; set; }
+        /// <value>the root URI of your bot application.</value>
+        public Uri PublicAddress { get; set; }
 
         /// <summary>
         /// Gets or sets a name for the webhook subscription that will be created to tell WebEx to send your bot webhooks.
