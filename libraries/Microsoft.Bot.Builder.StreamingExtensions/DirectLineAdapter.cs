@@ -47,7 +47,6 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
         private IBot _bot;
         private ClaimsIdentity _claimsIdentity;
         private HttpClient _httpClient;
-        private IStreamingTransportServer _transportServer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DirectLineAdapter"/> class for processing HTTP or streaming requests.
@@ -126,8 +125,8 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
 
             OnTurnError = onTurnError;
             _bot = bot ?? throw new ArgumentNullException(nameof(bot));
-            _transportServer = new NamedPipeServer(pipeName, this);
-            _httpClient = new StreamingHttpClient(_transportServer, _logger);
+            _httpClient = new StreamingHttpClient(_logger);
+            (_httpClient as StreamingHttpClient).AddConnection(pipeName, this);
             _claimsIdentity = new ClaimsIdentity();
             if (logger != null)
             {
