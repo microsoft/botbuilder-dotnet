@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.AI.Luis;
@@ -13,6 +14,8 @@ using Xunit;
 
 namespace Microsoft.Bot.Builder.Dialogs.Form.Tests
 {
+
+
     public class FormTests
     {
         private static readonly string SchemaFile = @"resources\sandwich-schema.json";

@@ -23,13 +23,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="resources\sandwich-schema.json">
+    <None Update="resources\sandwich.form">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="resources\sandwich.lu">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="resources\schema.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

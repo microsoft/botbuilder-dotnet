@@ -308,7 +308,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                             var mapping = new SlotMapping
                             {
                                 Entity = entity,
-                                Slot = slotOps.First()
+                                Change = slotOps.First()
                             };
                             AddMappingToQueue(mapping, queues);
                         }
@@ -352,12 +352,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
             var slotToQueues = new Dictionary<PropertySchema, Queues>();
             foreach (var entry in queues.Set)
             {
-                SlotQueues(entry.Slot.Slot, slotToQueues).Set.Add(entry);
+                SlotQueues(entry.Change.Slot, slotToQueues).Set.Add(entry);
             }
 
             foreach (var entry in queues.Clarify)
             {
-                SlotQueues(entry.Slot.Slot, slotToQueues).Clarify.Add(entry);
+                SlotQueues(entry.Change.Slot, slotToQueues).Clarify.Add(entry);
             }
 
             foreach (var entry in queues.SingletonChoice)
@@ -391,7 +391,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                 if (!slot.IsArray && slotQueues.Set.Count() + slotQueues.Clarify.Count() > 1)
                 {
                     // Singleton with multiple operations
-                    var mappings = from mapping in slotQueues.Set.Union(slotQueues.Clarify) where mapping.Slot.Operation != Operations.Remove select mapping;
+                    var mappings = from mapping in slotQueues.Set.Union(slotQueues.Clarify) where mapping.Change.Operation != Operations.Remove select mapping;
                     switch (mappings.Count())
                     {
                         case 0:
@@ -404,7 +404,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                             queues.SingletonChoice.Add(new SingletonChoices
                             {
                                 Entities = (from mapping in mappings select mapping.Entity).ToList(),
-                                Slot = mappings.First().Slot
+                                Slot = mappings.First().Change
                             });
                             break;
                     }
@@ -492,7 +492,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
         // Simple mapping
         private class SlotMapping
         {
-            public SlotOp Slot { get; set; }
+            public SlotOp Change { get; set; }
 
             public EntityInfo Entity { get; set; }
         }
