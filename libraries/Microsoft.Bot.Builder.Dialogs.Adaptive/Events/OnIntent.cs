@@ -18,7 +18,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
     public class OnIntent : OnDialogEvent
     {
         [JsonConstructor]
-        public OnIntent(string intent = null, List<string> entities = null, List<IDialog> actions = null, string constraint = null, int priority = 0, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public OnIntent(string intent = null, List<string> entities = null, List<Dialog> actions = null, string constraint = null, int priority = 0, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base(
                 events: new List<string>() { AdaptiveEvents.RecognizedIntent },
                 actions: actions,

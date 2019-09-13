@@ -13,7 +13,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form.Events
     public class OnClearSlot : OnDialogEvent
     {
         [JsonConstructor]
-        public OnClearSlot(List<IDialog> actions = null, string constraint = null, int priority = 0, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public OnClearSlot(List<Dialog> actions = null, string constraint = null, int priority = 0, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base(
                 events: new List<string>() { FormEvents.Ask },
                 actions: actions,

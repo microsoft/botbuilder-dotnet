@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
@@ -47,7 +48,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Form.Tests
                 .UseStorage(storage)
                 .UseState(userState, convoState)
                 .UseResourceExplorer(_form.Resources)
-                .UseLanguageGeneration(_form.Resources)
+                .UseAdaptiveDialogs()
+                .UseFormDialogs()
                 .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
 
             var resource = _form.Resources.GetResource(resourceName);
@@ -56,7 +58,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form.Tests
                 throw new Exception($"Resource[{resourceName}] not found");
             }
 
-            var dialog = DeclarativeTypeLoader.Load<IDialog>(resource, _form.Resources, DebugSupport.SourceRegistry);
+            var dialog = DeclarativeTypeLoader.Load<Dialog>(resource, _form.Resources, DebugSupport.SourceRegistry);
             var dm = new DialogManager(dialog);
 
             return new TestFlow(adapter, async (turnContext, cancellationToken) =>
@@ -72,8 +74,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form.Tests
         public FormFixture()
         {
             TypeFactory.Configuration = new ConfigurationBuilder().AddInMemoryCollection().Build();
-            TypeFactory.RegisterAdaptiveTypes();
-            string projPath = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, PathUtils.NormalizePath($@"..\..\..\..\..\tests\Microsoft.Bot.Builder.Dialogs.Form.Tests\Microsoft.Bot.Builder.Dialogs.Form.Tests.csproj")));
+            var projPath = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, PathUtils.NormalizePath($@"..\..\..\..\..\tests\Microsoft.Bot.Builder.Dialogs.Form.Tests\Microsoft.Bot.Builder.Dialogs.Form.Tests.csproj")));
             Resources = ResourceExplorer.LoadProject(projPath);
         }
 
@@ -85,4 +86,3 @@ namespace Microsoft.Bot.Builder.Dialogs.Form.Tests
         public ResourceExplorer Resources { get; }
     }
 }
-

@@ -47,7 +47,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Form.Tests
                 .UseStorage(storage)
                 .UseState(userState, convoState)
                 .UseResourceExplorer(resourceExplorer)
-                .UseLanguageGeneration(resourceExplorer)
                 .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
 
             adapter.Locale = locale;

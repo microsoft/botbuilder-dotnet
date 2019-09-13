@@ -31,7 +31,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
             if (candidates.Any())
             {
                 var candidate = candidates.First();
-                var choice = new OnDialogEvent(actions: new List<IDialog>(candidate.Actions));
+                var choice = new OnDialogEvent(actions: new List<Dialog>(candidate.Actions));
                 choice.Actions.Add(new EmitEvent(FormEvents.FillForm, bubble: false));
                 choices.Add(choice);
             }

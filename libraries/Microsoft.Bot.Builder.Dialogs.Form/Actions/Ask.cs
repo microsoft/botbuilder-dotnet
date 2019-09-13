@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
+using Microsoft.Bot.Builder.LanguageGeneration.Templates;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Form.Actions

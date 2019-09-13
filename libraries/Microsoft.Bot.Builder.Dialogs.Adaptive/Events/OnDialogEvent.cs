@@ -15,13 +15,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
     public class OnDialogEvent : OnEvent
     {
         [JsonConstructor]
-        public OnDialogEvent(List<string> events = null, List<IDialog> actions = null, string constraint = null, int priority = 0, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public OnDialogEvent(List<string> events = null, List<Dialog> actions = null, string constraint = null, int priority = 0, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
      : base(constraint: constraint, actions: actions, callerPath: callerPath, callerLine: callerLine)
         {
             this.Events = events ?? new List<string>();
-            this.Actions = actions ?? new List<IDialog>();
+            this.Actions = actions ?? new List<Dialog>();
             this.Priority = priority;
         }
+
         /// <summary>
         /// Gets or sets list of events to filter.
         /// </summary>
@@ -37,6 +38,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
         /// The relative priority of this event handler.
         /// </value>
         public int Priority { get; set; }
+
         public override string GetIdentity()
         {
             return $"{this.GetType().Name}({string.Join(",", Events)})";

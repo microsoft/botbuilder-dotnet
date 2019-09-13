@@ -529,7 +529,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
             public List<string> Clear { get; } = new List<string>();
 
             public void Write(SequenceContext context)
-                => context.DialogState.Add("mappings", this);
+                => context.State.Add("mappings", this);
 
             public void Merge(Queues queues)
             {
@@ -544,7 +544,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
             public static Queues Read(SequenceContext context)
             {
                 Queues queues;
-                if (context.DialogState.TryGetValue("mappings", out var obj))
+                if (context.State.TryGetValue("mappings", out var obj))
                 {
                     queues = (Queues)obj;
                 }
