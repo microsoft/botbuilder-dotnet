@@ -21,6 +21,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// Initializes a new instance of the TaskModuleContinueResponse class.
         /// </summary>
         public TaskModuleContinueResponse()
+            :base("continue")
         {
             CustomInit();
         }

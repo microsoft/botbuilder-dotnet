@@ -21,6 +21,7 @@ namespace Microsoft.Bot.Schema.Teams
         /// Initializes a new instance of the TaskModuleMessageResponse class.
         /// </summary>
         public TaskModuleMessageResponse()
+            :base("message")
         {
             CustomInit();
         }
