@@ -39,7 +39,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                     if (child.Name == steps[step])
                     {
                         property = child;
-                        while (++step < steps.Length && (steps[step] == "." || steps[step] == "[]")) ;
+                        while (++step < steps.Length && (steps[step] == "." || steps[step] == "[]"))
+                        {
+                        }
+
                         found = true;
                         break;
                     }

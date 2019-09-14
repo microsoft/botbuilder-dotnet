@@ -33,14 +33,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Form.Actions
         /// </value>
         public IList<string> ExpectedSlots { get; set; }
 
-        protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (ExpectedSlots != null)
             {
                 dc.Context.TurnState.Add("expectedSlots", ExpectedSlots);
             }
 
-            return await base.OnRunCommandAsync(dc, options, cancellationToken);
+            return await base.BeginDialogAsync(dc, options, cancellationToken);
         }
     }
 }

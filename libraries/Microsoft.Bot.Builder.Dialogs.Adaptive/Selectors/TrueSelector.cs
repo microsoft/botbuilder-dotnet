@@ -21,14 +21,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
             _evaluate = evaluate;
         }
 
-        public Task<IReadOnlyList<IOnEvent>> Select(SequenceContext context, CancellationToken cancel = default(CancellationToken))
+        public Task<IReadOnlyList<TriggerHandler>> Select(SequenceContext context, CancellationToken cancel = default(CancellationToken))
         {
-            var candidates = _rules;
+            var candidates = _triggerHandlers;
             if (_evaluate)
             {
                 var parser = new ExpressionEngine();
-                candidates = new List<IOnEvent>();
-                foreach (var rule in _rules)
+                candidates = new List<TriggerHandler>();
+                foreach (var rule in _triggerHandlers)
                 {
                     var expression = rule.GetExpression(parser);
                     var (value, error) = expression.TryEvaluate(context.State);
@@ -40,7 +40,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
                 }
             }
 
-            return Task.FromResult((IReadOnlyList<IOnEvent>)candidates);
+            return Task.FromResult((IReadOnlyList<TriggerHandler>)candidates);
         }
     }
 }

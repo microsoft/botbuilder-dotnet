@@ -41,5 +41,10 @@
         /// Used to track that we don't end up in infinite loop of RepeatDialogs()
         /// </summary>
         public const string REPEATEDIDS = "turn.repeatedIds";
+
+        /// <summary>
+        /// Used to track the current form schema.
+        /// </summary>
+        public const string SCHEMA = "turn.schema";
     }
 }

@@ -14,8 +14,6 @@ using Xunit;
 
 namespace Microsoft.Bot.Builder.Dialogs.Form.Tests
 {
-
-
     public class FormTests
     {
         private static readonly string SchemaFile = @"resources\sandwich-schema.json";

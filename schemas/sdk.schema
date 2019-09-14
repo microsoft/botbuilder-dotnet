@@ -423,10 +423,10 @@
                     "$ref": "#/definitions/Microsoft.ILanguageGenerator"
                 },
                 "selector": {
-                    "$type": "Microsoft.IEventSelector",
+                    "$type": "Microsoft.ITriggerSelector",
                     "title": "Selector",
                     "description": "Policy for how to select rule to execute next",
-                    "$ref": "#/definitions/Microsoft.IEventSelector"
+                    "$ref": "#/definitions/Microsoft.ITriggerSelector"
                 },
                 "events": {
                     "type": "array",
@@ -1196,7 +1196,7 @@
             ]
         },
         "Microsoft.ConditionalSelector": {
-            "$role": "unionType(Microsoft.IEventSelector)",
+            "$role": "unionType(Microsoft.ITriggerSelector)",
             "title": "Condtional Event Selector",
             "description": "Use a rule selector based on a condition",
             "type": "object",
@@ -1231,12 +1231,12 @@
                     "description": "String must contain an expression."
                 },
                 "ifTrue": {
-                    "$type": "Microsoft.IEventSelector",
-                    "$ref": "#/definitions/Microsoft.IEventSelector"
+                    "$type": "Microsoft.ITriggerSelector",
+                    "$ref": "#/definitions/Microsoft.ITriggerSelector"
                 },
                 "ifFalse": {
-                    "$type": "Microsoft.IEventSelector",
-                    "$ref": "#/definitions/Microsoft.IEventSelector"
+                    "$type": "Microsoft.ITriggerSelector",
+                    "$ref": "#/definitions/Microsoft.ITriggerSelector"
                 }
             },
             "additionalProperties": false,
@@ -2313,7 +2313,7 @@
             ]
         },
         "Microsoft.FirstSelector": {
-            "$role": "unionType(Microsoft.IEventSelector)",
+            "$role": "unionType(Microsoft.ITriggerSelector)",
             "title": "First Event Selector",
             "description": "Selector for first true rule",
             "type": "object",
@@ -2671,10 +2671,10 @@
                     "$ref": "#/definitions/Microsoft.ILanguageGenerator"
                 },
                 "selector": {
-                    "$type": "Microsoft.IEventSelector",
+                    "$type": "Microsoft.ITriggerSelector",
                     "title": "Selector",
                     "description": "Policy for how to select rule to execute next",
-                    "$ref": "#/definitions/Microsoft.IEventSelector"
+                    "$ref": "#/definitions/Microsoft.ITriggerSelector"
                 },
                 "events": {
                     "type": "array",
@@ -3032,9 +3032,9 @@
                 }
             ]
         },
-        "Microsoft.IEventSelector": {
-            "title": "Microsoft IEventSelector",
-            "description": "Union of components which implement the IEventSelector interface",
+        "Microsoft.ITriggerSelector": {
+            "title": "Microsoft ITriggerSelector",
+            "description": "Union of components which implement the ITriggerSelector interface",
             "$role": "unionType",
             "oneOf": [
                 {
@@ -3644,7 +3644,7 @@
             ]
         },
         "Microsoft.MostSpecificSelector": {
-            "$role": "unionType(Microsoft.IEventSelector)",
+            "$role": "unionType(Microsoft.ITriggerSelector)",
             "title": "Most Specific Event Selector",
             "description": "Select most specific true events with optional additional selector",
             "type": "object",
@@ -3674,8 +3674,8 @@
                     "description": "Extra information for the Bot Framework Designer."
                 },
                 "selector": {
-                    "$type": "Microsoft.IEventSelector",
-                    "$ref": "#/definitions/Microsoft.IEventSelector"
+                    "$type": "Microsoft.ITriggerSelector",
+                    "$ref": "#/definitions/Microsoft.ITriggerSelector"
                 }
             },
             "additionalProperties": false,
@@ -5875,7 +5875,7 @@
             ]
         },
         "Microsoft.RandomSelector": {
-            "$role": "unionType(Microsoft.IEventSelector)",
+            "$role": "unionType(Microsoft.ITriggerSelector)",
             "title": "Random rule selector",
             "description": "Select most specific true rule",
             "type": "object",
@@ -6710,7 +6710,7 @@
             ]
         },
         "Microsoft.TrueSelector": {
-            "$role": "unionType(Microsoft.IEventSelector)",
+            "$role": "unionType(Microsoft.ITriggerSelector)",
             "title": "True Event Selector",
             "description": "Selector for all true events",
             "type": "object",

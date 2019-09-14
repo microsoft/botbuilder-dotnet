@@ -1,16 +1,10 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Events;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors;
-using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Form
 {
@@ -32,7 +26,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
         {
             var handled = false;
             // Save into turn
-            sequenceContext.State.SetValue(DialogContextState.TURN_SCHEMA, this.Schema);
+            sequenceContext.State.SetValue(TurnPath.SCHEMA, this.Schema);
             if (preBubble)
             {
                 switch (dialogEvent.Name)
@@ -163,8 +157,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
             var entityToInfo = new Dictionary<string, List<EntityInfo>>();
 
             // TODO: In a multiple event world, we only want to do this at the end of the RecognizedIntent round
-            var text = (string)context.State.GetValue(DialogContextState.TURN_RECOGNIZED + ".text");
-            if (context.State.TryGetValue<dynamic>(DialogContextState.TURN_RECOGNIZED + ".entities", out var entities))
+            var text = context.State.GetValue<string>(TurnPath.RECOGNIZED + ".text");
+            if (context.State.TryGetValue<dynamic>(TurnPath.RECOGNIZED + ".entities", out var entities))
             {
                 if (!context.State.TryGetValue<int>("dialog.turn", out var turn))
                 {
@@ -343,6 +337,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                 slotQueues = new Queues();
                 slotToQueues[prop] = slotQueues;
             }
+
             return slotQueues;
         }
 
@@ -528,19 +523,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
             // Slots to clear
             public List<string> Clear { get; } = new List<string>();
 
-            public void Write(SequenceContext context)
-                => context.State.Add("mappings", this);
-
-            public void Merge(Queues queues)
-            {
-                Unknown.AddRange(queues.Unknown);
-                Set.AddRange(queues.Set);
-                Clarify.AddRange(queues.Clarify);
-                SingletonChoice.AddRange(queues.SingletonChoice);
-                SlotChoices.AddRange(queues.SlotChoices);
-                Clear.AddRange(queues.Clear);
-            }
-
             public static Queues Read(SequenceContext context)
             {
                 Queues queues;
@@ -554,6 +536,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                 }
 
                 return queues;
+            }
+
+            public void Write(SequenceContext context)
+                => context.State.Add("mappings", this);
+
+            public void Merge(Queues queues)
+            {
+                Unknown.AddRange(queues.Unknown);
+                Set.AddRange(queues.Set);
+                Clarify.AddRange(queues.Clarify);
+                SingletonChoice.AddRange(queues.SingletonChoice);
+                SlotChoices.AddRange(queues.SlotChoices);
+                Clear.AddRange(queues.Clear);
             }
         }
 

@@ -33,19 +33,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
             }
         }
 
-        public virtual async Task<IReadOnlyList<IOnEvent>> Select(SequenceContext context, CancellationToken cancel)
+        public virtual async Task<IReadOnlyList<TriggerHandler>> Select(SequenceContext context, CancellationToken cancel)
         {
             var nodes = _tree.Matches(context.State);
-            var matches = new List<IOnEvent>();
+            var matches = new List<TriggerHandler>();
             foreach (var node in nodes)
             {
                 foreach (var trigger in node.AllTriggers)
                 {
-                    matches.Add((IOnEvent)trigger.Action);
+                    matches.Add((TriggerHandler)trigger.Action);
                 }
             }
 
-            IReadOnlyList<IOnEvent> selections = matches;
+            IReadOnlyList<TriggerHandler> selections = matches;
             if (Selector != null)
             { 
                 Selector.Initialize(matches, false);

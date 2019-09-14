@@ -9,7 +9,7 @@ using Microsoft.Bot.Builder.Expressions.Parser;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
 {
     /// <summary>
-    /// Select the first true rule implementation of <see cref="ITriggerSelector"/>.
+    /// Select the first true triggerHandler implementation of <see cref="ITriggerSelector"/>.
     /// </summary>
     public class FirstSelector : ITriggerSelector
     {
@@ -23,20 +23,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
             _evaluate = evaluate;
         }
 
-        public Task<IReadOnlyList<IOnEvent>> Select(SequenceContext context, CancellationToken cancel)
+        public Task<IReadOnlyList<TriggerHandler>> Select(SequenceContext context, CancellationToken cancel)
         {
-            IOnEvent selection = null;
+            TriggerHandler selection = null;
             if (_evaluate)
             {
                 for (var i = 0; i < _triggerHandlers.Count; i++)
                 {
-                    var rule = _triggerHandlers[i];
-                    var expression = rule.GetExpression(_parser);
+                    var triggerHandler = _triggerHandlers[i];
+                    var expression = triggerHandler.GetExpression(_parser);
                     var (value, error) = expression.TryEvaluate(context.State);
                     var eval = error == null && (bool)value;
                     if (eval == true)
                     {
-                        selection = rule;
+                        selection = triggerHandler;
                         break;
                     }
                 }
@@ -45,17 +45,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
             {
                 if (_triggerHandlers.Count > 0)
                 {
-                    selection = _rules[0];
+                    selection = _triggerHandlers[0];
                 }
             }
 
-            var result = new List<IOnEvent>();
+            var result = new List<TriggerHandler>();
             if (selection != null)
             {
                 result.Add(selection);
             }
 
-            return Task.FromResult((IReadOnlyList<IOnEvent>)result);
+            return Task.FromResult((IReadOnlyList<TriggerHandler>)result);
         }
     }
 }

@@ -26,7 +26,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.TriggerHandlers
                 actions: actions,
                 constraint: constraint,
                 priority: priority,
-                callerPath: callerPath, callerLine: callerLine)
+                callerPath: callerPath, 
+                callerLine: callerLine)
         {
         }
     }

@@ -45,6 +45,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                     // We want to pick up generic numbers when expected.
                     list.Add("number");
                 }
+
                 Mappings = list;
             }
             else

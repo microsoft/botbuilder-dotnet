@@ -19,6 +19,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                 result = queue[0];
                 queue.RemoveAt(0);
             }
+
             return result;
         }
     }

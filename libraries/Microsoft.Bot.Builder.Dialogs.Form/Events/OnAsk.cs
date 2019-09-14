@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Events;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.TriggerHandlers;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Form.Events

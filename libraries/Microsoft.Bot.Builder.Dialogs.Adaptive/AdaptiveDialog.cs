@@ -8,8 +8,8 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.TriggerHandlers;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.TriggerHandlers;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.LanguageGeneration;
 using Microsoft.Bot.Schema;
@@ -504,7 +504,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 System.Diagnostics.Trace.TraceInformation($"Executing Dialog: {this.Id} Rule[{selection}]: {evt.GetType().Name}: {evt.GetExpression(null)}");
                 var changes = await evt.ExecuteAsync(sequenceContext).ConfigureAwait(false);
 
-                if (changes != null && changes.Count > 0)
+                if (changes != null && changes.Count() > 0)
                 {
                     sequenceContext.QueueChanges(changes[0]);
                     return true;

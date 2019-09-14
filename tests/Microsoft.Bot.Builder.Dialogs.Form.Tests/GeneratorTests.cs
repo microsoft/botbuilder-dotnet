@@ -19,14 +19,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Form.Tests
 {
     public class GeneratorTests : IClassFixture<FormFixture>
     {
-        FormFixture _form;
+        private FormFixture _form;
+
+        private readonly string samplesDirectory = PathUtils.NormalizePath(@"..\..\..\..\..\tests\Microsoft.Bot.Builder.Dialogs.Form.Tests\Resources\");
 
         public GeneratorTests(FormFixture form)
         {
             _form = form;
         }
-
-        private readonly string samplesDirectory = PathUtils.NormalizePath(@"..\..\..\..\..\tests\Microsoft.Bot.Builder.Dialogs.Form.Tests\Resources\");
 
         [Fact]
         public async Task TestAsk()
@@ -66,7 +66,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Form.Tests
                 await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
             });
         }
-
     }
 
     public class FormFixture : IDisposable
@@ -78,11 +77,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Form.Tests
             Resources = ResourceExplorer.LoadProject(projPath);
         }
 
+        public ResourceExplorer Resources { get; }
+
         public void Dispose()
         {
             Resources.Dispose();
         }
-
-        public ResourceExplorer Resources { get; }
     }
 }

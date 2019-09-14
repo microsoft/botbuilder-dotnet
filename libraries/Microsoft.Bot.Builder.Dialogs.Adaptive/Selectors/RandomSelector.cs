@@ -10,7 +10,7 @@ using Microsoft.Bot.Builder.Expressions.Parser;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
 {
     /// <summary>
-    /// Select a random true rule implementation of IRuleSelector.
+    /// Select a random true triggerHandler implementation of IRuleSelector.
     /// </summary>
     public class RandomSelector : ITriggerSelector
     {
@@ -47,32 +47,32 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
             }
         }
 
-        public Task<IReadOnlyList<IOnEvent>> Select(SequenceContext context, CancellationToken cancel = default(CancellationToken))
+        public Task<IReadOnlyList<TriggerHandler>> Select(SequenceContext context, CancellationToken cancel = default(CancellationToken))
         {
-            var candidates = _rules;
+            var candidates = _triggerHandlers;
             if (_evaluate)
             {
-                candidates = new List<IOnEvent>();
-                foreach (var rule in _rules)
+                candidates = new List<TriggerHandler>();
+                foreach (var triggerHandler in _triggerHandlers)
                 {
-                    var expression = rule.GetExpression(_parser);
+                    var expression = triggerHandler.GetExpression(_parser);
                     var (value, error) = expression.TryEvaluate(context.State);
                     var eval = error == null && (bool)value;
                     if (eval == true)
                     {
-                        candidates.Add(rule);
+                        candidates.Add(triggerHandler);
                     }
                 }
             }
 
-            var result = new List<IOnEvent>();
+            var result = new List<TriggerHandler>();
             if (candidates.Count > 0)
             {
                 var selection = _rand.Next(candidates.Count);
                 result.Add(candidates[selection]);
             }
 
-            return Task.FromResult((IReadOnlyList<IOnEvent>)result);
+            return Task.FromResult((IReadOnlyList<TriggerHandler>)result);
         }
     }
 }

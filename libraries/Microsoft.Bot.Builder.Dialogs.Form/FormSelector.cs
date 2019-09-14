@@ -8,26 +8,26 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Events;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.TriggerHandlers;
 
 namespace Microsoft.Bot.Builder.Dialogs.Form
 {
-    internal class FormSelector : IEventSelector
+    internal class FormSelector : ITriggerSelector
     {
-        private readonly IEventSelector _selector;
+        private readonly ITriggerSelector _selector;
 
-        public FormSelector(IEventSelector selector)
+        public FormSelector(ITriggerSelector selector)
         {
             _selector = selector;
         }
 
-        public void Initialize(IEnumerable<IOnEvent> rules, bool evaluate = true) 
+        public void Initialize(IEnumerable<TriggerHandler> rules, bool evaluate = true) 
             => _selector.Initialize(rules);
 
-        public async Task<IReadOnlyList<IOnEvent>> Select(SequenceContext context, CancellationToken cancel = default(CancellationToken))
+        public async Task<IReadOnlyList<TriggerHandler>> Select(SequenceContext context, CancellationToken cancel = default(CancellationToken))
         {
             var candidates = await _selector.Select(context, cancel);
-            var choices = new List<IOnEvent>();
+            var choices = new List<TriggerHandler>();
             if (candidates.Any())
             {
                 var candidate = candidates.First();
@@ -36,8 +36,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                 choices.Add(choice);
             }
 
-            return (IReadOnlyList<IOnEvent>)choices;
+            return (IReadOnlyList<TriggerHandler>)choices;
         }
-
     }
 }
