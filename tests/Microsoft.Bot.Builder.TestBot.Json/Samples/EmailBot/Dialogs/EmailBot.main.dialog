@@ -55,7 +55,7 @@
             }
         ]
     },
-    "events": [
+    "triggers": [
         {
             "$type": "Microsoft.OnUnknownIntent",
             "actions": [

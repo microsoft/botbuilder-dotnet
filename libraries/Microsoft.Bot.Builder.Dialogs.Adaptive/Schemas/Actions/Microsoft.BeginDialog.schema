@@ -24,10 +24,10 @@
                         "title": "Options"
                     }
                 },
-                "property": {
+                "resultProperty": {
                     "$role": "expression",
                     "title": "Property",
-                    "description": "The property to bind to the dialog and store the result in",
+                    "description": "The property to store the result in",
                     "examples": [
                         "user.name"
                     ]

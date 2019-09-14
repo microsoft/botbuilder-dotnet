@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.TriggerHandlers;
 using Microsoft.Bot.Builder.Expressions.Parser;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
@@ -9,14 +10,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
     /// <summary>
     /// Select all rules which evaluate to true.
     /// </summary>
-    public class TrueSelector : IEventSelector
+    public class TrueSelector : ITriggerSelector
     {
-        private List<IOnEvent> _rules;
+        private List<TriggerHandler> _triggerHandlers;
         private bool _evaluate;
 
-        public void Initialize(IEnumerable<IOnEvent> rules, bool evaluate = true)
+        public void Initialize(IEnumerable<TriggerHandler> triggerHandlers, bool evaluate = true)
         {
-            _rules = rules.ToList();
+            _triggerHandlers = triggerHandlers.ToList();
             _evaluate = evaluate;
         }
 

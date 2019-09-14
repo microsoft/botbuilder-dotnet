@@ -7,12 +7,12 @@ using System.Runtime.CompilerServices;
 using Microsoft.Bot.Builder.Expressions;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive.TriggerHandlers
 {
     /// <summary>
     /// Event triggered when a dialog event matching a list of event names is emitted.
     /// </summary>
-    public class OnDialogEvent : OnEvent
+    public class OnDialogEvent : TriggerHandler
     {
         [JsonConstructor]
         public OnDialogEvent(List<string> events = null, List<Dialog> actions = null, string constraint = null, int priority = 0, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
@@ -77,7 +77,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
 
             foreach (var evt in Events)
             {
-                expressions.Add(factory.Parse($"turn.dialogEvent.name == '{evt}'"));
+                expressions.Add(factory.Parse($"{TurnPath.DIALOGEVENT}.name == '{evt}'"));
             }
 
             return expressions.Any()

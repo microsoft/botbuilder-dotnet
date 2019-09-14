@@ -13,7 +13,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// <summary>
     /// Sets a property with the result of evaluating a value expression.
     /// </summary>
-    public class InitProperty : DialogAction
+    public class InitProperty : Dialog
     {
         [JsonConstructor]
         public InitProperty([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
@@ -23,24 +23,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         }
 
         /// <summary>
-        /// Gets or sets bidirectional property for input and output.  Example: user.age will be passed in, and user.age will be set when the dialog completes.
+        /// Gets or sets property path to initialize.
         /// </summary>
-        /// <value>
-        /// Property for input and output.
-        /// </value>
-        public string Property
-        {
-            get
-            {
-                return OutputBinding;
-            }
-
-            set
-            {
-                InputBindings[DialogContextState.DIALOG_VALUE] = value;
-                OutputBinding = value;
-            }
-        }
+        public string Property { get; set; }
 
         /// <summary>
         ///  Gets or sets type, either Array or Object.
@@ -50,7 +35,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// </value>
         public string Type { get; set; }
 
-        protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (options is CancellationToken)
             {
@@ -80,7 +65,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
         protected override string OnComputeId()
         {
-            return $"InitProperty[${this.Property.ToString() ?? string.Empty}]";
+            return $"{this.GetType().Name}[${this.Property.ToString() ?? string.Empty}]";
         }
     }
 }

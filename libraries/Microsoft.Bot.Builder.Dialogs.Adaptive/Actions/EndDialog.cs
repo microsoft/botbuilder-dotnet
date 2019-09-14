@@ -5,6 +5,8 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Expressions;
+using Microsoft.Bot.Builder.Expressions.Parser;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
@@ -12,42 +14,70 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// <summary>
     /// Command to end the current dialog, returning the resultProperty as the result of the dialog.
     /// </summary>
-    public class EndDialog : DialogAction
+    public class EndDialog : Dialog
     {
+        private Expression value;
+
         [JsonConstructor]
-        public EndDialog(string resultProperty = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public EndDialog(string property = null, string value = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base()
         {
             this.RegisterSourceLocation(callerPath, callerLine);
 
-            if (!string.IsNullOrEmpty(resultProperty))
+            if (!string.IsNullOrEmpty(value))
             {
-                ResultProperty = resultProperty;
+                this.Value = value;
             }
         }
 
         /// <summary>
-        /// Gets or sets the property to return as the result ending the dialog.
+        /// Gets or sets a value expression for the result to be returned to the caller
         /// </summary>
-        /// <value>
-        /// The property to return as the result ending the dialog.
-        /// </value>
-        public string ResultProperty { get; set; } = "dialog.result";
+        [JsonProperty("value")]
+        public string Value
+        {
+            get { return value?.ToString(); }
+            set { this.value = (value != null) ? new ExpressionEngine().Parse(value) : null; }
+        }
 
-        protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (options is CancellationToken)
             {
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            dc.State.TryGetValue<string>(ResultProperty, out var result);
-            return await EndParentDialogAsync(dc, result, cancellationToken).ConfigureAwait(false);
+            if (this.Value != null)
+            {
+                var (result, error) = this.value.TryEvaluate(dc.State);
+                return await EndParentDialogAsync(dc, result, cancellationToken).ConfigureAwait(false);
+            }
+
+            return await EndParentDialogAsync(dc, result: null, cancellationToken: cancellationToken).ConfigureAwait(false);
+        }
+
+        protected async Task<DialogTurnResult> EndParentDialogAsync(DialogContext dc, object result = null, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (result is CancellationToken)
+            {
+                throw new ArgumentException($"{nameof(result)} cannot be a cancellation token");
+            }
+
+            if (dc.Parent != null)
+            {
+                var turnResult = await dc.Parent.EndDialogAsync(result, cancellationToken).ConfigureAwait(false);
+                turnResult.ParentEnded = true;
+                return turnResult;
+            }
+            else
+            {
+                return await dc.EndDialogAsync(result, cancellationToken).ConfigureAwait(false);
+            }
         }
 
         protected override string OnComputeId()
         {
-            return $"end({this.ResultProperty ?? string.Empty})";
+            return $"{this.GetType().Name}({this.Value ?? string.Empty})";
         }
     }
 }

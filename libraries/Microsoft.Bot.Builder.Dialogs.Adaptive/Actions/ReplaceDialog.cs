@@ -16,13 +16,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     public class ReplaceDialog : BaseInvokeDialog
     {
         [JsonConstructor]
-        public ReplaceDialog(string dialogIdToCall = null, string property = null, IDictionary<string, string> options = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
-            : base(dialogIdToCall, property, options)
+        public ReplaceDialog(string dialogIdToCall = null, IDictionary<string, string> options = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+            : base(dialogIdToCall, options)
         {
             this.RegisterSourceLocation(callerPath, callerLine);
         }
 
-        protected async override Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (options is CancellationToken)
             {

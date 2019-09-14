@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Events;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.TriggerHandlers;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
@@ -73,7 +73,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .AssertReplyOneOf(new string[] { "ruleAandB", "ruleAandC" })
                 .StartTestAsync();
 
-        private TestFlow CreateFlow(IEventSelector selector)
+        private TestFlow CreateFlow(ITriggerSelector selector)
         {
             TypeFactory.Configuration = new ConfigurationBuilder().Build();
             var storage = new MemoryStorage();
@@ -99,7 +99,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     new IntentPattern("trigger", "trigger"),
                 }
             };
-            dialog.AddEvents(new List<IOnEvent>()
+            dialog.AddTriggerHandlers(new List<TriggerHandler>()
             {
                 new OnIntent("a", actions: new List<Dialog> { new SetProperty { Property = "user.a", Value = "1" } }),
                 new OnIntent("b", actions: new List<Dialog> { new SetProperty { Property = "user.b", Value = "1" } }),

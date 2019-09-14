@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// Base class for all dialogs.
     /// </summary>
     [DebuggerDisplay("{Id}")]
-    public abstract class Dialog 
+    public abstract class Dialog
     {
         public static readonly DialogTurnResult EndOfTurn = new DialogTurnResult(DialogTurnStatus.Waiting);
 
@@ -60,22 +60,6 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// Set of tags assigned to the dialog.
         /// </value>
         public List<string> Tags { get; private set; } = new List<string>();
-
-        /// <summary>
-        /// Gets or sets expression for the memory slots to bind the dialogs options to on a call to `beginDialog()`.
-        /// </summary>
-        /// <value>
-        /// Expression for the memory slots to bind the dialogs options to on a call to `beginDialog()`.
-        /// </value>
-        public Dictionary<string, string> InputBindings { get; set; } = new Dictionary<string, string>();
-
-        /// <summary>
-        /// Gets or sets jSONPath expression for the memory slot to bind the dialogs result to when `endDialog()` is called.
-        /// </summary>
-        /// <value>
-        /// JSONPath expression for the memory slot to bind the dialogs result to when `endDialog()` is called.
-        /// </value>
-        public string OutputBinding { get; set; }
 
         /// <summary>
         /// Gets or sets the telemetry client for logging events.
@@ -232,23 +216,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         protected virtual string OnComputeId()
         {
-            return $"{this.GetType().Name}[{this.BindingPath()}]";
-        }
-
-        protected virtual string BindingPath()
-        {
-            const string valueKey = "value";
-
-            if (InputBindings.ContainsKey(valueKey))
-            {
-                return InputBindings[valueKey];
-            }
-            else if (!string.IsNullOrEmpty(OutputBinding))
-            {
-                return OutputBinding;
-            }
-
-            return string.Empty;
+            return this.GetType().Name;
         }
 
         protected void RegisterSourceLocation(string path, int lineNumber)

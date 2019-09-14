@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.TriggerHandlers;
 using Microsoft.Bot.Builder.Expressions;
 using Microsoft.Bot.Builder.Expressions.Parser;
 
@@ -11,9 +12,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
     /// <summary>
     /// Select a random true rule implementation of IRuleSelector.
     /// </summary>
-    public class RandomSelector : IEventSelector
+    public class RandomSelector : ITriggerSelector
     {
-        private List<IOnEvent> _rules;
+        private List<TriggerHandler> _triggerHandlers;
         private bool _evaluate;
         private Random _rand;
         private int _seed = -1;
@@ -36,9 +37,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
             }
         }
 
-        public void Initialize(IEnumerable<IOnEvent> rules, bool evaluate)
+        public void Initialize(IEnumerable<TriggerHandler> triggerHandlers, bool evaluate)
         {
-            _rules = rules.ToList();
+            _triggerHandlers = triggerHandlers.ToList();
             _evaluate = evaluate;
             if (_rand == null)
             {
