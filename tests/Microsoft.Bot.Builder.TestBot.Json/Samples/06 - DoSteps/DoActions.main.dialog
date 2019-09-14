@@ -22,7 +22,7 @@
             }
         ]
     },
-    "events": [
+    "triggers": [
         {
             "$type": "Microsoft.OnBeginDialog",
             "actions": [

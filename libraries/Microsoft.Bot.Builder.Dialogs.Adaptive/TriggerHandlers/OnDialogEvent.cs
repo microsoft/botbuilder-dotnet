@@ -6,12 +6,12 @@ using System.Runtime.CompilerServices;
 using Microsoft.Bot.Builder.Expressions;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive.TriggerHandlers
 {
     /// <summary>
     /// Event triggered when a dialog event matching a list of event names is emitted.
     /// </summary>
-    public class OnDialogEvent : OnEvent
+    public class OnDialogEvent : TriggerHandler
     {
         [JsonConstructor]
         public OnDialogEvent(List<string> events = null, List<Dialog> actions = null, string constraint = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)

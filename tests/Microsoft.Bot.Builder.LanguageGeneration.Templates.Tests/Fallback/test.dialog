@@ -1,7 +1,7 @@
 ﻿{
     "$type": "Microsoft.AdaptiveDialog",
     "generator": "root.lg",
-    "events": [
+    "triggers": [
         {
             "$type": "Microsoft.OnBeginDialog",
             "actions": [
@@ -12,7 +12,7 @@
                 {
                     "$type": "Microsoft.AdaptiveDialog",
                     "generator": "subDialog.lg",
-                    "events": [
+                    "triggers": [
                         {
                             "$type": "Microsoft.OnBeginDialog",
                             "actions": [

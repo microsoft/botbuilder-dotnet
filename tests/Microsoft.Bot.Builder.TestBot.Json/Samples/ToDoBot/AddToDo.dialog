@@ -2,7 +2,7 @@
     "$schema": "../../app.schema",
     "$type": "Microsoft.AdaptiveDialog",
     "generator": "todo.lg",
-    "events": [
+    "triggers": [
         {
             "$type": "Microsoft.OnBeginDialog",
             "actions": [

@@ -6,7 +6,7 @@ using System.Runtime.CompilerServices;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive.TriggerHandlers
 {
     /// <summary>
     /// Event for MessageUpdate Activity.

@@ -6,10 +6,10 @@ using System.Runtime.CompilerServices;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive.TriggerHandlers
 {
     /// <summary>
-    /// Event for Event Activity.
+    /// Event for external event activity (Activity.Type=="Event")
     /// </summary>
     public class OnEventActivity : OnActivity
     {
