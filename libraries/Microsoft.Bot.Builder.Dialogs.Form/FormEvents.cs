@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Microsoft.Bot.Builder.Dialogs.Adaptive;
+﻿using Microsoft.Bot.Builder.Dialogs.Adaptive;
 
 namespace Microsoft.Bot.Builder.Dialogs.Form
 {

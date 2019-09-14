@@ -1,8 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace Microsoft.Bot.Builder.Dialogs.Debugging
+﻿namespace Microsoft.Bot.Builder.Dialogs.Debugging
 {
     public static class Identifier
     {

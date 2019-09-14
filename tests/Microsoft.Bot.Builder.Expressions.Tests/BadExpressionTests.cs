@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Diagnostics;
 using Microsoft.Bot.Builder.Expressions.Parser;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 

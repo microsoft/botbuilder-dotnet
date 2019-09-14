@@ -2,7 +2,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
@@ -17,7 +16,7 @@ using Xunit;
 
 namespace Microsoft.Bot.Builder.Dialogs.Form.Tests
 {
-    public class GeneratorTests : IClassFixture<FormFixture>
+    public class GeneratorTests : IClassFixture<GeneratorTests.FormFixture>
     {
         private FormFixture _form;
 
@@ -32,7 +31,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Form.Tests
         public async Task TestAsk()
         {
             await BuildTestFlow("TestAsk", @"sandwich.dialog")
-                .AssertReply("Welcome!")
                 .Send("Order a ham sandwich")
             .StartTestAsync();
         }
@@ -66,22 +64,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Form.Tests
                 await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
             });
         }
-    }
 
-    public class FormFixture : IDisposable
-    {
-        public FormFixture()
+        public class FormFixture : IDisposable
         {
-            TypeFactory.Configuration = new ConfigurationBuilder().AddInMemoryCollection().Build();
-            var projPath = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, PathUtils.NormalizePath($@"..\..\..\..\..\tests\Microsoft.Bot.Builder.Dialogs.Form.Tests\Microsoft.Bot.Builder.Dialogs.Form.Tests.csproj")));
-            Resources = ResourceExplorer.LoadProject(projPath);
-        }
+            public FormFixture()
+            {
+                TypeFactory.Configuration = new ConfigurationBuilder().AddInMemoryCollection().Build();
+                var projPath = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, PathUtils.NormalizePath($@"..\..\..\..\..\tests\Microsoft.Bot.Builder.Dialogs.Form.Tests\Microsoft.Bot.Builder.Dialogs.Form.Tests.csproj")));
+                Resources = ResourceExplorer.LoadProject(projPath);
+            }
 
-        public ResourceExplorer Resources { get; }
+            public ResourceExplorer Resources { get; }
 
-        public void Dispose()
-        {
-            Resources.Dispose();
+            public void Dispose()
+            {
+                Resources.Dispose();
+            }
         }
     }
 }

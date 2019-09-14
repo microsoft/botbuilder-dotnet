@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Microsoft.Bot.Builder.AI.Luis;
+﻿using System.Collections.Generic;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Converters;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Loaders;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resolvers;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
 using Microsoft.Bot.Builder.LanguageGeneration.Generators;
 using Microsoft.Bot.Builder.LanguageGeneration.Templates;
 using Newtonsoft.Json;

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Microsoft.Bot.Builder.Dialogs.Form
+﻿namespace Microsoft.Bot.Builder.Dialogs.Form
 {
     public static class Operations
     {

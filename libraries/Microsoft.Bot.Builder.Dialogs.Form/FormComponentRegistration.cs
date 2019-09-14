@@ -2,8 +2,8 @@
 using System.Linq;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Converters;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resolvers;
+using Microsoft.Bot.Builder.Dialogs.Form.Converters;
 using Microsoft.Bot.Builder.Dialogs.Form.Events;
 using Newtonsoft.Json;
 
@@ -25,8 +25,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
 
         public override IEnumerable<JsonConverter> GetConverters(Source.IRegistry registry, IRefResolver refResolver, Stack<string> paths)
         {
-            return Enumerable.Empty<JsonConverter>();
-            // TODO: DialogSchemaConverter
+            yield return new DialogSchemaConverter(refResolver, registry);
         }
     }
 }

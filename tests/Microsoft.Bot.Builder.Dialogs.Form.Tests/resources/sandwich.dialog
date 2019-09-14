@@ -2,7 +2,12 @@
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/chrimc/map/schemas/sdk.schema",
     "$type": "Microsoft.FormDialog",
     "schema": "sandwich.form",
-    "recognizer": "sandwich.lu",
+    "recognizer": {
+        "$type": "Microsoft.LuisRecognizer",
+        "applicationId": "ec5be598-b4c5-4adb-9272-9bfb52595dec",
+        "endpoint": "https://westus.api.cognitive.microsoft.com/luis/v2.0",
+        "endpointKey": "0f43266ab91447ec8d705897381478c5"
+    },
     "events": [
         {
             "$type": "Microsoft.OnAsk",

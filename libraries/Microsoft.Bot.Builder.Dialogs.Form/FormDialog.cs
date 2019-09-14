@@ -26,7 +26,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
         {
             var handled = false;
             // Save into turn
-            sequenceContext.State.SetValue(TurnPath.SCHEMA, this.Schema);
+            sequenceContext.State.SetValue(TurnPath.SCHEMA, this.Schema.Schema);
             if (preBubble)
             {
                 switch (dialogEvent.Name)

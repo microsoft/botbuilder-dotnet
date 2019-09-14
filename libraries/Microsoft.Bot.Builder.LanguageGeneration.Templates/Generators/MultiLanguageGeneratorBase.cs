@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Dialogs;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration.Generators
 {

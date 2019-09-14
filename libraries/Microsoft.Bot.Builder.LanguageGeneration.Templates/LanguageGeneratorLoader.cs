@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Loaders;
 using Microsoft.Bot.Builder.LanguageGeneration.Generators;
 using Newtonsoft.Json;

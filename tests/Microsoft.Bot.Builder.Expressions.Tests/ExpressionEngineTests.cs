@@ -5,7 +5,6 @@ using System.Collections;
 using System.Collections.Generic;
 using Microsoft.Bot.Builder.Expressions.Parser;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Expressions.Tests

@@ -1,5 +1,4 @@
-﻿using Microsoft.Bot.Builder.Dialogs;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration.Generators
 {
