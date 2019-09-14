@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveCards;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Schema.Teams;
@@ -14,13 +13,6 @@ namespace Microsoft.BotBuilderSamples.Bots
 {
     public class TaskModuleBot : TeamsActivityHandler
     {
-        string _webRootPath;
-
-        public TaskModuleBot(IHostingEnvironment hostingEnvironment)
-        {
-            _webRootPath = hostingEnvironment.ContentRootPath;
-        }
-
         protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
             var reply = MessageFactory.Attachment(this.GetHeroCard());
