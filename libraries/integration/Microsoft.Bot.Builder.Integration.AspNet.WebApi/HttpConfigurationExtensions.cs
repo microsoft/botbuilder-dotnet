@@ -33,9 +33,17 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
             var adapter = httpConfiguration.DependencyResolver.GetService(typeof(IAdapterIntegration)) as IAdapterIntegration;
             if (adapter == null)
             {
-                var credentialProvider = ResolveCredentialProvider(options);
+                BotFrameworkAdapter botFrameworkAdapter;
 
-                var botFrameworkAdapter = new BotFrameworkAdapter(credentialProvider, options.AuthenticationConfiguration, options.ChannelProvider, options.ConnectorClientRetryPolicy, options.HttpClient);
+                if (options.AppCredentials != null)
+                {
+                    botFrameworkAdapter = new BotFrameworkAdapter(options.AppCredentials, options.AuthenticationConfiguration, options.ChannelProvider, options.ConnectorClientRetryPolicy, options.HttpClient);
+                }
+                else
+                {
+                    var credentialProvider = ResolveCredentialProvider(options);
+                    botFrameworkAdapter = new BotFrameworkAdapter(credentialProvider, options.AuthenticationConfiguration, options.ChannelProvider, options.ConnectorClientRetryPolicy, options.HttpClient);
+                }
 
                 // error handler
                 botFrameworkAdapter.OnTurnError = options.OnTurnError;

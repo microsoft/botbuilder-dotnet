@@ -162,17 +162,36 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             var options = serviceProvider.GetRequiredService<IOptions<BotFrameworkOptions>>().Value;
             var logger = serviceProvider.GetRequiredService<ILogger<IAdapterIntegration>>();
 
-            var botFrameworkAdapter = new BotFrameworkAdapter(
-                            options.CredentialProvider,
-                            options.AuthenticationConfiguration,
-                            options.ChannelProvider,
-                            options.ConnectorClientRetryPolicy,
-                            options.HttpClient,
-                            null,
-                            logger)
+            BotFrameworkAdapter botFrameworkAdapter;
+
+            if (options.AppCredentials != null)
             {
-                OnTurnError = options.OnTurnError,
-            };
+                botFrameworkAdapter = new BotFrameworkAdapter(
+                   options.AppCredentials,
+                   options.AuthenticationConfiguration,
+                   options.ChannelProvider,
+                   options.ConnectorClientRetryPolicy,
+                   options.HttpClient,
+                   null,
+                   logger)
+                {
+                    OnTurnError = options.OnTurnError,
+                };
+            }
+            else
+            {
+                botFrameworkAdapter = new BotFrameworkAdapter(
+                options.CredentialProvider,
+                options.AuthenticationConfiguration,
+                options.ChannelProvider,
+                options.ConnectorClientRetryPolicy,
+                options.HttpClient,
+                null,
+                logger)
+                {
+                    OnTurnError = options.OnTurnError,
+                };
+            }
 
             foreach (var middleware in options.Middleware)
             {
