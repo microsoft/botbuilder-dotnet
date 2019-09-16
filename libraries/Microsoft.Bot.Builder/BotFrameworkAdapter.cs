@@ -50,6 +50,7 @@ namespace Microsoft.Bot.Builder
 
         private static readonly HttpClient _defaultHttpClient = new HttpClient();
         private readonly ICredentialProvider _credentialProvider;
+        private readonly AppCredentials _appCredentials;
         private readonly IChannelProvider _channelProvider;
         private readonly HttpClient _httpClient;
         private readonly RetryPolicy _connectorClientRetryPolicy;
@@ -115,6 +116,54 @@ namespace Microsoft.Bot.Builder
             ILogger logger = null)
         {
             _credentialProvider = credentialProvider ?? throw new ArgumentNullException(nameof(credentialProvider));
+            _channelProvider = channelProvider;
+            _httpClient = customHttpClient ?? _defaultHttpClient;
+            _connectorClientRetryPolicy = connectorClientRetryPolicy;
+            _logger = logger ?? NullLogger.Instance;
+            _authConfiguration = authConfig ?? throw new ArgumentNullException(nameof(authConfig));
+
+            if (middleware != null)
+            {
+                Use(middleware);
+            }
+
+            // Relocate the tenantId field used by MS Teams to a new location (from channelData to conversation)
+            // This will only occur on activities from teams that include tenant info in channelData but NOT in conversation,
+            // thus should be future friendly.  However, once the transition is complete. we can remove this.
+            Use(new TenantIdWorkaroundForTeamsMiddleware());
+
+            // DefaultRequestHeaders are not thread safe so set them up here because this adapter should be a singleton.
+            ConnectorClient.AddDefaultRequestHeaders(_httpClient);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BotFrameworkAdapter"/> class,
+        /// using a credential provider.
+        /// </summary>
+        /// <param name="credentials">The credentials to be used for token acquisition.</param>
+        /// <param name="authConfig">The authentication configuration.</param>
+        /// <param name="channelProvider">The channel provider.</param>
+        /// <param name="connectorClientRetryPolicy">Retry policy for retrying HTTP operations.</param>
+        /// <param name="customHttpClient">The HTTP client.</param>
+        /// <param name="middleware">The middleware to initially add to the adapter.</param>
+        /// <param name="logger">The ILogger implementation this adapter should use.</param>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="credentialProvider"/> is <c>null</c>.</exception>
+        /// <remarks>Use a <see cref="MiddlewareSet"/> object to add multiple middleware
+        /// components in the constructor. Use the <see cref="Use(IMiddleware)"/> method to
+        /// add additional middleware to the adapter after construction.
+        /// </remarks>
+        public BotFrameworkAdapter(
+            AppCredentials credentials,
+            AuthenticationConfiguration authConfig,
+            IChannelProvider channelProvider = null,
+            RetryPolicy connectorClientRetryPolicy = null,
+            HttpClient customHttpClient = null,
+            IMiddleware middleware = null,
+            ILogger logger = null)
+        {
+            _appCredentials = credentials ?? throw new ArgumentNullException(nameof(credentials));
+            _credentialProvider = new SimpleCredentialProvider(credentials.MicrosoftAppId, string.Empty);
             _channelProvider = channelProvider;
             _httpClient = customHttpClient ?? _defaultHttpClient;
             _connectorClientRetryPolicy = connectorClientRetryPolicy;
@@ -958,6 +1007,13 @@ namespace Microsoft.Bot.Builder
 
             if (_appCredentialMap.TryGetValue(appId, out var appCredentials))
             {
+                return appCredentials;
+            }
+
+            // If app credentials were provided, use them as they are the preferred choice moving forward
+            if (_appCredentials != null)
+            {
+                _appCredentialMap[appId] = appCredentials;
                 return appCredentials;
             }
 
