@@ -201,7 +201,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 destList.Add(replaceString);
             }
 
-            destList.AddRange(originList.Skip(endIndex + 1).Take(originList.Length - endIndex - 1).Select(u => u.Trim()));
+            destList.AddRange(originList.Skip(endIndex + 1).Select(u => u.Trim()));
 
             return string.Join("\r\n", destList);
         }
