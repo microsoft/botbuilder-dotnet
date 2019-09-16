@@ -3,6 +3,8 @@
 @parser::header {#pragma warning disable 3021} // Disable StyleCop warning CS3021 re CLSCompliant attribute in generated files.
 @lexer::header {#pragma warning disable 3021} // Disable StyleCop warning CS3021 re CLSCompliant attribute in generated files.
 
+file: expression EOF;
+
 expression
     : ('!'|'-'|'+') expression                  #unaryOpExp
     | <assoc=right> expression '^' expression   #binaryOpExp 
@@ -21,7 +23,6 @@ primaryExpression
     | NUMBER                                  #numericAtom
     | STRING                                  #stringAtom
     | IDENTIFIER                              #idAtom
-    | primaryExpression IDENTIFIER            #shorthandAccessorExp
     | primaryExpression '.' IDENTIFIER        #memberAccessExp
     | primaryExpression '(' argsList? ')'     #funcInvokeExp
     | primaryExpression '[' expression ']'    #indexAccessExp

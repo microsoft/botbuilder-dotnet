@@ -17,18 +17,6 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
     public class ExpressionEngine : IExpressionParser
     {
         /// <summary>
-        /// constant short hand currently have.
-        /// </summary>
-        private static readonly Dictionary<string, string> ShorthandPrefixMap = new Dictionary<string, string>()
-        {
-            { "#", $"turn.recognized.intents" },
-            { "@", $"turn.recognized.entities" },
-            { "@@", $"turn.recognized.entities" },
-            { "$", $"" },
-            { "%", $"dialog.options" },
-        };
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="ExpressionEngine"/> class.
         /// Constructor.
         /// </summary>
@@ -56,7 +44,7 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
             parser.RemoveErrorListeners();
             parser.AddErrorListener(ErrorListener.Instance);
             parser.BuildParseTree = true;
-            return parser.expression();
+            return parser.file()?.expression();
         }
 
         private class ExpressionTransformer : ExpressionBaseVisitor<Expression>
