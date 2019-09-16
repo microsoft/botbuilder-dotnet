@@ -69,7 +69,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var startLine = template.ParseTree.Start.Line - 1;
             var stopLine = template.ParseTree.Stop.Line - 1;
 
-            var newContent = ReplaceContent(Content, startLine, stopLine, content);
+            var newContent = ReplaceRangeContent(Content, startLine, stopLine, content);
             return LGParser.Parse(newContent, Id);
         }
 
@@ -109,7 +109,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var startLine = template.ParseTree.Start.Line - 1;
             var stopLine = template.ParseTree.Stop.Line - 1;
 
-            var newContent = ReplaceContent(Content, startLine, stopLine, null);
+            var newContent = ReplaceRangeContent(Content, startLine, stopLine, null);
             return LGParser.Parse(newContent, Id);
         }
 
@@ -182,11 +182,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
         }
 
-        private string ReplaceContent(string originString, int startLine, int stopLine, string replaceString)
+        private string ReplaceRangeContent(string originString, int startLine, int stopLine, string replaceString)
         {
             var originList = originString.Split('\n');
             var destList = new List<string>();
-            if (startLine > stopLine || originList.Length <= stopLine)
+            if (startLine < 0 || startLine > stopLine || originList.Length <= stopLine)
             {
                 throw new Exception("index out of range.");
             }

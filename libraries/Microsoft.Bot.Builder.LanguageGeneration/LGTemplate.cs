@@ -97,7 +97,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         private string GetRangeContent(string originString, int startLine, int stopLine)
         {
             var originList = originString.Split('\n');
-            if (startLine > stopLine || originList.Length <= stopLine)
+            if (startLine < 0 || startLine > stopLine || originList.Length <= stopLine)
             {
                 throw new Exception("index out of range.");
             }
