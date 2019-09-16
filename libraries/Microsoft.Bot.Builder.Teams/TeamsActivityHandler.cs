@@ -73,7 +73,7 @@ namespace Microsoft.BotBuilderSamples
                         return CreateInvokeResponse(await OnTeamsMessagingExtensionQueryAsync(turnContext, SafeCast<MessagingExtensionQuery>(turnContext.Activity.Value), cancellationToken).ConfigureAwait(false));
 
                     case "composeExtension/queryLink":
-                        return CreateInvokeResponse(await OnTeamsAppBasedLinkQueryAsync(turnContext, cancellationToken).ConfigureAwait(false));
+                        return CreateInvokeResponse(await OnTeamsAppBasedLinkQueryAsync(turnContext, SafeCast<AppBasedLinkQuery>(turnContext.Activity.Value), cancellationToken).ConfigureAwait(false));
 
                     case "composeExtension/selectItem":
                         return CreateInvokeResponse(await OnTeamsMessagingExtensionSelectItemAsync(turnContext, SafeCast<MessagingExtensionQuery>(turnContext.Activity.Value), cancellationToken).ConfigureAwait(false));
@@ -149,7 +149,7 @@ namespace Microsoft.BotBuilderSamples
             return Task.CompletedTask;
         }
 
-        protected virtual Task<MessagingExtensionResponse> OnTeamsAppBasedLinkQueryAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
+        protected virtual Task<MessagingExtensionResponse> OnTeamsAppBasedLinkQueryAsync(ITurnContext<IInvokeActivity> turnContext, AppBasedLinkQuery query, CancellationToken cancellationToken)
         {
             return Task.FromResult<MessagingExtensionResponse>(null);
         }
