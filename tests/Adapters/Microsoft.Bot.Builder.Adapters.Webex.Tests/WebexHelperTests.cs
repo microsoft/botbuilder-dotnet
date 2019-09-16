@@ -92,13 +92,13 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
             var activity = WebexHelper.DecryptedMessageToActivity(message, identity);
 
             Assert.Equal(message.Id, activity.Id);
-            Assert.Equal(message.Html, activity.Text);
+            Assert.Equal(message.Text, activity.Text);
         }
 
         [Fact]
         public void DecryptedMessageToActivityWithHtmlShouldReturnActivityWhenMatch()
         {
-            var serializedPerson = "{\"id\":\"/ciscospark://us/PEOPLE/different_id\"}";
+            var serializedPerson = "{\"id\":\"ciscospark://us/PEOPLE/different_id\"}";
             var identity = JsonConvert.DeserializeObject<Person>(serializedPerson);
 
             var message =
@@ -108,7 +108,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
             var activity = WebexHelper.DecryptedMessageToActivity(message, identity);
 
             Assert.Equal(message.Id, activity.Id);
-            Assert.Equal(message.Html, activity.Text);
+            Assert.Equal(message.Text, activity.Text);
         }
 
         [Fact]

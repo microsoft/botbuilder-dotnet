@@ -4,12 +4,9 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using System.Security.Cryptography;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 using Thrzn41.WebexTeams.Version1;
@@ -130,10 +127,10 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
             {
                 // strip the mention & HTML from the message
                 var pattern = new Regex($"^(<p>)?<spark-mention .*?data-object-id=\"{identity.Id}\".*?>.*?</spark-mention>", RegexOptions.IgnoreCase | RegexOptions.Multiline);
-                if (!decryptedMessage.Html.Equals(pattern))
+                if (!pattern.IsMatch(decryptedMessage.Html))
                 {
                     // this should look like ciscospark://us/PEOPLE/<id string>
-                    var match = Regex.Match(identity.Id, "/ciscospark://.*/(.*)", RegexOptions.IgnoreCase | RegexOptions.Multiline);
+                    var match = Regex.Match(identity.Id, "ciscospark://.*/(.*)", RegexOptions.IgnoreCase | RegexOptions.Multiline);
                     if (match.Captures.Count > 0)
                     {
                         pattern = new Regex(
@@ -141,15 +138,16 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                     }
                 }
 
-                var action = decryptedMessage.Html.Replace(pattern.ToString(), string.Empty);
+                var action = pattern.Replace(decryptedMessage.Html, string.Empty);
 
-                // Strip the remaining HTML tags and replace the message text with the the HTML version
-                activity.Text = action.Replace("/<.*?>/img", string.Empty).Trim();
+                // Strip the remaining HTML tags and replace the message text with the HTML version
+                var remainingHtml = new Regex("<.*?>", RegexOptions.IgnoreCase | RegexOptions.Multiline);
+                activity.Text = remainingHtml.Replace(action, string.Empty).Trim();
             }
             else
             {
                 var pattern = new Regex("^" + identity.DisplayName + "\\s+");
-                activity.Text = activity.Text.Replace(pattern.ToString(), string.Empty);
+                activity.Text = pattern.Replace(activity.Text, string.Empty);
             }
 
             if (decryptedMessage.FileCount > 0)
