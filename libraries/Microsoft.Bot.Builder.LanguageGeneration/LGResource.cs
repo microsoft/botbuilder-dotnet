@@ -64,8 +64,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 return this;
             }
-
-            var content = $"# {templateName}({string.Join(", ", parameters)})\r\n{templateBody}";
+            var templateNameLine = BuildTemplateNameLine(templateName, parameters);
+            var content = $"{templateNameLine}\r\n{templateBody}";
             var startLine = template.ParseTree.Start.Line - 1;
             var stopLine = template.ParseTree.Stop.Line - 1;
 
@@ -87,8 +87,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 throw new Exception($"template {templateName} already exists.");
             }
+            var templateNameLine = BuildTemplateNameLine(templateName, parameters);
 
-            var currentContent = $"{OriginalContent}\r\n# {templateName}({string.Join(", ", parameters)})\r\n{templateBody}\r\n";
+            var currentContent = $"{OriginalContent}\r\n{templateNameLine}\r\n{templateBody}\r\n";
             return LGParser.Parse(currentContent);
         }
 
@@ -203,6 +204,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             destList.AddRange(originList.Skip(endIndex + 1).Take(originList.Length - endIndex - 1).Select(u => u.Trim()));
 
             return string.Join("\r\n", destList);
+        }
+
+        private string BuildTemplateNameLine(string templateName, List<string> parameters)
+        {
+            return $"# {templateName}({string.Join(", ", parameters)})";
         }
     }
 }
