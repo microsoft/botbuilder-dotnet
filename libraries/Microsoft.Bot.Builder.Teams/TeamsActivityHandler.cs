@@ -93,8 +93,7 @@ namespace Microsoft.Bot.Builder.Teams
                         return CreateInvokeResponse(await OnTeamsTaskModuleFetchAsync(turnContext, cancellationToken).ConfigureAwait(false));
 
                     case "task/submit":
-                        await OnTeamsTaskModuleSubmitAsync(turnContext, cancellationToken).ConfigureAwait(false);
-                        return CreateInvokeResponse();
+                        return CreateInvokeResponse(await OnTeamsTaskModuleSubmitAsync(turnContext, cancellationToken).ConfigureAwait(false));
 
                     default:
                         return null;
@@ -217,9 +216,9 @@ namespace Microsoft.Bot.Builder.Teams
             return Task.FromResult<TaskModuleResponse>(null);
         }
 
-        protected virtual Task OnTeamsTaskModuleSubmitAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
+        protected virtual Task<TaskModuleResponse> OnTeamsTaskModuleSubmitAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
         {
-            return Task.CompletedTask;
+            return Task.FromResult<TaskModuleResponse>(null);
         }
 
         protected override Task OnConversationUpdateActivityAsync(ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
