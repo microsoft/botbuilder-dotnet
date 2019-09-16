@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Microsoft.Bot.Builder.LanguageGeneration;
@@ -283,10 +284,10 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             var todos = new[] { "A", "B", "C" };
             evaled = engine.EvaluateTemplate("showTodo", new { todos });
-            Assert.AreEqual(evaled, Environment.NewLine + "    Your most recent 3 tasks are" + Environment.NewLine + "    * A\n* B\n* C" + Environment.NewLine + "    ");
-
+            Assert.AreEqual(evaled.Replace("\r\n", "\n"), "\n    Your most recent 3 tasks are\n    * A\n* B\n* C\n    ");
+            
             evaled = engine.EvaluateTemplate("showTodo", null);
-            Assert.AreEqual(evaled, Environment.NewLine + "    You don't have any \"t\\\\odo'\"." + Environment.NewLine + "    ");
+            Assert.AreEqual(evaled.Replace("\r\n", "\n"), "\n    You don't have any \"t\\\\odo'\".\n    ");
         }
 
         [TestMethod]
@@ -682,31 +683,31 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.AreEqual(lgResource.Templates.Count, 1);
             Assert.AreEqual(lgResource.Imports.Count, 0);
             Assert.AreEqual(lgResource.Templates[0].Name, "wPhrase");
-            Assert.AreEqual(lgResource.Templates[0].Body, "-Hi\r\n-Hello\r\n-Hiya\r\n-Hi");
+            Assert.AreEqual(lgResource.Templates[0].Body.Replace("\r\n", "\n"), "- Hi\n- Hello\n- Hiya\n- Hi");
 
-            lgResource = lgResource.AddTemplate("newtemplate", new List<string> { "age", "name" }, "- hi");
+            lgResource = lgResource.AddTemplate("newtemplate", new List<string> { "age", "name" }, "- hi ");
             Assert.AreEqual(lgResource.Templates.Count, 2);
             Assert.AreEqual(lgResource.Imports.Count, 0);
             Assert.AreEqual(lgResource.Templates[1].Name, "newtemplate");
             Assert.AreEqual(lgResource.Templates[1].Parameters.Count, 2);
             Assert.AreEqual(lgResource.Templates[1].Parameters[0], "age");
             Assert.AreEqual(lgResource.Templates[1].Parameters[1], "name");
-            Assert.AreEqual(lgResource.Templates[1].Body, "-hi");
+            Assert.AreEqual(lgResource.Templates[1].Body, "- hi ");
 
-            lgResource = lgResource.UpdateTemplate("newtemplate", new List<string> { "newage", "newname" }, "- newhi");
+            lgResource = lgResource.UpdateTemplate("newtemplate", new List<string> { "newage", "newname" }, "- new hi ");
             Assert.AreEqual(lgResource.Templates.Count, 2);
             Assert.AreEqual(lgResource.Imports.Count, 0);
             Assert.AreEqual(lgResource.Templates[1].Name, "newtemplate");
             Assert.AreEqual(lgResource.Templates[1].Parameters.Count, 2);
             Assert.AreEqual(lgResource.Templates[1].Parameters[0], "newage");
             Assert.AreEqual(lgResource.Templates[1].Parameters[1], "newname");
-            Assert.AreEqual(lgResource.Templates[1].Body, "-newhi");
+            Assert.AreEqual(lgResource.Templates[1].Body, "- new hi ");
 
             lgResource = lgResource.DeleteTemplate("newtemplate");
             Assert.AreEqual(lgResource.Templates.Count, 1);
             Assert.AreEqual(lgResource.Imports.Count, 0);
             Assert.AreEqual(lgResource.Templates[0].Name, "wPhrase");
-            Assert.AreEqual(lgResource.Templates[0].Body, "-Hi\r\n-Hello\r\n-Hiya\r\n-Hi");
+            Assert.AreEqual(lgResource.Templates[0].Body.Replace("\r\n", "\n"), "- Hi\n- Hello\n- Hiya\n- Hi");
         }
 
         private string GetExampleFilePath(string fileName)

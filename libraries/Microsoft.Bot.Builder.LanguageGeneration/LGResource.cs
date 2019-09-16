@@ -14,17 +14,17 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </summary>
         /// <param name="templates">The lg templates.</param>
         /// <param name="imports">The lg imports.</param>
-        /// <param name="originalContent">original lg content.</param>
+        /// <param name="content">original lg content.</param>
         /// <param name="id">The id of the lg source.</param>
-        public LGResource(IList<LGTemplate> templates, IList<LGImport> imports, string originalContent, string id = "")
+        public LGResource(IList<LGTemplate> templates, IList<LGImport> imports, string content, string id = "")
         {
             Templates = templates;
             Imports = imports;
             Id = id;
-            OriginalContent = originalContent;
+            Content = content;
         }
 
-        public string OriginalContent { get; set; }
+        public string Content { get; set; }
 
         /// <summary>
         /// Gets or sets id of this lg source.
@@ -69,7 +69,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var startLine = template.ParseTree.Start.Line - 1;
             var stopLine = template.ParseTree.Stop.Line - 1;
 
-            var currentContent = ReplaceContent(OriginalContent, startLine, stopLine, content);
+            var currentContent = ReplaceContent(Content, startLine, stopLine, content);
             return LGParser.Parse(currentContent, Id);
         }
 
@@ -89,8 +89,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
             var templateNameLine = BuildTemplateNameLine(templateName, parameters);
 
-            var currentContent = $"{OriginalContent}\r\n{templateNameLine}\r\n{templateBody}\r\n";
-            return LGParser.Parse(currentContent, Id);
+            var newContent = $"{Content}\r\n{templateNameLine}\r\n{templateBody}";
+            return LGParser.Parse(newContent, Id);
         }
 
         /// <summary>
@@ -109,8 +109,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var startLine = template.ParseTree.Start.Line - 1;
             var stopLine = template.ParseTree.Stop.Line - 1;
 
-            var currentContent = ReplaceContent(OriginalContent, startLine, stopLine, null);
-            return LGParser.Parse(currentContent, Id);
+            var newContent = ReplaceContent(Content, startLine, stopLine, null);
+            return LGParser.Parse(newContent, Id);
         }
 
         /// <summary>
@@ -150,10 +150,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return resourcesFound.ToList();
         }
 
-        public override string ToString()
-        {
-            return $"{Id} Templates[{Templates.Count}] Imports[{Imports.Count}]";
-        }
+        public override string ToString() => Content;
 
         /// <summary>
         /// Resolve imported LG resources from a start resource.
@@ -185,30 +182,27 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
         }
 
-        private string ReplaceContent(string originString, int startIndex, int endIndex, string replaceString)
+        private string ReplaceContent(string originString, int startLine, int stopLine, string replaceString)
         {
             var originList = originString.Split('\n');
             var destList = new List<string>();
-            if (startIndex > endIndex || originList.Length <= endIndex)
+            if (startLine > stopLine || originList.Length <= stopLine)
             {
                 throw new Exception("index out of range.");
             }
 
-            destList.AddRange(originList.Take(startIndex).Select(u => u.Trim()));
+            destList.AddRange(originList.Take(startLine));
 
             if (!string.IsNullOrEmpty(replaceString))
             {
                 destList.Add(replaceString);
             }
 
-            destList.AddRange(originList.Skip(endIndex + 1).Select(u => u.Trim()));
+            destList.AddRange(originList.Skip(stopLine + 1));
 
-            return string.Join("\r\n", destList);
+            return string.Join("\n", destList).TrimEnd('\r');
         }
 
-        private string BuildTemplateNameLine(string templateName, List<string> parameters)
-        {
-            return $"# {templateName}({string.Join(", ", parameters)})";
-        }
+        private string BuildTemplateNameLine(string templateName, List<string> parameters) => $"# {templateName}({string.Join(", ", parameters)})";
     }
 }
