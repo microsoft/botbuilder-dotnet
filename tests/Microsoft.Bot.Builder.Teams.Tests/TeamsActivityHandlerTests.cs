@@ -10,6 +10,7 @@ using Microsoft.Bot.Builder.Teams;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Schema.Teams;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Tests
 {
@@ -450,22 +451,22 @@ namespace Microsoft.Bot.Builder.Tests
                 return base.OnTeamsFileConsentDeclineAsync(turnContext, fileConsentCardResponse, cancellationToken);
             }
 
-            protected override Task<MessagingExtensionActionResponse> OnTeamsMessagingExtensionBotMessagePreviewEdit(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionAction query, CancellationToken cancellationToken)
+            protected override Task<MessagingExtensionActionResponse> OnTeamsMessagingExtensionBotMessagePreviewEditAsync(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionAction query, CancellationToken cancellationToken)
             {
                 Record.Add(MethodBase.GetCurrentMethod().Name);
-                return base.OnTeamsMessagingExtensionBotMessagePreviewEdit(turnContext, query, cancellationToken);
+                return base.OnTeamsMessagingExtensionBotMessagePreviewEditAsync(turnContext, query, cancellationToken);
             }
 
-            protected override Task<MessagingExtensionActionResponse> OnTeamsMessagingExtensionBotMessagePreviewSend(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionAction query, CancellationToken cancellationToken)
+            protected override Task<MessagingExtensionActionResponse> OnTeamsMessagingExtensionBotMessagePreviewSendAsync(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionAction query, CancellationToken cancellationToken)
             {
                 Record.Add(MethodBase.GetCurrentMethod().Name);
-                return base.OnTeamsMessagingExtensionBotMessagePreviewSend(turnContext, query, cancellationToken);
+                return base.OnTeamsMessagingExtensionBotMessagePreviewSendAsync(turnContext, query, cancellationToken);
             }
 
-            protected override Task<MessagingExtensionResponse> OnTeamsMessagingExtensionConfigurationSettings(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
+            protected override Task<MessagingExtensionResponse> OnTeamsMessagingExtensionConfigurationSettingsAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
             {
                 Record.Add(MethodBase.GetCurrentMethod().Name);
-                return base.OnTeamsMessagingExtensionConfigurationSettings(turnContext, cancellationToken);
+                return base.OnTeamsMessagingExtensionConfigurationSettingsAsync(turnContext, cancellationToken);
             }
 
             protected override Task<MessagingExtensionActionResponse> OnTeamsMessagingExtensionFetchTaskAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
@@ -486,7 +487,7 @@ namespace Microsoft.Bot.Builder.Tests
                 return base.OnTeamsMessagingExtensionQueryAsync(turnContext, query, cancellationToken);
             }
 
-            protected override Task<MessagingExtensionResponse> OnTeamsMessagingExtensionSelectItemAsync(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionQuery query, CancellationToken cancellationToken)
+            protected override Task<MessagingExtensionResponse> OnTeamsMessagingExtensionSelectItemAsync(ITurnContext<IInvokeActivity> turnContext, JObject query, CancellationToken cancellationToken)
             {
                 Record.Add(MethodBase.GetCurrentMethod().Name);
                 return base.OnTeamsMessagingExtensionSelectItemAsync(turnContext, query, cancellationToken);
