@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// <summary>
     /// Send an Tace activity back to the transcript.
     /// </summary>
-    public class TraceActivity : DialogAction
+    public class TraceActivity : Dialog
     {
         [JsonConstructor]
         public TraceActivity([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
@@ -39,14 +39,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         public string ValueType { get; set; }
 
         /// <summary>
-        /// Gets or sets property binding to memory to send as the value. 
+        /// Gets or sets value expression to send as the value. 
         /// </summary>
         /// <value>
         /// Property binding to memory to send as the value. 
         /// </value>
         public string Value { get; set; }
 
-        protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (options is CancellationToken)
             {
@@ -56,22 +56,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             object value = null;
             if (!string.IsNullOrEmpty(this.Value))
             {
-                value = JObject.FromObject(dc.State.GetValue<object>(this.Value));
+                value = dc.State.GetValue<object>(this.Value);
             }
             else
             {
-                value = JObject.FromObject(dc.State);
+                value = dc.State.GetMemorySnapshot();
             }
 
-            var traceActivity = Activity.CreateTraceActivity(this.Name, valueType: this.ValueType, value: value);
+            var traceActivity = Activity.CreateTraceActivity(this.Name ?? "Trace", valueType: this.ValueType ?? "State", value: value);
             await dc.Context.SendActivityAsync(traceActivity, cancellationToken).ConfigureAwait(false);
-
             return await dc.EndDialogAsync(traceActivity, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
         protected override string OnComputeId()
         {
-            return $"TraceActivity({Name})";
+            return $"{this.GetType().Name}({Name})";
         }
     }
 }

@@ -10,7 +10,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.TestBot.Json
 {
-    public class JavascriptAction : DialogAction
+    public class JavascriptAction : Dialog
     {
         private ScriptEngine scriptEngine;
         private string script;
@@ -48,15 +48,11 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             get { return script; } set { LoadScript(value); }
         }
 
-        protected override Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
+        public override Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             // map state into json
             dynamic payload = new JObject();
-            payload.state = new JObject();
-            payload.state.user = JObject.FromObject(dc.State.User);
-            payload.state.conversation = JObject.FromObject(dc.State.Conversation);
-            payload.state.dialog = JObject.FromObject(dc.State.Dialog);
-            payload.state.turn = JObject.FromObject(dc.State.Turn);
+            payload.state = dc.State.GetMemorySnapshot();
 
             // payload.property = (this.Property != null) ? dc.GetValue<object>(this.Property) : null;
             string payloadJson = JsonConvert.SerializeObject(payload);
@@ -65,10 +61,10 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             if (!string.IsNullOrEmpty(responseJson))
             {
                 dynamic response = JsonConvert.DeserializeObject(responseJson);
-                payload.state.User = response.state.user;
-                payload.state.Conversation = response.state.conversation;
-                payload.state.Dialog = response.state.dialog;
-                payload.state.Turn = response.state.turn;
+                dc.State.SetValue(ScopePath.USER, response.state.user);
+                dc.State.SetValue(ScopePath.CONVERSATION, response.state.conversation);
+                dc.State.SetValue(ScopePath.DIALOG, response.state.dialog);
+                dc.State.SetValue(ScopePath.TURN, response.state.turn);
                 return dc.EndDialogAsync((object)response.result, cancellationToken: cancellationToken);
             }
 
@@ -77,7 +73,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
 
         protected override string OnComputeId()
         {
-            return $"{nameof(JavascriptAction)}({this.script.GetHashCode()})";
+            return $"{this.GetType().Name}({this.script.GetHashCode()})";
         }
 
         private void LoadScript(string value)

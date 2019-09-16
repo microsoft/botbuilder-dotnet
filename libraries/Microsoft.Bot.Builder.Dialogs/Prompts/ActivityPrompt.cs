@@ -252,10 +252,5 @@ namespace Microsoft.Bot.Builder.Dialogs
                 Value = turnContext.Activity,
             });
         }
-
-        protected override string OnComputeId()
-        {
-            return $"ActivityPrompt[{this.BindingPath()}]";
-        }
     }
 }

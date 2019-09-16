@@ -2,16 +2,15 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Cache;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Expressions.Parser;
 using Microsoft.Bot.Builder.LanguageGeneration.Templates;
 using Microsoft.Bot.Builder.TraceExtensions;
 using Microsoft.Bot.Schema;
@@ -24,7 +23,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// <summary>
     /// Action for performing an HttpRequest.
     /// </summary>
-    public class HttpRequest : DialogAction
+    public class HttpRequest : Dialog
     {
         private static readonly HttpClient Client = new HttpClient();
 
@@ -116,35 +115,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         public ResponseTypes ResponseType { get; set; } = ResponseTypes.Json;
 
         /// <summary>
-        /// Gets or sets the property to store the HTTP response in. 
+        /// Gets or sets the property expression to store the HTTP response in. 
         /// </summary>
         /// <remarks>
         /// The result will have 4 properties from the http response: 
         /// [statusCode|reasonPhrase|content|headers]
         /// If the content is json it will be an deserialized object, otherwise it will be a string.
         /// </remarks>
-        /// <value>
-        /// Property from the HTTP response.
-        /// </value>
-        public string Property
-        {
-            get
-            {
-                return OutputBinding;
-            }
+        public string ResultProperty { get; set; }
 
-            set
-            {
-                OutputBinding = value;
-            }
-        }
-
-        protected override string OnComputeId()
-        {
-            return $"HttpRequest[{Method} {Url}]";
-        }
-
-        protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (options is CancellationToken)
             {
@@ -294,8 +274,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             // Write Trace Activity for the http request and response values
             await dc.Context.TraceActivityAsync("HttpRequest", (object)traceInfo, valueType: "Microsoft.HttpRequest", label: this.Id).ConfigureAwait(false);
 
+            if (this.ResultProperty != null)
+            {
+                dc.State.SetValue(this.ResultProperty, requestResult);
+            }
+
             // return the actionResult as the result of this operation
             return await dc.EndDialogAsync(result: requestResult, cancellationToken: cancellationToken);
+        }
+
+        protected override string OnComputeId()
+        {
+            return $"{this.GetType().Name}[{Method} {Url}]";
         }
 
         private async Task ReplaceJTokenRecursively(DialogContext dc, JToken token)
@@ -325,23 +315,27 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 default:
                     if (token.Type == JTokenType.String)
                     {
-                        var temp = await new TextTemplate(token.ToString()).BindToData(dc.Context, dc.State);
-                        if ((temp.StartsWith("{") && temp.EndsWith("}")) || (temp.StartsWith("[") && temp.EndsWith("]")))
+                        var text = token.ToString();
+
+                        // if it is a "{bindingpath}" then run through expression engine and treat as a value
+                        if (text.StartsWith("{") && text.EndsWith("}"))
                         {
-                            // try parse with json                        
-                            var jtoken = JToken.Parse(temp);
-                            token.Replace(jtoken);
+                            text = text.Trim('{', '}');
+                            var (val, error) = new ExpressionEngine().Parse(text).TryEvaluate(dc.State);
+                            token.Replace(new JValue(val));
                         }
                         else
                         {
-                            token.Replace(temp);
+                            // use text template binding to bind in place to a string
+                            var temp = await new TextTemplate(text).BindToData(dc.Context, dc.State);
+                            token.Replace(new JValue(temp));
                         }
                     }
 
                     break;
             }
         }
- 
+
         /// <summary>
         /// Result data of the the http operation.
         /// </summary>

@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Events;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.TriggerHandlers;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Choices;
@@ -64,7 +64,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             var choiceInput = new ChoiceInput()
             {
                 Prompt = new ActivityTemplate("What declarative sample do you want to run?"),
-                OutputBinding = "conversation.dialogChoice",
+                Property = "conversation.dialogChoice",
                 AlwaysPrompt = true,
                 Choices = new List<Choice>()
             };
@@ -95,7 +95,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             }
 
             choiceInput.Style = ListStyle.Auto;
-            rootDialog.Events.Add(new OnBeginDialog()
+            rootDialog.Triggers.Add(new OnBeginDialog()
             {
                 Actions = new List<Dialog>()
                 {

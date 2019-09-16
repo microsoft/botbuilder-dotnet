@@ -2,7 +2,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -18,9 +17,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// <summary>
     /// Executes a set of actions once for each item in an in-memory list or collection.
     /// </summary>
-    public class ForeachPage : DialogAction
+    public class ForeachPage : Dialog, IDialogDependencies
     {
-        private Expression listProperty;
+#pragma warning disable SA1310 // Field names should not contain underscore
+        private const string FOREACH_PAGE = "dialog.foreach.page";
+#pragma warning restore SA1310 // Field names should not contain underscore
 
         [JsonConstructor]
         public ForeachPage([CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
@@ -30,30 +31,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         }
 
         // Expression used to compute the list that should be enumerated.
-        [JsonProperty("listProperty")]
-        public string ListProperty
-        {
-            get { return listProperty?.ToString(); }
-            set { this.listProperty = (value != null) ? new ExpressionEngine().Parse(value) : null; }
-        }
+        [JsonProperty("itemsProperty")]
+        public string ItemsProperty { get; set; }
 
         [JsonProperty("pageSize")]
         public int PageSize { get; set; } = 10;
-
-        // In-memory property that will contain the current items value. Defaults to `dialog.value`.
-        [JsonProperty("valueProperty")]
-        public string ValueProperty { get; set; } = DialogContextState.DIALOG_VALUE;
 
         // Actions to be run for each of items.
         [JsonProperty("actions")]
         public List<Dialog> Actions { get; set; } = new List<Dialog>();
 
-        public override IEnumerable<Dialog> GetDependencies()
+        public virtual IEnumerable<Dialog> GetDependencies()
         {
             return this.Actions;
         }
 
-        protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (options is CancellationToken)
             {
@@ -63,13 +56,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             // Ensure planning context
             if (dc is SequenceContext sc)
             {
-                Expression listProperty = null;
+                Expression itemsProperty = new ExpressionEngine().Parse(this.ItemsProperty);
                 int offset = 0;
                 int pageSize = 0;
                 if (options != null && options is ForeachPageOptions)
                 {
                     var opt = options as ForeachPageOptions;
-                    listProperty = opt.List;
+                    itemsProperty = opt.Items;
                     offset = opt.Offset;
                     pageSize = opt.PageSize;
                 }
@@ -79,19 +72,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                     pageSize = this.PageSize;
                 }
 
-                if (listProperty == null)
-                {
-                    listProperty = new ExpressionEngine().Parse(this.ListProperty);
-                }
-
-                var (itemList, error) = listProperty.TryEvaluate(dc.State);
+                var (items, error) = itemsProperty.TryEvaluate(dc.State);
                 if (error == null)
                 {
-                    var page = this.GetPage(itemList, offset, pageSize);
+                    var page = this.GetPage(items, offset, pageSize);
 
                     if (page.Count() > 0)
                     {
-                        dc.State.SetValue(this.ValueProperty, page);
+                        dc.State.SetValue(FOREACH_PAGE, page);
                         var changes = new ActionChangeList()
                         {
                             ChangeType = ActionChangeType.InsertActions,
@@ -105,7 +93,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                             DialogId = this.Id,
                             Options = new ForeachPageOptions()
                             {
-                                List = listProperty,
+                                Items = itemsProperty,
                                 Offset = offset + pageSize,
                                 PageSize = pageSize
                             }
@@ -124,7 +112,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
         protected override string OnComputeId()
         {
-            return $"{nameof(Foreach)}({this.ListProperty})";
+            return $"{this.GetType().Name}({this.ItemsProperty})";
         }
 
         private List<object> GetPage(object list, int index, int pageSize)
@@ -133,7 +121,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             int end = index + pageSize;
             if (list != null && list.GetType() == typeof(JArray))
             {
-                for (int i = index;  i < end && i < JArray.FromObject(list).Count; i++)
+                for (int i = index; i < end && i < JArray.FromObject(list).Count; i++)
                 {
                     page.Add(JArray.FromObject(list)[i]);
                 }
@@ -154,7 +142,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
         public class ForeachPageOptions
         {
-            public Expression List { get; set; }
+            public Expression Items { get; set; }
 
             public int Offset { get; set; }
 

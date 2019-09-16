@@ -175,11 +175,6 @@ namespace Microsoft.Bot.Builder.Dialogs
             return await _steps[stepContext.Index](stepContext, cancellationToken).ConfigureAwait(false);
         }
 
-        protected override string OnComputeId()
-        {
-            return $"waterfall[{this.BindingPath()}]";
-        }
-
         private async Task<DialogTurnResult> RunStepAsync(DialogContext dc, int index, DialogReason reason, object result, CancellationToken cancellationToken)
         {
             if (dc == null)

@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// <summary>
     /// Deletes a property from memory.
     /// </summary>
-    public class DeleteProperty : DialogAction
+    public class DeleteProperty : Dialog
     {
         [JsonConstructor]
         public DeleteProperty([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
@@ -32,14 +32,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         }
 
         /// <summary>
-        /// Gets or sets property to path to remove Example: user.age will remove "age" from "user".
+        /// Gets or sets property path to remove.
         /// </summary>
-        /// <value>
-        /// Property to path to remove Example: user.age will remove "age" from "user".
-        /// </value>
+        /// <example>
+        /// user.age will remove "age" from "user".
+        /// </example>
         public string Property { get; set; }
 
-        protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (options is CancellationToken)
             {
@@ -49,7 +49,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             // Ensure planning context
             if (dc is SequenceContext planning)
             {
-                dc.State.RemoveProperty(Property);
+                dc.State.RemoveValue(Property);
                 return await dc.EndDialogAsync();
             }
             else

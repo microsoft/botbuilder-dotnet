@@ -9,7 +9,7 @@ using Microsoft.Bot.Builder.Expressions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive.TriggerHandlers
 {
     /// <summary>
     /// Rule triggered when a message is received and the recognized intents and entities match a
@@ -23,9 +23,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
                 events: new List<string>() { AdaptiveEvents.RecognizedIntent },
                 actions: actions,
                 constraint: constraint,
-                callerPath: callerPath, 
+                callerPath: callerPath,
                 callerLine: callerLine)
-            {
+        {
             Intent = intent ?? null;
             Entities = entities ?? new List<string>();
         }
@@ -61,14 +61,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
                 throw new ArgumentNullException(nameof(this.Intent));
             }
 
-            var intentExpression = factory.Parse($"turn.recognized.intent == '{this.Intent.TrimStart('#')}'");
+            var intentExpression = factory.Parse($"{TurnPath.RECOGNIZED}.intent == '{this.Intent.TrimStart('#')}'");
 
             // build expression to be INTENT AND (@ENTITY1 != null OR @ENTITY2 != null)
             if (this.Entities.Any())
             {
                 intentExpression = Expression.AndExpression(
                     intentExpression,
-                    Expression.OrExpression(this.Entities.Select(entity => factory.Parse($"exists(turn.recognized.entities.{entity.TrimStart('@')})")).ToArray()));
+                    Expression.OrExpression(this.Entities.Select(entity => factory.Parse($"exists({TurnPath.RECOGNIZED}.entities.{entity.TrimStart('@')})")).ToArray()));
             }
 
             return Expression.AndExpression(intentExpression, base.BuildExpression(factory));
@@ -76,7 +76,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
 
         protected override ActionChangeList OnCreateChangeList(SequenceContext planning, object dialogOptions = null)
         {
-            if (planning.State.TryGetValue<RecognizerResult>("turn.dialogEvent.value", out var recognizerResult))
+            var recognizerResult = planning.State.GetValue<RecognizerResult>($"{TurnPath.DIALOGEVENT}.value");
+            if (recognizerResult != null)
             {
                 var (name, score) = recognizerResult.GetTopScoringIntent();
                 return new ActionChangeList()

@@ -14,10 +14,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// <summary>
     /// Sets a property with the result of evaluating a value expression.
     /// </summary>
-    public class SetProperty : DialogAction
+    public class SetProperty : Dialog
     {
         private Expression value;
-        private Expression property;
 
         [JsonConstructor]
         public SetProperty([CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
@@ -27,11 +26,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         }
 
         /// <summary>
-        /// Gets or sets value expression.
+        /// Gets or sets property path to put the value in.
         /// </summary>
-        /// <value>
-        /// Value expression.
-        /// </value>
+        [JsonProperty("property")]
+        public string Property { get; set; }
+
+        /// <summary>
+        /// Gets or sets the expression to get the value to put into property path.
+        /// </summary>
         [JsonProperty("value")]
         public string Value
         {
@@ -39,20 +41,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             set { this.value = (value != null) ? new ExpressionEngine().Parse(value) : null; }
         }
 
-        /// <summary>
-        /// Gets or sets property to put the value in.
-        /// </summary>
-        /// <value>
-        /// Property to put the value in.
-        /// </value>
-        [JsonProperty("property")]
-        public string Property 
-        {
-            get { return property?.ToString(); }
-            set { this.property = (value != null) ? new ExpressionEngine().Parse(value) : null; }
-        }
-
-        protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (options is CancellationToken)
             {
@@ -63,9 +52,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             if (dc is SequenceContext planning)
             {
                 // SetProperty evaluates the "Value" expression and returns it as the result of the dialog
-                if (dc.State.TryGetValue<object>(this.value, out object value))
+                var (value, valueError) = this.value.TryEvaluate(dc.State);
+                if (valueError == null)
                 {
-                    dc.State.SetValue(property, value);
+                    dc.State.SetValue(this.Property, value);
 
                     var sc = dc as SequenceContext;
 
@@ -87,7 +77,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
         protected override string OnComputeId()
         {
-            return $"SetProperty[{this.Property.ToString() ?? string.Empty}]";
+            return $"{this.GetType().Name}[{this.Property ?? string.Empty}]";
         }
     }
 }

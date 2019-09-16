@@ -134,15 +134,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             return base.OnInitializeOptions(dc, op);
         }
 
-        protected override string OnComputeId()
-        {
-            return $"ChoiceInput[{BindingPath()}]";
-        }
-
         protected override Task<InputState> OnRecognizeInput(DialogContext dc)
         {
-            var input = dc.State.GetValue<object>(INPUT_PROPERTY);
-            var options = dc.State.GetValue<ChoiceInputOptions>(DialogContextState.DIALOG_OPTIONS);
+            var input = dc.State.GetValue<object>(VALUE_PROPERTY);
+            var options = dc.State.GetValue<ChoiceInputOptions>(ThisPath.OPTIONS);
 
             var choices = options.Choices;
 
@@ -162,10 +157,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 {
                     case ChoiceOutputFormat.Value:
                     default:
-                        dc.State.SetValue(INPUT_PROPERTY, foundChoice.Value);
+                        dc.State.SetValue(VALUE_PROPERTY, foundChoice.Value);
                         break;
                     case ChoiceOutputFormat.Index:
-                        dc.State.SetValue(INPUT_PROPERTY, foundChoice.Index);
+                        dc.State.SetValue(VALUE_PROPERTY, foundChoice.Index);
                         break;
                 }
             }

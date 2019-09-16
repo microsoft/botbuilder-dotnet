@@ -1,7 +1,10 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Builder.Expressions.Parser;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.TestBot.Json
@@ -9,7 +12,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
     /// <summary>
     /// Custom command which takes takes 2 data bound arguments (arg1 and arg2) and multiplies them returning that as a databound result.
     /// </summary>
-    public class MultiplyAction : DialogAction
+    public class MultiplyAction : Dialog
     {
         [JsonConstructor]
         public MultiplyAction([CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
@@ -22,47 +25,33 @@ namespace Microsoft.Bot.Builder.TestBot.Json
         /// <summary>
         /// Gets or sets memory path to bind to arg1 (ex: conversation.width).
         /// </summary>
-        /// <value>
-        /// memory path to bind to arg1 (ex: conversation.width).
-        /// </value>
         [JsonProperty("arg1")]
-        public string Arg1
-        {
-            get { return this.InputBindings["arg1"]; } set { this.InputBindings["arg1"] = value; }
-        }
+        public string Arg1 { get; set; }
 
         /// <summary>
         /// Gets or sets memory path to bind to arg2 (ex: conversation.height).
         /// </summary>
-        /// <value>
-        /// memory path to bind to arg2 (ex: conversation.height).
-        /// </value>
         [JsonProperty("arg2")]
-        public string Arg2
-        {
-            get { return this.InputBindings["arg2"]; } set { this.InputBindings["arg2"] = value; }
-        }
+        public string Arg2 { get; set; }
 
         /// <summary>
         /// Gets or sets caller's memory path to store the result of this step in (ex: conversation.area).
         /// </summary>
-        /// <value>
-        /// caller's memory path to store the result of this step in (ex: conversation.area).
-        /// </value>
-        [JsonProperty("result")]
-        public string Result
-        {
-            get { return this.OutputBinding; } set { this.OutputBinding = value; }
-        }
+        [JsonProperty("resultProperty")]
+        public string ResultProperty { get; set; }
 
-        protected override Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
+        public override Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            // get the values that were data bound from parents memory context using the InputBindings
-            var arg1 = dc.State.GetValue<float>($"dialog.result.arg1");
-            var arg2 = dc.State.GetValue<float>($"dialog.result.arg2");
-            var result = arg1 * arg2;
+            var engine = new ExpressionEngine();
+            var (arg1, err1) = engine.Parse(Arg1).TryEvaluate(dc.State);
+            var (arg2, err2) = engine.Parse(Arg2).TryEvaluate(dc.State);
 
-            // result will be databound to parents memory using the OutputBinding value
+            var result = Convert.ToInt32(arg1) * Convert.ToInt32(arg2);
+            if (this.ResultProperty != null)
+            {
+                dc.State.SetValue(this.ResultProperty, result);
+            }
+
             return dc.EndDialogAsync(result: result, cancellationToken: cancellationToken);
         }
     }

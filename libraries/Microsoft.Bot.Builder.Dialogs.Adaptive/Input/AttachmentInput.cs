@@ -33,14 +33,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
         public AttachmentOutputFormat OutputFormat { get; set; } = AttachmentOutputFormat.First;
 
-        protected override string OnComputeId()
-        {
-            return $"AttachmentInput[{BindingPath()}]";
-        }
-
         protected override Task<InputState> OnRecognizeInput(DialogContext dc)
         {
-            var input = dc.State.GetValue<List<Attachment>>(INPUT_PROPERTY);
+            var input = dc.State.GetValue<List<Attachment>>(VALUE_PROPERTY);
             var first = input.Count > 0 ? input[0] : null;
 
             if (first == null || (string.IsNullOrEmpty(first.ContentUrl) && first.Content == null))
@@ -51,10 +46,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             switch (this.OutputFormat)
             {
                 case AttachmentOutputFormat.All:
-                    dc.State.SetValue(INPUT_PROPERTY, input);
+                    dc.State.SetValue(VALUE_PROPERTY, input);
                     break;
                 case AttachmentOutputFormat.First:
-                    dc.State.SetValue(INPUT_PROPERTY, first);
+                    dc.State.SetValue(VALUE_PROPERTY, first);
                     break;
             }
 

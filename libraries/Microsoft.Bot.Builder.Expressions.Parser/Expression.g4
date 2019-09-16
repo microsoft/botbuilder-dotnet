@@ -21,7 +21,6 @@ primaryExpression
     | NUMBER                                  #numericAtom
     | STRING                                  #stringAtom
     | IDENTIFIER                              #idAtom
-    | ('#'|'@'|'@@'|'$'|'%')          #shorthandAtom
     | primaryExpression IDENTIFIER            #shorthandAccessorExp
     | primaryExpression '.' IDENTIFIER        #memberAccessExp
     | primaryExpression '(' argsList? ')'     #funcInvokeExp
@@ -39,7 +38,7 @@ NUMBER : DIGIT + ( '.' DIGIT +)? ;
 
 WHITESPACE : (' '|'\t'|'\ufeff'|'\u00a0') -> skip;
 
-IDENTIFIER : (LETTER | '_') (LETTER | DIGIT | '-' | '_')*;
+IDENTIFIER : (LETTER | '_' | '#' | '@' | '@@' | '$') (LETTER | DIGIT | '-' | '_')*;
 
 NEWLINE : '\r'? '\n' -> skip;
 

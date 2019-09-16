@@ -17,10 +17,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// <summary>
     /// Lets you modify an array in memory.
     /// </summary>
-    public class EditArray : DialogAction
+    public class EditArray : Dialog
     {
         private Expression value;
-        private Expression arrayProperty;
+        private Expression itemsProperty;
         private Expression resultProperty;
 
         /// <summary>
@@ -37,7 +37,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             if (!string.IsNullOrEmpty(arrayProperty))
             {
-                this.ArrayProperty = arrayProperty;
+                this.ItemsProperty = arrayProperty;
             }
 
             switch (changeType)
@@ -100,37 +100,28 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         public ArrayChangeType ChangeType { get; set; }
 
         /// <summary>
-        /// Gets or sets memory expression of the array to manipulate.
+        /// Gets or sets property path expression to the collection of items.
         /// </summary>
-        /// <value>
-        /// Memory expression of the array to manipulate.
-        /// </value>Edit
-        [JsonProperty("arrayProperty")]
-        public string ArrayProperty
+        [JsonProperty("itemsProperty")]
+        public string ItemsProperty
         {
-            get { return arrayProperty?.ToString(); }
-            set { this.arrayProperty = (value != null) ? new ExpressionEngine().Parse(value) : null; }
+            get { return itemsProperty?.ToString(); }
+            set { this.itemsProperty = (value != null) ? new ExpressionEngine().Parse(value) : null; }
         }
 
         /// <summary>
-        /// Gets or sets the result of the action.
+        /// Gets or sets the path expression to store the result of the action.
         /// </summary>
-        /// <value>
-        /// The result of the action.
-        /// </value>
         [JsonProperty("resultProperty")]
-        public string ResultProperty 
+        public string ResultProperty
         {
             get { return resultProperty?.ToString(); }
             set { this.resultProperty = (value != null) ? new ExpressionEngine().Parse(value) : null; }
         }
 
         /// <summary>
-        /// Gets or sets the expression of the item to put onto the array.
+        /// Gets or sets the expression of the value to put onto the array.
         /// </summary>
-        /// <value>
-        /// The expression of the item to put onto the array.
-        /// </value>
         [JsonProperty("value")]
         public string Value
         {
@@ -138,24 +129,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             set { this.value = (value != null) ? new ExpressionEngine().Parse(value) : null; }
         }
 
-        protected override string OnComputeId()
-        {
-            return $"array[{ChangeType + ": " + ArrayProperty}]";
-        }
-
-        protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (options is CancellationToken)
             {
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            if (string.IsNullOrEmpty(ArrayProperty))
+            if (string.IsNullOrEmpty(ItemsProperty))
             {
                 throw new Exception($"EditArray: \"{ChangeType}\" operation couldn't be performed because the arrayProperty wasn't specified.");
             }
 
-            var array = dc.State.GetValue<JArray>(this.arrayProperty, new JArray());
+            var array = dc.State.GetValue<JArray>(this.ItemsProperty, () => new JArray());
 
             object item = null;
             object result = null;
@@ -210,21 +196,26 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                     break;
             }
 
-            dc.State.SetValue(this.arrayProperty, array);
+            dc.State.SetValue(this.ItemsProperty, array);
 
             if (ResultProperty != null)
             {
-                dc.State.SetValue(resultProperty, result);
+                dc.State.SetValue(this.ResultProperty, result);
             }
 
             return await dc.EndDialogAsync(result);
+        }
+
+        protected override string OnComputeId()
+        {
+            return $"{this.GetType().Name}[{ChangeType + ": " + ItemsProperty}]";
         }
 
         private void EnsureValue()
         {
             if (Value == null)
             {
-                throw new Exception($"EditArray: \"{ChangeType}\" operation couldn't be performed for array \"{ArrayProperty}\" because a value wasn't specified.");
+                throw new Exception($"EditArray: \"{ChangeType}\" operation couldn't be performed for array \"{ItemsProperty}\" because a value wasn't specified.");
             }
         }
     }

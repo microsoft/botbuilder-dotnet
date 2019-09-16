@@ -2,7 +2,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -17,9 +16,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// <summary>
     /// Executes a set of actions once for each item in an in-memory list or collection.
     /// </summary>
-    public class Foreach : DialogAction
+    public class Foreach : Dialog, IDialogDependencies
     {
-        private Expression listProperty;
+        private const string INDEX = "dialog.foreach.index";
+        private const string VALUE = "dialog.foreach.value";
 
         [JsonConstructor]
         public Foreach([CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
@@ -28,32 +28,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             this.RegisterSourceLocation(sourceFilePath, sourceLineNumber);
         }
 
-        // Expression used to compute the list that should be enumerated.
-        [JsonProperty("listProperty")]
-        public string ListProperty
-        {
-            get { return listProperty?.ToString(); }
-            set { this.listProperty = (value != null) ? new ExpressionEngine().Parse(value) : null; }
-        }
+        /// <summary>
+        /// Gets or sets property path expression to the collection of items.
+        /// </summary>
+        [JsonProperty("itemsProperty")]
+        public string ItemsProperty { get; set; }
 
-        // In-memory property that will contain the current items index. Defaults to `dialog.index`.
-        [JsonProperty("indexProperty")]
-        public string IndexProperty { get; set; } = "dialog.index";
-
-        // In-memory property that will contain the current items value. Defaults to `dialog.value`.
-        [JsonProperty("valueProperty")]
-        public string ValueProperty { get; set; } = DialogContextState.DIALOG_VALUE;
-
-        // Actions to be run for each of items.
+        /// <summary>
+        /// Gets or sets the actions to be run for each of items.
+        /// </summary>
         [JsonProperty("actions")]
         public List<Dialog> Actions { get; set; } = new List<Dialog>();
 
-        public override IEnumerable<Dialog> GetDependencies()
+        public virtual IEnumerable<Dialog> GetDependencies()
         {
             return this.Actions;
         }
 
-        protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (options is CancellationToken)
             {
@@ -63,29 +55,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             // Ensure planning context
             if (dc is SequenceContext sc)
             {
-                Expression listProperty = null;
+                Expression itemsProperty = null;
                 int offset = 0;
                 if (options != null && options is ForeachOptions)
                 {
                     var opt = options as ForeachOptions;
-                    listProperty = opt.List;
+                    itemsProperty = opt.List;
                     offset = opt.Offset;
                 }
 
-                if (listProperty == null)
-                {
-                    listProperty = new ExpressionEngine().Parse(this.ListProperty);
-                }
-
-                var (itemList, error) = listProperty.TryEvaluate(dc.State);
+                itemsProperty = new ExpressionEngine().Parse(this.ItemsProperty);
+                var (itemList, error) = itemsProperty.TryEvaluate(dc.State);
 
                 if (error == null)
                 {
                     var item = this.GetItem(itemList, offset);
                     if (item != null)
                     {
-                        dc.State.SetValue(this.ValueProperty, item);
-                        dc.State.SetValue(this.IndexProperty, offset);
+                        dc.State.SetValue(VALUE, item);
+                        dc.State.SetValue(INDEX, offset);
                         var changes = new ActionChangeList()
                         {
                             ChangeType = ActionChangeType.InsertActions,
@@ -99,7 +87,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                             DialogId = this.Id,
                             Options = new ForeachOptions()
                             {
-                                List = listProperty,
+                                List = itemsProperty,
                                 Offset = offset + 1
                             }
                         });
@@ -117,7 +105,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
         protected override string OnComputeId()
         {
-            return $"{nameof(Foreach)}({this.ListProperty})";
+            return $"{this.GetType().Name}({this.ItemsProperty})";
         }
 
         private object GetItem(object list, int index)

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Events;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.TriggerHandlers;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Choices;
@@ -30,12 +30,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             var testDialog = new AdaptiveDialog("planningTest");
 
-            testDialog.AddEvents(new List<IOnEvent>()
+            testDialog.AddTriggerHandlers(new List<TriggerHandler>()
             {
                 new OnUnknownIntent(
                     new List<Dialog>()
                     {
-                        new TextInput() { Prompt = new ActivityTemplate("Hello, what is your name?"),  OutputBinding = "user.name" },
+                        new TextInput() { Prompt = new ActivityTemplate("Hello, what is your name?"), Property = "user.name" },
                         new SendActivity("Hello {user.name}, nice to meet you!"),
                     })
             });
@@ -89,7 +89,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             var dialog = new AdaptiveDialog("traceActivity");
 
-            dialog.AddEvents(new List<IOnEvent>()
+            dialog.AddTriggerHandlers(new List<TriggerHandler>()
             {
                 new OnUnknownIntent(
                     new List<Dialog>()
@@ -120,14 +120,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     var traceActivity = (ITraceActivity)activity;
                     Assert.AreEqual(ActivityTypes.Trace, traceActivity.Type, "type doesn't match");
                     Assert.AreEqual("user", traceActivity.ValueType, "ValueType doesn't match");
-                    Assert.AreEqual("frank", (string)((dynamic)traceActivity.Value).name, "Value doesn't match");
+                    dynamic value = traceActivity.Value;
+                    Assert.AreEqual("frank", (string)value["name"], "Value doesn't match");
                 })
                 .AssertReply((activity) =>
                 {
                     var traceActivity = (ITraceActivity)activity;
                     Assert.AreEqual(ActivityTypes.Trace, traceActivity.Type, "type doesn't match");
                     Assert.AreEqual("memory", traceActivity.ValueType, "ValueType doesn't match");
-                    Assert.AreEqual("frank", (string)((dynamic)traceActivity.Value).user.name, "Value doesn't match");
+                    dynamic value = traceActivity.Value;
+                    Assert.AreEqual("frank", (string)value["user"]["name"], "Value doesn't match");
                 })
                 .StartTestAsync();
         }
@@ -136,7 +138,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         public async Task Action_IfCondition()
         {
             var testDialog = new AdaptiveDialog("planningTest");
-            testDialog.AddEvents(new List<IOnEvent>()
+            testDialog.AddTriggerHandlers(new List<TriggerHandler>()
             {
                 new OnUnknownIntent(
                     new List<Dialog>()
@@ -149,7 +151,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 new TextInput()
                                 {
                                     Prompt = new ActivityTemplate("Hello, what is your name?"),
-                                    OutputBinding = "user.name"
+                                    Property = "user.name"
                                 },
                                 new SendActivity("Hello {user.name}, nice to meet you!")
                             },
@@ -176,7 +178,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             var testDialog = new AdaptiveDialog("planningTest")
             {
-                Events = new List<IOnEvent>()
+                Triggers = new List<TriggerHandler>()
                 {
                     new OnBeginDialog()
                     {
@@ -214,7 +216,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             var testDialog = new AdaptiveDialog("planningTest")
             {
-                Events = new List<IOnEvent>()
+                Triggers = new List<TriggerHandler>()
                 {
                     new OnBeginDialog()
                     {
@@ -252,7 +254,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             var testDialog = new AdaptiveDialog("planningTest")
             {
-                Events = new List<IOnEvent>()
+                Triggers = new List<TriggerHandler>()
                 {
                     new OnBeginDialog()
                     {
@@ -290,7 +292,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             var testDialog = new AdaptiveDialog("planningTest")
             {
-                Events = new List<IOnEvent>()
+                Triggers = new List<TriggerHandler>()
                 {
                     new OnBeginDialog()
                     {
@@ -327,7 +329,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             var testDialog = new AdaptiveDialog("planningTest");
 
-            testDialog.AddEvents(new List<IOnEvent>()
+            testDialog.AddTriggerHandlers(new List<TriggerHandler>()
             {
                 new OnUnknownIntent(
                     new List<Dialog>()
@@ -344,7 +346,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                     Property = "user.name",
                                     Validations = new List<string>()
                                     {
-                                        "turn.value.Length > 3"
+                                        "this.value.Length > 3"
                                     }
                                 }
                             }
@@ -368,7 +370,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             var testDialog = new AdaptiveDialog("planningTest");
 
-            testDialog.AddEvents(new List<IOnEvent>()
+            testDialog.AddTriggerHandlers(new List<TriggerHandler>()
             {
                 new OnUnknownIntent()
                 {
@@ -400,7 +402,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var testDialog = new AdaptiveDialog("planningTest")
             {
                 AutoEndDialog = false,
-                Events = new List<IOnEvent>()
+                Triggers = new List<TriggerHandler>()
                 {
                     new OnBeginDialog()
                     {
@@ -453,7 +455,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var testDialog = new AdaptiveDialog("planningTest")
             {
                 AutoEndDialog = false,
-                Events = new List<IOnEvent>()
+                Triggers = new List<TriggerHandler>()
                 {
                     new OnBeginDialog()
                     {
@@ -512,7 +514,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var testDialog = new AdaptiveDialog("planningTest")
             {
                 AutoEndDialog = false,
-                Events = new List<IOnEvent>()
+                Triggers = new List<TriggerHandler>()
                 {
                     new OnBeginDialog()
                     {
@@ -571,7 +573,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var testDialog = new AdaptiveDialog("planningTest")
             {
                 AutoEndDialog = false,
-                Events = new List<IOnEvent>()
+                Triggers = new List<TriggerHandler>()
                 {
                     new OnBeginDialog()
                     {
@@ -635,7 +637,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var testDialog = new AdaptiveDialog("planningTest")
             {
                 AutoEndDialog = false,
-                Events = new List<IOnEvent>()
+                Triggers = new List<TriggerHandler>()
                 {
                     new OnBeginDialog()
                     {
@@ -701,7 +703,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 AutoEndDialog = false
             };
 
-            testDialog.AddEvents(new List<IOnEvent>()
+            testDialog.AddTriggerHandlers(new List<TriggerHandler>()
             {
                 new OnUnknownIntent(
                     new List<Dialog>()
@@ -714,7 +716,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             OutputFormat = NumberOutputFormat.Integer,
                             Validations = new List<string>()
                             {
-                                "turn.value > 0 && turn.value < 150"
+                                "this.value > 0 && this.value < 150"
                             }
                         },
                         new SendActivity("I have your age as {user.userProfile.Age}."),
@@ -741,7 +743,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 AutoEndDialog = false
             };
 
-            testDialog.AddEvents(new List<IOnEvent>()
+            testDialog.AddTriggerHandlers(new List<TriggerHandler>()
             {
                 new OnUnknownIntent(
                     new List<Dialog>()
@@ -749,7 +751,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         new DateTimeInput()
                         {
                             Prompt = new ActivityTemplate("Please enter a date."),
-                            Value = "user.date",
                             Property = "user.date",
                         },
                         new SendActivity("You entered {user.date[0].Value}"),
@@ -769,7 +770,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             var testDialog = new AdaptiveDialog("planningTest");
 
-            testDialog.AddEvents(new List<IOnEvent>()
+            testDialog.AddTriggerHandlers(new List<TriggerHandler>()
             {
                 new OnUnknownIntent(
                     new List<Dialog>()
@@ -787,7 +788,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                     Property = "user.name",
                                     Validations = new List<string>()
                                     {
-                                        "turn.value.Length > 3"
+                                        "this.value.Length > 3"
                                     }
                                 }
                             }
@@ -820,7 +821,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 }
             };
 
-            testDialog.AddEvents(new List<IOnEvent>()
+            testDialog.AddTriggerHandlers(new List<TriggerHandler>()
             {
                 new OnUnknownIntent()
                 {
@@ -883,7 +884,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 }
             };
 
-            testDialog.AddEvents(new List<IOnEvent>()
+            testDialog.AddTriggerHandlers(new List<TriggerHandler>()
             {
                 new OnBeginDialog()
                 {
@@ -928,7 +929,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             testDialog.Recognizer = new RegexRecognizer() { Intents = new List<IntentPattern>() { new IntentPattern("JokeIntent", "joke") } };
 
-            testDialog.AddEvents(new List<IOnEvent>()
+            testDialog.AddTriggerHandlers(new List<TriggerHandler>()
             {
                 new OnIntent(
                     "JokeIntent",
@@ -949,7 +950,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 new TextInput()
                                 {
                                     Prompt = new ActivityTemplate("Hello, what is your name?"),
-                                    OutputBinding = "user.name"
+                                    Property = "user.name"
                                 }
                             }
                         },
@@ -976,7 +977,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             var tellJokeDialog = new AdaptiveDialog("TellJokeDialog")
             {
-                Events = new List<IOnEvent>()
+                Triggers = new List<TriggerHandler>()
                 {
                     new OnUnknownIntent()
                     {
@@ -992,7 +993,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             var askNameDialog = new AdaptiveDialog("AskNameDialog")
             {
-                Events = new List<IOnEvent>()
+                Triggers = new List<TriggerHandler>()
                 {
                     new OnBeginDialog()
                     {
@@ -1006,7 +1007,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                     new TextInput()
                                     {
                                         Prompt = new ActivityTemplate("Hello, what is your name?"),
-                                        OutputBinding = "user.name"
+                                        Property = "user.name"
                                     }
                                 }
                             },
@@ -1021,7 +1022,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             testDialog.Recognizer = new RegexRecognizer() { Intents = new List<IntentPattern>() { new IntentPattern("JokeIntent", "joke") } };
 
-            testDialog.AddEvents(new List<IOnEvent>()
+            testDialog.AddTriggerHandlers(new List<TriggerHandler>()
             {
                 new OnBeginDialog()
                 {
@@ -1060,7 +1061,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         public async Task Action_ReplaceDialog()
         {
             var tellJokeDialog = new AdaptiveDialog("TellJokeDialog");
-            tellJokeDialog.AddEvents(new List<IOnEvent>()
+            tellJokeDialog.AddTriggerHandlers(new List<TriggerHandler>()
             {
                 new OnUnknownIntent(
                     new List<Dialog>()
@@ -1073,7 +1074,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             var askNameDialog = new AdaptiveDialog("AskNameDialog")
             {
-                Events = new List<IOnEvent>()
+                Triggers = new List<TriggerHandler>()
                 {
                     new OnBeginDialog()
                     {
@@ -1103,7 +1104,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             testDialog.AutoEndDialog = false;
             testDialog.Recognizer = new RegexRecognizer() { Intents = new List<IntentPattern>() { new IntentPattern("JokeIntent", "joke") } };
 
-            testDialog.AddEvent(new OnBeginDialog()
+            testDialog.AddTriggerHandler(new OnBeginDialog()
             {
                 Actions = new List<Dialog>()
                 {
@@ -1112,7 +1113,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 }
             });
 
-            testDialog.AddEvents(new List<IOnEvent>()
+            testDialog.AddTriggerHandlers(new List<TriggerHandler>()
             {
                 new OnIntent(
                     "JokeIntent",
@@ -1149,7 +1150,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             testDialog.Recognizer = new RegexRecognizer() { Intents = new List<IntentPattern>() { new IntentPattern("EndIntent", "end") } };
 
             var tellJokeDialog = new AdaptiveDialog("TellJokeDialog");
-            tellJokeDialog.AddEvents(new List<IOnEvent>()
+            tellJokeDialog.AddTriggerHandlers(new List<TriggerHandler>()
             {
                 new OnIntent(
                     "EndIntent",
@@ -1167,7 +1168,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             });
             tellJokeDialog.Recognizer = new RegexRecognizer() { Intents = new List<IntentPattern>() { new IntentPattern("EndIntent", "end") } };
 
-            testDialog.AddEvents(new List<IOnEvent>()
+            testDialog.AddTriggerHandlers(new List<TriggerHandler>()
             {
                 new OnUnknownIntent(
                     new List<Dialog>()
@@ -1192,13 +1193,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             var testDialog = new AdaptiveDialog("testDialog")
             {
-                Events = new List<IOnEvent>()
+                Triggers = new List<TriggerHandler>()
                 {
                     new OnBeginDialog()
                     {
                         Actions = new List<Dialog>()
                         {
-                            new TextInput() { Prompt = new ActivityTemplate("Hello, what is your name?"), OutputBinding = "user.name", Value = "user.name" },
+                            new TextInput() { Prompt = new ActivityTemplate("Hello, what is your name?"), Property = "user.name" },
                             new SendActivity("Hello {user.name}, nice to meet you!"),
                             new EndTurn(),
                             new RepeatDialog()
@@ -1234,7 +1235,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         new IntentPattern("CowboyIntent", "moo")
                     }
                 },
-                Events = new List<IOnEvent>()
+                Triggers = new List<TriggerHandler>()
                 {
                     new OnIntent(intent: "CowboyIntent")
                     {
@@ -1259,7 +1260,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             var rootDialog = new AdaptiveDialog("root")
             {
-                Events = new List<IOnEvent>()
+                Triggers = new List<TriggerHandler>()
                 {
                     new OnBeginDialog()
                     {
@@ -1299,7 +1300,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             var rootDialog = new AdaptiveDialog("root")
             {
-                Events = new List<IOnEvent>()
+                Triggers = new List<TriggerHandler>()
                 {
                     new OnBeginDialog()
                     {
@@ -1313,31 +1314,31 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
                             new EditArray()
                             {
-                                ArrayProperty = "dialog.todo",
+                                ItemsProperty = "dialog.todo",
                                 ChangeType = EditArray.ArrayChangeType.Push,
                                 Value = "1"
                             },
 
                             new EditArray()
                             {
-                                ArrayProperty = "dialog.todo",
+                                ItemsProperty = "dialog.todo",
                                 ChangeType = EditArray.ArrayChangeType.Push,
                                 Value = "2"
                             },
 
                             new EditArray()
                             {
-                                ArrayProperty = "dialog.todo",
+                                ItemsProperty = "dialog.todo",
                                 ChangeType = EditArray.ArrayChangeType.Push,
                                 Value = "3"
                             },
 
                             new Foreach()
                             {
-                                ListProperty = "dialog.todo",
+                                ItemsProperty = "dialog.todo",
                                 Actions = new List<Dialog>()
                                 {
-                                    new SendActivity("index is: {dialog.index} and value is: {dialog.value}")
+                                    new SendActivity("index is: {dialog.foreach.index} and value is: {dialog.foreach.value}")
                                 }
                             }
                         }
@@ -1361,7 +1362,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             var rootDialog = new AdaptiveDialog("root")
             {
-                Events = new List<IOnEvent>()
+                Triggers = new List<TriggerHandler>()
                 {
                     new OnBeginDialog()
                     {
@@ -1375,60 +1376,59 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
                             new EditArray()
                             {
-                                ArrayProperty = "dialog.todo",
+                                ItemsProperty = "dialog.todo",
                                 ChangeType = EditArray.ArrayChangeType.Push,
                                 Value = "1"
                             },
 
                             new EditArray()
                             {
-                                ArrayProperty = "dialog.todo",
+                                ItemsProperty = "dialog.todo",
                                 ChangeType = EditArray.ArrayChangeType.Push,
                                 Value = "2"
                             },
 
                             new EditArray()
                             {
-                                ArrayProperty = "dialog.todo",
+                                ItemsProperty = "dialog.todo",
                                 ChangeType = EditArray.ArrayChangeType.Push,
                                 Value = "3"
                             },
 
                             new EditArray()
                             {
-                                ArrayProperty = "dialog.todo",
+                                ItemsProperty = "dialog.todo",
                                 ChangeType = EditArray.ArrayChangeType.Push,
                                 Value = "4"
                             },
 
                             new EditArray()
                             {
-                                ArrayProperty = "dialog.todo",
+                                ItemsProperty = "dialog.todo",
                                 ChangeType = EditArray.ArrayChangeType.Push,
                                 Value = "5"
                             },
 
                             new EditArray()
                             {
-                                ArrayProperty = "dialog.todo",
+                                ItemsProperty = "dialog.todo",
                                 ChangeType = EditArray.ArrayChangeType.Push,
                                 Value = "6"
                             },
 
                             new ForeachPage()
                             {
-                                ListProperty = "dialog.todo",
+                                ItemsProperty = "dialog.todo",
                                 PageSize = 3,
-                                ValueProperty = "dialog.page",
                                 Actions = new List<Dialog>()
                                 {
                                     new SendActivity("This page have 3 items"),
                                     new Foreach()
                                     {
-                                        ListProperty = "dialog.page",
+                                        ItemsProperty = "dialog.foreach.page",
                                         Actions = new List<Dialog>()
                                         {
-                                            new SendActivity("index is: {dialog.index} and value is: {dialog.value}")
+                                            new SendActivity("index is: {dialog.foreach.index} and value is: {dialog.foreach.value}")
                                         }
                                     }
                                 }

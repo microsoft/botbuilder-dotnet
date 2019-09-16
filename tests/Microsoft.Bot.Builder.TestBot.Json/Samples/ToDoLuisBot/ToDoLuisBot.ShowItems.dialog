@@ -2,7 +2,7 @@
     "$schema": "../../app.schema",
     "$type": "Microsoft.AdaptiveDialog",
     "generator": "ToDoLuisBot.lg",
-    "events": [
+    "triggers": [
         {
             "$type": "Microsoft.OnBeginDialog",
             "actions": [

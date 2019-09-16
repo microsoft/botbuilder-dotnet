@@ -3,12 +3,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
-using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 {
@@ -19,7 +17,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         private DialogSet actionDialogs;
 
         public SequenceContext(DialogSet dialogs, DialogContext dc, DialogState state, List<ActionState> actions, string changeKey, DialogSet actionDialogs)
-            : base(dialogs, dc.Context, state, conversationState: dc.State.Conversation, userState: dc.State.User, settings: dc.State.Settings)
+            : base(dialogs, dc, state)
         {
             this.Actions = actions;
             this.changeKey = changeKey;
@@ -81,7 +79,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             {
                 // Clear current change list
                 this.Context.TurnState[changeKey] = null;
-                
+
                 // Apply each queued set of changes
                 foreach (var change in changes)
                 {
@@ -181,21 +179,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     Actions = actions
                 });
             return this;
-        }
-
-        /// <summary>
-        /// Specifies whether a given dialog should inherit dialog-level state. For adaptive dialogs, 
-        /// we take our base class cases plus we explicitly ask that InputDialogs inherit state as well.
-        /// InputDialogs don't inherit state out of the box because they inherit directly from Dialog and 
-        /// are declared in the Adaptive assembly, so the base class, DialogContext does not explicitly
-        /// request that they inherit state. Thus, we add it here. This enables seamless usage of
-        /// dialog level properties such as $name across Input dialogs and / or steps within an adaptive dialog.
-        /// </summary>
-        /// <param name="dialog">The dialog to be tested.</param>
-        /// <returns>Whether the passed dialog should inherit dialog-level state.</returns>
-        protected override bool ShouldInheritState(Dialog dialog)
-        {
-            return base.ShouldInheritState(dialog) || dialog is InputDialog;
         }
 
         private Task UpdateSequenceAsync(ActionChangeList change, CancellationToken cancellationToken = default(CancellationToken))

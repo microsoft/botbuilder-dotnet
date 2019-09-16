@@ -1,15 +1,13 @@
 ﻿// Licensed under the MIT License.
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using Microsoft.Bot.Builder.Expressions;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
-namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive.TriggerHandlers
 {
     /// <summary>
     /// Event triggered when a Activity of a given type is received. 
@@ -22,7 +20,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
                 events: new List<string>() { AdaptiveEvents.ActivityReceived },
                 actions: actions,
                 constraint: constraint,
-                callerPath: callerPath, 
+                callerPath: callerPath,
                 callerLine: callerLine)
         {
             Type = type;
@@ -46,7 +44,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
         {
             // add constraints for activity type
             return Expression.AndExpression(
-                factory.Parse($"turn.dialogEvent.value.type == '{this.Type}'"),
+                factory.Parse($"{TurnPath.DIALOGEVENT}.value.type == '{this.Type}'"),
                 base.BuildExpression(factory));
         }
 

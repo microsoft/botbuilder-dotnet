@@ -19,7 +19,7 @@
             }
         ]
     },
-    "events": [
+    "triggers": [
         {
             "$type": "Microsoft.OnBeginDialog",
             "actions": [
@@ -46,7 +46,7 @@
         },
         {
             "$type": "Microsoft.OnDialogEvent",
-            "events": [
+            "triggers": [
                 "cancelDialog"
             ],
             "actions": [
