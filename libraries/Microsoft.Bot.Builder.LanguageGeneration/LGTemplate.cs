@@ -97,13 +97,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         private string GetRangeContent(string originString, int startLine, int stopLine)
         {
             var originList = originString.Split('\n');
-            var destList = new List<string>();
             if (startLine > stopLine || originList.Length <= stopLine)
             {
                 throw new Exception("index out of range.");
             }
 
-            destList.AddRange(originList.Skip(startLine).Take(stopLine - startLine + 1));
+            var destList = originList.Skip(startLine).Take(stopLine - startLine + 1);
             return string.Join("\n", destList).TrimEnd('\r');
         }
     }
