@@ -11,7 +11,7 @@ namespace Microsoft.Bot.Builder.GrammarChecker.Tests
         [TestMethod]
         public void TestSingularNoun()
         {
-            var checker = new SyntaxnetGrammarChecker();
+            var checker = new MockGrammarChecker();
             var evaled = checker.CheckText("She wants one apples");
             var expected = "She wants one apple";
             Assert.AreEqual(expected, evaled);
@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder.GrammarChecker.Tests
         [TestMethod]
         public void TestPluralNoun()
         {
-            var checker = new SyntaxnetGrammarChecker();
+            var checker = new MockGrammarChecker();
             var evaled = checker.CheckText("She wants two apple");
             var expected = "She wants two apples";
             Assert.AreEqual(expected, evaled);
@@ -49,7 +49,7 @@ namespace Microsoft.Bot.Builder.GrammarChecker.Tests
         [TestMethod]
         public void Test1stVerb()
         {
-            var checker = new SyntaxnetGrammarChecker();
+            var checker = new MockGrammarChecker();
             var evaled = checker.CheckText("The apples is delicious");
             var expected = "The apples are delicious";
             Assert.AreEqual(expected, evaled);
@@ -66,7 +66,7 @@ namespace Microsoft.Bot.Builder.GrammarChecker.Tests
         [TestMethod]
         public void Test3sgVerb()
         {
-            var checker = new SyntaxnetGrammarChecker();
+            var checker = new MockGrammarChecker();
             var evaled = checker.CheckText("The apple are delicious");
             var expected = "The apple is delicious";
             Assert.AreEqual(expected, evaled);
@@ -79,7 +79,7 @@ namespace Microsoft.Bot.Builder.GrammarChecker.Tests
         [TestMethod]
         public void TestSingularPronoun()
         {
-            var checker = new SyntaxnetGrammarChecker();
+            var checker = new MockGrammarChecker();
             var evaled = checker.CheckText("She want two apples");
             var expected = "She wants two apples";
             Assert.AreEqual(expected, evaled);
@@ -120,7 +120,7 @@ namespace Microsoft.Bot.Builder.GrammarChecker.Tests
         [TestMethod]
         public void TestPluralPronoun()
         {
-            var checker = new SyntaxnetGrammarChecker();
+            var checker = new MockGrammarChecker();
             var evaled = checker.CheckText("I wants two apple");
             var expected = "I want two apples";
             Assert.AreEqual(expected, evaled);
@@ -145,7 +145,7 @@ namespace Microsoft.Bot.Builder.GrammarChecker.Tests
         [TestMethod]
         public void TestElision()
         {
-            var checker = new SyntaxnetGrammarChecker();
+            var checker = new MockGrammarChecker();
             var evaled = checker.CheckText("She wants a apple");
             var expected = "She wants an apple";
             Assert.AreEqual(expected, evaled);
@@ -168,7 +168,7 @@ namespace Microsoft.Bot.Builder.GrammarChecker.Tests
         [TestMethod]
         public void TestEnglishNumber()
         {
-            var checker = new SyntaxnetGrammarChecker();
+            var checker = new MockGrammarChecker();
             var evaled = checker.CheckText("She wants one hundred apple");
             var expected = "She wants one hundred apples";
             Assert.AreEqual(expected, evaled);
@@ -181,7 +181,7 @@ namespace Microsoft.Bot.Builder.GrammarChecker.Tests
         [TestMethod]
         public void TestEnglishOrdinal()
         {
-            var checker = new SyntaxnetGrammarChecker();
+            var checker = new MockGrammarChecker();
             var evaled = checker.CheckText("She wants the fifth apples");
             var expected = "She wants the fifth apple";
             Assert.AreEqual(expected, evaled);
@@ -210,7 +210,7 @@ namespace Microsoft.Bot.Builder.GrammarChecker.Tests
         [TestMethod]
         public void TestEnglishName()
         {
-            var checker = new SyntaxnetGrammarChecker();
+            var checker = new MockGrammarChecker();
             var evaled = checker.CheckText("Mary want the apple");
             var expected = "Mary wants the apple";
             Assert.AreEqual(expected, evaled);
@@ -223,7 +223,7 @@ namespace Microsoft.Bot.Builder.GrammarChecker.Tests
         [TestMethod]
         public void TestCheckParagraph()
         {
-            var checker = new SyntaxnetGrammarChecker();
+            var checker = new MockGrammarChecker();
             var evaled = checker.CheckText(
                 "I found a few places matching  Hilton near you that have 5 star and have 2 or more star, " +
                 "125 of them is within one mile, but none have 3 or more stars. " +

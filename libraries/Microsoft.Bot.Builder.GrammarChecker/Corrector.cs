@@ -65,17 +65,17 @@ namespace Microsoft.Bot.Builder.GrammarChecker
 
             // english number dictionary
             englishNumberDict = new HashSet<string>();
-            path = GetExampleFilePath("english_number.txt");
+            path = GetExampleFilePath("number.txt");
             ReadSetFile(path, englishNumberDict);
 
             // english ordinal dictionary
             englishOrdinalDict = new HashSet<string>();
-            path = GetExampleFilePath("english_ordinal.txt");
+            path = GetExampleFilePath("ordinal.txt");
             ReadSetFile(path, englishOrdinalDict);
 
             // english name dictionary
             englishNameDict = new HashSet<string>();
-            path = GetExampleFilePath("english_name.txt");
+            path = GetExampleFilePath("name.txt");
             ReadSetFile(path, englishNameDict);
         }
 
@@ -251,9 +251,11 @@ namespace Microsoft.Bot.Builder.GrammarChecker
             return outputWord;
         }
 
-        private string GetExampleFilePath(string fileName)
+        private string GetExampleFilePath(string fileName, string locale = "en_us")
         {
-            var path = Path.Combine(Directory.GetCurrentDirectory(), "CollectingDict", fileName);
+            var path = Path.Combine(Directory.GetCurrentDirectory(), "Data");
+            path = Path.Combine(path, locale, fileName);
+
             return path;
         }
 

@@ -92,7 +92,6 @@ namespace Microsoft.Bot.Builder.GrammarChecker
 
         private List<string> CorrectWords(List<string> words, List<DependencyFeature> depFeatures)
         {
-            // Handle noun and verb at first, then a/an
             foreach (var depFeature in depFeatures)
             {
                 var correctingInfo = new CorrectingInfo();
@@ -200,8 +199,8 @@ namespace Microsoft.Bot.Builder.GrammarChecker
 
         private bool IsElision(string strWord)
         {
-            if (strWord.Trim().Equals(ElisionENUS.a.ToString(), StringComparison.InvariantCultureIgnoreCase)
-                || strWord.Trim().Equals(ElisionENUS.an.ToString(), StringComparison.InvariantCultureIgnoreCase))
+            if (strWord.Trim().Equals(Elision.a.ToString(), StringComparison.InvariantCultureIgnoreCase)
+                || strWord.Trim().Equals(Elision.an.ToString(), StringComparison.InvariantCultureIgnoreCase))
             {
                 return true;
             }
