@@ -15,7 +15,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 {
     public class Evaluator : LGFileParserBaseVisitor<object>
     {
-        private const string ExpressionRecognizePattern = @"@?(?<!\\)\{.+?(?<!\\)\}";
+        private readonly Regex expressionRecognizeRegex = new Regex(@"@?(?<!\\)\{.+?(?<!\\)\}", RegexOptions.Compiled);
+        private readonly Regex escapeSeperatorRegex = new Regex(@"(?<!\\)\|", RegexOptions.Compiled);
         private readonly Stack<EvaluationTarget> evaluationTargetStack = new Stack<EvaluationTarget>();
 
         public Evaluator(List<LGTemplate> templates, ExpressionEngine expressionEngine)
@@ -81,8 +82,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     var property = line.Substring(0, start).Trim().ToLower();
                     var originValue = line.Substring(start + 1).Trim();
 
-                    var regex = new Regex(@"(?<!\\)\|");
-                    var valueArray = regex.Split(originValue);
+                    var valueArray = escapeSeperatorRegex.Split(originValue);
                     if (valueArray.Length == 1)
                     {
                         result[property] = EvalText(originValue);
@@ -326,7 +326,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         private string EvalTextContainsExpression(string exp)
         {
             var evalutor = new MatchEvaluator(m => EvalExpression(m.Value).ToString());
-            return Regex.Replace(exp, ExpressionRecognizePattern, evalutor);
+            return expressionRecognizeRegex.Replace(exp, evalutor);
         }
 
         private JToken EvalText(string exp)
@@ -355,7 +355,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
 
             exp = exp.Trim();
-            var expressions = Regex.Matches(exp, ExpressionRecognizePattern);
+            var expressions = expressionRecognizeRegex.Matches(exp);
             return expressions.Count == 1 && expressions[0].Value == exp;
         }
 

@@ -210,10 +210,9 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
     public class MockLanguageGenerator : ILanguageGenerator
     {
-        public Task<object> Generate(ITurnContext turnContext, string template, object data)
+        public Task<string> Generate(ITurnContext turnContext, string template, object data)
         {
-            object result = template;
-            return Task.FromResult(result);
+            return Task.FromResult(template);
         }
     }
 }

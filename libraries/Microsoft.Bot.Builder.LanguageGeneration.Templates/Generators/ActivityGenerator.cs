@@ -32,43 +32,27 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <returns>activity.</returns>
         public async Task<Activity> Generate(ITurnContext turnContext, string template, object data)
         {
-            object lgOriginResult = template;
+            var lgOriginalStringResult = template;
             var languageGenerator = turnContext.TurnState.Get<ILanguageGenerator>();
             if (languageGenerator != null)
             {
                 // data bind template 
-                lgOriginResult = await languageGenerator.Generate(turnContext, template, data).ConfigureAwait(false);
+                lgOriginalStringResult = await languageGenerator.Generate(turnContext, template, data).ConfigureAwait(false);
             }
             else
             {
                 Trace.TraceWarning($"There is no ILanguageGenerator registered in the ITurnContext so no data binding was performed for template: {template}");
             }
 
-            // render activity from template
-            return await GenerateActivity(lgOriginResult).ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// Given a lg result, create an activity.
-        /// </summary>
-        /// <remarks>
-        /// This method will create an MessageActivity from text ot JToken.
-        /// </remarks>
-        /// <param name="lgOutput">lg output.</param>
-        /// <returns>MessageActivity for it.</returns>
-        public async Task<Activity> GenerateActivity(object lgOutput)
-        {
-            Activity activity;
-            if (lgOutput is JObject lgJObj)
+            try
             {
-                activity = BuildActivityFromObject(lgJObj);
+                var lgOriginResult = JObject.Parse(lgOriginalStringResult);
+                return BuildActivityFromObject(lgOriginResult);
             }
-            else
+            catch
             {
-                activity = BuildActivityFromText(lgOutput?.ToString()?.Trim());
+                return BuildActivityFromText(lgOriginalStringResult?.ToString()?.Trim());
             }
-
-            return activity;
         }
 
         /// <summary>

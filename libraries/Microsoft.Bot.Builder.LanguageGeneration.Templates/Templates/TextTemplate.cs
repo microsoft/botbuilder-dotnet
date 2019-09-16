@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration.Templates
                     turnContext,
                     template: Template,
                     data: data).ConfigureAwait(false);
-                return result.ToString();
+                return result;
             }
 
             return null;

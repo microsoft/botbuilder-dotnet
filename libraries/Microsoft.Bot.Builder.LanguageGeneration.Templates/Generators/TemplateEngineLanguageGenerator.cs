@@ -56,11 +56,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration.Generators
         /// <param name="template">template to evaluate.</param>
         /// <param name="data">data to bind to.</param>
         /// <returns>generated text.</returns>
-        public async Task<object> Generate(ITurnContext turnContext, string template, object data)
+        public async Task<string> Generate(ITurnContext turnContext, string template, object data)
         {
             try
             {
-                return await Task.FromResult(engine.Evaluate(template, data));
+                return await Task.FromResult(engine.Evaluate(template, data).ToString());
             }
             catch (Exception err)
             {
