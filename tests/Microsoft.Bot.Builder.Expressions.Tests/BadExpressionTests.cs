@@ -15,6 +15,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
 
         public static IEnumerable<object[]> SyntaxErrorExpressions => new[]
         {
+            Test("hello world"),
             Test("a+"),
             Test("a+b*"),
             Test("fun(a, b, c"),
