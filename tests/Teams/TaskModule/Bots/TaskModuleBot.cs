@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveCards;
 using Microsoft.Bot.Builder;
+using Microsoft.Bot.Builder.Teams;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Schema.Teams;
 
