@@ -75,7 +75,7 @@ namespace Microsoft.Bot.Builder.Teams
                         return CreateInvokeResponse(await OnTeamsAppBasedLinkQueryAsync(turnContext, cancellationToken).ConfigureAwait(false));
 
                     case "composeExtension/selectItem":
-                        return CreateInvokeResponse(await OnTeamsMessagingExtensionSelectItemAsync(turnContext, SafeCast<MessagingExtensionQuery>(turnContext.Activity.Value), cancellationToken).ConfigureAwait(false));
+                        return CreateInvokeResponse(await OnTeamsMessagingExtensionSelectItemAsync(turnContext, turnContext.Activity.Value as JObject, cancellationToken).ConfigureAwait(false));
 
                     case "composeExtension/submitAction":
                         return CreateInvokeResponse(await OnTeamsMessagingExtensionSubmitActionDispatchAsync(turnContext, SafeCast<MessagingExtensionAction>(turnContext.Activity.Value), cancellationToken).ConfigureAwait(false));
@@ -87,7 +87,7 @@ namespace Microsoft.Bot.Builder.Teams
                         return CreateInvokeResponse(await OnTeamsMessagingExtensionConfigurationSettingsUrlAsync(turnContext, cancellationToken).ConfigureAwait(false));
 
                     case "composeExtension/setting":
-                        return CreateInvokeResponse(await OnTeamsMessagingExtensionConfigurationSettings(turnContext, cancellationToken).ConfigureAwait(false));
+                        return CreateInvokeResponse(await OnTeamsMessagingExtensionConfigurationSettingsAsync(turnContext, cancellationToken).ConfigureAwait(false));
 
                     case "task/fetch":
                         return CreateInvokeResponse(await OnTeamsTaskModuleFetchAsync(turnContext, cancellationToken).ConfigureAwait(false));
@@ -153,7 +153,7 @@ namespace Microsoft.Bot.Builder.Teams
             return Task.FromResult<MessagingExtensionResponse>(null);
         }
 
-        protected virtual Task<MessagingExtensionResponse> OnTeamsMessagingExtensionSelectItemAsync(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionQuery query, CancellationToken cancellationToken)
+        protected virtual Task<MessagingExtensionResponse> OnTeamsMessagingExtensionSelectItemAsync(ITurnContext<IInvokeActivity> turnContext, JObject query, CancellationToken cancellationToken)
         {
             return Task.FromResult<MessagingExtensionResponse>(null);
         }
@@ -171,10 +171,10 @@ namespace Microsoft.Bot.Builder.Teams
                 switch (value.BotMessagePreviewAction)
                 {
                     case "edit":
-                        return await OnTeamsMessagingExtensionBotMessagePreviewEdit(turnContext, query, cancellationToken).ConfigureAwait(false);
+                        return await OnTeamsMessagingExtensionBotMessagePreviewEditAsync(turnContext, query, cancellationToken).ConfigureAwait(false);
 
                     case "submit":
-                        return await OnTeamsMessagingExtensionBotMessagePreviewSend(turnContext, query, cancellationToken).ConfigureAwait(false);
+                        return await OnTeamsMessagingExtensionBotMessagePreviewSendAsync(turnContext, query, cancellationToken).ConfigureAwait(false);
 
                     default:
                         return null;
@@ -191,12 +191,12 @@ namespace Microsoft.Bot.Builder.Teams
             return Task.FromResult<MessagingExtensionActionResponse>(null);
         }
 
-        protected virtual Task<MessagingExtensionActionResponse> OnTeamsMessagingExtensionBotMessagePreviewEdit(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionAction query, CancellationToken cancellationToken)
+        protected virtual Task<MessagingExtensionActionResponse> OnTeamsMessagingExtensionBotMessagePreviewEditAsync(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionAction query, CancellationToken cancellationToken)
         {
             return Task.FromResult<MessagingExtensionActionResponse>(null);
         }
 
-        protected virtual Task<MessagingExtensionActionResponse> OnTeamsMessagingExtensionBotMessagePreviewSend(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionAction query, CancellationToken cancellationToken)
+        protected virtual Task<MessagingExtensionActionResponse> OnTeamsMessagingExtensionBotMessagePreviewSendAsync(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionAction query, CancellationToken cancellationToken)
         {
             return Task.FromResult<MessagingExtensionActionResponse>(null);
         }
@@ -206,7 +206,7 @@ namespace Microsoft.Bot.Builder.Teams
             return Task.FromResult<MessagingExtensionResponse>(null);
         }
 
-        protected virtual Task<MessagingExtensionResponse> OnTeamsMessagingExtensionConfigurationSettings(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
+        protected virtual Task<MessagingExtensionResponse> OnTeamsMessagingExtensionConfigurationSettingsAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
         {
             return Task.FromResult<MessagingExtensionResponse>(null);
         }
