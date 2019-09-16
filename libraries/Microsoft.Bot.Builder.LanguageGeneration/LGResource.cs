@@ -69,8 +69,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var startLine = template.ParseTree.Start.Line - 1;
             var stopLine = template.ParseTree.Stop.Line - 1;
 
-            var currentContent = ReplaceContent(Content, startLine, stopLine, content);
-            return LGParser.Parse(currentContent, Id);
+            var newContent = ReplaceContent(Content, startLine, stopLine, content);
+            return LGParser.Parse(newContent, Id);
         }
 
         /// <summary>
