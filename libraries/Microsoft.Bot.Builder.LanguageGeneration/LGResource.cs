@@ -70,7 +70,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var stopLine = template.ParseTree.Stop.Line - 1;
 
             var currentContent = ReplaceContent(OriginalContent, startLine, stopLine, content);
-            return LGParser.Parse(currentContent);
+            return LGParser.Parse(currentContent, Id);
         }
 
         /// <summary>
@@ -90,7 +90,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var templateNameLine = BuildTemplateNameLine(templateName, parameters);
 
             var currentContent = $"{OriginalContent}\r\n{templateNameLine}\r\n{templateBody}\r\n";
-            return LGParser.Parse(currentContent);
+            return LGParser.Parse(currentContent, Id);
         }
 
         /// <summary>
@@ -110,7 +110,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             var stopLine = template.ParseTree.Stop.Line - 1;
 
             var currentContent = ReplaceContent(OriginalContent, startLine, stopLine, null);
-            return LGParser.Parse(currentContent);
+            return LGParser.Parse(currentContent, Id);
         }
 
         /// <summary>
