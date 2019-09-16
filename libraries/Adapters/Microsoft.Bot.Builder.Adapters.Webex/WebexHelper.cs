@@ -123,6 +123,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
             if (activity.From.Id == identity.Id)
             {
                 activity.Type = ActivityTypes.Event;
+                activity.Name = "self_message";
             }
 
             if (decryptedMessage.HasHtml)
