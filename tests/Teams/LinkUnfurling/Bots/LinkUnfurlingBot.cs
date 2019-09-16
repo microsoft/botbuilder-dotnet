@@ -4,7 +4,6 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Schema.Teams;
@@ -13,13 +12,6 @@ namespace Microsoft.BotBuilderSamples.Bots
 {
     public class LinkUnfurlingBot : TeamsActivityHandler
     {
-        private readonly IHostingEnvironment _hostingEnvironment;
-
-        public LinkUnfurlingBot(IHostingEnvironment hostingEnvironment)
-        {
-            _hostingEnvironment = hostingEnvironment;
-        }
-
         protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
             await turnContext.SendActivityAsync(MessageFactory.Text($"echo: {turnContext.Activity.Text}"), cancellationToken);
