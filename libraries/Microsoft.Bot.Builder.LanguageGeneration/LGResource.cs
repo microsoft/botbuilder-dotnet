@@ -53,10 +53,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// <summary>
         /// update an exist template.
         /// </summary>
-        /// <param name="templateName">origin template name.</param>
+        /// <param name="templateName">origin template name. the only id of a template.</param>
+        /// <param name="parameters">new params.</param>
         /// <param name="templateBody">new template body.</param>
         /// <returns>new LG resource.</returns>
-        public LGResource UpdateTemplate(string templateName, string templateBody)
+        public LGResource UpdateTemplate(string templateName, List<string> parameters, string templateBody)
         {
             var template = Templates.FirstOrDefault(u => u.Name == templateName);
             if (template == null)
@@ -64,10 +65,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 return this;
             }
 
-            var startLine = template.ParseTree.templateBody().Start.Line - 1;
-            var stopLine = template.ParseTree.templateBody().Stop.Line - 1;
+            var content = $"# {templateName}({string.Join(", ", parameters)})\r\n{templateBody}";
+            var startLine = template.ParseTree.Start.Line - 1;
+            var stopLine = template.ParseTree.Stop.Line - 1;
 
-            var currentContent = ReplaceContent(OriginalContent, startLine, stopLine, templateBody);
+            var currentContent = ReplaceContent(OriginalContent, startLine, stopLine, content);
             return LGParser.Parse(currentContent);
         }
 
@@ -75,9 +77,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// Add a new template and return LG resource.
         /// </summary>
         /// <param name="templateName">new template name.</param>
+        /// <param name="parameters">new params.</param>
         /// <param name="templateBody">new  template body.</param>
         /// <returns>new lg resource.</returns>
-        public LGResource AddTemplate(string templateName, string templateBody)
+        public LGResource AddTemplate(string templateName, List<string> parameters, string templateBody)
         {
             var template = Templates.FirstOrDefault(u => u.Name == templateName);
             if (template != null)
@@ -85,7 +88,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 throw new Exception($"template {templateName} already exists.");
             }
 
-            var currentContent = $"{OriginalContent}\r\n# {templateName}\r\n{templateBody}\r\n";
+            var currentContent = $"{OriginalContent}\r\n# {templateName}({string.Join(", ", parameters)})\r\n{templateBody}\r\n";
             return LGParser.Parse(currentContent);
         }
 

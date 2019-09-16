@@ -674,6 +674,41 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.AreEqual(evaled, "goodmorning");
         }
 
+        [TestMethod]
+        public void TestLGResource()
+        {
+            var lgResource = LGParser.Parse(File.ReadAllText(GetExampleFilePath("2.lg")));
+
+            Assert.AreEqual(lgResource.Templates.Count, 1);
+            Assert.AreEqual(lgResource.Imports.Count, 0);
+            Assert.AreEqual(lgResource.Templates[0].Name, "wPhrase");
+            Assert.AreEqual(lgResource.Templates[0].Body, "-Hi\r\n-Hello\r\n-Hiya\r\n-Hi");
+
+            lgResource = lgResource.AddTemplate("newtemplate", new List<string> { "age", "name" }, "- hi");
+            Assert.AreEqual(lgResource.Templates.Count, 2);
+            Assert.AreEqual(lgResource.Imports.Count, 0);
+            Assert.AreEqual(lgResource.Templates[1].Name, "newtemplate");
+            Assert.AreEqual(lgResource.Templates[1].Parameters.Count, 2);
+            Assert.AreEqual(lgResource.Templates[1].Parameters[0], "age");
+            Assert.AreEqual(lgResource.Templates[1].Parameters[1], "name");
+            Assert.AreEqual(lgResource.Templates[1].Body, "-hi");
+
+            lgResource = lgResource.UpdateTemplate("newtemplate", new List<string> { "newage", "newname" }, "- newhi");
+            Assert.AreEqual(lgResource.Templates.Count, 2);
+            Assert.AreEqual(lgResource.Imports.Count, 0);
+            Assert.AreEqual(lgResource.Templates[1].Name, "newtemplate");
+            Assert.AreEqual(lgResource.Templates[1].Parameters.Count, 2);
+            Assert.AreEqual(lgResource.Templates[1].Parameters[0], "newage");
+            Assert.AreEqual(lgResource.Templates[1].Parameters[1], "newname");
+            Assert.AreEqual(lgResource.Templates[1].Body, "-newhi");
+
+            lgResource = lgResource.DeleteTemplate("newtemplate");
+            Assert.AreEqual(lgResource.Templates.Count, 1);
+            Assert.AreEqual(lgResource.Imports.Count, 0);
+            Assert.AreEqual(lgResource.Templates[0].Name, "wPhrase");
+            Assert.AreEqual(lgResource.Templates[0].Body, "-Hi\r\n-Hello\r\n-Hiya\r\n-Hi");
+        }
+
         private string GetExampleFilePath(string fileName)
         {
             return Path.Combine(AppContext.BaseDirectory, "Examples", fileName);
