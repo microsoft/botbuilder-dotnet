@@ -32,10 +32,10 @@ namespace Microsoft.BotBuilderSamples.Bots
                     var action3 = new CardAction(ActionTypes.MessageBack, "message back local echo", null, "text received by bots", "display text message back", JObject.Parse(@"{ ""key"" : ""value"" }"));
                     var action4 = new CardAction("invoke", "invoke", null, null, null, JObject.Parse(@"{ ""key"" : ""value"" }"));
 
-                    //adaptiveCard.Actions.Add(action1.ToAdaptiveCardAction());
-                    //adaptiveCard.Actions.Add(action2.ToAdaptiveCardAction());
-                    //adaptiveCard.Actions.Add(action3.ToAdaptiveCardAction());
-                    //adaptiveCard.Actions.Add(action4.ToAdaptiveCardAction());
+                    adaptiveCard.Actions.Add(action1.ToAdaptiveCardAction());
+                    adaptiveCard.Actions.Add(action2.ToAdaptiveCardAction());
+                    adaptiveCard.Actions.Add(action3.ToAdaptiveCardAction());
+                    adaptiveCard.Actions.Add(action4.ToAdaptiveCardAction());
 
                     var replyActivity = MessageFactory.Attachment(adaptiveCard.ToAttachment());
                     await turnContext.SendActivityAsync(replyActivity, cancellationToken);
@@ -77,6 +77,35 @@ namespace Microsoft.BotBuilderSamples.Bots
                     await turnContext.SendActivityAsync(MessageFactory.Text($"but with value {turnContext.Activity.Value}"), cancellationToken);
                 }
             }
+        }
+
+        protected override async Task<TaskModuleResponse> OnTeamsTaskModuleFetchAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
+        {
+            var reply = MessageFactory.Text("OnTeamsTaskModuleFetchAsync Value: " + turnContext.Activity.Value.ToString());
+            await turnContext.SendActivityAsync(reply, cancellationToken);
+
+            var adaptiveCard = new AdaptiveCard();
+            adaptiveCard.Body.Add(new AdaptiveTextBlock("This is an Adaptive Card within a Task Module"));
+
+            return new TaskModuleResponse
+            {
+                Task = new TaskModuleContinueResponse()
+                {
+                    Value = new TaskModuleTaskInfo()
+                    {
+                        Card = adaptiveCard.ToAttachment(),
+                        Height = 200,
+                        Width = 400,
+                        Title = "Task Module Example",
+                    },
+                },
+            };
+        }
+
+        protected override async Task<InvokeResponse> OnTeamsCardActionInvokeAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
+        {
+            await turnContext.SendActivityAsync(MessageFactory.Text($"OnTeamsCardActionInvokeAsync value: {turnContext.Activity.Value}"), cancellationToken);
+            return new InvokeResponse() { Status = 200 };
         }
     }
 }
