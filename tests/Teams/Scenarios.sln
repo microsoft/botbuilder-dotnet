@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.705
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29123.89
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConversationUpdate", "ConversationUpdate\ConversationUpdate.csproj", "{D62F48FD-D7F4-41D9-958F-421D51536B54}"
 EndProject
@@ -42,6 +42,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Schema", "..\..\libraries\Microsoft.Bot.Schema\Microsoft.Bot.Schema.csproj", "{E1A7BC3C-0232-4344-853D-CEFA065AF3D5}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Connector", "..\..\libraries\Microsoft.Bot.Connector\Microsoft.Bot.Connector.csproj", "{A7DC47A2-4F88-44AE-AD9B-46C943964B4D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SearchBasedMessagingExtension", "SearchBasedMessagingExtension\SearchBasedMessagingExtension.csproj", "{6E2FC58C-1A10-49C0-92BB-8CBACB8B02CF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -164,6 +166,12 @@ Global
 		{A7DC47A2-4F88-44AE-AD9B-46C943964B4D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A7DC47A2-4F88-44AE-AD9B-46C943964B4D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A7DC47A2-4F88-44AE-AD9B-46C943964B4D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6E2FC58C-1A10-49C0-92BB-8CBACB8B02CF}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{6E2FC58C-1A10-49C0-92BB-8CBACB8B02CF}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
+		{6E2FC58C-1A10-49C0-92BB-8CBACB8B02CF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6E2FC58C-1A10-49C0-92BB-8CBACB8B02CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6E2FC58C-1A10-49C0-92BB-8CBACB8B02CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6E2FC58C-1A10-49C0-92BB-8CBACB8B02CF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
