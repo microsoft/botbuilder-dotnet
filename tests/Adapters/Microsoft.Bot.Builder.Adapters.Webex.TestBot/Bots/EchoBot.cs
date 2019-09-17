@@ -37,9 +37,8 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.TestBot.Bots
             }
             else
             {
-                // var activityCard = MessageFactory.Attachment(CreateAdaptiveCardAttachment(Directory.GetCurrentDirectory() + @"\Resources\adaptive_card.json"));
-                var activityCard = MessageFactory.Text($"Echo: {turnContext.Activity.Text}");
-                await turnContext.SendActivityAsync(activityCard, cancellationToken);
+                var activity = MessageFactory.Text($"Echo: {turnContext.Activity.Text}");
+                await turnContext.SendActivityAsync(activity, cancellationToken);
             }
         }
 
