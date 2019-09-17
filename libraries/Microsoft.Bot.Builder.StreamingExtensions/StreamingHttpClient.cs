@@ -22,31 +22,48 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
     public class StreamingHttpClient : HttpClient
     {
         private readonly ILogger _logger;
-        private Dictionary<Guid, IStreamingTransportServer> _transportServers;
+        private Dictionary<string, IStreamingTransportServer> _transportServers;
 
         public StreamingHttpClient(ILogger logger = null)
         {
             this._logger = logger ?? NullLogger.Instance;
         }
 
-        public void AddConnection(string pipeName, IRequestHandler requestHandler)
+        /// <summary>
+        /// Adds a new NamedPipe connection to the client and starts listening on it.
+        /// </summary>
+        /// <param name="pipeName">The name of the NamedPipe to use to establish the connection.</param>
+        /// <param name="requestHandler">The request handler associated with the connection.</param>
+        /// <returns>The ID of the successfully added server.</returns>
+        public Guid AddConnection(string pipeName, IRequestHandler requestHandler)
         {
             var server = new NamedPipeServer(pipeName, requestHandler);
-            _transportServers.Add(server.Id, server);
+            _transportServers.Add(server.Id.ToString().ToLowerInvariant(), server);
 
             // The task that begins with starting the server listening doesn't complete until the server stops listening, so we don't want to await it.
             server.StartAsync();
             server.Disconnected += Server_Disconnected;
+
+            return server.Id;
         }
 
-        public void AddConnection(WebSocket socket, string connectionBaseUrl, IRequestHandler requestHandler)
+        /// <summary>
+        /// Adds a new WebSocket connection to the client and starts listening on it.
+        /// </summary>
+        /// <param name="socket">The socket to use to establish the connection.</param>
+        /// <param name="connectionBaseUrl">The base URL of the remote server.</param>
+        /// <param name="requestHandler">The request handler associated with the connection.</param>
+        /// <returns>The ID of the successfully added server.</returns>
+        public Guid AddConnection(WebSocket socket, string connectionBaseUrl, IRequestHandler requestHandler)
         {
             var server = new WebSocketServer(socket, connectionBaseUrl, requestHandler);
-            _transportServers.Add(server.Id, server);
+            _transportServers.Add(server.Id.ToString().ToLowerInvariant(), server);
 
             // The task that begins with starting the server listening doesn't complete until the server stops listening, so we don't want to await it.
             server.StartAsync();
             server.Disconnected += Server_Disconnected;
+
+            return server.Id;
         }
 
         /// <summary>
@@ -54,12 +71,12 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
         /// </summary>
         /// <param name="id">The guid identifying the connection to find.</param>
         /// <returns>A connection with the specified id if one exists, otherwise null.</returns>
-        public IStreamingTransportServer GetConnection(Guid id)
+        public IStreamingTransportServer GetConnection(string id)
         {
             try
             {
                 IStreamingTransportServer connection = null;
-                _transportServers.TryGetValue(id, out connection);
+                _transportServers.TryGetValue(id.ToLowerInvariant(), out connection);
 
                 return connection;
             }
@@ -76,13 +93,13 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
         /// Useful to avoid opening multiple connections to the same service for calls that do not
         /// need to be bound to a specific connection.
         /// </summary>
-        /// <param name="baseUrl">The base URL of the remote service to search for existing connections with.</param>
+        /// <param name="hostName">The base URL of the remote service to search for existing connections with.</param>
         /// <returns>A connection if one exists, otherwise null.</returns>
-        public IStreamingTransportServer FindConnection(string baseUrl)
+        public IStreamingTransportServer FindConnection(string hostName)
         {
             try
             {
-                return _transportServers.Values.Where(x => x.RemoteHost.ToLowerInvariant() == baseUrl.ToLowerInvariant()).FirstOrDefault();
+                return _transportServers.Values.Where(x => x.RemoteHost.ToLowerInvariant() == hostName.ToLowerInvariant()).FirstOrDefault();
             }
             catch (Exception ex)
             {
@@ -92,7 +109,7 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
             }
         }
 
-        public async Task<ReceiveResponse> SendAsync(StreamingRequest streamingRequest, CancellationToken cancellationToken = default) => await this._server.SendAsync(streamingRequest, cancellationToken).ConfigureAwait(false);
+        public async Task<ReceiveResponse> SendAsync(StreamingRequest streamingRequest, string connectionId, CancellationToken cancellationToken = default) => await this.GetConnection(connectionId).SendAsync(streamingRequest, cancellationToken).ConfigureAwait(false);
 
         public override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken = default)
         {
@@ -102,15 +119,15 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
                 Verb = request.Method.ToString(),
             };
             streamingRequest.SetBody(request.Content);
-
-            return await this.SendRequestAsync<HttpResponseMessage>(streamingRequest, cancellationToken).ConfigureAwait(false);
+            string connectionId = this.FindConnection(request.RequestUri.Host).Id.ToString().ToLowerInvariant();
+            return await this.SendRequestAsync<HttpResponseMessage>(streamingRequest, connectionId, cancellationToken).ConfigureAwait(false);
         }
 
-        private async Task<T> SendRequestAsync<T>(StreamingRequest request, CancellationToken cancellation = default)
+        private async Task<T> SendRequestAsync<T>(StreamingRequest request, string connectionId, CancellationToken cancellation = default)
         {
             try
             {
-                var serverResponse = await this._server.SendAsync(request, cancellation).ConfigureAwait(false);
+                var serverResponse = await this.GetConnection(connectionId).SendAsync(request, cancellation).ConfigureAwait(false);
 
                 if (serverResponse.StatusCode == (int)HttpStatusCode.OK)
                 {
@@ -128,7 +145,7 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
         private void Server_Disconnected(object sender, DisconnectedEventArgs e)
         {
             var id = (sender as IStreamingTransportServer).Id;
-            _transportServers.Remove(id);
+            _transportServers.Remove(id.ToString().ToLowerInvariant());
             _logger.LogInformation("De-registered connection " + id + " after receiving disconnection event: " + e.Reason);
         }
     }

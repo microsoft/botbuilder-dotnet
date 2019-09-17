@@ -178,7 +178,7 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
             // In the DI model there is nothing waiting for the session to complete, so there is no
             // need to watch for the completion of this task. Simply start the session and hand
             // up the adapter.
-            _ = adapter.ConnectNamedPipe();
+            _ = adapter.ConnectNamedPipe(pipeName);
 
             return adapter;
         }
@@ -429,7 +429,7 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
 
                 try
                 {
-                    var serverResponse = await (_httpClient as StreamingHttpClient).SendAsync(request, cancellationToken).ConfigureAwait(false);
+                    var serverResponse = await (_httpClient as StreamingHttpClient).SendAsync(request, activity.ServiceUrl, cancellationToken).ConfigureAwait(false);
 
                     if (serverResponse.StatusCode == (int)HttpStatusCode.OK)
                     {
@@ -538,7 +538,11 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
         /// Starts the adapter listening to the named pipe created.
         /// </summary>
         /// <returns>A task.</returns>
-        private async Task ConnectNamedPipe() => await _transportServer.StartAsync();
+        private async Task ConnectNamedPipe(string pipeName)
+        {
+            _httpClient = _httpClient ?? new StreamingHttpClient(_logger);
+            (_httpClient as StreamingHttpClient).AddConnection(pipeName, this);
+        }
 
         /// <summary>
         /// Process the initial request to establish a long lived connection via a streaming server.
@@ -574,10 +578,8 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
             try
             {
                 var socket = await httpRequest.HttpContext.WebSockets.AcceptWebSocketAsync().ConfigureAwait(false);
-                _httpClient = new StreamingHttpClient(_logger);
+                _httpClient = _httpClient ?? new StreamingHttpClient(_logger);
                 (_httpClient as StreamingHttpClient).AddConnection(socket, httpRequest.HttpContext.Request.PathBase.ToString(), this);
-
-                await _transportServer.StartAsync().ConfigureAwait(false);
             }
             catch (Exception ex)
             {
