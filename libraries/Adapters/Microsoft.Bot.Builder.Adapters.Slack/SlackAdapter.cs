@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
 {
     public class SlackAdapter : BotAdapter, IBotFrameworkHttpAdapter
     {
-        private readonly ISlackAdapterOptions _options;
+        private readonly SlackAdapterOptions _options;
         private readonly SlackClientWrapper _slackClient;
         private readonly string _slackOAuthUrl = "https://slack.com/oauth/authorize?client_id=";
         private string _identity;
@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// Create a Slack adapter.
         /// </summary>
         /// <param name="options">An object containing API credentials, a webhook verification token and other options.</param>
-        public SlackAdapter(ISlackAdapterOptions options)
+        public SlackAdapter(SlackAdapterOptions options)
             : base()
         {
             _options = options ?? throw new ArgumentNullException(nameof(options));

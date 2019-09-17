@@ -31,7 +31,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.TestBot
             services.AddSingleton<ICredentialProvider, ConfigurationCredentialProvider>();
 
             // Create the options for the SlackAdapter
-            services.AddSingleton<ISlackAdapterOptions, ConfigurationSlackAdapterOptions>();
+            services.AddSingleton<SlackAdapterOptions, ConfigurationSlackAdapterOptions>();
 
             // services.AddSingleton<IBotFrameworkHttpAdapter, BotFrameworkHttpAdapter>();
 
