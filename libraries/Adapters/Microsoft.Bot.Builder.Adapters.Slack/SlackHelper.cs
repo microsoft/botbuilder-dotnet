@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
 using Microsoft.AspNetCore.Http;
@@ -47,23 +48,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
             // if channelData is specified, overwrite any fields in message object
             if (activity.ChannelData != null)
             {
-                try
-                {
-                    // Try a straight up cast
-                    message = activity.ChannelData as NewSlackMessage;
-                }
-                catch (InvalidCastException)
-                {
-                    foreach (var property in message.GetType().GetFields())
-                    {
-                        var name = property.Name;
-                        var value = (activity.ChannelData as dynamic)[name];
-                        if (value != null)
-                        {
-                            message.GetType().GetField(name).SetValue(message, value);
-                        }
-                    }
-                }
+                message = activity.GetChannelData<NewSlackMessage>();
             }
 
             // should this message be sent as an ephemeral message
@@ -106,6 +91,29 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
 
                 return hash == retrievedSignature;
             }
+        }
+
+        /// <summary>
+        /// Converts the 'Event' subobject of the Slack payload into a NewSlackMessage for assigning to ChannelData.
+        /// </summary>
+        /// <param name="slackEvent">A dynamic payload from the request body sent by Slack.</param>
+        /// <returns>A NewSlackMessage with the resulting properties.</returns>
+        public static NewSlackMessage GetChannelDataFromSlackEvent(dynamic slackEvent)
+        {
+            // Convert Slack timestamp format to DateTime
+            var eventProperty = slackEvent["event"];
+            string[] splitString = eventProperty.ts.ToString().Split('.');
+            var dateTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).ToLocalTime().AddSeconds(Convert.ToDouble(splitString[0], CultureInfo.InvariantCulture));
+
+            return new NewSlackMessage()
+            {
+                type = eventProperty.type ?? null,
+                text = eventProperty.text ?? null,
+                user = eventProperty.user ?? null,
+                ts = dateTime,
+                team = eventProperty.team ?? null,
+                channel = eventProperty.channel ?? null,
+            };
         }
     }
 }
