@@ -16,7 +16,7 @@ namespace Microsoft.BotBuilderSamples.Bots
     {
         protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
-            var reply = MessageFactory.Attachment(this.GetHeroCard());
+            var reply = MessageFactory.Attachment(this.GetTaskModuleHeroCard());
             await turnContext.SendActivityAsync(reply);
         }
 
@@ -31,7 +31,7 @@ namespace Microsoft.BotBuilderSamples.Bots
                 {
                     Value = new TaskModuleTaskInfo()
                     {
-                        Card = this.GetAdaptiveCard(),
+                        Card = this.GetTaskModuleAdaptiveCard(),
                         Height = 200,
                         Width = 400,
                         Title = "Adaptive Card: Inputs",
@@ -55,7 +55,7 @@ namespace Microsoft.BotBuilderSamples.Bots
             };
         }
 
-        private Attachment GetHeroCard()
+        private Attachment GetTaskModuleHeroCard()
         {
             return new HeroCard()
             {
@@ -68,9 +68,9 @@ namespace Microsoft.BotBuilderSamples.Bots
             }.ToAttachment();
         }
 
-        private Attachment GetAdaptiveCard()
+        private Attachment GetTaskModuleAdaptiveCard()
         {
-            return new AdaptiveCard(new AdaptiveSchemaVersion("1.0"))
+            var card = new AdaptiveCard(new AdaptiveSchemaVersion("1.0"))
             {
                 Body = new List<AdaptiveElement>()
                 {
@@ -87,7 +87,13 @@ namespace Microsoft.BotBuilderSamples.Bots
                 {
                     new AdaptiveSubmitAction() { Title = "Submit" },
                 },
-            }.ToAttachment();
+            };
+
+            return new Attachment
+            {
+                Content = card,
+                ContentType = AdaptiveCards.AdaptiveCard.ContentType,
+            };
         }
     }
 }
