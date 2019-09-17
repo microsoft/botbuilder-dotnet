@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -22,6 +23,31 @@ namespace Microsoft.Bot.Connector.Authentication
     public class ClientCertificateAppCredentials : AppCredentials
     {
         private readonly ClientAssertionCertificate clientCertificate;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ClientCertificateAppCredentials"/> class.
+        /// </summary>
+        /// <param name="clientCertificate">Client certificate to be presented for authentication.</param>
+        /// <param name="appId">Microsoft application Id related to the certifiacte.</param>
+        /// <param name="channelAuthTenant">Optional. The oauth token tenant.</param>
+        /// <param name="customHttpClient">Optional <see cref="HttpClient"/> to be used when acquiring tokens.</param>
+        /// <param name="logger">Optional <see cref="ILogger"/> to gather telemetry data while acquiring and managing credentials.</param>
+        public ClientCertificateAppCredentials(X509Certificate2 clientCertificate, string appId, string channelAuthTenant = null, HttpClient customHttpClient = null, ILogger logger = null)
+            : base(channelAuthTenant, customHttpClient, logger)
+        {
+            if (clientCertificate == null)
+            {
+                throw new ArgumentNullException(nameof(clientCertificate));
+            }
+
+            if (string.IsNullOrEmpty(appId))
+            {
+                throw new ArgumentNullException(nameof(appId));
+            }
+
+            this.clientCertificate = new ClientAssertionCertificate(appId, clientCertificate);
+            MicrosoftAppId = this.clientCertificate.ClientId;
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ClientCertificateAppCredentials"/> class.
