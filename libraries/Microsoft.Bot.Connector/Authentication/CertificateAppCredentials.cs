@@ -18,21 +18,21 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Connector.Authentication
 {
     /// <summary>
-    /// ClientCertificateAppCredentials auth implementation and cache.
+    /// CertificateAppCredentials auth implementation and cache.
     /// </summary>
-    public class ClientCertificateAppCredentials : AppCredentials
+    public class CertificateAppCredentials : AppCredentials
     {
         private readonly ClientAssertionCertificate clientCertificate;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ClientCertificateAppCredentials"/> class.
+        /// Initializes a new instance of the <see cref="CertificateAppCredentials"/> class.
         /// </summary>
         /// <param name="clientCertificate">Client certificate to be presented for authentication.</param>
         /// <param name="appId">Microsoft application Id related to the certifiacte.</param>
         /// <param name="channelAuthTenant">Optional. The oauth token tenant.</param>
         /// <param name="customHttpClient">Optional <see cref="HttpClient"/> to be used when acquiring tokens.</param>
         /// <param name="logger">Optional <see cref="ILogger"/> to gather telemetry data while acquiring and managing credentials.</param>
-        public ClientCertificateAppCredentials(X509Certificate2 clientCertificate, string appId, string channelAuthTenant = null, HttpClient customHttpClient = null, ILogger logger = null)
+        public CertificateAppCredentials(X509Certificate2 clientCertificate, string appId, string channelAuthTenant = null, HttpClient customHttpClient = null, ILogger logger = null)
             : base(channelAuthTenant, customHttpClient, logger)
         {
             if (clientCertificate == null)
@@ -50,13 +50,13 @@ namespace Microsoft.Bot.Connector.Authentication
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ClientCertificateAppCredentials"/> class.
+        /// Initializes a new instance of the <see cref="CertificateAppCredentials"/> class.
         /// </summary>
         /// <param name="clientCertificate">Client certificate to be presented for authentication.</param>
         /// <param name="channelAuthTenant">Optional. The oauth token tenant.</param>
         /// <param name="customHttpClient">Optional <see cref="HttpClient"/> to be used when acquiring tokens.</param>
         /// <param name="logger">Optional <see cref="ILogger"/> to gather telemetry data while acquiring and managing credentials.</param>
-        public ClientCertificateAppCredentials(ClientAssertionCertificate clientCertificate, string channelAuthTenant = null, HttpClient customHttpClient = null, ILogger logger = null)
+        public CertificateAppCredentials(ClientAssertionCertificate clientCertificate, string channelAuthTenant = null, HttpClient customHttpClient = null, ILogger logger = null)
             : base(channelAuthTenant, customHttpClient, logger)
         {
             this.clientCertificate = clientCertificate ?? throw new ArgumentNullException(nameof(clientCertificate));
