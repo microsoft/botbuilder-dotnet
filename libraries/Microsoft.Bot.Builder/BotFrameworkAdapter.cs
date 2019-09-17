@@ -54,7 +54,7 @@ namespace Microsoft.Bot.Builder
         private readonly HttpClient _httpClient;
         private readonly RetryPolicy _connectorClientRetryPolicy;
         private readonly ILogger _logger;
-        private readonly ConcurrentDictionary<string, MicrosoftAppCredentials> _appCredentialMap = new ConcurrentDictionary<string, MicrosoftAppCredentials>();
+        private readonly ConcurrentDictionary<string, AppCredentials> _appCredentialMap = new ConcurrentDictionary<string, AppCredentials>();
         private readonly AuthenticationConfiguration _authConfiguration;
 
         // There is a significant boost in throughput if we reuse a connectorClient
@@ -964,7 +964,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="serviceUrl">The service URL.</param>
         /// <param name="appCredentials">The application credentials for the bot.</param>
         /// <returns>Connector client instance.</returns>
-        private IConnectorClient CreateConnectorClient(string serviceUrl, MicrosoftAppCredentials appCredentials = null)
+        private IConnectorClient CreateConnectorClient(string serviceUrl, AppCredentials appCredentials = null)
         {
             string clientKey = $"{serviceUrl}{appCredentials?.MicrosoftAppId ?? string.Empty}";
 
@@ -999,7 +999,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="appId">The application identifier (AAD Id for the bot).</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>App credentials.</returns>
-        private async Task<MicrosoftAppCredentials> GetAppCredentialsAsync(string appId, CancellationToken cancellationToken)
+        private async Task<AppCredentials> GetAppCredentialsAsync(string appId, CancellationToken cancellationToken)
         {
             if (appId == null)
             {
