@@ -65,7 +65,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 return this;
             }
             var templateNameLine = BuildTemplateNameLine(templateName, parameters);
-            var content = $"{templateNameLine}\r\n{templateBody}";
+            var newTemplateBody = ExtractReplaceString(templateBody);
+            var content = $"{templateNameLine}\r\n{newTemplateBody}";
             var startLine = template.ParseTree.Start.Line - 1;
             var stopLine = template.ParseTree.Stop.Line - 1;
 
@@ -88,8 +89,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 throw new Exception($"template {templateName} already exists.");
             }
             var templateNameLine = BuildTemplateNameLine(templateName, parameters);
-
-            var newContent = $"{Content}\r\n{templateNameLine}\r\n{templateBody}";
+            var newTemplateBody = ExtractReplaceString(templateBody);
+            var newContent = $"{Content}\r\n{templateNameLine}\r\n{newTemplateBody}";
             return LGParser.Parse(newContent, Id);
         }
 
@@ -200,7 +201,33 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             destList.AddRange(originList.Skip(stopLine + 1));
 
-            return string.Join("\n", destList).TrimEnd('\r');
+            return string.Join("\n", destList);
+        }
+
+        private string ExtractReplaceString(string replaceString)
+        {
+            if (string.IsNullOrWhiteSpace(replaceString))
+            {
+                return string.Empty;
+            }
+            var replaceList = replaceString.Split('\n').ToList();
+
+            var result = new List<string>();
+            replaceList.ForEach(u => result.Add(WrapTemplateBodyString(u)));
+
+            return string.Join("\n", result);
+        }
+
+        // we will warp '# abc' into '- #abc', to avoid adding additional template.
+        private string WrapTemplateBodyString(string replaceItem)
+        {
+            var result = replaceItem;
+            if (replaceItem.TrimStart().StartsWith("#"))
+            {
+                result = "- " + replaceItem.TrimStart();
+            }
+
+            return result;
         }
 
         private string BuildTemplateNameLine(string templateName, List<string> parameters) => $"# {templateName}({string.Join(", ", parameters)})";

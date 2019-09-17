@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var engine = new TemplateEngine().AddFile(GetExampleFilePath("2.lg"));
 
             var evaled = engine.EvaluateTemplate("wPhrase");
-            var options = new List<string> { "Hi", "Hello", "Hiya " };
+            var options = new List<string> { "Hi", "Hello", "Hiya" };
 
             Assert.IsTrue(options.Contains(evaled), $"The result `{evaled}` is not in those options [{string.Join(",", options)}]");
         }
@@ -694,14 +694,14 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.AreEqual(lgResource.Templates[1].Parameters[1], "name");
             Assert.AreEqual(lgResource.Templates[1].Body, "- hi ");
 
-            lgResource = lgResource.UpdateTemplate("newtemplate", new List<string> { "newage", "newname" }, "- new hi ");
+            lgResource = lgResource.UpdateTemplate("newtemplate", new List<string> { "newage", "newname" }, "- new hi\r\n#hi");
             Assert.AreEqual(lgResource.Templates.Count, 2);
             Assert.AreEqual(lgResource.Imports.Count, 0);
             Assert.AreEqual(lgResource.Templates[1].Name, "newtemplate");
             Assert.AreEqual(lgResource.Templates[1].Parameters.Count, 2);
             Assert.AreEqual(lgResource.Templates[1].Parameters[0], "newage");
             Assert.AreEqual(lgResource.Templates[1].Parameters[1], "newname");
-            Assert.AreEqual(lgResource.Templates[1].Body, "- new hi ");
+            Assert.AreEqual(lgResource.Templates[1].Body, "- new hi\r\n- #hi");
 
             lgResource = lgResource.DeleteTemplate("newtemplate");
             Assert.AreEqual(lgResource.Templates.Count, 1);

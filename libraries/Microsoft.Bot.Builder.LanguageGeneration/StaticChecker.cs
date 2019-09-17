@@ -188,7 +188,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 var errorTemplateName = templateNameLine.errorTemplateName();
                 if (errorTemplateName != null)
                 {
-                    result.Add(BuildLGDiagnostic($"The format of template name is error", context: errorTemplateName));
+                    result.Add(BuildLGDiagnostic($"Not a valid template name line", context: errorTemplateName));
                 }
                 else
                 {
@@ -226,7 +226,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     var errorTemplateStr = templateStr.errorTemplateString();
                     if (errorTemplateStr != null)
                     {
-                        result.Add(BuildLGDiagnostic($"Do you missing - in front of {errorTemplateStr.GetText()}", context: errorTemplateStr));
+                        result.Add(BuildLGDiagnostic($"Invalid template body line, did you miss '-' at line begin", context: errorTemplateStr));
                     }
                     else
                     {
