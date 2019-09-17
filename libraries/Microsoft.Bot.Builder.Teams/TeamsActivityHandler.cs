@@ -52,6 +52,7 @@ namespace Microsoft.Bot.Builder.Teams
         {
             if (turnContext.Activity.Name == null)
             {
+                // TODO: seems we will come in here in unexpected cases - should we tighten up the conditions?
                 return await OnTeamsCardActionInvokeAsync(turnContext, cancellationToken).ConfigureAwait(false);
             }
             else
@@ -68,11 +69,11 @@ namespace Microsoft.Bot.Builder.Teams
                         await OnTeamsO365ConnectorCardActionAsync(turnContext, SafeCast<O365ConnectorCardActionQuery>(turnContext.Activity.Value), cancellationToken).ConfigureAwait(false);
                         return CreateInvokeResponse();
 
-                    case "composeExtension/query":
-                        return CreateInvokeResponse(await OnTeamsMessagingExtensionQueryAsync(turnContext, SafeCast<MessagingExtensionQuery>(turnContext.Activity.Value), cancellationToken).ConfigureAwait(false));
-
                     case "composeExtension/queryLink":
                         return CreateInvokeResponse(await OnTeamsAppBasedLinkQueryAsync(turnContext, SafeCast<AppBasedLinkQuery>(turnContext.Activity.Value), cancellationToken).ConfigureAwait(false));
+
+                    case "composeExtension/query":
+                        return CreateInvokeResponse(await OnTeamsMessagingExtensionQueryAsync(turnContext, SafeCast<MessagingExtensionQuery>(turnContext.Activity.Value), cancellationToken).ConfigureAwait(false));
 
                     case "composeExtension/selectItem":
                         return CreateInvokeResponse(await OnTeamsMessagingExtensionSelectItemAsync(turnContext, turnContext.Activity.Value as JObject, cancellationToken).ConfigureAwait(false));
@@ -83,7 +84,7 @@ namespace Microsoft.Bot.Builder.Teams
                     case "composeExtension/fetchTask":
                         return CreateInvokeResponse(await OnTeamsMessagingExtensionFetchTaskAsync(turnContext, cancellationToken).ConfigureAwait(false));
 
-                    case "composeExtension/onquerySettingsUrl":
+                    case "composeExtension/querySettingsUrl":
                         return CreateInvokeResponse(await OnTeamsMessagingExtensionConfigurationSettingsUrlAsync(turnContext, cancellationToken).ConfigureAwait(false));
 
                     case "composeExtension/setting":
