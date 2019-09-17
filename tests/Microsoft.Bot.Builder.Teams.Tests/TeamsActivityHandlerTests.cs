@@ -34,7 +34,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             }
         }
 
-        private class TestTeamsActivityHandler : TeamsActivityHandler
+        private class TestActivityHandler : TeamsActivityHandler
         {
             public List<string> Record { get; } = new List<string>();
 
@@ -45,40 +45,40 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 return base.OnConversationUpdateActivityAsync(turnContext, cancellationToken);
             }
 
-            protected override Task OnChannelCreatedEventAsync(ChannelInfo channelInfo, TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
+            protected override Task OnTeamsChannelCreatedAsync(ChannelInfo channelInfo, TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
             {
                 Record.Add(MethodBase.GetCurrentMethod().Name);
-                return base.OnChannelCreatedEventAsync(channelInfo, teamInfo, turnContext, cancellationToken);
+                return base.OnTeamsChannelCreatedAsync(channelInfo, teamInfo, turnContext, cancellationToken);
             }
 
-            protected override Task OnChannelDeletedEventAsync(ChannelInfo channelInfo, TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
+            protected override Task OnTeamsChannelDeletedAsync(ChannelInfo channelInfo, TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
             {
                 Record.Add(MethodBase.GetCurrentMethod().Name);
-                return base.OnChannelDeletedEventAsync(channelInfo, teamInfo, turnContext, cancellationToken);
+                return base.OnTeamsChannelDeletedAsync(channelInfo, teamInfo, turnContext, cancellationToken);
             }
 
-            protected override Task OnChannelRenamedEventAsync(ChannelInfo channelInfo, TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
+            protected override Task OnTeamsChannelRenamedAsync(ChannelInfo channelInfo, TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
             {
                 Record.Add(MethodBase.GetCurrentMethod().Name);
-                return base.OnChannelRenamedEventAsync(channelInfo, teamInfo, turnContext, cancellationToken);
+                return base.OnTeamsChannelRenamedAsync(channelInfo, teamInfo, turnContext, cancellationToken);
             }
 
-            protected override Task OnTeamRenamedEventAsync(TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
+            protected override Task OnTeamsTeamRenamedAsync(TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
             {
                 Record.Add(MethodBase.GetCurrentMethod().Name);
-                return base.OnTeamRenamedEventAsync(teamInfo, turnContext, cancellationToken);
+                return base.OnTeamsTeamRenamedAsync(teamInfo, turnContext, cancellationToken);
             }
 
-            protected override Task OnTeamMembersAddedEventAsync(IList<ChannelAccount> membersAdded, TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
+            protected override Task OnTeamsMembersAddedAsync(IList<ChannelAccount> membersAdded, TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
             {
                 Record.Add(MethodBase.GetCurrentMethod().Name);
-                return base.OnTeamMembersAddedEventAsync(membersAdded, teamInfo, turnContext, cancellationToken);
+                return base.OnTeamsMembersAddedAsync(membersAdded, teamInfo, turnContext, cancellationToken);
             }
 
-            protected override Task OnTeamMembersRemovedEventAsync(IList<ChannelAccount> membersRemoved, TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
+            protected override Task OnTeamsMembersRemovedAsync(IList<ChannelAccount> membersRemoved, TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
             {
                 Record.Add(MethodBase.GetCurrentMethod().Name);
-                return base.OnTeamMembersRemovedEventAsync(membersRemoved, teamInfo, turnContext, cancellationToken);
+                return base.OnTeamsMembersRemovedAsync(membersRemoved, teamInfo, turnContext, cancellationToken);
             }
 
             protected override Task OnMembersAddedAsync(IList<ChannelAccount> membersAdded, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)

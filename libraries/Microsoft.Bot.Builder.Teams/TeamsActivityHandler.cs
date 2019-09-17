@@ -233,54 +233,54 @@ namespace Microsoft.Bot.Builder.Teams
             switch (channelData.EventType)
             {
                 case "teamMemberAdded":
-                    return OnTeamMembersAddedEventAsync(turnContext.Activity.MembersAdded, channelData.Team, turnContext, cancellationToken);
+                    return OnTeamsMembersAddedAsync(turnContext.Activity.MembersAdded, channelData.Team, turnContext, cancellationToken);
 
                 case "teamMemberRemoved":
-                    return OnTeamMembersRemovedEventAsync(turnContext.Activity.MembersRemoved, channelData.Team, turnContext, cancellationToken);
+                    return OnTeamsMembersRemovedAsync(turnContext.Activity.MembersRemoved, channelData.Team, turnContext, cancellationToken);
 
                 case "channelCreated":
-                    return OnChannelCreatedEventAsync(channelData.Channel, channelData.Team, turnContext, cancellationToken);
+                    return OnTeamsChannelCreatedAsync(channelData.Channel, channelData.Team, turnContext, cancellationToken);
 
                 case "channelDeleted":
-                    return OnChannelDeletedEventAsync(channelData.Channel, channelData.Team, turnContext, cancellationToken);
+                    return OnTeamsChannelDeletedAsync(channelData.Channel, channelData.Team, turnContext, cancellationToken);
 
                 case "channelRenamed":
-                    return OnChannelRenamedEventAsync(channelData.Channel, channelData.Team, turnContext, cancellationToken);
+                    return OnTeamsChannelRenamedAsync(channelData.Channel, channelData.Team, turnContext, cancellationToken);
 
                 case "teamRenamed":
-                    return OnTeamRenamedEventAsync(channelData.Team, turnContext, cancellationToken);
+                    return OnTeamsTeamRenamedAsync(channelData.Team, turnContext, cancellationToken);
 
                 default:
                     return base.OnConversationUpdateActivityAsync(turnContext, cancellationToken);
             }
         }
 
-        protected virtual Task OnTeamMembersAddedEventAsync(IList<ChannelAccount> membersAdded, TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
+        protected virtual Task OnTeamsMembersAddedAsync(IList<ChannelAccount> membersAdded, TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
         {
             return OnMembersAddedAsync(membersAdded, turnContext, cancellationToken);
         }
 
-        protected virtual Task OnTeamMembersRemovedEventAsync(IList<ChannelAccount> membersRemoved, TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
+        protected virtual Task OnTeamsMembersRemovedAsync(IList<ChannelAccount> membersRemoved, TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
         {
             return OnMembersRemovedAsync(membersRemoved, turnContext, cancellationToken);
         }
 
-        protected virtual Task OnChannelCreatedEventAsync(ChannelInfo channelInfo, TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
+        protected virtual Task OnTeamsChannelCreatedAsync(ChannelInfo channelInfo, TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
         {
             return Task.CompletedTask;
         }
 
-        protected virtual Task OnChannelDeletedEventAsync(ChannelInfo channelInfo, TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
+        protected virtual Task OnTeamsChannelDeletedAsync(ChannelInfo channelInfo, TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
         {
             return Task.CompletedTask;
         }
 
-        protected virtual Task OnChannelRenamedEventAsync(ChannelInfo channelInfo, TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
+        protected virtual Task OnTeamsChannelRenamedAsync(ChannelInfo channelInfo, TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
         {
             return Task.CompletedTask;
         }
 
-        protected virtual Task OnTeamRenamedEventAsync(TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
+        protected virtual Task OnTeamsTeamRenamedAsync(TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
         {
             return Task.CompletedTask;
         }
