@@ -199,9 +199,7 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <returns>A new <see cref="TestFlow"/> object that appends this assertion to the modeled exchange.</returns>
         /// <remarks>This method does not modify the original <see cref="TestFlow"/> object.</remarks>
         /// <exception cref="Exception">The bot did not respond as expected.</exception>
-        public TestFlow AssertReply(IActivity expected, [CallerMemberName] string description = null, uint timeout = 3000)
-        {
-            return AssertReply(
+        public TestFlow AssertReply(IActivity expected, [CallerMemberName] string description = null, uint timeout = 3000) => AssertReply(
                 (reply) =>
                 {
                     description = description ?? expected.AsMessageActivity()?.Text.Trim();
@@ -210,7 +208,7 @@ namespace Microsoft.Bot.Builder.Adapters
                         throw new Exception($"{description}: Type should match");
                     }
 
-                    if (expected.AsMessageActivity().Text.Trim() != reply.AsMessageActivity().Text.Trim())
+                    if (!CompareActivities(expected.AsMessageActivity(), reply.AsMessageActivity()))
                     {
                         if (description == null)
                         {
@@ -224,7 +222,6 @@ namespace Microsoft.Bot.Builder.Adapters
                 },
                 description,
                 timeout);
-        }
 
         /// <summary>
         /// Adds an assertion that the turn processing logic responds as expected.
@@ -429,6 +426,26 @@ namespace Microsoft.Bot.Builder.Adapters
                 },
                 description,
                 timeout);
+        }
+
+        private static bool CompareActivities(IMessageActivity activity1, IMessageActivity activity2)
+        {
+            // Check for text 
+            if (activity1.Text.Trim() != activity2.Text.Trim())
+            {
+                return false;
+            }
+
+            // Check for attachments
+            if (activity1.Attachments != null && activity2.Attachments != null)
+            {
+                if (activity1.Attachments != activity2.Attachments)
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         private bool IsReply(IActivity activity)

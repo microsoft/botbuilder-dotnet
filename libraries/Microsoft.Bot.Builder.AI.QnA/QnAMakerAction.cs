@@ -7,8 +7,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Builder.Dialogs.Adaptive;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Events;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
@@ -22,16 +20,21 @@ namespace Microsoft.Bot.Builder.AI.QnA
     /// </remarks>
     public class QnAMakerAction : Dialog
     {
+        private const float DefaultThreshold = 0.03F;
         private QnAMaker qnamaker;
         private readonly HttpClient httpClient;
+        private readonly string defaultNoAnswer = "No QnAMaker answers found.";
 
-        public QnAMakerAction(string kbId, string hostName, string endpointKey, HttpClient httpClient = null, [CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
+        public QnAMakerAction(string knowledgeBaseId, string endpointKey, string hostName, string noAnswer, float threshold = DefaultThreshold, Metadata[] strictFilters = null,   HttpClient httpClient = null, [CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
             : base()
         {
             this.RegisterSourceLocation(sourceFilePath, sourceLineNumber);
-            this.KbId = kbId;
-            this.HostName = hostName;
-            this.EndpointKey = endpointKey;
+            this.KnowledgeBaseId = knowledgeBaseId ?? throw new ArgumentNullException(nameof(knowledgeBaseId));
+            this.HostName = hostName ?? throw new ArgumentNullException(nameof(HostName));
+            this.EndpointKey = endpointKey ?? throw new ArgumentNullException(nameof(EndpointKey));
+            this.Threshold = threshold;
+            this.NoAnswer = noAnswer ?? defaultNoAnswer;
+            this.StrictFilters = strictFilters;
             this.httpClient = httpClient;
         }
 
@@ -42,8 +45,8 @@ namespace Microsoft.Bot.Builder.AI.QnA
             this.RegisterSourceLocation(sourceFilePath, sourceLineNumber);
         }
 
-        [JsonProperty("kbId")]
-        public string KbId { get; set; }
+        [JsonProperty("knowledgeBaseId")]
+        public string KnowledgeBaseId { get; set; }
 
         [JsonProperty("hostname")]
         public string HostName { get; set; }
@@ -57,18 +60,22 @@ namespace Microsoft.Bot.Builder.AI.QnA
         [JsonProperty("noAnswer")]
         public string NoAnswer { get; set; }
 
+        [JsonProperty("strictFilters")]
+        public Metadata[] StrictFilters { get; set; }
+
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             var endpoint = new QnAMakerEndpoint
             {
                 EndpointKey = this.EndpointKey,
                 Host = this.HostName,
-                KnowledgeBaseId = this.KbId
+                KnowledgeBaseId = this.KnowledgeBaseId
             };
 
             var qnamakerOptions = new QnAMakerOptions
             {
-                ScoreThreshold = this.Threshold
+                ScoreThreshold = this.Threshold,
+                StrictFilters = this.StrictFilters
             };
 
             if (qnamaker == null)
@@ -93,37 +100,20 @@ namespace Microsoft.Bot.Builder.AI.QnA
         {
             var questionResults = await qnamaker.GetAnswersAsync(dc.Context, qnamakerOptions).ConfigureAwait(false);
 
-            // TODO: Get active learning flag: Need to update when this support is added to SDK
-            var isActiveLearningEnabled = true;
-
-            var queryResults = questionResults;
-
-            var noAnswerMsg = this.NoAnswer ?? "No QnAMaker answers found.";
-
-            if (queryResults == null || queryResults.Length == 0)
+            if (questionResults == null || questionResults.Length == 0)
             {
-                await dc.Context.SendActivityAsync(noAnswerMsg, cancellationToken: cancellationToken).ConfigureAwait(false);
+                await dc.Context.SendActivityAsync(this.NoAnswer, cancellationToken: cancellationToken).ConfigureAwait(false);
                 return await dc.EndDialogAsync(false, cancellationToken: cancellationToken).ConfigureAwait(false);
             }
             else
             {
-                var filteredQueryResults = queryResults;
-                if (isActiveLearningEnabled)
+                if (questionResults.Length > 0)
                 {
-                    filteredQueryResults = qnamaker.GetLowScoreVariation(queryResults);
-                }
-
-                if (filteredQueryResults.Length > 1)
-                {
-                    await dc.Context.SendActivityAsync("Multiple answers triggred", cancellationToken: cancellationToken).ConfigureAwait(false);
-                }
-                else if (filteredQueryResults.Length > 0)
-                {
-                    await dc.Context.SendActivityAsync(filteredQueryResults[0].Answer, cancellationToken: cancellationToken).ConfigureAwait(false);
+                    await dc.Context.SendActivityAsync(questionResults[0].Answer, cancellationToken: cancellationToken).ConfigureAwait(false);
                 }
                 else
                 {
-                    await dc.Context.SendActivityAsync(noAnswerMsg, cancellationToken: cancellationToken).ConfigureAwait(false);
+                    await dc.Context.SendActivityAsync(this.NoAnswer, cancellationToken: cancellationToken).ConfigureAwait(false);
                 }
             }
 
@@ -132,12 +122,12 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
         private async Task<DialogTurnResult> ExecuteAdaptiveQnAMakerDialog(DialogContext dc, QnAMaker qnaMaker, QnAMakerOptions qnamakerOptions, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var dialog = new DialogHelper(qnaMaker);
+            var dialog = new QnAMakerBaseDialog(qnaMaker);
             var textPrompt = new TextPrompt("TextPrompt");
-            dc.Dialogs.Add(dialog.QnAMakerActiveLearningDialog);
+            dc.Dialogs.Add(dialog.QnAMakerDialog);
             dc.Dialogs.Add(textPrompt);
 
-            return await dc.BeginDialogAsync(DialogHelper.ActiveLearningDialogName, qnamakerOptions, cancellationToken).ConfigureAwait(false);
+            return await dc.BeginDialogAsync(QnAMakerBaseDialog.ActiveLearningDialogName, qnamakerOptions, cancellationToken).ConfigureAwait(false);
         }
     }
 }

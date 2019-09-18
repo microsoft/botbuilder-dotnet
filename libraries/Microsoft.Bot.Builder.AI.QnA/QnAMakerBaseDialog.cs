@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
     /// <summary>
     /// QnAMaker Active Learning Dialog helper class
     /// </summary>
-    public class DialogHelper
+    public class QnAMakerBaseDialog
     {
         /// <summary>
         /// QnA Maker Active Learning dialog name
@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <summary>
         /// Gets QnA Maker Active Learning Dialog.
         /// </summary>
-        public WaterfallDialog QnAMakerActiveLearningDialog { get; }
+        public WaterfallDialog QnAMakerDialog { get; }
         
         // Define value names for values tracked inside the dialogs.
         private const string CurrentQuery = "value-current-query";
@@ -44,9 +44,9 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// Dialog helper to generate dialogs.
         /// </summary>
         /// <param name="services">Bot Services.</param>
-        public DialogHelper(QnAMaker services)
+        public QnAMakerBaseDialog(QnAMaker services)
         {
-            QnAMakerActiveLearningDialog = new WaterfallDialog(ActiveLearningDialogName)
+            QnAMakerDialog = new WaterfallDialog(ActiveLearningDialogName)
                 .AddStep(CallGenerateAnswer)
                 .AddStep(CallTrain)
                 .AddStep(DisplayQnAResult);
