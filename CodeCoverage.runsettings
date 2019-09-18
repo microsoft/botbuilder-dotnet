@@ -9,6 +9,7 @@
             <ModulePaths>
               <Include>
                 <ModulePath>.*\Microsoft.Bot.Builder.dll$</ModulePath>               
+                <ModulePath>.*\Microsoft.Bot.Builder.Adapters.Twilio.dll$</ModulePath>
                 <ModulePath>.*\Microsoft.Bot.Builder.Teams.dll$</ModulePath>               
                 <ModulePath>.*\Microsoft.Bot.Builder.AI.Luis.dll$</ModulePath>
                 <ModulePath>.*\Microsoft.Bot.Builder.AI.QnA.dll$</ModulePath>

@@ -300,9 +300,12 @@ namespace Microsoft.Bot.Builder
         /// channel assigned to the activity.
         /// <para>Before calling this, set the ID of the replacement activity to the ID
         /// of the activity to replace.</para></remarks>
-        public async Task<ResourceResponse> UpdateActivityAsync(IActivity activity, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<ResourceResponse> UpdateActivityAsync(IActivity activity, CancellationToken cancellationToken = default)
         {
-            Activity a = (Activity)activity;
+            BotAssert.ActivityNotNull(activity);
+
+            var conversationReference = Activity.GetConversationReference();
+            var a = activity.ApplyConversationReference(conversationReference);
 
             async Task<ResourceResponse> ActuallyUpdateStuff()
             {
