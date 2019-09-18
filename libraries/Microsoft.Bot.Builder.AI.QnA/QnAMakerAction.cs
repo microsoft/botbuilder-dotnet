@@ -93,7 +93,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 return Dialog.EndOfTurn;
             }
 
-            return await ExecuteAdaptiveQnAMakerDialog(dc, qnamaker, qnamakerOptions, cancellationToken).ConfigureAwait(false);
+            return await ExecuteQnAMakerDialog(dc, qnamaker, qnamakerOptions, cancellationToken).ConfigureAwait(false);
         }
 
         private async Task<DialogTurnResult> ExecuteQnAMakerDialog(DialogContext dc, QnAMaker qnaMaker, QnAMakerOptions qnamakerOptions, CancellationToken cancellationToken = default(CancellationToken))
@@ -118,16 +118,6 @@ namespace Microsoft.Bot.Builder.AI.QnA
             }
 
             return await dc.EndDialogAsync(false, cancellationToken: cancellationToken).ConfigureAwait(false);
-        }
-
-        private async Task<DialogTurnResult> ExecuteAdaptiveQnAMakerDialog(DialogContext dc, QnAMaker qnaMaker, QnAMakerOptions qnamakerOptions, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            var dialog = new QnAMakerBaseDialog(qnaMaker);
-            var textPrompt = new TextPrompt("TextPrompt");
-            dc.Dialogs.Add(dialog.QnAMakerDialog);
-            dc.Dialogs.Add(textPrompt);
-
-            return await dc.BeginDialogAsync(QnAMakerBaseDialog.ActiveLearningDialogName, qnamakerOptions, cancellationToken).ConfigureAwait(false);
         }
     }
 }
