@@ -1,15 +1,9 @@
 ﻿// Licensed under the MIT License.
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Expressions;
-using Microsoft.Bot.Builder.Expressions.Parser;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
@@ -25,18 +19,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <summary>
         /// Gets or sets value expression to be compared against condition.
         /// </summary>
-        /// <value>
-        /// Value expression to be compared against condition.
-        /// </value>
         [JsonProperty("value")]
         public string Value { get; set; }
 
         /// <summary>
         /// Gets or sets set of actions to be executed given that the condition of the switch matches the value of this case.
         /// </summary>
-        /// <value>
-        /// Set of actions to be executed given that the condition of the switch matches the value of this case.
-        /// </value>
         [JsonProperty("actions")]
         public List<Dialog> Actions { get; set; } = new List<Dialog>();
 
@@ -62,7 +50,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             {
                 expression = Expression.ConstantExpression(b);
             }
-            else 
+            else
             {
                 expression = Expression.ConstantExpression(Value);
             }

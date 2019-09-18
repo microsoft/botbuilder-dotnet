@@ -30,7 +30,7 @@
         }
     ]
   },
-  "events": [
+  "triggers": [
     {
       "$type": "Microsoft.OnIntent",
       "intent": "ForwardEmailIntent",

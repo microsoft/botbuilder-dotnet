@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Events;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.TriggerHandlers;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         new IntentPattern("JokeIntent", "joke"),
                     }
                 },
-                Events = new List<IOnEvent>()
+                Triggers = new List<TriggerHandler>()
                 {
                     new OnBeginDialog()
                     {
@@ -79,7 +79,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         new IntentPattern("addColor", "I want (?<color>(red|green|blue|yellow))*"),
                     }
                 },
-                Events = new List<IOnEvent>()
+                Triggers = new List<TriggerHandler>()
                 {
                     new OnIntent(
                         intent: "addColor",

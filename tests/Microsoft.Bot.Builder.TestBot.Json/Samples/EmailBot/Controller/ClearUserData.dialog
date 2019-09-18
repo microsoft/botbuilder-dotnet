@@ -30,12 +30,12 @@
     {
       "$type": "Microsoft.EditArray",
       "changeType": "Clear",
-      "arrayProperty": "user.emails"
+      "itemsProperty": "user.emails"
     },
     {
       "$type": "Microsoft.EditArray",
       "changeType": "Clear",
-      "arrayProperty": "user.recipients"
+      "itemsProperty": "user.recipients"
     },
     {
       "$type": "Microsoft.DeleteProperty",

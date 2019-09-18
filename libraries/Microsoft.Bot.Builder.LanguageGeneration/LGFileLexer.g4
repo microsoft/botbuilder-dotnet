@@ -49,7 +49,7 @@ WS
   ;
 
 NEWLINE
-  : '\r'? '\n' -> skip
+  : '\r'? '\n'
   ;
 
 HASH
@@ -102,8 +102,8 @@ COMMA
   : ','
   ;
 
-INVALID_SEPERATE_CHAR
-  : [;]
+TEXT_IN_NAME
+  : ~[\r\n]+?
   ;
 
 mode TEMPLATE_BODY_MODE;

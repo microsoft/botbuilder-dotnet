@@ -1,5 +1,8 @@
-﻿namespace Microsoft.Bot.Builder.Dialogs
+﻿using System.Diagnostics;
+
+namespace Microsoft.Bot.Builder.Dialogs
 {
+    [DebuggerDisplay("{Name}")]
     public class DialogEvent
     {
         /// <summary>

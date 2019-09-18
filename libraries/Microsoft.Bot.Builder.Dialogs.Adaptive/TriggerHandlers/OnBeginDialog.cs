@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive.TriggerHandlers
 {
     /// <summary>
     /// Rule triggered when a dialog is started via BeginDialog().
@@ -17,11 +17,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
             : base(
                 events: new List<string>()
                 {
-                AdaptiveEvents.BeginDialog
+                    AdaptiveEvents.BeginDialog
                 },
                 actions: actions,
                 constraint: constraint,
-                callerPath: callerPath, 
+                callerPath: callerPath,
                 callerLine: callerLine)
         {
         }

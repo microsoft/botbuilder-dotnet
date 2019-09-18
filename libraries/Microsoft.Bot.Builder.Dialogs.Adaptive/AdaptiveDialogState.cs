@@ -12,13 +12,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         {
         }
 
-        [JsonProperty(PropertyName = "options")]
-        public dynamic Options { get; set; }
-
         [JsonProperty(PropertyName = "actions")]
         public List<ActionState> Actions { get; set; } = new List<ActionState>();
-
-        [JsonProperty(PropertyName = "result")]
-        public object Result { get; set; }
     }
 }

@@ -17,7 +17,7 @@
                 "property": {
                     "$role": "expression",
                     "title": "Property",
-                    "description": "The property to set the value of",
+                    "description": "The property path to initialize",
                     "examples": [
                         "user.age"
                     ]

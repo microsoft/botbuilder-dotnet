@@ -121,7 +121,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         public override async Task RepromptDialogAsync(ITurnContext turnContext, DialogInstance instance, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Delegate to inner dialog.
-            var innerDc = this.CreateInnerDc(turnContext, instance, null, null);
+            var innerDc = this.CreateInnerDc(turnContext, instance);
             await innerDc.RepromptDialogAsync(cancellationToken).ConfigureAwait(false);
 
             // Notify component
@@ -133,7 +133,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             // Forward cancel to inner dialogs
             if (reason == DialogReason.CancelCalled)
             {
-                var innerDc = this.CreateInnerDc(turnContext, instance, null, null);
+                var innerDc = this.CreateInnerDc(turnContext, instance);
                 await innerDc.CancelAllDialogsAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
@@ -170,7 +170,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         public override DialogContext CreateChildContext(DialogContext dc)
         {
-            var childDc = this.CreateInnerDc(dc.Context, dc.ActiveDialog, dc.State.User, dc.State.Conversation);
+            var childDc = this.CreateInnerDc(dc.Context, dc.ActiveDialog);
             childDc.Parent = dc;
             return childDc;
         }
@@ -219,12 +219,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             return outerDc.EndDialogAsync(result, cancellationToken);
         }
 
-        protected override string OnComputeId()
-        {
-            return $"component[{this.BindingPath()}]";
-        }
-
-        private DialogContext CreateInnerDc(ITurnContext context, DialogInstance instance, IDictionary<string, object> userState, IDictionary<string, object> conversationState)
+        private DialogContext CreateInnerDc(ITurnContext context, DialogInstance instance)
         {
             DialogState state;
 
@@ -243,7 +238,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 state.DialogStack = new List<DialogInstance>();
             }
 
-            return new DialogContext(this._dialogs, context, state, conversationState, userState);
+            return new DialogContext(this._dialogs, context, state);
         }
     }
 }

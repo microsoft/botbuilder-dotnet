@@ -12,13 +12,13 @@ using Microsoft.Bot.Builder.Expressions;
 using Microsoft.Bot.Builder.Expressions.Parser;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive.TriggerHandlers
 {
     /// <summary>
-    /// Defines basic OnEvent handler.
+    /// Defines basic TriggerHandler.
     /// </summary>
     [DebuggerDisplay("{GetIdentity()}")]
-    public abstract class OnEvent : IOnEvent, IItemIdentity
+    public abstract class TriggerHandler : IItemIdentity
     {
         // constraints from Rule.AddConstraint()
         private List<Expression> extraConstraints = new List<Expression>();
@@ -27,7 +27,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
         private Expression fullConstraint = null;
 
         [JsonConstructor]
-        public OnEvent(string constraint = null, List<Dialog> actions = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public TriggerHandler(string constraint = null, List<Dialog> actions = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
             this.RegisterSourceLocation(callerPath, callerLine);
 
@@ -58,7 +58,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
         /// </summary>
         /// <param name="parser">Expression parser.</param>
         /// <returns>Expression which will be cached and used to evaluate this rule.</returns>
-        public Expression GetExpression(IExpressionParser parser)
+        public virtual Expression GetExpression(IExpressionParser parser)
         {
             lock (this.extraConstraints)
             {
@@ -99,7 +99,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
         /// </summary>
         /// <param name="planningContext">Context.</param>
         /// <returns>A <see cref="Task"/> with plan change list.</returns>
-        public async Task<List<ActionChangeList>> ExecuteAsync(SequenceContext planningContext)
+        public virtual async Task<List<ActionChangeList>> ExecuteAsync(SequenceContext planningContext)
         {
             return await OnExecuteAsync(planningContext).ConfigureAwait(false);
         }
@@ -109,7 +109,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Events
         /// </summary>
         /// <param name="planning">Context.</param>
         /// <returns>A <see cref="Task"/> with plan change list.</returns>
-        public async virtual Task<List<ActionChangeList>> OnExecuteAsync(SequenceContext planning)
+        public virtual async Task<List<ActionChangeList>> OnExecuteAsync(SequenceContext planning)
         {
             return await Task.FromResult(new List<ActionChangeList>()
             {

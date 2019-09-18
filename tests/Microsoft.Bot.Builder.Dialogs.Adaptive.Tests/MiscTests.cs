@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Events;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.TriggerHandlers;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
@@ -28,7 +28,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             var testDialog = new AdaptiveDialog(nameof(AdaptiveDialog))
             {
-                Events = new List<IOnEvent>()
+                Triggers = new List<TriggerHandler>()
                 {
                     new OnBeginDialog()
                     {
@@ -103,15 +103,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         new IntentPattern("SetName", @"my name is (?<name>.*)"),
                     }
                 },
-                Events = new List<IOnEvent>()
+                Triggers = new List<TriggerHandler>()
                 {
                     new OnBeginDialog()
                     {
                         Actions = new List<Dialog>()
                         {
-                            new TextInput() { Prompt = new ActivityTemplate("Hello, what is your name?"), OutputBinding = "user.name", AllowInterruptions = AllowInterruptions.Always, Value = "user.name" },
+                            new TextInput() { Prompt = new ActivityTemplate("Hello, what is your name?"), Property = "user.name", AllowInterruptions = AllowInterruptions.Always },
                             new SendActivity("Hello {user.name}, nice to meet you!"),
-                            new NumberInput() { Prompt = new ActivityTemplate("What is your age?"), OutputBinding = "user.age" },
+                            new NumberInput() { Prompt = new ActivityTemplate("What is your age?"), Property = "user.age" },
                             new SendActivity("{user.age} is a good age to be!"),
                             new SendActivity("your name is {user.name}!"),
                         },

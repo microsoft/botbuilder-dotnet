@@ -2,7 +2,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -17,7 +16,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// <summary>
     /// Conditional branch.
     /// </summary>
-    public class IfCondition : DialogAction
+    public class IfCondition : Dialog, IDialogDependencies
     {
         private Expression condition;
 
@@ -29,26 +28,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         }
 
         /// <summary>
-        /// Gets or sets condition expression against memory. Example: "user.age > 18".
+        /// Gets or sets the memory expression. 
         /// </summary>
-        /// <value>
-        /// Condition expression against memory.
-        /// </value>
+        /// <example>
+        /// "user.age > 18".
+        /// </example>
         [JsonProperty("condition")]
         public string Condition
         {
-            get
-            {
-                return condition?.ToString();
-            }
-
-            set
-            {
-                lock (this)
-                {
-                    condition = value != null ? new ExpressionEngine().Parse(value) : null;
-                }
-            }
+            get { return condition?.ToString(); }
+            set { condition = value != null ? new ExpressionEngine().Parse(value) : null; }
         }
 
         [JsonProperty("actions")]
@@ -57,14 +46,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         [JsonProperty("elseActions")]
         public List<Dialog> ElseActions { get; set; } = new List<Dialog>();
 
-        public override IEnumerable<Dialog> GetDependencies()
+        public virtual IEnumerable<Dialog> GetDependencies()
         {
             var combined = new List<Dialog>(Actions);
             combined.AddRange(ElseActions);
             return combined;
         }
 
-        protected override async Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (options is CancellationToken)
             {
@@ -112,7 +101,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         protected override string OnComputeId()
         {
             var idList = Actions.Select(s => s.Id);
-            return $"{nameof(IfCondition)}({this.Condition}|{string.Join(",", idList)})";
+            return $"{this.GetType().Name}({this.Condition}|{string.Join(",", idList)})";
         }
     }
 }

@@ -220,19 +220,17 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
         public static IEnumerable<object[]> Data => new[]
         {
             #region SetPathToProperty test
-            // TODO: We should support this.
-            // Test("@@['c' + 'ity']", "Seattle"),
-            Test("setPathToValue(@@blah.woof, 1+2) + @@blah.woof", 6),
             Test("setPathToValue(path.simple, 3) + path.simple", 6),
             Test("setPathToValue(path.simple, 5) + path.simple", 10),
             Test("setPathToValue(path.array[0], 7) + path.array[0]", 14),
             Test("setPathToValue(path.array[1], 9) + path.array[1]", 18),
             Test("setPathToValue(path.darray[2][0], 11) + path.darray[2][0]", 22),
-            Test("setPathToValue(path.darray[2][3].foo, 13) + path.darray[2][3].foo)", 26),
+            Test("setPathToValue(path.darray[2][3].foo, 13) + path.darray[2][3].foo", 26),
             Test("setPathToValue(path.overwrite, 3) + setPathToValue(path.overwrite[0], 4) + path.overwrite[0]", 11),
             Test("setPathToValue(path.overwrite[0], 3) + setPathToValue(path.overwrite, 4) + path.overwrite", 11),
             Test("setPathToValue(path.overwrite.prop, 3) + setPathToValue(path.overwrite, 4) + path.overwrite", 11),
             Test("setPathToValue(path.overwrite.prop, 3) + setPathToValue(path.overwrite[0], 4) + path.overwrite[0]", 11),
+            Test("setPathToValue(path.x.y.z, null)", null),
             #endregion
 
             #region Operators test
@@ -510,7 +508,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("subtractFromTime(timestamp, 1, 'Minute')", "2018-03-15T12:59:00.000Z"),
             Test("subtractFromTime(timestamp, 1, 'Second')", "2018-03-15T12:59:59.000Z"),
             Test("dateReadBack(timestamp, addDays(timestamp, 1))", "tomorrow"),
-            Test("dateReadBack(addDays(timestamp, 1),timestamp))", "yesterday"),
+            Test("dateReadBack(addDays(timestamp, 1),timestamp)", "yesterday"),
             Test("getTimeOfDay('2018-03-15T00:00:00.000Z')", "midnight"),
             Test("getTimeOfDay('2018-03-15T08:00:00.000Z')", "morning"),
             Test("getTimeOfDay('2018-03-15T12:00:00.000Z')", "noon"),
@@ -611,35 +609,6 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("jPath(jsonStr,'$..Products[?(@.Price >= 50)].Name')", new[] { "Anvil", "Elbow Grease" }),
             #endregion
 
-            #region  Short Hand Expression
-            Test("@city == 'Bellevue'", false, new HashSet<string> { "turn.recognized.entities.city" }),
-            Test("@city", "Seattle", new HashSet<string> { "turn.recognized.entities.city" }),
-            Test("@city == 'Seattle'", true, new HashSet<string> { "turn.recognized.entities.city" }),
-            Test("@@city[0]", "Seattle", new HashSet<string> { "turn.recognized.entities.city[0]" }),
-            Test("count(@@city)", 1),
-            Test("count(@@city) == 1", true),
-            Test("@ordinal", "1", new HashSet<string> { "turn.recognized.entities.ordinal" }),
-            Test("@@ordinal[1]", "2", new HashSet<string> { "turn.recognized.entities.ordinal[1]" }),
-            Test("@['city']", "Seattle", new HashSet<string> { "turn.recognized.entities.city" }),
-            Test("@[concat('cit', 'y')]", "Seattle", new HashSet<string> { "turn.recognized.entities" }),
-            Test("@[concat(cit, y)]", "Seattle", new HashSet<string> { "turn.recognized.entities", "cit", "y" }),
-            Test("#BookFlight == 'BookFlight'", true, new HashSet<string> { "turn.recognized.intents.BookFlight" }),
-            Test("#BookHotel[1].Where", "Kirkland", new HashSet<string> { "turn.recognized.intents.BookHotel[1].Where" }),
-            Test("exists(#BookFlight)", true, new HashSet<string> { "turn.recognized.intents.BookFlight" }),
-            Test("dialog.title", "Dialog Title"),
-            Test("dialog.subTitle", "Dialog Sub Title"),
-            Test("%xxx", "options", new HashSet<string> { "dialog.options.xxx" }),
-            Test("%['xxx']", "options", new HashSet<string> { "dialog.options.xxx" }),
-            Test("%yyy[1]", "optionY2", new HashSet<string> { "dialog.options.yyy[1]" }),
-            Test("dialog.x", 3),
-            Test("dialog.y", null),
-            Test("dialog.z", null),
-            Test("$x", 3),
-            Test("$y", 2),
-            Test("$z", 1),
-            Test("count(@@CompositeList1) == 1 && count(@@CompositeList1[0]) == 1", true),
-            #endregion
-
             #region  Memory access
             Test("getProperty(bag, concat('na','me'))", "mybag"),
             Test("items[2]", "two", new HashSet<string> { "items[2]" }),
@@ -650,15 +619,6 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("items[1+1]", "two"),
             Test("getProperty(null, 'p')", null),
             Test("(getProperty(null, 'p'))[1]", null),
-            #endregion
-
-            #region Dialog 
-            Test("user.lists.todo[int(@@ordinal[0]) - 1] != null", true),
-            Test("user.lists.todo[int(@@ordinal[0]) + 3] != null", false),
-            Test("count(user.lists.todo) > int(@@ordinal[0]))", true),
-            Test("count(user.lists.todo) >= int(@@ordinal[0]))", true),
-            Test("user.lists.todo[int(@@ordinal[0]) - 1]", "todo1"),
-            Test("user.lists[user.listType][int(@@ordinal[0]) - 1]", "todo1"),
             #endregion
 
             #region Regex

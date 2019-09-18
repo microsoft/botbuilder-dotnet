@@ -2,7 +2,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using Microsoft.Bot.Builder.Expressions.Parser;
 using Newtonsoft.Json.Linq;
@@ -12,12 +11,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// <summary>
     /// Action which calls another dialog.
     /// </summary>
-    public abstract class BaseInvokeDialog : DialogAction
+    public abstract class BaseInvokeDialog : Dialog, IDialogDependencies
     {
         // Expression for dialogId to call (allowing dynamic expression)
         private string dialogIdToCall;
 
-        public BaseInvokeDialog(string dialogIdToCall = null, string property = null, IDictionary<string, string> bindingOptions = null)
+        public BaseInvokeDialog(string dialogIdToCall = null, IDictionary<string, string> bindingOptions = null)
             : base()
         {
             this.dialogIdToCall = dialogIdToCall;
@@ -25,11 +24,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             if (bindingOptions != null)
             {
                 this.Options = bindingOptions;
-            }
-
-            if (!string.IsNullOrEmpty(property))
-            {
-                Property = property;
             }
         }
 
@@ -46,27 +40,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// </summary>
         public Dialog Dialog { get; set; }
 
-        /// <summary>
-        /// Gets or sets the property from memory to pass to the calling dialog and to set the return value to.
-        /// </summary>
-        /// <value>
-        /// The property from memory to pass to the calling dialog and to set the return value to.
-        /// </value>
-        public string Property
-        {
-            get
-            {
-                return InputBindings.TryGetValue(DialogContextState.DIALOG_VALUE, out string value) ? value : null;
-            }
-
-            set
-            {
-                InputBindings[DialogContextState.DIALOG_VALUE] = value;
-                OutputBinding = value;
-            }
-        }
-
-        public override IEnumerable<Dialog> GetDependencies()
+        public virtual IEnumerable<Dialog> GetDependencies()
         {
             if (Dialog != null)
             {
@@ -78,7 +52,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
         protected override string OnComputeId()
         {
-            return $"{this.GetType().Name}[{Dialog?.Id ?? this.dialogIdToCall}:{this.BindingPath()}]";
+            return $"{this.GetType().Name}[{Dialog?.Id ?? this.dialogIdToCall}]";
         }
 
         protected Dialog ResolveDialog(DialogContext dc)

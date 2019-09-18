@@ -4,14 +4,15 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.AI.TriggerTrees;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.TriggerHandlers;
 using Microsoft.Bot.Builder.Expressions.Parser;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
 {
     /// <summary>
-    /// Select the most specific true rule implementation of <see cref="IEventSelector"/>.
+    /// Select the most specific true rule implementation of <see cref="ITriggerSelector"/>.
     /// </summary>
-    public class MostSpecificSelector : IEventSelector
+    public class MostSpecificSelector : ITriggerSelector
     {
         private readonly TriggerTree _tree = new TriggerTree();
 
@@ -21,15 +22,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
         /// <value>
         /// Optional rule selector to use when more than one most specific rule is true.
         /// </value>
-        public IEventSelector Selector { get; set; }
+        public ITriggerSelector Selector { get; set; }
 
-        public void Initialize(IEnumerable<IOnEvent> rules, bool evaluate)
+        public void Initialize(IEnumerable<TriggerHandler> triggerHandlers, bool evaluate)
         {
             var i = 0;
             var parser = new ExpressionEngine(TriggerTree.LookupFunction);
-            foreach (var rule in rules)
+            foreach (var triggerHandler in triggerHandlers)
             {
-                _tree.AddTrigger(rule.GetExpression(parser), (i, rule));
+                _tree.AddTrigger(triggerHandler.GetExpression(parser), (i, triggerHandler));
                 ++i;
             }
         }
@@ -46,7 +47,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
                 {
                     foreach (var trigger in node.AllTriggers)
                     {
-                        var (pos, rule) = (ValueTuple<int, IOnEvent>)trigger.Action;
+                        var (pos, rule) = (ValueTuple<int, TriggerHandler>)trigger.Action;
                         matches.Add(pos);
                     }
                 }
@@ -55,12 +56,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
             }
             else
             {
-                var matches = new List<ValueTuple<int, IOnEvent>>();
+                var matches = new List<ValueTuple<int, TriggerHandler>>();
                 foreach (var node in nodes)
                 {
                     foreach (var trigger in node.AllTriggers)
                     {
-                        matches.Add((ValueTuple<int, IOnEvent>)trigger.Action);
+                        matches.Add((ValueTuple<int, TriggerHandler>)trigger.Action);
                     }
                 }
 

@@ -16,13 +16,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     public class BeginDialog : BaseInvokeDialog
     {
         [JsonConstructor]
-        public BeginDialog(string dialogIdToCall = null, string property = null, IDictionary<string, string> options = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
-            : base(dialogIdToCall, property, options)
+        public BeginDialog(string dialogIdToCall = null, IDictionary<string, string> options = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+            : base(dialogIdToCall, options)
         {
             this.RegisterSourceLocation(callerPath, callerLine);
         }
 
-        protected async override Task<DialogTurnResult> OnRunCommandAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
+        /// <summary>
+        /// Gets or sets the property path to store the dialog result in
+        /// </summary>
+        public string ResultProperty { get; set; }
+
+        public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (options is CancellationToken)
             {
@@ -36,6 +41,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
             // start dialog with bound options passed in as the options
             return await dc.BeginDialogAsync(dialog.Id, options: boundOptions, cancellationToken: cancellationToken).ConfigureAwait(false);
+        }
+
+        public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (this.ResultProperty != null)
+            {
+                dc.State.SetValue(this.ResultProperty, result);
+            }
+
+            // By default just end the current dialog and return result to parent.
+            return await dc.EndDialogAsync(result, cancellationToken).ConfigureAwait(false);
         }
     }
 }

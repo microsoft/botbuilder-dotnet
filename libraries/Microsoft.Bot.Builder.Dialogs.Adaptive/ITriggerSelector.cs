@@ -1,20 +1,21 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.TriggerHandlers;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 {
     /// <summary>
-    /// Select the event to execute in a given state.
+    /// Select the trigger to execute in a given state.
     /// </summary>
-    public interface IEventSelector
+    public interface ITriggerSelector
     {
         /// <summary>
         /// Initialize the selector with the set of rules.
         /// </summary>
-        /// <param name="rules">Possible rules to match.</param>
+        /// <param name="handlers">Possible rules to match.</param>
         /// <param name="evaluate">True if rules should be evaluated on select.</param>
-        void Initialize(IEnumerable<IOnEvent> rules, bool evaluate = true);
+        void Initialize(IEnumerable<TriggerHandler> handlers, bool evaluate = true);
 
         /// <summary>
         /// Select the best rule to execute.

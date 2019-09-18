@@ -184,31 +184,33 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             public override List<Diagnostic> VisitTemplateDefinition([NotNull] LGFileParser.TemplateDefinitionContext context)
             {
                 var result = new List<Diagnostic>();
-                var templateName = context.templateNameLine().templateName().GetText();
-
-                if (context.templateBody() == null)
+                var templateNameLine = context.templateNameLine();
+                var errorTemplateName = templateNameLine.errorTemplateName();
+                if (errorTemplateName != null)
                 {
-                    result.Add(BuildLGDiagnostic($"There is no template body in template {templateName}", context: context.templateNameLine()));
+                    result.Add(BuildLGDiagnostic($"Not a valid template name line", context: errorTemplateName));
                 }
                 else
                 {
-                    result.AddRange(Visit(context.templateBody()));
-                }
+                    var templateName = context.templateNameLine().templateName().GetText();
 
-                var parameters = context.templateNameLine().parameters();
-                if (parameters != null)
-                {
-                    if (parameters.CLOSE_PARENTHESIS() == null
-                           || parameters.OPEN_PARENTHESIS() == null)
+                    if (context.templateBody() == null)
                     {
-                        result.Add(BuildLGDiagnostic($"parameters: {parameters.GetText()} format error", context: context.templateNameLine()));
+                        result.Add(BuildLGDiagnostic($"There is no template body in template {templateName}", context: context.templateNameLine()));
+                    }
+                    else
+                    {
+                        result.AddRange(Visit(context.templateBody()));
                     }
 
-                    var invalidSeperateCharacters = parameters.INVALID_SEPERATE_CHAR();
-                    if (invalidSeperateCharacters != null
-                        && invalidSeperateCharacters.Length > 0)
+                    var parameters = context.templateNameLine().parameters();
+                    if (parameters != null)
                     {
-                        result.Add(BuildLGDiagnostic("Parameters for templates must be separated by comma.", context: context.templateNameLine()));
+                        if (parameters.CLOSE_PARENTHESIS() == null
+                               || parameters.OPEN_PARENTHESIS() == null)
+                        {
+                            result.Add(BuildLGDiagnostic($"parameters: {parameters.GetText()} format error", context: context.templateNameLine()));
+                        }
                     }
                 }
 
@@ -219,10 +221,18 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 var result = new List<Diagnostic>();
 
-                foreach (var templateStr in context.normalTemplateString())
+                foreach (var templateStr in context.templateString())
                 {
-                    var item = Visit(templateStr);
-                    result.AddRange(item);
+                    var errorTemplateStr = templateStr.errorTemplateString();
+                    if (errorTemplateStr != null)
+                    {
+                        result.Add(BuildLGDiagnostic($"Invalid template body line, did you miss '-' at line begin", context: errorTemplateStr));
+                    }
+                    else
+                    {
+                        var item = Visit(templateStr.normalTemplateString());
+                        result.AddRange(item);
+                    }
                 }
 
                 return result;

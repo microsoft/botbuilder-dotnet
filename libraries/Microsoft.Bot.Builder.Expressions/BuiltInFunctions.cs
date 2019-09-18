@@ -672,42 +672,6 @@ namespace Microsoft.Bot.Builder.Expressions
             return eval;
         }
 
-        /// <summary>
-        /// Walk dialog callstack looking for property.
-        /// </summary>
-        /// <param name="expression">Filter expression.</param>
-        /// <param name="state">Object containing the dialog callstack to search.</param>
-        /// <returns>The property.</returns>
-        private static (object value, string error) CallstackScope(Expression expression, object state)
-        {
-            // get callstack collection?
-            var (result, error) = AccessProperty(state, "callstack");
-            if (result != null)
-            {
-                var items = (IEnumerable<object>)result;
-                object property = null;
-
-                // Check for a match??
-                (property, error) = expression.Children[0].TryEvaluate(state);
-                if (property != null && error == null)
-                {
-                    foreach (var item in items)
-                    {
-                        // get property off of item
-                        (result, error) = AccessProperty(item, property.ToString());
-
-                        // if not null
-                        if (error == null && result != null)
-                        {
-                            // return it
-                            return (result, null);
-                        }
-                    }
-                }
-            }
-            return (null, error);
-        }
-
         private static void ValidateAccessor(Expression expression)
         {
             var children = expression.Children;
@@ -840,8 +804,15 @@ namespace Microsoft.Bot.Builder.Expressions
             }
             else if (instance is JObject jobj)
             {
-                result = JToken.FromObject(value);
-                jobj[property] = (JToken)result;
+                if (value != null)
+                {
+                    result = JToken.FromObject(value);
+                    jobj[property] = (JToken)result;
+                }
+                else
+                {
+                    jobj[property] = null;
+                }
             }
             else
             {
@@ -958,8 +929,9 @@ namespace Microsoft.Bot.Builder.Expressions
         }
 
         // Expected is null if expecting an object or the desired offset in a list.
-        // Value is null except at the root
-        private static (object, string) SetPathToValue(Expression path, int? expected, object value, object state)
+        // intermediatePath is true when setting intermediate paths, and false at the root to apply the value
+        // x.y.z => intermediatePath will be true when procesing x.y so that path is initialized, and false when assigning value to leaf node z
+        private static (object, string) SetPathToValue(Expression path, int? expected, object value, object state, bool intermediatePath = false)
         {
             object result = null;
             string error;
@@ -974,7 +946,7 @@ namespace Microsoft.Bot.Builder.Expressions
                     var iindex = index as int?;
                     if (children.Count() == 2)
                     {
-                        (instance, error) = SetPathToValue(children[path.Type == ExpressionType.Accessor ? 1 : 0], iindex, null, state);
+                        (instance, error) = SetPathToValue(children[path.Type == ExpressionType.Accessor ? 1 : 0], iindex, null, state, intermediatePath: true);
                     }
                     else
                     {
@@ -984,8 +956,9 @@ namespace Microsoft.Bot.Builder.Expressions
                     {
                         if (index is string propName)
                         {
-                            if (value != null)
+                            if (!intermediatePath)
                             {
+                                // if !InitPath then we are on the leaf property path and we always set the value regardless off it's value (null or not)
                                 result = SetProperty(instance, propName, value);
                             }
                             else
@@ -3269,25 +3242,6 @@ namespace Microsoft.Bot.Builder.Expressions
                         }),
                     ReturnType.Boolean,
                     ValidateIsMatch),
-
-                // Shorthand functions
-                new ExpressionEvaluator(ExpressionType.CallstackScope, CallstackScope, ReturnType.Object, ValidateUnary),
-                new ExpressionEvaluator(
-                    ExpressionType.SimpleEntity,
-                    Apply(args =>
-                    {
-                        var result = args[0];
-
-                        // fix issue: https://github.com/microsoft/botbuilder-dotnet/issues/1969
-                        while (TryParseList(result, out IList list) && list.Count >= 1)
-                        {
-                            result = list[0];
-                        }
-
-                        return result;
-                    }),
-                    ReturnType.Object,
-                    ValidateUnary),
             };
 
             var lookup = new Dictionary<string, ExpressionEvaluator>();

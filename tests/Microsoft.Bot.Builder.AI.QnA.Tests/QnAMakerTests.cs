@@ -12,8 +12,8 @@ using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Events;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.TriggerHandlers;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
@@ -1404,7 +1404,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                         new IntentPattern("CowboyIntent", "moo")
                     }
                 },
-                Events = new List<IOnEvent>()
+                Triggers = new List<TriggerHandler>()
                 {
                     new OnIntent(intent: "CowboyIntent")
                     {
@@ -1417,17 +1417,14 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                     {
                         Actions = new List<Dialog>()
                         {
-                            new QnAMakerDialog(qnamaker: qna)
-                            {
-                                OutputBinding = "turn.LastResult"
-                            },
+                            new QnAMakerDialog(qnamaker: qna),
                             new IfCondition()
                             {
-                                    Condition = "turn.LastResult == false",
-                                    Actions = new List<Dialog>()
-                                    {
-                                        new SendActivity("I didn't understand that.")
-                                    }
+                                Condition = "turn.LastResult == false",
+                                Actions = new List<Dialog>()
+                                {
+                                    new SendActivity("I didn't understand that.")
+                                }
                             }
                         }
                     }
@@ -1436,7 +1433,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
 
             var rootDialog = new AdaptiveDialog("root")
             {
-                Events = new List<IOnEvent>()
+                Triggers = new List<TriggerHandler>()
                 {
                     new OnBeginDialog()
                     {
@@ -1445,7 +1442,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                             new BeginDialog(outerDialog.Id)
                         }
                     },
-                    new Dialogs.Adaptive.Events.OnDialogEvent()
+                    new Dialogs.Adaptive.TriggerHandlers.OnDialogEvent()
                     {
                         Events = new List<string>() { "UnhandledUnknownIntent" },
                         Actions = new List<Dialog>()
