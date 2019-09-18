@@ -11,12 +11,6 @@ namespace Microsoft.BotBuilderSamples.Bots
 {
     public class MentionsBot : ActivityHandler
     {
-        private ActivityLog _log;
-
-        public MentionsBot(ActivityLog log)
-        {
-            _log = log;
-        }
 
         protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
@@ -29,7 +23,7 @@ namespace Microsoft.BotBuilderSamples.Bots
             var replyActivity = MessageFactory.Text($"Hello {mention.Text}.");
             replyActivity.Entities = new List<Entity> { mention };
 
-            await turnContext.SendActivityAsync(replyActivity);
+            await turnContext.SendActivityAsync(replyActivity, cancellationToken);
         }
     }
 }
