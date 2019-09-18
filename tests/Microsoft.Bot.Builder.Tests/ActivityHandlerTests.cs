@@ -117,7 +117,7 @@ namespace Microsoft.Bot.Builder.Tests
             var activity = new Activity
             {
                 Type = ActivityTypes.ConversationUpdate,
-                MembersAdded = new List<ChannelAccount>
+                MembersRemoved = new List<ChannelAccount>
                 {
                     new ChannelAccount { Id = "c" },
                 },
@@ -141,7 +141,7 @@ namespace Microsoft.Bot.Builder.Tests
             var activity = new Activity
             {
                 Type = ActivityTypes.ConversationUpdate,
-                MembersAdded = new List<ChannelAccount>
+                MembersRemoved = new List<ChannelAccount>
                 {
                     new ChannelAccount { Id = "a" },
                     new ChannelAccount { Id = "c" },
@@ -157,7 +157,7 @@ namespace Microsoft.Bot.Builder.Tests
             // Assert
             Assert.AreEqual(2, bot.Record.Count);
             Assert.AreEqual("OnConversationUpdateActivityAsync", bot.Record[0]);
-            Assert.AreEqual("OnMembersAddedAsync", bot.Record[1]);
+            Assert.AreEqual("OnMembersRemovedAsync", bot.Record[1]);
         }
 
         [TestMethod]
@@ -167,7 +167,7 @@ namespace Microsoft.Bot.Builder.Tests
             var activity = new Activity
             {
                 Type = ActivityTypes.ConversationUpdate,
-                MembersAdded = new List<ChannelAccount>
+                MembersRemoved = new List<ChannelAccount>
                 {
                     new ChannelAccount { Id = "a" },
                     new ChannelAccount { Id = "b" },
@@ -184,7 +184,7 @@ namespace Microsoft.Bot.Builder.Tests
             // Assert
             Assert.AreEqual(2, bot.Record.Count);
             Assert.AreEqual("OnConversationUpdateActivityAsync", bot.Record[0]);
-            Assert.AreEqual("OnMembersAddedAsync", bot.Record[1]);
+            Assert.AreEqual("OnMembersRemovedAsync", bot.Record[1]);
         }
 
         [TestMethod]
@@ -218,7 +218,7 @@ namespace Microsoft.Bot.Builder.Tests
             var activity = new Activity
             {
                 Type = ActivityTypes.ConversationUpdate,
-                MembersAdded = new List<ChannelAccount>
+                MembersRemoved = new List<ChannelAccount>
                 {
                     new ChannelAccount { Id = "c" },
                 },

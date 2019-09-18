@@ -1,0 +1,168 @@
+{
+  "entities": {
+    "$instance": {
+      "number": [
+        {
+          "endIndex": 7,
+          "modelType": "Prebuilt Entity Extractor",
+          "recognitionSources": [
+            "externalEntities"
+          ],
+          "startIndex": 4,
+          "text": "hul",
+          "type": "builtin.number"
+        },
+        {
+          "endIndex": 13,
+          "modelType": "Prebuilt Entity Extractor",
+          "recognitionSources": [
+            "model"
+          ],
+          "startIndex": 12,
+          "text": "2",
+          "type": "builtin.number"
+        }
+      ]
+    },
+    "number": [
+      8,
+      2
+    ]
+  },
+  "intents": {
+    "Cancel": {
+      "score": 0.006906527
+    },
+    "Delivery": {
+      "score": 0.00567273
+    },
+    "EntityTests": {
+      "score": 0.128755629
+    },
+    "Greeting": {
+      "score": 0.00450348156
+    },
+    "Help": {
+      "score": 0.00583425
+    },
+    "None": {
+      "score": 0.0135525977
+    },
+    "Roles": {
+      "score": 0.04635598
+    },
+    "search": {
+      "score": 0.0106323734
+    },
+    "SpecifyName": {
+      "score": 0.00679729227
+    },
+    "Travel": {
+      "score": 0.004811074
+    },
+    "Weather_GetForecast": {
+      "score": 0.00913477
+    }
+  },
+  "sentiment": {
+    "label": "positive",
+    "score": 0.7149857
+  },
+  "text": "buy hul and 2 items",
+  "v3": {
+    "options": {
+      "ExternalEntities": [
+        {
+          "entityLength": 3,
+          "entityName": "number",
+          "resolution": 8,
+          "startIndex": 4
+        }
+      ],
+      "IncludeAllIntents": true,
+      "IncludeAPIResults": true,
+      "IncludeInstanceData": true,
+      "Log": true,
+      "PreferExternalEntities": true,
+      "Slot": "production"
+    },
+    "response": {
+      "prediction": {
+        "entities": {
+          "$instance": {
+            "number": [
+              {
+                "length": 3,
+                "modelType": "Prebuilt Entity Extractor",
+                "modelTypeId": 2,
+                "recognitionSources": [
+                  "externalEntities"
+                ],
+                "startIndex": 4,
+                "text": "hul",
+                "type": "builtin.number"
+              },
+              {
+                "length": 1,
+                "modelType": "Prebuilt Entity Extractor",
+                "modelTypeId": 2,
+                "recognitionSources": [
+                  "model"
+                ],
+                "startIndex": 12,
+                "text": "2",
+                "type": "builtin.number"
+              }
+            ]
+          },
+          "number": [
+            8,
+            2
+          ]
+        },
+        "intents": {
+          "Cancel": {
+            "score": 0.006906527
+          },
+          "Delivery": {
+            "score": 0.00567273
+          },
+          "EntityTests": {
+            "score": 0.128755629
+          },
+          "Greeting": {
+            "score": 0.00450348156
+          },
+          "Help": {
+            "score": 0.00583425
+          },
+          "None": {
+            "score": 0.0135525977
+          },
+          "Roles": {
+            "score": 0.04635598
+          },
+          "search": {
+            "score": 0.0106323734
+          },
+          "SpecifyName": {
+            "score": 0.00679729227
+          },
+          "Travel": {
+            "score": 0.004811074
+          },
+          "Weather.GetForecast": {
+            "score": 0.00913477
+          }
+        },
+        "normalizedQuery": "buy hul and 2 items",
+        "sentiment": {
+          "label": "positive",
+          "score": 0.7149857
+        },
+        "topIntent": "EntityTests"
+      },
+      "query": "buy hul and 2 items"
+    }
+  }
+}

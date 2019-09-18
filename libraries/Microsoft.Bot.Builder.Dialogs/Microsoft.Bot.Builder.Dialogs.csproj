@@ -18,7 +18,40 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Description>This library implements .NET Simple Dialog classes </Description>
+    <Description>
+      This library implements .NET Simple Dialog classes
+      Library for building bots using Microsoft Bot Framework Connector
+
+      Recognizers-Text Version Upgrade: from v1.1.3 to v1.2.6
+
+      DateTime - Recognize
+      New recognized inputs:
+      - ash wednesday
+      - halloween
+
+      Changed results:
+      - black friday
+      - easter
+      - maundy thursday
+      - palm sunday
+
+      DateTime - Prompt
+      New recognized inputs:
+      - untill friday
+      - monday untill friday
+      - this past friday
+      - past friday
+
+      Ordinal
+      Removed inputs:
+      - the second to last
+
+      Number
+      Changed inputs:
+      - half
+      - half nelson
+      - half seas over
+    </Description>
     <Summary>This library implements .NET Simple Dialog classes </Summary>
   </PropertyGroup>
 
@@ -44,8 +77,8 @@
     <PackageReference Include="AsyncUsageAnalyzers" Version="1.0.0-alpha003" PrivateAssets="all" />
     <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(PackageVersion)' == '' " Version="4.5.0-local" />
     <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(PackageVersion)' != '' " Version="$(PackageVersion)" />
-    <PackageReference Include="Microsoft.Recognizers.Text.Choice" Version="1.1.3" />
-    <PackageReference Include="Microsoft.Recognizers.Text.DateTime" Version="1.1.3" />
+    <PackageReference Include="Microsoft.Recognizers.Text.Choice" Version="1.2.6.1" />
+    <PackageReference Include="Microsoft.Recognizers.Text.DateTime" Version="1.2.6.1" />
     <PackageReference Include="SourceLink.Create.CommandLine" Version="2.8.3" />
   </ItemGroup>
 

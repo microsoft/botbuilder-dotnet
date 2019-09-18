@@ -35,7 +35,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
             }
         }
 
-        internal static JObject ExtractEntitiesAndMetadata(IList<EntityModel> entities, IList<CompositeEntityModel> compositeEntities, bool verbose)
+        internal static JObject ExtractEntitiesAndMetadata(IList<EntityModel> entities, IList<CompositeEntityModel> compositeEntities, bool verbose, string utterance)
         {
             var entitiesAndMetadata = new JObject();
             if (verbose)
@@ -49,7 +49,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
             if (compositeEntities != null && compositeEntities.Any())
             {
                 compositeEntityTypes = new HashSet<string>(compositeEntities.Select(ce => ce.ParentType));
-                entities = compositeEntities.Aggregate(entities, (current, compositeEntity) => PopulateCompositeEntityModel(compositeEntity, current, entitiesAndMetadata, verbose));
+                entities = compositeEntities.Aggregate(entities, (current, compositeEntity) => PopulateCompositeEntityModel(compositeEntity, current, entitiesAndMetadata, verbose, utterance));
             }
 
             foreach (var entity in entities)
@@ -64,7 +64,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
 
                 if (verbose)
                 {
-                    AddProperty((JObject)entitiesAndMetadata[_metadataKey], ExtractNormalizedEntityName(entity), ExtractEntityMetadata(entity));
+                    AddProperty((JObject)entitiesAndMetadata[_metadataKey], ExtractNormalizedEntityName(entity), ExtractEntityMetadata(entity, utterance));
                 }
             }
 
@@ -162,15 +162,18 @@ namespace Microsoft.Bot.Builder.AI.Luis
             }
         }
 
-        internal static JObject ExtractEntityMetadata(EntityModel entity)
+        internal static JObject ExtractEntityMetadata(EntityModel entity, string utterance)
         {
+            var start = (int)entity.StartIndex;
+            var end = (int)entity.EndIndex + 1;
             dynamic obj = JObject.FromObject(new
             {
-                startIndex = (int)entity.StartIndex,
-                endIndex = (int)entity.EndIndex + 1,
-                text = entity.Entity,
+                startIndex = start,
+                endIndex = end,
+                text = entity.Entity.Length == end - start ? entity.Entity : utterance.Substring(start, end - start),
                 type = entity.Type,
             });
+
             if (entity.AdditionalProperties != null)
             {
                 if (entity.AdditionalProperties.TryGetValue("score", out var score))
@@ -223,7 +226,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
             return type.Replace('.', '_').Replace(' ', '_');
         }
 
-        internal static IList<EntityModel> PopulateCompositeEntityModel(CompositeEntityModel compositeEntity, IList<EntityModel> entities, JObject entitiesAndMetadata, bool verbose)
+        internal static IList<EntityModel> PopulateCompositeEntityModel(CompositeEntityModel compositeEntity, IList<EntityModel> entities, JObject entitiesAndMetadata, bool verbose, string utterance)
         {
             var childrenEntites = new JObject();
             var childrenEntitiesMetadata = new JObject();
@@ -243,7 +246,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
 
             if (verbose)
             {
-                childrenEntitiesMetadata = ExtractEntityMetadata(compositeEntityMetadata);
+                childrenEntitiesMetadata = ExtractEntityMetadata(compositeEntityMetadata, utterance);
                 childrenEntites[_metadataKey] = new JObject();
             }
 
@@ -259,7 +262,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
                     }
 
                     // This entity doesn't belong to this composite entity
-                    if (child.Type != entity.Type || !CompositeContainsEntity(compositeEntityMetadata, entity))
+                    if (child.Type != entity.Type || !CompositeContainsEntity(compositeEntityMetadata, entity) || child.Value != entity.Entity)
                     {
                         continue;
                     }
@@ -270,8 +273,10 @@ namespace Microsoft.Bot.Builder.AI.Luis
 
                     if (verbose)
                     {
-                        AddProperty((JObject)childrenEntites[_metadataKey], ExtractNormalizedEntityName(entity), ExtractEntityMetadata(entity));
+                        AddProperty((JObject)childrenEntites[_metadataKey], ExtractNormalizedEntityName(entity), ExtractEntityMetadata(entity, utterance));
                     }
+
+                    break;
                 }
             }
 

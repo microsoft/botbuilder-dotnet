@@ -8,8 +8,8 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.TriggerHandlers;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.TriggerHandlers;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.LanguageGeneration;
 using Microsoft.Bot.Schema;
@@ -82,6 +82,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// Gets or sets the property to return as the result when the dialog ends when there are no more Actions and AutoEndDialog = true.
         /// </value>
         public string DefaultResultProperty { get; set; } = "dialog.result";
+
+        /// <summary>
+        /// Gets the dialogs which make up the AdaptiveDialog 
+        /// </summary>
+        public DialogSet Dialogs => this._dialogs;
 
         public override IBotTelemetryClient TelemetryClient
         {
