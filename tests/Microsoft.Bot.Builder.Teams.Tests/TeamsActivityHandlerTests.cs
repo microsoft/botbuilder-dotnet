@@ -603,6 +603,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             {
                 Type = ActivityTypes.Invoke,
                 Name = "task/fetch",
+                Value = JObject.Parse(@"{""data"":{""hiddenKey"":""hidden value from task module launcher"",""type"":""task / fetch""},""context"":{""theme"":""default""}}"),
             };
 
             Activity[] activitiesToSend = null;
@@ -635,6 +636,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             {
                 Type = ActivityTypes.Invoke,
                 Name = "task/submit",
+                Value = JObject.Parse(@"{""data"":{""hiddenKey"":""hidden value from task module launcher"",""type"":""task / fetch""},""context"":{""theme"":""default""}}"),
             };
 
             Activity[] activitiesToSend = null;
@@ -833,16 +835,16 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 return base.OnTeamsCardActionInvokeAsync(turnContext, cancellationToken);
             }
 
-            protected override Task<TaskModuleResponse> OnTeamsTaskModuleFetchAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
+            protected override Task<TaskModuleTaskInfo> OnTeamsTaskModuleFetchAsync(ITurnContext<IInvokeActivity> turnContext, TaskModuleRequest taskModuleRequest, CancellationToken cancellationToken)
             {
                 Record.Add(MethodBase.GetCurrentMethod().Name);
-                return base.OnTeamsTaskModuleFetchAsync(turnContext, cancellationToken);
+                return base.OnTeamsTaskModuleFetchAsync(turnContext, taskModuleRequest, cancellationToken);
             }
 
-            protected override Task<TaskModuleResponse> OnTeamsTaskModuleSubmitAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
+            protected override Task<TaskModuleResponseBase> OnTeamsTaskModuleSubmitAsync(ITurnContext<IInvokeActivity> turnContext, TaskModuleRequest taskModuleRequest, CancellationToken cancellationToken)
             {
                 Record.Add(MethodBase.GetCurrentMethod().Name);
-                return base.OnTeamsTaskModuleSubmitAsync(turnContext, cancellationToken);
+                return base.OnTeamsTaskModuleSubmitAsync(turnContext, taskModuleRequest, cancellationToken);
             }
         }
     }
