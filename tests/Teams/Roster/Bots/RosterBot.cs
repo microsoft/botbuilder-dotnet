@@ -73,12 +73,8 @@ namespace Microsoft.BotBuilderSamples.Bots
         private async Task ShowChannels(ITurnContext<IMessageActivity> turnContext, TeamsConnectorClient teamsConnectorClient, CancellationToken cancellationToken)
         {
             var channelList = await teamsConnectorClient.Teams.FetchChannelListAsync(turnContext.Activity.GetChannelData<TeamsChannelData>().Team.Id);
-<<<<<<< HEAD
-            var replyActivity = MessageFactory.Text($"<at>{turnContext.Activity.From.Name}</at> Total of {channelList.Conversations.Count} channels are currently in team");
-=======
 
             var replyActivity = MessageFactory.Text($"Total of {channelList.Conversations.Count} channels are currently in team");
->>>>>>> 0e07ac210... removing mentions from roster sample
 
             var mention = new Mention
             {
@@ -105,16 +101,8 @@ namespace Microsoft.BotBuilderSamples.Bots
                 Text = $"<at>{turnContext.Activity.From.Name}</at>",
             };
 
-<<<<<<< HEAD
-            var replyActivity1 = MessageFactory.Text($"{mention.Text} there are {teamMembers.Count} people in this team.");
-            replyActivity1.Entities = new List<Entity> { mention };
-=======
             var replyActivity = MessageFactory.Text($"Total of {teamMembers.Count} members are currently in team");
-
             await turnContext.SendActivityAsync(replyActivity);
->>>>>>> 0e07ac210... removing mentions from roster sample
-
-            await turnContext.SendActivityAsync(replyActivity1);
             
             var messages = teamMembers
                 .Select(channelAccount => JObject.FromObject(channelAccount).ToObject<TeamsChannelAccount>())
