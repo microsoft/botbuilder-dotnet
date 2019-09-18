@@ -325,6 +325,340 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             Assert.AreEqual(200, ((InvokeResponse)activitiesToSend[0].Value).Status);
         }
 
+        [TestMethod]
+        public async Task TestComposeExtensionQuery()
+        {
+            // Arrange
+            var activity = new Activity
+            {
+                Type = ActivityTypes.Invoke,
+                Name = "composeExtension/query",
+                Value = JObject.FromObject(new MessagingExtensionQuery()),
+            };
+
+            Activity[] activitiesToSend = null;
+            void CaptureSend(Activity[] arg)
+            {
+                activitiesToSend = arg;
+            }
+
+            var turnContext = new TurnContext(new SimpleAdapter(CaptureSend), activity);
+
+            // Act
+            var bot = new TestActivityHandler();
+            await ((IBot)bot).OnTurnAsync(turnContext);
+
+            // Assert
+            Assert.AreEqual(2, bot.Record.Count);
+            Assert.AreEqual("OnInvokeActivityAsync", bot.Record[0]);
+            Assert.AreEqual("OnTeamsMessagingExtensionQueryAsync", bot.Record[1]);
+            Assert.IsNotNull(activitiesToSend);
+            Assert.AreEqual(1, activitiesToSend.Length);
+            Assert.IsInstanceOfType(activitiesToSend[0].Value, typeof(InvokeResponse));
+            Assert.AreEqual(200, ((InvokeResponse)activitiesToSend[0].Value).Status);
+        }
+
+        [TestMethod]
+        public async Task TestMessagingExtensionSelectItemAsync()
+        {
+            // Arrange
+            var activity = new Activity
+            {
+                Type = ActivityTypes.Invoke,
+                Name = "composeExtension/selectItem",
+                Value = new JObject(),
+            };
+
+            Activity[] activitiesToSend = null;
+            void CaptureSend(Activity[] arg)
+            {
+                activitiesToSend = arg;
+            }
+
+            var turnContext = new TurnContext(new SimpleAdapter(CaptureSend), activity);
+
+            // Act
+            var bot = new TestActivityHandler();
+            await ((IBot)bot).OnTurnAsync(turnContext);
+
+            // Assert
+            Assert.AreEqual(2, bot.Record.Count);
+            Assert.AreEqual("OnInvokeActivityAsync", bot.Record[0]);
+            Assert.AreEqual("OnTeamsMessagingExtensionSelectItemAsync", bot.Record[1]);
+            Assert.IsNotNull(activitiesToSend);
+            Assert.AreEqual(1, activitiesToSend.Length);
+            Assert.IsInstanceOfType(activitiesToSend[0].Value, typeof(InvokeResponse));
+            Assert.AreEqual(200, ((InvokeResponse)activitiesToSend[0].Value).Status);
+        }
+
+        [TestMethod]
+        public async Task TestMessagingExtensionSubmitAction()
+        {
+            // Arrange
+            var activity = new Activity
+            {
+                Type = ActivityTypes.Invoke,
+                Name = "composeExtension/submitAction",
+                Value = JObject.FromObject(new MessagingExtensionQuery()),
+            };
+
+            Activity[] activitiesToSend = null;
+            void CaptureSend(Activity[] arg)
+            {
+                activitiesToSend = arg;
+            }
+
+            var turnContext = new TurnContext(new SimpleAdapter(CaptureSend), activity);
+
+            // Act
+            var bot = new TestActivityHandler();
+            await ((IBot)bot).OnTurnAsync(turnContext);
+
+            // Assert
+            Assert.AreEqual(3, bot.Record.Count);
+            Assert.AreEqual("OnInvokeActivityAsync", bot.Record[0]);
+            Assert.AreEqual("OnTeamsMessagingExtensionSubmitActionDispatchAsync", bot.Record[1]);
+            Assert.AreEqual("OnTeamsMessagingExtensionSubmitActionAsync", bot.Record[2]);
+            Assert.IsNotNull(activitiesToSend);
+            Assert.AreEqual(1, activitiesToSend.Length);
+            Assert.IsInstanceOfType(activitiesToSend[0].Value, typeof(InvokeResponse));
+            Assert.AreEqual(200, ((InvokeResponse)activitiesToSend[0].Value).Status);
+        }
+
+        [TestMethod]
+        public async Task TestMessagingExtensionSubmitActionPreviewActionEdit()
+        {
+            // Arrange
+            var activity = new Activity
+            {
+                Type = ActivityTypes.Invoke,
+                Name = "composeExtension/submitAction",
+                Value = JObject.FromObject(new MessagingExtensionAction
+                {
+                    BotMessagePreviewAction = "edit",
+                }),
+            };
+
+            Activity[] activitiesToSend = null;
+            void CaptureSend(Activity[] arg)
+            {
+                activitiesToSend = arg;
+            }
+
+            var turnContext = new TurnContext(new SimpleAdapter(CaptureSend), activity);
+
+            // Act
+            var bot = new TestActivityHandler();
+            await ((IBot)bot).OnTurnAsync(turnContext);
+
+            // Assert
+            Assert.AreEqual(3, bot.Record.Count);
+            Assert.AreEqual("OnInvokeActivityAsync", bot.Record[0]);
+            Assert.AreEqual("OnTeamsMessagingExtensionSubmitActionDispatchAsync", bot.Record[1]);
+            Assert.AreEqual("OnTeamsMessagingExtensionBotMessagePreviewEditAsync", bot.Record[2]);
+            Assert.IsNotNull(activitiesToSend);
+            Assert.AreEqual(1, activitiesToSend.Length);
+            Assert.IsInstanceOfType(activitiesToSend[0].Value, typeof(InvokeResponse));
+            Assert.AreEqual(200, ((InvokeResponse)activitiesToSend[0].Value).Status);
+        }
+
+        [TestMethod]
+        public async Task TestMessagingExtensionSubmitActionPreviewActionSubmit()
+        {
+            // Arrange
+            var activity = new Activity
+            {
+                Type = ActivityTypes.Invoke,
+                Name = "composeExtension/submitAction",
+                Value = JObject.FromObject(new MessagingExtensionAction
+                {
+                    BotMessagePreviewAction = "submit",
+                }),
+            };
+
+            Activity[] activitiesToSend = null;
+            void CaptureSend(Activity[] arg)
+            {
+                activitiesToSend = arg;
+            }
+
+            var turnContext = new TurnContext(new SimpleAdapter(CaptureSend), activity);
+
+            // Act
+            var bot = new TestActivityHandler();
+            await ((IBot)bot).OnTurnAsync(turnContext);
+
+            // Assert
+            Assert.AreEqual(3, bot.Record.Count);
+            Assert.AreEqual("OnInvokeActivityAsync", bot.Record[0]);
+            Assert.AreEqual("OnTeamsMessagingExtensionSubmitActionDispatchAsync", bot.Record[1]);
+            Assert.AreEqual("OnTeamsMessagingExtensionBotMessagePreviewSubmitAsync", bot.Record[2]);
+            Assert.IsNotNull(activitiesToSend);
+            Assert.AreEqual(1, activitiesToSend.Length);
+            Assert.IsInstanceOfType(activitiesToSend[0].Value, typeof(InvokeResponse));
+            Assert.AreEqual(200, ((InvokeResponse)activitiesToSend[0].Value).Status);
+        }
+
+        [TestMethod]
+        public async Task TestMessagingExtensionFetchTask()
+        {
+            // Arrange
+            var activity = new Activity
+            {
+                Type = ActivityTypes.Invoke,
+                Name = "composeExtension/fetchTask",
+            };
+
+            Activity[] activitiesToSend = null;
+            void CaptureSend(Activity[] arg)
+            {
+                activitiesToSend = arg;
+            }
+
+            var turnContext = new TurnContext(new SimpleAdapter(CaptureSend), activity);
+
+            // Act
+            var bot = new TestActivityHandler();
+            await ((IBot)bot).OnTurnAsync(turnContext);
+
+            // Assert
+            Assert.AreEqual(2, bot.Record.Count);
+            Assert.AreEqual("OnInvokeActivityAsync", bot.Record[0]);
+            Assert.AreEqual("OnTeamsMessagingExtensionFetchTaskAsync", bot.Record[1]);
+            Assert.IsNotNull(activitiesToSend);
+            Assert.AreEqual(1, activitiesToSend.Length);
+            Assert.IsInstanceOfType(activitiesToSend[0].Value, typeof(InvokeResponse));
+            Assert.AreEqual(200, ((InvokeResponse)activitiesToSend[0].Value).Status);
+        }
+
+        [TestMethod]
+        public async Task TestMessagingExtensionConfigurationQuerySettingsUrl()
+        {
+            // Arrange
+            var activity = new Activity
+            {
+                Type = ActivityTypes.Invoke,
+                Name = "composeExtension/querySettingsUrl",
+            };
+
+            Activity[] activitiesToSend = null;
+            void CaptureSend(Activity[] arg)
+            {
+                activitiesToSend = arg;
+            }
+
+            var turnContext = new TurnContext(new SimpleAdapter(CaptureSend), activity);
+
+            // Act
+            var bot = new TestActivityHandler();
+            await ((IBot)bot).OnTurnAsync(turnContext);
+
+            // Assert
+            Assert.AreEqual(2, bot.Record.Count);
+            Assert.AreEqual("OnInvokeActivityAsync", bot.Record[0]);
+            Assert.AreEqual("OnTeamsMessagingExtensionConfigurationQuerySettingsUrlAsync", bot.Record[1]);
+            Assert.IsNotNull(activitiesToSend);
+            Assert.AreEqual(1, activitiesToSend.Length);
+            Assert.IsInstanceOfType(activitiesToSend[0].Value, typeof(InvokeResponse));
+            Assert.AreEqual(200, ((InvokeResponse)activitiesToSend[0].Value).Status);
+        }
+
+        [TestMethod]
+        public async Task TestMessagingExtensionConfigurationSetting()
+        {
+            // Arrange
+            var activity = new Activity
+            {
+                Type = ActivityTypes.Invoke,
+                Name = "composeExtension/setting",
+            };
+
+            Activity[] activitiesToSend = null;
+            void CaptureSend(Activity[] arg)
+            {
+                activitiesToSend = arg;
+            }
+
+            var turnContext = new TurnContext(new SimpleAdapter(CaptureSend), activity);
+
+            // Act
+            var bot = new TestActivityHandler();
+            await ((IBot)bot).OnTurnAsync(turnContext);
+
+            // Assert
+            Assert.AreEqual(2, bot.Record.Count);
+            Assert.AreEqual("OnInvokeActivityAsync", bot.Record[0]);
+            Assert.AreEqual("OnTeamsMessagingExtensionConfigurationSettingsAsync", bot.Record[1]);
+            Assert.IsNotNull(activitiesToSend);
+            Assert.AreEqual(1, activitiesToSend.Length);
+            Assert.IsInstanceOfType(activitiesToSend[0].Value, typeof(InvokeResponse));
+            Assert.AreEqual(200, ((InvokeResponse)activitiesToSend[0].Value).Status);
+        }
+
+        [TestMethod]
+        public async Task TestTaskModuleFetch()
+        {
+            // Arrange
+            var activity = new Activity
+            {
+                Type = ActivityTypes.Invoke,
+                Name = "task/fetch",
+            };
+
+            Activity[] activitiesToSend = null;
+            void CaptureSend(Activity[] arg)
+            {
+                activitiesToSend = arg;
+            }
+
+            var turnContext = new TurnContext(new SimpleAdapter(CaptureSend), activity);
+
+            // Act
+            var bot = new TestActivityHandler();
+            await ((IBot)bot).OnTurnAsync(turnContext);
+
+            // Assert
+            Assert.AreEqual(2, bot.Record.Count);
+            Assert.AreEqual("OnInvokeActivityAsync", bot.Record[0]);
+            Assert.AreEqual("OnTeamsTaskModuleFetchAsync", bot.Record[1]);
+            Assert.IsNotNull(activitiesToSend);
+            Assert.AreEqual(1, activitiesToSend.Length);
+            Assert.IsInstanceOfType(activitiesToSend[0].Value, typeof(InvokeResponse));
+            Assert.AreEqual(200, ((InvokeResponse)activitiesToSend[0].Value).Status);
+        }
+
+        [TestMethod]
+        public async Task TestTaskModuleSubmit()
+        {
+            // Arrange
+            var activity = new Activity
+            {
+                Type = ActivityTypes.Invoke,
+                Name = "task/submit",
+            };
+
+            Activity[] activitiesToSend = null;
+            void CaptureSend(Activity[] arg)
+            {
+                activitiesToSend = arg;
+            }
+
+            var turnContext = new TurnContext(new SimpleAdapter(CaptureSend), activity);
+
+            // Act
+            var bot = new TestActivityHandler();
+            await ((IBot)bot).OnTurnAsync(turnContext);
+
+            // Assert
+            Assert.AreEqual(2, bot.Record.Count);
+            Assert.AreEqual("OnInvokeActivityAsync", bot.Record[0]);
+            Assert.AreEqual("OnTeamsTaskModuleSubmitAsync", bot.Record[1]);
+            Assert.IsNotNull(activitiesToSend);
+            Assert.AreEqual(1, activitiesToSend.Length);
+            Assert.IsInstanceOfType(activitiesToSend[0].Value, typeof(InvokeResponse));
+            Assert.AreEqual(200, ((InvokeResponse)activitiesToSend[0].Value).Status);
+        }
+
         private class NotImplementedAdapter : BotAdapter
         {
             public override Task DeleteActivityAsync(ITurnContext turnContext, ConversationReference reference, CancellationToken cancellationToken)
@@ -433,16 +767,16 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 return base.OnTeamsO365ConnectorCardActionAsync(turnContext, query, cancellationToken);
             }
 
-            protected override Task<MessagingExtensionActionResponse> OnTeamsMessagingExtensionBotMessagePreviewEditAsync(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionAction query, CancellationToken cancellationToken)
+            protected override Task<MessagingExtensionActionResponse> OnTeamsMessagingExtensionBotMessagePreviewEditAsync(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionAction action, CancellationToken cancellationToken)
             {
                 Record.Add(MethodBase.GetCurrentMethod().Name);
-                return base.OnTeamsMessagingExtensionBotMessagePreviewEditAsync(turnContext, query, cancellationToken);
+                return base.OnTeamsMessagingExtensionBotMessagePreviewEditAsync(turnContext, action, cancellationToken);
             }
 
-            protected override Task<MessagingExtensionActionResponse> OnTeamsMessagingExtensionBotMessagePreviewSendAsync(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionAction query, CancellationToken cancellationToken)
+            protected override Task<MessagingExtensionActionResponse> OnTeamsMessagingExtensionBotMessagePreviewSubmitAsync(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionAction action, CancellationToken cancellationToken)
             {
                 Record.Add(MethodBase.GetCurrentMethod().Name);
-                return base.OnTeamsMessagingExtensionBotMessagePreviewSendAsync(turnContext, query, cancellationToken);
+                return base.OnTeamsMessagingExtensionBotMessagePreviewSubmitAsync(turnContext, action, cancellationToken);
             }
 
             protected override Task<MessagingExtensionResponse> OnTeamsMessagingExtensionConfigurationSettingsAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
@@ -457,10 +791,10 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 return base.OnTeamsMessagingExtensionFetchTaskAsync(turnContext, cancellationToken);
             }
 
-            protected override Task<MessagingExtensionResponse> OnTeamsMessagingExtensionConfigurationSettingsUrlAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
+            protected override Task<MessagingExtensionResponse> OnTeamsMessagingExtensionConfigurationQuerySettingsUrlAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
             {
                 Record.Add(MethodBase.GetCurrentMethod().Name);
-                return base.OnTeamsMessagingExtensionConfigurationSettingsUrlAsync(turnContext, cancellationToken);
+                return base.OnTeamsMessagingExtensionConfigurationQuerySettingsUrlAsync(turnContext, cancellationToken);
             }
 
             protected override Task<MessagingExtensionResponse> OnTeamsMessagingExtensionQueryAsync(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionQuery query, CancellationToken cancellationToken)

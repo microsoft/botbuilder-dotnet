@@ -85,7 +85,7 @@ namespace Microsoft.Bot.Builder.Teams
                         return CreateInvokeResponse(await OnTeamsMessagingExtensionFetchTaskAsync(turnContext, cancellationToken).ConfigureAwait(false));
 
                     case "composeExtension/querySettingsUrl":
-                        return CreateInvokeResponse(await OnTeamsMessagingExtensionConfigurationSettingsUrlAsync(turnContext, cancellationToken).ConfigureAwait(false));
+                        return CreateInvokeResponse(await OnTeamsMessagingExtensionConfigurationQuerySettingsUrlAsync(turnContext, cancellationToken).ConfigureAwait(false));
 
                     case "composeExtension/setting":
                         return CreateInvokeResponse(await OnTeamsMessagingExtensionConfigurationSettingsAsync(turnContext, cancellationToken).ConfigureAwait(false));
@@ -164,18 +164,17 @@ namespace Microsoft.Bot.Builder.Teams
             return Task.FromResult<MessagingExtensionActionResponse>(null);
         }
 
-        protected virtual async Task<MessagingExtensionActionResponse> OnTeamsMessagingExtensionSubmitActionDispatchAsync(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionAction query, CancellationToken cancellationToken)
+        protected virtual async Task<MessagingExtensionActionResponse> OnTeamsMessagingExtensionSubmitActionDispatchAsync(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionAction action, CancellationToken cancellationToken)
         {
-            var value = turnContext.Activity.Value as MessagingExtensionAction;
-            if (value?.BotMessagePreviewAction != null)
+            if (!string.IsNullOrEmpty(action.BotMessagePreviewAction))
             {
-                switch (value.BotMessagePreviewAction)
+                switch (action.BotMessagePreviewAction)
                 {
                     case "edit":
-                        return await OnTeamsMessagingExtensionBotMessagePreviewEditAsync(turnContext, query, cancellationToken).ConfigureAwait(false);
+                        return await OnTeamsMessagingExtensionBotMessagePreviewEditAsync(turnContext, action, cancellationToken).ConfigureAwait(false);
 
                     case "submit":
-                        return await OnTeamsMessagingExtensionBotMessagePreviewSendAsync(turnContext, query, cancellationToken).ConfigureAwait(false);
+                        return await OnTeamsMessagingExtensionBotMessagePreviewSubmitAsync(turnContext, action, cancellationToken).ConfigureAwait(false);
 
                     default:
                         return null;
@@ -183,26 +182,26 @@ namespace Microsoft.Bot.Builder.Teams
             }
             else
             {
-                return await OnTeamsMessagingExtensionSubmitActionAsync(turnContext, query, cancellationToken).ConfigureAwait(false);
+                return await OnTeamsMessagingExtensionSubmitActionAsync(turnContext, action, cancellationToken).ConfigureAwait(false);
             }
         }
 
-        protected virtual Task<MessagingExtensionActionResponse> OnTeamsMessagingExtensionSubmitActionAsync(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionAction query, CancellationToken cancellationToken)
+        protected virtual Task<MessagingExtensionActionResponse> OnTeamsMessagingExtensionSubmitActionAsync(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionAction action, CancellationToken cancellationToken)
         {
             return Task.FromResult<MessagingExtensionActionResponse>(null);
         }
 
-        protected virtual Task<MessagingExtensionActionResponse> OnTeamsMessagingExtensionBotMessagePreviewEditAsync(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionAction query, CancellationToken cancellationToken)
+        protected virtual Task<MessagingExtensionActionResponse> OnTeamsMessagingExtensionBotMessagePreviewEditAsync(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionAction action, CancellationToken cancellationToken)
         {
             return Task.FromResult<MessagingExtensionActionResponse>(null);
         }
 
-        protected virtual Task<MessagingExtensionActionResponse> OnTeamsMessagingExtensionBotMessagePreviewSendAsync(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionAction query, CancellationToken cancellationToken)
+        protected virtual Task<MessagingExtensionActionResponse> OnTeamsMessagingExtensionBotMessagePreviewSubmitAsync(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionAction action, CancellationToken cancellationToken)
         {
             return Task.FromResult<MessagingExtensionActionResponse>(null);
         }
 
-        protected virtual Task<MessagingExtensionResponse> OnTeamsMessagingExtensionConfigurationSettingsUrlAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
+        protected virtual Task<MessagingExtensionResponse> OnTeamsMessagingExtensionConfigurationQuerySettingsUrlAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
         {
             return Task.FromResult<MessagingExtensionResponse>(null);
         }
