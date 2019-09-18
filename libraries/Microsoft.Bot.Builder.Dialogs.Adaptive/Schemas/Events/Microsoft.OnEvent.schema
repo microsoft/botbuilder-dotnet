@@ -1,6 +1,6 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
-    "$role": "unionType(Microsoft.IOnEvent)",
+    "$role": "unionType(Microsoft.TriggerHandler)",
     "title": "Event Event",
     "description": "Defines a rule for an event which is triggered by some source",
     "type": "object",
