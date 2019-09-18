@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -126,15 +127,19 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
             if (decryptedMessage.HasHtml)
             {
                 // strip the mention & HTML from the message
-                var pattern = new Regex($"^(<p>)?<spark-mention .*?data-object-id=\"{identity.Id}\".*?>.*?</spark-mention>", RegexOptions.IgnoreCase | RegexOptions.Multiline);
+                var pattern = new Regex($"^(<p>|<div>)?<spark-mention .*?data-object-id=\"{identity.Id}\".*?>.*?</spark-mention>", RegexOptions.IgnoreCase | RegexOptions.Multiline);
                 if (!pattern.IsMatch(decryptedMessage.Html))
                 {
+                    var encodedId = $"{identity.Id}=";
+                    var buffer = Convert.FromBase64String(encodedId);
+                    var decodedId = Encoding.ASCII.GetString(buffer);
+
                     // this should look like ciscospark://us/PEOPLE/<id string>
-                    var match = Regex.Match(identity.Id, "ciscospark://.*/(.*)", RegexOptions.IgnoreCase | RegexOptions.Multiline);
+                    var match = Regex.Match(decodedId, "ciscospark://.*/(.*)", RegexOptions.IgnoreCase | RegexOptions.Multiline);
                     if (match.Captures.Count > 0)
                     {
                         pattern = new Regex(
-                            $"^(<p>)?<spark-mention .*?data-object-id=\"{match.Captures[0]}\".*?>.*?</spark-mention>", RegexOptions.IgnoreCase | RegexOptions.Multiline);
+                            $"^(<p>|<div>)?<spark-mention .*?data-object-id=\"{match.Groups[1]}\".*?>.*?</spark-mention>", RegexOptions.IgnoreCase | RegexOptions.Multiline);
                     }
                 }
 

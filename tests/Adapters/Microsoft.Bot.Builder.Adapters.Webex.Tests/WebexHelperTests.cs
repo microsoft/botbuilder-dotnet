@@ -80,14 +80,15 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         }
 
         [Fact]
-        public void DecryptedMessageToActivityWithHtmlShouldReturnActivity()
+        public void DecryptedMessageToActivityWithEncodedIdMentionShouldSucceed()
         {
-            var serializedPerson = "{\"id\":\"different_id\"}";
+            // fake encoded id
+            var serializedPerson = "{\"id\":\"Y2lzY29zcGFyazovL3VzL1BFT1BMRS9lN2RhNmNkNC01MGYxLTQ1MWYtYWY1OC1iOXEwZDM2YTk3Yzc\"}";
             var identity = JsonConvert.DeserializeObject<Person>(serializedPerson);
 
             var message =
                 JsonConvert.DeserializeObject<Message>(
-                    File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\MessageHtml.json"));
+                    File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\MessageHtmlEncodedMention.json"));
 
             var activity = WebexHelper.DecryptedMessageToActivity(message, identity);
 
@@ -96,14 +97,15 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         }
 
         [Fact]
-        public void DecryptedMessageToActivityWithHtmlShouldReturnActivityWhenMatch()
+        public void DecryptedMessageToActivityWithDecodedIdMentionShouldSucceed()
         {
-            var serializedPerson = "{\"id\":\"ciscospark://us/PEOPLE/different_id\"}";
+            // fake encoded id
+            var serializedPerson = "{\"id\":\"Y2lzY29zcGFyazovL3VzL1BFT1BMRS9lN2RhNmNkNC01MGYxLTQ1MWYtYWY1OC1iOXEwZDM2YTk3Yzc\"}";
             var identity = JsonConvert.DeserializeObject<Person>(serializedPerson);
 
             var message =
                 JsonConvert.DeserializeObject<Message>(
-                    File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\MessageHtml.json"));
+                    File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\MessageHtmlDecodedMention.json"));
 
             var activity = WebexHelper.DecryptedMessageToActivity(message, identity);
 
