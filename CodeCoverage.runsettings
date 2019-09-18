@@ -23,6 +23,7 @@
                 <ModulePath>.*\Microsoft.Bot.Builder.Integration.AspNet.Core.dll$</ModulePath>
                 <ModulePath>.*\Microsoft.Bot.Builder.TemplateManager.dll$</ModulePath>
                 <ModulePath>.*\Microsoft.Bot.Builder.Testing.dll$</ModulePath>
+                <ModulePath>.*\Microsoft.Bot.Builder.Adapters.Slack.dll$</ModulePath>                
                 <!-- <ModulePath>Microsoft.Bot.Builder.Schema.dll$</ModulePath> -->
               </Include>
             </ModulePaths>
