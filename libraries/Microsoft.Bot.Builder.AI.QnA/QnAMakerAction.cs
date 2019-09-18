@@ -13,11 +13,8 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.AI.QnA
 {
     /// <summary>
-    /// QnAMaker dialog which uses QnAMaker to get an answer.
+    /// QnAMaker action which uses QnAMaker to get an answer.
     /// </summary>
-    /// <remarks>
-    /// The answer is treated as a inline LG expression, so it can be completely customized by LG system.
-    /// </remarks>
     public class QnAMakerAction : Dialog
     {
         private const float DefaultThreshold = 0.03F;
