@@ -194,7 +194,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 throw new ArgumentException("Null or empty text");
             }
 
-            var result = await this.generateAnswerHelper.GetAnswersAsync(turnContext, messageActivity, options).ConfigureAwait(false);
+            var result = await this.generateAnswerHelper.GetAnswersRawAsync(turnContext, messageActivity, options).ConfigureAwait(false);
 
             await OnQnaResultsAsync(result.Answers, turnContext, telemetryProperties, telemetryMetrics, CancellationToken.None).ConfigureAwait(false);
 
