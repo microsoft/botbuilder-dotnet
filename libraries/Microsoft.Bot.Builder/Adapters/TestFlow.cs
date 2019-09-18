@@ -439,7 +439,7 @@ namespace Microsoft.Bot.Builder.Adapters
             // Check for attachments
             if (activity1.Attachments != null && activity2.Attachments != null)
             {
-                if (activity1.Attachments != activity2.Attachments)
+                if (activity1.Attachments.Count != activity2.Attachments.Count)
                 {
                     return false;
                 }

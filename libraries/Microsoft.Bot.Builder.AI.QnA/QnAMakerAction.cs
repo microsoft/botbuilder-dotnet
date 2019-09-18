@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -15,17 +18,15 @@ namespace Microsoft.Bot.Builder.AI.QnA
     /// <summary>
     /// QnAMaker dialog which uses QnAMaker to get an answer.
     /// </summary>
-    /// <remarks>
-    /// The answer is treated as a inline LG expression, so it can be completely customized by LG system.
-    /// </remarks>
     public class QnAMakerAction : Dialog
     {
-        private const float DefaultThreshold = 0.03F;
+        private const float DefaultThreshold = 0.3F;
+        private const string DefaultNoAnswer = "No QnAMaker answers found.";
+
         private QnAMaker qnamaker;
         private readonly HttpClient httpClient;
-        private readonly string defaultNoAnswer = "No QnAMaker answers found.";
 
-        public QnAMakerAction(string knowledgeBaseId, string endpointKey, string hostName, string noAnswer, float threshold = DefaultThreshold, Metadata[] strictFilters = null,   HttpClient httpClient = null, [CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
+        public QnAMakerAction(string knowledgeBaseId, string endpointKey, string hostName, string noAnswer = DefaultNoAnswer, float threshold = DefaultThreshold, Metadata[] strictFilters = null,   HttpClient httpClient = null, [CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
             : base()
         {
             this.RegisterSourceLocation(sourceFilePath, sourceLineNumber);
@@ -33,7 +34,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
             this.HostName = hostName ?? throw new ArgumentNullException(nameof(HostName));
             this.EndpointKey = endpointKey ?? throw new ArgumentNullException(nameof(EndpointKey));
             this.Threshold = threshold;
-            this.NoAnswer = noAnswer ?? defaultNoAnswer;
+            this.NoAnswer = noAnswer;
             this.StrictFilters = strictFilters;
             this.httpClient = httpClient;
         }
@@ -65,6 +66,21 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (this.EndpointKey == null)
+            {
+                throw new ArgumentNullException(nameof(EndpointKey));
+            }
+
+            if (this.HostName == null)
+            {
+                throw new ArgumentNullException(nameof(HostName));
+            }
+
+            if (this.KnowledgeBaseId == null)
+            {
+                throw new ArgumentNullException(nameof(KnowledgeBaseId));
+            }
+
             var endpoint = new QnAMakerEndpoint
             {
                 EndpointKey = this.EndpointKey,
@@ -123,9 +139,10 @@ namespace Microsoft.Bot.Builder.AI.QnA
         private async Task<DialogTurnResult> ExecuteAdaptiveQnAMakerDialog(DialogContext dc, QnAMaker qnaMaker, QnAMakerOptions qnamakerOptions, CancellationToken cancellationToken = default(CancellationToken))
         {
             var dialog = new QnAMakerBaseDialog(qnaMaker);
-            var textPrompt = new TextPrompt("TextPrompt");
             dc.Dialogs.Add(dialog.QnAMakerDialog);
-            dc.Dialogs.Add(textPrompt);
+
+            // Set default no answer for active dialog.
+            qnamakerOptions.NoAnswer = NoAnswer;
 
             return await dc.BeginDialogAsync(QnAMakerBaseDialog.ActiveLearningDialogName, qnamakerOptions, cancellationToken).ConfigureAwait(false);
         }

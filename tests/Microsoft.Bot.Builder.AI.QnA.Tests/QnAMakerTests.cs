@@ -58,8 +58,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             .StartTestAsync();
         }
 
-        [TestMethod]
-        public async Task QnAMakerAction_Test1()
+        public AdaptiveDialog QnAMakerAction_ActiveLearningDialog()
         {
             TypeFactory.Configuration = new ConfigurationBuilder().Build();
             var mockHttp = new MockHttpMessageHandler();
@@ -70,10 +69,16 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Q12\",\"top\":1,\"strictFilters\":[],\"metadataBoost\":[],\"scoreThreshold\":0.3}")
                .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswer_WhenNoAnswerFoundInKb.json"));
 
-            var rootDialog = CreateQnAMakerActionDialog(mockHttp);
+            return CreateQnAMakerActionDialog(mockHttp);
+        }
+
+        [TestMethod]
+        public async Task QnAMakerAction_ActiveLearningDialog_WithProperResponse()
+        {
+            var rootDialog = QnAMakerAction_ActiveLearningDialog();
 
             var suggestionList = new List<string> { "Q1", "Q2", "Q3" };
-            var suggestionActivity = CardHelper.GetSuggestionsCard(suggestionList, "Did you mean:", "None of the above.");
+            var suggestionActivity = QnACardBuilder.GetSuggestionsCard(suggestionList, "Did you mean:", "None of the above.");
 
             await CreateFlow(rootDialog)
             .Send("Q11")
@@ -81,13 +86,31 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             .Send("Q1")
                 .AssertReply("A1")
             .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task QnAMakerAction_ActiveLearningDialog_WithNoResponse()
+        {
+            var rootDialog = QnAMakerAction_ActiveLearningDialog();
+
+            var suggestionList = new List<string> { "Q1", "Q2", "Q3" };
+            var suggestionActivity = QnACardBuilder.GetSuggestionsCard(suggestionList, "Did you mean:", "None of the above.");
 
             await CreateFlow(rootDialog)
             .Send("Q11")
                 .AssertReply(suggestionActivity)
             .Send("Q12")
-                .AssertReply("No QnAMaker answers found.")
+                .AssertReply("No match found, please as another question.")
             .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task QnAMakerAction_ActiveLearningDialog_WithNoneOfAboveQuery()
+        {
+            var rootDialog = QnAMakerAction_ActiveLearningDialog();
+
+            var suggestionList = new List<string> { "Q1", "Q2", "Q3" };
+            var suggestionActivity = QnACardBuilder.GetSuggestionsCard(suggestionList, "Did you mean:", "None of the above.");
 
             await CreateFlow(rootDialog)
             .Send("Q11")
@@ -1461,19 +1484,18 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
         {
             var client = new HttpClient(mockHttp);
 
+            var noAnswer = "No match found, please as another question.";
+
             var outerDialog = new AdaptiveDialog("outer")
             {
                 AutoEndDialog = false,
-                Events = new List<IOnEvent>()
+                Triggers = new List<TriggerHandler>()
                 {
                     new OnUnknownIntent()
                     {
                         Actions = new List<Dialog>()
                         {
-                            new QnAMakerAction(kbId: _knowlegeBaseId, hostName: _hostname, endpointKey: _endpointKey, httpClient: client)
-                            {
-                                OutputBinding = "turn.LastResult"
-                            }
+                            new QnAMakerAction(knowledgeBaseId: _knowlegeBaseId, hostName: _hostname, endpointKey: _endpointKey, noAnswer: noAnswer, httpClient: client)
                         }
                     }
                 }
@@ -1481,7 +1503,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
 
             var rootDialog = new AdaptiveDialog("root")
             {
-                Events = new List<IOnEvent>()
+                Triggers = new List<TriggerHandler>()
                 {
                     new OnBeginDialog()
                     {
@@ -1490,7 +1512,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                             new BeginDialog(outerDialog.Id)
                         }
                     },
-                    new Dialogs.Adaptive.Events.OnDialogEvent()
+                    new OnDialogEvent()
                     {
                         Events = new List<string>() { "UnhandledUnknownIntent" },
                         Actions = new List<Dialog>()
