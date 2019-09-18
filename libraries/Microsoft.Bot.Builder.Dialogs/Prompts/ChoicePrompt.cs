@@ -39,6 +39,18 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
+        /// Gets or sets a dictionary of Default ChoiceOptions to be used for locale recognition.
+        /// </summary>
+        /// <value>The dictionary of Default ChoiceOptions to be used for locale recognition.</value>
+        /// <remarks>
+        /// If set, this replaces DefaultChoiceOptions.
+        /// Usage: ChoicePrompt.CustomDefaultChoiceOptions = new Dictionary<string, ChoiceFactoryOptions>()
+        ///         { "en-US", new ChoiceFactoryOptions {...} }
+        /// </remarks>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1629:Documentation text should end with a period", Justification = "Doesn't like `Dictionary<string`")]
+        public static Dictionary<string, ChoiceFactoryOptions> CustomDefaultChoiceOptions { get; set; }
+
+        /// <summary>
         /// Gets or sets the style to use when presenting the prompt to the user.
         /// </summary>
         /// <value>The style to use when presenting the prompt to the user.</value>
@@ -71,13 +83,18 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             get
             {
-                var defaults = new Dictionary<string, ChoiceFactoryOptions>();
-                foreach (var culture in GetSupportedCultures())
+                if (CustomDefaultChoiceOptions == null || CustomDefaultChoiceOptions.Count == 0)
                 {
-                    defaults.Add(culture.Locale, new ChoiceFactoryOptions { InlineSeparator = culture.Separator, InlineOr = culture.InlineOr, InlineOrMore = culture.InlineOrMore, IncludeNumbers = true });
+                    var defaults = new Dictionary<string, ChoiceFactoryOptions>();
+                    foreach (var culture in GetSupportedCultures())
+                    {
+                        defaults.Add(culture.Locale, new ChoiceFactoryOptions { InlineSeparator = culture.Separator, InlineOr = culture.InlineOr, InlineOrMore = culture.InlineOrMore, IncludeNumbers = true });
+                    }
+
+                    return defaults;
                 }
 
-                return defaults;
+                return CustomDefaultChoiceOptions;
             }
         }
 
