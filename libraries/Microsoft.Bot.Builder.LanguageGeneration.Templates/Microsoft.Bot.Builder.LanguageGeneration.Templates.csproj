@@ -57,6 +57,11 @@
     <Content Include="**/*.lu" />
     <Content Include="**/*.schema" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Bot.Builder.Dialogs" Condition=" '$(PackageVersion)' != '' " Version="$(PackageVersion)" />
+    <PackageReference Include="Microsoft.Bot.Builder.LanguageGeneration" Condition=" '$(PackageVersion)' != '' " Version="$(PackageVersion)" />
+    <PackageReference Include="Microsoft.Bot.Builder.Dialogs.Declarative" Condition=" '$(PackageVersion)' != '' " Version="$(PackageVersion)" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Microsoft.Bot.Builder.Dialogs.Declarative\Microsoft.Bot.Builder.Dialogs.Declarative.csproj" />

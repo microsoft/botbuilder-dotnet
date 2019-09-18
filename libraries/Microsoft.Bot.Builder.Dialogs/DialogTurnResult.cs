@@ -4,9 +4,12 @@
 namespace Microsoft.Bot.Builder.Dialogs
 {
     /// <summary>
-    /// Result returned to the caller of one of the various stack manipulation methods,
-    /// and used to return the result from a final call to `DialogContext.EndDialogAsync()` to the bot's logic.
+    /// Result returned to the caller of one of the various stack manipulation methods.
     /// </summary>
+    /// <remarks>
+    /// Use <see cref="DialogContext.EndDialogAsync(object, System.Threading.CancellationToken)"/>
+    /// to end a <see cref="Dialog"/> and return a result to the calling context.
+    /// </remarks>
     public class DialogTurnResult
     {
         public DialogTurnResult(DialogTurnStatus status, object result = null)

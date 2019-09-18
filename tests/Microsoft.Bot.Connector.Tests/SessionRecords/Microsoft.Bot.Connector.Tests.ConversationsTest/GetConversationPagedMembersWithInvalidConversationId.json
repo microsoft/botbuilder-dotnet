@@ -2,8 +2,9 @@
   "Entries": [
     {
       "RequestUri": "/v3/conversations",
+      "EncodedRequestUri": "L3YzL2NvbnZlcnNhdGlvbnM=",
       "RequestMethod": "POST",
-      "RequestBody": "{\r\n  \"bot\": {\r\n    \"id\": \"B21UTEF8S:T03CWQ0QB\"\r\n  },\r\n  \"members\": [\r\n    {\r\n      \"id\": \"U19KH8EHJ:T03CWQ0QB\"\r\n    }\r\n  ]\r\n}",
+      "RequestBody": "{\r\n  \"bot\": {\r\n    \"id\": \"BKGSYSTFG:TKGSUQHQE\"\r\n  },\r\n  \"members\": [\r\n    {\r\n      \"id\": \"UK8CH2281:TKGSUQHQE\"\r\n    }\r\n  ]\r\n}",
       "RequestHeaders": {
         "Content-Type": [
           "application/json; charset=utf-8"
@@ -12,14 +13,13 @@
           "125"
         ],
         "User-Agent": [
-          "FxVersion/4.6.26814.03",
-          "Microsoft.Bot.Connector.ConnectorClient/4.0.0.0",
-          "Microsoft-BotFramework/3.1",
-          "BotBuilder/4.0.0.0",
-          "(.NETCoreApp,Version=v1.0; Microsoft Windows 10.0.17134 ; X64)"
+          "FxVersion/4.6.27617.04",
+          "OSName/Windows",
+          "OSVersion/Microsoft.Windows.10.0.18362.",
+          "Microsoft.Bot.Connector.ConnectorClient/4.0.0.0"
         ]
       },
-      "ResponseBody": "{\r\n  \"id\": \"B21UTEF8S:T03CWQ0QB:DD6UM0YHW\"\r\n}",
+      "ResponseBody": "{\r\n  \"id\": \"BKGSYSTFG:TKGSUQHQE:DKE8NUG92\"\r\n}",
       "ResponseHeaders": {
         "Content-Length": [
           "45"
@@ -39,32 +39,35 @@
         "Server": [
           "Microsoft-IIS/10.0"
         ],
+        "x-ms-request-id": [
+          "|97dcc5599216b54196f7c0ac8637ea7f.3642c7f8_"
+        ],
         "Strict-Transport-Security": [
           "max-age=31536000"
         ],
         "Date": [
-          "Tue, 09 Oct 2018 18:35:49 GMT"
+          "Tue, 02 Jul 2019 19:11:29 GMT"
         ]
       },
       "StatusCode": 200
     },
     {
-      "RequestUri": "/v3/conversations/B21UTEF8S%3AT03CWQ0QB%3ADD6UM0YHWM/pagedmembers",
+      "RequestUri": "/v3/conversations/BKGSYSTFG%3ATKGSUQHQE%3ADKE8NUG92M/pagedmembers",
+      "EncodedRequestUri": "L3YzL2NvbnZlcnNhdGlvbnMvQktHU1lTVEZHJTNBVEtHU1VRSFFFJTNBREtFOE5VRzkyTS9wYWdlZG1lbWJlcnM=",
       "RequestMethod": "GET",
       "RequestBody": "",
       "RequestHeaders": {
         "User-Agent": [
-          "FxVersion/4.6.26814.03",
-          "Microsoft.Bot.Connector.ConnectorClient/4.0.0.0",
-          "Microsoft-BotFramework/3.1",
-          "BotBuilder/4.0.0.0",
-          "(.NETCoreApp,Version=v1.0; Microsoft Windows 10.0.17134 ; X64)"
+          "FxVersion/4.6.27617.04",
+          "OSName/Windows",
+          "OSVersion/Microsoft.Windows.10.0.18362.",
+          "Microsoft.Bot.Connector.ConnectorClient/4.0.0.0"
         ]
       },
-      "ResponseBody": "{\r\n  \"error\": {\r\n    \"code\": \"ServiceError\",\r\n    \"message\": \"ExecuteWithActivityContext FAILED: The specified channel was not found\"\r\n  }\r\n}",
+      "ResponseBody": "{\r\n  \"error\": {\r\n    \"code\": \"BadArgument\",\r\n    \"message\": \"Slack API error\",\r\n    \"innerHttpError\": {\r\n      \"statusCode\": 200,\r\n      \"body\": {\r\n        \"ok\": false,\r\n        \"error\": \"channel_not_found\"\r\n      }\r\n    }\r\n  }\r\n}",
       "ResponseHeaders": {
         "Content-Length": [
-          "141"
+          "230"
         ],
         "Content-Type": [
           "application/json; charset=utf-8"
@@ -81,11 +84,14 @@
         "Server": [
           "Microsoft-IIS/10.0"
         ],
+        "x-ms-request-id": [
+          "|33980d0ba39e954fbfa8d9285da939b5.e7f43280_"
+        ],
         "Strict-Transport-Security": [
           "max-age=31536000"
         ],
         "Date": [
-          "Tue, 09 Oct 2018 18:35:49 GMT"
+          "Tue, 02 Jul 2019 19:11:29 GMT"
         ]
       },
       "StatusCode": 400

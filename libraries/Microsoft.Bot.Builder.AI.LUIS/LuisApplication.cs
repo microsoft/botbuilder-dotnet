@@ -50,7 +50,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
         {
             var (applicationId, endpointKey, endpoint) = props;
 
-            if (!Guid.TryParse(applicationId, out var appGuid))
+            if (!Guid.TryParse(applicationId, out var _))
             {
                 throw new ArgumentException($"\"{applicationId}\" is not a valid LUIS application id.");
             }

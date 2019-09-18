@@ -1,61 +1,464 @@
 {
-  "text": "12 years old and 3 days old and monday july 3rd, 2019 and every monday and between 3am and 5:30am and 4 acres and 4 pico meters and chrimc@hotmail.com and $4 and $4.25 and also 32 and 210.4 and first and 10% and 10.5% and 425-555-1234 and 3 degrees and -27.5 degrees c and the next one and the previous one",
-  "intents": {
-    "EntityTests": {
-      "score": 0.953405857
-    },
-    "Roles": {
-      "score": 0.197366714
-    },
-    "search": {
-      "score": 0.149378926
-    },
-    "Weather_GetForecast": {
-      "score": 0.0143940123
-    },
-    "Travel": {
-      "score": 0.0119320424
-    },
-    "None": {
-      "score": 0.01040122
-    },
-    "Delivery": {
-      "score": 0.0002846266
-    },
-    "SpecifyName": {
-      "score": 6.563565E-05
-    },
-    "Help": {
-      "score": 4.81870757E-06
-    },
-    "Cancel": {
-      "score": 1.56337478E-06
-    },
-    "Greeting": {
-      "score": 8.20979437E-07
-    }
-  },
   "entities": {
-    "ordinalV2": [
-      {
-        "relativeTo": "start",
-        "offset": 3
-      },
-      {
-        "relativeTo": "start",
-        "offset": 1
-      },
-      {
-        "relativeTo": "current",
-        "offset": 1
-      },
-      {
-        "relativeTo": "current",
-        "offset": -1
-      }
-    ],
+    "$instance": {
+      "Composite1": [
+        {
+          "endIndex": 306,
+          "modelType": "Composite Entity Extractor",
+          "recognitionSources": [
+            "model"
+          ],
+          "score": 0.880988955,
+          "startIndex": 0,
+          "text": "12 years old and 3 days old and monday july 3rd, 2019 and every monday and between 3am and 5:30am and 4 acres and 4 pico meters and chrimc@hotmail.com and $4 and $4.25 and also 32 and 210.4 and first and 10% and 10.5% and 425-555-1234 and 3 degrees and -27.5 degrees c and the next one and the previous one",
+          "type": "Composite1"
+        }
+      ],
+      "ordinalV2": [
+        {
+          "endIndex": 47,
+          "modelType": "Prebuilt Entity Extractor",
+          "recognitionSources": [
+            "model"
+          ],
+          "startIndex": 44,
+          "text": "3rd",
+          "type": "builtin.ordinalV2"
+        },
+        {
+          "endIndex": 199,
+          "modelType": "Prebuilt Entity Extractor",
+          "recognitionSources": [
+            "model"
+          ],
+          "startIndex": 194,
+          "text": "first",
+          "type": "builtin.ordinalV2"
+        },
+        {
+          "endIndex": 285,
+          "modelType": "Prebuilt Entity Extractor",
+          "recognitionSources": [
+            "model"
+          ],
+          "startIndex": 277,
+          "text": "next one",
+          "type": "builtin.ordinalV2.relative"
+        },
+        {
+          "endIndex": 306,
+          "modelType": "Prebuilt Entity Extractor",
+          "recognitionSources": [
+            "model"
+          ],
+          "startIndex": 294,
+          "text": "previous one",
+          "type": "builtin.ordinalV2.relative"
+        }
+      ]
+    },
     "Composite1": [
       {
+        "$instance": {
+          "age": [
+            {
+              "endIndex": 12,
+              "modelType": "Prebuilt Entity Extractor",
+              "recognitionSources": [
+                "model"
+              ],
+              "startIndex": 0,
+              "text": "12 years old",
+              "type": "builtin.age"
+            },
+            {
+              "endIndex": 27,
+              "modelType": "Prebuilt Entity Extractor",
+              "recognitionSources": [
+                "model"
+              ],
+              "startIndex": 17,
+              "text": "3 days old",
+              "type": "builtin.age"
+            }
+          ],
+          "datetime": [
+            {
+              "endIndex": 8,
+              "modelType": "Prebuilt Entity Extractor",
+              "recognitionSources": [
+                "model"
+              ],
+              "startIndex": 0,
+              "text": "12 years",
+              "type": "builtin.datetimeV2.duration"
+            },
+            {
+              "endIndex": 23,
+              "modelType": "Prebuilt Entity Extractor",
+              "recognitionSources": [
+                "model"
+              ],
+              "startIndex": 17,
+              "text": "3 days",
+              "type": "builtin.datetimeV2.duration"
+            },
+            {
+              "endIndex": 53,
+              "modelType": "Prebuilt Entity Extractor",
+              "recognitionSources": [
+                "model"
+              ],
+              "startIndex": 32,
+              "text": "monday july 3rd, 2019",
+              "type": "builtin.datetimeV2.date"
+            },
+            {
+              "endIndex": 70,
+              "modelType": "Prebuilt Entity Extractor",
+              "recognitionSources": [
+                "model"
+              ],
+              "startIndex": 58,
+              "text": "every monday",
+              "type": "builtin.datetimeV2.set"
+            },
+            {
+              "endIndex": 97,
+              "modelType": "Prebuilt Entity Extractor",
+              "recognitionSources": [
+                "model"
+              ],
+              "startIndex": 75,
+              "text": "between 3am and 5:30am",
+              "type": "builtin.datetimeV2.timerange"
+            }
+          ],
+          "dimension": [
+            {
+              "endIndex": 109,
+              "modelType": "Prebuilt Entity Extractor",
+              "recognitionSources": [
+                "model"
+              ],
+              "startIndex": 102,
+              "text": "4 acres",
+              "type": "builtin.dimension"
+            },
+            {
+              "endIndex": 127,
+              "modelType": "Prebuilt Entity Extractor",
+              "recognitionSources": [
+                "model"
+              ],
+              "startIndex": 114,
+              "text": "4 pico meters",
+              "type": "builtin.dimension"
+            }
+          ],
+          "email": [
+            {
+              "endIndex": 150,
+              "modelType": "Prebuilt Entity Extractor",
+              "recognitionSources": [
+                "model"
+              ],
+              "startIndex": 132,
+              "text": "chrimc@hotmail.com",
+              "type": "builtin.email"
+            }
+          ],
+          "money": [
+            {
+              "endIndex": 157,
+              "modelType": "Prebuilt Entity Extractor",
+              "recognitionSources": [
+                "model"
+              ],
+              "startIndex": 155,
+              "text": "$4",
+              "type": "builtin.currency"
+            },
+            {
+              "endIndex": 167,
+              "modelType": "Prebuilt Entity Extractor",
+              "recognitionSources": [
+                "model"
+              ],
+              "startIndex": 162,
+              "text": "$4.25",
+              "type": "builtin.currency"
+            }
+          ],
+          "number": [
+            {
+              "endIndex": 2,
+              "modelType": "Prebuilt Entity Extractor",
+              "recognitionSources": [
+                "model"
+              ],
+              "startIndex": 0,
+              "subtype": "integer",
+              "text": "12",
+              "type": "builtin.number"
+            },
+            {
+              "endIndex": 18,
+              "modelType": "Prebuilt Entity Extractor",
+              "recognitionSources": [
+                "model"
+              ],
+              "startIndex": 17,
+              "subtype": "integer",
+              "text": "3",
+              "type": "builtin.number"
+            },
+            {
+              "endIndex": 53,
+              "modelType": "Prebuilt Entity Extractor",
+              "recognitionSources": [
+                "model"
+              ],
+              "startIndex": 49,
+              "subtype": "integer",
+              "text": "2019",
+              "type": "builtin.number"
+            },
+            {
+              "endIndex": 92,
+              "modelType": "Prebuilt Entity Extractor",
+              "recognitionSources": [
+                "model"
+              ],
+              "startIndex": 91,
+              "subtype": "integer",
+              "text": "5",
+              "type": "builtin.number"
+            },
+            {
+              "endIndex": 103,
+              "modelType": "Prebuilt Entity Extractor",
+              "recognitionSources": [
+                "model"
+              ],
+              "startIndex": 102,
+              "subtype": "integer",
+              "text": "4",
+              "type": "builtin.number"
+            },
+            {
+              "endIndex": 115,
+              "modelType": "Prebuilt Entity Extractor",
+              "recognitionSources": [
+                "model"
+              ],
+              "startIndex": 114,
+              "subtype": "integer",
+              "text": "4",
+              "type": "builtin.number"
+            },
+            {
+              "endIndex": 157,
+              "modelType": "Prebuilt Entity Extractor",
+              "recognitionSources": [
+                "model"
+              ],
+              "startIndex": 156,
+              "subtype": "integer",
+              "text": "4",
+              "type": "builtin.number"
+            },
+            {
+              "endIndex": 167,
+              "modelType": "Prebuilt Entity Extractor",
+              "recognitionSources": [
+                "model"
+              ],
+              "startIndex": 163,
+              "subtype": "decimal",
+              "text": "4.25",
+              "type": "builtin.number"
+            },
+            {
+              "endIndex": 179,
+              "modelType": "Prebuilt Entity Extractor",
+              "recognitionSources": [
+                "model"
+              ],
+              "startIndex": 177,
+              "subtype": "integer",
+              "text": "32",
+              "type": "builtin.number"
+            },
+            {
+              "endIndex": 189,
+              "modelType": "Prebuilt Entity Extractor",
+              "recognitionSources": [
+                "model"
+              ],
+              "startIndex": 184,
+              "subtype": "decimal",
+              "text": "210.4",
+              "type": "builtin.number"
+            },
+            {
+              "endIndex": 206,
+              "modelType": "Prebuilt Entity Extractor",
+              "recognitionSources": [
+                "model"
+              ],
+              "startIndex": 204,
+              "subtype": "integer",
+              "text": "10",
+              "type": "builtin.number"
+            },
+            {
+              "endIndex": 216,
+              "modelType": "Prebuilt Entity Extractor",
+              "recognitionSources": [
+                "model"
+              ],
+              "startIndex": 212,
+              "subtype": "decimal",
+              "text": "10.5",
+              "type": "builtin.number"
+            },
+            {
+              "endIndex": 225,
+              "modelType": "Prebuilt Entity Extractor",
+              "recognitionSources": [
+                "model"
+              ],
+              "startIndex": 222,
+              "subtype": "integer",
+              "text": "425",
+              "type": "builtin.number"
+            },
+            {
+              "endIndex": 229,
+              "modelType": "Prebuilt Entity Extractor",
+              "recognitionSources": [
+                "model"
+              ],
+              "startIndex": 226,
+              "subtype": "integer",
+              "text": "555",
+              "type": "builtin.number"
+            },
+            {
+              "endIndex": 234,
+              "modelType": "Prebuilt Entity Extractor",
+              "recognitionSources": [
+                "model"
+              ],
+              "startIndex": 230,
+              "subtype": "integer",
+              "text": "1234",
+              "type": "builtin.number"
+            },
+            {
+              "endIndex": 240,
+              "modelType": "Prebuilt Entity Extractor",
+              "recognitionSources": [
+                "model"
+              ],
+              "startIndex": 239,
+              "subtype": "integer",
+              "text": "3",
+              "type": "builtin.number"
+            },
+            {
+              "endIndex": 258,
+              "modelType": "Prebuilt Entity Extractor",
+              "recognitionSources": [
+                "model"
+              ],
+              "startIndex": 253,
+              "subtype": "decimal",
+              "text": "-27.5",
+              "type": "builtin.number"
+            },
+            {
+              "endIndex": 285,
+              "modelType": "Prebuilt Entity Extractor",
+              "recognitionSources": [
+                "model"
+              ],
+              "startIndex": 282,
+              "subtype": "integer",
+              "text": "one",
+              "type": "builtin.number"
+            },
+            {
+              "endIndex": 306,
+              "modelType": "Prebuilt Entity Extractor",
+              "recognitionSources": [
+                "model"
+              ],
+              "startIndex": 303,
+              "subtype": "integer",
+              "text": "one",
+              "type": "builtin.number"
+            }
+          ],
+          "percentage": [
+            {
+              "endIndex": 207,
+              "modelType": "Prebuilt Entity Extractor",
+              "recognitionSources": [
+                "model"
+              ],
+              "startIndex": 204,
+              "text": "10%",
+              "type": "builtin.percentage"
+            },
+            {
+              "endIndex": 217,
+              "modelType": "Prebuilt Entity Extractor",
+              "recognitionSources": [
+                "model"
+              ],
+              "startIndex": 212,
+              "text": "10.5%",
+              "type": "builtin.percentage"
+            }
+          ],
+          "phonenumber": [
+            {
+              "endIndex": 234,
+              "modelType": "Prebuilt Entity Extractor",
+              "recognitionSources": [
+                "model"
+              ],
+              "score": 0.9,
+              "startIndex": 222,
+              "text": "425-555-1234",
+              "type": "builtin.phonenumber"
+            }
+          ],
+          "temperature": [
+            {
+              "endIndex": 248,
+              "modelType": "Prebuilt Entity Extractor",
+              "recognitionSources": [
+                "model"
+              ],
+              "startIndex": 239,
+              "text": "3 degrees",
+              "type": "builtin.temperature"
+            },
+            {
+              "endIndex": 268,
+              "modelType": "Prebuilt Entity Extractor",
+              "recognitionSources": [
+                "model"
+              ],
+              "startIndex": 253,
+              "text": "-27.5 degrees c",
+              "type": "builtin.temperature"
+            }
+          ]
+        },
         "age": [
           {
             "number": 12.0,
@@ -68,34 +471,34 @@
         ],
         "datetime": [
           {
-            "type": "duration",
             "timex": [
               "P12Y"
-            ]
+            ],
+            "type": "duration"
           },
           {
-            "type": "duration",
             "timex": [
               "P3D"
-            ]
+            ],
+            "type": "duration"
           },
           {
-            "type": "date",
             "timex": [
               "2019-07-03"
-            ]
+            ],
+            "type": "date"
           },
           {
-            "type": "set",
             "timex": [
               "XXXX-WXX-1"
-            ]
+            ],
+            "type": "set"
           },
           {
-            "type": "timerange",
             "timex": [
               "(T03,T05:30,PT2H30M)"
-            ]
+            ],
+            "type": "timerange"
           }
         ],
         "dimension": [
@@ -142,10 +545,6 @@
           1.0,
           1.0
         ],
-        "ordinal": [
-          3.0,
-          1.0
-        ],
         "percentage": [
           10.0,
           10.5
@@ -162,985 +561,1393 @@
             "number": -27.5,
             "units": "C"
           }
-        ],
-        "$instance": {
-          "age": [
-            {
-              "startIndex": 0,
-              "endIndex": 12,
-              "text": "12 years old",
-              "type": "builtin.age"
-            },
-            {
-              "startIndex": 17,
-              "endIndex": 27,
-              "text": "3 days old",
-              "type": "builtin.age"
-            }
-          ],
-          "datetime": [
-            {
-              "startIndex": 0,
-              "endIndex": 8,
-              "text": "12 years",
-              "type": "builtin.datetimeV2.duration"
-            },
-            {
-              "startIndex": 17,
-              "endIndex": 23,
-              "text": "3 days",
-              "type": "builtin.datetimeV2.duration"
-            },
-            {
-              "startIndex": 32,
-              "endIndex": 53,
-              "text": "monday july 3rd, 2019",
-              "type": "builtin.datetimeV2.date"
-            },
-            {
-              "startIndex": 58,
-              "endIndex": 70,
-              "text": "every monday",
-              "type": "builtin.datetimeV2.set"
-            },
-            {
-              "startIndex": 75,
-              "endIndex": 97,
-              "text": "between 3am and 5:30am",
-              "type": "builtin.datetimeV2.timerange"
-            }
-          ],
-          "dimension": [
-            {
-              "startIndex": 102,
-              "endIndex": 109,
-              "text": "4 acres",
-              "type": "builtin.dimension"
-            },
-            {
-              "startIndex": 114,
-              "endIndex": 127,
-              "text": "4 pico meters",
-              "type": "builtin.dimension"
-            }
-          ],
-          "email": [
-            {
-              "startIndex": 132,
-              "endIndex": 150,
-              "text": "chrimc@hotmail.com",
-              "type": "builtin.email"
-            }
-          ],
-          "money": [
-            {
-              "startIndex": 155,
-              "endIndex": 157,
-              "text": "$4",
-              "type": "builtin.currency"
-            },
-            {
-              "startIndex": 162,
-              "endIndex": 167,
-              "text": "$4.25",
-              "type": "builtin.currency"
-            }
-          ],
-          "number": [
-            {
-              "startIndex": 0,
-              "endIndex": 2,
-              "text": "12",
-              "type": "builtin.number",
-              "subtype": "integer"
-            },
-            {
-              "startIndex": 17,
-              "endIndex": 18,
-              "text": "3",
-              "type": "builtin.number",
-              "subtype": "integer"
-            },
-            {
-              "startIndex": 49,
-              "endIndex": 53,
-              "text": "2019",
-              "type": "builtin.number",
-              "subtype": "integer"
-            },
-            {
-              "startIndex": 91,
-              "endIndex": 92,
-              "text": "5",
-              "type": "builtin.number",
-              "subtype": "integer"
-            },
-            {
-              "startIndex": 102,
-              "endIndex": 103,
-              "text": "4",
-              "type": "builtin.number",
-              "subtype": "integer"
-            },
-            {
-              "startIndex": 114,
-              "endIndex": 115,
-              "text": "4",
-              "type": "builtin.number",
-              "subtype": "integer"
-            },
-            {
-              "startIndex": 156,
-              "endIndex": 157,
-              "text": "4",
-              "type": "builtin.number",
-              "subtype": "integer"
-            },
-            {
-              "startIndex": 163,
-              "endIndex": 167,
-              "text": "4.25",
-              "type": "builtin.number",
-              "subtype": "decimal"
-            },
-            {
-              "startIndex": 177,
-              "endIndex": 179,
-              "text": "32",
-              "type": "builtin.number",
-              "subtype": "integer"
-            },
-            {
-              "startIndex": 184,
-              "endIndex": 189,
-              "text": "210.4",
-              "type": "builtin.number",
-              "subtype": "decimal"
-            },
-            {
-              "startIndex": 204,
-              "endIndex": 206,
-              "text": "10",
-              "type": "builtin.number",
-              "subtype": "integer"
-            },
-            {
-              "startIndex": 212,
-              "endIndex": 216,
-              "text": "10.5",
-              "type": "builtin.number",
-              "subtype": "decimal"
-            },
-            {
-              "startIndex": 222,
-              "endIndex": 225,
-              "text": "425",
-              "type": "builtin.number",
-              "subtype": "integer"
-            },
-            {
-              "startIndex": 226,
-              "endIndex": 229,
-              "text": "555",
-              "type": "builtin.number",
-              "subtype": "integer"
-            },
-            {
-              "startIndex": 230,
-              "endIndex": 234,
-              "text": "1234",
-              "type": "builtin.number",
-              "subtype": "integer"
-            },
-            {
-              "startIndex": 239,
-              "endIndex": 240,
-              "text": "3",
-              "type": "builtin.number",
-              "subtype": "integer"
-            },
-            {
-              "startIndex": 253,
-              "endIndex": 258,
-              "text": "-27.5",
-              "type": "builtin.number",
-              "subtype": "decimal"
-            },
-            {
-              "startIndex": 282,
-              "endIndex": 285,
-              "text": "one",
-              "type": "builtin.number",
-              "subtype": "integer"
-            },
-            {
-              "startIndex": 303,
-              "endIndex": 306,
-              "text": "one",
-              "type": "builtin.number",
-              "subtype": "integer"
-            }
-          ],
-          "ordinal": [
-            {
-              "startIndex": 44,
-              "endIndex": 47,
-              "text": "3rd",
-              "type": "builtin.ordinal"
-            },
-            {
-              "startIndex": 194,
-              "endIndex": 199,
-              "text": "first",
-              "type": "builtin.ordinal"
-            }
-          ],
-          "percentage": [
-            {
-              "startIndex": 204,
-              "endIndex": 207,
-              "text": "10%",
-              "type": "builtin.percentage"
-            },
-            {
-              "startIndex": 212,
-              "endIndex": 217,
-              "text": "10.5%",
-              "type": "builtin.percentage"
-            }
-          ],
-          "phonenumber": [
-            {
-              "startIndex": 222,
-              "endIndex": 234,
-              "text": "425-555-1234",
-              "type": "builtin.phonenumber"
-            }
-          ],
-          "temperature": [
-            {
-              "startIndex": 239,
-              "endIndex": 248,
-              "text": "3 degrees",
-              "type": "builtin.temperature"
-            },
-            {
-              "startIndex": 253,
-              "endIndex": 268,
-              "text": "-27.5 degrees c",
-              "type": "builtin.temperature"
-            }
-          ]
-        }
+        ]
       }
     ],
-    "$instance": {
-      "Composite1": [
-        {
-          "startIndex": 0,
-          "endIndex": 306,
-          "text": "12 years old and 3 days old and monday july 3rd , 2019 and every monday and between 3am and 5 : 30am and 4 acres and 4 pico meters and chrimc @ hotmail . com and $ 4 and $ 4 . 25 and also 32 and 210 . 4 and first and 10 % and 10 . 5 % and 425 - 555 - 1234 and 3 degrees and - 27 . 5 degrees c and the next one and the previous one",
-          "score": 0.8764849,
-          "type": "Composite1"
-        }
-      ],
-      "ordinalV2": [
-        {
-          "startIndex": 44,
-          "endIndex": 47,
-          "text": "3rd",
-          "type": "builtin.ordinalV2"
-        },
-        {
-          "startIndex": 194,
-          "endIndex": 199,
-          "text": "first",
-          "type": "builtin.ordinalV2"
-        },
-        {
-          "startIndex": 277,
-          "endIndex": 285,
-          "text": "next one",
-          "type": "builtin.ordinalV2.relative"
-        },
-        {
-          "startIndex": 294,
-          "endIndex": 306,
-          "text": "previous one",
-          "type": "builtin.ordinalV2.relative"
-        }
-      ]
+    "ordinalV2": [
+      {
+        "offset": 3,
+        "relativeTo": "start"
+      },
+      {
+        "offset": 1,
+        "relativeTo": "start"
+      },
+      {
+        "offset": 1,
+        "relativeTo": "current"
+      },
+      {
+        "offset": -1,
+        "relativeTo": "current"
+      }
+    ]
+  },
+  "intents": {
+    "Cancel": {
+      "score": 1.56337478E-06
+    },
+    "Delivery": {
+      "score": 0.0002846266
+    },
+    "EntityTests": {
+      "score": 0.953405857
+    },
+    "Greeting": {
+      "score": 8.20979437E-07
+    },
+    "Help": {
+      "score": 4.81870757E-06
+    },
+    "None": {
+      "score": 0.01040122
+    },
+    "Roles": {
+      "score": 0.197366714
+    },
+    "search": {
+      "score": 0.14049834
+    },
+    "SpecifyName": {
+      "score": 0.000137732946
+    },
+    "Travel": {
+      "score": 0.0100996653
+    },
+    "Weather_GetForecast": {
+      "score": 0.0143940123
     }
   },
   "sentiment": {
     "label": "neutral",
     "score": 0.5
   },
+  "text": "12 years old and 3 days old and monday july 3rd, 2019 and every monday and between 3am and 5:30am and 4 acres and 4 pico meters and chrimc@hotmail.com and $4 and $4.25 and also 32 and 210.4 and first and 10% and 10.5% and 425-555-1234 and 3 degrees and -27.5 degrees c and the next one and the previous one",
   "v2": {
-    "query": "12 years old and 3 days old and monday july 3rd, 2019 and every monday and between 3am and 5:30am and 4 acres and 4 pico meters and chrimc@hotmail.com and $4 and $4.25 and also 32 and 210.4 and first and 10% and 10.5% and 425-555-1234 and 3 degrees and -27.5 degrees c and the next one and the previous one",
-    "topScoringIntent": {
-      "intent": "EntityTests",
-      "score": 0.953405857
+    "options": {
+      "IncludeAllIntents": true,
+      "IncludeInstanceData": true,
+      "LogPersonalInformation": false,
+      "Timeout": 100000.0
     },
-    "intents": [
-      {
-        "intent": "EntityTests",
-        "score": 0.953405857
-      },
-      {
-        "intent": "Roles",
-        "score": 0.197366714
-      },
-      {
-        "intent": "search",
-        "score": 0.149378926
-      },
-      {
-        "intent": "Weather.GetForecast",
-        "score": 0.0143940123
-      },
-      {
-        "intent": "Travel",
-        "score": 0.0119320424
-      },
-      {
-        "intent": "None",
-        "score": 0.01040122
-      },
-      {
-        "intent": "Delivery",
-        "score": 0.0002846266
-      },
-      {
-        "intent": "SpecifyName",
-        "score": 6.563565E-05
-      },
-      {
-        "intent": "Help",
-        "score": 4.81870757E-06
-      },
-      {
-        "intent": "Cancel",
-        "score": 1.56337478E-06
-      },
-      {
-        "intent": "Greeting",
-        "score": 8.20979437E-07
-      }
-    ],
-    "entities": [
-      {
-        "entity": "12 years old and 3 days old and monday july 3rd , 2019 and every monday and between 3am and 5 : 30am and 4 acres and 4 pico meters and chrimc @ hotmail . com and $ 4 and $ 4 . 25 and also 32 and 210 . 4 and first and 10 % and 10 . 5 % and 425 - 555 - 1234 and 3 degrees and - 27 . 5 degrees c and the next one and the previous one",
-        "type": "Composite1",
-        "startIndex": 0,
-        "endIndex": 305,
-        "score": 0.8764849
-      },
-      {
-        "entity": "12",
-        "type": "builtin.number",
-        "startIndex": 0,
-        "endIndex": 1,
-        "resolution": {
-          "subtype": "integer",
-          "value": "12"
-        }
-      },
-      {
-        "entity": "3",
-        "type": "builtin.number",
-        "startIndex": 17,
-        "endIndex": 17,
-        "resolution": {
-          "subtype": "integer",
-          "value": "3"
-        }
-      },
-      {
-        "entity": "2019",
-        "type": "builtin.number",
-        "startIndex": 49,
-        "endIndex": 52,
-        "resolution": {
-          "subtype": "integer",
-          "value": "2019"
-        }
-      },
-      {
-        "entity": "5",
-        "type": "builtin.number",
-        "startIndex": 91,
-        "endIndex": 91,
-        "resolution": {
-          "subtype": "integer",
-          "value": "5"
-        }
-      },
-      {
-        "entity": "4",
-        "type": "builtin.number",
-        "startIndex": 102,
-        "endIndex": 102,
-        "resolution": {
-          "subtype": "integer",
-          "value": "4"
-        }
-      },
-      {
-        "entity": "4",
-        "type": "builtin.number",
-        "startIndex": 114,
-        "endIndex": 114,
-        "resolution": {
-          "subtype": "integer",
-          "value": "4"
-        }
-      },
-      {
-        "entity": "4",
-        "type": "builtin.number",
-        "startIndex": 156,
-        "endIndex": 156,
-        "resolution": {
-          "subtype": "integer",
-          "value": "4"
-        }
-      },
-      {
-        "entity": "4.25",
-        "type": "builtin.number",
-        "startIndex": 163,
-        "endIndex": 166,
-        "resolution": {
-          "subtype": "decimal",
-          "value": "4.25"
-        }
-      },
-      {
-        "entity": "32",
-        "type": "builtin.number",
-        "startIndex": 177,
-        "endIndex": 178,
-        "resolution": {
-          "subtype": "integer",
-          "value": "32"
-        }
-      },
-      {
-        "entity": "210.4",
-        "type": "builtin.number",
-        "startIndex": 184,
-        "endIndex": 188,
-        "resolution": {
-          "subtype": "decimal",
-          "value": "210.4"
-        }
-      },
-      {
-        "entity": "10",
-        "type": "builtin.number",
-        "startIndex": 204,
-        "endIndex": 205,
-        "resolution": {
-          "subtype": "integer",
-          "value": "10"
-        }
-      },
-      {
-        "entity": "10.5",
-        "type": "builtin.number",
-        "startIndex": 212,
-        "endIndex": 215,
-        "resolution": {
-          "subtype": "decimal",
-          "value": "10.5"
-        }
-      },
-      {
-        "entity": "425",
-        "type": "builtin.number",
-        "startIndex": 222,
-        "endIndex": 224,
-        "resolution": {
-          "subtype": "integer",
-          "value": "425"
-        }
-      },
-      {
-        "entity": "555",
-        "type": "builtin.number",
-        "startIndex": 226,
-        "endIndex": 228,
-        "resolution": {
-          "subtype": "integer",
-          "value": "555"
-        }
-      },
-      {
-        "entity": "1234",
-        "type": "builtin.number",
-        "startIndex": 230,
-        "endIndex": 233,
-        "resolution": {
-          "subtype": "integer",
-          "value": "1234"
-        }
-      },
-      {
-        "entity": "3",
-        "type": "builtin.number",
-        "startIndex": 239,
-        "endIndex": 239,
-        "resolution": {
-          "subtype": "integer",
-          "value": "3"
-        }
-      },
-      {
-        "entity": "-27.5",
-        "type": "builtin.number",
-        "startIndex": 253,
-        "endIndex": 257,
-        "resolution": {
-          "subtype": "decimal",
-          "value": "-27.5"
-        }
-      },
-      {
-        "entity": "one",
-        "type": "builtin.number",
-        "startIndex": 282,
-        "endIndex": 284,
-        "resolution": {
-          "subtype": "integer",
-          "value": "1"
-        }
-      },
-      {
-        "entity": "one",
-        "type": "builtin.number",
-        "startIndex": 303,
-        "endIndex": 305,
-        "resolution": {
-          "subtype": "integer",
-          "value": "1"
-        }
-      },
-      {
-        "entity": "12 years old",
-        "type": "builtin.age",
-        "startIndex": 0,
-        "endIndex": 11,
-        "resolution": {
-          "unit": "Year",
-          "value": "12"
-        }
-      },
-      {
-        "entity": "3 days old",
-        "type": "builtin.age",
-        "startIndex": 17,
-        "endIndex": 26,
-        "resolution": {
-          "unit": "Day",
-          "value": "3"
-        }
-      },
-      {
-        "entity": "12 years",
-        "type": "builtin.datetimeV2.duration",
-        "startIndex": 0,
-        "endIndex": 7,
-        "resolution": {
-          "values": [
+    "response": {
+      "compositeEntities": [
+        {
+          "children": [
             {
-              "timex": "P12Y",
-              "type": "duration",
-              "value": "378432000"
-            }
-          ]
-        }
-      },
-      {
-        "entity": "3 days",
-        "type": "builtin.datetimeV2.duration",
-        "startIndex": 17,
-        "endIndex": 22,
-        "resolution": {
-          "values": [
+              "type": "builtin.age",
+              "value": "12 years old"
+            },
             {
-              "timex": "P3D",
-              "type": "duration",
-              "value": "259200"
-            }
-          ]
-        }
-      },
-      {
-        "entity": "monday july 3rd, 2019",
-        "type": "builtin.datetimeV2.date",
-        "startIndex": 32,
-        "endIndex": 52,
-        "resolution": {
-          "values": [
+              "type": "builtin.age",
+              "value": "3 days old"
+            },
             {
-              "timex": "2019-07-03",
-              "type": "date",
-              "value": "2019-07-03"
-            }
-          ]
-        }
-      },
-      {
-        "entity": "every monday",
-        "type": "builtin.datetimeV2.set",
-        "startIndex": 58,
-        "endIndex": 69,
-        "resolution": {
-          "values": [
+              "type": "builtin.datetimeV2.duration",
+              "value": "12 years"
+            },
             {
-              "timex": "XXXX-WXX-1",
-              "type": "set",
-              "value": "not resolved"
-            }
-          ]
-        }
-      },
-      {
-        "entity": "between 3am and 5:30am",
-        "type": "builtin.datetimeV2.timerange",
-        "startIndex": 75,
-        "endIndex": 96,
-        "resolution": {
-          "values": [
+              "type": "builtin.datetimeV2.duration",
+              "value": "3 days"
+            },
             {
-              "timex": "(T03,T05:30,PT2H30M)",
-              "type": "timerange",
-              "start": "03:00:00",
-              "end": "05:30:00"
+              "type": "builtin.datetimeV2.date",
+              "value": "monday july 3rd, 2019"
+            },
+            {
+              "type": "builtin.datetimeV2.set",
+              "value": "every monday"
+            },
+            {
+              "type": "builtin.datetimeV2.timerange",
+              "value": "between 3am and 5:30am"
+            },
+            {
+              "type": "builtin.dimension",
+              "value": "4 acres"
+            },
+            {
+              "type": "builtin.dimension",
+              "value": "4 pico meters"
+            },
+            {
+              "type": "builtin.email",
+              "value": "chrimc@hotmail.com"
+            },
+            {
+              "type": "builtin.currency",
+              "value": "$4"
+            },
+            {
+              "type": "builtin.currency",
+              "value": "$4.25"
+            },
+            {
+              "type": "builtin.number",
+              "value": "12"
+            },
+            {
+              "type": "builtin.number",
+              "value": "3"
+            },
+            {
+              "type": "builtin.number",
+              "value": "2019"
+            },
+            {
+              "type": "builtin.number",
+              "value": "5"
+            },
+            {
+              "type": "builtin.number",
+              "value": "4"
+            },
+            {
+              "type": "builtin.number",
+              "value": "4"
+            },
+            {
+              "type": "builtin.number",
+              "value": "4"
+            },
+            {
+              "type": "builtin.number",
+              "value": "4.25"
+            },
+            {
+              "type": "builtin.number",
+              "value": "32"
+            },
+            {
+              "type": "builtin.number",
+              "value": "210.4"
+            },
+            {
+              "type": "builtin.number",
+              "value": "10"
+            },
+            {
+              "type": "builtin.number",
+              "value": "10.5"
+            },
+            {
+              "type": "builtin.number",
+              "value": "425"
+            },
+            {
+              "type": "builtin.number",
+              "value": "555"
+            },
+            {
+              "type": "builtin.number",
+              "value": "1234"
+            },
+            {
+              "type": "builtin.number",
+              "value": "3"
+            },
+            {
+              "type": "builtin.number",
+              "value": "-27.5"
+            },
+            {
+              "type": "builtin.number",
+              "value": "one"
+            },
+            {
+              "type": "builtin.number",
+              "value": "one"
+            },
+            {
+              "type": "builtin.percentage",
+              "value": "10%"
+            },
+            {
+              "type": "builtin.percentage",
+              "value": "10.5%"
+            },
+            {
+              "type": "builtin.phonenumber",
+              "value": "425-555-1234"
+            },
+            {
+              "type": "builtin.temperature",
+              "value": "3 degrees"
+            },
+            {
+              "type": "builtin.temperature",
+              "value": "-27.5 degrees c"
             }
-          ]
+          ],
+          "parentType": "Composite1",
+          "value": "12 years old and 3 days old and monday july 3rd , 2019 and every monday and between 3am and 5 : 30am and 4 acres and 4 pico meters and chrimc @ hotmail . com and $ 4 and $ 4 . 25 and also 32 and 210 . 4 and first and 10 % and 10 . 5 % and 425 - 555 - 1234 and 3 degrees and - 27 . 5 degrees c and the next one and the previous one"
         }
-      },
-      {
-        "entity": "4 acres",
-        "type": "builtin.dimension",
-        "startIndex": 102,
-        "endIndex": 108,
-        "resolution": {
-          "unit": "Acre",
-          "value": "4"
-        }
-      },
-      {
-        "entity": "4 pico meters",
-        "type": "builtin.dimension",
-        "startIndex": 114,
-        "endIndex": 126,
-        "resolution": {
-          "unit": "Picometer",
-          "value": "4"
-        }
-      },
-      {
-        "entity": "chrimc@hotmail.com",
-        "type": "builtin.email",
-        "startIndex": 132,
-        "endIndex": 149,
-        "resolution": {
-          "value": "chrimc@hotmail.com"
-        }
-      },
-      {
-        "entity": "$4",
-        "type": "builtin.currency",
-        "startIndex": 155,
-        "endIndex": 156,
-        "resolution": {
-          "unit": "Dollar",
-          "value": "4"
-        }
-      },
-      {
-        "entity": "$4.25",
-        "type": "builtin.currency",
-        "startIndex": 162,
-        "endIndex": 166,
-        "resolution": {
-          "unit": "Dollar",
-          "value": "4.25"
-        }
-      },
-      {
-        "entity": "3rd",
-        "type": "builtin.ordinal",
-        "startIndex": 44,
-        "endIndex": 46,
-        "resolution": {
-          "value": "3"
-        }
-      },
-      {
-        "entity": "first",
-        "type": "builtin.ordinal",
-        "startIndex": 194,
-        "endIndex": 198,
-        "resolution": {
-          "value": "1"
-        }
-      },
-      {
-        "entity": "3rd",
-        "type": "builtin.ordinalV2",
-        "startIndex": 44,
-        "endIndex": 46,
-        "resolution": {
-          "offset": "3",
-          "relativeTo": "start"
-        }
-      },
-      {
-        "entity": "first",
-        "type": "builtin.ordinalV2",
-        "startIndex": 194,
-        "endIndex": 198,
-        "resolution": {
-          "offset": "1",
-          "relativeTo": "start"
-        }
-      },
-      {
-        "entity": "next one",
-        "type": "builtin.ordinalV2.relative",
-        "startIndex": 277,
-        "endIndex": 284,
-        "resolution": {
-          "offset": "1",
-          "relativeTo": "current"
-        }
-      },
-      {
-        "entity": "previous one",
-        "type": "builtin.ordinalV2.relative",
-        "startIndex": 294,
-        "endIndex": 305,
-        "resolution": {
-          "offset": "-1",
-          "relativeTo": "current"
-        }
-      },
-      {
-        "entity": "10%",
-        "type": "builtin.percentage",
-        "startIndex": 204,
-        "endIndex": 206,
-        "resolution": {
-          "value": "10%"
-        }
-      },
-      {
-        "entity": "10.5%",
-        "type": "builtin.percentage",
-        "startIndex": 212,
-        "endIndex": 216,
-        "resolution": {
-          "value": "10.5%"
-        }
-      },
-      {
-        "entity": "425-555-1234",
-        "type": "builtin.phonenumber",
-        "startIndex": 222,
-        "endIndex": 233,
-        "resolution": {
-          "score": "0.9",
-          "value": "425-555-1234"
-        }
-      },
-      {
-        "entity": "3 degrees",
-        "type": "builtin.temperature",
-        "startIndex": 239,
-        "endIndex": 247,
-        "resolution": {
-          "unit": "Degree",
-          "value": "3"
-        }
-      },
-      {
-        "entity": "-27.5 degrees c",
-        "type": "builtin.temperature",
-        "startIndex": 253,
-        "endIndex": 267,
-        "resolution": {
-          "unit": "C",
-          "value": "-27.5"
-        }
-      }
-    ],
-    "compositeEntities": [
-      {
-        "parentType": "Composite1",
-        "value": "12 years old and 3 days old and monday july 3rd , 2019 and every monday and between 3am and 5 : 30am and 4 acres and 4 pico meters and chrimc @ hotmail . com and $ 4 and $ 4 . 25 and also 32 and 210 . 4 and first and 10 % and 10 . 5 % and 425 - 555 - 1234 and 3 degrees and - 27 . 5 degrees c and the next one and the previous one",
-        "children": [
-          {
-            "type": "builtin.age",
-            "value": "12 years old"
-          },
-          {
-            "type": "builtin.age",
-            "value": "3 days old"
-          },
-          {
-            "type": "builtin.datetimeV2.duration",
-            "value": "12 years"
-          },
-          {
-            "type": "builtin.datetimeV2.duration",
-            "value": "3 days"
-          },
-          {
-            "type": "builtin.datetimeV2.date",
-            "value": "monday july 3rd, 2019"
-          },
-          {
-            "type": "builtin.datetimeV2.set",
-            "value": "every monday"
-          },
-          {
-            "type": "builtin.datetimeV2.timerange",
-            "value": "between 3am and 5:30am"
-          },
-          {
-            "type": "builtin.dimension",
-            "value": "4 acres"
-          },
-          {
-            "type": "builtin.dimension",
-            "value": "4 pico meters"
-          },
-          {
-            "type": "builtin.email",
-            "value": "chrimc@hotmail.com"
-          },
-          {
-            "type": "builtin.currency",
-            "value": "$4"
-          },
-          {
-            "type": "builtin.currency",
-            "value": "$4.25"
-          },
-          {
-            "type": "builtin.number",
+      ],
+      "entities": [
+        {
+          "endIndex": 305,
+          "entity": "12 years old and 3 days old and monday july 3rd , 2019 and every monday and between 3am and 5 : 30am and 4 acres and 4 pico meters and chrimc @ hotmail . com and $ 4 and $ 4 . 25 and also 32 and 210 . 4 and first and 10 % and 10 . 5 % and 425 - 555 - 1234 and 3 degrees and - 27 . 5 degrees c and the next one and the previous one",
+          "score": 0.880988955,
+          "startIndex": 0,
+          "type": "Composite1"
+        },
+        {
+          "endIndex": 1,
+          "entity": "12",
+          "resolution": {
+            "subtype": "integer",
             "value": "12"
           },
-          {
-            "type": "builtin.number",
+          "startIndex": 0,
+          "type": "builtin.number"
+        },
+        {
+          "endIndex": 17,
+          "entity": "3",
+          "resolution": {
+            "subtype": "integer",
             "value": "3"
           },
-          {
-            "type": "builtin.number",
+          "startIndex": 17,
+          "type": "builtin.number"
+        },
+        {
+          "endIndex": 52,
+          "entity": "2019",
+          "resolution": {
+            "subtype": "integer",
             "value": "2019"
           },
-          {
-            "type": "builtin.number",
+          "startIndex": 49,
+          "type": "builtin.number"
+        },
+        {
+          "endIndex": 91,
+          "entity": "5",
+          "resolution": {
+            "subtype": "integer",
             "value": "5"
           },
-          {
-            "type": "builtin.number",
+          "startIndex": 91,
+          "type": "builtin.number"
+        },
+        {
+          "endIndex": 102,
+          "entity": "4",
+          "resolution": {
+            "subtype": "integer",
             "value": "4"
           },
-          {
-            "type": "builtin.number",
+          "startIndex": 102,
+          "type": "builtin.number"
+        },
+        {
+          "endIndex": 114,
+          "entity": "4",
+          "resolution": {
+            "subtype": "integer",
             "value": "4"
           },
-          {
-            "type": "builtin.number",
+          "startIndex": 114,
+          "type": "builtin.number"
+        },
+        {
+          "endIndex": 156,
+          "entity": "4",
+          "resolution": {
+            "subtype": "integer",
             "value": "4"
           },
-          {
-            "type": "builtin.number",
+          "startIndex": 156,
+          "type": "builtin.number"
+        },
+        {
+          "endIndex": 166,
+          "entity": "4.25",
+          "resolution": {
+            "subtype": "decimal",
             "value": "4.25"
           },
-          {
-            "type": "builtin.number",
+          "startIndex": 163,
+          "type": "builtin.number"
+        },
+        {
+          "endIndex": 178,
+          "entity": "32",
+          "resolution": {
+            "subtype": "integer",
             "value": "32"
           },
-          {
-            "type": "builtin.number",
+          "startIndex": 177,
+          "type": "builtin.number"
+        },
+        {
+          "endIndex": 188,
+          "entity": "210.4",
+          "resolution": {
+            "subtype": "decimal",
             "value": "210.4"
           },
-          {
-            "type": "builtin.number",
+          "startIndex": 184,
+          "type": "builtin.number"
+        },
+        {
+          "endIndex": 205,
+          "entity": "10",
+          "resolution": {
+            "subtype": "integer",
             "value": "10"
           },
-          {
-            "type": "builtin.number",
+          "startIndex": 204,
+          "type": "builtin.number"
+        },
+        {
+          "endIndex": 215,
+          "entity": "10.5",
+          "resolution": {
+            "subtype": "decimal",
             "value": "10.5"
           },
-          {
-            "type": "builtin.number",
+          "startIndex": 212,
+          "type": "builtin.number"
+        },
+        {
+          "endIndex": 224,
+          "entity": "425",
+          "resolution": {
+            "subtype": "integer",
             "value": "425"
           },
-          {
-            "type": "builtin.number",
+          "startIndex": 222,
+          "type": "builtin.number"
+        },
+        {
+          "endIndex": 228,
+          "entity": "555",
+          "resolution": {
+            "subtype": "integer",
             "value": "555"
           },
-          {
-            "type": "builtin.number",
+          "startIndex": 226,
+          "type": "builtin.number"
+        },
+        {
+          "endIndex": 233,
+          "entity": "1234",
+          "resolution": {
+            "subtype": "integer",
             "value": "1234"
           },
-          {
-            "type": "builtin.number",
+          "startIndex": 230,
+          "type": "builtin.number"
+        },
+        {
+          "endIndex": 239,
+          "entity": "3",
+          "resolution": {
+            "subtype": "integer",
             "value": "3"
           },
-          {
-            "type": "builtin.number",
+          "startIndex": 239,
+          "type": "builtin.number"
+        },
+        {
+          "endIndex": 257,
+          "entity": "-27.5",
+          "resolution": {
+            "subtype": "decimal",
             "value": "-27.5"
           },
-          {
-            "type": "builtin.number",
-            "value": "one"
+          "startIndex": 253,
+          "type": "builtin.number"
+        },
+        {
+          "endIndex": 284,
+          "entity": "one",
+          "resolution": {
+            "subtype": "integer",
+            "value": "1"
           },
-          {
-            "type": "builtin.number",
-            "value": "one"
+          "startIndex": 282,
+          "type": "builtin.number"
+        },
+        {
+          "endIndex": 305,
+          "entity": "one",
+          "resolution": {
+            "subtype": "integer",
+            "value": "1"
           },
-          {
-            "type": "builtin.ordinal",
-            "value": "3rd"
+          "startIndex": 303,
+          "type": "builtin.number"
+        },
+        {
+          "endIndex": 11,
+          "entity": "12 years old",
+          "resolution": {
+            "unit": "Year",
+            "value": "12"
           },
-          {
-            "type": "builtin.ordinal",
-            "value": "first"
+          "startIndex": 0,
+          "type": "builtin.age"
+        },
+        {
+          "endIndex": 26,
+          "entity": "3 days old",
+          "resolution": {
+            "unit": "Day",
+            "value": "3"
           },
-          {
-            "type": "builtin.percentage",
+          "startIndex": 17,
+          "type": "builtin.age"
+        },
+        {
+          "endIndex": 7,
+          "entity": "12 years",
+          "resolution": {
+            "values": [
+              {
+                "timex": "P12Y",
+                "type": "duration",
+                "value": "378432000"
+              }
+            ]
+          },
+          "startIndex": 0,
+          "type": "builtin.datetimeV2.duration"
+        },
+        {
+          "endIndex": 22,
+          "entity": "3 days",
+          "resolution": {
+            "values": [
+              {
+                "timex": "P3D",
+                "type": "duration",
+                "value": "259200"
+              }
+            ]
+          },
+          "startIndex": 17,
+          "type": "builtin.datetimeV2.duration"
+        },
+        {
+          "endIndex": 52,
+          "entity": "monday july 3rd, 2019",
+          "resolution": {
+            "values": [
+              {
+                "timex": "2019-07-03",
+                "type": "date",
+                "value": "2019-07-03"
+              }
+            ]
+          },
+          "startIndex": 32,
+          "type": "builtin.datetimeV2.date"
+        },
+        {
+          "endIndex": 69,
+          "entity": "every monday",
+          "resolution": {
+            "values": [
+              {
+                "timex": "XXXX-WXX-1",
+                "type": "set",
+                "value": "not resolved"
+              }
+            ]
+          },
+          "startIndex": 58,
+          "type": "builtin.datetimeV2.set"
+        },
+        {
+          "endIndex": 96,
+          "entity": "between 3am and 5:30am",
+          "resolution": {
+            "values": [
+              {
+                "end": "05:30:00",
+                "start": "03:00:00",
+                "timex": "(T03,T05:30,PT2H30M)",
+                "type": "timerange"
+              }
+            ]
+          },
+          "startIndex": 75,
+          "type": "builtin.datetimeV2.timerange"
+        },
+        {
+          "endIndex": 108,
+          "entity": "4 acres",
+          "resolution": {
+            "unit": "Acre",
+            "value": "4"
+          },
+          "startIndex": 102,
+          "type": "builtin.dimension"
+        },
+        {
+          "endIndex": 126,
+          "entity": "4 pico meters",
+          "resolution": {
+            "unit": "Picometer",
+            "value": "4"
+          },
+          "startIndex": 114,
+          "type": "builtin.dimension"
+        },
+        {
+          "endIndex": 149,
+          "entity": "chrimc@hotmail.com",
+          "resolution": {
+            "value": "chrimc@hotmail.com"
+          },
+          "startIndex": 132,
+          "type": "builtin.email"
+        },
+        {
+          "endIndex": 156,
+          "entity": "$4",
+          "resolution": {
+            "unit": "Dollar",
+            "value": "4"
+          },
+          "startIndex": 155,
+          "type": "builtin.currency"
+        },
+        {
+          "endIndex": 166,
+          "entity": "$4.25",
+          "resolution": {
+            "unit": "Dollar",
+            "value": "4.25"
+          },
+          "startIndex": 162,
+          "type": "builtin.currency"
+        },
+        {
+          "endIndex": 46,
+          "entity": "3rd",
+          "resolution": {
+            "offset": "3",
+            "relativeTo": "start"
+          },
+          "startIndex": 44,
+          "type": "builtin.ordinalV2"
+        },
+        {
+          "endIndex": 198,
+          "entity": "first",
+          "resolution": {
+            "offset": "1",
+            "relativeTo": "start"
+          },
+          "startIndex": 194,
+          "type": "builtin.ordinalV2"
+        },
+        {
+          "endIndex": 284,
+          "entity": "next one",
+          "resolution": {
+            "offset": "1",
+            "relativeTo": "current"
+          },
+          "startIndex": 277,
+          "type": "builtin.ordinalV2.relative"
+        },
+        {
+          "endIndex": 305,
+          "entity": "previous one",
+          "resolution": {
+            "offset": "-1",
+            "relativeTo": "current"
+          },
+          "startIndex": 294,
+          "type": "builtin.ordinalV2.relative"
+        },
+        {
+          "endIndex": 206,
+          "entity": "10%",
+          "resolution": {
             "value": "10%"
           },
-          {
-            "type": "builtin.percentage",
+          "startIndex": 204,
+          "type": "builtin.percentage"
+        },
+        {
+          "endIndex": 216,
+          "entity": "10.5%",
+          "resolution": {
             "value": "10.5%"
           },
-          {
-            "type": "builtin.phonenumber",
+          "startIndex": 212,
+          "type": "builtin.percentage"
+        },
+        {
+          "endIndex": 233,
+          "entity": "425-555-1234",
+          "resolution": {
+            "score": "0.9",
             "value": "425-555-1234"
           },
-          {
-            "type": "builtin.temperature",
-            "value": "3 degrees"
+          "startIndex": 222,
+          "type": "builtin.phonenumber"
+        },
+        {
+          "endIndex": 247,
+          "entity": "3 degrees",
+          "resolution": {
+            "unit": "Degree",
+            "value": "3"
           },
-          {
-            "type": "builtin.temperature",
-            "value": "-27.5 degrees c"
-          }
-        ]
+          "startIndex": 239,
+          "type": "builtin.temperature"
+        },
+        {
+          "endIndex": 267,
+          "entity": "-27.5 degrees c",
+          "resolution": {
+            "unit": "C",
+            "value": "-27.5"
+          },
+          "startIndex": 253,
+          "type": "builtin.temperature"
+        }
+      ],
+      "intents": [
+        {
+          "intent": "EntityTests",
+          "score": 0.953405857
+        },
+        {
+          "intent": "Roles",
+          "score": 0.197366714
+        },
+        {
+          "intent": "search",
+          "score": 0.14049834
+        },
+        {
+          "intent": "Weather.GetForecast",
+          "score": 0.0143940123
+        },
+        {
+          "intent": "None",
+          "score": 0.01040122
+        },
+        {
+          "intent": "Travel",
+          "score": 0.0100996653
+        },
+        {
+          "intent": "Delivery",
+          "score": 0.0002846266
+        },
+        {
+          "intent": "SpecifyName",
+          "score": 0.000137732946
+        },
+        {
+          "intent": "Help",
+          "score": 4.81870757E-06
+        },
+        {
+          "intent": "Cancel",
+          "score": 1.56337478E-06
+        },
+        {
+          "intent": "Greeting",
+          "score": 8.20979437E-07
+        }
+      ],
+      "query": "12 years old and 3 days old and monday july 3rd, 2019 and every monday and between 3am and 5:30am and 4 acres and 4 pico meters and chrimc@hotmail.com and $4 and $4.25 and also 32 and 210.4 and first and 10% and 10.5% and 425-555-1234 and 3 degrees and -27.5 degrees c and the next one and the previous one",
+      "sentimentAnalysis": {
+        "label": "neutral",
+        "score": 0.5
+      },
+      "topScoringIntent": {
+        "intent": "EntityTests",
+        "score": 0.953405857
       }
-    ],
-    "sentimentAnalysis": {
-      "label": "neutral",
-      "score": 0.5
+    }
+  },
+  "v3": {
+    "options": {
+      "IncludeAllIntents": true,
+      "IncludeAPIResults": true,
+      "IncludeInstanceData": true,
+      "Log": true,
+      "PreferExternalEntities": true,
+      "Slot": "production"
+    },
+    "response": {
+      "prediction": {
+        "entities": {
+          "$instance": {
+            "Composite1": [
+              {
+                "length": 306,
+                "modelType": "Composite Entity Extractor",
+                "modelTypeId": 4,
+                "recognitionSources": [
+                  "model"
+                ],
+                "score": 0.880988955,
+                "startIndex": 0,
+                "text": "12 years old and 3 days old and monday july 3rd, 2019 and every monday and between 3am and 5:30am and 4 acres and 4 pico meters and chrimc@hotmail.com and $4 and $4.25 and also 32 and 210.4 and first and 10% and 10.5% and 425-555-1234 and 3 degrees and -27.5 degrees c and the next one and the previous one",
+                "type": "Composite1"
+              }
+            ],
+            "ordinalV2": [
+              {
+                "length": 3,
+                "modelType": "Prebuilt Entity Extractor",
+                "modelTypeId": 2,
+                "recognitionSources": [
+                  "model"
+                ],
+                "startIndex": 44,
+                "text": "3rd",
+                "type": "builtin.ordinalV2"
+              },
+              {
+                "length": 5,
+                "modelType": "Prebuilt Entity Extractor",
+                "modelTypeId": 2,
+                "recognitionSources": [
+                  "model"
+                ],
+                "startIndex": 194,
+                "text": "first",
+                "type": "builtin.ordinalV2"
+              },
+              {
+                "length": 8,
+                "modelType": "Prebuilt Entity Extractor",
+                "modelTypeId": 2,
+                "recognitionSources": [
+                  "model"
+                ],
+                "startIndex": 277,
+                "text": "next one",
+                "type": "builtin.ordinalV2.relative"
+              },
+              {
+                "length": 12,
+                "modelType": "Prebuilt Entity Extractor",
+                "modelTypeId": 2,
+                "recognitionSources": [
+                  "model"
+                ],
+                "startIndex": 294,
+                "text": "previous one",
+                "type": "builtin.ordinalV2.relative"
+              }
+            ]
+          },
+          "Composite1": [
+            {
+              "$instance": {
+                "age": [
+                  {
+                    "length": 12,
+                    "modelType": "Prebuilt Entity Extractor",
+                    "modelTypeId": 2,
+                    "recognitionSources": [
+                      "model"
+                    ],
+                    "startIndex": 0,
+                    "text": "12 years old",
+                    "type": "builtin.age"
+                  },
+                  {
+                    "length": 10,
+                    "modelType": "Prebuilt Entity Extractor",
+                    "modelTypeId": 2,
+                    "recognitionSources": [
+                      "model"
+                    ],
+                    "startIndex": 17,
+                    "text": "3 days old",
+                    "type": "builtin.age"
+                  }
+                ],
+                "datetimeV2": [
+                  {
+                    "length": 8,
+                    "modelType": "Prebuilt Entity Extractor",
+                    "modelTypeId": 2,
+                    "recognitionSources": [
+                      "model"
+                    ],
+                    "startIndex": 0,
+                    "text": "12 years",
+                    "type": "builtin.datetimeV2.duration"
+                  },
+                  {
+                    "length": 6,
+                    "modelType": "Prebuilt Entity Extractor",
+                    "modelTypeId": 2,
+                    "recognitionSources": [
+                      "model"
+                    ],
+                    "startIndex": 17,
+                    "text": "3 days",
+                    "type": "builtin.datetimeV2.duration"
+                  },
+                  {
+                    "length": 21,
+                    "modelType": "Prebuilt Entity Extractor",
+                    "modelTypeId": 2,
+                    "recognitionSources": [
+                      "model"
+                    ],
+                    "startIndex": 32,
+                    "text": "monday july 3rd, 2019",
+                    "type": "builtin.datetimeV2.date"
+                  },
+                  {
+                    "length": 12,
+                    "modelType": "Prebuilt Entity Extractor",
+                    "modelTypeId": 2,
+                    "recognitionSources": [
+                      "model"
+                    ],
+                    "startIndex": 58,
+                    "text": "every monday",
+                    "type": "builtin.datetimeV2.set"
+                  },
+                  {
+                    "length": 22,
+                    "modelType": "Prebuilt Entity Extractor",
+                    "modelTypeId": 2,
+                    "recognitionSources": [
+                      "model"
+                    ],
+                    "startIndex": 75,
+                    "text": "between 3am and 5:30am",
+                    "type": "builtin.datetimeV2.timerange"
+                  }
+                ],
+                "dimension": [
+                  {
+                    "length": 7,
+                    "modelType": "Prebuilt Entity Extractor",
+                    "modelTypeId": 2,
+                    "recognitionSources": [
+                      "model"
+                    ],
+                    "startIndex": 102,
+                    "text": "4 acres",
+                    "type": "builtin.dimension"
+                  },
+                  {
+                    "length": 13,
+                    "modelType": "Prebuilt Entity Extractor",
+                    "modelTypeId": 2,
+                    "recognitionSources": [
+                      "model"
+                    ],
+                    "startIndex": 114,
+                    "text": "4 pico meters",
+                    "type": "builtin.dimension"
+                  }
+                ],
+                "email": [
+                  {
+                    "length": 18,
+                    "modelType": "Prebuilt Entity Extractor",
+                    "modelTypeId": 2,
+                    "recognitionSources": [
+                      "model"
+                    ],
+                    "startIndex": 132,
+                    "text": "chrimc@hotmail.com",
+                    "type": "builtin.email"
+                  }
+                ],
+                "money": [
+                  {
+                    "length": 2,
+                    "modelType": "Prebuilt Entity Extractor",
+                    "modelTypeId": 2,
+                    "recognitionSources": [
+                      "model"
+                    ],
+                    "startIndex": 155,
+                    "text": "$4",
+                    "type": "builtin.currency"
+                  },
+                  {
+                    "length": 5,
+                    "modelType": "Prebuilt Entity Extractor",
+                    "modelTypeId": 2,
+                    "recognitionSources": [
+                      "model"
+                    ],
+                    "startIndex": 162,
+                    "text": "$4.25",
+                    "type": "builtin.currency"
+                  }
+                ],
+                "number": [
+                  {
+                    "length": 2,
+                    "modelType": "Prebuilt Entity Extractor",
+                    "modelTypeId": 2,
+                    "recognitionSources": [
+                      "model"
+                    ],
+                    "startIndex": 0,
+                    "text": "12",
+                    "type": "builtin.number"
+                  },
+                  {
+                    "length": 1,
+                    "modelType": "Prebuilt Entity Extractor",
+                    "modelTypeId": 2,
+                    "recognitionSources": [
+                      "model"
+                    ],
+                    "startIndex": 17,
+                    "text": "3",
+                    "type": "builtin.number"
+                  },
+                  {
+                    "length": 4,
+                    "modelType": "Prebuilt Entity Extractor",
+                    "modelTypeId": 2,
+                    "recognitionSources": [
+                      "model"
+                    ],
+                    "startIndex": 49,
+                    "text": "2019",
+                    "type": "builtin.number"
+                  },
+                  {
+                    "length": 1,
+                    "modelType": "Prebuilt Entity Extractor",
+                    "modelTypeId": 2,
+                    "recognitionSources": [
+                      "model"
+                    ],
+                    "startIndex": 91,
+                    "text": "5",
+                    "type": "builtin.number"
+                  },
+                  {
+                    "length": 1,
+                    "modelType": "Prebuilt Entity Extractor",
+                    "modelTypeId": 2,
+                    "recognitionSources": [
+                      "model"
+                    ],
+                    "startIndex": 102,
+                    "text": "4",
+                    "type": "builtin.number"
+                  },
+                  {
+                    "length": 1,
+                    "modelType": "Prebuilt Entity Extractor",
+                    "modelTypeId": 2,
+                    "recognitionSources": [
+                      "model"
+                    ],
+                    "startIndex": 114,
+                    "text": "4",
+                    "type": "builtin.number"
+                  },
+                  {
+                    "length": 1,
+                    "modelType": "Prebuilt Entity Extractor",
+                    "modelTypeId": 2,
+                    "recognitionSources": [
+                      "model"
+                    ],
+                    "startIndex": 156,
+                    "text": "4",
+                    "type": "builtin.number"
+                  },
+                  {
+                    "length": 4,
+                    "modelType": "Prebuilt Entity Extractor",
+                    "modelTypeId": 2,
+                    "recognitionSources": [
+                      "model"
+                    ],
+                    "startIndex": 163,
+                    "text": "4.25",
+                    "type": "builtin.number"
+                  },
+                  {
+                    "length": 2,
+                    "modelType": "Prebuilt Entity Extractor",
+                    "modelTypeId": 2,
+                    "recognitionSources": [
+                      "model"
+                    ],
+                    "startIndex": 177,
+                    "text": "32",
+                    "type": "builtin.number"
+                  },
+                  {
+                    "length": 5,
+                    "modelType": "Prebuilt Entity Extractor",
+                    "modelTypeId": 2,
+                    "recognitionSources": [
+                      "model"
+                    ],
+                    "startIndex": 184,
+                    "text": "210.4",
+                    "type": "builtin.number"
+                  },
+                  {
+                    "length": 2,
+                    "modelType": "Prebuilt Entity Extractor",
+                    "modelTypeId": 2,
+                    "recognitionSources": [
+                      "model"
+                    ],
+                    "startIndex": 204,
+                    "text": "10",
+                    "type": "builtin.number"
+                  },
+                  {
+                    "length": 4,
+                    "modelType": "Prebuilt Entity Extractor",
+                    "modelTypeId": 2,
+                    "recognitionSources": [
+                      "model"
+                    ],
+                    "startIndex": 212,
+                    "text": "10.5",
+                    "type": "builtin.number"
+                  },
+                  {
+                    "length": 3,
+                    "modelType": "Prebuilt Entity Extractor",
+                    "modelTypeId": 2,
+                    "recognitionSources": [
+                      "model"
+                    ],
+                    "startIndex": 222,
+                    "text": "425",
+                    "type": "builtin.number"
+                  },
+                  {
+                    "length": 3,
+                    "modelType": "Prebuilt Entity Extractor",
+                    "modelTypeId": 2,
+                    "recognitionSources": [
+                      "model"
+                    ],
+                    "startIndex": 226,
+                    "text": "555",
+                    "type": "builtin.number"
+                  },
+                  {
+                    "length": 4,
+                    "modelType": "Prebuilt Entity Extractor",
+                    "modelTypeId": 2,
+                    "recognitionSources": [
+                      "model"
+                    ],
+                    "startIndex": 230,
+                    "text": "1234",
+                    "type": "builtin.number"
+                  },
+                  {
+                    "length": 1,
+                    "modelType": "Prebuilt Entity Extractor",
+                    "modelTypeId": 2,
+                    "recognitionSources": [
+                      "model"
+                    ],
+                    "startIndex": 239,
+                    "text": "3",
+                    "type": "builtin.number"
+                  },
+                  {
+                    "length": 5,
+                    "modelType": "Prebuilt Entity Extractor",
+                    "modelTypeId": 2,
+                    "recognitionSources": [
+                      "model"
+                    ],
+                    "startIndex": 253,
+                    "text": "-27.5",
+                    "type": "builtin.number"
+                  },
+                  {
+                    "length": 3,
+                    "modelType": "Prebuilt Entity Extractor",
+                    "modelTypeId": 2,
+                    "recognitionSources": [
+                      "model"
+                    ],
+                    "startIndex": 282,
+                    "text": "one",
+                    "type": "builtin.number"
+                  },
+                  {
+                    "length": 3,
+                    "modelType": "Prebuilt Entity Extractor",
+                    "modelTypeId": 2,
+                    "recognitionSources": [
+                      "model"
+                    ],
+                    "startIndex": 303,
+                    "text": "one",
+                    "type": "builtin.number"
+                  }
+                ],
+                "percentage": [
+                  {
+                    "length": 3,
+                    "modelType": "Prebuilt Entity Extractor",
+                    "modelTypeId": 2,
+                    "recognitionSources": [
+                      "model"
+                    ],
+                    "startIndex": 204,
+                    "text": "10%",
+                    "type": "builtin.percentage"
+                  },
+                  {
+                    "length": 5,
+                    "modelType": "Prebuilt Entity Extractor",
+                    "modelTypeId": 2,
+                    "recognitionSources": [
+                      "model"
+                    ],
+                    "startIndex": 212,
+                    "text": "10.5%",
+                    "type": "builtin.percentage"
+                  }
+                ],
+                "phonenumber": [
+                  {
+                    "length": 12,
+                    "modelType": "Prebuilt Entity Extractor",
+                    "modelTypeId": 2,
+                    "recognitionSources": [
+                      "model"
+                    ],
+                    "score": 0.9,
+                    "startIndex": 222,
+                    "text": "425-555-1234",
+                    "type": "builtin.phonenumber"
+                  }
+                ],
+                "temperature": [
+                  {
+                    "length": 9,
+                    "modelType": "Prebuilt Entity Extractor",
+                    "modelTypeId": 2,
+                    "recognitionSources": [
+                      "model"
+                    ],
+                    "startIndex": 239,
+                    "text": "3 degrees",
+                    "type": "builtin.temperature"
+                  },
+                  {
+                    "length": 15,
+                    "modelType": "Prebuilt Entity Extractor",
+                    "modelTypeId": 2,
+                    "recognitionSources": [
+                      "model"
+                    ],
+                    "startIndex": 253,
+                    "text": "-27.5 degrees c",
+                    "type": "builtin.temperature"
+                  }
+                ]
+              },
+              "age": [
+                {
+                  "number": 12,
+                  "unit": "Year"
+                },
+                {
+                  "number": 3,
+                  "unit": "Day"
+                }
+              ],
+              "datetimeV2": [
+                {
+                  "type": "duration",
+                  "values": [
+                    {
+                      "timex": "P12Y",
+                      "value": "378432000"
+                    }
+                  ]
+                },
+                {
+                  "type": "duration",
+                  "values": [
+                    {
+                      "timex": "P3D",
+                      "value": "259200"
+                    }
+                  ]
+                },
+                {
+                  "type": "date",
+                  "values": [
+                    {
+                      "timex": "2019-07-03",
+                      "value": "2019-07-03"
+                    }
+                  ]
+                },
+                {
+                  "type": "set",
+                  "values": [
+                    {
+                      "timex": "XXXX-WXX-1",
+                      "value": "not resolved"
+                    }
+                  ]
+                },
+                {
+                  "type": "timerange",
+                  "values": [
+                    {
+                      "end": "05:30:00",
+                      "start": "03:00:00",
+                      "timex": "(T03,T05:30,PT2H30M)"
+                    }
+                  ]
+                }
+              ],
+              "dimension": [
+                {
+                  "number": 4,
+                  "unit": "Acre"
+                },
+                {
+                  "number": 4,
+                  "unit": "Picometer"
+                }
+              ],
+              "email": [
+                "chrimc@hotmail.com"
+              ],
+              "money": [
+                {
+                  "number": 4,
+                  "unit": "Dollar"
+                },
+                {
+                  "number": 4.25,
+                  "unit": "Dollar"
+                }
+              ],
+              "number": [
+                12,
+                3,
+                2019,
+                5,
+                4,
+                4,
+                4,
+                4.25,
+                32,
+                210.4,
+                10,
+                10.5,
+                425,
+                555,
+                1234,
+                3,
+                -27.5,
+                1,
+                1
+              ],
+              "percentage": [
+                10,
+                10.5
+              ],
+              "phonenumber": [
+                "425-555-1234"
+              ],
+              "temperature": [
+                {
+                  "number": 3,
+                  "unit": "Degree"
+                },
+                {
+                  "number": -27.5,
+                  "unit": "C"
+                }
+              ]
+            }
+          ],
+          "ordinalV2": [
+            {
+              "offset": 3,
+              "relativeTo": "start"
+            },
+            {
+              "offset": 1,
+              "relativeTo": "start"
+            },
+            {
+              "offset": 1,
+              "relativeTo": "current"
+            },
+            {
+              "offset": -1,
+              "relativeTo": "current"
+            }
+          ]
+        },
+        "intents": {
+          "Cancel": {
+            "score": 1.56337478E-06
+          },
+          "Delivery": {
+            "score": 0.0002846266
+          },
+          "EntityTests": {
+            "score": 0.953405857
+          },
+          "Greeting": {
+            "score": 8.20979437E-07
+          },
+          "Help": {
+            "score": 4.81870757E-06
+          },
+          "None": {
+            "score": 0.01040122
+          },
+          "Roles": {
+            "score": 0.197366714
+          },
+          "search": {
+            "score": 0.14049834
+          },
+          "SpecifyName": {
+            "score": 0.000137732946
+          },
+          "Travel": {
+            "score": 0.0100996653
+          },
+          "Weather.GetForecast": {
+            "score": 0.0143940123
+          }
+        },
+        "normalizedQuery": "12 years old and 3 days old and monday july 3rd, 2019 and every monday and between 3am and 5:30am and 4 acres and 4 pico meters and chrimc@hotmail.com and $4 and $4.25 and also 32 and 210.4 and first and 10% and 10.5% and 425-555-1234 and 3 degrees and -27.5 degrees c and the next one and the previous one",
+        "sentiment": {
+          "label": "neutral",
+          "score": 0.5
+        },
+        "topIntent": "EntityTests"
+      },
+      "query": "12 years old and 3 days old and monday july 3rd, 2019 and every monday and between 3am and 5:30am and 4 acres and 4 pico meters and chrimc@hotmail.com and $4 and $4.25 and also 32 and 210.4 and first and 10% and 10.5% and 425-555-1234 and 3 degrees and -27.5 degrees c and the next one and the previous one"
     }
   }
 }

@@ -78,8 +78,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers.Tests
             var turnContext = GetTurnContext("Next thursday at 4pm.");
             var results = recognizers.Value.RecognizeEntities(turnContext).Result;
 
-            Assert.AreEqual(3, results.Count, "Should be 2 entities found");
+            Assert.AreEqual(4, results.Count, "Should be 3 entities found");
             Assert.AreEqual(1, results.Where(entity => entity.Type == "datetimeV2.datetime").Count(), "Should have 1 datetime result");
+            Assert.AreEqual(1, results.Where(entity => entity.Type == "ordinal.relative").Count(), "Should have 1 ordinal.relative result");
+            Assert.AreEqual(1, results.Where(entity => entity.Type == "dimension").Count(), "Should have 1 dimension result");
         }
 
         [TestMethod]

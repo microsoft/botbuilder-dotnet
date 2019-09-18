@@ -6,9 +6,9 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.TriggerHandlers;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.TriggerHandlers;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
 using Microsoft.Bot.Builder.Expressions;
@@ -653,8 +653,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 }
             };
 
-            innerDialog.AddDialogs(new[]
-            {
+            innerDialog.Dialogs.Add(
                 new AdaptiveDialog("Greeting")
                 {
                     Triggers = new List<TriggerHandler>()
@@ -683,7 +682,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             }
                         }
                     }
-                },
+                });
+            innerDialog.Dialogs.Add(
                 new AdaptiveDialog("TellJokeDialog")
                 {
                     Triggers = new List<TriggerHandler>()
@@ -698,8 +698,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             }
                         }
                     }
-                }
-            });
+                });
 
             var outerDialog = new AdaptiveDialog("outer")
             {
@@ -744,7 +743,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     },
                 }
             };
-            outerDialog.AddDialogs(new List<Dialog>() { innerDialog });
+            outerDialog.Dialogs.Add(innerDialog);
 
             await CreateFlow(outerDialog)
             .Send("hi")
@@ -1072,7 +1071,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 }
             };
 
-            rootDialog.AddDialog(ageDialog);
+            rootDialog.Dialogs.Add(ageDialog);
 
             await CreateFlow(rootDialog)
             .Send("Hi")
@@ -1966,7 +1965,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 }
             };
 
-            rootDialog.AddDialog(ageDialog);
+            rootDialog.Dialogs.Add(ageDialog);
 
             await CreateFlow(rootDialog)
             .Send("Hi")

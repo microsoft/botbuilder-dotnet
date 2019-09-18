@@ -5,9 +5,9 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.TriggerHandlers;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.TriggerHandlers;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
@@ -1044,7 +1044,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         new SendActivity("I'm a joke bot. To get started say 'tell me a joke'")
                     }),
             });
-            testDialog.AddDialog(askNameDialog);
+            testDialog.Dialogs.Add(askNameDialog);
 
             await CreateFlow(testDialog)
             .SendConversationUpdate()
@@ -1178,7 +1178,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     })
             });
 
-            testDialog.AddDialog(tellJokeDialog);
+            testDialog.Dialogs.Add(tellJokeDialog);
 
             await CreateFlow(testDialog)
             .Send("hi")
@@ -1280,7 +1280,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     }
                 }
             };
-            rootDialog.AddDialog(outer);
+            rootDialog.Dialogs.Add(outer);
 
             await CreateFlow(rootDialog)
             .Send("moo")
