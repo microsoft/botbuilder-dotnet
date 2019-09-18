@@ -14,13 +14,17 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </summary>
         /// <param name="templates">The lg templates.</param>
         /// <param name="imports">The lg imports.</param>
+        /// <param name="content">original lg content.</param>
         /// <param name="id">The id of the lg source.</param>
-        public LGResource(IList<LGTemplate> templates, IList<LGImport> imports, string id = "")
+        public LGResource(IList<LGTemplate> templates, IList<LGImport> imports, string content, string id = "")
         {
             Templates = templates;
             Imports = imports;
             Id = id;
+            Content = content;
         }
+
+        public string Content { get; set; }
 
         /// <summary>
         /// Gets or sets id of this lg source.
@@ -45,6 +49,70 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// LG imports.
         /// </value>
         public IList<LGImport> Imports { get; set; }
+
+        /// <summary>
+        /// update an exist template.
+        /// </summary>
+        /// <param name="templateName">origin template name. the only id of a template.</param>
+        /// <param name="parameters">new params.</param>
+        /// <param name="templateBody">new template body.</param>
+        /// <returns>new LG resource.</returns>
+        public LGResource UpdateTemplate(string templateName, List<string> parameters, string templateBody)
+        {
+            var template = Templates.FirstOrDefault(u => u.Name == templateName);
+            if (template == null)
+            {
+                return this;
+            }
+            var templateNameLine = BuildTemplateNameLine(templateName, parameters);
+            var newTemplateBody = ConvertTemplateBody(templateBody);
+            var content = $"{templateNameLine}\r\n{newTemplateBody}";
+            var startLine = template.ParseTree.Start.Line - 1;
+            var stopLine = template.ParseTree.Stop.Line - 1;
+
+            var newContent = ReplaceRangeContent(Content, startLine, stopLine, content);
+            return LGParser.Parse(newContent, Id);
+        }
+
+        /// <summary>
+        /// Add a new template and return LG resource.
+        /// </summary>
+        /// <param name="templateName">new template name.</param>
+        /// <param name="parameters">new params.</param>
+        /// <param name="templateBody">new  template body.</param>
+        /// <returns>new lg resource.</returns>
+        public LGResource AddTemplate(string templateName, List<string> parameters, string templateBody)
+        {
+            var template = Templates.FirstOrDefault(u => u.Name == templateName);
+            if (template != null)
+            {
+                throw new Exception($"template {templateName} already exists.");
+            }
+            var templateNameLine = BuildTemplateNameLine(templateName, parameters);
+            var newTemplateBody = ConvertTemplateBody(templateBody);
+            var newContent = $"{Content}\r\n{templateNameLine}\r\n{newTemplateBody}";
+            return LGParser.Parse(newContent, Id);
+        }
+
+        /// <summary>
+        /// Delete an exist template.
+        /// </summary>
+        /// <param name="templateName">which template should delete.</param>
+        /// <returns>return the new lg resource.</returns>
+        public LGResource DeleteTemplate(string templateName)
+        {
+            var template = Templates.FirstOrDefault(u => u.Name == templateName);
+            if (template == null)
+            {
+                return this;
+            }
+
+            var startLine = template.ParseTree.Start.Line - 1;
+            var stopLine = template.ParseTree.Stop.Line - 1;
+
+            var newContent = ReplaceRangeContent(Content, startLine, stopLine, null);
+            return LGParser.Parse(newContent, Id);
+        }
 
         /// <summary>
         /// Override the Equals function for LGResource comparison.
@@ -83,6 +151,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return resourcesFound.ToList();
         }
 
+        public override string ToString() => Content;
+
         /// <summary>
         /// Resolve imported LG resources from a start resource.
         /// All the imports will be visited and resolved to LGResouce list.
@@ -112,5 +182,42 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 }
             }
         }
+
+        private string ReplaceRangeContent(string originString, int startLine, int stopLine, string replaceString)
+        {
+            var originList = originString.Split('\n');
+            var destList = new List<string>();
+            if (startLine < 0 || startLine > stopLine || originList.Length <= stopLine)
+            {
+                throw new Exception("index out of range.");
+            }
+
+            destList.AddRange(originList.Take(startLine));
+
+            if (!string.IsNullOrEmpty(replaceString))
+            {
+                destList.Add(replaceString);
+            }
+
+            destList.AddRange(originList.Skip(stopLine + 1));
+
+            return string.Join("\n", destList);
+        }
+
+        private string ConvertTemplateBody(string templateBody)
+        {
+            if (string.IsNullOrWhiteSpace(templateBody))
+            {
+                return string.Empty;
+            }
+            var replaceList = templateBody.Split('\n');
+
+            return string.Join("\n", replaceList.Select(u => WrapTemplateBodyString(u)));
+        }
+
+        // we will warp '# abc' into '- #abc', to avoid adding additional template.
+        private string WrapTemplateBodyString(string replaceItem) => replaceItem.TrimStart().StartsWith("#") ? $"- {replaceItem.TrimStart()}" : replaceItem;
+
+        private string BuildTemplateNameLine(string templateName, List<string> parameters) => $"# {templateName}({string.Join(", ", parameters)})";
     }
 }
