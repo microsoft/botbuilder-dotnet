@@ -12,6 +12,7 @@ using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Teams;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Schema.Teams;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.BotBuilderSamples.Bots
@@ -72,10 +73,16 @@ namespace Microsoft.BotBuilderSamples.Bots
         private async Task ShowChannels(ITurnContext<IMessageActivity> turnContext, TeamsConnectorClient teamsConnectorClient, CancellationToken cancellationToken)
         {
             var channelList = await teamsConnectorClient.Teams.FetchChannelListAsync(turnContext.Activity.GetChannelData<TeamsChannelData>().Team.Id);
-
             var replyActivity = MessageFactory.Text($"<at>{turnContext.Activity.From.Name}</at> Total of {channelList.Conversations.Count} channels are currently in team");
-            replyActivity.Entities = new List<Entity> { new Mention { Text = turnContext.Activity.From.Name, Mentioned = turnContext.Activity.From } };
 
+            var mention = new Mention
+            {
+                Mentioned = turnContext.Activity.From,
+                Text = $"<at>{turnContext.Activity.From.Name}</at>",
+            };
+
+            replyActivity.Entities = new List<Entity> { mention };
+            
             await turnContext.SendActivityAsync(replyActivity);
 
             var messages = channelList.Conversations.Select(channel => $"{channel.Id} --> {channel.Name}");
@@ -85,13 +92,19 @@ namespace Microsoft.BotBuilderSamples.Bots
 
         private async Task ShowMembers(ITurnContext<IMessageActivity> turnContext, TeamsConnectorClient teamsConnectorClient, string conversationId, CancellationToken cancellationToken)
         {
+            var channelData = turnContext.Activity.GetChannelData<TeamsChannelData>();
             var teamMembers = await turnContext.TurnState.Get<IConnectorClient>().Conversations.GetConversationMembersAsync(conversationId);
+            var mention = new Mention
+            {
+                Mentioned = turnContext.Activity.From,
+                Text = $"<at>{turnContext.Activity.From.Name}</at>",
+            };
 
-            var replyActivity = MessageFactory.Text($"<at>{turnContext.Activity.From.Name}</at> Total of {teamMembers.Count} members are currently in team");
-            replyActivity.Entities = new List<Entity> { new Mention { Text = turnContext.Activity.From.Name, Mentioned = turnContext.Activity.From } };
+            var replyActivity1 = MessageFactory.Text($"{mention.Text} there are {teamMembers.Count} people in this team.");
+            replyActivity1.Entities = new List<Entity> { mention };
 
-            await turnContext.SendActivityAsync(replyActivity);
-
+            await turnContext.SendActivityAsync(replyActivity1);
+            
             var messages = teamMembers
                 .Select(channelAccount => JObject.FromObject(channelAccount).ToObject<TeamsChannelAccount>())
                 .Select(teamsChannelAccount => $"{teamsChannelAccount.AadObjectId} --> {teamsChannelAccount.Name} -->  {teamsChannelAccount.UserPrincipalName}");
