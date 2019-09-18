@@ -32,7 +32,6 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// Creates a Webex Client Wrapper. See <see cref="WebexAdapterOptions"/> for a full definition of the allowed parameters.
         /// </summary>
         /// <param name="config">An object containing API credentials, a webhook verification token and other options.</param>
-        /// <param name="webexClient">A Webex API interface.</param>
         public WebexClientWrapper(WebexAdapterOptions config)
         {
             _config = config ?? throw new ArgumentNullException(nameof(config));

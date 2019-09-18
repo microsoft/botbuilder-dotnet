@@ -19,9 +19,8 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WebexAdapter"/> class.
-        /// Creates a Webex adapter. See <see cref="WebexAdapterOptions"/> for a full definition of the allowed parameters.
+        /// Creates a Webex adapter.
         /// </summary>
-        /// <param name="config">An object containing API credentials, a webhook verification token and other options.</param>
         /// <param name="webexClient">A Webex API interface.</param>
         public WebexAdapter(WebexClientWrapper webexClient)
         {
