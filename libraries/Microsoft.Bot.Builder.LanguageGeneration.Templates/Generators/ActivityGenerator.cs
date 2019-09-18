@@ -14,11 +14,22 @@ namespace Microsoft.Bot.Builder.Dialogs
 {
     /// <summary>
     /// The ActivityGenerator implements IActivityGenerator by using ILanguageGenerator
-    /// to generate text and then uses simple markdown semantics like chatdown to create complex
-    /// attachments such as herocards, image cards, image attachments etc.
+    /// to generate text and then uses simple markdown semantics like chatdown to create Activity
     /// </summary>
     public class ActivityGenerator : IActivityGenerator
     {
+        private readonly Dictionary<string, string> genericCardTypeMapping = new Dictionary<string, string>
+        {
+            { nameof(HeroCard), HeroCard.ContentType },
+            { nameof(ThumbnailCard), ThumbnailCard.ContentType },
+            { nameof(AudioCard), AudioCard.ContentType },
+            { nameof(VideoCard), VideoCard.ContentType },
+            { nameof(AnimationCard), AnimationCard.ContentType },
+            { nameof(SigninCard), SigninCard.ContentType },
+            { nameof(OAuthCard), OAuthCard.ContentType },
+            { nameof(ReceiptCard), ReceiptCard.ContentType }
+        };
+
         public ActivityGenerator()
         {
         }
@@ -32,12 +43,12 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <returns>activity.</returns>
         public async Task<Activity> Generate(ITurnContext turnContext, string template, object data)
         {
-            var lgOriginalStringResult = template;
+            var lgStringResult = template;
             var languageGenerator = turnContext.TurnState.Get<ILanguageGenerator>();
             if (languageGenerator != null)
             {
                 // data bind template 
-                lgOriginalStringResult = await languageGenerator.Generate(turnContext, template, data).ConfigureAwait(false);
+                lgStringResult = await languageGenerator.Generate(turnContext, template, data).ConfigureAwait(false);
             }
             else
             {
@@ -46,19 +57,19 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             try
             {
-                var lgOriginResult = JObject.Parse(lgOriginalStringResult);
-                return BuildActivityFromObject(lgOriginResult);
+                var lgObjectResult = JObject.Parse(lgStringResult);
+                return BuildActivityFromObject(lgObjectResult);
             }
             catch
             {
-                return BuildActivityFromText(lgOriginalStringResult?.ToString()?.Trim());
+                return BuildActivityFromText(lgStringResult?.ToString()?.Trim());
             }
         }
 
         /// <summary>
-        /// Given a lg result, create an text activity.
+        /// Given a lg result, create a text activity.
         /// </summary>
-        /// This method will create an MessageActivity from text.
+        /// This method will create a MessageActivity from text.
         /// <param name="text">lg text output.</param>
         /// <returns>activity with text.</returns>
         private Activity BuildActivityFromText(string text)
@@ -100,6 +111,8 @@ namespace Microsoft.Bot.Builder.Dialogs
         private Activity BuildActivity(JObject lgJObj)
         {
             Activity activity;
+
+            // Currently Event and Message type are supported.
             if (lgJObj["type"]?.ToString() == ActivityTypes.Event)
             {
                 activity = BuildEventActivity(lgJObj) as Activity;
@@ -108,9 +121,6 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 activity = BuildMessageActivity(lgJObj) as Activity;
             }
-
-            // TODO
-            // BuildGenericActivity(activity, lgJObj);
 
             return activity;
         }
@@ -333,47 +343,17 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             var type = GetStructureType(lgJObj);
 
-            switch (type)
+            if (genericCardTypeMapping.ContainsKey(type))
             {
-                case nameof(HeroCard):
-                    attachment = GetCardAtttachment(HeroCard.ContentType, lgJObj);
-                    break;
-
-                case nameof(ThumbnailCard):
-                    attachment = GetCardAtttachment(ThumbnailCard.ContentType, lgJObj);
-                    break;
-
-                case nameof(AudioCard):
-                    attachment = GetCardAtttachment(AudioCard.ContentType, lgJObj);
-                    break;
-
-                case nameof(VideoCard):
-                    attachment = GetCardAtttachment(VideoCard.ContentType, lgJObj);
-                    break;
-
-                case nameof(AnimationCard):
-                    attachment = GetCardAtttachment(AnimationCard.ContentType, lgJObj);
-                    break;
-
-                case nameof(SigninCard):
-                    attachment = GetCardAtttachment(SigninCard.ContentType, lgJObj);
-                    break;
-
-                case nameof(OAuthCard):
-                    attachment = GetCardAtttachment(OAuthCard.ContentType, lgJObj);
-                    break;
-
-                case nameof(ReceiptCard):
-                    attachment = GetCardAtttachment(ReceiptCard.ContentType, lgJObj);
-                    break;
-
-                case nameof(AdaptiveCard):
-                    attachment = new Attachment(AdaptiveCard.ContentType, content: lgJObj);
-                    break;
-
-                default:
-                    isAttachment = false;
-                    break;
+                attachment = GetCardAtttachment(genericCardTypeMapping[type], lgJObj);
+            }
+            else if (type == nameof(AdaptiveCard))
+            {
+                attachment = new Attachment(AdaptiveCard.ContentType, content: lgJObj);
+            }
+            else
+            {
+                isAttachment = false;
             }
 
             return isAttachment;
@@ -462,20 +442,9 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         private List<JToken> NormalizedToList(JToken item)
         {
-            var list = new List<JToken>();
-            if (item != null)
-            {
-                if (item is JArray array)
-                {
-                    list = array.ToList();
-                }
-                else
-                {
-                    list.Add(item);
-                }
-            }
-
-            return list;
+            return item == null ? 
+                new List<JToken>() :
+                item is JArray array ? array.ToList() : new List<JToken>() { item };
         }
     }
 }
