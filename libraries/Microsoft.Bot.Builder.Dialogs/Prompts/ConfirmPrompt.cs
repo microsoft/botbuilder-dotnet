@@ -184,6 +184,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         private string DetermineCulture(Activity activity)
         {
+            activity.Locale = activity.Locale.ToLower();
             var culture = activity.Locale ?? DefaultLocale;
             if (string.IsNullOrEmpty(culture) || !ChoiceDefaults.ContainsKey(culture))
             {
