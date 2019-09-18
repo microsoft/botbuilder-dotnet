@@ -129,9 +129,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         public override object VisitNormalTemplateBody([NotNull] LGFileParser.NormalTemplateBodyContext context)
         {
-            var normalTemplateStrs = context.normalTemplateString();
+            var normalTemplateStrs = context.templateString();
             var rd = new Random();
-            return Visit(normalTemplateStrs[rd.Next(normalTemplateStrs.Length)]);
+            return Visit(normalTemplateStrs[rd.Next(normalTemplateStrs.Length)].normalTemplateString());
         }
 
         public override object VisitIfElseBody([NotNull] LGFileParser.IfElseBodyContext context)

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
@@ -13,15 +14,16 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// Initializes a new instance of the <see cref="LGTemplate"/> class.
         /// </summary>
         /// <param name="parseTree">The parse tree of this template.</param>
+        /// <param name="lgfileContent">lg file content.</param>
         /// <param name="source">Source of this template.</param>
-        public LGTemplate(LGFileParser.TemplateDefinitionContext parseTree, string source = "")
+        public LGTemplate(LGFileParser.TemplateDefinitionContext parseTree, string lgfileContent, string source = "")
         {
             ParseTree = parseTree;
             Source = source;
 
             Name = ExtractName(parseTree);
             Parameters = ExtractParameters(parseTree);
-            Body = ExtractBody(parseTree);
+            Body = ExtractBody(parseTree, lgfileContent);
         }
 
         /// <summary>
@@ -64,20 +66,27 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// </value>
         public LGFileParser.TemplateDefinitionContext ParseTree { get; }
 
-        private string ExtractBody(LGFileParser.TemplateDefinitionContext parseTree)
+        public override string ToString() => $"[{Name}({string.Join(", ", Parameters)})]\"{Body}\"";
+
+        private string ExtractBody(LGFileParser.TemplateDefinitionContext parseTree, string lgfileContent)
         {
-            var originText = parseTree.templateBody()?.GetText();
-            if (originText == null)
+            var templateBody = parseTree.templateBody();
+            if (templateBody == null)
             {
-                return null;
+                return string.Empty;
             }
 
-            var eof = "<EOF>";
-            var result = originText.EndsWith(eof) ? originText.Substring(0, originText.Length - eof.Length) : originText;
-            return result.TrimEnd('\r', '\n');
+            var startLine = templateBody.Start.Line - 1;
+            var stopLine = templateBody.Stop.Line - 1;
+
+            return GetRangeContent(lgfileContent, startLine, stopLine);
         }
 
-        private string ExtractName(LGFileParser.TemplateDefinitionContext parseTree) => parseTree.templateNameLine().templateName().GetText();
+        private string ExtractName(LGFileParser.TemplateDefinitionContext parseTree)
+        {
+            var name = parseTree.templateNameLine().templateName()?.GetText();
+            return name ?? string.Empty;
+        }
 
         private List<string> ExtractParameters(LGFileParser.TemplateDefinitionContext parseTree)
         {
@@ -88,6 +97,18 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
 
             return new List<string>();
+        }
+
+        private string GetRangeContent(string originString, int startLine, int stopLine)
+        {
+            var originList = originString.Split('\n');
+            if (startLine < 0 || startLine > stopLine || originList.Length <= stopLine)
+            {
+                throw new Exception("index out of range.");
+            }
+
+            var destList = originList.Skip(startLine).Take(stopLine - startLine + 1);
+            return string.Join("\n", destList).TrimEnd('\r');
         }
     }
 }

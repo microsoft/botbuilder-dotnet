@@ -9,10 +9,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public static LGResource Parse(string content, string id = "")
         {
             var fileContext = GetFileContentContext(content, id);
-            var templates = ExtractLGTemplates(fileContext, id);
+            var templates = ExtractLGTemplates(fileContext, content, id);
             var imports = ExtractLGImports(fileContext, id);
 
-            return new LGResource(templates, imports, id);
+            return new LGResource(templates, imports, content, id);
         }
 
         /// <summary>
@@ -44,15 +44,16 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// Extract LG templates from a file parse tree.
         /// </summary>
         /// <param name="file">LGFile context from antlr parser.</param>
+        /// <param name="lgfileContent">LGFile content.</param>
         /// <param name="source">text source.</param>
         /// <returns>lg template list.</returns>
-        private static IList<LGTemplate> ExtractLGTemplates(LGFileParser.FileContext file, string source = "")
+        private static IList<LGTemplate> ExtractLGTemplates(LGFileParser.FileContext file, string lgfileContent, string source = "")
         {
             return file == null ? new List<LGTemplate>() :
                    file.paragraph()
                    .Select(x => x.templateDefinition())
                    .Where(x => x != null)
-                   .Select(t => new LGTemplate(t, source))
+                   .Select(t => new LGTemplate(t, lgfileContent, source))
                    .ToList();
         }
 

@@ -74,9 +74,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             var result = new AnalyzerResult();
 
-            foreach (var templateStr in context.normalTemplateString())
+            foreach (var templateStr in context.templateString())
             {
-                var item = Visit(templateStr);
+                var item = Visit(templateStr.normalTemplateString());
                 result.Union(item);
             }
 
