@@ -40,16 +40,16 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// Gets or sets a dictionary of Default ChoiceOptions to be used for locale recognition.
+        /// Gets or sets a dictionary used for custom prompt display based on user-provided locale settings.
         /// </summary>
-        /// <value>The dictionary of Default ChoiceOptions to be used for locale recognition.</value>
+        /// <value>The dictionary used for custom prompt display based on user-provided locale settings.</value>
         /// <remarks>
-        /// If set, this replaces DefaultChoiceOptions.
-        /// Usage: ChoicePrompt.CustomChoiceDefaults = new Dictionary<string, ChoiceFactoryOptions>()
+        /// If set, this replaces DefaultChoiceOptions. Because this is static, it is not thread-safe.
+        /// Usage: ChoicePrompt.CustomLocaleOptions = new Dictionary<string, ChoiceFactoryOptions>()
         ///         { "en-US", (new Choice("Yes"), new Choice("No"), new ChoiceFactoryOptions {...}) }
         /// </remarks>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1629:Documentation text should end with a period", Justification = "Doesn't like `Dictionary<string`")]
-        public static Dictionary<string, (Choice, Choice, ChoiceFactoryOptions)> CustomChoiceDefaults { get; set; }
+        public static Dictionary<string, (Choice, Choice, ChoiceFactoryOptions)> CustomLocaleOptions { get; set; }
 
         /// <summary>
         /// Gets or sets the style of the yes/no choices rendered to the user when prompting.
@@ -85,7 +85,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             get
             {
-                if (CustomChoiceDefaults == null || CustomChoiceDefaults.Count == 0)
+                if (CustomLocaleOptions == null || CustomLocaleOptions.Count == 0)
                 {
                     var defaults = new Dictionary<string, (Choice, Choice, ChoiceFactoryOptions)>();
                     foreach (var culture in GetSupportedCultures())
@@ -96,7 +96,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                     return defaults;
                 }
 
-                return CustomChoiceDefaults;
+                return CustomLocaleOptions;
             }
         }
 
