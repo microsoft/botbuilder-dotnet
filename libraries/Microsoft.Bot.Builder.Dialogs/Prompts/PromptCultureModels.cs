@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using Microsoft.Recognizers.Text;
+﻿using Microsoft.Recognizers.Text;
 
 namespace Microsoft.Bot.Builder.Dialogs.Prompts
 {
@@ -9,8 +7,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Prompts
     /// </summary>
     public static class PromptCultureModels
     {
-        private static readonly string[] SupportedCultureCodes = GetSupportedCultures().Select(c => c.Locale).ToArray();
-
         public static IPromptCultureModel Chinese =>
             new IPromptCultureModel
             {
@@ -20,17 +16,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Prompts
                 NoInLanguage = "不",
                 Separator = "， ",
                 YesInLanguage = "是的",
-            };
-
-        public static IPromptCultureModel Danish =>
-            new IPromptCultureModel
-            {
-                InlineOr = " of ",
-                InlineOrMore = "， of ",
-                Locale = "da-DK",
-                NoInLanguage = "Nej",
-                Separator = "， ",
-                YesInLanguage = "Ja",
             };
 
         public static IPromptCultureModel Dutch =>
@@ -112,40 +97,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Prompts
 
         /// <summary>
         /// Use Recognizers-Text to normalize various potential Locale strings to a standard.
-        /// This is more or less a copy/paste of Recognizers-Text.Culture's MapToNearestLanguage, but needed as an override
-        /// here so that we can support additional languages.
+        /// This mostly exists so that you don't need to directly include Recognizers-Text in other class files (there are some name conflicts).
         /// </summary>
-        /// <param name="cultureCode">Represents locale. Examples: "en-US, en-us, EN".</param>
+        /// <param name="culture">Represents locale. Examples: "en-US, en-us, EN".</param>
         /// <returns>Normalized locale.</returns>
-        public static string MapToNearestLanguage(string cultureCode)
-        {
-            cultureCode = cultureCode.ToLowerInvariant();
-
-            if (SupportedCultureCodes.All(o => o != cultureCode))
-            {
-                // Handle cases like EnglishOthers with cultureCode "en-*"
-                var fallbackCultureCodes = SupportedCultureCodes
-                    .Where(o => o.EndsWith("*", StringComparison.Ordinal) &&
-                                cultureCode.StartsWith(o.Split('-').First(), StringComparison.Ordinal)).ToList();
-
-                if (fallbackCultureCodes.Count == 1)
-                {
-                    return fallbackCultureCodes.First();
-                }
-
-                // If there is no cultureCode like "-*", map only the prefix
-                // For example, "es-mx" will be mapped to "es-es"
-                fallbackCultureCodes = SupportedCultureCodes
-                    .Where(o => cultureCode.StartsWith(o.Split('-').First(), StringComparison.Ordinal)).ToList();
-
-                if (fallbackCultureCodes.Any())
-                {
-                    return fallbackCultureCodes.First();
-                }
-            }
-
-            return cultureCode;
-        }
+        public static string MapToNearestLanguage(string culture) => Culture.MapToNearestLanguage(culture);
 
         public static IPromptCultureModel[] GetSupportedCultures() => new IPromptCultureModel[]
             {
