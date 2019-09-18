@@ -50,6 +50,7 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ActionBasedMessagingExtensionFetchTask", "ActionBasedMessagingExtension-FetchTask\ActionBasedMessagingExtensionFetchTask.csproj", "{746CEEA6-3A8F-49AB-976B-69F54A84C8D4}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mentions", "Mentions\Mentions.csproj", "{88633DE8-E3CF-4493-B679-0B6EDCC88FEE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProactiveMessages", "ProactiveMessages\ProactiveMessages.csproj", "{5BE773D5-FB75-4F60-81DF-A32604FB2967}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -196,6 +197,12 @@ Global
 		{88633DE8-E3CF-4493-B679-0B6EDCC88FEE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{88633DE8-E3CF-4493-B679-0B6EDCC88FEE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{88633DE8-E3CF-4493-B679-0B6EDCC88FEE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5BE773D5-FB75-4F60-81DF-A32604FB2967}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{5BE773D5-FB75-4F60-81DF-A32604FB2967}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
+		{5BE773D5-FB75-4F60-81DF-A32604FB2967}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5BE773D5-FB75-4F60-81DF-A32604FB2967}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5BE773D5-FB75-4F60-81DF-A32604FB2967}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5BE773D5-FB75-4F60-81DF-A32604FB2967}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
