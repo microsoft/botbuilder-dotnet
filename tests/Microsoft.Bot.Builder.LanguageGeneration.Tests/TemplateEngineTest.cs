@@ -297,10 +297,10 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             var todos = new[] { "A", "B", "C" };
             evaled = engine.EvaluateTemplate("showTodo", new { todos });
-            Assert.AreEqual(evaled.Replace("\r\n", "\n"), "\n    Your most recent 3 tasks are\n    * A\n* B\n* C\n    ");
+            Assert.AreEqual(((string)evaled).Replace("\r\n", "\n"), "\n    Your most recent 3 tasks are\n    * A\n* B\n* C\n    ");
             
             evaled = engine.EvaluateTemplate("showTodo", null);
-            Assert.AreEqual(evaled.Replace("\r\n", "\n"), "\n    You don't have any \"t\\\\odo'\".\n    ");
+            Assert.AreEqual(((string)evaled).Replace("\r\n", "\n"), "\n    You don't have any \"t\\\\odo'\".\n    ");
         }
 
         [TestMethod]
