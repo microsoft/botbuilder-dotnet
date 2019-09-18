@@ -13,6 +13,7 @@ using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Teams;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Schema.Teams;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -20,12 +21,19 @@ namespace Microsoft.BotBuilderSamples.Bots
 {
     public class ProactiveMessageBot : TeamsActivityHandler
     {
-        /// <inheritdoc/>
+        private string _appId;
+
+        public ProactiveMessageBot(IConfiguration configuration) 
+        {
+            _appId = configuration["MicrosoftAppId"];
+        }
+
         protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
             var connectorClient = turnContext.TurnState.Get<IConnectorClient>();
             var connector = new ConnectorClient(connectorClient.Credentials);
-            connector.BaseUri = new Uri(turnContext.Activity.ServiceUrl);
+
+             connector.BaseUri = new Uri(turnContext.Activity.ServiceUrl);
 
             var parameters = new ConversationParameters
             {
@@ -49,6 +57,13 @@ namespace Microsoft.BotBuilderSamples.Bots
             };
 
             await connector.Conversations.SendToConversationAsync(proactiveMessage, cancellationToken);
+
+            await turnContext.Adapter.ContinueConversationAsync(_appId, turnContext.Activity.GetConversationReference(), BotOnTurn, cancellationToken);
+        }
+
+        private async Task BotOnTurn (ITurnContext turnContext, CancellationToken cancellationToken)
+        {
+            await turnContext.SendActivityAsync("Proactive response to the thread.");
         }
 
         protected override async Task OnTeamsMembersAddedAsync(IList<ChannelAccount> membersAdded, TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
