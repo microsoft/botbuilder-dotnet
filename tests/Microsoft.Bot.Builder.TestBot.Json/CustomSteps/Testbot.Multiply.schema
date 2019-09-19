@@ -1,6 +1,6 @@
 ﻿{
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
-    "$role": "unionType(Microsoft.Dialog)",
+    "$role": "unionType(Microsoft.IDialog)",
     "title": "Multiply",
     "description": "This will return the result of arg1*arg2",
     "type": "object",

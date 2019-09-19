@@ -95,7 +95,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     switch (change.ChangeType)
                     {
                         case ActionChangeType.InsertActions:
-                        case ActionChangeType.InsertActionsBeforeTags:
                         case ActionChangeType.AppendActions:
                             await UpdateSequenceAsync(change, cancellationToken).ConfigureAwait(false);
                             break;
@@ -132,18 +131,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 {
                     ChangeType = ActionChangeType.InsertActions,
                     Actions = actions
-                });
-            return this;
-        }
-
-        public SequenceContext InsertActionsBeforeTags(List<string> tags, List<ActionState> actions)
-        {
-            this.QueueChanges(
-                new ActionChangeList()
-                {
-                    ChangeType = ActionChangeType.InsertActionsBeforeTags,
-                    Actions = actions,
-                    Tags = tags
                 });
             return this;
         }
@@ -203,36 +190,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     this.Actions.AddRange(newActions);
                     break;
 
-                case ActionChangeType.InsertActionsBeforeTags:
-                    var inserted = false;
-
-                    if (change.Tags != null && change.Tags.Any())
-                    {
-                        // Walk list of actions to find point at which to insert new actions based off tags
-                        for (int i = 0; i < this.Actions.Count; i++)
-                        {
-                            // Does the current step have one of the tags we are looking for?
-                            if (ActionHasTags(this.Actions[i], change.Tags))
-                            {
-                                // Insert actions before the current step
-                                // We have actions before and after the insertion point, and we want to insert the change
-                                // actions in the middle
-                                this.Actions.InsertRange(i, change.Actions);
-                                inserted = true;
-                                break;
-                            }
-                        }
-                    }
-
-                    // If we didn't find any of the tags we were looking for, then just
-                    // append the actions to the end of the current sequence
-                    if (!inserted)
-                    {
-                        this.Actions.AddRange(change.Actions);
-                    }
-
-                    break;
-
                 case ActionChangeType.AppendActions:
                 case ActionChangeType.ReplaceSequence:
                     this.Actions.AddRange(change.Actions);
@@ -240,18 +197,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             }
 
             return Task.CompletedTask;
-        }
-
-        private bool ActionHasTags(ActionState step, List<string> tags)
-        {
-            var dialog = actionDialogs.Find(step.DialogId);
-            if (dialog != null && dialog.Tags != null)
-            {
-                // True if the dialog contains any of the tags passed as parameters
-                return tags.Any(t => dialog.Tags.Contains(t));
-            }
-
-            return false;
         }
     }
 }

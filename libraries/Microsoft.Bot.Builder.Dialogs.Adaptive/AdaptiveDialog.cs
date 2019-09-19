@@ -8,9 +8,10 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.TriggerHandlers;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
+using Microsoft.Bot.Builder.Expressions.Parser;
 using Microsoft.Bot.Builder.LanguageGeneration;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
@@ -56,7 +57,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// <summary>
         /// Gets or sets trigger handlers to respond to conditions which modifying the executing plan. 
         /// </summary>
-        public virtual List<TriggerHandler> Triggers { get; set; } = new List<TriggerHandler>();
+        public virtual List<OnCondition> Triggers { get; set; } = new List<OnCondition>();
 
         /// <summary>
         /// Gets or sets a value indicating whether to end the dialog when there are no actions to execute.
@@ -169,28 +170,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 // for the active step
                 var stepDc = new DialogContext(_dialogs, turnContext, state.Actions[0]);
                 await stepDc.RepromptDialogAsync(cancellationToken).ConfigureAwait(false);
-            }
-        }
-
-        public void AddTriggerHandler(TriggerHandler trigger)
-        {
-            trigger.Actions.ForEach(action => _dialogs.Add(action));
-            this.Triggers.Add(trigger);
-        }
-
-        public void AddTriggerHandlers(IEnumerable<TriggerHandler> triggers)
-        {
-            foreach (var evt in triggers)
-            {
-                this.AddTriggerHandler(evt);
-            }
-        }
-
-        public void AddDialogs(IEnumerable<Dialog> dialogs)
-        {
-            foreach (var dialog in dialogs)
-            {
-                this._dialogs.Add(dialog);
             }
         }
 
@@ -506,7 +485,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             {
                 var evt = Triggers[selection.First()];
                 await sequenceContext.DebuggerStepAsync(evt, dialogEvent, cancellationToken).ConfigureAwait(false);
-                System.Diagnostics.Trace.TraceInformation($"Executing Dialog: {this.Id} Rule[{selection}]: {evt.GetType().Name}: {evt.GetExpression(null)}");
+                System.Diagnostics.Trace.TraceInformation($"Executing Dialog: {this.Id} Rule[{selection}]: {evt.GetType().Name}: {evt.GetExpression(new ExpressionEngine())}");
                 var changes = await evt.ExecuteAsync(sequenceContext).ConfigureAwait(false);
 
                 if (changes != null && changes.Count > 0)
@@ -548,7 +527,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
                     foreach (var @event in this.Triggers)
                     {
-                        AddDialogs(@event.Actions);
+                        if (@event is IDialogDependencies depends)
+                        {
+                            foreach (var dlg in depends.GetDependencies())
+                            {
+                                this.Dialogs.Add(dlg);
+                            }
+                        }
                     }
 
                     // Wire up selector

@@ -1,6 +1,6 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
-    "$role": "unionType(Microsoft.EntityRecognizer)",
+    "$role": "unionType(Microsoft.EntityRecognizers)",
     "title": "Url Entity Recognizer",
     "description": "Recognizer which recognizes urls (example: http://bing.com)",
     "type": "object",

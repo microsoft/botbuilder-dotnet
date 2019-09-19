@@ -1,11 +1,17 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
+    "$role": "unionType(Microsoft.ITextTemplate)",
     "title": "Microsoft TextTemplate",
-    "description": "Union of components which implement the TextTemplate",
-    "$role": "unionType",
-    "oneOf": [
-        {
+    "description": "Lg tempalte to evaluate to create text",
+    "type": "object",
+    "properties": {
+        "template": {
+            "title": "Template",
+            "Description": "Language Generator template to evaluate to create the text",
             "type": "string"
         }
+    },
+    "required": [
+        "template"
     ]
 }
