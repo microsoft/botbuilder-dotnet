@@ -20,10 +20,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         {
             // Conditionals
             yield return new TypeRegistration<OnCondition>("Microsoft.OnCondition");
+            yield return new TypeRegistration<OnError>("Microsoft.OnError");
+
+            yield return new TypeRegistration<OnDialogEvent>("Microsoft.OnDialogEvent");
             yield return new TypeRegistration<OnCustomEvent>("Microsoft.OnCustomEvent");
+
+            yield return new TypeRegistration<OnBeginDialog>("Microsoft.OnBeginDialog");
+            yield return new TypeRegistration<OnCancelDialog>("Microsoft.OnCancelDialog");
+            yield return new TypeRegistration<OnRepromptDialog>("Microsoft.OnRepromptDialog");
+
             yield return new TypeRegistration<OnIntent>("Microsoft.OnIntent");
             yield return new TypeRegistration<OnUnknownIntent>("Microsoft.OnUnknownIntent");
-            yield return new TypeRegistration<OnBeginDialog>("Microsoft.OnBeginDialog");
+
             yield return new TypeRegistration<OnActivity>("Microsoft.OnActivity");
             yield return new TypeRegistration<OnMessageActivity>("Microsoft.OnMessageActivity");
             yield return new TypeRegistration<OnMessageUpdateActivity>("Microsoft.OnMessageUpdateActivity");
