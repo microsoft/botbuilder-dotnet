@@ -22,13 +22,12 @@
     <PackageReference Include="Moq" Version="4.11.0" />
     <PackageReference Include="MSTest.TestAdapter" Version="1.4.0" />
     <PackageReference Include="MSTest.TestFramework" Version="1.4.0" />
-    <PackageReference Include="Microsoft.Bot.Builder" Version="4.5.0" />
-    <PackageReference Include="Microsoft.Bot.Schema" Version="4.5.0" />
-    <PackageReference Include="Microsoft.Bot.Schema" Version="4.5.0" />
   </ItemGroup>
 
   <ItemGroup>        
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.StreamingExtensions\Microsoft.Bot.Builder.StreamingExtensions.csproj" />        
+    <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder\Microsoft.Bot.Builder.csproj" />        
+    <ProjectReference Include="..\..\libraries\Microsoft.Bot.Schema\Microsoft.Bot.Schema.csproj" />        
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.StreamingExtensions\Microsoft.Bot.StreamingExtensions.csproj" />
   </ItemGroup>
 </Project>

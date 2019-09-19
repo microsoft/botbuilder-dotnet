@@ -1,6 +1,6 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
-    "$role": "unionType(Microsoft.IEventSelector)",
+    "$role": "unionType(Microsoft.ITriggerSelector)",
     "title": "Random rule selector",
     "description": "Select most specific true rule",
     "type": "object",

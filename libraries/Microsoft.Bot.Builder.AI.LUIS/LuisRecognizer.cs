@@ -359,8 +359,8 @@ namespace Microsoft.Bot.Builder.AI.Luis
                 {
                     Text = utterance,
                     AlteredText = luisResult.AlteredQuery,
-                    Intents = LuisUtil.GetIntents(luisResult), 
-                    Entities = LuisUtil.ExtractEntitiesAndMetadata(luisResult.Entities, luisResult.CompositeEntities, luisPredictionOptions.IncludeInstanceData ?? true),
+                    Intents = LuisUtil.GetIntents(luisResult),
+                    Entities = LuisUtil.ExtractEntitiesAndMetadata(luisResult.Entities, luisResult.CompositeEntities, luisPredictionOptions.IncludeInstanceData ?? true, utterance),
                 };
                 LuisUtil.AddProperties(luisResult, recognizerResult);
                 if (_includeApiResults)
@@ -428,13 +428,6 @@ namespace Microsoft.Bot.Builder.AI.Luis
             return currentHandler;
         }
 
-        private HttpClientHandler CreateRootHandler() =>
-
-            // Create our root handler
-#if FullNetFx
-            return new WebRequestHandler();
-#else
-            new HttpClientHandler();
-#endif
+        private HttpClientHandler CreateRootHandler() => new HttpClientHandler();
     }
 }

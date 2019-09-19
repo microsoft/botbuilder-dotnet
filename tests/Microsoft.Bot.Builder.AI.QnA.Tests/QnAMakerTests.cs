@@ -12,8 +12,8 @@ using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.TriggerHandlers;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
@@ -586,6 +586,101 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             };
 
             var qnaWithSmallThreshold = new QnAMaker(endpoint, tooSmallThreshold);
+        }
+
+        [TestMethod]
+        [TestCategory("AI")]
+        [TestCategory("QnAMaker")]
+        public async Task QnaMaker_ReturnsAnswerWithContext()
+        {
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, GetRequestUrl())
+                .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswerWithContext.json"));
+
+            var qna = GetQnAMaker(
+                mockHttp,
+                new QnAMakerEndpoint
+                {
+                    KnowledgeBaseId = _knowlegeBaseId,
+                    EndpointKey = _endpointKey,
+                    Host = _hostname,
+                });
+
+            var options = new QnAMakerOptions()
+            {
+                Top = 1,
+                Context = new QnARequestContext()
+                {
+                    PreviousQnAId = 5,
+                    PreviousUserQuery = "how do I clean the stove?",
+                },
+            };
+
+            var results = await qna.GetAnswersAsync(GetContext("Where can I buy?"), options);
+            Assert.IsNotNull(results);
+            Assert.AreEqual(1, results.Length, "should get one result");
+            Assert.AreEqual(55, results[0].Id, "should get context based follow-up");
+            Assert.AreEqual(1, results[0].Score, "Score should be high");
+        }
+
+        [TestMethod]
+        [TestCategory("AI")]
+        [TestCategory("QnAMaker")]
+        public async Task QnaMaker_ReturnsAnswerWithoutContext()
+        {
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, GetRequestUrl())
+                .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswerWithoutContext.json"));
+
+            var qna = GetQnAMaker(
+                mockHttp,
+                new QnAMakerEndpoint
+                {
+                    KnowledgeBaseId = _knowlegeBaseId,
+                    EndpointKey = _endpointKey,
+                    Host = _hostname,
+                });
+
+            var options = new QnAMakerOptions()
+            {
+                Top = 3,
+            };
+
+            var results = await qna.GetAnswersAsync(GetContext("Where can I buy?"), options);
+            Assert.IsNotNull(results);
+            Assert.AreEqual(2, results.Length, "should get two result");
+            Assert.AreNotEqual(1, results[0].Score, "Score should be low");
+        }
+
+        [TestMethod]
+        [TestCategory("AI")]
+        [TestCategory("QnAMaker")]
+        public async Task QnaMaker_ReturnsHighScoreWhenIdPassed()
+        {
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, GetRequestUrl())
+                .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswerWithContext.json"));
+
+            var qna = GetQnAMaker(
+                mockHttp,
+                new QnAMakerEndpoint
+                {
+                    KnowledgeBaseId = _knowlegeBaseId,
+                    EndpointKey = _endpointKey,
+                    Host = _hostname,
+                });
+
+            var options = new QnAMakerOptions()
+            {
+                Top = 1,
+                QnAId = 55,
+            };
+
+            var results = await qna.GetAnswersAsync(GetContext("Where can I buy?"), options);
+            Assert.IsNotNull(results);
+            Assert.AreEqual(1, results.Length, "should get one result");
+            Assert.AreEqual(55, results[0].Id, "should get context based follow-up");
+            Assert.AreEqual(1, results[0].Score, "Score should be high");
         }
 
         [TestMethod]
@@ -1427,7 +1522,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                         new IntentPattern("CowboyIntent", "moo")
                     }
                 },
-                Triggers = new List<TriggerHandler>()
+                Triggers = new List<OnCondition>()
                 {
                     new OnIntent(intent: "CowboyIntent")
                     {
@@ -1456,7 +1551,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
 
             var rootDialog = new AdaptiveDialog("root")
             {
-                Triggers = new List<TriggerHandler>()
+                Triggers = new List<OnCondition>()
                 {
                     new OnBeginDialog()
                     {
@@ -1465,9 +1560,9 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                             new BeginDialog(outerDialog.Id)
                         }
                     },
-                    new Dialogs.Adaptive.TriggerHandlers.OnDialogEvent()
+                    new Dialogs.Adaptive.Conditions.OnCustomEvent()
                     {
-                        Events = new List<string>() { "UnhandledUnknownIntent" },
+                        Event = "UnhandledUnknownIntent",
                         Actions = new List<Dialog>()
                         {
                             new EditArray(),
@@ -1476,7 +1571,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                     }
                 }
             };
-            rootDialog.AddDialog(outerDialog);
+            rootDialog.Dialogs.Add(outerDialog);
             return rootDialog;
         }
 

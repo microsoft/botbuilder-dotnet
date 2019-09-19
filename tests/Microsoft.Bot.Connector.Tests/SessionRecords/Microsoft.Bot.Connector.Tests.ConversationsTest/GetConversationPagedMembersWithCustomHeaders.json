@@ -2,8 +2,9 @@
   "Entries": [
     {
       "RequestUri": "/v3/conversations",
+      "EncodedRequestUri": "L3YzL2NvbnZlcnNhdGlvbnM=",
       "RequestMethod": "POST",
-      "RequestBody": "{\r\n  \"bot\": {\r\n    \"id\": \"B21UTEF8S:T03CWQ0QB\"\r\n  },\r\n  \"members\": [\r\n    {\r\n      \"id\": \"U19KH8EHJ:T03CWQ0QB\"\r\n    }\r\n  ]\r\n}",
+      "RequestBody": "{\r\n  \"bot\": {\r\n    \"id\": \"BKGSYSTFG:TKGSUQHQE\"\r\n  },\r\n  \"members\": [\r\n    {\r\n      \"id\": \"UK8CH2281:TKGSUQHQE\"\r\n    }\r\n  ]\r\n}",
       "RequestHeaders": {
         "Content-Type": [
           "application/json; charset=utf-8"
@@ -12,14 +13,13 @@
           "125"
         ],
         "User-Agent": [
-          "FxVersion/4.6.26814.03",
-          "Microsoft.Bot.Connector.ConnectorClient/4.0.0.0",
-          "Microsoft-BotFramework/3.1",
-          "BotBuilder/4.0.0.0",
-          "(.NETCoreApp,Version=v1.0; Microsoft Windows 10.0.17134 ; X64)"
+          "FxVersion/4.6.27617.04",
+          "OSName/Windows",
+          "OSVersion/Microsoft.Windows.10.0.18362.",
+          "Microsoft.Bot.Connector.ConnectorClient/4.0.0.0"
         ]
       },
-      "ResponseBody": "{\r\n  \"id\": \"B21UTEF8S:T03CWQ0QB:DD6UM0YHW\"\r\n}",
+      "ResponseBody": "{\r\n  \"id\": \"BKGSYSTFG:TKGSUQHQE:DKE8NUG92\"\r\n}",
       "ResponseHeaders": {
         "Content-Length": [
           "45"
@@ -39,32 +39,38 @@
         "Server": [
           "Microsoft-IIS/10.0"
         ],
+        "x-ms-request-id": [
+          "|58c6f722f0baa947855f969b3c560bf8.447a05f4_"
+        ],
         "Strict-Transport-Security": [
           "max-age=31536000"
         ],
         "Date": [
-          "Tue, 09 Oct 2018 18:09:00 GMT"
+          "Tue, 02 Jul 2019 19:11:36 GMT"
         ]
       },
       "StatusCode": 200
     },
     {
-      "RequestUri": "/v3/conversations/B21UTEF8S%3AT03CWQ0QB%3ADD6UM0YHW/pagedmembers",
+      "RequestUri": "/v3/conversations/BKGSYSTFG%3ATKGSUQHQE%3ADKE8NUG92/pagedmembers",
+      "EncodedRequestUri": "L3YzL2NvbnZlcnNhdGlvbnMvQktHU1lTVEZHJTNBVEtHU1VRSFFFJTNBREtFOE5VRzkyL3BhZ2VkbWVtYmVycw==",
       "RequestMethod": "GET",
       "RequestBody": "",
       "RequestHeaders": {
+        "customHeader": [
+          "customValue"
+        ],
         "User-Agent": [
-          "FxVersion/4.6.26814.03",
-          "Microsoft.Bot.Connector.ConnectorClient/4.0.0.0",
-          "Microsoft-BotFramework/3.1",
-          "BotBuilder/4.0.0.0",
-          "(.NETCoreApp,Version=v1.0; Microsoft Windows 10.0.17134 ; X64)"
+          "FxVersion/4.6.27617.04",
+          "OSName/Windows",
+          "OSVersion/Microsoft.Windows.10.0.18362.",
+          "Microsoft.Bot.Connector.ConnectorClient/4.0.0.0"
         ]
       },
-      "ResponseBody": "{\r\n  \"members\": [\r\n    {\r\n      \"id\": \"B21UTEF8S:T03CWQ0QB\",\r\n      \"name\": \"botframeworktest\"\r\n    },\r\n    {\r\n      \"id\": \"U19KH8EHJ:T03CWQ0QB\",\r\n      \"name\": \"juan.ar\"\r\n    }\r\n  ]\r\n}",
+      "ResponseBody": "{\r\n  \"members\": [\r\n    {\r\n      \"id\": \"BKGSYSTFG:TKGSUQHQE\",\r\n      \"name\": \"vmicricbot\"\r\n    },\r\n    {\r\n      \"id\": \"UK8CH2281:TKGSUQHQE\",\r\n      \"name\": \"v-micric\"\r\n    }\r\n  ]\r\n}",
       "ResponseHeaders": {
         "Content-Length": [
-          "185"
+          "180"
         ],
         "Content-Type": [
           "application/json; charset=utf-8"
@@ -81,11 +87,14 @@
         "Server": [
           "Microsoft-IIS/10.0"
         ],
+        "x-ms-request-id": [
+          "|98c819322668094aa4bf184c2f3720e8.3642c807_"
+        ],
         "Strict-Transport-Security": [
           "max-age=31536000"
         ],
         "Date": [
-          "Tue, 09 Oct 2018 18:09:01 GMT"
+          "Tue, 02 Jul 2019 19:11:36 GMT"
         ]
       },
       "StatusCode": 200

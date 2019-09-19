@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Microsoft.Bot.Builder.AI.Luis;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.TriggerHandlers;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
@@ -18,8 +18,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
     {
         public override IEnumerable<TypeRegistration> GetTypes()
         {
-            // Events
-            yield return new TypeRegistration<OnDialogEvent>("Microsoft.OnDialogEvent");
+            // Conditionals
+            yield return new TypeRegistration<OnCondition>("Microsoft.OnCondition");
+            yield return new TypeRegistration<OnCustomEvent>("Microsoft.OnCustomEvent");
             yield return new TypeRegistration<OnIntent>("Microsoft.OnIntent");
             yield return new TypeRegistration<OnUnknownIntent>("Microsoft.OnUnknownIntent");
             yield return new TypeRegistration<OnBeginDialog>("Microsoft.OnBeginDialog");
@@ -100,7 +101,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
         public override IEnumerable<JsonConverter> GetConverters(Source.IRegistry registry, IRefResolver refResolver, Stack<string> paths)
         {
-            yield return new InterfaceConverter<TriggerHandler>(refResolver, registry, paths);
+            yield return new InterfaceConverter<OnCondition>(refResolver, registry, paths);
         }
     }
 }

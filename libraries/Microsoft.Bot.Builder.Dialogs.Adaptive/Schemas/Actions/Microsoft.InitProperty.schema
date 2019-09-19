@@ -1,6 +1,6 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
-    "$role": "unionType(Microsoft.Dialog)",
+    "$role": "unionType(Microsoft.IDialog)",
     "title": "Init Property Action",
     "description": "This action allows you to innitial a property to either an object or array",
     "type": "object",
@@ -8,30 +8,23 @@
         "property",
         "type"
     ],
-    "allOf": [
-        {
-            "$ref": "./baseActionSchema.json"
+    "properties": {
+        "property": {
+            "$role": "expression",
+            "title": "Property",
+            "description": "The property path to initialize",
+            "examples": [
+                "user.age"
+            ]
         },
-        {
-            "properties": {
-                "property": {
-                    "$role": "expression",
-                    "title": "Property",
-                    "description": "The property path to initialize",
-                    "examples": [
-                        "user.age"
-                    ]
-                },
-                "type": {
-                    "type": "string",
-                    "title": "type",
-                    "description": "type of value to set the property to, object or array.",
-                    "enum": [
-                        "object",
-                        "array"
-                    ]
-                }
-            }
+        "type": {
+            "type": "string",
+            "title": "type",
+            "description": "type of value to set the property to, object or array.",
+            "enum": [
+                "object",
+                "array"
+            ]
         }
-    ]
+    }
 }

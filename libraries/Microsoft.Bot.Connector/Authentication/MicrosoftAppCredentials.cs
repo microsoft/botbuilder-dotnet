@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Microsoft.Rest;
 
@@ -80,9 +81,34 @@ namespace Microsoft.Bot.Connector.Authentication
         /// </summary>
         /// <param name="appId">The Microsoft app ID.</param>
         /// <param name="password">The Microsoft app password.</param>
+        /// <param name="customHttpClient">Optional <see cref="HttpClient"/> to be used when acquiring tokens.</param>
+        /// <param name="logger">Optional <see cref="ILogger"/> to gather telemetry data while acquiring and managing credentials.</param>
+        public MicrosoftAppCredentials(string appId, string password, HttpClient customHttpClient, ILogger logger)
+            : this(appId, password, null, customHttpClient, logger)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MicrosoftAppCredentials"/> class.
+        /// </summary>
+        /// <param name="appId">The Microsoft app ID.</param>
+        /// <param name="password">The Microsoft app password.</param>
         /// <param name="channelAuthTenant">Optional. The oauth token tenant.</param>
         /// <param name="customHttpClient">Optional <see cref="HttpClient"/> to be used when acquiring tokens.</param>
         public MicrosoftAppCredentials(string appId, string password, string channelAuthTenant, HttpClient customHttpClient)
+            : this(appId, password, channelAuthTenant, customHttpClient, null)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MicrosoftAppCredentials"/> class.
+        /// </summary>
+        /// <param name="appId">The Microsoft app ID.</param>
+        /// <param name="password">The Microsoft app password.</param>
+        /// <param name="channelAuthTenant">Optional. The oauth token tenant.</param>
+        /// <param name="customHttpClient">Optional <see cref="HttpClient"/> to be used when acquiring tokens.</param>
+        /// <param name="logger">Optional <see cref="ILogger"/> to gather telemetry data while acquiring and managing credentials.</param>
+        public MicrosoftAppCredentials(string appId, string password, string channelAuthTenant, HttpClient customHttpClient, ILogger logger = null)
         {
             this.MicrosoftAppId = appId;
             this.MicrosoftAppPassword = password;
@@ -93,7 +119,8 @@ namespace Microsoft.Bot.Connector.Authentication
                 new AdalAuthenticator(
                     new ClientCredential(MicrosoftAppId, MicrosoftAppPassword),
                     new OAuthConfiguration() { Authority = OAuthEndpoint, Scope = OAuthScope },
-                    customHttpClient),
+                    customHttpClient,
+                    logger),
                 LazyThreadSafetyMode.ExecutionAndPublication);
         }
 

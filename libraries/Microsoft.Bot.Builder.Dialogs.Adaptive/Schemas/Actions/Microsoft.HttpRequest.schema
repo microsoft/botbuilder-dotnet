@@ -1,6 +1,6 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
-    "$role": "unionType(Microsoft.Dialog)",
+    "$role": "unionType(Microsoft.IDialog)",
     "type": "object",
     "title": "Http Request",
     "description": "This is a action which replaces the current dialog with the target dialog",
@@ -8,66 +8,59 @@
         "url",
         "method"
     ],
-    "allOf": [
-        {
-            "$ref": "./baseActionSchema.json"
+    "properties": {
+        "method": {
+            "type": "string",
+            "title": "Method",
+            "description": "The HTTP method to use",
+            "enum": [
+                "GET",
+                "POST"
+            ],
+            "examples": [
+                "GET",
+                "POST"
+            ]
         },
-        {
-            "properties": {
-                "method": {
-                    "type": "string",
-                    "title": "Method",
-                    "description": "The HTTP method to use",
-                    "enum": [
-                        "GET",
-                        "POST"
-                    ],
-                    "examples": [
-                        "GET",
-                        "POST"
-                    ]
-                },
-                "url": {
-                    "type": "string",
-                    "title": "Url",
-                    "description": "The url to call (supports data binding)",
-                    "examples": [
-                        "https://contoso.com"
-                    ]
-                },
-                "body": {
-                    "type": "object",
-                    "title": "Body",
-                    "description": "The body to send in the HTTP call  (supports data binding)",
-                    "additionalProperties": true
-                },
-                "resultProperty": {
-                    "$role": "expression",
-                    "title": "Result Property",
-                    "description": "The property to store the result of the HTTP call in. The result will have 4 properties from the http response: statusCode|reasonPhrase|content|headers.  If the content is json it will be an deserialized object, otherwise it will be a string",
-                    "examples": [
-                        "dialog.contosodata"
-                    ]
-                },
-                "headers": {
-                    "type": "object",
-                    "additionProperties": true,
-                    "title": "Http headers",
-                    "description": "Http headers to include with the HTTP request (supports data binding)"
-                },
-                "responseType": {
-                    "type": "string",
-                    "title": "Response Type",
-                    "description": "Describes how to parse the response from the http request. If Activity or Activities, then the they will be sent to the user.",
-                    "enum": [
-                        "None",
-                        "Json",
-                        "Activity",
-                        "Activities"
-                    ],
-                    "default": "Json"
-                }
-            }
+        "url": {
+            "type": "string",
+            "title": "Url",
+            "description": "The url to call (supports data binding)",
+            "examples": [
+                "https://contoso.com"
+            ]
+        },
+        "body": {
+            "type": "object",
+            "title": "Body",
+            "description": "The body to send in the HTTP call  (supports data binding)",
+            "additionalProperties": true
+        },
+        "resultProperty": {
+            "$role": "expression",
+            "title": "Result Property",
+            "description": "The property to store the result of the HTTP call in. The result will have 4 properties from the http response: statusCode|reasonPhrase|content|headers.  If the content is json it will be an deserialized object, otherwise it will be a string",
+            "examples": [
+                "dialog.contosodata"
+            ]
+        },
+        "headers": {
+            "type": "object",
+            "additionProperties": true,
+            "title": "Http headers",
+            "description": "Http headers to include with the HTTP request (supports data binding)"
+        },
+        "responseType": {
+            "type": "string",
+            "title": "Response Type",
+            "description": "Describes how to parse the response from the http request. If Activity or Activities, then the they will be sent to the user.",
+            "enum": [
+                "None",
+                "Json",
+                "Activity",
+                "Activities"
+            ],
+            "default": "Json"
         }
-    ]
+    }
 }

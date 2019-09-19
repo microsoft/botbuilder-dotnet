@@ -39,11 +39,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
                 Assert.Equal(bookingTestData.UtterancesAndReplies[i, 1], reply?.Text);
             }
 
-            if (testClient.DialogTurnResult.Status == DialogTurnStatus.Cancelled)
-            {
-                Assert.Null(testClient.DialogTurnResult.Result);
-            }
-            else
+            if (testClient.DialogTurnResult.Result != null)
             {
                 var bookingResults = (BookingDetails)testClient.DialogTurnResult.Result;
                 Assert.Equal(bookingTestData.ExpectedBookingDetails.Origin, bookingResults.Origin);

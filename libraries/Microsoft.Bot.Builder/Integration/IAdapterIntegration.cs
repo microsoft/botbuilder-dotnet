@@ -32,7 +32,7 @@ namespace Microsoft.Bot.Builder.Integration
         /// <summary>
         /// Sends a proactive message to a conversation.
         /// </summary>
-        /// <param name="botId">The application ID of the bot. This paramter is ignored in
+        /// <param name="botId">The application ID of the bot. This parameter is ignored in
         /// single tenant the Adapters (Console, Test, etc) but is critical to the BotFrameworkAdapter
         /// which is multi-tenant aware. </param>
         /// <param name="reference">A reference to the conversation to continue.</param>

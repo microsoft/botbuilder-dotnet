@@ -189,9 +189,16 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
             try
             {
                 var adapter = new BotFrameworkStreamingExtensionsAdapter(_transportServer, _middlewareSet, logger);
+                IBot bot = null;
 
                 // First check if an IBot type definition is available from the service provider.
-                var bot = _services?.GetService<IBot>();
+                if (_services != null)
+                {
+                    /* Creating a new scope for each request allows us to support
+                     * bots that inject scoped services as dependencies.
+                     */
+                    bot = _services.CreateScope().ServiceProvider.GetService<IBot>();
+                }
 
                 // If no bot has been set, check if a singleton bot is associated with this request handler.
                 if (bot == null)

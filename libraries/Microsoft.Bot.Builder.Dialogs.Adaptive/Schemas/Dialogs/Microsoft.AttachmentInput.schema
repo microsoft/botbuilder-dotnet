@@ -1,11 +1,11 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
-    "$role": "unionType(Microsoft.Dialog)",
+    "$role": "unionType(Microsoft.IDialog)",
     "title": "AttachmentInput Dialog",
     "description": "This represents a dialog which gathers an attachment such as image or music",
     "allOf": [
         {
-            "$ref": "./baseInputSchema.json"
+            "$ref": "./Microsoft.InputDialog.json#"
         },
         {
             "properties": {
