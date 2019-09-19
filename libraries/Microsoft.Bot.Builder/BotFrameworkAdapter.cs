@@ -1014,8 +1014,8 @@ namespace Microsoft.Bot.Builder
             // If app credentials were provided, use them as they are the preferred choice moving forward
             if (_appCredentials != null)
             {
-                _appCredentialMap[appId] = appCredentials;
-                return appCredentials;
+                _appCredentialMap[appId] = _appCredentials;
+                return _appCredentials;
             }
 
             // NOTE: we can't do async operations inside of a AddOrUpdate, so we split access pattern
