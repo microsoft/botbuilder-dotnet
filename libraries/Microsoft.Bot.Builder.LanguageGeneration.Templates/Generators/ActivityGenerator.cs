@@ -57,8 +57,8 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             try
             {
-                var lgObjectResult = JObject.Parse(lgStringResult);
-                return BuildActivityFromObject(lgObjectResult);
+                var lgStructuredResult = JObject.Parse(lgStringResult);
+                return BuildActivityFromLGStructuredResult(lgStructuredResult);
             }
             catch
             {
@@ -83,7 +83,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// This method will create an MessageActivity from JToken
         /// <param name="lgJObj">lg output.</param>
         /// <returns>Activity for it.</returns>
-        private Activity BuildActivityFromObject(JObject lgJObj)
+        private Activity BuildActivityFromLGStructuredResult(JObject lgJObj)
         {
             Activity activity;
 
@@ -97,7 +97,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
                 if (type == nameof(Activity))
                 {
-                    activity = BuildActivity(lgJObj);
+                    activity = BuildActivityFromObject(lgJObj);
                 }
                 else
                 {
@@ -108,7 +108,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             return activity;
         }
 
-        private Activity BuildActivity(JObject lgJObj)
+        private Activity BuildActivityFromObject(JObject lgJObj)
         {
             Activity activity;
 
