@@ -91,10 +91,12 @@ namespace Microsoft.Bot.Builder.Teams
                         return CreateInvokeResponse(await OnTeamsMessagingExtensionConfigurationSettingsAsync(turnContext, cancellationToken).ConfigureAwait(false));
 
                     case "task/fetch":
-                        return CreateInvokeResponse(await OnTeamsTaskModuleFetchAsync(turnContext, cancellationToken).ConfigureAwait(false));
+                        var fetchResponse = await OnTeamsTaskModuleFetchAsync(turnContext, SafeCast<TaskModuleRequest>(turnContext.Activity.Value), cancellationToken).ConfigureAwait(false);
+                        return CreateInvokeResponse(new TaskModuleResponse { Task = new TaskModuleContinueResponse(fetchResponse) });
 
                     case "task/submit":
-                        return CreateInvokeResponse(await OnTeamsTaskModuleSubmitAsync(turnContext, cancellationToken).ConfigureAwait(false));
+                        var submitResponse = await OnTeamsTaskModuleSubmitAsync(turnContext, SafeCast<TaskModuleRequest>(turnContext.Activity.Value), cancellationToken).ConfigureAwait(false);
+                        return CreateInvokeResponse(new TaskModuleResponse { Task = submitResponse });
 
                     default:
                         return null;
@@ -211,14 +213,14 @@ namespace Microsoft.Bot.Builder.Teams
             return Task.FromResult<MessagingExtensionResponse>(null);
         }
 
-        protected virtual Task<TaskModuleResponse> OnTeamsTaskModuleFetchAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
+        protected virtual Task<TaskModuleTaskInfo> OnTeamsTaskModuleFetchAsync(ITurnContext<IInvokeActivity> turnContext, TaskModuleRequest taskModuleRequest, CancellationToken cancellationToken)
         {
-            return Task.FromResult<TaskModuleResponse>(null);
+            return Task.FromResult<TaskModuleTaskInfo>(null);
         }
 
-        protected virtual Task<TaskModuleResponse> OnTeamsTaskModuleSubmitAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
+        protected virtual Task<TaskModuleResponseBase> OnTeamsTaskModuleSubmitAsync(ITurnContext<IInvokeActivity> turnContext, TaskModuleRequest taskModuleRequest, CancellationToken cancellationToken)
         {
-            return Task.FromResult<TaskModuleResponse>(null);
+            return Task.FromResult<TaskModuleResponseBase>(null);
         }
 
         protected override Task OnConversationUpdateActivityAsync(ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
