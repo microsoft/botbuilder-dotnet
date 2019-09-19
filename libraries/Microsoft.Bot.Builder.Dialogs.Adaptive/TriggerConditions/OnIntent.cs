@@ -12,10 +12,9 @@ using Newtonsoft.Json.Linq;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
 {
     /// <summary>
-    /// Rule triggered when a message is received and the recognized intents and entities match a
-    /// specified list of intent and entity filters.
+    /// Actions triggered when an Activity has been received and the recognized intents and entities match specified list of intent and entity filters.
     /// </summary>
-    public class OnIntent : OnCustomEvent
+    public class OnIntent : OnDialogEvent
     {
         [JsonConstructor]
         public OnIntent(string intent = null, List<string> entities = null, List<Dialog> actions = null, string constraint = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)

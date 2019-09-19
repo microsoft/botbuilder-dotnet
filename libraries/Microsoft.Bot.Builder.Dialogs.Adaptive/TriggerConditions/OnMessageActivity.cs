@@ -9,8 +9,12 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
 {
     /// <summary>
-    /// Event for Message Activity.
+    /// Actions triggered when an MessageActivity is received
     /// </summary>
+    /// <remarks>
+    /// The default behavior for an Adaptive Dialog is to process this event and run the configured Recognizer against the input, triggering OnIntent/OnUnknownIntent events.
+    /// Defining this trigger condition overrides that behavior with custom steps.
+    /// </remarks>
     public class OnMessageActivity : OnActivity
     {
         [JsonConstructor]

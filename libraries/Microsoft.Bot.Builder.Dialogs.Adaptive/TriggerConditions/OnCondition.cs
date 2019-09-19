@@ -15,7 +15,7 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
 {
     /// <summary>
-    /// Defines most promitive declarative implementation of a OnCondition 
+    /// Actions triggered when condition is true
     /// </summary>
     [DebuggerDisplay("{GetIdentity()}")]
     public class OnCondition : IItemIdentity, IDialogDependencies

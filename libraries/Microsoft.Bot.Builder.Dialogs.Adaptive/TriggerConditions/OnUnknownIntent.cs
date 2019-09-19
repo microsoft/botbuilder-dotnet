@@ -8,13 +8,16 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
 {
     /// <summary>
-    /// This rule fires when the utterance is not recognized and the fallback consultation is happening 
+    /// Actions triggered when a UnknownIntent event has been emitted by the recognizer.
+    /// </summary>
+    /// <remarks>
+    /// This trigger is run when the utterance is not recognized and the fallback consultation is happening 
     /// It will only trigger if and when 
     /// * it is the leaf dialog AND 
     /// * none of the parent dialogs handle the event 
     /// This provides the parent dialogs the opportunity to handle global commands as fallback interruption.
-    /// </summary>
-    public class OnUnknownIntent : OnCustomEvent
+    /// </remarks>
+    public class OnUnknownIntent : OnDialogEvent
     {
         [JsonConstructor]
         public OnUnknownIntent(List<Dialog> actions = null, string constraint = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)

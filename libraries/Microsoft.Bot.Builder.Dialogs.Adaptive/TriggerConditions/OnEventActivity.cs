@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
 {
     /// <summary>
-    /// Event for external event activity (Activity.Type=="Event")
+    /// Actions triggered when an EventActivity is received
     /// </summary>
     public class OnEventActivity : OnActivity
     {
