@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Tests
         }
 
         [Fact]
-        public async Task UpdateActivityAsyncShouldFailWithNullActivityId()
+        public async Task UpdateActivityAsyncShouldFailWithNullActivityTimestamp()
         {
             var options = new Mock<SlackAdapterOptions>();
             options.Object.VerificationToken = "VerificationToken";
@@ -52,7 +52,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Tests
 
             var activity = new Activity
             {
-                Id = null,
+                Timestamp = null,
             };
 
             var turnContext = new TurnContext(slackAdapter, activity);
@@ -78,11 +78,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Tests
 
             var slackAdapter = new SlackAdapter(slackApi.Object);
 
-            var activity = new Activity
-            {
-                Id = "testId",
-                Conversation = null,
-            };
+            var activity = new Activity();
 
             await Assert.ThrowsAsync<ArgumentNullException>(async () =>
             {

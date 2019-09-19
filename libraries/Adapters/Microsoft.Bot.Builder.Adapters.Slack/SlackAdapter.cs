@@ -114,12 +114,12 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
 
             if (activity.Id == null)
             {
-                throw new ArgumentException(nameof(activity.Id));
+                throw new ArgumentException(nameof(activity.Timestamp));
             }
 
             if (activity.Conversation == null)
             {
-                throw new ArgumentException(nameof(activity.Conversation));
+                throw new ArgumentException(nameof(activity.ChannelId));
             }
 
             var message = SlackHelper.ActivityToSlack(activity);
