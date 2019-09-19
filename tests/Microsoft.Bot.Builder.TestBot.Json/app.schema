@@ -544,12 +544,12 @@
                     "description": "Policy for how to select rule to execute next",
                     "$ref": "#/definitions/Microsoft.IEventSelector"
                 },
-                "events": {
+                "triggers": {
                     "type": "array",
-                    "description": "Events to use to evaluate conversation",
+                    "description": "Trigger Handlers to use to evaluate conversation",
                     "items": {
-                        "$type": "Microsoft.IOnEvent",
-                        "$ref": "#/definitions/Microsoft.IOnEvent"
+                        "$type": "Microsoft.TriggerHandler",
+                        "$ref": "#/definitions/Microsoft.TriggerHandler"
                     }
                 }
             },
@@ -872,10 +872,10 @@
                         "title": "Options"
                     }
                 },
-                "property": {
+                "resultProperty": {
                     "$role": "expression",
                     "title": "Property",
-                    "description": "The property to bind to the dialog and store the result in",
+                    "description": "The property to store the result in",
                     "examples": [
                         "user.name"
                     ],
@@ -2503,16 +2503,16 @@
                         "Clear"
                     ]
                 },
-                "arrayProperty": {
+                "itemsProperty": {
                     "$role": "expression",
-                    "title": "Array Property",
-                    "description": "Memory expression of the array to manipulate.",
+                    "title": "Items Property",
+                    "description": "Memory expression of the collection of items to manipulate.",
                     "type": "string"
                 },
                 "resultProperty": {
                     "$role": "expression",
                     "title": "Result Property",
-                    "description": "Memory expression of the result of this action.",
+                    "description": "The path expression to store the result of the action.",
                     "type": "string"
                 },
                 "value": {
@@ -2759,9 +2759,9 @@
                         "type": "string"
                     }
                 },
-                "property": {
+                "value": {
                     "$role": "expression",
-                    "description": "Specifies a path to memory should be returned as the result to the calling dialog.",
+                    "description": "Specifies a value expression for the result to be returned to the caller.",
                     "examples": [
                         "dialog.name"
                     ],
@@ -3061,10 +3061,10 @@
                         "type": "string"
                     }
                 },
-                "listProperty": {
+                "itemsProperty": {
                     "$role": "expression",
-                    "title": "ListProperty",
-                    "description": "Expression to evaluate.",
+                    "title": "Items Property",
+                    "description": "Property path expression to the collection of items.",
                     "examples": [
                         "user.todoList"
                     ],
@@ -3078,20 +3078,6 @@
                         "$type": "Microsoft.Dialog",
                         "$ref": "#/definitions/Microsoft.Dialog"
                     }
-                },
-                "indexProperty": {
-                    "$role": "expression",
-                    "title": "Index Property",
-                    "description": "The memory path which refers to the index of the item",
-                    "default": "dialog.index",
-                    "type": "string"
-                },
-                "valueProperty": {
-                    "$role": "expression",
-                    "title": "Value Property",
-                    "description": "The memory path which refers to the value of the item",
-                    "default": "dialog.value",
-                    "type": "string"
                 }
             },
             "additionalProperties": false,
@@ -3110,7 +3096,7 @@
                 {
                     "title": "Type",
                     "required": [
-                        "listProperty",
+                        "itemsProperty",
                         "actions",
                         "$type"
                     ]
@@ -3167,10 +3153,10 @@
                         "type": "string"
                     }
                 },
-                "listProperty": {
+                "itemsProperty": {
                     "$role": "expression",
-                    "title": "ListProperty",
-                    "description": "Expression to evaluate.",
+                    "title": "Items Property",
+                    "description": "Property path expression to the collection of items.",
                     "examples": [
                         "user.todoList"
                     ],
@@ -3190,13 +3176,6 @@
                     "title": "Page Size",
                     "description": "The page size",
                     "default": 10
-                },
-                "valueProperty": {
-                    "$role": "expression",
-                    "title": "Value Property",
-                    "description": "The memory path which refers to the value of the item",
-                    "default": "dialog.value",
-                    "type": "string"
                 }
             },
             "additionalProperties": false,
@@ -3215,7 +3194,7 @@
                 {
                     "title": "Type",
                     "required": [
-                        "listProperty",
+                        "itemsProperty",
                         "actions",
                         "$type"
                     ]
@@ -3403,9 +3382,9 @@
                     "description": "The body to send in the HTTP call  (supports data binding)",
                     "additionalProperties": true
                 },
-                "property": {
+                "resultProperty": {
                     "$role": "expression",
-                    "title": "Property",
+                    "title": "Result Property",
                     "description": "The property to store the result of the HTTP call in. The result will have 4 properties from the http response: statusCode|reasonPhrase|content|headers.  If the content is json it will be an deserialized object, otherwise it will be a string",
                     "examples": [
                         "dialog.contosodata"
@@ -3483,93 +3462,6 @@
                     "title": "Microsoft.TrueSelector",
                     "description": "Selector for all true events",
                     "$ref": "#/definitions/Microsoft.TrueSelector"
-                }
-            ]
-        },
-        "Microsoft.IOnEvent": {
-            "title": "Microsoft IOnEvent",
-            "description": "Union of components which implement the IOnEvent interface",
-            "$role": "unionType",
-            "oneOf": [
-                {
-                    "title": "Microsoft.OnActivity",
-                    "description": "This defines the actions to take when an custom activity is received",
-                    "$ref": "#/definitions/Microsoft.OnActivity"
-                },
-                {
-                    "title": "Microsoft.OnBeginDialog",
-                    "description": "This defines the actions to take when a dialog is started via BeginDialog()",
-                    "$ref": "#/definitions/Microsoft.OnBeginDialog"
-                },
-                {
-                    "title": "Microsoft.OnConversationUpdateActivity",
-                    "description": "This defines the actions to take when an ConversationUpdate activity is received",
-                    "$ref": "#/definitions/Microsoft.OnConversationUpdateActivity"
-                },
-                {
-                    "title": "Microsoft.OnDialogEvent",
-                    "description": "Defines a rule for an event which is triggered by some source",
-                    "$ref": "#/definitions/Microsoft.OnDialogEvent"
-                },
-                {
-                    "title": "Microsoft.OnEndOfConversationActivity",
-                    "description": "This defines the actions to take when an EndOfConversation Activity is received",
-                    "$ref": "#/definitions/Microsoft.OnEndOfConversationActivity"
-                },
-                {
-                    "title": "Microsoft.OnEvent",
-                    "description": "Defines a rule for an event which is triggered by some source",
-                    "$ref": "#/definitions/Microsoft.OnEvent"
-                },
-                {
-                    "title": "Microsoft.OnEventActivity",
-                    "description": "This defines the actions to take when an Event activity is received",
-                    "$ref": "#/definitions/Microsoft.OnEventActivity"
-                },
-                {
-                    "title": "Microsoft.OnHandoffActivity",
-                    "description": "This defines the actions to take when an Handoff activity is received",
-                    "$ref": "#/definitions/Microsoft.OnHandoffActivity"
-                },
-                {
-                    "title": "Microsoft.OnIntent",
-                    "description": "This defines the actions to take when an Intent is recognized (and optionally entities)",
-                    "$ref": "#/definitions/Microsoft.OnIntent"
-                },
-                {
-                    "title": "Microsoft.OnInvokeActivity",
-                    "description": "This defines the actions to take when an Invoke activity is received",
-                    "$ref": "#/definitions/Microsoft.OnInvokeActivity"
-                },
-                {
-                    "title": "Microsoft.OnMessageActivity",
-                    "description": "This defines the actions to take when an Message activity is received. NOTE: If this triggers it will override any Recognizer/Intent rule calculation",
-                    "$ref": "#/definitions/Microsoft.OnMessageActivity"
-                },
-                {
-                    "title": "Microsoft.OnMessageDeleteActivity",
-                    "description": "This defines the actions to take when an MessageDelete activity is received",
-                    "$ref": "#/definitions/Microsoft.OnMessageDeleteActivity"
-                },
-                {
-                    "title": "Microsoft.OnMessageReactionActivity",
-                    "description": "This defines the actions to take when a MessageReaction activity is received",
-                    "$ref": "#/definitions/Microsoft.OnMessageReactionActivity"
-                },
-                {
-                    "title": "Microsoft.OnMessageUpdateActivity",
-                    "description": "This defines the actions to take when an MessageUpdate ctivity is received",
-                    "$ref": "#/definitions/Microsoft.OnMessageUpdateActivity"
-                },
-                {
-                    "title": "Microsoft.OnTypingActivity",
-                    "description": "This defines the actions to take when a Typing activity is received",
-                    "$ref": "#/definitions/Microsoft.OnTypingActivity"
-                },
-                {
-                    "title": "Microsoft.OnUnknownIntent",
-                    "description": "This defines the actions to take when an utterence is not recognized (aka, the None Intent). NOTE: UnknownIntent will defer to any specific intent that fires in a parent dialog",
-                    "$ref": "#/definitions/Microsoft.OnUnknownIntent"
                 }
             ]
         },
@@ -3753,7 +3645,7 @@
                 "property": {
                     "$role": "expression",
                     "title": "Property",
-                    "description": "The property to set the value of",
+                    "description": "The property path to initialize",
                     "examples": [
                         "user.age"
                     ],
@@ -4715,7 +4607,7 @@
             ]
         },
         "Microsoft.OnActivity": {
-            "$role": "unionType(Microsoft.IOnEvent)",
+            "$role": "unionType(Microsoft.TriggerHandler)",
             "title": "OnActivity",
             "description": "This defines the actions to take when an custom activity is received",
             "type": "object",
@@ -4793,7 +4685,7 @@
         "Microsoft.OnBeginDialog": {
             "title": "OnBeginDialog",
             "description": "This defines the actions to take when a dialog is started via BeginDialog()",
-            "$role": "unionType(Microsoft.IOnEvent)",
+            "$role": "unionType(Microsoft.TriggerHandler)",
             "type": "object",
             "properties": {
                 "$type": {
@@ -4861,7 +4753,7 @@
             ]
         },
         "Microsoft.OnConversationUpdateActivity": {
-            "$role": "unionType(Microsoft.IOnEvent)",
+            "$role": "unionType(Microsoft.TriggerHandler)",
             "title": "OnConversationUpdateActivity",
             "description": "This defines the actions to take when an ConversationUpdate activity is received",
             "type": "object",
@@ -4934,7 +4826,7 @@
             "title": "Event Event",
             "description": "Defines a rule for an event which is triggered by some source",
             "type": "object",
-            "$role": "unionType(Microsoft.IOnEvent)",
+            "$role": "unionType(Microsoft.TriggerHandler)",
             "properties": {
                 "$type": {
                     "title": "$type",
@@ -5021,7 +4913,7 @@
             ]
         },
         "Microsoft.OnEndOfConversationActivity": {
-            "$role": "unionType(Microsoft.IOnEvent)",
+            "$role": "unionType(Microsoft.TriggerHandler)",
             "title": "OnEndOfConversationActivity",
             "description": "This defines the actions to take when an EndOfConversation Activity is received",
             "type": "object",
@@ -5091,7 +4983,7 @@
             ]
         },
         "Microsoft.OnEvent": {
-            "$role": "unionType(Microsoft.IOnEvent)",
+            "$role": "unionType(Microsoft.TriggerHandler)",
             "title": "Event Event",
             "description": "Defines a rule for an event which is triggered by some source",
             "type": "object",
@@ -5161,7 +5053,7 @@
             ]
         },
         "Microsoft.OnEventActivity": {
-            "$role": "unionType(Microsoft.IOnEvent)",
+            "$role": "unionType(Microsoft.TriggerHandler)",
             "title": "OnEventActivity",
             "description": "This defines the actions to take when an Event activity is received",
             "type": "object",
@@ -5231,7 +5123,7 @@
             ]
         },
         "Microsoft.OnHandoffActivity": {
-            "$role": "unionType(Microsoft.IOnEvent)",
+            "$role": "unionType(Microsoft.TriggerHandler)",
             "title": "OnHandoffActivity",
             "description": "This defines the actions to take when an Handoff activity is received",
             "type": "object",
@@ -5301,7 +5193,7 @@
             ]
         },
         "Microsoft.OnIntent": {
-            "$role": "unionType(Microsoft.IOnEvent)",
+            "$role": "unionType(Microsoft.TriggerHandler)",
             "title": "Intent Event",
             "description": "This defines the actions to take when an Intent is recognized (and optionally entities)",
             "type": "object",
@@ -5385,7 +5277,7 @@
             ]
         },
         "Microsoft.OnInvokeActivity": {
-            "$role": "unionType(Microsoft.IOnEvent)",
+            "$role": "unionType(Microsoft.TriggerHandler)",
             "title": "OnInvokeActivity",
             "description": "This defines the actions to take when an Invoke activity is received",
             "type": "object",
@@ -5455,7 +5347,7 @@
             ]
         },
         "Microsoft.OnMessageActivity": {
-            "$role": "unionType(Microsoft.IOnEvent)",
+            "$role": "unionType(Microsoft.TriggerHandler)",
             "title": "OnMessageActivity",
             "description": "This defines the actions to take when an Message activity is received. NOTE: If this triggers it will override any Recognizer/Intent rule calculation",
             "type": "object",
@@ -5525,7 +5417,7 @@
             ]
         },
         "Microsoft.OnMessageDeleteActivity": {
-            "$role": "unionType(Microsoft.IOnEvent)",
+            "$role": "unionType(Microsoft.TriggerHandler)",
             "title": "MessageDeleteActivity",
             "description": "This defines the actions to take when an MessageDelete activity is received",
             "type": "object",
@@ -5595,7 +5487,7 @@
             ]
         },
         "Microsoft.OnMessageReactionActivity": {
-            "$role": "unionType(Microsoft.IOnEvent)",
+            "$role": "unionType(Microsoft.TriggerHandler)",
             "title": "MessageReactionActivity",
             "description": "This defines the actions to take when a MessageReaction activity is received",
             "type": "object",
@@ -5665,7 +5557,7 @@
             ]
         },
         "Microsoft.OnMessageUpdateActivity": {
-            "$role": "unionType(Microsoft.IOnEvent)",
+            "$role": "unionType(Microsoft.TriggerHandler)",
             "title": "MessageUpdateActivity",
             "description": "This defines the actions to take when an MessageUpdate ctivity is received",
             "type": "object",
@@ -5735,7 +5627,7 @@
             ]
         },
         "Microsoft.OnTypingActivity": {
-            "$role": "unionType(Microsoft.IOnEvent)",
+            "$role": "unionType(Microsoft.TriggerHandler)",
             "title": "TypingActivity",
             "description": "This defines the actions to take when a Typing activity is received",
             "type": "object",
@@ -5807,7 +5699,7 @@
         "Microsoft.OnUnknownIntent": {
             "title": "OnUnknownIntent",
             "description": "This defines the actions to take when an utterence is not recognized (aka, the None Intent). NOTE: UnknownIntent will defer to any specific intent that fires in a parent dialog",
-            "$role": "unionType(Microsoft.IOnEvent)",
+            "$role": "unionType(Microsoft.TriggerHandler)",
             "type": "object",
             "properties": {
                 "$type": {
@@ -6462,14 +6354,6 @@
                         "type": "string",
                         "title": "Options"
                     }
-                },
-                "property": {
-                    "$role": "expression",
-                    "description": "The property to bind to the dialog and store the result in",
-                    "examples": [
-                        "user.name"
-                    ],
-                    "type": "string"
                 }
             },
             "additionalProperties": false,
@@ -6624,7 +6508,7 @@
                 "property": {
                     "$role": "expression",
                     "title": "Property",
-                    "description": "The property to set the value of",
+                    "description": "The property path to set the value",
                     "examples": [
                         "user.age"
                     ],
@@ -7114,6 +6998,93 @@
                     "required": [
                         "$type"
                     ]
+                }
+            ]
+        },
+        "Microsoft.TriggerHandler": {
+            "title": "Microsoft TriggerHandler",
+            "description": "Union of components which implement the TriggerHandler interface",
+            "$role": "unionType",
+            "oneOf": [
+                {
+                    "title": "Microsoft.OnActivity",
+                    "description": "This defines the actions to take when an custom activity is received",
+                    "$ref": "#/definitions/Microsoft.OnActivity"
+                },
+                {
+                    "title": "Microsoft.OnBeginDialog",
+                    "description": "This defines the actions to take when a dialog is started via BeginDialog()",
+                    "$ref": "#/definitions/Microsoft.OnBeginDialog"
+                },
+                {
+                    "title": "Microsoft.OnConversationUpdateActivity",
+                    "description": "This defines the actions to take when an ConversationUpdate activity is received",
+                    "$ref": "#/definitions/Microsoft.OnConversationUpdateActivity"
+                },
+                {
+                    "title": "Microsoft.OnDialogEvent",
+                    "description": "Defines a rule for an event which is triggered by some source",
+                    "$ref": "#/definitions/Microsoft.OnDialogEvent"
+                },
+                {
+                    "title": "Microsoft.OnEndOfConversationActivity",
+                    "description": "This defines the actions to take when an EndOfConversation Activity is received",
+                    "$ref": "#/definitions/Microsoft.OnEndOfConversationActivity"
+                },
+                {
+                    "title": "Microsoft.OnEvent",
+                    "description": "Defines a rule for an event which is triggered by some source",
+                    "$ref": "#/definitions/Microsoft.OnEvent"
+                },
+                {
+                    "title": "Microsoft.OnEventActivity",
+                    "description": "This defines the actions to take when an Event activity is received",
+                    "$ref": "#/definitions/Microsoft.OnEventActivity"
+                },
+                {
+                    "title": "Microsoft.OnHandoffActivity",
+                    "description": "This defines the actions to take when an Handoff activity is received",
+                    "$ref": "#/definitions/Microsoft.OnHandoffActivity"
+                },
+                {
+                    "title": "Microsoft.OnIntent",
+                    "description": "This defines the actions to take when an Intent is recognized (and optionally entities)",
+                    "$ref": "#/definitions/Microsoft.OnIntent"
+                },
+                {
+                    "title": "Microsoft.OnInvokeActivity",
+                    "description": "This defines the actions to take when an Invoke activity is received",
+                    "$ref": "#/definitions/Microsoft.OnInvokeActivity"
+                },
+                {
+                    "title": "Microsoft.OnMessageActivity",
+                    "description": "This defines the actions to take when an Message activity is received. NOTE: If this triggers it will override any Recognizer/Intent rule calculation",
+                    "$ref": "#/definitions/Microsoft.OnMessageActivity"
+                },
+                {
+                    "title": "Microsoft.OnMessageDeleteActivity",
+                    "description": "This defines the actions to take when an MessageDelete activity is received",
+                    "$ref": "#/definitions/Microsoft.OnMessageDeleteActivity"
+                },
+                {
+                    "title": "Microsoft.OnMessageReactionActivity",
+                    "description": "This defines the actions to take when a MessageReaction activity is received",
+                    "$ref": "#/definitions/Microsoft.OnMessageReactionActivity"
+                },
+                {
+                    "title": "Microsoft.OnMessageUpdateActivity",
+                    "description": "This defines the actions to take when an MessageUpdate ctivity is received",
+                    "$ref": "#/definitions/Microsoft.OnMessageUpdateActivity"
+                },
+                {
+                    "title": "Microsoft.OnTypingActivity",
+                    "description": "This defines the actions to take when a Typing activity is received",
+                    "$ref": "#/definitions/Microsoft.OnTypingActivity"
+                },
+                {
+                    "title": "Microsoft.OnUnknownIntent",
+                    "description": "This defines the actions to take when an utterence is not recognized (aka, the None Intent). NOTE: UnknownIntent will defer to any specific intent that fires in a parent dialog",
+                    "$ref": "#/definitions/Microsoft.OnUnknownIntent"
                 }
             ]
         },

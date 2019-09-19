@@ -141,6 +141,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.StreamingExtensions
         }
 
         [TestMethod]
+        [Ignore]
         public async Task StreamingRequestHandler_ProcessRequestAsync_PostMessages_NoActivity_BadRequest()
         {
             var s = new StreamingRequestHandler(onTurnError: null, bot: new MockBot(), transportServer: new MockStreamingTransportServer());

@@ -106,7 +106,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
 
         private static List<ModelResult<FoundChoice>> RecognizeOrdinal(string utterance, string culture)
         {
-            var model = new NumberRecognizer(culture).GetOrdinalModel(culture);
+            var model = new NumberRecognizer(culture, NumberOptions.SuppressExtendedTypes).GetOrdinalModel(culture);
             var result = model.Parse(utterance);
             return result.Select(r =>
                 new ModelResult<FoundChoice>
@@ -123,7 +123,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Choices
 
         private static List<ModelResult<FoundChoice>> RecognizeNumber(string utterance, string culture)
         {
-            var model = new NumberRecognizer(culture).GetNumberModel(culture);
+            var model = new NumberRecognizer(culture, NumberOptions.SuppressExtendedTypes).GetNumberModel(culture);
             var result = model.Parse(utterance);
             return result.Select(r =>
                 new ModelResult<FoundChoice>

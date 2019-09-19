@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder.Dialogs
     ///
     /// - The automatic signin flow where once the user signs in and the SSO service will forward the bot
     /// the users access token using either an `event` or `invoke` activity.
-    /// - The "magic code" flow where where once the user signs in they will be prompted by the SSO
+    /// - The "magic code" flow where once the user signs in they will be prompted by the SSO
     /// service to send the bot a six digit code confirming their identity. This code will be sent as a
     /// standard `message` activity.
     ///

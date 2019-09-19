@@ -10,6 +10,7 @@ using System.Net.Http;
 using System.Security.Claims;
 using System.Security.Principal;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Integration;
@@ -827,9 +828,7 @@ namespace Microsoft.Bot.Builder
         {
             if (reference.Conversation != null)
             {
-                var typeOfDynamic = reference.Conversation.GetType();
-                var tenantProperty = typeOfDynamic.GetProperty("tenantId");
-                var tenantId = tenantProperty?.GetValue(reference.Conversation, null);
+                var tenantId = reference.Conversation.TenantId;
 
                 if (tenantId != null)
                 {
@@ -976,8 +975,8 @@ namespace Microsoft.Bot.Builder
             // NOTE: we can't do async operations inside of a AddOrUpdate, so we split access pattern
             string appPassword = await _credentialProvider.GetAppPasswordAsync(appId).ConfigureAwait(false);
             appCredentials = (_channelProvider != null && _channelProvider.IsGovernment()) ?
-                new MicrosoftGovernmentAppCredentials(appId, appPassword, _httpClient) :
-                new MicrosoftAppCredentials(appId, appPassword, _httpClient);
+                new MicrosoftGovernmentAppCredentials(appId, appPassword, _httpClient, _logger) :
+                new MicrosoftAppCredentials(appId, appPassword, _httpClient, _logger);
             _appCredentialMap[appId] = appCredentials;
             return appCredentials;
         }

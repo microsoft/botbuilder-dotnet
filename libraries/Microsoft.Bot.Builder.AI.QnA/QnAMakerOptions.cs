@@ -47,7 +47,22 @@ namespace Microsoft.Bot.Builder.AI.QnA
         [JsonProperty("top")]
         public int Top { get; set; }
 
-        [JsonProperty("strictFilters")]
+        /// <summary>
+        /// Gets or sets context of the previous turn.
+        /// </summary>
+        /// <value>
+        /// The context of previous turn.
+        /// </value>
+        public QnARequestContext Context { get; set; }
+
+        /// <summary>
+        /// Gets or sets QnA Id of the current question asked (if avaliable).
+        /// </summary>
+        /// <value>
+        /// Id of the current question asked.
+        /// </value>
+        public int QnAId { get; set; }
+
         public Metadata[] StrictFilters { get; set; }
 
         [JsonProperty("metadataBoost")]

@@ -44,23 +44,34 @@ namespace Microsoft.Bot.Schema
         }
 
         /// <summary>
-        /// Replace any mention text for given id from Text property. First checks for and replaces the name of the
-        /// recipient with the matching id and then checks for the leftover <at></at> tags (this is done to handle
-        /// the way Skype sends mention text.
-        /// Use with caution because this function is altering the text on the Activity.
+        /// Remove any mention text for given id from the Activity.Text property.  For example, given the message
+        /// @echoBot Hi Bot, this will remove "@echoBot", leaving "Hi Bot".
         /// </summary>
-        /// <param name="activity">activity.</param>
+        /// <description>
+        /// Typically this would be used to remove the mention text for the target recipient (the bot usually), though
+        /// it could be called for each member.  For example:
+        ///    turnContext.Activity.RemoveMentionText(turnContext.Activity.Recipient.Id);
+        /// The format of a mention Activity.Entity is dependent on the Channel.  But in all cases we
+        /// expect the Mention.Text to contain the exact text for the user as it appears in
+        /// Activity.Text.
+        /// For example, Teams uses &lt;at&gt;username&lt;/at&gt;, whereas slack use @username. It
+        /// is expected that text is in Activity.Text and this method will remove that value from
+        /// Activity.Text.
+        /// </description>
+        /// <param name="activity">activity.  The Text property is modified by this method.</param>
         /// <param name="id">id to match.</param>
-        /// <returns>new .Text property value.</returns>
+        /// <returns>new Activity.Text property value.</returns>
         public static string RemoveMentionText(this IMessageActivity activity, string id)
         {
             foreach (var mention in activity.GetMentions().Where(mention => mention.Mentioned.Id == id))
             {
-                var mentionNameMatch = Regex.Match(mention.Text, @"(?<=<at.*>)(.*?)(?=<\/at>)", RegexOptions.IgnoreCase);
-                if (mentionNameMatch.Success)
+                if (mention.Text == null)
                 {
-                    activity.Text = activity.Text.Replace(mentionNameMatch.Value, string.Empty);
-                    activity.Text = Regex.Replace(activity.Text, "<at></at>", string.Empty, RegexOptions.IgnoreCase);
+                    activity.Text = Regex.Replace(activity.Text, "<at>" + mention.Mentioned.Name + "</at>", string.Empty, RegexOptions.IgnoreCase).Trim();
+                }
+                else
+                {
+                   activity.Text = Regex.Replace(activity.Text, mention.Text, string.Empty, RegexOptions.IgnoreCase).Trim();
                 }
             }
 

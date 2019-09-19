@@ -171,7 +171,7 @@ namespace Microsoft.Bot.Builder.Tests
         [Description("Cannot get a bool with no default set")]
         public async Task State_bool_NoDefault()
         {
-            // Arange
+            // Arrange
             var dictionary = new Dictionary<string, JObject>();
             var userState = new UserState(new MemoryStorage(dictionary));
             var context = TestUtilities.CreateEmptyContext();
@@ -756,6 +756,56 @@ namespace Microsoft.Bot.Builder.Tests
             var json = conversationState.Get(turnContext);
 
             Assert.AreEqual("test-value", json["test-name"]["Value"].ToString());
+        }
+
+        [TestMethod]
+        [Description("Should not throw when forcing without cached state")]
+        public async Task State_ForceIsNoOpWithoutCachedBotState()
+        {
+            // Arrange
+            var dictionary = new Dictionary<string, JObject>();
+            var userState = new UserState(new MemoryStorage(dictionary));
+            var context = TestUtilities.CreateEmptyContext();
+
+            // Act
+            await userState.SaveChangesAsync(context, true);
+        }
+
+        [TestMethod]
+        [Description("Should call IStorage.WriteAsync when force flag is true and cached state has not changed")]
+        public async Task State_ForceCallsSaveWithoutCachedBotStateChanges()
+        {
+            // Mock a storage provider, which counts writes
+            var storeCount = 0;
+            var dictionary = new Dictionary<string, object>();
+            var mock = new Mock<IStorage>();
+            mock.Setup(ms => ms.WriteAsync(It.IsAny<Dictionary<string, object>>(), It.IsAny<CancellationToken>()))
+                .Returns(Task.CompletedTask)
+                .Callback(() => storeCount++);
+            mock.Setup(ms => ms.ReadAsync(It.IsAny<string[]>(), It.IsAny<CancellationToken>()))
+                .Returns(Task.FromResult(result: (IDictionary<string, object>)dictionary));
+
+            // Arrange
+            var userState = new UserState(mock.Object);
+            var context = TestUtilities.CreateEmptyContext();
+
+            // Act
+            var propertyA = userState.CreateProperty<string>("propertyA");
+
+            // Set initial value and save
+            await propertyA.SetAsync(context, "test");
+            await userState.SaveChangesAsync(context);
+
+            // Assert
+            Assert.AreEqual(1, storeCount);
+
+            // Saving without changes and wthout force does NOT call .WriteAsync
+            await userState.SaveChangesAsync(context);
+            Assert.AreEqual(1, storeCount);
+
+            // Forcing save without changes DOES call .WriteAsync
+            await userState.SaveChangesAsync(context, true);
+            Assert.AreEqual(2, storeCount);
         }
 
         public class TypedObject

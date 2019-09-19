@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Net.Http;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Bot.Connector.Authentication
 {
@@ -23,6 +24,18 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <param name="customHttpClient">Optional <see cref="HttpClient"/> to be used when acquiring tokens.</param>
         public MicrosoftGovernmentAppCredentials(string appId, string password, HttpClient customHttpClient = null)
             : base(appId, password, customHttpClient)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MicrosoftGovernmentAppCredentials"/> class.
+        /// </summary>
+        /// <param name="appId">The Microsoft app ID.</param>
+        /// <param name="password">The Microsoft app password.</param>
+        /// <param name="customHttpClient">Optional <see cref="HttpClient"/> to be used when acquiring tokens.</param>
+        /// <param name="logger">Optional <see cref="ILogger"/> to gather telemetry data while acquiring and managing credentials.</param>
+        public MicrosoftGovernmentAppCredentials(string appId, string password, HttpClient customHttpClient, ILogger logger)
+            : base(appId, password, customHttpClient, logger)
         {
         }
 
