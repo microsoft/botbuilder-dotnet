@@ -12,13 +12,13 @@ using Microsoft.Bot.Builder.Expressions;
 using Microsoft.Bot.Builder.Expressions.Parser;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Dialogs.Adaptive.TriggerHandlers
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
 {
     /// <summary>
-    /// Defines basic TriggerHandler.
+    /// Defines most promitive declarative implementation of a OnCondition 
     /// </summary>
     [DebuggerDisplay("{GetIdentity()}")]
-    public abstract class TriggerHandler : IItemIdentity
+    public class OnCondition : IItemIdentity, IDialogDependencies
     {
         // constraints from Rule.AddConstraint()
         private List<Expression> extraConstraints = new List<Expression>();
@@ -27,22 +27,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.TriggerHandlers
         private Expression fullConstraint = null;
 
         [JsonConstructor]
-        public TriggerHandler(string constraint = null, List<Dialog> actions = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public OnCondition(string condition = null, List<Dialog> actions = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
         {
             this.RegisterSourceLocation(callerPath, callerLine);
-
-            this.Constraint = constraint;
+            this.Condition = condition;
             this.Actions = actions;
         }
 
         /// <summary>
-        /// Gets or sets the constraint to apply to the rule (OPTIONAL). 
+        /// Gets or sets the condition which needs to be met for the actions to be executed (OPTIONAL)
         /// </summary>
         /// <value>
-        /// The constraint to apply to the rule (OPTIONAL). 
+        /// The condition which needs to be met for the actions to be executed 
         /// </value>
-        [JsonProperty("constraint")]
-        public string Constraint { get; set; }
+        [JsonProperty("condition")]
+        public string Condition { get; set; }
 
         /// <summary>
         /// Gets or sets the actions to add to the plan when the rule constraints are met.
@@ -64,7 +63,32 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.TriggerHandlers
             {
                 if (this.fullConstraint == null)
                 {
-                    this.fullConstraint = BuildExpression(parser);
+                    List<Expression> allExpressions = new List<Expression>();
+                    if (!string.IsNullOrWhiteSpace(this.Condition))
+                    {
+                        try
+                        {
+                            allExpressions.Add(parser.Parse(this.Condition));
+                        }
+                        catch (Exception e)
+                        {
+                            throw new Exception($"Invalid constraint expression: {this.Condition}, {e.Message}");
+                        }
+                    }
+
+                    if (this.extraConstraints.Any())
+                    {
+                        allExpressions.AddRange(this.extraConstraints);
+                    }
+
+                    if (allExpressions.Any())
+                    {
+                        return Expression.AndExpression(allExpressions.ToArray());
+                    }
+                    else
+                    {
+                        return Expression.ConstantExpression(true);
+                    }
                 }
             }
 
@@ -72,24 +96,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.TriggerHandlers
         }
 
         /// <summary>
-        /// Add external constraint to the rule (mostly used by RuleSet to apply external constraints to rule).
+        /// Add external condition to the OnCondition (mostly used by external OnConditionSet to apply external constraints to OnCondition).
         /// </summary>
-        /// <param name="constraint">External constraint to add.</param>
-        public void AddConstraint(string constraint)
+        /// <param name="condition">External constraint to add, it will be AND'ed to all other constraints.</param>
+        public void AddExternalCondition(string condition)
         {
-            if (!string.IsNullOrWhiteSpace(constraint))
+            if (!string.IsNullOrWhiteSpace(condition))
             {
                 try
                 {
                     lock (this.extraConstraints)
                     {
-                        this.extraConstraints.Add(new ExpressionEngine().Parse(constraint));
+                        this.extraConstraints.Add(new ExpressionEngine().Parse(condition));
                         this.fullConstraint = null; // reset to force it to be recalcaulated
                     }
                 }
                 catch (Exception e)
                 {
-                    throw new Exception($"Invalid constraint expression: {this.Constraint}, {e.Message}");
+                    throw new Exception($"Invalid constraint expression: {this.Condition}, {e.Message}");
                 }
             }
         }
@@ -101,60 +125,38 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.TriggerHandlers
         /// <returns>A <see cref="Task"/> with plan change list.</returns>
         public virtual async Task<List<ActionChangeList>> ExecuteAsync(SequenceContext planningContext)
         {
-            return await OnExecuteAsync(planningContext).ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// Method called to process the request to execute the actions.
-        /// </summary>
-        /// <param name="planning">Context.</param>
-        /// <returns>A <see cref="Task"/> with plan change list.</returns>
-        public virtual async Task<List<ActionChangeList>> OnExecuteAsync(SequenceContext planning)
-        {
             return await Task.FromResult(new List<ActionChangeList>()
             {
-                this.OnCreateChangeList(planning)
+                this.OnCreateChangeList(planningContext)
             });
         }
 
+        /// <summary>
+        /// Method called to execute the rule's actions.
+        /// </summary>
+        /// <param name="planningContext">Context.</param>
+        /// <returns>A <see cref="Task"/> with plan change list.</returns>
         public virtual string GetIdentity()
         {
             return $"{this.GetType().Name}()";
         }
 
-        /// <summary>
-        /// Override this method to define the expression which is evaluated to determine if this rule should fire.
-        /// </summary>
-        /// <param name="factory">Expression parser.</param>
-        /// <returns>Expression which will be cached and used to evaluate this rule.</returns>
-        protected virtual Expression BuildExpression(IExpressionParser factory)
+        public virtual IEnumerable<Dialog> GetDependencies()
         {
-            List<Expression> allExpressions = new List<Expression>();
-            if (!string.IsNullOrWhiteSpace(this.Constraint))
+            foreach (var action in this.Actions)
             {
-                try
+                yield return action;
+
+                if (action is IDialogDependencies depends)
                 {
-                    allExpressions.Add(factory.Parse(this.Constraint));
-                }
-                catch (Exception e)
-                {
-                    throw new Exception($"Invalid constraint expression: {this.Constraint}, {e.Message}");
+                    foreach (var dialog in depends.GetDependencies())
+                    {
+                        yield return dialog;
+                    }
                 }
             }
 
-            if (this.extraConstraints.Any())
-            {
-                allExpressions.AddRange(this.extraConstraints);
-            }
-
-            if (allExpressions.Any())
-            {
-                return Expression.AndExpression(allExpressions.ToArray());
-            }
-            else
-            {
-                return Expression.ConstantExpression(true);
-            }
+            yield break;
         }
 
         protected virtual ActionChangeList OnCreateChangeList(SequenceContext planning, object dialogOptions = null)

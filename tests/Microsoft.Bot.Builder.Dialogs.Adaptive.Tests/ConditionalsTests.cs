@@ -5,26 +5,27 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.TriggerHandlers;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
 using Microsoft.Bot.Builder.Expressions.Parser;
 using Microsoft.Bot.Builder.LanguageGeneration;
+using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 {
     [TestClass]
-    public class EventTests
+    public class ConditionalsTests
     {
         public TestContext TestContext { get; set; }
 
         public ExpressionEngine ExpressionEngine { get; set; } = new ExpressionEngine();
 
         [TestMethod]
-        public async Task EventTests_OnIntent()
+        public async Task OnIntent()
         {
             var planningDialog = new AdaptiveDialog("planningTest")
             {
@@ -36,7 +37,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         new IntentPattern("JokeIntent", "joke"),
                     }
                 },
-                Triggers = new List<TriggerHandler>()
+                Triggers = new List<OnCondition>()
                 {
                     new OnBeginDialog()
                     {
@@ -67,7 +68,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
-        public async Task EventTests_OnIntentWithEntities()
+        public async Task OnIntentWithEntities()
         {
             var planningDialog = new AdaptiveDialog("planningTest")
             {
@@ -79,7 +80,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         new IntentPattern("addColor", "I want (?<color>(red|green|blue|yellow))*"),
                     }
                 },
-                Triggers = new List<TriggerHandler>()
+                Triggers = new List<OnCondition>()
                 {
                     new OnIntent(
                         intent: "addColor",
@@ -96,6 +97,52 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .AssertReply("pbtpbtpbt!")
             .Send("fooo")
                 .AssertReply("pbtpbtpbt!")
+            .StartTestAsync();
+        }
+
+        public OnCondition TestCondition(OnCondition conditional)
+        {
+            conditional.Condition = $"turn.activity.text == '{conditional.GetType().Name}'";
+            conditional.Actions.Add(new SendActivity(conditional.GetType().Name));
+            return conditional;
+        }
+
+        [TestMethod]
+        public async Task OnActivityTypes()
+        {
+            var planningDialog = new AdaptiveDialog("planningTest")
+            {
+                AutoEndDialog = false,
+                Triggers = new List<OnCondition>()
+                {
+                    TestCondition(new OnMessageActivity()),
+                    TestCondition(new OnEventActivity()),
+                    TestCondition(new OnConversationUpdateActivity()),
+                    TestCondition(new OnTypingActivity()),
+                    TestCondition(new OnEndOfConversationActivity()),
+                    TestCondition(new OnEventActivity()),
+                    TestCondition(new OnHandoffActivity()),
+                    TestCondition(new OnMessageReactionActivity()),
+                    TestCondition(new OnMessageUpdateActivity()),
+                    TestCondition(new OnMessageDeleteActivity()),
+                }
+            };
+
+            await CreateFlow(planningDialog)
+            .Send(new Activity(ActivityTypes.Message, text: nameof(OnMessageActivity)))
+                .AssertReply(nameof(OnMessageActivity))
+            .Send(new Activity(ActivityTypes.MessageReaction, text: nameof(OnMessageReactionActivity)))
+                .AssertReply(nameof(OnMessageReactionActivity))
+            .Send(new Activity(ActivityTypes.MessageDelete, text: nameof(OnMessageDeleteActivity)))
+                .AssertReply(nameof(OnMessageDeleteActivity))
+            .Send(new Activity(ActivityTypes.MessageUpdate, text: nameof(OnMessageUpdateActivity)))
+                .AssertReply(nameof(OnMessageUpdateActivity))
+            .Send(new Activity(ActivityTypes.ConversationUpdate, text: nameof(OnConversationUpdateActivity)))
+                .AssertReply(nameof(OnConversationUpdateActivity))
+            .Send(new Activity(ActivityTypes.EndOfConversation, text: nameof(OnEndOfConversationActivity)))
+                .AssertReply(nameof(OnEndOfConversationActivity))
+            .Send(new Activity(ActivityTypes.Event, text: nameof(OnEventActivity)) { Name = nameof(OnEventActivity) })
+                .AssertReply(nameof(OnEventActivity))
             .StartTestAsync();
         }
 

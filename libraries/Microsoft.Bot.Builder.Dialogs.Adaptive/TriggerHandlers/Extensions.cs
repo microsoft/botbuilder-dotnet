@@ -5,16 +5,16 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 
-namespace Microsoft.Bot.Builder.Dialogs.Adaptive.TriggerHandlers
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
 {
     /// <summary>
     /// Extension method for <see cref="DialogContext"/> provides <see cref="DebugSupport"/>.
     /// </summary>
     public static partial class Extensions
     {
-        public static async Task DebuggerStepAsync(this DialogContext context, TriggerHandler triggerHandler, DialogEvent dialogEvent, CancellationToken cancellationToken)
+        public static async Task DebuggerStepAsync(this DialogContext context, OnCondition conditional, DialogEvent dialogEvent, CancellationToken cancellationToken)
         {
-            await context.GetDebugger().StepAsync(context, triggerHandler, more: dialogEvent?.Name ?? string.Empty, cancellationToken: cancellationToken).ConfigureAwait(false);
+            await context.GetDebugger().StepAsync(context, conditional, more: dialogEvent?.Name ?? string.Empty, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
     }
 }

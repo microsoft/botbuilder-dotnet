@@ -7,21 +7,16 @@ using System.Runtime.CompilerServices;
 using Microsoft.Bot.Builder.Expressions;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Dialogs.Adaptive.TriggerHandlers
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
 {
     /// <summary>
     /// Event triggered when a Activity of a given type is received. 
     /// </summary>
-    public class OnActivity : OnDialogEvent
+    public class OnActivity : OnCustomEvent
     {
         [JsonConstructor]
         public OnActivity(string type = null, List<Dialog> actions = null, string constraint = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
-            : base(
-                events: new List<string>() { AdaptiveEvents.ActivityReceived },
-                actions: actions,
-                constraint: constraint,
-                callerPath: callerPath,
-                callerLine: callerLine)
+            : base(@event: AdaptiveEvents.ActivityReceived, actions: actions, condition: constraint, callerPath: callerPath, callerLine: callerLine)
         {
             Type = type;
         }
@@ -37,28 +32,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.TriggerHandlers
 
         public override string GetIdentity()
         {
-            return $"{this.GetType().Name}({this.Type})[{this.Constraint}]";
+            if (this.GetType() == typeof(OnActivity))
+            {
+                return $"{this.GetType().Name}({this.Type})[{this.Condition}]";
+            }
+
+            return $"{this.GetType().Name}[{this.Condition}]";
         }
 
-        protected override Expression BuildExpression(IExpressionParser factory)
+        public override Expression GetExpression(IExpressionParser factory)
         {
             // add constraints for activity type
             return Expression.AndExpression(
-                factory.Parse($"{TurnPath.DIALOGEVENT}.value.type == '{this.Type}'"),
-                base.BuildExpression(factory));
-        }
-
-        protected override ActionChangeList OnCreateChangeList(SequenceContext planning, object dialogOptions = null)
-        {
-            return new ActionChangeList()
-            {
-                Actions = Actions.Select(s => new ActionState()
-                {
-                    DialogStack = new List<DialogInstance>(),
-                    DialogId = s.Id,
-                    Options = dialogOptions
-                }).ToList()
-            };
+                factory.Parse($"{TurnPath.ACTIVITY}.type == '{this.Type}'"),
+                base.GetExpression(factory));
         }
     }
 }

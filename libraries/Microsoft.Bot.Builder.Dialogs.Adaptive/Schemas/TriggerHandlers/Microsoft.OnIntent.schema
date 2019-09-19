@@ -1,13 +1,12 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
-    "$ref": "./Microsoft.OnEvent.schema#",
-    "$role": "unionType(Microsoft.TriggerHandler)",
+    "$role": "unionType(Microsoft.ITriggerCondition)",
     "title": "Intent Event",
     "description": "This defines the actions to take when an Intent is recognized (and optionally entities)",
     "type": "object",
     "allOf": [
         {
-            "$ref": "./Microsoft.OnEvent.schema"
+            "$ref": "./Microsoft.OnCondition.schema#"
         },
         {
             "properties": {
@@ -24,11 +23,11 @@
                         "type": "string"
                     }
                 }
-            },
-            "required": [
-                "intent",
-                "actions"
-            ]
+            }
         }
+    ],
+    "required": [
+        "intent",
+        "actions"
     ]
 }

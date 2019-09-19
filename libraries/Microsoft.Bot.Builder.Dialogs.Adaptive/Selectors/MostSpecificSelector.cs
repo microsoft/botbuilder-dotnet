@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.AI.TriggerTrees;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.TriggerHandlers;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Expressions.Parser;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
@@ -24,13 +24,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
         /// </value>
         public ITriggerSelector Selector { get; set; }
 
-        public void Initialize(IEnumerable<TriggerHandler> triggerHandlers, bool evaluate)
+        public void Initialize(IEnumerable<OnCondition> conditionals, bool evaluate)
         {
             var i = 0;
             var parser = new ExpressionEngine(TriggerTree.LookupFunction);
-            foreach (var triggerHandler in triggerHandlers)
+            foreach (var conditional in conditionals)
             {
-                _tree.AddTrigger(triggerHandler.GetExpression(parser), (i, triggerHandler));
+                _tree.AddTrigger(conditional.GetExpression(parser), (i, conditional));
                 ++i;
             }
         }
@@ -47,7 +47,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
                 {
                     foreach (var trigger in node.AllTriggers)
                     {
-                        var (pos, rule) = (ValueTuple<int, TriggerHandler>)trigger.Action;
+                        var (pos, rule) = (ValueTuple<int, OnCondition>)trigger.Action;
                         matches.Add(pos);
                     }
                 }
@@ -56,12 +56,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
             }
             else
             {
-                var matches = new List<ValueTuple<int, TriggerHandler>>();
+                var matches = new List<ValueTuple<int, OnCondition>>();
                 foreach (var node in nodes)
                 {
                     foreach (var trigger in node.AllTriggers)
                     {
-                        matches.Add((ValueTuple<int, TriggerHandler>)trigger.Action);
+                        matches.Add((ValueTuple<int, OnCondition>)trigger.Action);
                     }
                 }
 

@@ -5,24 +5,16 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Dialogs.Adaptive.TriggerHandlers
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
 {
     /// <summary>
     /// Rule triggered when a dialog is started via BeginDialog().
     /// </summary>
-    public class OnBeginDialog : OnDialogEvent
+    public class OnBeginDialog : OnCustomEvent
     {
         [JsonConstructor]
-        public OnBeginDialog(List<Dialog> actions = null, string constraint = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
-            : base(
-                events: new List<string>()
-                {
-                    AdaptiveEvents.BeginDialog
-                },
-                actions: actions,
-                constraint: constraint,
-                callerPath: callerPath,
-                callerLine: callerLine)
+        public OnBeginDialog(List<Dialog> actions = null, string condition = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+            : base(@event: AdaptiveEvents.BeginDialog, actions: actions, condition: condition, callerPath: callerPath, callerLine: callerLine)
         {
         }
     }

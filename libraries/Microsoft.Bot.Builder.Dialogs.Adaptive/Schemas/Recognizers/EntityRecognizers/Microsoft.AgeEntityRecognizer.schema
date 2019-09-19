@@ -1,6 +1,6 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
-    "$role": "unionType(Microsoft.EntityRecognizer)",
+    "$role": "unionType(Microsoft.EntityRecognizers)",
     "title": "Age Entity Recognizer",
     "description": "Recognizer which recognizes age.",
     "type": "object",

@@ -1,21 +1,14 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
-    "$role": "unionType(Microsoft.Dialog)",
+    "$role": "unionType(Microsoft.IDialog)",
     "title": "Send Activity Action",
     "description": "This is a action which sends an activity to the user",
     "type": "object",
-    "allOf": [
-        {
-            "$ref": "./baseActionSchema.json"
-        },
-        {
-            "properties": {
-                "activity": {
-                    "$type": "Microsoft.ActivityTemplate",
-                    "title": "Activity",
-                    "description": "Activity to send to the user"
-                }
-            }
+    "properties": {
+        "activity": {
+            "$type": "Microsoft.IActivityTemplate",
+            "title": "Activity",
+            "description": "Activity to send to the user"
         }
-    ]
+    }
 }

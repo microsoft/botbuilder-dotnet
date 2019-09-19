@@ -10,7 +10,7 @@
                     "$type": "Microsoft.AttachmentInput",
                     "property": "dialog.attachments",
                     "prompt": "Please send an image or music.",
-                    "outputFormat": "All"
+                    "outputFormat": "all"
                 },
                 {
                     "$type": "Microsoft.SendActivity",

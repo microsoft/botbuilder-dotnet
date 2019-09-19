@@ -25,8 +25,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         protected const string PROCESS_INPUT_PROPERTY = "turn.processInput";
 #pragma warning restore SA1310 // Field should not contain underscore.
 
+        /// <summary>
+        /// gets or sets If set to true this will always prompt the user regardless if you already have the value or not.
+        /// </summary>
         public bool AlwaysPrompt { get; set; } = false;
 
+        /// <summary>
+        /// gets or sets intteruption policy.
+        /// </summary>
         public AllowInterruptions AllowInterruptions { get; set; } = AllowInterruptions.NotRecognized;
 
         /// <summary>
@@ -55,6 +61,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// </summary>
         public ITemplate<Activity> DefaultValueResponse { get; set; }
 
+        /// <summary>
+        /// Gets or sets the expressions to run to validate the input.
+        /// </summary>
         public List<string> Validations { get; set; } = new List<string>();
 
         /// <summary>

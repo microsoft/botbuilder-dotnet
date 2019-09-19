@@ -6,9 +6,9 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.TriggerHandlers;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
 using Microsoft.Bot.Builder.Expressions;
@@ -34,7 +34,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             var ruleDialog = new AdaptiveDialog("planningTest");
 
-            ruleDialog.AddTriggerHandler(new OnUnknownIntent(
+            ruleDialog.Triggers.Add(new OnUnknownIntent(
                     new List<Dialog>()
                     {
                         new SendActivity("Hello Planning!")
@@ -51,7 +51,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             var ruleDialog = new AdaptiveDialog("planningTest");
 
-            ruleDialog.AddTriggerHandler(new OnUnknownIntent(new List<Dialog>()
+            ruleDialog.Triggers.Add(new OnUnknownIntent(new List<Dialog>()
                     {
                         new SendActivity("Hello Planning!"),
                         new SendActivity("Howdy awain")
@@ -69,7 +69,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             var ruleDialog = new AdaptiveDialog("planningTest");
 
-            ruleDialog.AddTriggerHandler(
+            ruleDialog.Triggers.Add(
                 new OnUnknownIntent(
                     new List<Dialog>()
                     {
@@ -182,7 +182,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             var ruleDialog = new AdaptiveDialog("planningTest");
 
-            ruleDialog.AddTriggerHandler(new OnUnknownIntent(
+            ruleDialog.Triggers.Add(new OnUnknownIntent(
                     new List<Dialog>()
                     {
                         new IfCondition()
@@ -213,7 +213,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             var ruleDialog = new AdaptiveDialog("planningTest")
             {
-                Triggers = new List<TriggerHandler>()
+                Triggers = new List<OnCondition>()
                 {
                     new OnBeginDialog()
                     {
@@ -252,7 +252,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var ruleDialog = new AdaptiveDialog("planningTest")
             {
                 AutoEndDialog = false,
-                Triggers = new List<TriggerHandler>()
+                Triggers = new List<OnCondition>()
                 {
                     new OnUnknownIntent()
                     {
@@ -300,7 +300,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             var ruleDialog = new AdaptiveDialog("planningTest")
             {
-                Triggers = new List<TriggerHandler>()
+                Triggers = new List<OnCondition>()
                 {
                     new OnBeginDialog()
                     {
@@ -339,7 +339,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             var ruleDialog = new AdaptiveDialog("planningTest")
             {
-                Triggers = new List<TriggerHandler>()
+                Triggers = new List<OnCondition>()
                 {
                     new OnBeginDialog()
                     {
@@ -387,7 +387,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         new IntentPattern("HelloIntent", "hi|hello"),
                     }
                 },
-                Triggers = new List<TriggerHandler>()
+                Triggers = new List<OnCondition>()
                 {
                     new OnBeginDialog()
                     {
@@ -457,7 +457,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 }
             };
 
-            ruleDialog.AddTriggerHandlers(new List<TriggerHandler>()
+            ruleDialog.Triggers.AddRange(new List<OnCondition>()
             {
                 new OnBeginDialog()
                 {
@@ -530,7 +530,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         new IntentPattern("GoodbyeIntent", "bye|goodbye|seeya|see ya"),
                     }
                 },
-                Triggers = new List<TriggerHandler>()
+                Triggers = new List<OnCondition>()
                 {
                     new OnBeginDialog()
                     {
@@ -613,7 +613,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         new IntentPattern("GoodbyeIntent", "(?i)bye|goodbye|seeya|see ya"),
                     }
                 },
-                Triggers = new List<TriggerHandler>()
+                Triggers = new List<OnCondition>()
                 {
                     new OnBeginDialog()
                     {
@@ -656,7 +656,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             innerDialog.Dialogs.Add(
                 new AdaptiveDialog("Greeting")
                 {
-                    Triggers = new List<TriggerHandler>()
+                    Triggers = new List<OnCondition>()
                     {
                         new OnBeginDialog()
                         {
@@ -686,7 +686,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             innerDialog.Dialogs.Add(
                 new AdaptiveDialog("TellJokeDialog")
                 {
-                    Triggers = new List<TriggerHandler>()
+                    Triggers = new List<OnCondition>()
                     {
                         new OnBeginDialog()
                         {
@@ -711,7 +711,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         new IntentPattern("HelpIntent", "(?i)help"),
                     }
                 },
-                Triggers = new List<TriggerHandler>()
+                Triggers = new List<OnCondition>()
                 {
                     new OnBeginDialog()
                     {
@@ -786,7 +786,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         new IntentPattern("CancelIntent", "cancel"),
                     }
                 },
-                Triggers = new List<TriggerHandler>()
+                Triggers = new List<OnCondition>()
                 {
                     new OnBeginDialog()
                     {
@@ -831,7 +831,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         new IntentPattern("RootIntent", "root"),
                     }
                 },
-                Triggers = new List<TriggerHandler>()
+                Triggers = new List<OnCondition>()
                 {
                     new OnIntent("StartOuterIntent", actions: new List<Dialog>() { outerDialog }),
                     new OnIntent("RootIntent", actions: new List<Dialog>() { new SendActivity("rootintent") }),
@@ -879,7 +879,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         new IntentPattern("JokeIntent", "joke"),
                     }
                 },
-                Triggers = new List<TriggerHandler>()
+                Triggers = new List<OnCondition>()
                 {
                     new OnActivity("Custom", actions: new List<Dialog>() { new SendActivity("CustomActivityEvent") }),
                     new OnMessageActivity(actions: new List<Dialog>() { new SendActivity("MessageActivityEvent") }),
@@ -937,7 +937,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         new IntentPattern("JokeIntent", "joke"),
                     }
                 },
-                Triggers = new List<TriggerHandler>()
+                Triggers = new List<OnCondition>()
                 {
                     new OnIntent(intent: "JokeIntent", actions: new List<Dialog>() { new SendActivity("chicken joke") }),
                     new OnMessageActivity(constraint: "turn.activity.text == 'magic'", actions: new List<Dialog>() { new SendActivity("abracadabra") }),
@@ -958,7 +958,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var rootDialog = new AdaptiveDialog(nameof(AdaptiveDialog))
             {
                 Generator = new TemplateEngineLanguageGenerator(),
-                Triggers = new List<TriggerHandler>()
+                Triggers = new List<OnCondition>()
                 {
                     new OnUnknownIntent()
                     {
@@ -992,7 +992,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var rootDialog = new AdaptiveDialog(nameof(AdaptiveDialog))
             {
                 Generator = new TemplateEngineLanguageGenerator(),
-                Triggers = new List<TriggerHandler>()
+                Triggers = new List<OnCondition>()
                 {
                     new OnUnknownIntent()
                     {
@@ -1033,7 +1033,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             var rootDialog = new AdaptiveDialog(nameof(AdaptiveDialog))
             {
-                Triggers = new List<TriggerHandler>()
+                Triggers = new List<OnCondition>()
                 {
                     new OnUnknownIntent()
                     {
@@ -1058,7 +1058,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             var ageDialog = new AdaptiveDialog("ageDialog")
             {
-                Triggers = new List<TriggerHandler>()
+                Triggers = new List<OnCondition>()
                 {
                     new OnUnknownIntent()
                     {
@@ -1088,7 +1088,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var rootDialog = new AdaptiveDialog(nameof(AdaptiveDialog))
             {
                 Generator = new TemplateEngineLanguageGenerator(),
-                Triggers = new List<TriggerHandler>()
+                Triggers = new List<OnCondition>()
                 {
                     new OnUnknownIntent()
                     {
@@ -1165,7 +1165,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         new IntentPattern("reset", "(?i)reset"),
                     }
                 },
-                Triggers = new List<TriggerHandler>()
+                Triggers = new List<OnCondition>()
                 {
                     new OnUnknownIntent()
                     {
@@ -1280,7 +1280,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         new IntentPattern("Start", "(?i)start"),
                     }
                 },
-                Triggers = new List<TriggerHandler>()
+                Triggers = new List<OnCondition>()
                 {
                     new OnIntent()
                     {
@@ -1338,7 +1338,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         new IntentPattern("Start", "(?i)start"),
                     }
                 },
-                Triggers = new List<TriggerHandler>()
+                Triggers = new List<OnCondition>()
                 {
                     new OnIntent()
                     {
@@ -1420,7 +1420,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         new IntentPattern("None", "200"),
                     }
                 },
-                Triggers = new List<TriggerHandler>()
+                Triggers = new List<OnCondition>()
                 {
                     new OnIntent()
                     {
@@ -1489,7 +1489,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         new IntentPattern("Start", "(?i)start"),
                     }
                 },
-                Triggers = new List<TriggerHandler>()
+                Triggers = new List<OnCondition>()
                 {
                     new OnIntent()
                     {
@@ -1555,7 +1555,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         new IntentPattern("Start", "(?i)start"),
                     }
                 },
-                Triggers = new List<TriggerHandler>()
+                Triggers = new List<OnCondition>()
                 {
                     new OnIntent()
                     {
@@ -1619,7 +1619,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         new IntentPattern("Start", "(?i)start"),
                     }
                 },
-                Triggers = new List<TriggerHandler>()
+                Triggers = new List<OnCondition>()
                 {
                     new OnIntent()
                     {
@@ -1682,7 +1682,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         new IntentPattern("Start", "(?i)start"),
                     }
                 },
-                Triggers = new List<TriggerHandler>()
+                Triggers = new List<OnCondition>()
                 {
                     new OnIntent()
                     {
@@ -1742,7 +1742,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         new IntentPattern("Start", "(?i)start"),
                     }
                 },
-                Triggers = new List<TriggerHandler>()
+                Triggers = new List<OnCondition>()
                 {
                     new OnIntent()
                     {
@@ -1803,7 +1803,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         new IntentPattern("Start", "(?i)start"),
                     }
                 },
-                Triggers = new List<TriggerHandler>()
+                Triggers = new List<OnCondition>()
                 {
                     new OnIntent()
                     {
@@ -1870,7 +1870,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         new IntentPattern("Start", "(?i)start"),
                     }
                 },
-                Triggers = new List<TriggerHandler>()
+                Triggers = new List<OnCondition>()
                 {
                     new OnIntent()
                     {
@@ -1921,7 +1921,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             var rootDialog = new AdaptiveDialog(nameof(AdaptiveDialog))
             {
-                Triggers = new List<TriggerHandler>()
+                Triggers = new List<OnCondition>()
                 {
                     new OnUnknownIntent()
                     {
@@ -1945,7 +1945,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             var ageDialog = new AdaptiveDialog("ageDialog")
             {
-                Triggers = new List<TriggerHandler>()
+                Triggers = new List<OnCondition>()
                 {
                     new OnUnknownIntent()
                     {
@@ -1990,7 +1990,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         new IntentPattern("SubmitIntent", "123123123"),
                     }
                 },
-                Triggers = new List<TriggerHandler>()
+                Triggers = new List<OnCondition>()
                 {
                     new OnIntent(intent: "SubmitIntent")
                     {
