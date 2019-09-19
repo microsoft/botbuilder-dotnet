@@ -551,10 +551,11 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// Wraps Slack API's TestAuthAsync method.
         /// </summary>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
-        /// <returns>A <see cref="AuthTestResponse"/> representing the authentication operation.</returns>
-        public virtual async Task<AuthTestResponse> TestAuthAsync(CancellationToken cancellationToken)
+        /// <returns>The user Id.</returns>
+        public virtual async Task<string> TestAuthAsync(CancellationToken cancellationToken)
         {
-            return await _api.TestAuthAsync().ConfigureAwait(false);
+            var auth = await _api.TestAuthAsync().ConfigureAwait(false);
+            return auth.user_id;
         }
 
         /// <summary>
@@ -570,7 +571,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// <param name="asUser">If the message is being sent as user instead of as a bot.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A <see cref="UpdateResponse"/> representing the response to the operation.</returns>
-        public virtual async Task<UpdateResponse> UpdateAsync(string ts, string channelId, string text, string botName = null, string parse = null, bool linkNames = false, Attachment[] attachments = null, bool asUser = false, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual async Task<UpdateResponse> UpdateAsync(string ts, string channelId, string text, string botName = null, string parse = null, bool linkNames = false, Attachment[] attachments = null, bool asUser = false, CancellationToken cancellationToken = default)
         {
             return await _api.UpdateAsync(ts, channelId, text, botName, parse, linkNames, attachments, asUser).ConfigureAwait(false);
         }

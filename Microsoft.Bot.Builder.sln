@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29123.88
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.106
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{4269F3C3-6B42-419B-B64A-3E6DC0F1574A}"
 EndProject
@@ -114,7 +114,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Adapt
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Adapters.Slack.TestBot", "tests\Adapters\Microsoft.Bot.Builder.Adapters.Slack.TestBot\Microsoft.Bot.Builder.Adapters.Slack.TestBot.csproj", "{170EA6A3-26A6-4A1A-A6F9-44BE5208FA06}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Builder.Adapters.Slack.Tests", "tests\Adapters\Microsoft.Bot.Builder.Adapters.Slack.Tests\Microsoft.Bot.Builder.Adapters.Slack.Tests.csproj", "{195FC24B-C4DA-4055-918D-5ABF50FD805B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Adapters.Slack.Tests", "tests\Adapters\Microsoft.Bot.Builder.Adapters.Slack.Tests\Microsoft.Bot.Builder.Adapters.Slack.Tests.csproj", "{195FC24B-C4DA-4055-918D-5ABF50FD805B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -393,12 +393,6 @@ Global
 		{D9C6FA68-340F-4338-8158-3BCBF10F320D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D9C6FA68-340F-4338-8158-3BCBF10F320D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D9C6FA68-340F-4338-8158-3BCBF10F320D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{195FC24B-C4DA-4055-918D-5ABF50FD805B}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{195FC24B-C4DA-4055-918D-5ABF50FD805B}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
-		{195FC24B-C4DA-4055-918D-5ABF50FD805B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{195FC24B-C4DA-4055-918D-5ABF50FD805B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{195FC24B-C4DA-4055-918D-5ABF50FD805B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{195FC24B-C4DA-4055-918D-5ABF50FD805B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A67CCC9B-3B0D-4E3D-A111-6D8A85FAA35B}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
 		{A67CCC9B-3B0D-4E3D-A111-6D8A85FAA35B}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{A67CCC9B-3B0D-4E3D-A111-6D8A85FAA35B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -417,6 +411,12 @@ Global
 		{170EA6A3-26A6-4A1A-A6F9-44BE5208FA06}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{170EA6A3-26A6-4A1A-A6F9-44BE5208FA06}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{170EA6A3-26A6-4A1A-A6F9-44BE5208FA06}.Release|Any CPU.Build.0 = Release|Any CPU
+		{195FC24B-C4DA-4055-918D-5ABF50FD805B}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{195FC24B-C4DA-4055-918D-5ABF50FD805B}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
+		{195FC24B-C4DA-4055-918D-5ABF50FD805B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{195FC24B-C4DA-4055-918D-5ABF50FD805B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{195FC24B-C4DA-4055-918D-5ABF50FD805B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{195FC24B-C4DA-4055-918D-5ABF50FD805B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -473,9 +473,9 @@ Global
 		{6EB0FEBB-DB84-44C8-9C5B-FD3D3D187A4F} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{D9C6FA68-340F-4338-8158-3BCBF10F320D} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{A67CCC9B-3B0D-4E3D-A111-6D8A85FAA35B} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
-		{195FC24B-C4DA-4055-918D-5ABF50FD805B} = {A6539B8D-3806-4E21-9DFE-11AEC075D2E3}
 		{D2D9931A-EBFC-4923-A7BC-EF8BBD76D079} = {6230B915-B238-4E57-AAC4-06B4498F540F}
 		{170EA6A3-26A6-4A1A-A6F9-44BE5208FA06} = {E8CD434A-306F-41D9-B67D-BFFF3287354D}
+		{195FC24B-C4DA-4055-918D-5ABF50FD805B} = {E8CD434A-306F-41D9-B67D-BFFF3287354D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7173C9F3-A7F9-496E-9078-9156E35D6E16}

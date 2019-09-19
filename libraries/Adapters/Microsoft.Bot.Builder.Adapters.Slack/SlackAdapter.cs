@@ -41,7 +41,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
 
             if (string.IsNullOrWhiteSpace(_options.VerificationToken) && string.IsNullOrWhiteSpace(_options.ClientSigningSecret))
             {
-                string warning =
+                var warning =
                     "****************************************************************************************" +
                     "* WARNING: Your bot is operating without recommended security mechanisms in place.     *" +
                     "* Initialize your adapter with a clientSigningSecret parameter to enable               *" +
@@ -55,7 +55,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
                 throw new Exception(warning + Environment.NewLine + "Required: include a verificationToken or clientSigningSecret to verify incoming Events API webhooks");
             }
 
-            _slackClient = slackClient;
+            _slackClient = slackClient ?? throw new ArgumentNullException(nameof(slackClient));
             LoginWithSlack().Wait();
         }
 
@@ -193,19 +193,32 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// <returns>A resource response with the Id of the updated activity.</returns>
         public override async Task<ResourceResponse> UpdateActivityAsync(ITurnContext turnContext, Activity activity, CancellationToken cancellationToken)
         {
-            if (activity.Id != null && activity.Conversation != null)
+            if (turnContext == null)
             {
-                NewSlackMessage message = SlackHelper.ActivityToSlack(activity);
-                SlackClientWrapper slack = await GetAPIAsync(activity).ConfigureAwait(false);
-                var results = await slack.UpdateAsync(activity.Timestamp.ToString(), activity.ChannelId, message.text, null, null, false, null, false, cancellationToken).ConfigureAwait(false);
-                if (!results.ok)
-                {
-                    throw new Exception($"Error updating activity on Slack:{results}");
-                }
+                throw new ArgumentNullException(nameof(turnContext));
             }
-            else
+
+            if (activity == null)
             {
-                throw new Exception("Cannot update activity: activity is missing id.");
+                throw new ArgumentNullException(nameof(activity));
+            }
+
+            if (activity.Id == null)
+            {
+                throw new ArgumentException(nameof(activity.Id));
+            }
+
+            if (activity.Conversation == null)
+            {
+                throw new ArgumentException(nameof(activity.Conversation));
+            }
+
+            var message = SlackHelper.ActivityToSlack(activity);
+            var slack = await GetAPIAsync(activity).ConfigureAwait(false);
+            var results = await slack.UpdateAsync(activity.Timestamp.ToString(), activity.ChannelId, message.text, cancellationToken: cancellationToken).ConfigureAwait(false);
+            if (!results.ok)
+            {
+                throw new Exception($"Error updating activity on Slack:{results}");
             }
 
             return new ResourceResponse()
@@ -477,8 +490,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         {
             if (_options.BotToken != null)
             {
-                AuthTestResponse response = await _slackClient.TestAuthAsync(default(CancellationToken)).ConfigureAwait(false);
-                _identity = response.user_id;
+                _identity = await _slackClient.TestAuthAsync(default).ConfigureAwait(false);
             }
             else
             {
