@@ -54,6 +54,7 @@
 
   <ItemGroup>
     <None Remove="Schemas\Microsoft.Dialog.schema" />
+    <None Remove="Schemas\TriggerConditions\Microsoft.OnDialogEvent.schema" />
     <None Remove="Schemas\TriggerHandlers\Microsoft.OnCondition.schema" />
   </ItemGroup>
 

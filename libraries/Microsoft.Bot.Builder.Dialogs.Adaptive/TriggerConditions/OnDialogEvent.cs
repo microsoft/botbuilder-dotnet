@@ -9,12 +9,12 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
 {
     /// <summary>
-    /// Event triggered when a dialog event custom event names is emitted.
+    ///  triggered when a dialog event matching event is emitted.
     /// </summary>
-    public class OnCustomEvent : OnCondition
+    public class OnDialogEvent : OnCondition
     {
         [JsonConstructor]
-        public OnCustomEvent(string @event = null, List<Dialog> actions = null, string condition = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public OnDialogEvent(string @event = null, List<Dialog> actions = null, string condition = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base(condition: condition, actions: actions, callerPath: callerPath, callerLine: callerLine)
         {
             this.Event = @event;
@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         }
 
         /// <summary>
-        /// Gets or sets the custom event to fire on
+        /// Gets or sets the event to fire on
         /// </summary>
         public string Event { get; set; }
 

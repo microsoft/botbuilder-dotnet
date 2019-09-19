@@ -232,8 +232,13 @@
         },
         {
             "title": "Microsoft.OnCustomEvent",
-            "description": "Defines a actions which are executed when a condition is true",
+            "description": "Defines a actions which are executed when custom event is detected",
             "$ref": "#/definitions/Microsoft.OnCustomEvent"
+        },
+        {
+            "title": "Microsoft.OnDialogEvent",
+            "description": "Defines a actions which are executed when a dialog event matching event is is true",
+            "$ref": "#/definitions/Microsoft.OnDialogEvent"
         },
         {
             "title": "Microsoft.OnEndOfConversationActivity",
@@ -3104,8 +3109,13 @@
                 },
                 {
                     "title": "Microsoft.OnCustomEvent",
-                    "description": "Defines a actions which are executed when a condition is true",
+                    "description": "Defines a actions which are executed when custom event is detected",
                     "$ref": "#/definitions/Microsoft.OnCustomEvent"
+                },
+                {
+                    "title": "Microsoft.OnDialogEvent",
+                    "description": "Defines a actions which are executed when a dialog event matching event is is true",
+                    "$ref": "#/definitions/Microsoft.OnDialogEvent"
                 },
                 {
                     "title": "Microsoft.OnEndOfConversationActivity",
@@ -4503,8 +4513,8 @@
         },
         "Microsoft.OnCustomEvent": {
             "$role": "unionType(Microsoft.ITriggerCondition)",
-            "title": "OnEvent",
-            "description": "Defines a actions which are executed when a condition is true",
+            "title": "OnCustomEvent",
+            "description": "Defines a actions which are executed when custom event is detected",
             "type": "object",
             "properties": {
                 "$type": {
@@ -4551,10 +4561,83 @@
                 "event": {
                     "type": "string",
                     "title": "Custom Event Name",
-                    "description": "Custom event name to match to trigger these actions",
+                    "description": "Custom event name to match to trigger these actions"
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "actions",
+                        "event",
+                        "$type"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.OnDialogEvent": {
+            "$role": "unionType(Microsoft.ITriggerCondition)",
+            "title": "OnDialogEvent",
+            "description": "Defines a actions which are executed when a dialog event matching event is is true",
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.OnDialogEvent"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "condition": {
+                    "$role": "expression",
+                    "title": "Condition",
+                    "description": "Condition which must be met for these actions to be executed",
                     "examples": [
                         "user.vip == true"
-                    ]
+                    ],
+                    "type": "string"
+                },
+                "actions": {
+                    "type": "array",
+                    "description": "Sequence of actions or dialogs to execute",
+                    "items": {
+                        "$type": "Microsoft.IDialog",
+                        "$ref": "#/definitions/Microsoft.IDialog"
+                    }
+                },
+                "event": {
+                    "type": "string",
+                    "title": "Dialog Event Name",
+                    "description": "Dialog event name to match to trigger these actions"
                 }
             },
             "additionalProperties": false,
