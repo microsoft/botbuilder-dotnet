@@ -22,9 +22,9 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.TestBot
             this.Configuration = configuration;
 
             var options = new SimpleSlackAdapterOptions(configuration["VerificationToken"], configuration["BotToken"], configuration["SigningSecret"]);
-            var wrapper = new SlackClientWrapper(options.BotToken);
+            var wrapper = new SlackClientWrapper(options);
 
-            _adapter = new SlackAdapter(wrapper, options);
+            _adapter = new SlackAdapter(wrapper);
         }
 
         public IConfiguration Configuration { get; }

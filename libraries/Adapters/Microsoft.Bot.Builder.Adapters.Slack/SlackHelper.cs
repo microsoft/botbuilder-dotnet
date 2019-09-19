@@ -86,34 +86,6 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         }
 
         /// <summary>
-        /// Validates the local secret against the one obtained from the request header.
-        /// </summary>
-        /// <param name="secret">The local stored secret.</param>
-        /// <param name="request">The <see cref="HttpRequest"/> with the signature.</param>
-        /// <param name="body">The raw body of the request.</param>
-        /// <returns>The result of the comparison between the signature in the request and hashed secret.</returns>
-        public static bool VerifySignature(string secret, HttpRequest request, string body)
-        {
-            string baseString;
-
-            var timestamp = request.Headers["X-Slack-Request-Timestamp"];
-
-            object[] signature = { "v0", timestamp.ToString(), body };
-            baseString = string.Join(":", signature);
-
-            using (var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(secret)))
-            {
-                var hashArray = hmac.ComputeHash(Encoding.UTF8.GetBytes(baseString));
-
-                var hash = string.Concat("v0=", BitConverter.ToString(hashArray).Replace("-", string.Empty)).ToUpperInvariant();
-
-                var retrievedSignature = request.Headers["X-Slack-Signature"].ToString().ToUpperInvariant();
-
-                return hash == retrievedSignature;
-            }
-        }
-
-        /// <summary>
         /// Converts the 'Event' subobject of the Slack payload into a NewSlackMessage for assigning to ChannelData.
         /// </summary>
         /// <param name="slackEvent">A dynamic payload from the request body sent by Slack.</param>

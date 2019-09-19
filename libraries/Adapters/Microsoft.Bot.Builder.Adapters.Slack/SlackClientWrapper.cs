@@ -2,10 +2,16 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Bot.Schema;
 using SlackAPI;
 using SlackAPI.RPCMessages;
+
+using Attachment = SlackAPI.Attachment;
 
 namespace Microsoft.Bot.Builder.Adapters.Slack
 {
@@ -17,11 +23,45 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// Initializes a new instance of the <see cref="SlackClientWrapper"/> class.
         /// Creates a Slack client by supplying the access token.
         /// </summary>
+        /// <param name="options">An object containing API credentials, a webhook verification token and other options.</param>
         /// <param name="botToken">The bot token from the Slack account.</param>
-        public SlackClientWrapper(string botToken)
+        public SlackClientWrapper(SlackAdapterOptions options)
         {
-            _api = new SlackTaskClient(botToken);
+            if (string.IsNullOrWhiteSpace(options.VerificationToken) && string.IsNullOrWhiteSpace(options.ClientSigningSecret))
+            {
+                var warning =
+                    "****************************************************************************************" +
+                    "* WARNING: Your bot is operating without recommended security mechanisms in place.     *" +
+                    "* Initialize your adapter with a clientSigningSecret parameter to enable               *" +
+                    "* verification that all incoming webhooks originate with Slack:                        *" +
+                    "*                                                                                      *" +
+                    "* var adapter = new SlackAdapter({clientSigningSecret: <my secret from slack>});       *" +
+                    "*                                                                                      *" +
+                    "****************************************************************************************" +
+                    ">> Slack docs: https://api.slack.com/docs/verifying-requests-from-slack";
+
+                throw new Exception(warning + Environment.NewLine + "Required: include a verificationToken or clientSigningSecret to verify incoming Events API webhooks");
+            }
+
+            Options = options ?? throw new ArgumentNullException(nameof(options));
+            _api = new SlackTaskClient(options.BotToken);
         }
+
+        /// <summary>
+        /// Gets the SlackAdapterOptions.
+        /// </summary>
+        /// <value>
+        /// An object containing API credentials, a webhook verification token and other options.
+        /// </value>
+        public SlackAdapterOptions Options { get; private set; }
+
+        /// <summary>
+        /// Gets the user identity.
+        /// </summary>
+        /// <value>
+        /// A string containing the user identity.
+        /// </value>
+        public string Identity { get; private set; }
 
         /// <summary>
         /// Wraps Slack API's AddReactionAsync method.
@@ -591,6 +631,79 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         public virtual async Task<FileUploadResponse> UploadFileAsync(byte[] fileData, string fileName, string[] channelIds, string title = null, string initialComment = null, bool useAsync = false, string fileType = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             return await _api.UploadFileAsync(fileData, fileName, channelIds, title, initialComment, useAsync, fileType).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Manages the login to Slack with the given credentials.
+        /// </summary>
+        /// <param name="cancellationToken">A cancellation token for the task.</param>
+        /// <returns>A Task representing the asynchronous operation.</returns>
+        public async Task LoginWithSlackAsync(CancellationToken cancellationToken)
+        {
+            if (Options.BotToken != null)
+            {
+                Identity = await TestAuthAsync(cancellationToken).ConfigureAwait(false);
+            }
+            else
+            {
+                if (string.IsNullOrWhiteSpace(Options.ClientId) || string.IsNullOrWhiteSpace(Options.ClientSecret) ||
+                Options.RedirectUri != null || Options.GetScopes().Length > 0)
+                {
+                    throw new Exception("Missing Slack API credentials! Provide clientId, clientSecret, scopes and redirectUri as part of the SlackAdapter options.");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Get the bot user id associated with the team on which an incoming activity originated. This is used internally by the SlackMessageTypeMiddleware to identify direct_mention and mention events.
+        /// In single-team mode, this will pull the information from the Slack API at launch.
+        /// In multi-team mode, this will use the `getBotUserByTeam` method passed to the constructor to pull the information from a developer-defined source.
+        /// </summary>
+        /// <param name="activity">An Activity.</param>
+        /// <param name="cancellationToken">A cancellation token for the task.</param>
+        /// <returns>The identity of the bot's user.</returns>
+        public async Task<string> GetBotUserByTeamAsync(Activity activity, CancellationToken cancellationToken)
+        {
+            if (!string.IsNullOrWhiteSpace(Identity))
+            {
+                return Identity;
+            }
+
+            if (activity.Conversation.Properties["team"] == null)
+            {
+                return null;
+            }
+
+            // multi-team mode
+            var userId = await Options.GetBotUserByTeam(activity.Conversation.Properties["team"].ToString()).ConfigureAwait(false);
+            return !string.IsNullOrWhiteSpace(userId) ? userId : throw new Exception("Missing credentials for team.");
+        }
+
+        /// <summary>
+        /// Validates the local secret against the one obtained from the request header.
+        /// </summary>
+        /// <param name="request">The <see cref="HttpRequest"/> with the signature.</param>
+        /// <param name="body">The raw body of the request.</param>
+        /// <returns>The result of the comparison between the signature in the request and hashed secret.</returns>
+        public bool VerifySignature(HttpRequest request, string body)
+        {
+            string baseString;
+
+            var timestamp = request.Headers["X-Slack-Request-Timestamp"];
+
+            object[] signature = { "v0", timestamp.ToString(), body };
+            baseString = string.Join(":", signature);
+
+            using (var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(Options.ClientSigningSecret)))
+            {
+                var hashArray = hmac.ComputeHash(Encoding.UTF8.GetBytes(baseString));
+
+                var hash = string.Concat("v0=", BitConverter.ToString(hashArray).Replace("-", string.Empty)).ToUpperInvariant();
+
+                var retrievedSignature = request.Headers["X-Slack-Signature"].ToString().ToUpperInvariant();
+
+                return hash == retrievedSignature;
+            }
         }
     }
 }
