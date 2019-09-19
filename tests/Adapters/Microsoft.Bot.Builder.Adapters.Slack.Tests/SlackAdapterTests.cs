@@ -14,25 +14,9 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Tests
     public class SlackAdapterTests
     {
         [Fact]
-        public void ConstructorShouldFailWithNullOptions()
+        public void ConstructorShouldFailWithNullClient()
         {
-            var slackApi = new Mock<SlackClientWrapper>("BotToken");
-
-            Assert.Throws<ArgumentNullException>(() => new SlackAdapter(slackApi.Object, null));
-        }
-
-        [Fact]
-        public void ConstructorShouldFailWithNullSecurityMechanisms()
-        {
-            var slackAdapterOptions = new SlackAdapterOptions()
-            {
-                VerificationToken = null,
-                ClientSigningSecret = null,
-            };
-
-            var slackApi = new Mock<SlackClientWrapper>("BotToken");
-
-            Assert.Throws<Exception>(() => new SlackAdapter(slackApi.Object, slackAdapterOptions));
+            Assert.Throws<ArgumentNullException>(() => new SlackAdapter(null));
         }
 
         [Fact]
@@ -43,12 +27,12 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Tests
             options.Object.ClientSigningSecret = "ClientSigningSecret";
             options.Object.BotToken = "BotToken";
 
-            var slackApi = new Mock<SlackClientWrapper>(options.Object.BotToken);
+            var slackApi = new Mock<SlackClientWrapper>(options.Object);
 
             // TODO: delete when LoginWithSlack method gets removed from SlackAdapter.
             slackApi.Setup(x => x.TestAuthAsync(It.IsAny<CancellationToken>())).Returns(Task.FromResult("mockedUserId"));
 
-            Assert.NotNull(new SlackAdapter(slackApi.Object, options.Object));
+            Assert.NotNull(new SlackAdapter(slackApi.Object));
         }
 
         [Fact]
@@ -59,12 +43,12 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Tests
             options.Object.ClientSigningSecret = "ClientSigningSecret";
             options.Object.BotToken = "BotToken";
 
-            var slackApi = new Mock<SlackClientWrapper>(options.Object.BotToken);
+            var slackApi = new Mock<SlackClientWrapper>(options.Object);
 
             // TODO: delete when LoginWithSlack method gets removed from SlackAdapter.
             slackApi.Setup(x => x.TestAuthAsync(It.IsAny<CancellationToken>())).Returns(Task.FromResult("mockedUserId"));
 
-            var slackAdapter = new SlackAdapter(slackApi.Object, options.Object);
+            var slackAdapter = new SlackAdapter(slackApi.Object);
 
             var activity = new Activity
             {
@@ -80,6 +64,56 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Tests
         }
 
         [Fact]
+        public async Task UpdateActivityAsyncShouldFailWithNullContext()
+        {
+            var options = new Mock<SlackAdapterOptions>();
+            options.Object.VerificationToken = "VerificationToken";
+            options.Object.ClientSigningSecret = "ClientSigningSecret";
+            options.Object.BotToken = "BotToken";
+
+            var slackApi = new Mock<SlackClientWrapper>(options.Object);
+
+            // TODO: delete when LoginWithSlack method gets removed from SlackAdapter.
+            slackApi.Setup(x => x.TestAuthAsync(It.IsAny<CancellationToken>())).Returns(Task.FromResult("mockedUserId"));
+
+            var slackAdapter = new SlackAdapter(slackApi.Object);
+
+            var activity = new Activity
+            {
+                Id = "testId",
+                Conversation = null,
+            };
+
+            await Assert.ThrowsAsync<ArgumentNullException>(async () =>
+            {
+                await slackAdapter.UpdateActivityAsync(null, activity, default);
+            });
+        }
+
+        [Fact]
+        public async Task UpdateActivityAsyncShouldFailWithNullActivity()
+        {
+            var options = new Mock<SlackAdapterOptions>();
+            options.Object.VerificationToken = "VerificationToken";
+            options.Object.ClientSigningSecret = "ClientSigningSecret";
+            options.Object.BotToken = "BotToken";
+
+            var slackApi = new Mock<SlackClientWrapper>(options.Object);
+
+            // TODO: delete when LoginWithSlack method gets removed from SlackAdapter.
+            slackApi.Setup(x => x.TestAuthAsync(It.IsAny<CancellationToken>())).Returns(Task.FromResult("mockedUserId"));
+
+            var slackAdapter = new SlackAdapter(slackApi.Object);
+
+            var turnContext = new TurnContext(slackAdapter, new Activity());
+
+            await Assert.ThrowsAsync<ArgumentNullException>(async () =>
+            {
+                await slackAdapter.UpdateActivityAsync(turnContext, null, default);
+            });
+        }
+
+        [Fact]
         public async Task UpdateActivityAsyncShouldFailWithNullActivityConversation()
         {
             var options = new Mock<SlackAdapterOptions>();
@@ -87,12 +121,12 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Tests
             options.Object.ClientSigningSecret = "ClientSigningSecret";
             options.Object.BotToken = "BotToken";
 
-            var slackApi = new Mock<SlackClientWrapper>(options.Object.BotToken);
+            var slackApi = new Mock<SlackClientWrapper>(options.Object);
 
             // TODO: delete when LoginWithSlack method gets removed from SlackAdapter.
             slackApi.Setup(x => x.TestAuthAsync(It.IsAny<CancellationToken>())).Returns(Task.FromResult("mockedUserId"));
 
-            var slackAdapter = new SlackAdapter(slackApi.Object, options.Object);
+            var slackAdapter = new SlackAdapter(slackApi.Object);
 
             var activity = new Activity
             {
@@ -116,13 +150,13 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Tests
             options.Object.ClientSigningSecret = "ClientSigningSecret";
             options.Object.BotToken = "BotToken";
 
-            var slackApi = new Mock<SlackClientWrapper>(options.Object.BotToken);
+            var slackApi = new Mock<SlackClientWrapper>(options.Object);
 
             // TODO: delete when LoginWithSlack method gets removed from SlackAdapter.
             slackApi.Setup(x => x.TestAuthAsync(It.IsAny<CancellationToken>())).Returns(Task.FromResult("mockedUserId"));
             slackApi.Setup(x => x.UpdateAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), null, It.IsAny<bool>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(new UpdateResponse { ok = true }));
 
-            var slackAdapter = new SlackAdapter(slackApi.Object, options.Object);
+            var slackAdapter = new SlackAdapter(slackApi.Object);
 
             var activity = new Mock<Activity>().SetupAllProperties();
             activity.Object.Id = "MockActivityId";
@@ -137,6 +171,141 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Tests
             var response = await slackAdapter.UpdateActivityAsync(turnContext, activity.Object, default);
 
             Assert.Equal(activity.Object.Id, response.Id);
+        }
+
+        [Fact]
+        public async Task DeleteActivityAsyncShouldFailWithNullReference()
+        {
+            var options = new Mock<SlackAdapterOptions>();
+            options.Object.VerificationToken = "VerificationToken";
+            options.Object.ClientSigningSecret = "ClientSigningSecret";
+            options.Object.BotToken = "BotToken";
+
+            var slackApi = new Mock<SlackClientWrapper>(options.Object);
+
+            // TODO: delete when LoginWithSlack method gets removed from SlackAdapter.
+            slackApi.Setup(x => x.TestAuthAsync(It.IsAny<CancellationToken>())).Returns(Task.FromResult("mockedUserId"));
+
+            var slackAdapter = new SlackAdapter(slackApi.Object);
+
+            var context = new TurnContext(slackAdapter, new Activity());
+
+            await Assert.ThrowsAsync<ArgumentNullException>(async () =>
+            {
+                await slackAdapter.DeleteActivityAsync(context, null, default);
+            });
+        }
+
+        [Fact]
+        public async Task DeleteActivityAsyncShouldFailWithNullTurnContext()
+        {
+            var options = new Mock<SlackAdapterOptions>();
+            options.Object.VerificationToken = "VerificationToken";
+            options.Object.ClientSigningSecret = "ClientSigningSecret";
+            options.Object.BotToken = "BotToken";
+
+            var slackApi = new Mock<SlackClientWrapper>(options.Object);
+
+            // TODO: delete when LoginWithSlack method gets removed from SlackAdapter.
+            slackApi.Setup(x => x.TestAuthAsync(It.IsAny<CancellationToken>())).Returns(Task.FromResult("mockedUserId"));
+
+            var slackAdapter = new SlackAdapter(slackApi.Object);
+
+            var reference = new ConversationReference();
+
+            await Assert.ThrowsAsync<ArgumentNullException>(async () =>
+            {
+                await slackAdapter.DeleteActivityAsync(null, reference, default);
+            });
+        }
+
+        [Fact]
+        public async Task DeleteActivityAsyncShouldFailWithNullChannelId()
+        {
+            var options = new Mock<SlackAdapterOptions>();
+            options.Object.VerificationToken = "VerificationToken";
+            options.Object.ClientSigningSecret = "ClientSigningSecret";
+            options.Object.BotToken = "BotToken";
+
+            var slackApi = new Mock<SlackClientWrapper>(options.Object);
+
+            // TODO: delete when LoginWithSlack method gets removed from SlackAdapter.
+            slackApi.Setup(x => x.TestAuthAsync(It.IsAny<CancellationToken>())).Returns(Task.FromResult("mockedUserId"));
+
+            var slackAdapter = new SlackAdapter(slackApi.Object);
+
+            var context = new TurnContext(slackAdapter, new Activity());
+
+            var reference = new ConversationReference
+            {
+                ChannelId = null,
+            };
+
+            await Assert.ThrowsAsync<ArgumentException>(async () =>
+            {
+                await slackAdapter.DeleteActivityAsync(context, reference, default);
+            });
+        }
+
+        [Fact]
+        public async Task DeleteActivityAsyncShouldFailWithNullTimestamp()
+        {
+            var options = new Mock<SlackAdapterOptions>();
+            options.Object.VerificationToken = "VerificationToken";
+            options.Object.ClientSigningSecret = "ClientSigningSecret";
+            options.Object.BotToken = "BotToken";
+
+            var slackApi = new Mock<SlackClientWrapper>(options.Object);
+
+            // TODO: delete when LoginWithSlack method gets removed from SlackAdapter.
+            slackApi.Setup(x => x.TestAuthAsync(It.IsAny<CancellationToken>())).Returns(Task.FromResult("mockedUserId"));
+
+            var slackAdapter = new SlackAdapter(slackApi.Object);
+
+            var context = new TurnContext(slackAdapter, new Activity());
+
+            var reference = new ConversationReference
+            {
+                ChannelId = "testChannelId",
+            };
+
+            await Assert.ThrowsAsync<ArgumentException>(async () =>
+            {
+                await slackAdapter.DeleteActivityAsync(context, reference, default);
+            });
+        }
+
+        [Fact]
+        public async Task DeleteActivityAsyncShouldSucceed()
+        {
+            var deletedMessages = 0;
+
+            var options = new Mock<SlackAdapterOptions>();
+            options.Object.VerificationToken = "VerificationToken";
+            options.Object.ClientSigningSecret = "ClientSigningSecret";
+            options.Object.BotToken = "BotToken";
+
+            var slackApi = new Mock<SlackClientWrapper>(options.Object);
+
+            // TODO: delete when LoginWithSlack method gets removed from SlackAdapter.
+            slackApi.Setup(x => x.TestAuthAsync(It.IsAny<CancellationToken>())).Returns(Task.FromResult("mockedUserId"));
+            slackApi.Setup(x => x.DeleteMessageAsync(It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<CancellationToken>())).Callback(() => { deletedMessages++; });
+
+            var slackAdapter = new SlackAdapter(slackApi.Object);
+
+            var activity = new Mock<Activity>();
+            activity.Object.Timestamp = new DateTimeOffset();
+
+            var context = new TurnContext(slackAdapter, activity.Object);
+
+            var reference = new ConversationReference
+            {
+                ChannelId = "channelId",
+            };
+
+            await slackAdapter.DeleteActivityAsync(context, reference, default);
+
+            Assert.Equal(1, deletedMessages);
         }
     }
 }

@@ -5,9 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Runtime.CompilerServices;
-using System.Security.Cryptography;
-using System.Text;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Schema;
 
 #if SIGNASSEMBLY
@@ -86,14 +83,20 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         }
 
         /// <summary>
-        /// Converts the 'Event' subobject of the Slack payload into a NewSlackMessage for assigning to ChannelData.
+        /// Converts the 'Event' subobject of the Slack payload into a NewSlackMessage.
         /// </summary>
         /// <param name="slackEvent">A dynamic payload from the request body sent by Slack.</param>
         /// <returns>A NewSlackMessage with the resulting properties.</returns>
-        public static NewSlackMessage GetChannelDataFromSlackEvent(dynamic slackEvent)
+        public static NewSlackMessage GetMessageFromSlackEvent(dynamic slackEvent)
         {
-            // Convert Slack timestamp format to DateTime
+            if (slackEvent == null)
+            {
+                return null;
+            }
+
             var eventProperty = slackEvent["event"];
+
+            // Convert Slack timestamp format to DateTime
             string[] splitString = eventProperty.ts.ToString().Split('.');
             var dateTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).ToLocalTime().AddSeconds(Convert.ToDouble(splitString[0], CultureInfo.InvariantCulture));
 
