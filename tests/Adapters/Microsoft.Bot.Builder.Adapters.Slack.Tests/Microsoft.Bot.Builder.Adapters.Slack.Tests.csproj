@@ -23,4 +23,10 @@
     <ProjectReference Include="..\..\..\libraries\Adapters\Microsoft.Bot.Builder.Adapters.Slack\Microsoft.Bot.Builder.Adapters.Slack.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Files\MessageBody.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

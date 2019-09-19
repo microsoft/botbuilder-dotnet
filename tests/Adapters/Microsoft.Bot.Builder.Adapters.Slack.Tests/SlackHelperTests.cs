@@ -4,9 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Schema;
-using Moq;
 using Newtonsoft.Json;
 using Xunit;
 
@@ -83,25 +81,6 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Tests
 
             Assert.Equal(activity.Conversation.Id, message.channel);
             Assert.Equal(activity.Conversation.Properties["thread_ts"], message.thread_ts);
-        }
-
-        [Fact]
-        public void VerifySignatureShouldReturnFalseWithNullParameters()
-        {
-            Assert.False(SlackHelper.VerifySignature(null, null, null));
-        }
-
-        [Fact]
-        public void VerifySignatureShouldReturnTrue()
-        {
-            var body = File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\MessageBody.json");
-
-            var httpRequest = new Mock<HttpRequest>();
-            httpRequest.Setup(req => req.Headers.ContainsKey(It.IsAny<string>())).Returns(true);
-            httpRequest.SetupGet(req => req.Headers["X-Slack-Request-Timestamp"]).Returns("0001-01-01T00:00:00+00:00");
-            httpRequest.SetupGet(req => req.Headers["X-Slack-Signature"]).Returns("V0=389808EE538C31F2030C00A0A172BC75C349A39F84B86DBCE695706575FDA19B");
-
-            Assert.True(SlackHelper.VerifySignature("secret", httpRequest.Object, body));
         }
 
         [Fact]
