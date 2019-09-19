@@ -63,7 +63,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
             {
                 intentExpression = Expression.AndExpression(
                     intentExpression,
-                    Expression.AndExpression(this.Entities.Select(entity => factory.Parse($"exists({entity})")).ToArray()));
+                    Expression.AndExpression(this.Entities.Select(entity =>
+                    {
+                        if (entity.StartsWith("@") || entity.StartsWith(TurnPath.RECOGNIZED, StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            return factory.Parse($"exists({entity})");
+                        }
+
+                        return factory.Parse($"exists(@{entity})");
+                    }).ToArray()));
             }
 
             return Expression.AndExpression(intentExpression, base.GetExpression(factory));

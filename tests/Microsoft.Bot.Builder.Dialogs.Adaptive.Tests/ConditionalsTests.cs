@@ -231,10 +231,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 new OnIntent()
                 {
                     Intent = "Intent",
-                    Entities = new List<string>() { "@foo", "@@bar", "turn.recognized.entities.blat" },
+                    Entities = new List<string>() { "@foo", "@@bar", "turn.recognized.entities.blat", "gronk"},
                     Condition = "turn.test == 1"
                 },
-                "(((turn.recognized.intent == 'Intent') && (exists(@foo) && exists(@@bar) && exists(turn.recognized.entities.blat))) && ((turn.dialogEvent.name == 'recognizedIntent') && (turn.test == 1)))");
+                "(((turn.recognized.intent == 'Intent') && (exists(@foo) && exists(@@bar) && exists(turn.recognized.entities.blat) && exists(@gronk))) && ((turn.dialogEvent.name == 'recognizedIntent') && (turn.test == 1)))");
 
             AssertExpression(
                 new OnBeginDialog()
