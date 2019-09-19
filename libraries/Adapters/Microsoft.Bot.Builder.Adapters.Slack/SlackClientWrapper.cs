@@ -687,6 +687,11 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// <returns>The result of the comparison between the signature in the request and hashed secret.</returns>
         public bool VerifySignature(HttpRequest request, string body)
         {
+            if (request == null || string.IsNullOrWhiteSpace(body))
+            {
+                return false;
+            }
+
             string baseString;
 
             var timestamp = request.Headers["X-Slack-Request-Timestamp"];

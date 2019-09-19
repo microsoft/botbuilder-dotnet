@@ -13,7 +13,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
-using SlackAPI;
 
 namespace Microsoft.Bot.Builder.Adapters.Slack
 {
@@ -34,7 +33,8 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
             : base()
         {
             _slackClient = slackClient ?? throw new ArgumentNullException(nameof(slackClient));
-            _slackClient.LoginWithSlackAsync(default(CancellationToken)).Wait();
+
+            _slackClient.LoginWithSlackAsync(default).Wait();
         }
 
         /// <summary>
@@ -49,10 +49,10 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
             var responses = new List<ResourceResponse>();
             for (var i = 0; i < activities.Length; i++)
             {
-                Activity activity = activities[i];
+                var activity = activities[i];
                 if (activity.Type == ActivityTypes.Message)
                 {
-                    NewSlackMessage message = SlackHelper.ActivityToSlack(activity);
+                    var message = SlackHelper.ActivityToSlack(activity);
 
                     SlackResponse responseInString;
 
@@ -76,7 +76,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
 
                     if (responseInString.Ok)
                     {
-                        ActivityResourceResponse resourceResponse = new ActivityResourceResponse()
+                        var resourceResponse = new ActivityResourceResponse()
                         {
                             Id = responseInString.TS,
                             ActivityId = responseInString.TS,
@@ -144,14 +144,27 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public override async Task DeleteActivityAsync(ITurnContext turnContext, ConversationReference reference, CancellationToken cancellationToken)
         {
-            if (reference.ActivityId != null && reference.Conversation != null)
+            if (turnContext == null)
             {
-                var results = await _slackClient.DeleteMessageAsync(reference.ChannelId, turnContext.Activity.Timestamp.Value.DateTime, cancellationToken).ConfigureAwait(false);
+                throw new ArgumentNullException(nameof(turnContext));
             }
-            else
+
+            if (reference == null)
             {
-                throw new Exception("Cannot delete activity: reference is missing activityId.");
+                throw new ArgumentNullException(nameof(reference));
             }
+
+            if (reference.ChannelId == null)
+            {
+                throw new ArgumentException(nameof(reference.ChannelId));
+            }
+
+            if (turnContext.Activity.Timestamp == null)
+            {
+                throw new ArgumentException(nameof(turnContext.Activity.Timestamp));
+            }
+
+            var results = await _slackClient.DeleteMessageAsync(reference.ChannelId, turnContext.Activity.Timestamp.Value.DateTime, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -293,7 +306,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
                             {
                                 Id = null,
                             },
-                            ChannelData = SlackHelper.GetChannelDataFromSlackEvent(slackEvent),
+                            ChannelData = SlackHelper.GetMessageFromSlackEvent(slackEvent),
                             Text = null,
                             Type = ActivityTypes.Event,
                         };
@@ -361,7 +374,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
                             {
                                 Id = null,
                             },
-                            ChannelData = SlackHelper.GetChannelDataFromSlackEvent(slackEvent),
+                            ChannelData = SlackHelper.GetMessageFromSlackEvent(slackEvent),
                             Text = slackEvent.text,
                             Type = ActivityTypes.Event,
                         };
