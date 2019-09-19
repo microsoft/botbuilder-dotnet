@@ -51,6 +51,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ActionBasedMessagingExtensi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mentions", "Mentions\Mentions.csproj", "{88633DE8-E3CF-4493-B679-0B6EDCC88FEE}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProactiveMessages", "ProactiveMessages\ProactiveMessages.csproj", "{FED44219-2A75-49A1-B925-954929D09BD8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug - NuGet Packages|Any CPU = Debug - NuGet Packages|Any CPU
@@ -196,6 +198,12 @@ Global
 		{88633DE8-E3CF-4493-B679-0B6EDCC88FEE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{88633DE8-E3CF-4493-B679-0B6EDCC88FEE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{88633DE8-E3CF-4493-B679-0B6EDCC88FEE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FED44219-2A75-49A1-B925-954929D09BD8}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{FED44219-2A75-49A1-B925-954929D09BD8}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
+		{FED44219-2A75-49A1-B925-954929D09BD8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FED44219-2A75-49A1-B925-954929D09BD8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FED44219-2A75-49A1-B925-954929D09BD8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FED44219-2A75-49A1-B925-954929D09BD8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
