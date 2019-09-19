@@ -41,7 +41,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
 
             if (string.IsNullOrWhiteSpace(_options.VerificationToken) && string.IsNullOrWhiteSpace(_options.ClientSigningSecret))
             {
-                string warning =
+                var warning =
                     "****************************************************************************************" +
                     "* WARNING: Your bot is operating without recommended security mechanisms in place.     *" +
                     "* Initialize your adapter with a clientSigningSecret parameter to enable               *" +
@@ -55,7 +55,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
                 throw new Exception(warning + Environment.NewLine + "Required: include a verificationToken or clientSigningSecret to verify incoming Events API webhooks");
             }
 
-            _slackClient = slackClient;
+            _slackClient = slackClient ?? throw new ArgumentNullException(nameof(slackClient));
             LoginWithSlack().Wait();
         }
 
@@ -193,6 +193,16 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// <returns>A resource response with the Id of the updated activity.</returns>
         public override async Task<ResourceResponse> UpdateActivityAsync(ITurnContext turnContext, Activity activity, CancellationToken cancellationToken)
         {
+            if (turnContext == null)
+            {
+                throw new ArgumentNullException(nameof(turnContext));
+            }
+
+            if (activity == null)
+            {
+                throw new ArgumentNullException(nameof(activity));
+            }
+
             if (activity.Id == null)
             {
                 throw new ArgumentException(nameof(activity.Id));
