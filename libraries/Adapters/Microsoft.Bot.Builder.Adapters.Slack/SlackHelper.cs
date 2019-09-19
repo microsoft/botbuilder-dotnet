@@ -40,7 +40,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
 
             message.channel = activity.Conversation.Id;
 
-            if (!string.IsNullOrEmpty(activity.Conversation.Properties["thread_ts"].ToString()))
+            if (!string.IsNullOrWhiteSpace(activity.Conversation.Properties["thread_ts"].ToString()))
             {
                 message.ThreadTS = activity.Conversation.Properties["thread_ts"].ToString();
             }
@@ -52,12 +52,12 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
             }
 
             // should this message be sent as an ephemeral message
-            if (message.Ephemeral != null)
+            if (!string.IsNullOrWhiteSpace(message.Ephemeral))
             {
                 message.user = activity.Recipient.Id;
             }
 
-            if (message.IconUrl != null || message.icons?.status_emoji != null || message.username != null)
+            if (message.IconUrl != null || !string.IsNullOrWhiteSpace(message.icons?.status_emoji) || !string.IsNullOrWhiteSpace(message.username))
             {
                 message.AsUser = false;
             }

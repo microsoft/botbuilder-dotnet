@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Microsoft.Bot.Builder.Adapters.Slack
 {
     /// <summary>
-    /// Interface for defining implementation of the SlackAdapter Options.
+    /// Class for defining implementation of the SlackAdapter Options.
     /// </summary>
     public class SlackAdapterOptions
     {
@@ -42,16 +42,19 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         public string ClientSecret { get; set; }
 
         /// <summary>
-        /// Gets or Sets an array of scope names that are being requested during the oauth process. Must match the scopes defined at api.slack.com.
-        /// </summary>
-        /// <value>The Scopes array.</value>
-        public string[] Scopes { get; set; }
-
-        /// <summary>
         /// Gets or Sets the URI users will be redirected to after an oauth flow. In most cases, should be `https://mydomain.com/install/auth`.
         /// </summary>
         /// <value>The Redirect URI.</value>
-        public string RedirectUri { get; set; }
+        public Uri RedirectUri { get; set; }
+
+        /// <summary>
+        /// A method that returns an array of scope names that are being requested during the oauth process. Must match the scopes defined at api.slack.com.
+        /// </summary>
+        /// <returns>The scopes array.</returns>
+        public string[] GetScopes()
+        {
+            throw new NotImplementedException();
+        }
 
         /// <summary>
         /// A method that receives a Slack team id and returns the bot token associated with that team. Required for multi-team apps.

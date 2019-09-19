@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using SlackAPI;
 using SlackAPI.RPCMessages;
@@ -28,8 +29,9 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// <param name="name">The optional name.</param>
         /// <param name="channel">The optional channel.</param>
         /// <param name="timestamp">The optional timestamp.</param>
+        /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>The <see cref="ReactionAddedResponse"/> representing the response to the reaction added.</returns>
-        public virtual async Task<ReactionAddedResponse> AddReactionAsync(string name = null, string channel = null, string timestamp = null)
+        public virtual async Task<ReactionAddedResponse> AddReactionAsync(string name = null, string channel = null, string timestamp = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             return await _api.AddReactionAsync(name, channel, timestamp).ConfigureAwait(false);
         }
@@ -37,10 +39,11 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// <summary>
         /// Wraps Slack API's APIRequestWithTokenAsync method.
         /// </summary>
+        /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <param name="postParameters">The parameters to the POST request.</param>
         /// <typeparam name="TResult">The generic type for the return. Must be of type Response.</param>
         /// <returns>A <see cref="Task"/> of type T representing the asynchronous operation.</returns>
-        public virtual async Task<TResult> APIRequestWithTokenAsync<TResult>(params Tuple<string, string>[] postParameters)
+        public virtual async Task<TResult> APIRequestWithTokenAsync<TResult>(CancellationToken cancellationToken, params Tuple<string, string>[] postParameters)
              where TResult : Response
         {
             return (postParameters != null) ?
@@ -52,8 +55,9 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// Wraps Slack API's ChannelsCreateAsync method.
         /// </summary>
         /// <param name="name">Name of the channel to be created.</param>
+        /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A <see cref="ChannelCreateResponse"/> representing the response from creating a channel.</returns>
-        public virtual async Task<ChannelCreateResponse> ChannelsCreateAsync(string name)
+        public virtual async Task<ChannelCreateResponse> ChannelsCreateAsync(string name, CancellationToken cancellationToken)
         {
             return await _api.ChannelsCreateAsync(name).ConfigureAwait(false);
         }
@@ -63,8 +67,9 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// </summary>
         /// <param name="channelId">The channel to set the topic to.</param>
         /// <param name="newTopic">The new topic.</param>
+        /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A <see cref="ChannelSetTopicResponse"/> representing the response of setting the channel's topic.</returns>
-        public virtual async Task<ChannelSetTopicResponse> ChannelSetTopicAsync(string channelId, string newTopic)
+        public virtual async Task<ChannelSetTopicResponse> ChannelSetTopicAsync(string channelId, string newTopic, CancellationToken cancellationToken)
         {
             return await _api.ChannelSetTopicAsync(channelId, newTopic).ConfigureAwait(false);
         }
@@ -74,8 +79,9 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// </summary>
         /// <param name="userId">The user to invite.</param>
         /// <param name="channelId">The channel to invite the user to.</param>
+        /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A <see cref="ChannelInviteResponse"/> representing the response to the invite.</returns>
-        public virtual async Task<ChannelInviteResponse> ChannelsInviteAsync(string userId, string channelId)
+        public virtual async Task<ChannelInviteResponse> ChannelsInviteAsync(string userId, string channelId, CancellationToken cancellationToken)
         {
             return await _api.ChannelsInviteAsync(userId, channelId).ConfigureAwait(false);
         }
@@ -83,8 +89,9 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// <summary>
         /// Wraps Slack API's ConnectAsync method.
         /// </summary>
+        /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A <see cref="LoginResponse"/> representing the login response.</returns>
-        public virtual async Task<LoginResponse> ConnectAsync()
+        public virtual async Task<LoginResponse> ConnectAsync(CancellationToken cancellationToken)
         {
             return await _api.ConnectAsync().ConfigureAwait(false);
         }
@@ -94,8 +101,9 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// </summary>
         /// <param name="channelId">The channel to delete the message from.</param>
         /// <param name="ts">The timestamp of the message.</param>
+        /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A <see cref="DeletedResponse"/> representing the response to deleting the message.</returns>
-        public virtual async Task<DeletedResponse> DeleteMessageAsync(string channelId, DateTime ts)
+        public virtual async Task<DeletedResponse> DeleteMessageAsync(string channelId, DateTime ts, CancellationToken cancellationToken)
         {
             return await _api.DeleteMessageAsync(channelId, ts).ConfigureAwait(false);
         }
@@ -105,8 +113,9 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// </summary>
         /// <param name="triggerId">.</param>
         /// <param name="dialog">The dialog to open.</param>
+        /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A <see cref="DialogOpenResponse"/> representing the response to the operation.</returns>
-        public virtual async Task<DialogOpenResponse> DialogOpenAsync(string triggerId, Dialog dialog)
+        public virtual async Task<DialogOpenResponse> DialogOpenAsync(string triggerId, Dialog dialog, CancellationToken cancellationToken)
         {
             return await _api.DialogOpenAsync(triggerId, dialog).ConfigureAwait(false);
         }
@@ -115,8 +124,9 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// Wraps Slack API's EmitLoginAsync method.
         /// </summary>
         /// <param name="agent">The agent name.</param>
+        /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A <see cref="LoginResponse"/> representing the response to the login operation.</returns>
-        public virtual async Task<LoginResponse> EmitLoginAsync(string agent = "Inumedia.SlackAPI")
+        public virtual async Task<LoginResponse> EmitLoginAsync(string agent = "Inumedia.SlackAPI", CancellationToken cancellationToken = default(CancellationToken))
         {
             return await _api.EmitLoginAsync(agent).ConfigureAwait(false);
         }
@@ -125,8 +135,9 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// Wraps Slack API's EmitPresence method.
         /// </summary>
         /// <param name="status">The presence status.</param>
+        /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A <see cref="PresenceResponse"/> representing the response of the operation.</returns>
-        public virtual async Task<PresenceResponse> EmitPresence(Presence status)
+        public virtual async Task<PresenceResponse> EmitPresence(Presence status, CancellationToken cancellationToken)
         {
             return await _api.EmitPresence(status).ConfigureAwait(false);
         }
@@ -138,8 +149,9 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// <param name="latest">The date of the latest.</param>
         /// <param name="oldest">The date of the oldest.</param>
         /// <param name="count">The requested count.</param>
+        /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A <see cref="ChannelMessageHistory"/> representing the response.</returns>
-        public virtual async Task<ChannelMessageHistory> GetChannelHistoryAsync(Channel channelInfo, DateTime? latest = null, DateTime? oldest = null, int? count = null)
+        public virtual async Task<ChannelMessageHistory> GetChannelHistoryAsync(Channel channelInfo, DateTime? latest = null, DateTime? oldest = null, int? count = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             return await _api.GetChannelHistoryAsync(channelInfo, latest, oldest, count).ConfigureAwait(false);
         }
@@ -148,8 +160,9 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// Wraps Slack API's GetChannelListAsync method.
         /// </summary>
         /// <param name="excludeArchived">Flag to set if archived channels are to be listed.</param>
+        /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A <see cref="ChannelListResponse"/> representing the response of listing the channel.</returns>
-        public virtual async Task<ChannelListResponse> GetChannelListAsync(bool excludeArchived = true)
+        public virtual async Task<ChannelListResponse> GetChannelListAsync(bool excludeArchived = true, CancellationToken cancellationToken = default(CancellationToken))
         {
             return await _api.GetChannelListAsync(excludeArchived).ConfigureAwait(false);
         }
@@ -157,6 +170,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// <summary>
         /// Wraps Slack API's GetCountsAsync method.
         /// </summary>
+        /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A <see cref="UserCountsResponse"/> representing the response.</returns>
         public virtual async Task<UserCountsResponse> GetCountsAsync()
         {
@@ -170,8 +184,9 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// <param name="latest">The date of the latest.</param>
         /// <param name="oldest">The date of the oldest.</param>
         /// <param name="count">The requested count.</param>
+        /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A <see cref="MessageHistory"/> representing the retrieved message history.</returns>
-        public virtual async Task<MessageHistory> GetDirectMessageHistoryAsync(DirectMessageConversation conversationInfo, DateTime? latest = null, DateTime? oldest = null, int? count = null)
+        public virtual async Task<MessageHistory> GetDirectMessageHistoryAsync(DirectMessageConversation conversationInfo, DateTime? latest = null, DateTime? oldest = null, int? count = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             return await _api.GetDirectMessageHistoryAsync(conversationInfo, latest, oldest, count).ConfigureAwait(false);
         }
@@ -179,8 +194,9 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// <summary>
         /// Wraps Slack API's GetDirectMessageListAsync method.
         /// </summary>
+        /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A <see cref="DirectMessageConversationListResponse"/> representing the response to listing the messages.</returns>
-        public virtual async Task<DirectMessageConversationListResponse> GetDirectMessageListAsync()
+        public virtual async Task<DirectMessageConversationListResponse> GetDirectMessageListAsync(CancellationToken cancellationToken)
         {
             return await _api.GetDirectMessageListAsync().ConfigureAwait(false);
         }
@@ -191,8 +207,9 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// <param name="fileId">The id of the file to retrieve the info from.</param>
         /// <param name="page">The page number.</param>
         /// <param name="count">The requested count.</param>
+        /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A <see cref="FileInfoResponse"/> representing the response.</returns>
-        public virtual async Task<FileInfoResponse> GetFileInfoAsync(string fileId, int? page = null, int? count = null)
+        public virtual async Task<FileInfoResponse> GetFileInfoAsync(string fileId, int? page = null, int? count = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             return await _api.GetFileInfoAsync(fileId, page, count).ConfigureAwait(false);
         }
@@ -206,8 +223,9 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// <param name="count">The requested count.</param>
         /// <param name="page">The page number.</param>
         /// <param name="types">The type of files to retrieve.</param>
+        /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A <see cref="FileListResponse"/> representing the response.</returns>
-        public virtual async Task<FileListResponse> GetFilesAsync(string userId = null, DateTime? dateFrom = null, DateTime? dateTo = null, int? count = null, int? page = null, FileTypes types = FileTypes.all)
+        public virtual async Task<FileListResponse> GetFilesAsync(string userId = null, DateTime? dateFrom = null, DateTime? dateTo = null, int? count = null, int? page = null, FileTypes types = FileTypes.all, CancellationToken cancellationToken = default(CancellationToken))
         {
             return await _api.GetFilesAsync(userId, dateFrom, dateTo, count, page, types).ConfigureAwait(false);
         }
@@ -219,8 +237,9 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// <param name="latest">The date of the latest.</param>
         /// <param name="oldest">The date of the oldest.</param>
         /// <param name="count">The requested count.</param>
+        /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A <see cref="GroupMessageHistory"/> representing the asynchronous operation.</returns>
-        public virtual async Task<GroupMessageHistory> GetGroupHistoryAsync(Channel groupInfo, DateTime? latest = null, DateTime? oldest = null, int? count = null)
+        public virtual async Task<GroupMessageHistory> GetGroupHistoryAsync(Channel groupInfo, DateTime? latest = null, DateTime? oldest = null, int? count = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             return await _api.GetGroupHistoryAsync(groupInfo, latest, oldest, count).ConfigureAwait(false);
         }
@@ -229,8 +248,9 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// Wraps Slack API's GetGroupsListAsync method.
         /// </summary>
         /// <param name="excludeArchived">Flag setting if archived groups are to be excluded.</param>
+        /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A <see cref="GroupListResponse"/> with the list of groups.</returns>
-        public virtual async Task<GroupListResponse> GetGroupsListAsync(bool excludeArchived = true)
+        public virtual async Task<GroupListResponse> GetGroupsListAsync(bool excludeArchived = true, CancellationToken cancellationToken = default(CancellationToken))
         {
             return await _api.GetGroupsListAsync(excludeArchived).ConfigureAwait(false);
         }
@@ -238,8 +258,9 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// <summary>
         /// Wraps Slack API's GetPreferencesAsync method.
         /// </summary>
+        /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A <see cref="UserPreferencesResponse"/> representing the asynchronous operation.</returns>
-        public virtual async Task<UserPreferencesResponse> GetPreferencesAsync()
+        public virtual async Task<UserPreferencesResponse> GetPreferencesAsync(CancellationToken cancellationToken)
         {
             return await _api.GetPreferencesAsync().ConfigureAwait(false);
         }
@@ -250,8 +271,9 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// <param name="userId">The user id.</param>
         /// <param name="count">The count to retrieve.</param>
         /// <param name="page">The page to retrieve from.</param>
+        /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A <see cref="StarListResponse"/> representing the asynchronous operation.</returns>
-        public virtual async Task<StarListResponse> GetStarsAsync(string userId = null, int? count = null, int? page = null)
+        public virtual async Task<StarListResponse> GetStarsAsync(string userId = null, int? count = null, int? page = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             return await _api.GetStarsAsync(userId, count, page).ConfigureAwait(false);
         }
@@ -259,6 +281,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// <summary>
         /// Wraps Slack API's GetUserListAsync method.
         /// </summary>
+        /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A <see cref="UserListResponse"/> representing the response.</returns>
         public virtual async Task<UserListResponse> GetUserListAsync()
         {
@@ -269,8 +292,9 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// Wraps Slack API's GroupsArchiveAsync method.
         /// </summary>
         /// <param name="channelId">The channel id.</param>
+        /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A <see cref="GroupArchiveResponse"/> representing the response to the operation.</returns>
-        public virtual async Task<GroupArchiveResponse> GroupsArchiveAsync(string channelId)
+        public virtual async Task<GroupArchiveResponse> GroupsArchiveAsync(string channelId, CancellationToken cancellationToken)
         {
             return await _api.GroupsArchiveAsync(channelId).ConfigureAwait(false);
         }
@@ -279,8 +303,9 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// Wraps Slack API's GroupsCloseAsync method.
         /// </summary>
         /// <param name="channelId">The channel id.</param>
+        /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A <see cref="GroupCloseResponse"/> representing the response.</returns>
-        public virtual async Task<GroupCloseResponse> GroupsCloseAsync(string channelId)
+        public virtual async Task<GroupCloseResponse> GroupsCloseAsync(string channelId, CancellationToken cancellationToken)
         {
             return await _api.GroupsCloseAsync(channelId).ConfigureAwait(false);
         }
@@ -289,8 +314,9 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// Wraps Slack API's GroupsCreateAsync method.
         /// </summary>
         /// <param name="name">The name of the group to create.</param>
+        /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A <see cref="GroupCreateResponse"/> representing the response to the group creation.</returns>
-        public virtual async Task<GroupCreateResponse> GroupsCreateAsync(string name)
+        public virtual async Task<GroupCreateResponse> GroupsCreateAsync(string name, CancellationToken cancellationToken)
         {
             return await _api.GroupsCreateAsync(name).ConfigureAwait(false);
         }
@@ -299,8 +325,9 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// Wraps Slack API's GroupsCreateChildAsync method.
         /// </summary>
         /// <param name="channelId">The channel id.</param>
+        /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A <see cref="GroupCreateChildResponse"/> representing the asynchronous operation.</returns>
-        public virtual async Task<GroupCreateChildResponse> GroupsCreateChildAsync(string channelId)
+        public virtual async Task<GroupCreateChildResponse> GroupsCreateChildAsync(string channelId, CancellationToken cancellationToken)
         {
             return await _api.GroupsCreateChildAsync(channelId).ConfigureAwait(false);
         }
@@ -310,8 +337,9 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// </summary>
         /// <param name="userId">The id of the user to invite.</param>
         /// <param name="channelId">The channel to invite the user to.</param>
+        /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A <see cref="GroupInviteResponse"/> representing the response.</returns>
-        public virtual async Task<GroupInviteResponse> GroupsInviteAsync(string userId, string channelId)
+        public virtual async Task<GroupInviteResponse> GroupsInviteAsync(string userId, string channelId, CancellationToken cancellationToken)
         {
             return await _api.GroupsInviteAsync(userId, channelId).ConfigureAwait(false);
         }
@@ -321,8 +349,9 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// </summary>
         /// <param name="userId">The id of the user to kick.</param>
         /// <param name="channelId">The channel to kick the user from.</param>
+        /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A <see cref="GroupKickResponse"/> representing the response.</returns>
-        public virtual async Task<GroupKickResponse> GroupsKickAsync(string userId, string channelId)
+        public virtual async Task<GroupKickResponse> GroupsKickAsync(string userId, string channelId, CancellationToken cancellationToken)
         {
             return await _api.GroupsKickAsync(userId, channelId).ConfigureAwait(false);
         }
@@ -331,8 +360,9 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// Wraps Slack API's GroupsLeaveAsync method.
         /// </summary>
         /// <param name="channelId">The channel id.</param>
+        /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A <see cref="GroupLeaveResponse"/> representing the response.</returns>
-        public virtual async Task<GroupLeaveResponse> GroupsLeaveAsync(string channelId)
+        public virtual async Task<GroupLeaveResponse> GroupsLeaveAsync(string channelId, CancellationToken cancellationToken)
         {
             return await _api.GroupsLeaveAsync(channelId).ConfigureAwait(false);
         }
@@ -342,8 +372,9 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// </summary>
         /// <param name="channelId">The channel id.</param>
         /// <param name="ts">The timestamp.</param>
+        /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A <see cref="GroupMarkResponse"/> representing the response.</returns>
-        public virtual async Task<GroupMarkResponse> GroupsMarkAsync(string channelId, DateTime ts)
+        public virtual async Task<GroupMarkResponse> GroupsMarkAsync(string channelId, DateTime ts, CancellationToken cancellationToken)
         {
             return await _api.GroupsMarkAsync(channelId, ts).ConfigureAwait(false);
         }
@@ -352,8 +383,9 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// Wraps Slack API's GroupsOpenAsync method.
         /// </summary>
         /// <param name="channelId">The channel id.</param>
+        /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A <see cref="GroupOpenResponse"/> representing the response.</returns>
-        public virtual async Task<GroupOpenResponse> GroupsOpenAsync(string channelId)
+        public virtual async Task<GroupOpenResponse> GroupsOpenAsync(string channelId, CancellationToken cancellationToken)
         {
             return await _api.GroupsOpenAsync(channelId).ConfigureAwait(false);
         }
@@ -363,8 +395,9 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// </summary>
         /// <param name="channelId">The channel id.</param>
         /// <param name="name">The new name to set to the group.</param>
+        /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A <see cref="GroupRenameResponse"/> representing the response to the group renaming.</returns>
-        public virtual async Task<GroupRenameResponse> GroupsRenameAsync(string channelId, string name)
+        public virtual async Task<GroupRenameResponse> GroupsRenameAsync(string channelId, string name, CancellationToken cancellationToken)
         {
             return await _api.GroupsRenameAsync(channelId, name).ConfigureAwait(false);
         }
@@ -374,8 +407,9 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// </summary>
         /// <param name="channelId">The channel id.</param>
         /// <param name="purpose">The new purpose.</param>
+        /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A <see cref="GroupSetPurposeResponse"/> representing the asynchronous operation.</returns>
-        public virtual async Task<GroupSetPurposeResponse> GroupsSetPurposeAsync(string channelId, string purpose)
+        public virtual async Task<GroupSetPurposeResponse> GroupsSetPurposeAsync(string channelId, string purpose, CancellationToken cancellationToken)
         {
             return await _api.GroupsSetPurposeAsync(channelId, purpose).ConfigureAwait(false);
         }
@@ -385,8 +419,9 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// </summary>
         /// <param name="channelId">The channel id.</param>
         /// <param name="topic">The new topic.</param>
+        /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A <see cref="GroupSetTopicResponse"/> representing the response to setting the topic.</returns>
-        public virtual async Task<GroupSetTopicResponse> GroupsSetTopicAsync(string channelId, string topic)
+        public virtual async Task<GroupSetTopicResponse> GroupsSetTopicAsync(string channelId, string topic, CancellationToken cancellationToken)
         {
             return await _api.GroupsSetTopicAsync(channelId, topic).ConfigureAwait(false);
         }
@@ -395,8 +430,9 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// Wraps Slack API's GroupsUnarchiveAsync method.
         /// </summary>
         /// <param name="channelId">The channel id.</param>
+        /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A <see cref="GroupUnarchiveResponse"/> representing the response.</returns>
-        public virtual async Task<GroupUnarchiveResponse> GroupsUnarchiveAsync(string channelId)
+        public virtual async Task<GroupUnarchiveResponse> GroupsUnarchiveAsync(string channelId, CancellationToken cancellationToken)
         {
             return await _api.GroupsUnarchiveAsync(channelId).ConfigureAwait(false);
         }
@@ -405,8 +441,9 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// Wraps Slack API's JoinDirectMessageChannelAsync method.
         /// </summary>
         /// <param name="user">The user to join in.</param>
+        /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A <see cref="JoinDirectMessageChannelResponse"/> representing the response.</returns>
-        public virtual async Task<JoinDirectMessageChannelResponse> JoinDirectMessageChannelAsync(string user)
+        public virtual async Task<JoinDirectMessageChannelResponse> JoinDirectMessageChannelAsync(string user, CancellationToken cancellationToken)
         {
             return await _api.JoinDirectMessageChannelAsync(user).ConfigureAwait(false);
         }
@@ -416,8 +453,9 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// </summary>
         /// <param name="channelId">The channel id.</param>
         /// <param name="ts">The timestamp.</param>
+        /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A <see cref="MarkResponse"/> representing the response.</returns>
-        public virtual async Task<MarkResponse> MarkChannelAsync(string channelId, DateTime ts)
+        public virtual async Task<MarkResponse> MarkChannelAsync(string channelId, DateTime ts, CancellationToken cancellationToken)
         {
             return await _api.MarkChannelAsync(channelId, ts).ConfigureAwait(false);
         }
@@ -433,8 +471,9 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// <param name="attachments">The attachments, if any.</param>
         /// <param name="asUser">If the message is being sent as user instead of as a bot.</param>
         /// <param name="threadTs">Info about the message coming from a thread. CURRENTLY NOT USED.</param>
+        /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A <see cref="PostEphemeralResponse"/> representing the response to the message posting.</returns>
-        public virtual async Task<PostEphemeralResponse> PostEphemeralMessageAsync(string channelId, string text, string targetUser, string parse = null, bool linkNames = false, Attachment[] attachments = null, bool asUser = false, string threadTs = null)
+        public virtual async Task<PostEphemeralResponse> PostEphemeralMessageAsync(string channelId, string text, string targetUser, string parse = null, bool linkNames = false, Attachment[] attachments = null, bool asUser = false, string threadTs = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             return await _api.PostEphemeralMessageAsync(channelId, text, targetUser, parse, linkNames, attachments, asUser, threadTs).ConfigureAwait(false);
         }
@@ -453,8 +492,9 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// <param name="iconUrl">The url of the icon with the message, if any.</param>
         /// <param name="iconEmoji">The emoji icon, if any.</param>
         /// <param name="asUser">If the message is being sent as user instead of as a bot.</param>
+        /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A <see cref="PostMessageResponse"/> representing the response to the message posting.</returns>
-        public virtual async Task<PostMessageResponse> PostMessageAsync(string channelId, string text, string botName = null, string parse = null, bool linkNames = false, IBlock[] blocks = null, Attachment[] attachments = null, bool unfurlLinks = false, string iconUrl = null, string iconEmoji = null, bool asUser = false)
+        public virtual async Task<PostMessageResponse> PostMessageAsync(string channelId, string text, string botName = null, string parse = null, bool linkNames = false, IBlock[] blocks = null, Attachment[] attachments = null, bool unfurlLinks = false, string iconUrl = null, string iconEmoji = null, bool asUser = false, CancellationToken cancellationToken = default(CancellationToken))
         {
             return await _api.PostMessageAsync(channelId, text, botName, parse, linkNames, blocks, attachments, unfurlLinks, iconUrl, iconEmoji, asUser).ConfigureAwait(false);
         }
@@ -468,8 +508,9 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// <param name="enableHighlights">Set if highlights are enabled.</param>
         /// <param name="count">The count to return.</param>
         /// <param name="page">The page to search from.</param>
+        /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A <see cref="SearchResponseAll"/> representing the response for the operation.</returns>
-        public virtual async Task<SearchResponseAll> SearchAllAsync(string query, string sorting = null, SearchSortDirection? direction = null, bool enableHighlights = false, int? count = null, int? page = null)
+        public virtual async Task<SearchResponseAll> SearchAllAsync(string query, string sorting = null, SearchSortDirection? direction = null, bool enableHighlights = false, int? count = null, int? page = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             return await _api.SearchAllAsync(query, sorting, direction, enableHighlights, count, page).ConfigureAwait(false);
         }
@@ -483,8 +524,9 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// <param name="enableHighlights">Set if highlights are enabled.</param>
         /// <param name="count">The count to return.</param>
         /// <param name="page">The page to search from.</param>
+        /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A <see cref="SearchResponseFiles"/> representing the response of the search operation.</returns>
-        public virtual async Task<SearchResponseFiles> SearchFilesAsync(string query, string sorting = null, SearchSortDirection? direction = null, bool enableHighlights = false, int? count = null, int? page = null)
+        public virtual async Task<SearchResponseFiles> SearchFilesAsync(string query, string sorting = null, SearchSortDirection? direction = null, bool enableHighlights = false, int? count = null, int? page = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             return await _api.SearchFilesAsync(query, sorting, direction, enableHighlights, count, page).ConfigureAwait(false);
         }
@@ -498,8 +540,9 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// <param name="enableHighlights">Set if highlights are enabled.</param>
         /// <param name="count">The count to return.</param>
         /// <param name="page">The page to search from.</param>
+        /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A <see cref="SearchResponseMessages"/> representing the response of the search operation.</returns>
-        public virtual async Task<SearchResponseMessages> SearchMessagesAsync(string query, string sorting = null, SearchSortDirection? direction = null, bool enableHighlights = false, int? count = null, int? page = null)
+        public virtual async Task<SearchResponseMessages> SearchMessagesAsync(string query, string sorting = null, SearchSortDirection? direction = null, bool enableHighlights = false, int? count = null, int? page = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             return await _api.SearchMessagesAsync(query, sorting, direction, enableHighlights, count).ConfigureAwait(false);
         }
@@ -507,8 +550,9 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// <summary>
         /// Wraps Slack API's TestAuthAsync method.
         /// </summary>
+        /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A <see cref="AuthTestResponse"/> representing the authentication operation.</returns>
-        public virtual async Task<AuthTestResponse> TestAuthAsync()
+        public virtual async Task<AuthTestResponse> TestAuthAsync(CancellationToken cancellationToken)
         {
             return await _api.TestAuthAsync().ConfigureAwait(false);
         }
@@ -524,8 +568,9 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// <param name="linkNames">If to find and link channel names and username.</param>
         /// <param name="attachments">The attachments, if any.</param>
         /// <param name="asUser">If the message is being sent as user instead of as a bot.</param>
+        /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A <see cref="UpdateResponse"/> representing the response to the operation.</returns>
-        public virtual async Task<UpdateResponse> UpdateAsync(string ts, string channelId, string text, string botName = null, string parse = null, bool linkNames = false, Attachment[] attachments = null, bool asUser = false)
+        public virtual async Task<UpdateResponse> UpdateAsync(string ts, string channelId, string text, string botName = null, string parse = null, bool linkNames = false, Attachment[] attachments = null, bool asUser = false, CancellationToken cancellationToken = default(CancellationToken))
         {
             return await _api.UpdateAsync(ts, channelId, text, botName, parse, linkNames, attachments, asUser).ConfigureAwait(false);
         }
@@ -540,8 +585,9 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// <param name="initialComment">The optional message text introducing the file in specified channels.</param>
         /// <param name="useAsync">Whether to use the async version of the upload.</param>
         /// <param name="fileType">A file type identifier. See https://api.slack.com/types/file#file_types for the available types.</param>
+        /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A <see cref="FileUploadResponse"/> representing the response.</returns>
-        public virtual async Task<FileUploadResponse> UploadFileAsync(byte[] fileData, string fileName, string[] channelIds, string title = null, string initialComment = null, bool useAsync = false, string fileType = null)
+        public virtual async Task<FileUploadResponse> UploadFileAsync(byte[] fileData, string fileName, string[] channelIds, string title = null, string initialComment = null, bool useAsync = false, string fileType = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             return await _api.UploadFileAsync(fileData, fileName, channelIds, title, initialComment, useAsync, fileType).ConfigureAwait(false);
         }

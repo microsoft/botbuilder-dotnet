@@ -15,9 +15,16 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.TestBot
 {
     public class Startup
     {
+        private readonly SlackAdapter _adapter;
+
         public Startup(IConfiguration configuration)
         {
             this.Configuration = configuration;
+
+            var options = new SimpleSlackAdapterOptions(configuration["VerificationToken"], configuration["BotToken"], configuration["SigningSecret"]);
+            var wrapper = new SlackClientWrapper(options.BotToken);
+
+            _adapter = new SlackAdapter(wrapper, options);
         }
 
         public IConfiguration Configuration { get; }
@@ -36,7 +43,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.TestBot
             // services.AddSingleton<IBotFrameworkHttpAdapter, BotFrameworkHttpAdapter>();
 
             // Create the Bot Framework Adapter.
-            services.AddSingleton<SlackAdapter>();
+            services.AddSingleton<SlackAdapter>(_adapter);
 
             // Create the bot as a transient. In this case the ASP Controller is expecting an IBot.
             services.AddTransient<IBot, EchoBot>();

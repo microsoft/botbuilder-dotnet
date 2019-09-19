@@ -1,6 +1,7 @@
 ﻿// Copyright(c) Microsoft Corporation.All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using SlackAPI.WebSocketMessages;
 
 namespace Microsoft.Bot.Builder.Adapters.Slack
@@ -26,7 +27,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// Gets or Sets the URL for an icon.
         /// </summary>
         /// <value>The URL for an icon.</value>
-        public string IconUrl { get; set; }
+        public Uri IconUrl { get; set; }
 
         /// <summary>
         /// Gets or Sets an emoji icon.
