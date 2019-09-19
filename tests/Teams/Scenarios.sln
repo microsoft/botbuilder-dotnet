@@ -45,6 +45,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdaptiveCards", "AdaptiveCa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mentions", "Mentions\Mentions.csproj", "{8485C374-3111-4A82-9A0C-CC38DE99AE75}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SearchBasedMessagingExtension", "SearchBasedMessagingExtension\SearchBasedMessagingExtension.csproj", "{45A96B17-2878-424C-929C-4CCD0B186AFA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ActionBasedMessagingExtension", "ActionBasedMessagingExtension\ActionBasedMessagingExtension.csproj", "{BC4553C0-E2CB-47A1-84A6-5D27A6EB7DEC}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ActionBasedMessagingExtensionFetchTask", "ActionBasedMessagingExtension-FetchTask\ActionBasedMessagingExtensionFetchTask.csproj", "{A26E1445-E2D7-44C2-9C33-CBFC3846537A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug - NuGet Packages|Any CPU = Debug - NuGet Packages|Any CPU
@@ -172,6 +178,24 @@ Global
 		{8485C374-3111-4A82-9A0C-CC38DE99AE75}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8485C374-3111-4A82-9A0C-CC38DE99AE75}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8485C374-3111-4A82-9A0C-CC38DE99AE75}.Release|Any CPU.Build.0 = Release|Any CPU
+		{45A96B17-2878-424C-929C-4CCD0B186AFA}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{45A96B17-2878-424C-929C-4CCD0B186AFA}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
+		{45A96B17-2878-424C-929C-4CCD0B186AFA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{45A96B17-2878-424C-929C-4CCD0B186AFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{45A96B17-2878-424C-929C-4CCD0B186AFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{45A96B17-2878-424C-929C-4CCD0B186AFA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BC4553C0-E2CB-47A1-84A6-5D27A6EB7DEC}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC4553C0-E2CB-47A1-84A6-5D27A6EB7DEC}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
+		{BC4553C0-E2CB-47A1-84A6-5D27A6EB7DEC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC4553C0-E2CB-47A1-84A6-5D27A6EB7DEC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC4553C0-E2CB-47A1-84A6-5D27A6EB7DEC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BC4553C0-E2CB-47A1-84A6-5D27A6EB7DEC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A26E1445-E2D7-44C2-9C33-CBFC3846537A}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{A26E1445-E2D7-44C2-9C33-CBFC3846537A}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
+		{A26E1445-E2D7-44C2-9C33-CBFC3846537A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A26E1445-E2D7-44C2-9C33-CBFC3846537A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A26E1445-E2D7-44C2-9C33-CBFC3846537A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A26E1445-E2D7-44C2-9C33-CBFC3846537A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

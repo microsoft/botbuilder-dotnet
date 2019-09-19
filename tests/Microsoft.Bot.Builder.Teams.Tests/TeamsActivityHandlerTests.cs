@@ -603,7 +603,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             {
                 Type = ActivityTypes.Invoke,
                 Name = "task/fetch",
-                Value = JObject.Parse(@"{""data"":{""hiddenKey"":""hidden value from task module launcher"",""type"":""task / fetch""},""context"":{""theme"":""default""}}"),
+                Value = JObject.Parse(@"{""data"":{""key"":""value"",""type"":""task / fetch""},""context"":{""theme"":""default""}}"),
             };
 
             Activity[] activitiesToSend = null;
@@ -636,7 +636,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             {
                 Type = ActivityTypes.Invoke,
                 Name = "task/submit",
-                Value = JObject.Parse(@"{""data"":{""hiddenKey"":""hidden value from task module launcher"",""type"":""task / fetch""},""context"":{""theme"":""default""}}"),
+                Value = JObject.Parse(@"{""data"":{""key"":""value"",""type"":""task / fetch""},""context"":{""theme"":""default""}}"),
             };
 
             Activity[] activitiesToSend = null;
