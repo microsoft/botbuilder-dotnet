@@ -64,6 +64,56 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Tests
         }
 
         [Fact]
+        public async Task UpdateActivityAsyncShouldFailWithNullContext()
+        {
+            var options = new Mock<SlackAdapterOptions>();
+            options.Object.VerificationToken = "VerificationToken";
+            options.Object.ClientSigningSecret = "ClientSigningSecret";
+            options.Object.BotToken = "BotToken";
+
+            var slackApi = new Mock<SlackClientWrapper>(options.Object);
+
+            // TODO: delete when LoginWithSlack method gets removed from SlackAdapter.
+            slackApi.Setup(x => x.TestAuthAsync(It.IsAny<CancellationToken>())).Returns(Task.FromResult("mockedUserId"));
+
+            var slackAdapter = new SlackAdapter(slackApi.Object);
+
+            var activity = new Activity
+            {
+                Id = "testId",
+                Conversation = null,
+            };
+
+            await Assert.ThrowsAsync<ArgumentNullException>(async () =>
+            {
+                await slackAdapter.UpdateActivityAsync(null, activity, default);
+            });
+        }
+
+        [Fact]
+        public async Task UpdateActivityAsyncShouldFailWithNullActivity()
+        {
+            var options = new Mock<SlackAdapterOptions>();
+            options.Object.VerificationToken = "VerificationToken";
+            options.Object.ClientSigningSecret = "ClientSigningSecret";
+            options.Object.BotToken = "BotToken";
+
+            var slackApi = new Mock<SlackClientWrapper>(options.Object);
+
+            // TODO: delete when LoginWithSlack method gets removed from SlackAdapter.
+            slackApi.Setup(x => x.TestAuthAsync(It.IsAny<CancellationToken>())).Returns(Task.FromResult("mockedUserId"));
+
+            var slackAdapter = new SlackAdapter(slackApi.Object);
+
+            var turnContext = new TurnContext(slackAdapter, new Activity());
+
+            await Assert.ThrowsAsync<ArgumentNullException>(async () =>
+            {
+                await slackAdapter.UpdateActivityAsync(turnContext, null, default);
+            });
+        }
+
+        [Fact]
         public async Task UpdateActivityAsyncShouldFailWithNullActivityConversation()
         {
             var options = new Mock<SlackAdapterOptions>();
