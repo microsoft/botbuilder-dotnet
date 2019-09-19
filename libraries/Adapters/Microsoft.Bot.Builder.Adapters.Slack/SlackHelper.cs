@@ -28,19 +28,22 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
 
             message.text = activity.Text;
 
-            foreach (var att in activity.Attachments)
+            if (activity.Attachments != null)
             {
-                var newAttachment = new SlackAPI.Attachment()
+                foreach (var att in activity.Attachments)
                 {
-                    author_name = att.Name,
-                    thumb_url = att.ThumbnailUrl,
-                };
-                message.attachments.Add(newAttachment);
+                    var newAttachment = new SlackAPI.Attachment()
+                    {
+                        author_name = att.Name,
+                        thumb_url = att.ThumbnailUrl,
+                    };
+                    message.attachments.Add(newAttachment);
+                }
             }
 
             message.channel = activity.Conversation.Id;
 
-            if (!string.IsNullOrWhiteSpace(activity.Conversation.Properties["thread_ts"].ToString()))
+            if (!string.IsNullOrWhiteSpace(activity.Conversation.Properties["thread_ts"]?.ToString()))
             {
                 message.ThreadTS = activity.Conversation.Properties["thread_ts"].ToString();
             }

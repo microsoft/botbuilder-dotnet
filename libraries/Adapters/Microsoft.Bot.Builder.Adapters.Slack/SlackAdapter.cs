@@ -193,19 +193,22 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// <returns>A resource response with the Id of the updated activity.</returns>
         public override async Task<ResourceResponse> UpdateActivityAsync(ITurnContext turnContext, Activity activity, CancellationToken cancellationToken)
         {
-            if (activity.Id != null && activity.Conversation != null)
+            if (activity.Id == null)
             {
-                NewSlackMessage message = SlackHelper.ActivityToSlack(activity);
-                SlackClientWrapper slack = await GetAPIAsync(activity).ConfigureAwait(false);
-                var results = await slack.UpdateAsync(activity.Timestamp.ToString(), activity.ChannelId, message.text, null, null, false, null, false, cancellationToken).ConfigureAwait(false);
-                if (!results.ok)
-                {
-                    throw new Exception($"Error updating activity on Slack:{results}");
-                }
+                throw new ArgumentException(nameof(activity.Id));
             }
-            else
+
+            if (activity.Conversation == null)
             {
-                throw new Exception("Cannot update activity: activity is missing id.");
+                throw new ArgumentException(nameof(activity.Conversation));
+            }
+
+            var message = SlackHelper.ActivityToSlack(activity);
+            var slack = await GetAPIAsync(activity).ConfigureAwait(false);
+            var results = await slack.UpdateAsync(activity.Timestamp.ToString(), activity.ChannelId, message.text, cancellationToken: cancellationToken).ConfigureAwait(false);
+            if (!results.ok)
+            {
+                throw new Exception($"Error updating activity on Slack:{results}");
             }
 
             return new ResourceResponse()
@@ -477,8 +480,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         {
             if (_options.BotToken != null)
             {
-                AuthTestResponse response = await _slackClient.TestAuthAsync(default(CancellationToken)).ConfigureAwait(false);
-                _identity = response.user_id;
+                _identity = await _slackClient.TestAuthAsync(default).ConfigureAwait(false);
             }
             else
             {
