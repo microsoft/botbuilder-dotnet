@@ -40,18 +40,6 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// Gets or sets a dictionary of Default ChoiceOptions to be used for locale recognition.
-        /// </summary>
-        /// <value>The dictionary of Default ChoiceOptions to be used for locale recognition.</value>
-        /// <remarks>
-        /// If set, this replaces DefaultChoiceOptions.
-        /// Usage: ChoicePrompt.CustomChoiceDefaults = new Dictionary<string, ChoiceFactoryOptions>()
-        ///         { "en-US", (new Choice("Yes"), new Choice("No"), new ChoiceFactoryOptions {...}) }
-        /// </remarks>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1629:Documentation text should end with a period", Justification = "Doesn't like `Dictionary<string`")]
-        public static Dictionary<string, (Choice, Choice, ChoiceFactoryOptions)> CustomChoiceDefaults { get; set; }
-
-        /// <summary>
         /// Gets or sets the style of the yes/no choices rendered to the user when prompting.
         /// </summary>
         /// <value>
@@ -85,18 +73,13 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             get
             {
-                if (CustomChoiceDefaults == null || CustomChoiceDefaults.Count == 0)
+                var defaults = new Dictionary<string, (Choice, Choice, ChoiceFactoryOptions)>();
+                foreach (var culture in GetSupportedCultures())
                 {
-                    var defaults = new Dictionary<string, (Choice, Choice, ChoiceFactoryOptions)>();
-                    foreach (var culture in GetSupportedCultures())
-                    {
-                        defaults.Add(culture.Locale, (new Choice(culture.YesInLanguage), new Choice(culture.NoInLanguage), new ChoiceFactoryOptions(culture.Separator, culture.InlineOr, culture.InlineOrMore, true)));
-                    }
-
-                    return defaults;
+                    defaults.Add(culture.Locale, (new Choice(culture.YesInLanguage), new Choice(culture.NoInLanguage), new ChoiceFactoryOptions(culture.Separator, culture.InlineOr, culture.InlineOrMore, true)));
                 }
 
-                return CustomChoiceDefaults;
+                return defaults;
             }
         }
 
