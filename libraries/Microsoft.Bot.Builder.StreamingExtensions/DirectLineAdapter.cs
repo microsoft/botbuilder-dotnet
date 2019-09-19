@@ -125,7 +125,7 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
             OnTurnError = onTurnError;
             _bot = bot ?? throw new ArgumentNullException(nameof(bot));
             _httpClient = new StreamingHttpClient(_logger);
-            (_httpClient as StreamingHttpClient).AddConnection(pipeName, this);
+            (_httpClient as StreamingHttpClient).CreateConnection(pipeName, this);
             _claimsIdentity = new ClaimsIdentity();
             if (logger != null)
             {
@@ -541,7 +541,7 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
         private async Task ConnectNamedPipe(string pipeName)
         {
             _httpClient = _httpClient ?? new StreamingHttpClient(_logger);
-            (_httpClient as StreamingHttpClient).AddConnection(pipeName, this);
+            (_httpClient as StreamingHttpClient).CreateConnection(pipeName, this);
         }
 
         /// <summary>
@@ -579,7 +579,7 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
             {
                 var socket = await httpRequest.HttpContext.WebSockets.AcceptWebSocketAsync().ConfigureAwait(false);
                 _httpClient = _httpClient ?? new StreamingHttpClient(_logger);
-                (_httpClient as StreamingHttpClient).AddConnection(socket, httpRequest.HttpContext.Request.PathBase.ToString(), this);
+                (_httpClient as StreamingHttpClient).CreateConnection(socket, httpRequest.HttpContext.Request.PathBase.ToString(), this);
             }
             catch (Exception ex)
             {
