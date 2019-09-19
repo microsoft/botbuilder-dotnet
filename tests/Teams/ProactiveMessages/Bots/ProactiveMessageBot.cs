@@ -23,17 +23,18 @@ namespace Microsoft.BotBuilderSamples.Bots
     {
         private string _appId;
 
-        public ProactiveMessageBot(IConfiguration configuration) 
+        public ProactiveMessageBot(IConfiguration configuration)
         {
             _appId = configuration["MicrosoftAppId"];
         }
 
         protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
+            // You can hand roll a connector to manually address a proactive message
             var connectorClient = turnContext.TurnState.Get<IConnectorClient>();
             var connector = new ConnectorClient(connectorClient.Credentials);
 
-             connector.BaseUri = new Uri(turnContext.Activity.ServiceUrl);
+            connector.BaseUri = new Uri(turnContext.Activity.ServiceUrl);
 
             var parameters = new ConversationParameters
             {
@@ -58,6 +59,8 @@ namespace Microsoft.BotBuilderSamples.Bots
 
             await connector.Conversations.SendToConversationAsync(proactiveMessage, cancellationToken);
 
+            // Or you can use the adaptor to send a message if you already have a conversation reference. You can put this code into the controller if
+            // you already have a store of conversation references. 
             await turnContext.Adapter.ContinueConversationAsync(_appId, turnContext.Activity.GetConversationReference(), BotOnTurn, cancellationToken);
         }
 
