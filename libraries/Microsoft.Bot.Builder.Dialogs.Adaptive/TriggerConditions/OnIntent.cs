@@ -58,12 +58,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
 
             var intentExpression = factory.Parse($"{TurnPath.RECOGNIZED}.intent == '{this.Intent.TrimStart('#')}'");
 
-            // build expression to be INTENT AND (@ENTITY1 != null OR @ENTITY2 != null)
+            // build expression to be INTENT AND (@ENTITY1 != null AND @ENTITY2 != null)
             if (this.Entities.Any())
             {
                 intentExpression = Expression.AndExpression(
                     intentExpression,
-                    Expression.OrExpression(this.Entities.Select(entity => factory.Parse($"exists(@@{entity})")).ToArray()));
+                    Expression.AndExpression(this.Entities.Select(entity => factory.Parse($"exists({entity})")).ToArray()));
             }
 
             return Expression.AndExpression(intentExpression, base.GetExpression(factory));
