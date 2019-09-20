@@ -6,14 +6,62 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Schema.Teams;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Teams
 {
-    public class TeamsActivityHandler : ActivityHandler
+    public class TeamsActivityHandler : ActivityHandler, ITeamsInfo
     {
+        private TeamsRosterClient _teamsRosterClient = null;
+
+        public async Task<TeamDetails> GetTeamDetailsAsync(ITurnContext turnContext, CancellationToken cancellationToken = default)
+        {
+            if (turnContext == null)
+            {
+                throw new ArgumentNullException(nameof(turnContext));
+            }
+
+            if (_teamsRosterClient == null)
+            {
+                throw new NotImplementedException("This method is only implemented for the MS Teams channel.");
+            }
+
+            return await _teamsRosterClient.GetTeamDetailsAsync(turnContext, cancellationToken).ConfigureAwait(false);
+        }
+
+        public async Task<IList<ChannelInfo>> GetChannelsAsync(ITurnContext turnContext, CancellationToken cancellationToken = default)
+        {
+            if (turnContext == null)
+            {
+                throw new ArgumentNullException(nameof(turnContext));
+            }
+
+            if (_teamsRosterClient == null)
+            {
+                throw new NotImplementedException("This method is only implemented for the MS Teams channel.");
+            }
+
+            return await _teamsRosterClient.GetChannelsAsync(turnContext, cancellationToken).ConfigureAwait(false);
+        }
+
+        public async Task<IEnumerable<TeamsChannelAccount>> GetMembersAsync(ITurnContext turnContext, CancellationToken cancellationToken = default)
+        {
+            if (turnContext == null)
+            {
+                throw new ArgumentNullException(nameof(turnContext));
+            }
+
+            if (_teamsRosterClient == null)
+            {
+                throw new NotImplementedException("This method is only implemented for the MS Teams channel.");
+            }
+
+            return await _teamsRosterClient.GetMembersAsync(turnContext, cancellationToken).ConfigureAwait(false);
+        }
+
         public override async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (turnContext == null)
@@ -29,6 +77,11 @@ namespace Microsoft.Bot.Builder.Teams
             if (turnContext.Activity.Type == null)
             {
                 throw new ArgumentException($"{nameof(turnContext)}.Activity must have non-null Type.");
+            }
+
+            if (turnContext.Activity.ChannelId == Channels.Msteams)
+            {
+                _teamsRosterClient = new TeamsRosterClient((ConnectorClient)turnContext.TurnState.Get<IConnectorClient>());
             }
 
             switch (turnContext.Activity.Type)
