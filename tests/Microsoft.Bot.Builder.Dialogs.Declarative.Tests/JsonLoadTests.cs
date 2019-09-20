@@ -315,11 +315,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
                 .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
 
             var resource = resourceExplorer.GetResource(resourceName);
-            if (resource == null)
-            {
-                throw new Exception($"Resource[{resourceName}] not found");
-            }
-
             var dialog = DeclarativeTypeLoader.Load<Dialog>(resource, resourceExplorer, DebugSupport.SourceRegistry);
             DialogManager dm = new DialogManager(dialog);
 

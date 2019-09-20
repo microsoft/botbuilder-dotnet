@@ -18,31 +18,31 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         /// Register default LG file as language generation.
         /// </summary>
         /// <param name="botAdapter">The <see cref="BotAdapter"/> to add services to.</param>
-        /// <param name="resourceExplorer">resource explorer.</param>
+        /// <param name="resourceExplorer">resource explorer to use for .lg based resources.</param>
         /// <param name="defaultLg">Default LG Resource Id (default: main.lg).</param>
-        /// <param name="messageGenerator">Optional message generator.</param>
         /// <returns>The BotAdapter.</returns>
         public static BotAdapter UseLanguageGeneration(
             this BotAdapter botAdapter,
-            ResourceExplorer resourceExplorer,
-            string defaultLg = null,
-            IActivityGenerator messageGenerator = null)
+            ResourceExplorer resourceExplorer = null,
+            string defaultLg = null)
         {
             if (defaultLg == null)
             {
                 defaultLg = "main.lg";
             }
 
-            DeclarativeTypeLoader.AddComponent(new LanguageGenerationComponentRegistration());
-
-            // if there is no main.lg, then provide default engine (for inline expression evaluation only)
-            if (resourceExplorer.GetResource(defaultLg) == null)
+            if (resourceExplorer == null)
             {
-                botAdapter.UseLanguageGeneration(resourceExplorer, new TemplateEngineLanguageGenerator(string.Empty, defaultLg, LanguageGeneratorManager.ResourceResolver(resourceExplorer)));
+                resourceExplorer = new ResourceExplorer();
+            }
+
+            if (resourceExplorer.TryGetResource(defaultLg, out var resource))
+            {
+                botAdapter.UseLanguageGeneration(resourceExplorer, new ResourceMultiLanguageGenerator(defaultLg));
             }
             else
             {
-                botAdapter.UseLanguageGeneration(resourceExplorer, new ResourceMultiLanguageGenerator(defaultLg));
+                botAdapter.UseLanguageGeneration(resourceExplorer, new TemplateEngineLanguageGenerator(string.Empty, defaultLg, LanguageGeneratorManager.ResourceResolver(resourceExplorer)));
             }
 
             return botAdapter;
