@@ -45,6 +45,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
 
             Options = options ?? throw new ArgumentNullException(nameof(options));
             _api = new SlackTaskClient(options.BotToken);
+            LoginWithSlackAsync(default).Wait();
         }
 
         /// <summary>
@@ -634,27 +635,6 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         }
 
         /// <summary>
-        /// Manages the login to Slack with the given credentials.
-        /// </summary>
-        /// <param name="cancellationToken">A cancellation token for the task.</param>
-        /// <returns>A Task representing the asynchronous operation.</returns>
-        public async Task LoginWithSlackAsync(CancellationToken cancellationToken)
-        {
-            if (Options.BotToken != null)
-            {
-                Identity = await TestAuthAsync(cancellationToken).ConfigureAwait(false);
-            }
-            else
-            {
-                if (string.IsNullOrWhiteSpace(Options.ClientId) || string.IsNullOrWhiteSpace(Options.ClientSecret) ||
-                Options.RedirectUri != null || Options.GetScopes().Length > 0)
-                {
-                    throw new Exception("Missing Slack API credentials! Provide clientId, clientSecret, scopes and redirectUri as part of the SlackAdapter options.");
-                }
-            }
-        }
-
-        /// <summary>
         /// Get the bot user id associated with the team on which an incoming activity originated. This is used internally by the SlackMessageTypeMiddleware to identify direct_mention and mention events.
         /// In single-team mode, this will pull the information from the Slack API at launch.
         /// In multi-team mode, this will use the `getBotUserByTeam` method passed to the constructor to pull the information from a developer-defined source.
@@ -685,7 +665,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// <param name="request">The <see cref="HttpRequest"/> with the signature.</param>
         /// <param name="body">The raw body of the request.</param>
         /// <returns>The result of the comparison between the signature in the request and hashed secret.</returns>
-        public bool VerifySignature(HttpRequest request, string body)
+        public virtual bool VerifySignature(HttpRequest request, string body)
         {
             if (request == null || string.IsNullOrWhiteSpace(body))
             {
@@ -708,6 +688,27 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
                 var retrievedSignature = request.Headers["X-Slack-Signature"].ToString().ToUpperInvariant();
 
                 return hash == retrievedSignature;
+            }
+        }
+
+        /// <summary>
+        /// Manages the login to Slack with the given credentials.
+        /// </summary>
+        /// <param name="cancellationToken">A cancellation token for the task.</param>
+        /// <returns>A Task representing the asynchronous operation.</returns>
+        public async Task LoginWithSlackAsync(CancellationToken cancellationToken)
+        {
+            if (Options.BotToken != null)
+            {
+                Identity = await TestAuthAsync(cancellationToken).ConfigureAwait(false);
+            }
+            else
+            {
+                if (string.IsNullOrWhiteSpace(Options.ClientId) || string.IsNullOrWhiteSpace(Options.ClientSecret) ||
+                Options.RedirectUri != null || Options.GetScopes().Length > 0)
+                {
+                    throw new Exception("Missing Slack API credentials! Provide clientId, clientSecret, scopes and redirectUri as part of the SlackAdapter options.");
+                }
             }
         }
     }

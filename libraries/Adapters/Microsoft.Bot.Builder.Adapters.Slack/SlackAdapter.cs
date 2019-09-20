@@ -20,7 +20,6 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
     {
         private const string PostMessageUrl = "https://slack.com/api/chat.postMessage";
         private const string PostEphemeralMessageUrl = "https://slack.com/api/chat.postEphemeral";
-        private const string SlackOAuthUrl = "https://slack.com/oauth/authorize?client_id=";
 
         private readonly SlackClientWrapper _slackClient;
 
@@ -33,8 +32,6 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
             : base()
         {
             _slackClient = slackClient ?? throw new ArgumentNullException(nameof(slackClient));
-
-            _slackClient.LoginWithSlackAsync(default).Wait();
         }
 
         /// <summary>
@@ -176,7 +173,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task ContinueConversationAsync(ConversationReference reference, BotCallbackHandler logic, CancellationToken cancellationToken)
         {
-            var request = reference.GetContinuationActivity().ApplyConversationReference(reference, true); // TODO: check on this
+            var request = reference.GetContinuationActivity().ApplyConversationReference(reference, true);
 
             using (var context = new TurnContext(this, request))
             {
@@ -206,19 +203,14 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
 
             if (slackEvent.type == "url_verification")
             {
-                response.StatusCode = (int)HttpStatusCode.OK;
-                response.ContentType = "text/plain";
-                string text = slackEvent.challenge.ToString();
-                await response.WriteAsync(text, cancellationToken).ConfigureAwait(false);
+                await SlackHelper.SendHttpResponse(response, (int)HttpStatusCode.OK, slackEvent.challenge.ToString()).ConfigureAwait(false);
                 return;
             }
 
             if (!_slackClient.VerifySignature(request, body))
             {
-                response.StatusCode = (int)HttpStatusCode.Unauthorized;
-                response.ContentType = "text/plain";
                 string text = $"Rejected due to mismatched header signature";
-                await response.WriteAsync(text, cancellationToken).ConfigureAwait(false);
+                await SlackHelper.SendHttpResponse(response, (int)HttpStatusCode.Unauthorized, text).ConfigureAwait(false);
             }
             else
             {
@@ -228,10 +220,8 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
                     slackEvent = JsonConvert.ToString(slackEvent.payload);
                     if (!string.IsNullOrWhiteSpace(_slackClient.Options.VerificationToken) && slackEvent.token != _slackClient.Options.VerificationToken)
                     {
-                        response.StatusCode = (int)HttpStatusCode.Forbidden;
-                        response.ContentType = "text/plain";
                         string text = $"Rejected due to mismatched verificationToken:{slackEvent}";
-                        await response.WriteAsync(text, cancellationToken).ConfigureAwait(false);
+                        await SlackHelper.SendHttpResponse(response, (int)HttpStatusCode.Forbidden, text).ConfigureAwait(false);
                     }
                     else
                     {
@@ -270,10 +260,9 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
                             await RunPipelineAsync(context, bot.OnTurnAsync, cancellationToken).ConfigureAwait(false);
 
                             // send http response back
-                            response.StatusCode = Convert.ToInt32(context.TurnState.Get<string>("httpStatus"), System.Globalization.CultureInfo.InvariantCulture);
-                            response.ContentType = "text/plain";
+                            int status = Convert.ToInt32(context.TurnState.Get<string>("httpStatus"), System.Globalization.CultureInfo.InvariantCulture);
                             string text = (context.TurnState.Get<object>("httpBody") != null) ? context.TurnState.Get<object>("httpBody").ToString() : string.Empty;
-                            await response.WriteAsync(text, cancellationToken).ConfigureAwait(false);
+                            await SlackHelper.SendHttpResponse(response, status, text).ConfigureAwait(false);
                         }
                     }
                 }
@@ -282,10 +271,8 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
                     // this is an event api post
                     if (!string.IsNullOrWhiteSpace(_slackClient.Options.VerificationToken) && slackEvent.token != _slackClient.Options.VerificationToken)
                     {
-                        response.StatusCode = (int)HttpStatusCode.Forbidden;
-                        response.ContentType = "text/plain";
                         string text = $"Rejected due to mismatched verificationToken:{slackEvent}";
-                        await response.WriteAsync(text, cancellationToken).ConfigureAwait(false);
+                        await SlackHelper.SendHttpResponse(response, (int)HttpStatusCode.Forbidden, text).ConfigureAwait(false);
                     }
                     else
                     {
@@ -338,10 +325,9 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
                             await RunPipelineAsync(context, bot.OnTurnAsync, cancellationToken).ConfigureAwait(false);
 
                             // send http response back
-                            response.StatusCode = Convert.ToInt32(context.TurnState.Get<string>("httpStatus"), System.Globalization.CultureInfo.InvariantCulture);
-                            response.ContentType = "text/plain";
+                            int status = Convert.ToInt32(context.TurnState.Get<string>("httpStatus"), System.Globalization.CultureInfo.InvariantCulture);
                             string text = (context.TurnState.Get<object>("httpBody") != null) ? context.TurnState.Get<object>("httpBody").ToString() : string.Empty;
-                            await response.WriteAsync(text, cancellationToken).ConfigureAwait(false);
+                            await SlackHelper.SendHttpResponse(response, status, text).ConfigureAwait(false);
                         }
                     }
                 }
@@ -349,10 +335,8 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
                 {
                     if (!string.IsNullOrWhiteSpace(_slackClient.Options.VerificationToken) && slackEvent.Token != _slackClient.Options.VerificationToken)
                     {
-                        response.StatusCode = (int)HttpStatusCode.Forbidden;
-                        response.ContentType = "text/plain";
                         string text = $"Rejected due to mismatched verificationToken:{slackEvent}";
-                        await response.WriteAsync(text, cancellationToken).ConfigureAwait(false);
+                        await SlackHelper.SendHttpResponse(response, (int)HttpStatusCode.Forbidden, text).ConfigureAwait(false);
                     }
                     else
                     {
@@ -395,10 +379,9 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
                             await RunPipelineAsync(context, bot.OnTurnAsync, cancellationToken).ConfigureAwait(false);
 
                             // send http response back
-                            response.StatusCode = Convert.ToInt32(context.TurnState.Get<string>("httpStatus"), System.Globalization.CultureInfo.InvariantCulture);
-                            response.ContentType = "text/plain";
+                            int status = Convert.ToInt32(context.TurnState.Get<string>("httpStatus"), System.Globalization.CultureInfo.InvariantCulture);
                             string text = (context.TurnState.Get<object>("httpBody") != null) ? context.TurnState.Get<object>("httpBody").ToString() : string.Empty;
-                            await response.WriteAsync(text).ConfigureAwait(false);
+                            await SlackHelper.SendHttpResponse(response, status, text).ConfigureAwait(false);
                         }
                     }
                 }

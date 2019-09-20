@@ -24,6 +24,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Files\VerificationMessageBody.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Files\MessageBody.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

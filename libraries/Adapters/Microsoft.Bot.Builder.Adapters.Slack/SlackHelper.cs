@@ -4,7 +4,11 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Net;
 using System.Runtime.CompilerServices;
+using System.Text;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Schema;
 
 #if SIGNASSEMBLY
@@ -109,6 +113,16 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
                 team = eventProperty.team ?? null,
                 channel = eventProperty.channel ?? null,
             };
+        }
+
+        public static async Task SendHttpResponse(HttpResponse httpResponse, int responseStatusCode, string responseText)
+        {
+            httpResponse.StatusCode = responseStatusCode;
+            httpResponse.ContentType = "text/plain";
+            string text = responseText;
+            var encoding = Encoding.UTF8;
+            var data = encoding.GetBytes(text);
+            await httpResponse.Body.WriteAsync(data, 0, data.Length, default).ConfigureAwait(false);
         }
     }
 }
