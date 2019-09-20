@@ -27,8 +27,8 @@ namespace Microsoft.Bot.Builder.AI.QnA
         {
             this.RegisterSourceLocation(sourceFilePath, sourceLineNumber);
             this.KnowledgeBaseId = knowledgeBaseId ?? throw new ArgumentNullException(nameof(knowledgeBaseId));
-            this.HostName = hostName ?? throw new ArgumentNullException(nameof(HostName));
-            this.EndpointKey = endpointKey ?? throw new ArgumentNullException(nameof(EndpointKey));
+            this.HostName = hostName ?? throw new ArgumentNullException(nameof(hostName));
+            this.EndpointKey = endpointKey ?? throw new ArgumentNullException(nameof(endpointKey));
             this.Threshold = threshold;
             this.NoAnswer = noAnswer ?? defaultNoAnswer;
             this.StrictFilters = strictFilters;
@@ -62,6 +62,21 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (this.EndpointKey == null)
+            {
+                throw new ArgumentNullException(nameof(EndpointKey));
+            }
+
+            if (this.HostName == null)
+            {
+                throw new ArgumentNullException(nameof(HostName));
+            }
+
+            if (this.KnowledgeBaseId == null)
+            {
+                throw new ArgumentNullException(nameof(KnowledgeBaseId));
+            }
+
             var endpoint = new QnAMakerEndpoint
             {
                 EndpointKey = this.EndpointKey,
