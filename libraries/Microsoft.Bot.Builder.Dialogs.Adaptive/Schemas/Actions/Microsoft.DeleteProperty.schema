@@ -1,24 +1,17 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
-    "$role": "unionType(Microsoft.Dialog)",
+    "$role": "unionType(Microsoft.IDialog)",
     "title": "Delete Property",
     "description": "This is a action which allows you to remove a property from memory",
     "type": "object",
     "required": [
         "property"
     ],
-    "allOf": [
-        {
-            "$ref": "./baseActionSchema.json"
-        },
-        {
-            "properties": {
-                "property": {
-                    "$role": "expression",
-                    "title": "Property",
-                    "description": "The Memory property path to delete"
-                }
-            }
+    "properties": {
+        "property": {
+            "$role": "expression",
+            "title": "Property",
+            "description": "The Memory property path to delete"
         }
-    ]
+    }
 }

@@ -30,7 +30,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
             this.UseState(userState, conversationState);
             this.UseResourceExplorer(resourceExplorer, new TypeRegistration[]
             {
-                new TypeRegistration<MultiplyAction>("Testbot.Multiply"),
+                new TypeRegistration<MultiplyDialog>("Testbot.Multiply"),
                 new TypeRegistration<JavascriptAction>("Testbot.JavascriptAction")
             });
             this.UseAdaptiveDialogs();

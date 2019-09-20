@@ -10,7 +10,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <summary>
         /// Enumerate child dialog dependencies so they can be added to the containers dialogset.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>dialog enumeration</returns>
         IEnumerable<Dialog> GetDependencies();
     }
 }

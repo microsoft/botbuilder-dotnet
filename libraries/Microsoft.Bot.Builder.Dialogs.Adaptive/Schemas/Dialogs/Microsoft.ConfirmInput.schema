@@ -1,12 +1,12 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
-    "$role": "unionType(Microsoft.Dialog)",
+    "$role": "unionType(Microsoft.IDialog)",
     "title": "ConfirmInput Dialog",
     "description": "This represents a dialog which gathers a yes/no style responses",
     "type": "object",
     "allOf": [
         {
-            "$ref": "./baseInputSchema.json"
+            "$ref": "./Microsoft.InputDialog.json#"
         },
         {
             "properties": {
@@ -63,39 +63,31 @@
                     "type": "array",
                     "items": [
                         {
-                            "$ref": "#/definitions/choice"
+                            "type": "object",
+                            "properties": {
+                                "value": {
+                                    "type": "string",
+                                    "title": "Value",
+                                    "description": "the value to return when selected."
+                                },
+                                "action": {
+                                    "type": "object",
+                                    "title": "Action",
+                                    "description": "Card action for the choice"
+                                },
+                                "synonyms": {
+                                    "type": "array",
+                                    "title": "Synonyms",
+                                    "description": "The list of synonyms to recognize in addition to the value. This is optional.",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
                         }
                     ]
                 }
             }
         }
-    ],
-    "definitions": {
-        "choice": {
-            "type": "object",
-            "properties": {
-                "value": {
-                    "type": "string",
-                    "title": "Value",
-                    "description": "the value to return when selected."
-                },
-                "action": {
-                    "$ref": "#/definitions/CardAction",
-                    "title": "Action",
-                    "description": "Card action for the choice"
-                },
-                "synonyms": {
-                    "type": "array",
-                    "title": "Synonyms",
-                    "description": "The list of synonyms to recognize in addition to the value. This is optional.",
-                    "items": {
-                        "type": "string"
-                    }
-                }
-            }
-        },
-        "CardAction": {
-            "type": "object"
-        }
-    }
+    ]
 }

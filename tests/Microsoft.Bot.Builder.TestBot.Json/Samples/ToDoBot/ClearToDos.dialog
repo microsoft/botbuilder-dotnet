@@ -5,7 +5,6 @@
     "triggers": [
         {
             "$type": "Microsoft.OnBeginDialog",
-
             "actions": [
                 {
                     "$type": "Microsoft.EditArray",

@@ -1,38 +1,31 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
-    "$role": "unionType(Microsoft.Dialog)",
+    "$role": "unionType(Microsoft.IDialog)",
     "title": "Begin Dialog",
     "description": "Action which begins another dialog (and when that dialog is done, it will return the caller).",
     "type": "object",
-    "allOf": [
-        {
-            "$ref": "./baseActionSchema.json"
+    "properties": {
+        "dialog": {
+            "$type": "Microsoft.IDialog",
+            "title": "Dialog",
+            "description": "This is the dialog to call."
         },
-        {
-            "properties": {
-                "dialog": {
-                    "$type": "Microsoft.Dialog",
-                    "title": "Dialog",
-                    "description": "This is the dialog to call."
-                },
-                "options": {
-                    "type": "object",
-                    "title": "Options binding",
-                    "description": "Bindings to configure the options object to pass to the dialog.",
-                    "additionalProperties": {
-                        "type": "string",
-                        "title": "Options"
-                    }
-                },
-                "resultProperty": {
-                    "$role": "expression",
-                    "title": "Property",
-                    "description": "The property to store the result in",
-                    "examples": [
-                        "user.name"
-                    ]
-                }
+        "options": {
+            "type": "object",
+            "title": "Options binding",
+            "description": "Bindings to configure the options object to pass to the dialog.",
+            "additionalProperties": {
+                "type": "string",
+                "title": "Options"
             }
+        },
+        "resultProperty": {
+            "$role": "expression",
+            "title": "Property",
+            "description": "The property to store the result in",
+            "examples": [
+                "user.name"
+            ]
         }
-    ]
+    }
 }

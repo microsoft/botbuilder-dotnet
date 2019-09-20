@@ -65,11 +65,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                     Actions = planActions.ToList()
                 };
 
-                if (this.ChangeType == ActionChangeType.InsertActionsBeforeTags)
-                {
-                    changes.Tags = this.Tags;
-                }
-
                 sc.QueueChanges(changes);
 
                 return await sc.EndDialogAsync(cancellationToken: cancellationToken).ConfigureAwait(false);

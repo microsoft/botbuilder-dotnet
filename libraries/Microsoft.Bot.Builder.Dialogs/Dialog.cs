@@ -58,14 +58,6 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// Gets set of tags assigned to the dialog.
-        /// </summary>
-        /// <value>
-        /// Set of tags assigned to the dialog.
-        /// </value>
-        public List<string> Tags { get; private set; } = new List<string>();
-
-        /// <summary>
         /// Gets or sets the <see cref="IBotTelemetryClient"/> to use for logging.
         /// </summary>
         /// <value>The <see cref="IBotTelemetryClient"/> to use for logging.</value>

@@ -1,50 +1,43 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
-    "$role": "unionType(Microsoft.Dialog)",
+    "$role": "unionType(Microsoft.IDialog)",
     "title": "Edit Array Action",
     "description": "This is a action which allows you to modify an array in memory",
     "type": "object",
     "required": [
         "changeType",
-        "arrayProperty"
+        "itemsProperty"
     ],
-    "allOf": [
-        {
-            "$ref": "./baseActionSchema.json"
+    "properties": {
+        "changeType": {
+            "type": "string",
+            "title": "Change Type",
+            "description": "The array operation to perform",
+            "enum": [
+                "Push",
+                "Pop",
+                "Take",
+                "Remove",
+                "Clear"
+            ]
         },
-        {
-            "properties": {
-                "changeType": {
-                    "type": "string",
-                    "title": "Change Type",
-                    "description": "The array operation to perform",
-                    "enum": [
-                        "Push",
-                        "Pop",
-                        "Take",
-                        "Remove",
-                        "Clear"
-                    ]
-                },
-                "itemsProperty": {
-                    "$role": "expression",
-                    "title": "Items Property",
-                    "description": "Memory expression of the collection of items to manipulate."
-                },
-                "resultProperty": {
-                    "$role": "expression",
-                    "title": "Result Property",
-                    "description": "The path expression to store the result of the action."
-                },
-                "value": {
-                    "$role": "expression",
-                    "title": "Value of the Item",
-                    "description": "Expression to evaluate.",
-                    "examples": [
-                        "dialog.todo"
-                    ]
-                }
-            }
+        "itemsProperty": {
+            "$role": "expression",
+            "title": "Items Property",
+            "description": "Memory expression of the collection of items to manipulate."
+        },
+        "resultProperty": {
+            "$role": "expression",
+            "title": "Result Property",
+            "description": "The path expression to store the result of the action."
+        },
+        "value": {
+            "$role": "expression",
+            "title": "Value of the Item",
+            "description": "Expression to evaluate.",
+            "examples": [
+                "dialog.todo"
+            ]
         }
-    ]
+    }
 }

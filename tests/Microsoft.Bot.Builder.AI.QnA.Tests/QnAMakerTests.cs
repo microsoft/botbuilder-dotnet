@@ -12,8 +12,8 @@ using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.TriggerHandlers;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
@@ -1460,7 +1460,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                         new IntentPattern("CowboyIntent", "moo")
                     }
                 },
-                Triggers = new List<TriggerHandler>()
+                Triggers = new List<OnCondition>()
                 {
                     new OnIntent(intent: "CowboyIntent")
                     {
@@ -1489,7 +1489,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
 
             var rootDialog = new AdaptiveDialog("root")
             {
-                Triggers = new List<TriggerHandler>()
+                Triggers = new List<OnCondition>()
                 {
                     new OnBeginDialog()
                     {
@@ -1498,9 +1498,9 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                             new BeginDialog(outerDialog.Id)
                         }
                     },
-                    new Dialogs.Adaptive.TriggerHandlers.OnDialogEvent()
+                    new Dialogs.Adaptive.Conditions.OnCustomEvent()
                     {
-                        Events = new List<string>() { "UnhandledUnknownIntent" },
+                        Event = "UnhandledUnknownIntent",
                         Actions = new List<Dialog>()
                         {
                             new EditArray(),

@@ -1,12 +1,12 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
-    "$role": "unionType(Microsoft.IEventSelector)",
-    "title": "Most Specific Event Selector",
+    "$role": "unionType(Microsoft.ITriggerSelector)",
+    "title": "Most Specific Trigger Selector",
     "description": "Select most specific true events with optional additional selector",
     "type": "object",
     "properties": {
         "selector": {
-            "$type": "Microsoft.IEventSelector"
+            "$type": "Microsoft.ITriggerSelector"
         }
     }
 }

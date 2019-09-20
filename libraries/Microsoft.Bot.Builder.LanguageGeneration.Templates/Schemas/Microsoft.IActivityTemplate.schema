@@ -1,0 +1,11 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
+    "title": "Microsoft ActivityTemplates",
+    "description": "Components which are IActivityTemplates",
+    "$role": "unionType",
+    "oneOf": [
+        {
+            "type": "string"
+        }
+    ]
+}

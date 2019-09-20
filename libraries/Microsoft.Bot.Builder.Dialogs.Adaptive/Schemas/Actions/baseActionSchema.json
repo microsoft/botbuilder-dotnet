@@ -1,9 +1,0 @@
-{
-  "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
-  "type": "object",
-  "allOf": [
-    {
-      "$ref": "../baseDialogSchema.json"
-    }
-  ]
-}

@@ -1,0 +1,6 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
+    "$role": "unionType",
+    "title": "Microsoft Triggers",
+    "description": "Union of components which implement the OnCondition"
+}

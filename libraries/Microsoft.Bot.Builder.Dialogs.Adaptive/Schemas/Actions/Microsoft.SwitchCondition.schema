@@ -1,62 +1,55 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
-    "$role": "unionType(Microsoft.Dialog)",
+    "$role": "unionType(Microsoft.IDialog)",
     "title": "Switch Action",
     "description": "Action which conditionally decides which action to execute next.",
     "type": "object",
     "required": [
         "condition"
     ],
-    "allOf": [
-        {
-            "$ref": "./baseActionSchema.json"
+    "properties": {
+        "condition": {
+            "$role": "expression",
+            "title": "Condition",
+            "description": "Expression to evaluate to switch on.",
+            "examples": [
+                "user.age > 3"
+            ]
         },
-        {
-            "properties": {
-                "condition": {
-                    "$role": "expression",
-                    "title": "Condition",
-                    "description": "Expression to evaluate to switch on.",
-                    "examples": [
-                        "user.age > 3"
-                    ]
-                },
-                "cases": {
-                    "type": "array",
-                    "title": "Cases",
-                    "desc": "Cases to evaluate against condition",
-                    "items": {
-                        "type": "object",
-                        "properties": {
-                            "value": {
-                                "$role": "expression",
-                                "title": "Value",
-                                "description": "Value which must match the condition property"
-                            },
-                            "actions": {
-                                "type": "array",
-                                "items": {
-                                    "$type": "Microsoft.Dialog"
-                                },
-                                "title": "Actions",
-                                "description": "Actions to execute if case is equal to condition"
-                            }
+        "cases": {
+            "type": "array",
+            "title": "Cases",
+            "desc": "Cases to evaluate against condition",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "$role": "expression",
+                        "title": "Value",
+                        "description": "Value which must match the condition property"
+                    },
+                    "actions": {
+                        "type": "array",
+                        "items": {
+                            "$type": "Microsoft.IDialog"
                         },
-                        "required": [
-                            "value",
-                            "case"
-                        ]
+                        "title": "Actions",
+                        "description": "Actions to execute if case is equal to condition"
                     }
                 },
-                "default": {
-                    "type": "array",
-                    "items": {
-                        "$type": "Microsoft.Dialog"
-                    },
-                    "title": "Default",
-                    "description": "Action to execute if no case is equal to condition"
-                }
+                "required": [
+                    "value",
+                    "case"
+                ]
             }
+        },
+        "default": {
+            "type": "array",
+            "items": {
+                "$type": "Microsoft.IDialog"
+            },
+            "title": "Default",
+            "description": "Action to execute if no case is equal to condition"
         }
-    ]
+    }
 }

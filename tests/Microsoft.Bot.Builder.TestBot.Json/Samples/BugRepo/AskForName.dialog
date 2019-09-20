@@ -1,9 +1,6 @@
 {
     "$schema": "../../app.schema",
     "$type": "Microsoft.AdaptiveDialog",
-    "inputBindings": {
-        "$name": "dialog.name"
-    },
     "defaultResultProperty": "$name",
     "triggers": [
         {
@@ -11,7 +8,7 @@
             "actions": [
                 {
                     "$type": "Microsoft.TextInput",
-                    "property": "dialog.name",
+                    "property": "$name",
                     "prompt": "what is your name?",
                     "unrecognizedPrompt": "prompt again",
                     "invalidPrompt": "that's wrong"

@@ -1,6 +1,6 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
-    "$role": "unionType(Microsoft.Dialog)",
+    "$role": "unionType(Microsoft.IDialog)",
     "title": "If Condition Action",
     "description": "Action which conditionally decides which action to execute next.",
     "type": "object",
@@ -8,37 +8,30 @@
         "condition",
         "actions"
     ],
-    "allOf": [
-        {
-            "$ref": "./baseActionSchema.json"
+    "properties": {
+        "condition": {
+            "$role": "expression",
+            "title": "Condition",
+            "description": "Expression to evaluate.",
+            "examples": [
+                "user.age > 3"
+            ]
         },
-        {
-            "properties": {
-                "condition": {
-                    "$role": "expression",
-                    "title": "Condition",
-                    "description": "Expression to evaluate.",
-                    "examples": [
-                        "user.age > 3"
-                    ]
-                },
-                "actions": {
-                    "type": "array",
-                    "items": {
-                        "$type": "Microsoft.Dialog"
-                    },
-                    "title": "Actions",
-                    "description": "Action to execute if condition is true."
-                },
-                "elseActions": {
-                    "type": "array",
-                    "items": {
-                        "$type": "Microsoft.Dialog"
-                    },
-                    "title": "Else Actions",
-                    "description": "Action to execute if condition is false."
-                }
-            }
+        "actions": {
+            "type": "array",
+            "items": {
+                "$type": "Microsoft.IDialog"
+            },
+            "title": "Actions",
+            "description": "Action to execute if condition is true."
+        },
+        "elseActions": {
+            "type": "array",
+            "items": {
+                "$type": "Microsoft.IDialog"
+            },
+            "title": "Else Actions",
+            "description": "Action to execute if condition is false."
         }
-    ]
+    }
 }
