@@ -10,7 +10,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
     /// Defines a Expression or value for a property
     /// </summary>
     /// <typeparam name="T">type of object the expression should evaluate to</typeparam>
-    public class ExpressionProperty<T>
+    public class ExpressionProperty<T> : IExpressionProperty
     {
         protected Expression expression;
 
@@ -25,12 +25,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
 
         public ExpressionProperty(object value)
         {
-            this.Value = ConvertObject(value);
+            SetValue(value);
         }
 
         public ExpressionProperty(T value)
         {
             this.Value = value;
+        }
+
+        public void SetValue(object value)
+        {
+            if (value is string expression)
+            {
+                this.Expression = expression;
+            }
+            else
+            {
+                this.Value = ConvertObject(value);
+            }
         }
 
         /// <summary>
@@ -63,8 +75,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
             return ConvertObject(result);
         }
 
+        /// <summary>
+        /// Convert raw object to desired value type
+        /// </summary>
+        /// <remarks>
+        /// This method is called whenever an object is fected via expression or is deserialized from raw text.
+        /// </remarks>
+        /// <param name="result"></param>
+        /// <returns></returns>
         protected virtual T ConvertObject(object result)
         {
+            if (result is T)
+            {
+                return (T)result;
+            }
+
             return JObject.FromObject(result).ToObject<T>();
         }
     }

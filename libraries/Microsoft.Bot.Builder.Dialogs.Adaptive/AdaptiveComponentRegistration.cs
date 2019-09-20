@@ -2,7 +2,6 @@
 using Microsoft.Bot.Builder.AI.Luis;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Converters;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Choices;
@@ -112,7 +111,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         public override IEnumerable<JsonConverter> GetConverters(Source.IRegistry registry, IRefResolver refResolver, Stack<string> paths)
         {
             yield return new InterfaceConverter<OnCondition>(refResolver, registry, paths);
-            yield return new ChoiceSetConverter();
+            yield return new ExpressionPropertyConverter<ChoiceSet>();
         }
     }
 }

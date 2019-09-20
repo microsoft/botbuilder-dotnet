@@ -5,8 +5,8 @@
 
 using System.Collections.Generic;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Converters;
 using Microsoft.Bot.Builder.Dialogs.Choices;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Converters;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -110,7 +110,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             });
             var settings = new JsonSerializerSettings()
             {
-                Converters = new List<JsonConverter>() { new ChoiceSetConverter() }
+                Converters = new List<JsonConverter>() { new ExpressionPropertyConverter<ChoiceSet>() }
             };
 
             var bar = JsonConvert.DeserializeObject<Bar>(json, settings);
@@ -140,7 +140,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             });
             var settings = new JsonSerializerSettings()
             {
-                Converters = new List<JsonConverter>() { new ChoiceSetConverter() }
+                Converters = new List<JsonConverter>() { new ExpressionPropertyConverter<ChoiceSet>() }
             };
 
             var bar = JsonConvert.DeserializeObject<Bar>(json, settings);
@@ -170,7 +170,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             });
             var settings = new JsonSerializerSettings()
             {
-                Converters = new List<JsonConverter>() { new ChoiceSetConverter() }
+                Converters = new List<JsonConverter>() { new ExpressionPropertyConverter<ChoiceSet>() }
             };
 
             var bar = JsonConvert.DeserializeObject<Bar>(json, settings);

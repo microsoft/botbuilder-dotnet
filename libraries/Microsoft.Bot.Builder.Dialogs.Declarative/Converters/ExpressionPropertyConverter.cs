@@ -12,25 +12,30 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
     /// <summary>
     /// Converter which allows json to be expression to object or static object
     /// </summary>
-    /// <typeparam name="T">type of property</typeparam>
+    /// <typeparam name="T">The property type to construct which is IExpressionProperty</typeparam>
     public class ExpressionPropertyConverter<T> : JsonConverter
+        where T : IExpressionProperty, new()
     {
         public override bool CanRead => true;
 
         public override bool CanConvert(Type objectType)
         {
-            return typeof(ExpressionProperty<T>) == objectType;
+            return typeof(T) == objectType;
         }
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
             if (reader.ValueType == typeof(string))
             {
-                return new ExpressionProperty<T>((string)reader.Value);
+                var prop = new T();
+                prop.SetValue((string)reader.Value);
+                return prop;
             }
             else
             {
-                return new ExpressionProperty<T>(JToken.Load(reader));
+                var prop = new T();
+                prop.SetValue(JToken.Load(reader));
+                return prop;
             }
         }
 
@@ -39,4 +44,5 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
             serializer.Serialize(writer, value);
         }
     }
+
 }

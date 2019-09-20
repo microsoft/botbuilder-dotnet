@@ -107,7 +107,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
             });
             var settings = new JsonSerializerSettings()
             {
-                Converters = new List<JsonConverter>() { new ExpressionPropertyConverter<Foo>() }
+                Converters = new List<JsonConverter>() { new ExpressionPropertyConverter<ExpressionProperty<Foo>>() }
             };
 
             var bar = JsonConvert.DeserializeObject<Bar>(json, settings);
@@ -127,7 +127,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
 
             var json = JsonConvert.SerializeObject(new
             {
-                Foo = new 
+                Foo = new
                 {
                     Name = "Test",
                     Age = 22
@@ -135,7 +135,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
             });
             var settings = new JsonSerializerSettings()
             {
-                Converters = new List<JsonConverter>() { new ExpressionPropertyConverter<Foo>() }
+                Converters = new List<JsonConverter>() { new ExpressionPropertyConverter<ExpressionProperty<Foo>>() }
             };
 
             var bar = JsonConvert.DeserializeObject<Bar>(json, settings);
