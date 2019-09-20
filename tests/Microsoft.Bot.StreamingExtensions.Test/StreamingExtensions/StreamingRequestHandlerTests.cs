@@ -24,28 +24,28 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.StreamingExtensions
         [TestMethod]
         public void StreamingRequestHandler_NullOnTurnError_Ok()
         {
-            var s = new DirectLineAdapter(null, new MockBot(), null);
+            var s = new StreamingRequestHandler(null, new MockBot());
             Assert.IsNotNull(s);
         }
 
         [TestMethod]
         public void StreamingRequestHandler_NullMiddleware_Ok()
         {
-            var s = new DirectLineAdapter(null, new MockBot(), null);
+            var s = new StreamingRequestHandler(null, new MockBot(), null);
             Assert.IsNotNull(s);
         }
 
         [TestMethod]
         public void StreamingRequestHandler_UserAgentSet()
         {
-            var s = new DirectLineAdapter(null, new MockBot(), null);
+            var s = new StreamingRequestHandler(null, new MockBot(), null);
             Assert.IsNotNull(s._userAgent);
         }
 
         [TestMethod]
         public void StreamingRequestHandler_UserAgent_Matches_Standard_Format()
         {
-            var s = new DirectLineAdapter(null, new MockBot(), null);
+            var s = new StreamingRequestHandler(null, new MockBot(), null);
 
             var client = new HttpClient();
             var userAgentHeader = client.DefaultRequestHeaders.UserAgent;
@@ -89,7 +89,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.StreamingExtensions
         [TestMethod]
         public async Task StreamingRequestHandler_ProcessRequestAsync_NoVerb_ReturnsBadRequest()
         {
-            var s = new DirectLineAdapter(null, new MockBot());
+            var s = new StreamingRequestHandler(null, new MockBot());
             s._transportServer = new MockStreamingTransportServer();
 
             var response = await s.ProcessRequestAsync(new ReceiveRequest() { Path = "/api/messages" }, null);
@@ -100,7 +100,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.StreamingExtensions
         [TestMethod]
         public async Task StreamingRequestHandler_ProcessRequestAsync_NoPath_ReturnsBadRequest()
         {
-            var s = new DirectLineAdapter(null, new MockBot());
+            var s = new StreamingRequestHandler(null, new MockBot());
             s._transportServer = new MockStreamingTransportServer();
 
             var response = await s.ProcessRequestAsync(new ReceiveRequest() { Verb = "POST" }, null);
@@ -111,7 +111,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.StreamingExtensions
         [TestMethod]
         public async Task StreamingRequestHandler_ProcessRequestAsync_BadVerb_ReturnsNotFound()
         {
-            var s = new DirectLineAdapter(null, new MockBot());
+            var s = new StreamingRequestHandler(null, new MockBot());
             s._transportServer = new MockStreamingTransportServer();
 
             var response = await s.ProcessRequestAsync(new ReceiveRequest() { Verb = "Delete", Path = "/api/messages" }, null);
@@ -122,7 +122,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.StreamingExtensions
         [TestMethod]
         public async Task StreamingRequestHandler_ProcessRequestAsync_BadPath_ReturnsNotFound()
         {
-            var s = new DirectLineAdapter(null, new MockBot());
+            var s = new StreamingRequestHandler(null, new MockBot());
             s._transportServer = new MockStreamingTransportServer();
 
             var response = await s.ProcessRequestAsync(new ReceiveRequest() { Verb = "Post", Path = "/api/messagesV3" }, null);
@@ -133,7 +133,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.StreamingExtensions
         [TestMethod]
         public async Task StreamingRequestHandler_ProcessRequestAsync_GetVersion()
         {
-            var s = new DirectLineAdapter(null, new MockBot());
+            var s = new StreamingRequestHandler(null, new MockBot());
             s._transportServer = new MockStreamingTransportServer();
 
             var response = await s.ProcessRequestAsync(new ReceiveRequest() { Verb = "GET", Path = "/api/version" }, null);
@@ -148,7 +148,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.StreamingExtensions
         [TestMethod]
         public async Task StreamingRequestHandler_ProcessRequestAsync_PostMessages_NoActivity_BadRequest()
         {
-            var s = new DirectLineAdapter(null, new MockBot());
+            var s = new StreamingRequestHandler(null, new MockBot());
             s._transportServer = new MockStreamingTransportServer();
 
             var response = await s.ProcessRequestAsync(new ReceiveRequest() { Verb = "POST", Path = "/api/messages" }, null);
@@ -159,7 +159,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.StreamingExtensions
         [TestMethod]
         public async Task StreamingRequestHandler_ProcessRequestAsync_PostMessages_WithActivity_OK()
         {
-            var s = new DirectLineAdapter(null, new MockBot());
+            var s = new StreamingRequestHandler(null, new MockBot());
             s._transportServer = new MockStreamingTransportServer();
 
             var request = new ReceiveRequest() { Verb = "POST", Path = "/api/messages" };
@@ -186,7 +186,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.StreamingExtensions
         [TestMethod]
         public async Task StreamingRequestHandler_ProcessRequestAsync_PostMessages_WithBotError_InternalServerError()
         {
-            var s = new DirectLineAdapter(null, new MockBot() { ThrowDuringOnTurnAsync = true });
+            var s = new StreamingRequestHandler(null, new MockBot() { ThrowDuringOnTurnAsync = true });
             s._transportServer = new MockStreamingTransportServer();
 
             var request = new ReceiveRequest() { Verb = "POST", Path = "/api/messages" };
@@ -214,7 +214,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.StreamingExtensions
         public async Task StreamingRequestHandler_ProcessRequestAsync_PostMessages_WithOneBotError_Recovers()
         {
             var bot = new MockBot() { ThrowDuringOnTurnAsync = true };
-            var s = new DirectLineAdapter(null, bot);
+            var s = new StreamingRequestHandler(null, bot);
             s._transportServer = new MockStreamingTransportServer();
 
             var request = new ReceiveRequest() { Verb = "POST", Path = "/api/messages" };
