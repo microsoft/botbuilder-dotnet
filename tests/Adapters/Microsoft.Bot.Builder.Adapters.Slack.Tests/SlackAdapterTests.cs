@@ -451,7 +451,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Tests
         }
 
         [Fact]
-        public async Task ContinueConversationAsyncShouldFailWithBot()
+        public async Task ContinueConversationAsyncShouldFailWithNullBot()
         {
             var options = new Mock<SlackAdapterOptions>();
             options.Object.VerificationToken = "VerificationToken";
