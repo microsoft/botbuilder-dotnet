@@ -2,21 +2,21 @@
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
     "$role": "unionType(Microsoft.IDialog)",
     "type": "object",
-    "title": "Replace Dialog",
-    "description": "This is a action which replaces the current dialog with the target dialog",
+    "title": "Replace dialog",
+    "description": "Replace current dialog with another dialog.",
     "properties": {
         "dialog": {
             "$type": "Microsoft.IDialog",
-            "title": "Dialog",
-            "description": "This is the dialog to switch to."
+            "title": "Dialog name",
+            "description": "Current dialog will be replaced by this dialog."
         },
         "options": {
             "type": "object",
-            "title": "Options binding",
-            "description": "Bindings to configure the options object to pass to the dialog.",
+            "title": "Value",
+            "description": "One or more values that are passed to the replacing dialog.",
             "additionalProperties": {
                 "type": "string",
-                "title": "Options"
+                "title": "Value"
             }
         }
     }

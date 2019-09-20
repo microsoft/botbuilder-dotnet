@@ -1,8 +1,8 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
     "$role": "unionType(Microsoft.IDialog)",
-    "title": "If Condition Action",
-    "description": "Action which conditionally decides which action to execute next.",
+    "title": "If-else branch",
+    "description": "Two-way branch the conversation flow based on a condition.",
     "type": "object",
     "required": [
         "condition",
@@ -23,15 +23,15 @@
                 "$type": "Microsoft.IDialog"
             },
             "title": "Actions",
-            "description": "Action to execute if condition is true."
+            "description": "Actions to execute if condition is true."
         },
         "elseActions": {
             "type": "array",
             "items": {
                 "$type": "Microsoft.IDialog"
             },
-            "title": "Else Actions",
-            "description": "Action to execute if condition is false."
+            "title": "Else",
+            "description": "Actions to execute if condition is false."
         }
     }
 }

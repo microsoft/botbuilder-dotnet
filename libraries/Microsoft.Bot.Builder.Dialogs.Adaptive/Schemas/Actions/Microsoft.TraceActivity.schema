@@ -1,8 +1,8 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
     "$role": "unionType(Microsoft.IDialog)",
-    "title": "Trace Activity Action",
-    "description": "This is a action which sends an TraceActivity to the transcript",
+    "title": "Send a TraceActivity",
+    "description": "Send a trace activity",
     "type": "object",
     "properties": {
         "name": {
@@ -12,13 +12,13 @@
         },
         "valueType": {
             "type": "string",
-            "title": "Value Type",
-            "description": "Value type of the trace activity"
+            "title": "Value type",
+            "description": "Type of value"
         },
         "value": {
             "$role": "expression",
             "title": "Value",
-            "description": "Property path to memory object to send as the value of the trace activity"
+            "description": "Named memory scope to send as the value of the trace activity."
         }
     }
 }

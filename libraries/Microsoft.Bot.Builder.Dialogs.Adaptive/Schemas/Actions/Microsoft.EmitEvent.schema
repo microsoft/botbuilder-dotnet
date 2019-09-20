@@ -1,16 +1,16 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
     "$role": "unionType(Microsoft.IDialog)",
-    "title": "Emit Event Action",
-    "description": "This is a action which allows you to emit an event",
+    "title": "Emit event",
+    "description": "Emit an event. Capture this event with a trigger.",
     "type": "object",
     "required": [
         "eventName"
     ],
     "properties": {
         "eventName": {
-            "title": "Event Name",
-            "description": "The name of event to emit",
+            "title": "Event name",
+            "description": "Name of the event to emit.",
             "anyOf": [
                 {
                     "enum": [
@@ -35,14 +35,14 @@
         },
         "eventValue": {
             "type": "object",
-            "title": "Event Value",
-            "description": "Optional value to emit along with the event",
+            "title": "Event value",
+            "description": "Value to emit with the event (optional).",
             "additionalProperties": true
         },
         "bubbleEvent": {
             "type": "boolean",
-            "title": "Bubble Event",
-            "description": "If true this event should propagate to parent dialogs"
+            "title": "Bubble event",
+            "description": "If true this event is passed on to parent dialogs."
         }
     }
 }

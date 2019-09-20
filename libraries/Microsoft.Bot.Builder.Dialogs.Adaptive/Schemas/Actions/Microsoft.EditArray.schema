@@ -1,8 +1,8 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
     "$role": "unionType(Microsoft.IDialog)",
-    "title": "Edit Array Action",
-    "description": "This is a action which allows you to modify an array in memory",
+    "title": "Edit array",
+    "description": "Modify an array in memory",
     "type": "object",
     "required": [
         "changeType",
@@ -11,8 +11,8 @@
     "properties": {
         "changeType": {
             "type": "string",
-            "title": "Change Type",
-            "description": "The array operation to perform",
+            "title": "Type of change",
+            "description": "Type of change to the array in memory.",
             "enum": [
                 "Push",
                 "Pop",
@@ -23,20 +23,22 @@
         },
         "itemsProperty": {
             "$role": "expression",
-            "title": "Items Property",
-            "description": "Memory expression of the collection of items to manipulate."
+            "title": "Items property",
+            "description": "Named memory scope that holds the array to update."
         },
         "resultProperty": {
             "$role": "expression",
             "title": "Result Property",
-            "description": "The path expression to store the result of the action."
+            "description": "Named memory scope to store the result of this action."
         },
         "value": {
             "$role": "expression",
-            "title": "Value of the Item",
-            "description": "Expression to evaluate.",
+            "title": "Value",
+            "description": "New value or expression.",
             "examples": [
-                "dialog.todo"
+                "'milk'",
+                "dialog.favColor",
+                "dialog.favColor == 'red'"
             ]
         }
     }

@@ -1,8 +1,8 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
     "$role": "unionType(Microsoft.IDialog)",
-    "title": "Log Action",
-    "description": "This is a action which writes to console.log and optional creates a TraceActivity around a text binding",
+    "title": "Log to console",
+    "description": "Log a message to the console and send a TraceActivity (optional).",
     "type": "object",
     "required": [
         "text"
@@ -11,12 +11,12 @@
         "text": {
             "type": "string",
             "title": "Text",
-            "description": "LG Expression to write to the log"
+            "description": "Information to log."
         },
         "traceActivity": {
             "type": "boolean",
             "title": "Send Trace Activity",
-            "description": "Set to true to also create a TraceActivity with the log text",
+            "description": "If true, automatically sends a TraceActivity (view in Bot Framework Emulator).",
             "default": false
         }
     }

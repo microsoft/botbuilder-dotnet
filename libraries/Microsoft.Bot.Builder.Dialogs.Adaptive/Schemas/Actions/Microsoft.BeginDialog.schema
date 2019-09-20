@@ -1,30 +1,33 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
     "$role": "unionType(Microsoft.IDialog)",
-    "title": "Begin Dialog",
-    "description": "Action which begins another dialog (and when that dialog is done, it will return the caller).",
+    "title": "Call a dialog",
+    "description": "Call another dialog.",
     "type": "object",
     "properties": {
         "dialog": {
             "$type": "Microsoft.IDialog",
-            "title": "Dialog",
-            "description": "This is the dialog to call."
+            "title": "Dialog name",
+            "description": "Name of the dialog to call.",
+            "examples": [
+                "AddToDoDialog"
+            ]
         },
         "options": {
             "type": "object",
-            "title": "Options binding",
-            "description": "Bindings to configure the options object to pass to the dialog.",
+            "title": "Value",
+            "description": "One or more values that are passed to the dialog that is called.",
             "additionalProperties": {
                 "type": "string",
-                "title": "Options"
+                "title": "Value"
             }
         },
         "resultProperty": {
             "$role": "expression",
             "title": "Property",
-            "description": "The property to store the result in",
+            "description": "Named memory scope to store any value returned by the dialog that is called.",
             "examples": [
-                "user.name"
+                "dialog.userName"
             ]
         }
     }

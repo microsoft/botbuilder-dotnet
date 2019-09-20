@@ -1,7 +1,7 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
     "$role": "unionType(Microsoft.IDialog)",
-    "title": "Debugger Break Action",
+    "title": "Debugger break",
     "description": "If debugger is attached, do a debugger break at this point",
     "type": "object"
 }
