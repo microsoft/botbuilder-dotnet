@@ -2,12 +2,15 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Specialized;
+using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Schema;
+using Newtonsoft.Json;
 using SlackAPI;
 using SlackAPI.RPCMessages;
 
@@ -17,6 +20,9 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
 {
     public class SlackClientWrapper
     {
+        private const string PostMessageUrl = "https://slack.com/api/chat.postMessage";
+        private const string PostEphemeralMessageUrl = "https://slack.com/api/chat.postEphemeral";
+
         private SlackTaskClient _api;
 
         /// <summary>
@@ -709,6 +715,40 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
 
                 return hash == retrievedSignature;
             }
+        }
+
+        /// <summary>
+        /// Posts a message to Slack.
+        /// </summary>
+        /// <param name="message">The message to be posted.</param>
+        /// <param name="cancellationToken">A cancellation token for the task.</param>
+        /// <returns>The <see cref="SlackResponse"/> to the posting operation.</returns>
+        public virtual async Task<SlackResponse> PostMessageAsync(NewSlackMessage message, CancellationToken cancellationToken)
+        {
+            if (message == null)
+            {
+                return null;
+            }
+
+            var data = new NameValueCollection
+            {
+                ["token"] = Options.BotToken,
+                ["channel"] = message.channel,
+                ["text"] = message.text,
+                ["thread_ts"] = message.ThreadTS,
+            };
+
+            byte[] response;
+            using (var client = new WebClient())
+            {
+                var url = !string.IsNullOrWhiteSpace(message.Ephemeral)
+                    ? PostEphemeralMessageUrl
+                    : PostMessageUrl;
+
+                response = await client.UploadValuesTaskAsync(url, "POST", data).ConfigureAwait(false);
+            }
+
+            return JsonConvert.DeserializeObject<SlackResponse>(Encoding.UTF8.GetString(response));
         }
     }
 }
