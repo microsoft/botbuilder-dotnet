@@ -14,7 +14,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     public class StaticChecker
     {
         private readonly ExpressionEngine expressionEngine;
-        private readonly Regex expressionRecognizeRegex = new Regex(@"@?(?<!\\)\{.+?(?<!\\)\}", RegexOptions.Compiled);
 
         public StaticChecker(ExpressionEngine expressionEngine = null)
         {
@@ -109,6 +108,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             private string currentSource = string.Empty;
             private ExpressionEngine baseExpressionEngine;
+            private readonly Regex expressionRecognizeRegex = new Regex(@"@?(?<!\\)\{.+?(?<!\\)\}", RegexOptions.Compiled);
 
             private IExpressionParser _expressionParser;
 
