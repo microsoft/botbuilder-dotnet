@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Net;
 using System.Security.Cryptography;
@@ -18,6 +19,7 @@ using Thrzn41.WebexTeams.Version1;
 
 namespace Microsoft.Bot.Builder.Adapters.Webex
 {
+    [ExcludeFromCodeCoverage]
     public class WebexClientWrapper
     {
         private const string WebhookUrl = "https://api.ciscospark.com/v1/webhooks";
