@@ -1,7 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Schema.Tests
@@ -45,10 +48,65 @@ namespace Microsoft.Bot.Schema.Tests
         }
 
         [TestMethod]
+        public void RemoveRecipientMention_forTeams()
+        {
+            var activity = CreateActivity();
+            activity.Text = "<at>firstName</at> lastName\n";
+            var expectedStrippedName = "lastName";
+
+            var mention = new Mention
+            {
+                Mentioned = new ChannelAccount()
+                {
+                    Id = activity.Recipient.Id,
+                    Name = "firstName",
+                },
+                Text = null,
+                Type = "mention",
+            };
+            var lst = new List<Entity>();
+
+            var output = JsonConvert.SerializeObject(mention);
+            var entity = JsonConvert.DeserializeObject<Entity>(output);
+            lst.Add(entity);
+            activity.Entities = lst;
+
+            var strippedActivityText = activity.RemoveRecipientMention();
+            Assert.AreEqual(strippedActivityText, expectedStrippedName);
+        }
+
+        [TestMethod]
+        public void RemoveRecipientMention_forNonTeamsScenario()
+        {
+            var activity = CreateActivity();
+            activity.Text = "<at>firstName</at> lastName\n";
+            var expectedStrippedName = "lastName";
+
+            var mention = new Mention
+            {
+                Mentioned = new ChannelAccount()
+                {
+                    Id = activity.Recipient.Id,
+                    Name = "<at>firstName</at>",
+                },
+                Text = "<at>firstName</at>",
+                Type = "mention",
+            };
+            var lst = new List<Entity>();
+
+            var output = JsonConvert.SerializeObject(mention);
+            var entity = JsonConvert.DeserializeObject<Entity>(output);
+            lst.Add(entity);
+            activity.Entities = lst;
+
+            var strippedActivityText = activity.RemoveRecipientMention();
+            Assert.AreEqual(strippedActivityText, expectedStrippedName);
+        }
+
+        [TestMethod]
         public void ApplyConversationReference_isIncoming()
         {
             var activity = CreateActivity();
-
             var conversationReference = new ConversationReference
             {
                 ChannelId = "cr_123",

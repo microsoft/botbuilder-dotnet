@@ -4,10 +4,13 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
+using Microsoft.Recognizers.Text;
 using Microsoft.Recognizers.Text.Number;
+using Microsoft.Recognizers.Text.NumberWithUnit;
 using static Microsoft.Recognizers.Text.Culture;
 
 namespace Microsoft.Bot.Builder.Dialogs
@@ -102,11 +105,19 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 var message = turnContext.Activity.AsMessageActivity();
                 var culture = turnContext.Activity.Locale ?? DefaultLocale ?? English;
-                var results = NumberRecognizer.RecognizeNumber(message.Text, culture, NumberOptions.SuppressExtendedTypes);
+                var results = RecognizeNumberWithUnit(message.Text, culture);
                 if (results.Count > 0)
                 {
                     // Try to parse value based on type
-                    var text = results[0].Resolution["value"].ToString();
+                    string text = string.Empty;
+
+                    // Try to parse value based on type
+                    var valueResolution = results[0].Resolution["value"];
+                    if (valueResolution != null)
+                    {
+                        text = valueResolution.ToString();
+                    }
+
                     if (typeof(T) == typeof(float))
                     {
                         if (float.TryParse(text, NumberStyles.Any, new CultureInfo(culture), out var value))
@@ -151,6 +162,29 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             return Task.FromResult(result);
+        }
+
+        private static List<ModelResult> RecognizeNumberWithUnit(string utterance, string culture)
+        {
+            var number = NumberRecognizer.RecognizeNumber(utterance, culture, NumberOptions.SuppressExtendedTypes);
+
+            if (number.Any())
+            {
+                // Result when it matches with a number recognizer
+                return number;
+            }
+            else
+            {
+                // Analyze every option for numberWithUnit
+                var results = new List<List<ModelResult>>();
+                results.Add(NumberWithUnitRecognizer.RecognizeCurrency(utterance, culture));
+                results.Add(NumberWithUnitRecognizer.RecognizeAge(utterance, culture));
+                results.Add(NumberWithUnitRecognizer.RecognizeTemperature(utterance, culture));
+                results.Add(NumberWithUnitRecognizer.RecognizeDimension(utterance, culture));
+
+                // Filter the options that returned nothing and return the one that matched
+                return results.FirstOrDefault(r => r.Any()) ?? new List<ModelResult>();
+            }
         }
     }
 }

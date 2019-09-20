@@ -20,6 +20,9 @@
     <AssemblyOriginatorKeyFile>..\..\..\build\35MSSharedLib1024.snk</AssemblyOriginatorKeyFile>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Builder.Adapters.Twilio.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(SignAssembly)'=='true' ">
     <DefineConstants>SIGNASSEMBLY</DefineConstants>
   </PropertyGroup>
 
