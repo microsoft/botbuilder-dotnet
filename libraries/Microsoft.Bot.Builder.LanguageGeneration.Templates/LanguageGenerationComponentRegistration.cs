@@ -18,7 +18,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     {
         public override IEnumerable<TypeRegistration> GetTypes()
         {
-            yield return new TypeRegistration<ResourceMultiLanguageGenerator>("DefaultLanguageGenerator") { CustomDeserializer = new LanguageGeneratorLoader() };
             yield return new TypeRegistration<TextTemplate>("Microsoft.TextTemplate");
             yield return new TypeRegistration<ActivityTemplate>("Microsoft.ActivityTemplate");
             yield return new TypeRegistration<StaticActivityTemplate>("Microsoft.StaticActivityTemplate");
