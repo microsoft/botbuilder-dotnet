@@ -26,12 +26,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 #pragma warning restore SA1310 // Field should not contain underscore.
 
         /// <summary>
-        /// gets or sets If set to true this will always prompt the user regardless if you already have the value or not.
+        /// Gets or sets a value indicating whether the input should always prompt the user regardless of there being a value or not.
         /// </summary>
         public bool AlwaysPrompt { get; set; } = false;
 
         /// <summary>
-        /// gets or sets intteruption policy.
+        /// Gets or sets intteruption policy.
         /// </summary>
         public AllowInterruptions AllowInterruptions { get; set; } = AllowInterruptions.NotRecognized;
 
@@ -116,17 +116,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                 return Dialog.EndOfTurn;
             }
 
-            var stepCount = dc.State.GetValue<int>(TurnPath.STEPCOUNT, () => 0);
-
-            if (stepCount > 0)
-            {
-                return await this.PromptUser(dc, InputState.Missing).ConfigureAwait(false);
-            }
-
+            var interrupted = dc.State.GetValue<bool>(TurnPath.INTERRUPTED, () => false);
             var turnCount = dc.State.GetValue<int>(TURN_COUNT_PROPERTY, () => 0);
 
             // Perform base recognition
-            var state = await this.RecognizeInput(dc);
+            var state = interrupted ? InputState.Missing : await this.RecognizeInput(dc);
 
             if (state == InputState.Valid)
             {
