@@ -10,6 +10,9 @@
     <SignAssembly>true</SignAssembly>
     <DelaySign>true</DelaySign>
     <AssemblyOriginatorKeyFile>..\..\..\build\35MSSharedLib1024.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(SignAssembly)'=='true' ">
     <DefineConstants>SIGNASSEMBLY</DefineConstants>
   </PropertyGroup>
 
