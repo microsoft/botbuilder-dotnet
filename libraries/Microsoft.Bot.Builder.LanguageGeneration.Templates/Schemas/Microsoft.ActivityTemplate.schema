@@ -1,9 +1,16 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
+    "$role": "unionType(Microsoft.IActivityTemplate)",
     "title": "Microsoft ActivityTemplate",
-    "oneOf": [
-        {
+    "type": "object",
+    "properties": {
+        "template": {
+            "title": "Template",
+            "Description": "Language Generator template to use to create the activity",
             "type": "string"
         }
+    },
+    "required": [
+        "template"
     ]
 }

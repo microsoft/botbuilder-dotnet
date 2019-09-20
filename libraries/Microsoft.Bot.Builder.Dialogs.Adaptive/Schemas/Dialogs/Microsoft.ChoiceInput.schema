@@ -1,12 +1,12 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
-    "$role": "unionType(Microsoft.Dialog)",
+    "$role": "unionType(Microsoft.IDialog)",
     "title": "ChoiceInput Dialog",
     "description": "This represents a dialog which gathers a choice responses",
     "type": "object",
     "allOf": [
         {
-            "$ref": "./baseInputSchema.json"
+            "$ref": "./Microsoft.InputDialog.json#"
         },
         {
             "properties": {
@@ -20,11 +20,37 @@
                     "description": "The output format.",
                     "default": "value"
                 },
+                "choicesProperty": {
+                    "type": "string",
+                    "title": "Choices Property",
+                    "description": "expression collection of choices to present to user."
+                },
                 "choices": {
                     "type": "array",
                     "items": [
                         {
-                            "$ref": "#/definitions/choice"
+                            "title": "Choice",
+                            "type": "object",
+                            "properties": {
+                                "value": {
+                                    "type": "string",
+                                    "title": "Value",
+                                    "description": "the value to return when selected."
+                                },
+                                "action": {
+                                    "type": "object",
+                                    "title": "Action",
+                                    "description": "Card action for the choice"
+                                },
+                                "synonyms": {
+                                    "type": "array",
+                                    "title": "Synonyms",
+                                    "description": "the list of synonyms to recognize in addition to the value. This is optional.",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
                         }
                     ]
                 },
@@ -102,33 +128,5 @@
                 }
             }
         }
-    ],
-    "definitions": {
-        "choice": {
-            "type": "object",
-            "properties": {
-                "value": {
-                    "type": "string",
-                    "title": "Value",
-                    "description": "the value to return when selected."
-                },
-                "action": {
-                    "$ref": "#/definitions/cardAction",
-                    "title": "Action",
-                    "description": "Card action for the choice"
-                },
-                "synonyms": {
-                    "type": "array",
-                    "title": "Synonyms",
-                    "description": "the list of synonyms to recognize in addition to the value. This is optional.",
-                    "items": {
-                        "type": "string"
-                    }
-                }
-            }
-        },
-        "cardAction": {
-            "type": "object"
-        }
-    }
+    ]
 }

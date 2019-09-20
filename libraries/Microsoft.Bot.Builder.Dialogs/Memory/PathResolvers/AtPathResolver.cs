@@ -28,6 +28,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.PathResolvers
             {
                 return base.TransformPath(path);
             }
+
             return path;
         }
     }

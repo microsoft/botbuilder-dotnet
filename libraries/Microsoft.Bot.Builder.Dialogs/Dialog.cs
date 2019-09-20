@@ -16,6 +16,10 @@ namespace Microsoft.Bot.Builder.Dialogs
     [DebuggerDisplay("{Id}")]
     public abstract class Dialog
     {
+        /// <summary>
+        /// A <see cref="DialogTurnResult"/> that indicates that the current dialog is still
+        /// active and waiting for input from the user next turn.
+        /// </summary>
         public static readonly DialogTurnResult EndOfTurn = new DialogTurnResult(DialogTurnStatus.Waiting);
 
         private IBotTelemetryClient _telemetryClient;
@@ -54,17 +58,10 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// Gets set of tags assigned to the dialog.
+        /// Gets or sets the <see cref="IBotTelemetryClient"/> to use for logging.
         /// </summary>
-        /// <value>
-        /// Set of tags assigned to the dialog.
-        /// </value>
-        public List<string> Tags { get; private set; } = new List<string>();
-
-        /// <summary>
-        /// Gets or sets the telemetry client for logging events.
-        /// </summary>
-        /// <value>The Telemetry Client logger.</value>
+        /// <value>The <see cref="IBotTelemetryClient"/> to use for logging.</value>
+        /// <seealso cref="DialogSet.TelemetryClient"/>
         public virtual IBotTelemetryClient TelemetryClient
         {
             get
@@ -79,29 +76,33 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// Method called when a new dialog has been pushed onto the stack and is being activated.
+        /// Called when the dialog is started and pushed onto the dialog stack.
         /// </summary>
-        /// <param name="dc">The dialog context for the current turn of conversation.</param>
-        /// <param name="options">(Optional) additional argument(s) to pass to the dialog being started.</param>
+        /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
+        /// <param name="options">Optional, initial information to pass to the dialog.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         /// <remarks>If the task is successful, the result indicates whether the dialog is still
         /// active after the turn has been processed by the dialog.</remarks>
+        /// <seealso cref="DialogContext.BeginDialogAsync(string, object, CancellationToken)"/>
         public abstract Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
-        /// Method called when an instance of the dialog is the "current" dialog and the
-        /// user replies with a new activity. The dialog will generally continue to receive the user's
-        /// replies until it calls either `EndDialogAsync()` or `BeginDialogAsync()`.
-        /// If this method is NOT implemented then the dialog will automatically be ended when the user replies.
+        /// Called when the dialog is _continued_, where it is the active dialog and the
+        /// user replies with a new activity.
         /// </summary>
-        /// <param name="dc">The dialog context for the current turn of conversation.</param>
+        /// <param name="dc">The <see cref="DialogContext"/> for the current turn of conversation.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         /// <remarks>If the task is successful, the result indicates whether the dialog is still
-        /// active after the turn has been processed by the dialog.</remarks>
+        /// active after the turn has been processed by the dialog. The result may also contain a
+        /// return value.
+        ///
+        /// If this method is *not* overridden, the dialog automatically ends when the user replies.
+        /// </remarks>
+        /// <seealso cref="DialogContext.ContinueDialogAsync(CancellationToken)"/>
         public virtual async Task<DialogTurnResult> ContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default(CancellationToken))
         {
             // By default just end the current dialog.
@@ -109,20 +110,26 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// Method called when an instance of the dialog is being returned to from another
-        /// dialog that was started by the current instance using `BeginDialogAsync()`.
-        /// If this method is NOT implemented then the dialog will be automatically ended with a call
-        /// to `EndDialogAsync()`. Any result passed from the called dialog will be passed
-        /// to the current dialog's parent.
+        /// Called when a child dialog completed this turn, returning control to this dialog.
         /// </summary>
         /// <param name="dc">The dialog context for the current turn of the conversation.</param>
-        /// <param name="reason">An enum indicating why the dialog resumed.</param>
-        /// <param name="result">(Optional) value returned from the dialog that was called. The type of the value returned is dependent on the dialog that was called.</param>
+        /// <param name="reason">Reason why the dialog resumed.</param>
+        /// <param name="result">Optional, value returned from the dialog that was called. The type
+        /// of the value returned is dependent on the child dialog.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        /// <remarks>If the task is successful, the result indicates whether the dialog is still
-        /// active after the turn has been processed by the dialog.</remarks>
+        /// <remarks>If the task is successful, the result indicates whether this dialog is still
+        /// active after this dialog turn has been processed.
+        ///
+        /// Generally, the child dialog was started with a call to
+        /// <see cref="BeginDialogAsync(DialogContext, object, CancellationToken)"/>. However, if the
+        /// <see cref="DialogContext.ReplaceDialogAsync(string, object, CancellationToken)"/> method
+        /// is called, the logical child dialog may be different than the original.
+        ///
+        /// If this method is *not* overridden, the dialog automatically ends when the user replies.
+        /// </remarks>
+        /// <seealso cref="DialogContext.EndDialogAsync(object, CancellationToken)"/>
         public virtual async Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (result is CancellationToken)
@@ -135,19 +142,29 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// Method called when the dialog has been requested to re-prompt the user for input.
+        /// Called when the dialog should re-prompt the user for input.
         /// </summary>
-        /// <param name="turnContext">Context for the current turn of conversation with the user.</param>
-        /// <param name="instance">The instance of the dialog on the stack.</param>
+        /// <param name="turnContext">The context object for this turn.</param>
+        /// <param name="instance">State information for this dialog.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        /// <seealso cref="DialogContext.RepromptDialogAsync(CancellationToken)"/>
         public virtual Task RepromptDialogAsync(ITurnContext turnContext, DialogInstance instance, CancellationToken cancellationToken = default(CancellationToken))
         {
             // No-op by default
             return Task.CompletedTask;
         }
 
+        /// <summary>
+        /// Called when the dialog is ending.
+        /// </summary>
+        /// <param name="turnContext">The context object for this turn.</param>
+        /// <param name="instance">State information associated with the instance of this dialog on the dialog stack.</param>
+        /// <param name="reason">Reason why the dialog ended.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public virtual Task EndDialogAsync(ITurnContext turnContext, DialogInstance instance, DialogReason reason, CancellationToken cancellationToken = default(CancellationToken))
         {
             // No-op by default

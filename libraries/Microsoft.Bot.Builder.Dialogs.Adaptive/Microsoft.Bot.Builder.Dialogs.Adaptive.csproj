@@ -53,6 +53,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Schemas\Microsoft.Dialog.schema" />
+    <None Remove="Schemas\TriggerConditions\Microsoft.OnCancelDialog.schema" />
+    <None Remove="Schemas\TriggerConditions\Microsoft.OnDialogEvent.schema" />
+    <None Remove="Schemas\TriggerConditions\Microsoft.OnError.schema" />
+    <None Remove="Schemas\TriggerConditions\Microsoft.OnRepromptDialog.schema" />
+    <None Remove="Schemas\TriggerHandlers\Microsoft.OnCondition.schema" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Microsoft.Bot.Builder.AI.TriggerTrees\Microsoft.Bot.Builder.AI.TriggerTrees.csproj" />
     <ProjectReference Include="..\Microsoft.Bot.Builder.Dialogs\Microsoft.Bot.Builder.Dialogs.csproj" />
     <ProjectReference Include="..\Microsoft.Bot.Builder.Expressions.Parser\Microsoft.Bot.Builder.Expressions.Parser.csproj" />
@@ -60,11 +69,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Recognizers.Text" Version="1.1.3" />
-    <PackageReference Include="Microsoft.Recognizers.Text.Choice" Version="1.1.3" />
-    <PackageReference Include="Microsoft.Recognizers.Text.DateTime" Version="1.1.3" />
-    <PackageReference Include="Microsoft.Recognizers.Text.Number" Version="1.1.3" />
-    <PackageReference Include="Microsoft.Recognizers.Text.Sequence" Version="1.1.3" />
+    <PackageReference Include="Microsoft.Recognizers.Text" Version="1.2.6.1" />
+    <PackageReference Include="Microsoft.Recognizers.Text.Choice" Version="1.2.6.1" />
+    <PackageReference Include="Microsoft.Recognizers.Text.DateTime" Version="1.2.6.1" />
+    <PackageReference Include="Microsoft.Recognizers.Text.Number" Version="1.2.6.1" />
+    <PackageReference Include="Microsoft.Recognizers.Text.Sequence" Version="1.2.6.1" />
   </ItemGroup>
 
   <ProjectExtensions>

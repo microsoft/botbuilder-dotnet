@@ -1,6 +1,6 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
-    "$role": "unionType(Microsoft.EntityRecognizer)",
+    "$role": "unionType(Microsoft.EntityRecognizers)",
     "title": "Ordinal Entity Recognizer",
     "description": "Recognizer which recognizes ordinals (example: first, second, 3rd).",
     "type": "object",

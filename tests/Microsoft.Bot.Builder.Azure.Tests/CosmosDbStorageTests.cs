@@ -37,14 +37,35 @@ namespace Microsoft.Bot.Builder.Azure.Tests
         {
             if (File.Exists(_emulatorPath))
             {
-                Process p = new Process();
-                p.StartInfo.UseShellExecute = true;
-                p.StartInfo.FileName = _emulatorPath;
-                p.StartInfo.Arguments = "/GetStatus";
-                p.Start();
-                p.WaitForExit();
+                var tries = 5;
 
-                return p.ExitCode == 2;
+                do
+                {
+                    var p = new Process();
+                    p.StartInfo.UseShellExecute = true;
+                    p.StartInfo.FileName = _emulatorPath;
+                    p.StartInfo.Arguments = "/GetStatus";
+                    p.Start();
+                    p.WaitForExit();
+
+                    switch (p.ExitCode)
+                    {
+                        case 1: // starting
+                            Task.Delay(1000).Wait();
+                            tries--;
+                            break;
+
+                        case 2: // started
+                            return true;
+
+                        case 3: // stopped
+                            return false;
+
+                        default:
+                            return false; // unknown status code
+                    }
+                }
+                while (tries > 0);
             }
 
             return false;

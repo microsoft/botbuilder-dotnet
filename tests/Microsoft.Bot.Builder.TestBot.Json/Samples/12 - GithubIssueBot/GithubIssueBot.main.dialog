@@ -17,7 +17,7 @@
                     "headers": {
                         "User-Agent": "TestBot"
                     },
-                    "property": "dialog.getResponse"
+                    "resultProperty": "dialog.getResponse"
                 },
                 {
                     "$type": "Microsoft.SendActivity",

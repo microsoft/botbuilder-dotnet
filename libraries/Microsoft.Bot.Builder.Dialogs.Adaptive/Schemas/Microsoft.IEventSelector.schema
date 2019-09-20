@@ -1,6 +1,0 @@
-{
-    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
-    "title": "Microsoft IEventSelector",
-    "description": "Union of components which implement the IEventSelector interface",
-    "$role": "unionType"
-}

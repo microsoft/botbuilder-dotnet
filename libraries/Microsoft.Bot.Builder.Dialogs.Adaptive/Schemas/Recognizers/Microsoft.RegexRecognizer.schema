@@ -28,7 +28,7 @@
         "entities": {
             "type": "array",
             "items": {
-                "$type": "Microsoft.EntityRecognizer"
+                "$type": "Microsoft.EntityRecognizers"
             },
             "title": "Entitie Recognizers",
             "description": "Entity Recognizers to use"

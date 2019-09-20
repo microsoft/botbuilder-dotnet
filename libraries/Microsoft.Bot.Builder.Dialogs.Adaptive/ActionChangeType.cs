@@ -14,11 +14,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         InsertActions,
 
         /// <summary>
-        /// Insert the change actions before named tags in the sequence.
-        /// </summary>
-        InsertActionsBeforeTags,
-
-        /// <summary>
         /// Add the changeactions to the tail of the sequence.
         /// </summary>
         AppendActions,

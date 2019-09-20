@@ -8,6 +8,11 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
+    /// <summary>
+    /// Provides context for a step in a <see cref="WaterfallDialog"/>.
+    /// </summary>
+    /// <remarks>The <see cref="DialogContext.Context"/> property contains the <see cref="ITurnContext"/>
+    /// for the current turn.</remarks>
     public class WaterfallStepContext : DialogContext
     {
         private readonly WaterfallDialog _parentWaterfall;
@@ -15,7 +20,6 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WaterfallStepContext"/> class.
-        /// Provides context for a turn of a waterfall dialog. Contains ITurnContext as property 'Context'.
         /// </summary>
         /// <param name= "parentWaterfall">The parent of the waterfall dialog.</param>
         /// <param name= "dc">The dialog's context.</param>
@@ -72,11 +76,13 @@ namespace Microsoft.Bot.Builder.Dialogs
         public DialogReason Reason { get; }
 
         /// <summary>
-        /// Gets results returned by a dialog called in the previous waterfall step.
+        /// Gets the result from the previous waterfall step.
         /// </summary>
         /// <value>
-        /// Results returned by a dialog called in the previous waterfall step.
+        /// The result from the previous waterfall step.
         /// </value>
+        /// <remarks>The result is often the return value of a child dialog that was started in
+        /// the previous step of the waterfall.</remarks>
         public object Result { get; }
 
         /// <summary>
@@ -88,9 +94,9 @@ namespace Microsoft.Bot.Builder.Dialogs
         public IDictionary<string, object> Values { get; }
 
         /// <summary>
-        /// Used to skip to the next waterfall step.
+        /// Skips to the next step of the waterfall.
         /// </summary>
-        /// <param name="result">(Optional) result to pass to the next step of the current waterfall dialog.</param>
+        /// <param name="result">Optional, result to pass to the next step of the current waterfall dialog.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
