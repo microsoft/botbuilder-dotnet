@@ -1,24 +1,19 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Channels;
-using System.Threading.Tasks;
-using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.Teams;
-using Microsoft.Bot.Connector;
-using Microsoft.Bot.Connector.Teams;
-using Microsoft.Bot.Schema;
-using Microsoft.Bot.Schema.Teams;
-using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-
 namespace Microsoft.BotBuilderSamples.Bots
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using Microsoft.Bot.Builder;
+    using Microsoft.Bot.Builder.Teams;
+    using Microsoft.Bot.Connector;
+    using Microsoft.Bot.Schema;
+    using Microsoft.Bot.Schema.Teams;
+    using Microsoft.Extensions.Configuration;
+
     public class ProactiveMessageBot : TeamsActivityHandler
     {
         private string _appId;
@@ -59,7 +54,7 @@ namespace Microsoft.BotBuilderSamples.Bots
 
             await connector.Conversations.SendToConversationAsync(proactiveMessage, cancellationToken);
 
-            // Or you can use the adaptor to send a message if you already have a conversation reference. You can put this code into the controller if
+            // Or you can use the adapter to send a message if you already have a conversation reference. You can put this code into the controller if
             // you already have a store of conversation references. 
             await turnContext.Adapter.ContinueConversationAsync(_appId, turnContext.Activity.GetConversationReference(), BotOnTurn, cancellationToken);
         }
@@ -82,11 +77,11 @@ namespace Microsoft.BotBuilderSamples.Bots
             }
         }
 
-        protected override async Task OnTeamsMembersRemovedAsync(IList<ChannelAccount> membersAdded, TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
+        protected override async Task OnTeamsMembersRemovedAsync(IList<ChannelAccount> membersRemoved, TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
         {
-            foreach (var member in membersAdded)
+            foreach (var member in membersRemoved)
             {
-                var replyActivity = MessageFactory.Text($"{member.Id} was removed to the team");
+                var replyActivity = MessageFactory.Text($"{member.Id} was removed from the team");
                 replyActivity.ApplyConversationReference(turnContext.Activity.GetConversationReference());
 
                 var channelId = turnContext.Activity.Conversation.Id.Split(";")[0];
