@@ -19,7 +19,6 @@ using Thrzn41.WebexTeams.Version1;
 
 namespace Microsoft.Bot.Builder.Adapters.Webex
 {
-    [ExcludeFromCodeCoverage]
     public class WebexClientWrapper
     {
         private const string WebhookUrl = "https://api.ciscospark.com/v1/webhooks";

@@ -27,6 +27,12 @@
                 <!-- <ModulePath>Microsoft.Bot.Builder.Schema.dll$</ModulePath> -->
               </Include>
             </ModulePaths>
+			<Sources>
+              <Exclude>
+                <Source>.*\\WebexMessageRequest.cs</Source>
+                <Source>.*\\WebexClientWrapper.cs</Source>
+              </Exclude>
+            </Sources>
           </CodeCoverage>
         </Configuration>
       </DataCollector>

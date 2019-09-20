@@ -8,7 +8,6 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Adapters.Webex
 {
-    [ExcludeFromCodeCoverage]
     public class WebexMessageRequest
     {
         /// <summary>
