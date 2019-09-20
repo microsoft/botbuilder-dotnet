@@ -8,11 +8,12 @@ using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Teams;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Schema.Teams;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.BotBuilderSamples.Bots
 {
-    public class CardActionsBot : TeamsActivityHandler
+    public class AdaptiveCardsBot : TeamsActivityHandler
     {
         protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
@@ -79,27 +80,28 @@ namespace Microsoft.BotBuilderSamples.Bots
             }
         }
 
-        protected override async Task<TaskModuleResponse> OnTeamsTaskModuleFetchAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
+        protected override async Task<TaskModuleTaskInfo> OnTeamsTaskModuleFetchAsync(ITurnContext<IInvokeActivity> turnContext, TaskModuleRequest taskModuleRequest, CancellationToken cancellationToken)
         {
-            var reply = MessageFactory.Text("OnTeamsTaskModuleFetchAsync Value: " + turnContext.Activity.Value.ToString());
+            var reply = MessageFactory.Text("OnTeamsTaskModuleFetchAsync TaskModuleRequest: " + JsonConvert.SerializeObject(taskModuleRequest));
             await turnContext.SendActivityAsync(reply, cancellationToken);
 
             var adaptiveCard = new AdaptiveCard();
             adaptiveCard.Body.Add(new AdaptiveTextBlock("This is an Adaptive Card within a Task Module"));
+            adaptiveCard.Actions.Add(new AdaptiveSubmitAction { Type = "Action.Submit", Title = "Action.Submit", Data = new JObject { { "submitLocation", "taskModule" } } });
 
-            return new TaskModuleResponse
+            return new TaskModuleTaskInfo()
             {
-                Task = new TaskModuleContinueResponse()
-                {
-                    Value = new TaskModuleTaskInfo()
-                    {
-                        Card = adaptiveCard.ToAttachment(),
-                        Height = 200,
-                        Width = 400,
-                        Title = "Task Module Example",
-                    },
-                },
+                Card = adaptiveCard.ToAttachment(),
+                Height = 200,
+                Width = 400,
+                Title = "Task Module Example",
             };
+        }
+
+        protected override async Task<TaskModuleResponseBase> OnTeamsTaskModuleSubmitAsync(ITurnContext<IInvokeActivity> turnContext, TaskModuleRequest taskModuleRequest, CancellationToken cancellationToken)
+        {
+            await turnContext.SendActivityAsync(MessageFactory.Text($"OnTeamsTaskModuleSubmitAsync value: { JsonConvert.SerializeObject(taskModuleRequest) }"), cancellationToken);
+            return new TaskModuleMessageResponse { Value = "Thanks!" };
         }
 
         protected override async Task<InvokeResponse> OnTeamsCardActionInvokeAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)

@@ -9,6 +9,7 @@ using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Teams;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Schema.Teams;
+using Newtonsoft.Json;
 
 namespace Microsoft.BotBuilderSamples.Bots
 {
@@ -20,39 +21,26 @@ namespace Microsoft.BotBuilderSamples.Bots
             await turnContext.SendActivityAsync(reply);
         }
 
-        protected override async Task<TaskModuleResponse> OnTeamsTaskModuleFetchAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
+        protected override async Task<TaskModuleTaskInfo> OnTeamsTaskModuleFetchAsync(ITurnContext<IInvokeActivity> turnContext, TaskModuleRequest taskModuleRequest, CancellationToken cancellationToken)
         {
-            var reply = MessageFactory.Text("OnTeamsTaskModuleFetchAsync Value: " + turnContext.Activity.Value.ToString());
+            var reply = MessageFactory.Text("OnTeamsTaskModuleFetchAsync TaskModuleRequest: " + JsonConvert.SerializeObject(taskModuleRequest));
             await turnContext.SendActivityAsync(reply);
 
-            return new TaskModuleResponse
+            return new TaskModuleTaskInfo()
             {
-                Task = new TaskModuleContinueResponse()
-                {
-                    Value = new TaskModuleTaskInfo()
-                    {
-                        Card = this.GetTaskModuleAdaptiveCard(),
-                        Height = 200,
-                        Width = 400,
-                        Title = "Adaptive Card: Inputs",
-                    },
-                },
+                Card = this.GetTaskModuleAdaptiveCard(),
+                Height = 200,
+                Width = 400,
+                Title = "Adaptive Card: Inputs",
             };
         }
 
-        protected override async Task<TaskModuleResponse> OnTeamsTaskModuleSubmitAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
+        protected override async Task<TaskModuleResponseBase> OnTeamsTaskModuleSubmitAsync(ITurnContext<IInvokeActivity> turnContext, TaskModuleRequest taskModuleRequest, CancellationToken cancellationToken)
         {
-            var value = turnContext.Activity.Value.ToString();
-            var reply = MessageFactory.Text("OnTeamsTaskModuleFetchAsync Value: " + value);
+            var reply = MessageFactory.Text("OnTeamsTaskModuleFetchAsync Value: " + JsonConvert.SerializeObject(taskModuleRequest));
             await turnContext.SendActivityAsync(reply);
 
-            return new TaskModuleResponse
-            {
-                Task = new TaskModuleMessageResponse()
-                {
-                    Value = "Thanks!",
-                },
-            };
+            return new TaskModuleMessageResponse() { Value = "Thanks!" };
         }
 
         private Attachment GetTaskModuleHeroCard()

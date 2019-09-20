@@ -3,10 +3,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.IO;
 using System.Net;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -18,9 +16,6 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
 {
     public class SlackAdapter : BotAdapter, IBotFrameworkHttpAdapter
     {
-        private const string PostMessageUrl = "https://slack.com/api/chat.postMessage";
-        private const string PostEphemeralMessageUrl = "https://slack.com/api/chat.postEphemeral";
-
         private readonly SlackClientWrapper _slackClient;
 
         /// <summary>
@@ -43,43 +38,37 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// <returns>A resource response.</returns>
         public override async Task<ResourceResponse[]> SendActivitiesAsync(ITurnContext turnContext, Activity[] activities, CancellationToken cancellationToken)
         {
+            if (turnContext == null)
+            {
+                throw new ArgumentNullException(nameof(turnContext));
+            }
+
+            if (activities == null)
+            {
+                throw new ArgumentNullException(nameof(activities));
+            }
+
             var responses = new List<ResourceResponse>();
+
             for (var i = 0; i < activities.Length; i++)
             {
                 var activity = activities[i];
+
                 if (activity.Type == ActivityTypes.Message)
                 {
                     var message = SlackHelper.ActivityToSlack(activity);
 
-                    SlackResponse responseInString;
+                    var slackResponse = await _slackClient.PostMessageAsync(message, cancellationToken).ConfigureAwait(false);
 
-                    var data = new NameValueCollection();
-                    data["token"] = _slackClient.Options.BotToken;
-                    data["channel"] = message.channel;
-                    data["text"] = message.text;
-                    data["thread_ts"] = message.ThreadTS;
-
-                    byte[] response;
-                    using (var client = new WebClient())
-                    {
-                        string url = !string.IsNullOrWhiteSpace(message.Ephemeral)
-                            ? PostEphemeralMessageUrl
-                            : PostMessageUrl;
-
-                        response = await client.UploadValuesTaskAsync(url, "POST", data).ConfigureAwait(false);
-                    }
-
-                    responseInString = JsonConvert.DeserializeObject<SlackResponse>(Encoding.UTF8.GetString(response));
-
-                    if (responseInString.Ok)
+                    if (slackResponse != null && slackResponse.Ok)
                     {
                         var resourceResponse = new ActivityResourceResponse()
                         {
-                            Id = responseInString.TS,
-                            ActivityId = responseInString.TS,
+                            Id = slackResponse.TS,
+                            ActivityId = slackResponse.TS,
                             Conversation = new ConversationAccount()
                             {
-                                Id = responseInString.Channel,
+                                Id = slackResponse.Channel,
                             },
                         };
                         responses.Add(resourceResponse as ResourceResponse);
@@ -111,12 +100,12 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
 
             if (activity.Id == null)
             {
-                throw new ArgumentException(nameof(activity.Id));
+                throw new ArgumentException(nameof(activity.Timestamp));
             }
 
             if (activity.Conversation == null)
             {
-                throw new ArgumentException(nameof(activity.Conversation));
+                throw new ArgumentException(nameof(activity.ChannelId));
             }
 
             var message = SlackHelper.ActivityToSlack(activity);
@@ -173,6 +162,16 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task ContinueConversationAsync(ConversationReference reference, BotCallbackHandler logic, CancellationToken cancellationToken)
         {
+            if (reference == null)
+            {
+                throw new ArgumentNullException(nameof(reference));
+            }
+
+            if (logic == null)
+            {
+                throw new ArgumentNullException(nameof(logic));
+            }
+
             var request = reference.GetContinuationActivity().ApplyConversationReference(reference, true);
 
             using (var context = new TurnContext(this, request))
