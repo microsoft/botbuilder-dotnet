@@ -11,7 +11,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 {
     public class Bar
     {

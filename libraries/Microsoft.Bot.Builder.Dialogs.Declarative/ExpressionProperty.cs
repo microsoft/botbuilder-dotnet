@@ -33,12 +33,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
             this.Value = value;
         }
 
+        /// <summary>
+        /// Gets or sets expression to use to get the value from data
+        /// </summary>
         public string Expression
         {
             get { return expression.ToString(); }
             set { expression = new ExpressionEngine().Parse(value); }
         }
 
+        /// <summary>
+        /// Gets or sets static value to use for the result (instead of data binding)
+        /// </summary>
         public T Value { get; set; }
 
         public virtual T GetValue(object data)
