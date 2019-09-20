@@ -233,6 +233,37 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
         [TestMethod]
         [TestCategory("AI")]
         [TestCategory("QnAMaker")]
+        public async Task QnaMaker_ReturnsAnswerRaw()
+        {
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, GetRequestUrl())
+                .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswer.json"));
+
+            var options = new QnAMakerOptions
+            {
+                Top = 1,
+            };
+
+            var qna = GetQnAMaker(
+                mockHttp,
+                new QnAMakerEndpoint
+                {
+                    KnowledgeBaseId = _knowlegeBaseId,
+                    EndpointKey = _endpointKey,
+                    Host = _hostname,
+                },
+                options);
+
+            var results = await qna.GetAnswersRawAsync(GetContext("how do I clean the stove?"), options);
+            Assert.IsNotNull(results.Answers);
+            Assert.IsTrue(results.ActiveLearningEnabled);
+            Assert.AreEqual(results.Answers.Length, 1, "should get one result");
+            StringAssert.StartsWith(results.Answers[0].Answer, "BaseCamp: You can use a damp rag to clean around the Power Pack");
+        }
+
+        [TestMethod]
+        [TestCategory("AI")]
+        [TestCategory("QnAMaker")]
         public async Task QnaMaker_LowScoreVariation()
         {
             var mockHttp = new MockHttpMessageHandler();
