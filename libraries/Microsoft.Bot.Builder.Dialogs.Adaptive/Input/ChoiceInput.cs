@@ -8,6 +8,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Choices;
+using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 using static Microsoft.Recognizers.Text.Culture;
@@ -53,17 +54,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// Gets or sets list of choices to present to user.
         /// </summary>
         /// <value>
-        /// List of choices to present to user.
+        /// Value Expression or List of choices (string or Choice objects) to present to user 
         /// </value>
-        public List<Choice> Choices { get; set; }
-
-        /// <summary>
-        /// Gets or sets expression collection of choices to present o user.
-        /// </summary>
-        /// <value>
-        /// Expression collection of choices to present o user.
-        /// </value>
-        public string ChoicesProperty { get; set; }
+        public ChoiceSet Choices { get; set; }
 
         /// <summary>
         /// Gets or sets listStyle to use to render the choices.
@@ -127,7 +120,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
                     op = new ChoiceInputOptions();
                 }
 
-                var choices = GetChoices(dc);
+                var choices = this.Choices.GetValue(dc.State);
                 op.Choices = choices;
             }
 
@@ -176,7 +169,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             var choicePrompt = new ChoicePrompt(this.Id);
             var choiceOptions = this.ChoiceOptions ?? ChoiceInput.DefaultChoiceOptions[locale];
 
-            var choices = GetChoices(dc);
+            var choices = this.Choices.GetValue(dc.State);
 
             return this.AppendChoices(prompt.AsMessageActivity(), channelId, choices, this.Style, choiceOptions);
         }
@@ -194,38 +187,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             }
 
             return English;
-        }
-
-        private List<Choice> GetChoices(DialogContext dc)
-        {
-            var choices = this.Choices ?? new List<Choice>();
-
-            if (!string.IsNullOrEmpty(this.ChoicesProperty))
-            {
-                var choicesMemory = dc.State.GetValue<object>(this.ChoicesProperty).ToString();
-
-                try
-                {
-                    choices = JsonConvert.DeserializeObject<List<Choice>>(choicesMemory);
-                }
-                catch
-                {
-                }
-
-                if (choices == null || choices.Count == 0)
-                {
-                    try
-                    {
-                        var strList = JsonConvert.DeserializeObject<List<string>>(choicesMemory);
-                        choices = strList.Select(item => new Choice(item)).ToList();
-                    }
-                    catch
-                    {
-                    }
-                }
-            }
-
-            return choices;
         }
     }
 }
