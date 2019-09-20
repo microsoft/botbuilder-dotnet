@@ -51,6 +51,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ActionBasedMessagingExtensi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ActionBasedMessagingExtensionFetchTask", "ActionBasedMessagingExtension-FetchTask\ActionBasedMessagingExtensionFetchTask.csproj", "{A26E1445-E2D7-44C2-9C33-CBFC3846537A}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProactiveMessages", "ProactiveMessages\ProactiveMessages.csproj", "{FED44219-2A75-49A1-B925-954929D09BD8}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NotificationOnly", "NotificationOnly\NotificationOnly.csproj", "{ED2CF41C-3B02-4602-AD2E-654B83374DC5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug - NuGet Packages|Any CPU = Debug - NuGet Packages|Any CPU
@@ -166,6 +170,42 @@ Global
 		{A7DC47A2-4F88-44AE-AD9B-46C943964B4D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A7DC47A2-4F88-44AE-AD9B-46C943964B4D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A7DC47A2-4F88-44AE-AD9B-46C943964B4D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6E2FC58C-1A10-49C0-92BB-8CBACB8B02CF}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{6E2FC58C-1A10-49C0-92BB-8CBACB8B02CF}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
+		{6E2FC58C-1A10-49C0-92BB-8CBACB8B02CF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6E2FC58C-1A10-49C0-92BB-8CBACB8B02CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6E2FC58C-1A10-49C0-92BB-8CBACB8B02CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6E2FC58C-1A10-49C0-92BB-8CBACB8B02CF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1279B32B-92E0-43E2-A1D5-D4D252E37F8C}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{1279B32B-92E0-43E2-A1D5-D4D252E37F8C}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
+		{1279B32B-92E0-43E2-A1D5-D4D252E37F8C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1279B32B-92E0-43E2-A1D5-D4D252E37F8C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1279B32B-92E0-43E2-A1D5-D4D252E37F8C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1279B32B-92E0-43E2-A1D5-D4D252E37F8C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{746CEEA6-3A8F-49AB-976B-69F54A84C8D4}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{746CEEA6-3A8F-49AB-976B-69F54A84C8D4}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
+		{746CEEA6-3A8F-49AB-976B-69F54A84C8D4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{746CEEA6-3A8F-49AB-976B-69F54A84C8D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{746CEEA6-3A8F-49AB-976B-69F54A84C8D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{746CEEA6-3A8F-49AB-976B-69F54A84C8D4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{88633DE8-E3CF-4493-B679-0B6EDCC88FEE}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{88633DE8-E3CF-4493-B679-0B6EDCC88FEE}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
+		{88633DE8-E3CF-4493-B679-0B6EDCC88FEE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{88633DE8-E3CF-4493-B679-0B6EDCC88FEE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{88633DE8-E3CF-4493-B679-0B6EDCC88FEE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{88633DE8-E3CF-4493-B679-0B6EDCC88FEE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ED2CF41C-3B02-4602-AD2E-654B83374DC5}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED2CF41C-3B02-4602-AD2E-654B83374DC5}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
+		{ED2CF41C-3B02-4602-AD2E-654B83374DC5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED2CF41C-3B02-4602-AD2E-654B83374DC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ED2CF41C-3B02-4602-AD2E-654B83374DC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ED2CF41C-3B02-4602-AD2E-654B83374DC5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FED44219-2A75-49A1-B925-954929D09BD8}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{FED44219-2A75-49A1-B925-954929D09BD8}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
+		{FED44219-2A75-49A1-B925-954929D09BD8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FED44219-2A75-49A1-B925-954929D09BD8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FED44219-2A75-49A1-B925-954929D09BD8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FED44219-2A75-49A1-B925-954929D09BD8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5CE0D599-F1F5-4F50-B5E5-A39724EE9AD5}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
 		{5CE0D599-F1F5-4F50-B5E5-A39724EE9AD5}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{5CE0D599-F1F5-4F50-B5E5-A39724EE9AD5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU

@@ -1,0 +1,15 @@
+{
+    "id": "new_webhook_id",
+    "name": "New_Webhook",
+    "targetUrl": "https://contoso.com/api/messages",
+    "resource": "all",
+    "event": "all",
+    "filter": null,
+    "secret": "test-secret-1234",
+    "status": "active",
+    "created": "2019-07-17T16:58:37.164Z",
+    "orgId": "test_org_id",
+    "createdBy": "test_creator_id",
+    "appId": "test_app_id",
+    "ownedBy": "creator"
+}
