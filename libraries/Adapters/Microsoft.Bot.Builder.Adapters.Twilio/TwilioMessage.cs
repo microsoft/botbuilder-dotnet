@@ -50,16 +50,16 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         public string NumMedia { get; set; }
 
         /// <summary>
-        /// Gets or sets the URLs referencing the media content included with the message, if any.
+        /// Gets the URLs referencing the media content included with the message, if any.
         /// </summary>
         /// <value>URLs referencing the media content included with the message.</value>
-        public List<Uri> MediaUrls { get; set; }
+        public List<Uri> MediaUrls { get; } = new List<Uri>();
 
         /// <summary>
-        /// Gets or sets the content types for the media included with the message, if any.
+        /// Gets the content types for the media included with the message, if any.
         /// </summary>
         /// <value>The content types for the media included with the message.</value>
-        public List<string> MediaContentTypes { get; set; }
+        public List<string> MediaContentTypes { get; } = new List<string>();
 
         /// <summary>
         /// Gets or sets the receiver's city.
