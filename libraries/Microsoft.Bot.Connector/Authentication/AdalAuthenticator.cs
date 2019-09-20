@@ -32,9 +32,10 @@ namespace Microsoft.Bot.Connector.Authentication
         private static volatile RetryParams currentRetryPolicy;
 
         // Our ADAL context. Acquires tokens and manages token caching for us.
-        private readonly AuthenticationContext authContext;
+        private AuthenticationContext authContext;
 
         private readonly ClientCredential clientCredential;
+        private readonly ClientAssertionCertificate clientCertificate;
         private readonly OAuthConfiguration authConfig;
         private readonly ILogger logger;
 
@@ -49,15 +50,16 @@ namespace Microsoft.Bot.Connector.Authentication
             this.clientCredential = clientCredential ?? throw new ArgumentNullException(nameof(clientCredential));
             this.logger = logger;
 
-            if (customHttpClient != null)
-            {
-                var httpClientFactory = new ConstantHttpClientFactory(customHttpClient);
-                this.authContext = new AuthenticationContext(configurationOAuth.Authority, true, new TokenCache(), httpClientFactory);
-            }
-            else
-            {
-                this.authContext = new AuthenticationContext(configurationOAuth.Authority);
-            }
+            Initialize(configurationOAuth, customHttpClient);
+        }
+
+        public AdalAuthenticator(ClientAssertionCertificate clientCertificate, OAuthConfiguration configurationOAuth, HttpClient customHttpClient = null, ILogger logger = null)
+        {
+            this.authConfig = configurationOAuth ?? throw new ArgumentNullException(nameof(configurationOAuth));
+            this.clientCertificate = clientCertificate ?? throw new ArgumentNullException(nameof(clientCertificate));
+            this.logger = logger;
+
+            Initialize(configurationOAuth, customHttpClient);
         }
 
         public async Task<AuthenticationResult> GetTokenAsync(bool forceRefresh = false)
@@ -100,7 +102,19 @@ namespace Microsoft.Bot.Connector.Authentication
                     // Given that this is a ClientCredential scenario, it will use the cache without the
                     // need to call AcquireTokenSilentAsync (which is only for user credentials).
                     // Scenario details: https://github.com/AzureAD/microsoft-authentication-library-for-dotnet/wiki/Client-credential-flows#it-uses-the-application-token-cache
-                    var res = await authContext.AcquireTokenAsync(authConfig.Scope, this.clientCredential).ConfigureAwait(false);
+                    AuthenticationResult authResult = null;
+
+                    // Password based auth
+                    if (clientCredential != null)
+                    {
+                        authResult = await authContext.AcquireTokenAsync(authConfig.Scope, this.clientCredential).ConfigureAwait(false);
+                    }
+
+                    // Certificate based auth
+                    else if (clientCertificate != null)
+                    {
+                        authResult = await authContext.AcquireTokenAsync(authConfig.Scope, clientCertificate).ConfigureAwait(false);
+                    }
 
                     // This means we acquired a valid token successfully. We can make our retry policy null.
                     // Note that the retry policy is set under the semaphore so no additional synchronization is needed.
@@ -109,7 +123,7 @@ namespace Microsoft.Bot.Connector.Authentication
                         currentRetryPolicy = null;
                     }
 
-                    return res;
+                    return authResult;
                 }
                 else
                 {
@@ -221,6 +235,24 @@ namespace Microsoft.Bot.Connector.Authentication
             }
 
             return RetryParams.DefaultBackOff(0);
+        }
+
+        private void Initialize(OAuthConfiguration configurationOAuth, HttpClient customHttpClient)
+        {
+            if (customHttpClient != null)
+            {
+                var httpClientFactory = new ConstantHttpClientFactory(customHttpClient);
+                this.authContext = new AuthenticationContext(configurationOAuth.Authority, true, new TokenCache(), httpClientFactory);
+            }
+            else
+            {
+                this.authContext = new AuthenticationContext(configurationOAuth.Authority);
+            }
+        }
+
+        private bool UseCertificate()
+        {
+            return this.clientCertificate != null;
         }
     }
 }
