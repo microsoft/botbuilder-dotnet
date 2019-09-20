@@ -170,6 +170,38 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Tests
         }
 
         [Fact]
+        public async Task UpdateActivityAsyncShouldFailWithResponseError()
+        {
+            var options = new Mock<SlackAdapterOptions>();
+            options.Object.VerificationToken = "VerificationToken";
+            options.Object.ClientSigningSecret = "ClientSigningSecret";
+            options.Object.BotToken = "BotToken";
+
+            var slackApi = new Mock<SlackClientWrapper>(options.Object);
+
+            // TODO: delete when LoginWithSlack method gets removed from SlackAdapter.
+            slackApi.Setup(x => x.TestAuthAsync(It.IsAny<CancellationToken>())).Returns(Task.FromResult("mockedUserId"));
+            slackApi.Setup(x => x.UpdateAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), null, It.IsAny<bool>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(new UpdateResponse { ok = false }));
+
+            var slackAdapter = new SlackAdapter(slackApi.Object);
+
+            var activity = new Mock<Activity>().SetupAllProperties();
+            activity.Object.Id = "MockActivityId";
+            activity.Object.Conversation = new ConversationAccount
+            {
+                Id = "MockConversationId",
+            };
+            activity.Object.Text = "Hello, Bot!";
+
+            var turnContext = new TurnContext(slackAdapter, activity.Object);
+
+            await Assert.ThrowsAsync<Exception>(async () =>
+            {
+                await slackAdapter.UpdateActivityAsync(turnContext, activity.Object, default);
+            });
+        }
+
+        [Fact]
         public async Task DeleteActivityAsyncShouldFailWithNullReference()
         {
             var options = new Mock<SlackAdapterOptions>();
@@ -396,6 +428,66 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Tests
             var responses = await slackAdapter.SendActivitiesAsync(turnContext, activities, default);
 
             Assert.Equal(slackResponse.TS, responses[0].Id);
+        }
+
+        [Fact]
+        public async Task ContinueConversationAsyncShouldFailWithNullReference()
+        {
+            var options = new Mock<SlackAdapterOptions>();
+            options.Object.VerificationToken = "VerificationToken";
+            options.Object.ClientSigningSecret = "ClientSigningSecret";
+            options.Object.BotToken = "BotToken";
+
+            var slackApi = new SlackClientWrapper(options.Object);
+
+            var slackAdapter = new SlackAdapter(slackApi);
+
+            Task BotsLogic(ITurnContext turnContext, CancellationToken cancellationToken)
+            {
+                return Task.CompletedTask;
+            }
+
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => { await slackAdapter.ContinueConversationAsync(null, BotsLogic, default); });
+        }
+
+        [Fact]
+        public async Task ContinueConversationAsyncShouldFailWithNullBot()
+        {
+            var options = new Mock<SlackAdapterOptions>();
+            options.Object.VerificationToken = "VerificationToken";
+            options.Object.ClientSigningSecret = "ClientSigningSecret";
+            options.Object.BotToken = "BotToken";
+
+            var slackApi = new SlackClientWrapper(options.Object);
+
+            var slackAdapter = new SlackAdapter(slackApi);
+
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => { await slackAdapter.ContinueConversationAsync(new ConversationReference(), null, default); });
+        }
+
+        [Fact]
+        public async Task ContinueConversationAsyncShouldSucceed()
+        {
+            var callbackInvoked = false;
+
+            var options = new Mock<SlackAdapterOptions>();
+            options.Object.VerificationToken = "VerificationToken";
+            options.Object.ClientSigningSecret = "ClientSigningSecret";
+            options.Object.BotToken = "BotToken";
+
+            var slackApi = new SlackClientWrapper(options.Object);
+
+            var slackAdapter = new SlackAdapter(slackApi);
+
+            Task BotsLogic(ITurnContext turnContext, CancellationToken cancellationToken)
+            {
+                callbackInvoked = true;
+                return Task.CompletedTask;
+            }
+
+            await slackAdapter.ContinueConversationAsync(new ConversationReference(), BotsLogic, default);
+
+            Assert.True(callbackInvoked);
         }
     }
 }
