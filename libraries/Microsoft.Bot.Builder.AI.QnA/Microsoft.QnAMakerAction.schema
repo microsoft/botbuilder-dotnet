@@ -39,7 +39,7 @@
       "description": "Threshold score to filter results.",
       "default": 0.3
     },
-    "strictFilterProperty": {
+    "strictFilters": {
       "$role": "expression",
       "title": "Strict Filter Property",
       "description": "Memory property that holds strict filters to use when calling the QnA Maker KB."
