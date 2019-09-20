@@ -77,5 +77,63 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
             return chatActivity;
         }
+
+        /// <summary>
+        /// Get active learning suggestions card.
+        /// </summary>
+        /// <param name="result">Result to be dispalyed as prompts.</param>
+        /// <param name="cardNoMatchText">No match text.</param>
+        /// <returns>IMessageActivity.</returns>
+        public static IMessageActivity GetQnAPromptsCard(QueryResult result, string cardNoMatchText)
+        {
+            if (result == null)
+            {
+                throw new ArgumentNullException(nameof(result));
+            }
+
+            if (cardNoMatchText == null)
+            {
+                throw new ArgumentNullException(nameof(cardNoMatchText));
+            }
+
+            var chatActivity = Activity.CreateMessageActivity();
+            var buttonList = new List<CardAction>();
+
+            // Add all prompt
+            foreach (var prompt in result.Context.Prompts)
+            {
+                buttonList.Add(
+                    new CardAction()
+                    {
+                        Value = prompt.DisplayText,
+                        Type = "imBack",
+                        Title = prompt.DisplayText,
+                    });
+            }
+
+            // Add No match text
+            buttonList.Add(
+                new CardAction()
+                {
+                    Value = cardNoMatchText,
+                    Type = "imBack",
+                    Title = cardNoMatchText
+                });
+
+            var plCard = new HeroCard()
+            {
+                Title = result.Answer,
+                Subtitle = string.Empty,
+                Buttons = buttonList
+            };
+
+            // Create the attachment.
+            var attachment = plCard.ToAttachment();
+
+            chatActivity.Attachments.Add(attachment);
+            chatActivity.Text = result.Answer;
+
+            return chatActivity;
+        }
     }
 }

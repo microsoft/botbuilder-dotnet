@@ -13,18 +13,20 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.AI.QnA
 {
     /// <summary>
-    /// QnAMaker Active Learning Dialog helper class
+    /// QnAMaker action builder class
     /// </summary>
-    public class QnAMakerBaseDialog
+    public class QnAMakerActionBuilder
     {
         /// <summary>
-        /// QnA Maker Active Learning dialog name
+        /// QnA Maker action auilder
         /// </summary>
-        public const string ActiveLearningDialogName = "active-learning-dialog";
+        public const string QnAMakerDialogName = "active-learning-dialog";
 
         // Define value names for values tracked inside the dialogs.
         private const string CurrentQuery = "value-current-query";
         private const string QnAData = "value-qnaData";
+        private const string QnAContextData = "value-qnaContextData";
+        private const string PreviousQnAId = "value-prevQnAId";
 
         // Dialog Options parameters
         private const float DefaultThreshold = 0.3F;
@@ -38,23 +40,40 @@ namespace Microsoft.Bot.Builder.AI.QnA
         private readonly QnAMaker _services;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="QnAMakerBaseDialog"/> class.
+        /// Initializes a new instance of the <see cref="QnAMakerActionBuilder"/> class.
         /// Dialog helper to generate dialogs.
         /// </summary>
         /// <param name="services">Bot Services.</param>
-        public QnAMakerBaseDialog(QnAMaker services)
+        public QnAMakerActionBuilder(QnAMaker services)
         {
-            QnAMakerDialog = new WaterfallDialog(ActiveLearningDialogName)
+            QnAMakerDialog = new WaterfallDialog(QnAMakerDialogName)
                 .AddStep(CallGenerateAnswerAsync)
                 .AddStep(CallTrain)
+                .AddStep(CheckForMultiTurnPrompt)
                 .AddStep(DisplayQnAResult);
             _services = services ?? throw new ArgumentNullException(nameof(services));
         }
 
         /// <summary>
-        /// Gets QnA Maker Active Learning Dialog.
+        /// Gets QnA Maker Dialog.
         /// </summary>
-        public WaterfallDialog QnAMakerDialog { get; }
+        private WaterfallDialog QnAMakerDialog { get; }
+
+        /// <summary>
+        /// Build dialog by adding QnAMaker dialog to dialog context.
+        /// </summary>
+        /// <param name="dc">DialogContext</param>
+        /// <returns>Updated dialog context.</returns>
+        public DialogContext BuildDialog(DialogContext dc)
+        {
+            if (dc == null)
+            {
+                return dc;
+            }
+
+            dc.Dialogs.Add(QnAMakerDialog);
+            return dc;
+        }
 
         private async Task<DialogTurnResult> CallGenerateAnswerAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
@@ -75,12 +94,37 @@ namespace Microsoft.Bot.Builder.AI.QnA
             stepContext.Values[CurrentQuery] = stepContext.Context.Activity.Text;
 
             // -Check if previous context is present, if yes then put it with the query
-            // -Check for id if query is present in reverse index
+            // -Check for id if query is present in reverse index.
+            if (!stepContext.ActiveDialog.State.ContainsKey(QnAContextData))
+            {
+                stepContext.ActiveDialog.State[QnAContextData] = new Dictionary<string, int>();
+            }
+            else
+            {
+                var previousContextData = stepContext.ActiveDialog.State[QnAContextData] as Dictionary<string, int>;
+                if (stepContext.ActiveDialog.State[PreviousQnAId] != null)
+                {
+                    var previousQnAId = Convert.ToInt32(stepContext.ActiveDialog.State[PreviousQnAId]);
+
+                    if (previousQnAId > 0)
+                    {
+                        qnaMakerOptions.Context.PreviousQnAId = previousQnAId;
+
+                        if (previousContextData.TryGetValue(stepContext.Context.Activity.Text, out var currentQnAId))
+                        {
+                            qnaMakerOptions.QnAId = currentQnAId;
+                        }
+                    }
+                }
+            }
 
             // Calling QnAMaker to get response.
             var response = await _services.GetAnswersAsync(stepContext.Context, qnaMakerOptions).ConfigureAwait(false);
-            
-            // TODO: Take this value from GetAnswerResponse 
+
+            // Resetting previous query.
+            stepContext.ActiveDialog.State[PreviousQnAId] = -1;
+
+            // Take this value from GetAnswerResponse 
             var isActiveLearningEnabled = true;
 
             stepContext.Values[QnAData] = new List<QueryResult>(response);
@@ -156,7 +200,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 }
                 else
                 {
-                    return await stepContext.ReplaceDialogAsync(ActiveLearningDialogName, stepContext.ActiveDialog.State["options"], cancellationToken).ConfigureAwait(false);
+                    return await stepContext.ReplaceDialogAsync(QnAMakerDialogName, stepContext.ActiveDialog.State["options"], cancellationToken).ConfigureAwait(false);
                 }
             }
 
@@ -167,13 +211,37 @@ namespace Microsoft.Bot.Builder.AI.QnA
         {
             if (stepContext.Result is List<QueryResult> response && response.Count > 0)
             {
-                // -Check if prompt exists 
+                // -Check if context is present and prompt exists 
                 // -If yes: Add reverse index of prompt display name and its corresponding qna id
-                // -Set PreviousQnAId as response[0].Id
-                // -Set PreviousQuery as stepContext.Values[CurrentQuery]
+                // -Set PreviousQnAId as answer.Id
                 // -Display card for the prompt
                 // -Wait for the reply
                 // -If no: Skip to next step
+
+                var answer = response.FirstOrDefault();
+
+                if (answer.Context != null && answer.Context.Prompts.Count() > 1)
+                {
+                    var previousContextData = new Dictionary<string, int>();
+                    if (stepContext.ActiveDialog.State.ContainsKey(QnAContextData))
+                    {
+                        previousContextData = stepContext.ActiveDialog.State[QnAContextData] as Dictionary<string, int>;
+                    }
+
+                    foreach (var prompt in answer.Context.Prompts)
+                    {
+                        previousContextData.Add(prompt.DisplayText, prompt.QnaId);
+                    }
+
+                    stepContext.ActiveDialog.State[QnAContextData] = previousContextData;
+                    stepContext.ActiveDialog.State[PreviousQnAId] = answer.Id;
+
+                    // Get multi-turn prompts card activity.
+                    var message = QnACardBuilder.GetQnAPromptsCard(answer, CardNoMatchText);
+                    await stepContext.Context.SendActivityAsync(message).ConfigureAwait(false);
+
+                    return new DialogTurnResult(DialogTurnStatus.Waiting);
+                }
             }
 
             return await stepContext.NextAsync(stepContext.Result, cancellationToken).ConfigureAwait(false);
@@ -181,6 +249,20 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
         private async Task<DialogTurnResult> DisplayQnAResult(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
+            // If previous QnAId is present, replace the dialog
+            var previousQnAId = Convert.ToInt32(stepContext.ActiveDialog.State[PreviousQnAId]);
+            if (previousQnAId > 0)
+            {
+                return await stepContext.ReplaceDialogAsync(QnAMakerDialogName, stepContext.ActiveDialog.State["options"], cancellationToken).ConfigureAwait(false);
+            }
+
+            var reply = stepContext.Context.Activity.Text;
+            if (reply.Equals(CardNoMatchText))
+            {
+                await stepContext.Context.SendActivityAsync(CardNoMatchResponse, cancellationToken: cancellationToken).ConfigureAwait(false);
+                return await stepContext.EndDialogAsync().ConfigureAwait(false);
+            }
+
             // If response is present then show that response, else default answer.
             if (stepContext.Result is List<QueryResult> response && response.Count > 0)
             {
@@ -197,8 +279,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
                 await stepContext.Context.SendActivityAsync(msg, cancellationToken: cancellationToken).ConfigureAwait(false);
             }
-
-            // -Clean previous id, query and reverse index
+            
             return await stepContext.EndDialogAsync().ConfigureAwait(false);
         }
     }

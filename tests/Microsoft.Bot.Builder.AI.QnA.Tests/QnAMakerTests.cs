@@ -62,11 +62,11 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
         {
             TypeFactory.Configuration = new ConfigurationBuilder().Build();
             var mockHttp = new MockHttpMessageHandler();
-            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Q11\",\"top\":1,\"strictFilters\":[],\"metadataBoost\":[],\"scoreThreshold\":0.3}")
+            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Q11\",\"top\":1,\"strictFilters\":[],\"metadataBoost\":[],\"scoreThreshold\":0.3,\"context\":null,\"qnaId\":0}")
                 .Respond("application/json", GetResponse("QnaMaker_TopNAnswer.json"));
             mockHttp.When(HttpMethod.Post, GetTrainRequestUrl())
                 .Respond(HttpStatusCode.NoContent, "application/json", "{ }");
-            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Q12\",\"top\":1,\"strictFilters\":[],\"metadataBoost\":[],\"scoreThreshold\":0.3}")
+            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Q12\",\"top\":1,\"strictFilters\":[],\"metadataBoost\":[],\"scoreThreshold\":0.3,\"context\":null,\"qnaId\":0}")
                .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswer_WhenNoAnswerFoundInKb.json"));
 
             return CreateQnAMakerActionDialog(mockHttp);
@@ -1584,7 +1584,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             var outerDialog = new AdaptiveDialog("outer")
             {
                 AutoEndDialog = false,
-                Triggers = new List<TriggerHandler>()
+                Triggers = new List<OnCondition>()
                 {
                     new OnUnknownIntent()
                     {
@@ -1598,7 +1598,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
 
             var rootDialog = new AdaptiveDialog("root")
             {
-                Triggers = new List<TriggerHandler>()
+                Triggers = new List<OnCondition>()
                 {
                     new OnBeginDialog()
                     {
@@ -1609,7 +1609,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                     },
                     new OnDialogEvent()
                     {
-                        Events = new List<string>() { "UnhandledUnknownIntent" },
+                        Event = "UnhandledUnknownIntent",
                         Actions = new List<Dialog>()
                         {
                             new EditArray(),
@@ -1618,7 +1618,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                     }
                 }
             };
-            rootDialog.AddDialog(outerDialog);
+            rootDialog.Dialogs.Add(outerDialog);
             return rootDialog;
         }
 
