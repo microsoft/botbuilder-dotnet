@@ -36,14 +36,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
             var mappings = schema["$mappings"]?.Value<JArray>();
             if (mappings == null)
             {
-                list.Add(path);
+                if (path != string.Empty)
+                {
+                    // TODO: Should probably be smarter about this--there may not be an entity.
+                    list.Add(path);
+                }
+
                 if (Type == "integer" || Type == "float")
                 {
                     // We want to pick up generic numbers when expected.
                     list.Add("number");
                 }
-
-                Mappings = list;
             }
             else
             {
@@ -52,6 +55,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                     list.Add(mapping.Value<string>());
                 }
             }
+
+            Mappings = list;
         }
 
         /// <summary>

@@ -31,26 +31,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Types
 
             lock (types)
             {
-                if (!types.ContainsKey(name))
-                {
-                    types.Add(name, type);
-                }
+                types[name] = type;
             }
 
             lock (names)
             {
-                if (!names.ContainsKey(type))
-                {
-                    names.Add(type, name);
-                }
+                names[type] = name;
             }
 
             lock (builders)
             {
-                if (!builders.ContainsKey(type))
-                {
-                    builders.Add(type, loader);
-                }
+                builders[type] = loader;
             }
         }
 

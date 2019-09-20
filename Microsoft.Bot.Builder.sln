@@ -140,6 +140,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Dialo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Dialogs.Form.Tests", "tests\Microsoft.Bot.Builder.Dialogs.Form.Tests\Microsoft.Bot.Builder.Dialogs.Form.Tests.csproj", "{D0ED187E-87A0-4373-A673-D690D1C863CE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Builder.MockLuis", "tests\Microsoft.Bot.Builder.MockLuis\Microsoft.Bot.Builder.MockLuis.csproj", "{DE4945A6-7289-4B66-8764-2C60B1DC9A74}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug - NuGet Packages|Any CPU = Debug - NuGet Packages|Any CPU
@@ -477,6 +479,12 @@ Global
 		{D0ED187E-87A0-4373-A673-D690D1C863CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D0ED187E-87A0-4373-A673-D690D1C863CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D0ED187E-87A0-4373-A673-D690D1C863CE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DE4945A6-7289-4B66-8764-2C60B1DC9A74}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{DE4945A6-7289-4B66-8764-2C60B1DC9A74}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
+		{DE4945A6-7289-4B66-8764-2C60B1DC9A74}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DE4945A6-7289-4B66-8764-2C60B1DC9A74}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DE4945A6-7289-4B66-8764-2C60B1DC9A74}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DE4945A6-7289-4B66-8764-2C60B1DC9A74}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -540,6 +548,7 @@ Global
 		{2454BBCD-77BC-4E3D-B5A6-3562BED898D6} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{9E694B23-DF55-448D-B735-13713827FB7D} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
 		{D0ED187E-87A0-4373-A673-D690D1C863CE} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
+		{DE4945A6-7289-4B66-8764-2C60B1DC9A74} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7173C9F3-A7F9-496E-9078-9156E35D6E16}

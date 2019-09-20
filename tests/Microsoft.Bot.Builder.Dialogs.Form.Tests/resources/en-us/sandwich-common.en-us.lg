@@ -1,0 +1,23 @@
+> This file contains the generic templates to use for properties of particular types.
+> It is copied to the output because it has the locale in it.
+> They are called by property specific .lg files.
+
+>>> Ask prompts <<<
+
+> TODO: We should look at the schema and if a few items list them or do cards or..
+# askEnum(property)
+- Which value do you want for {toLower(property)}?
+
+# askNumber(property)
+- IF: {turn.schema[property].minimum && turn.schema[property].maximum}
+- Enter a number for {toLower(property)} between {turn.schema[property].minimum} and {turn.schema[property].maximum}
+- ELSE:
+- Enter a number for {toLower(property)}
+
+# askString(property)
+- Enter a value for {toLower(property)}
+
+>>> Help messages <<<
+# helpEnum(property)
+- Possible values for {toLower(property)} include: \[{join(turn.schema[property].enum, ',')}\]
+

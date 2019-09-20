@@ -10,6 +10,8 @@ using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
+using Microsoft.Bot.Builder.LanguageGeneration;
+using Microsoft.Bot.Builder.MockLuis;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Xunit;
@@ -20,7 +22,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form.Tests
     {
         private FormFixture _form;
 
-        private readonly string samplesDirectory = PathUtils.NormalizePath(@"..\..\..\..\..\tests\Microsoft.Bot.Builder.Dialogs.Form.Tests\Resources\");
+        private readonly string resourcesDirectory = PathUtils.NormalizePath(@"..\..\..\..\..\tests\Microsoft.Bot.Builder.Dialogs.Form.Tests\Resources\");
 
         public GeneratorTests(FormFixture form)
         {
@@ -37,7 +39,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Form.Tests
 
         private TestFlow BuildTestFlow(string testName, string resourceName, bool sendTrace = false)
         {
-            TypeFactory.Configuration = new ConfigurationBuilder().Build();
+            TypeFactory.Configuration = new ConfigurationBuilder()
+                .UseLuisSettings(resourcesDirectory, "formTests")
+                .Build();
             var storage = new MemoryStorage();
             var convoState = new ConversationState(storage);
             var userState = new UserState(storage);
@@ -48,6 +52,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Form.Tests
                 .UseResourceExplorer(_form.Resources)
                 .UseAdaptiveDialogs()
                 .UseFormDialogs()
+                .UseLanguageGeneration(_form.Resources)
+                .UseMockLuis()
                 .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
 
             var resource = _form.Resources.GetResource(resourceName);

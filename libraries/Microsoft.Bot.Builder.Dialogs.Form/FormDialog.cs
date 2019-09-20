@@ -5,6 +5,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors;
+using Microsoft.Bot.Schema;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Form
 {
@@ -20,6 +22,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
             });
         }
 
+        [JsonProperty("schema")]
         public DialogSchema Schema { get; }
 
         protected override async Task<bool> ProcessEventAsync(SequenceContext sequenceContext, DialogEvent dialogEvent, bool preBubble, CancellationToken cancellationToken = default(CancellationToken))
@@ -37,11 +40,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                             var entities = NormalizeEntities(sequenceContext);
                             var utterance = sequenceContext.Context.Activity?.AsMessageActivity()?.Text;
                             // Build in the whole utterance as a string
-                            entities["string"] = new List<EntityInfo> { new EntityInfo { Coverage = 1.0, Start = 0, End = utterance.Length, Name = "string", Score = 0.0, Type = "string", Entity = utterance, Text = utterance } };
+                            entities["utterance"] = new List<EntityInfo> { new EntityInfo { Priority = int.MaxValue, Coverage = 1.0, Start = 0, End = utterance.Length, Name = "utterance", Score = 0.0, Type = "string", Entity = utterance, Text = utterance } };
                             var newQueues = new Queues();
                             AssignEntities(entities, newQueues);
                             queues.Merge(newQueues);
-                            CombineOldSlotMappings(queues, entities.First().Value.First().Turn);
+                            var turn = sequenceContext.State.GetValue<int>("this.turn");
+                            CombineOldSlotMappings(queues, turn);
                             queues.Write(sequenceContext);
 
                             handled = await base.ProcessEventAsync(sequenceContext, dialogEvent, preBubble, cancellationToken);
@@ -89,6 +93,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
 
                             break;
                         }
+
+                    default:
+                        handled = await base.ProcessEventAsync(sequenceContext, dialogEvent, preBubble, cancellationToken).ConfigureAwait(false);
+                        break;
                 }
             }
 
@@ -160,13 +168,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
             var text = context.State.GetValue<string>(TurnPath.RECOGNIZED + ".text");
             if (context.State.TryGetValue<dynamic>(TurnPath.RECOGNIZED + ".entities", out var entities))
             {
-                if (!context.State.TryGetValue<int>("dialog.turn", out var turn))
+                if (!context.State.TryGetValue<int>("this.turn", out var turn))
                 {
                     turn = 0;
                 }
 
                 ++turn;
-                context.State.SetValue("dialog.turn", turn);
+                context.State.SetValue("this.turn", turn);
 
                 // TODO: We should have RegexRecognizer return $instance or make this robust to it missing, i.e. assume no entities overlap
                 var metaData = entities["$instance"];
@@ -254,7 +262,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
         {
             foreach (var infos in entities.Values)
             {
-                infos.RemoveAll(e => e.Overlaps(entity));
+                infos.RemoveAll(e => e != entity && e.Overlaps(entity));
             }
         }
 
@@ -474,6 +482,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
             public EntityInfo Entity { get; set; }
 
             public bool Expected { get; set; }
+
+            public override string ToString()
+            {
+                var expected = Expected ? "expected" : "";
+                return $"{expected} {Slot} = {Entity.Name}";
+            }
         }
 
         // Slot and operation
@@ -482,6 +496,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
             public string Slot { get; set; }
 
             public string Operation { get; set; }
+
+            public override string ToString()
+                => $"{Operation}({Slot})";
         }
 
         // Simple mapping
@@ -490,6 +507,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
             public SlotOp Change { get; set; }
 
             public EntityInfo Entity { get; set; }
+
+            public override string ToString()
+                => $"{Change} = {Entity}";
         }
 
         // Select from multiple entities for singleton
@@ -498,6 +518,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
             public List<EntityInfo> Entities { get; set; } = new List<EntityInfo>();
 
             public SlotOp Slot { get; set; }
+
+            public override string ToString()
+                => $"Singleton {Slot} = [{Entities}]";
         }
 
         // Select which slot entity belongs to
@@ -506,6 +529,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
             public List<SlotOp> Slots { get; set; } = new List<SlotOp>();
 
             public EntityInfo Entity { get; set; }
+
+            public override string ToString()
+                => $"Slot {Entity} = [{Slots}]";
         }
 
         private class Queues
@@ -526,7 +552,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
             public static Queues Read(SequenceContext context)
             {
                 Queues queues;
-                if (context.State.TryGetValue("mappings", out var obj))
+                if (context.State.TryGetValue("this.mappings", out var obj))
                 {
                     queues = (Queues)obj;
                 }
@@ -539,7 +565,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
             }
 
             public void Write(SequenceContext context)
-                => context.State.Add("mappings", this);
+                => context.State.Add("this.mappings", this);
 
             public void Merge(Queues queues)
             {
@@ -578,6 +604,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
 
             public bool Overlaps(EntityInfo entity)
                 => Start <= entity.End && End >= entity.Start;
+
+            public override string ToString()
+                => $"{Name}:{Entity} P{Priority} {Score} {Coverage}";
         }
 
         // For simple singleton slot:

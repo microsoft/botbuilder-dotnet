@@ -2,12 +2,21 @@
     "$schema": "http://json-schema.org/draft-07/schema",
     "type": "object",
     "properties": {
-        "Size": {
+        "Quantity": {
+            "type": "number"
+        },
+        "Directions": {
             "type": "string",
-            "enum": [
-                "small",
-                "large"
-            ]
+            "$comment": "This indicates the whole string is what maps to this."
+        },
+        "Length": {
+            "type": "string",
+            "$mappings": [
+                "dimension",
+                "number"
+            ],
+            "$comment": "This is used by the mapping to convert underlying dimensions to inches.",
+            "$units": "inches"
         },
         "Bread": {
             "type": "string",
@@ -45,7 +54,10 @@
             ]
         },
         "Name": {
-            "type":"string"
+            "type": "string",
+            "$mappings": [
+                "utterance"
+            ]
         },
         "Toppings": {
             "type": "array",
