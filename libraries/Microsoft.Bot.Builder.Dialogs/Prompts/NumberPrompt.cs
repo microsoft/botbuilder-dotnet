@@ -109,7 +109,15 @@ namespace Microsoft.Bot.Builder.Dialogs
                 if (results.Count > 0)
                 {
                     // Try to parse value based on type
-                    var text = results[0].Resolution["value"].ToString();
+                    string text = string.Empty;
+
+                    // Try to parse value based on type
+                    var valueResolution = results[0].Resolution["value"];
+                    if (valueResolution != null)
+                    {
+                        text = valueResolution.ToString();
+                    }
+
                     if (typeof(T) == typeof(float))
                     {
                         if (float.TryParse(text, NumberStyles.Any, new CultureInfo(culture), out var value))

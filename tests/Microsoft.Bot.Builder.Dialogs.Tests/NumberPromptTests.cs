@@ -659,5 +659,47 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .AssertReply("Bot received the number '3.14'.")
             .StartTestAsync();
         }
+
+        [TestMethod]
+        public async Task NoNumberButUnitPrompt()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+
+            var adapter = new TestAdapter()
+                .Use(new AutoSaveStateMiddleware(convoState));
+
+            var dialogs = new DialogSet(dialogState);
+
+            var numberPrompt = new NumberPrompt<decimal>("NumberPrompt", defaultLocale: Culture.English);
+            dialogs.Add(numberPrompt);
+
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+
+                var results = await dc.ContinueDialogAsync(cancellationToken);
+                if (results.Status == DialogTurnStatus.Empty)
+                {
+                    var options = new PromptOptions
+                    {
+                        Prompt = new Activity { Type = ActivityTypes.Message, Text = "Enter a number." },
+                    };
+                    await dc.PromptAsync("NumberPrompt", options, cancellationToken);
+                }
+                else if (results.Status == DialogTurnStatus.Complete)
+                {
+                    var numberResult = (decimal)results.Result;
+                    await turnContext.SendActivityAsync(MessageFactory.Text($"Bot received the number '{numberResult}'."), cancellationToken);
+                }
+            })
+            .Send("hello")
+            .AssertReply("Enter a number.")
+            .Send("dollars")
+            .AssertReply("Enter a number.")
+            .Send("500 dollars")
+            .AssertReply("Bot received the number '500'.")
+            .StartTestAsync();
+        }
     }
 }
