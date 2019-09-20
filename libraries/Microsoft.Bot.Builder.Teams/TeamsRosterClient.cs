@@ -13,6 +13,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Teams
 {
+    #pragma warning disable CA1001
     internal class TeamsRosterClient
     {
         private ConnectorClient _connectorClient;
