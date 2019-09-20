@@ -361,11 +361,6 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("setPathToValue(2+3, 4)"), // Not a real path
             Test("setPathToValue(a)"), // Missing value
             #endregion
-
-            #region AdaptiveCard test
-            Test("adaptiveCard(3)"), // param should be string
-            Test("adaptiveCard('a', 'b')"), // support one param
-            #endregion
         };
 
         /// <summary>

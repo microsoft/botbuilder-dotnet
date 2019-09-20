@@ -67,7 +67,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="AdaptiveCards" Version="1.1.2" />
     <PackageReference Include="Antlr4.CodeGenerator" Version="4.6.6">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>

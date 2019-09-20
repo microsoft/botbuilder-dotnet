@@ -1,6 +1,6 @@
 ﻿﻿# prompt
 [Activity
-    Attachments = {adaptiveCard(adaptivecardjson())}
+    Attachments = {json(adaptivecardjson())}
 ]
 
 # adaptivecardjson

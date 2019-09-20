@@ -37,7 +37,6 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
                     { "name", "mybag" }
                 }
             },
-            { "adaptivecardString", "{\"$schema\":\"http://adaptivecards.io/schemas/adaptive-card.json\",\"type\":\"AdaptiveCard\",\"version\":\"1.0\",\"body\":[{\"type\":\"TextBlock\",\"text\":\"input text\"}]}" },
             { "items", new string[] { "zero", "one", "two" } },
             {
                 "nestedItems",
@@ -647,10 +646,6 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
             Test("isMatch('12abc', '([0-9]+)([a-z]+)([0-9]+)')", false), // "(...)" (simple group)
             Test(@"isMatch('a', '\\w{1}')", true), // "\w" (match [a-zA-Z0-9_])
             Test(@"isMatch('1', '\\d{1}')", true), // "\d" (match [0-9])
-            #endregion
-
-            #region AdaptiveCard
-            Test("adaptiveCard(adaptivecardString).Body[0].Text", "input text"),
             #endregion
         };
 

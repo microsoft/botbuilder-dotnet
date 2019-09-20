@@ -145,8 +145,5 @@ namespace Microsoft.Bot.Builder.Expressions
 
         // Regular expression
         public const string IsMatch = "isMatch";
-
-        // adaptiveCard
-        public const string AdaptiveCard = "adaptiveCard";
     }
 }
