@@ -3,18 +3,12 @@
 
 namespace Microsoft.BotBuilderSamples.Bots
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Bot.Builder;
     using Microsoft.Bot.Builder.Teams;
-    using Microsoft.Bot.Connector;
-    using Microsoft.Bot.Connector.Teams;
     using Microsoft.Bot.Schema;
     using Microsoft.Bot.Schema.Teams;
-    using Microsoft.EntityFrameworkCore.Migrations;
 
     public class OneOnOneAlertBot : TeamsActivityHandler
     {

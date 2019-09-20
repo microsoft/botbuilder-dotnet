@@ -27,7 +27,6 @@ namespace Microsoft.BotBuilderSamples.Bots
         private async Task SendMessageAndLogActivityId(ITurnContext turnContext, string text, CancellationToken cancellationToken)
         {
             var replyActivity = MessageFactory.Text(text);
-            //replyActivity.ApplyConversationReference(turnContext.Activity.GetConversationReference());
 
             // There are 2 ways to send a message to a channel. You can get the channelID from the TeamsChannelData object, or you can pull the
             // Channel ID from the conversationId after you drop the message ID that's packaged with the channel ID from Teams. Below are the
