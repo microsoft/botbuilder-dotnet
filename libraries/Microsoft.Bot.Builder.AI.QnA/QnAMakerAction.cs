@@ -143,7 +143,10 @@ namespace Microsoft.Bot.Builder.AI.QnA
             // Set default no answer for active dialog.
             qnamakerOptions.NoAnswer = NoAnswer;
 
-            return await dc.BeginDialogAsync(QnAMakerActionBuilder.QnAMakerDialogName, qnamakerOptions, cancellationToken).ConfigureAwait(false);
+            var dialogOptions = new Dictionary<string, object>();
+            dialogOptions["qnaOptions"] = qnamakerOptions;
+
+            return await dc.BeginDialogAsync(QnAMakerActionBuilder.QnAMakerDialogName, dialogOptions, cancellationToken).ConfigureAwait(false);
         }
     }
 }
