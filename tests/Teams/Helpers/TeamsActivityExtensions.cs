@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Channels;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Schema.Teams;
 
@@ -65,7 +66,21 @@ namespace Helpers
             }
 
             channelData.Channel = activity.GetGeneralChannel();
-            activity.Conversation.Id = channelData.Team.Id;
+
+            if (activity.Conversation == null)
+            {
+                activity.Conversation = new ConversationAccount
+                {
+                    Id = channelData.Team.Id,
+                    TenantId = channelData.Tenant.Id,
+                    IsGroup = true,
+                    ConversationType = "msteams",
+                };
+            }
+            else
+            {
+                activity.Conversation.Id = channelData.Team.Id;
+            }
 
             return activity;
         }
