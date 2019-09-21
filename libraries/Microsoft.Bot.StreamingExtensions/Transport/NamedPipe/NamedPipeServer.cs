@@ -71,16 +71,6 @@ namespace Microsoft.Bot.StreamingExtensions.Transport.NamedPipes
         public bool IsConnected => _sender.IsConnected && _receiver.IsConnected;
 
         /// <summary>
-        /// Gets or sets the Id for this Named Pipe Server.
-        /// </summary>
-        /// <value>
-        /// The Id for this Named Pipe Server.
-        /// </value>
-        public Guid Id { get; set; }
-
-        public string RemoteHost { get => _baseName; }
-
-        /// <summary>
         /// Used to establish the connection used by this server and begin listening for incoming messages.
         /// </summary>
         /// <returns>A <see cref="Task"/> to handle the server listen operation. This task will not resolve as long as the server is running.</returns>

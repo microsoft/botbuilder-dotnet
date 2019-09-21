@@ -18,22 +18,6 @@ namespace Microsoft.Bot.StreamingExtensions.Transport
         event DisconnectedEventHandler Disconnected;
 
         /// <summary>
-        /// Gets or sets the Id of this transport server.
-        /// </summary>
-        /// <value>
-        /// The ID of this transport server, useful for making sure responses are sent over the correct transport.
-        /// </value>
-        Guid Id { get; set; }
-
-        /// <summary>
-        /// Gets the base URL of the RemoteHost this server is connected to.
-        /// </summary>
-        /// <value>
-        /// The base URL of the RemoteHost this server is connected to.
-        /// </value>
-        string RemoteHost { get; }
-
-        /// <summary>
         /// Used to establish the connection used by this server and begin listening for incoming messages.
         /// </summary>
         /// <returns>A <see cref="Task"/> to handle the server listen operation.</returns>

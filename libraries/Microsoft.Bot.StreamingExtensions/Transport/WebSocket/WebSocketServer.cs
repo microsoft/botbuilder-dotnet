@@ -55,16 +55,6 @@ namespace Microsoft.Bot.StreamingExtensions.Transport.WebSockets
         public event DisconnectedEventHandler Disconnected;
 
         /// <summary>
-        /// Gets or sets the Id for this Named Pipe Server.
-        /// </summary>
-        /// <value>
-        /// The Id for this Named Pipe Server.
-        /// </value>
-        public Guid Id { get; set; }
-
-        public string RemoteHost { get; }
-
-        /// <summary>
         /// Gets a value indicating whether or not this server is currently connected.
         /// </summary>
         /// <returns>
