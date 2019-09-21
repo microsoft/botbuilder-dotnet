@@ -122,7 +122,7 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
         /// <returns>A response created by the BotAdapter to be sent to the client that originated the request.</returns>
         public async Task<StreamingResponse> ProcessRequestAsync(ReceiveRequest request, ILogger logger, object context = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            logger = logger ?? NullLogger<IRequestHandler>.Instance;
+            logger = logger ?? NullLogger.Instance;
             var response = new StreamingResponse();
 
             if (request == null || string.IsNullOrEmpty(request.Verb) || string.IsNullOrEmpty(request.Path))
