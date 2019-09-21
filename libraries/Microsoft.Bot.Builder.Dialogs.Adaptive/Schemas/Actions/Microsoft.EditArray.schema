@@ -24,12 +24,12 @@
         "itemsProperty": {
             "$role": "expression",
             "title": "Items property",
-            "description": "Named memory scope that holds the array to update."
+            "description": "Property that holds the array to update."
         },
         "resultProperty": {
             "$role": "expression",
             "title": "Result Property",
-            "description": "Named memory scope to store the result of this action."
+            "description": "Property to store the result of this action."
         },
         "value": {
             "$role": "expression",

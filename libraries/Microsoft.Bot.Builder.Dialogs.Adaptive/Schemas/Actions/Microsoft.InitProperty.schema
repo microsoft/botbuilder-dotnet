@@ -12,7 +12,7 @@
         "property": {
             "$role": "expression",
             "title": "Property",
-            "description": "Named memory scope.",
+            "description": "Property (named location to store information).",
             "examples": [
                 "user.age"
             ]

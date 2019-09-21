@@ -18,7 +18,7 @@
         "value": {
             "$role": "expression",
             "title": "Value",
-            "description": "Named memory scope to send as the value of the trace activity."
+            "description": "Property that holds the value to send as trace activity."
         }
     }
 }

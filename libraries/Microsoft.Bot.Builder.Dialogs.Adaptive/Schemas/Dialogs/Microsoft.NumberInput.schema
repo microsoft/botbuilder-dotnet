@@ -2,7 +2,7 @@
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
     "$role": "unionType(Microsoft.IDialog)",
     "title": "NumberInput Dialog",
-    "description": "This represents a dialog which gathers a decimal number in a specified range",
+    "description": "Collect information - Ask for a number.",
     "type": "object",
     "allOf": [
         {
@@ -16,14 +16,14 @@
                         "float",
                         "integer"
                     ],
-                    "title": "Output Format",
-                    "description": "The NumberInput output format.",
+                    "title": "Output format",
+                    "description": "Number output format.",
                     "default": "float"
                 },
                 "defaultLocale": {
                     "type": "string",
-                    "title": "Default Locale",
-                    "description": "The prompts default locale that should be recognized.",
+                    "title": "Default locale",
+                    "description": "Default locale.",
                     "default": "en-us"
                 }
             }

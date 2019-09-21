@@ -8,7 +8,7 @@
         "itemsProperty": {
             "$role": "expression",
             "title": "Items property",
-            "description": "Named memory scope that holds the array.",
+            "description": "Property that holds the array.",
             "examples": [
                 "user.todoList"
             ]

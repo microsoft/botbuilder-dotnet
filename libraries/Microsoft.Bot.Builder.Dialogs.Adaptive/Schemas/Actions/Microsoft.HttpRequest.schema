@@ -39,7 +39,7 @@
         "resultProperty": {
             "$role": "expression",
             "title": "Result property",
-            "description": "Named memory scope to store the result of this action. The result includes 4 properties from the http response: statusCode, reasonPhrase, content and headers. If the content is json it will be a deserialized object.",
+            "description": "Property to store the result of this action. The result includes 4 properties from the http response: statusCode, reasonPhrase, content and headers. If the content is json it will be a deserialized object.",
             "examples": [
                 "dialog.contosodata"
             ]

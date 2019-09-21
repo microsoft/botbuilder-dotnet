@@ -25,7 +25,7 @@
         "resultProperty": {
             "$role": "expression",
             "title": "Property",
-            "description": "Named memory scope to store any value returned by the dialog that is called.",
+            "description": "Property to store any value returned by the dialog that is called.",
             "examples": [
                 "dialog.userName"
             ]

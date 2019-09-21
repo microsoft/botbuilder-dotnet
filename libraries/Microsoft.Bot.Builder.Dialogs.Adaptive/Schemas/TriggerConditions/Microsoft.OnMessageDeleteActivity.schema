@@ -1,8 +1,8 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
     "$role": "unionType(Microsoft.ITriggerCondition)",
-    "title": "OnMessageDeleteActivity",
-    "description": "This defines the actions to take when an MessageDelete activity is received",
+    "title": "On MessageDelete activity",
+    "description": "Actions to perform on receipt of an activity with type MessageDelete.",
     "type": "object",
     "allOf": [
         {
