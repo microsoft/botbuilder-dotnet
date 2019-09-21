@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
                               /// <summary>
                               /// Used to process incoming requests sent over an <see cref="IStreamingTransport"/> and adhering to the Bot Framework Protocol v3 with Streaming Extensions.
                               /// </summary>
-    public class StreamingRequestHandler : RequestHandler
+    public class StreamingRequestHandler : IRequestHandler
 #pragma warning restore CS1574 // XML comment has cref attribute that could not be resolved
     {
         private readonly IBot _bot;
@@ -120,9 +120,9 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
         /// <param name="context">Optional context to operate within. Unused in bot implementation.</param>
         /// /// <param name="cancellationToken">Optional cancellation token.</param>
         /// <returns>A response created by the BotAdapter to be sent to the client that originated the request.</returns>
-        public override async Task<StreamingResponse> ProcessRequestAsync(ReceiveRequest request, ILogger<RequestHandler> logger, object context = null, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<StreamingResponse> ProcessRequestAsync(ReceiveRequest request, ILogger logger, object context = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            logger = logger ?? NullLogger<RequestHandler>.Instance;
+            logger = logger ?? NullLogger<IRequestHandler>.Instance;
             var response = new StreamingResponse();
 
             if (request == null || string.IsNullOrEmpty(request.Verb) || string.IsNullOrEmpty(request.Path))
@@ -180,7 +180,7 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
         /// <param name="logger">Optional logger.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>The response ready to send to the client.</returns>
-        private async Task<StreamingResponse> ProcessStreamingRequestAsync(ReceiveRequest request, StreamingResponse response, ILogger<RequestHandler> logger, CancellationToken cancellationToken)
+        private async Task<StreamingResponse> ProcessStreamingRequestAsync(ReceiveRequest request, StreamingResponse response, ILogger logger, CancellationToken cancellationToken)
         {
             var body = string.Empty;
 

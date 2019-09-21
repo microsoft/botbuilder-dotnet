@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Bot.StreamingExtensions.UnitTests.Mocks
 {
-    public class MockRequestHandler : RequestHandler
+    public class MockRequestHandler : IRequestHandler
     {
         private readonly Func<ReceiveRequest, StreamingResponse> _responseAction;
         private readonly Func<ReceiveRequest, Task<StreamingResponse>> _responseActionAsync;
@@ -25,7 +25,7 @@ namespace Microsoft.Bot.StreamingExtensions.UnitTests.Mocks
             _responseAction = null;
         }
 
-        public override async Task<StreamingResponse> ProcessRequestAsync(ReceiveRequest request, ILogger<RequestHandler> logger, object context = null, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<StreamingResponse> ProcessRequestAsync(ReceiveRequest request, ILogger logger, object context = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (_responseAction != null)
             {
