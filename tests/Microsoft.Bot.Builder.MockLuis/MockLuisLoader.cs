@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Runtime.Serialization;
 using Microsoft.Bot.Builder.AI.Luis;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Loaders;
@@ -27,11 +28,19 @@ namespace Microsoft.Bot.Builder.MockLuis
             if (obj["applicationId"]?.Type == JTokenType.String)
             {
                 var luisService = obj.ToObject<LuisApplication>();
+                var name = luisService.ApplicationId;
+                if (name.StartsWith("{") && name.EndsWith("}"))
+                {
+                    var start = name.LastIndexOf('.') + 1;
+                    var end = name.LastIndexOf('}');
+                    name = name.Substring(start, end - start);
+                }
+
                 luisService.ApplicationId = configuration.LoadSetting(luisService.ApplicationId);
                 luisService.Endpoint = configuration.LoadSetting(luisService.Endpoint);
                 luisService.EndpointKey = configuration.LoadSetting(luisService.EndpointKey);
 
-                return new MockLuisRecognizer(luisService, configuration.GetValue<string>("luis:resources"));
+                return new MockLuisRecognizer(luisService, configuration.GetValue<string>("luis:resources"), name);
             }
 
             // Else, just assume it is the verbose structure with LuisService as inner object
