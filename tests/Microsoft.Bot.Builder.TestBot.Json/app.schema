@@ -1058,37 +1058,49 @@
                     "description": "The output format.",
                     "default": "value"
                 },
-                "choicesProperty": {
-                    "type": "string",
-                    "title": "Choices Property",
-                    "description": "expression collection of choices to present to user."
-                },
                 "choices": {
-                    "type": "array",
-                    "items": [
+                    "anyOf": [
                         {
-                            "title": "Choice",
-                            "type": "object",
-                            "properties": {
-                                "value": {
-                                    "type": "string",
-                                    "title": "Value",
-                                    "description": "the value to return when selected."
-                                },
-                                "action": {
+                            "$role": "expression",
+                            "type": "string",
+                            "description": "String must contain an expression."
+                        },
+                        {
+                            "type": "array",
+                            "items": [
+                                {
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "array",
+                            "items": [
+                                {
+                                    "title": "Choice",
                                     "type": "object",
-                                    "title": "Action",
-                                    "description": "Card action for the choice"
-                                },
-                                "synonyms": {
-                                    "type": "array",
-                                    "title": "Synonyms",
-                                    "description": "the list of synonyms to recognize in addition to the value. This is optional.",
-                                    "items": {
-                                        "type": "string"
+                                    "properties": {
+                                        "value": {
+                                            "type": "string",
+                                            "title": "Value",
+                                            "description": "the value to return when selected."
+                                        },
+                                        "action": {
+                                            "type": "object",
+                                            "title": "Action",
+                                            "description": "Card action for the choice"
+                                        },
+                                        "synonyms": {
+                                            "type": "array",
+                                            "title": "Synonyms",
+                                            "description": "the list of synonyms to recognize in addition to the value. This is optional.",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
                                     }
                                 }
-                            }
+                            ]
                         }
                     ]
                 },

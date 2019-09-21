@@ -20,37 +20,47 @@
                     "description": "Choice output format.",
                     "default": "value"
                 },
-                "choicesProperty": {
-                    "type": "string",
-                    "title": "Choices property",
-                    "description": "Property that holds the list of choices."
-                },
                 "choices": {
-                    "type": "array",
-                    "items": [
+                    "anyOf": [
                         {
-                            "title": "Choice",
-                            "type": "object",
-                            "properties": {
-                                "value": {
-                                    "type": "string",
-                                    "title": "Value",
-                                    "description": "Value to return when this choice is selected."
-                                },
-                                "action": {
+                            "$role": "expression"
+                        },
+                        {
+                            "type": "array",
+                            "items": [
+                                {
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "array",
+                            "items": [
+                                {
+                                    "title": "Choice",
                                     "type": "object",
-                                    "title": "Action",
-                                    "description": "Card action for the choice."
-                                },
-                                "synonyms": {
-                                    "type": "array",
-                                    "title": "Synonyms",
-                                    "description": "List of synonyms to recognize in addition to the value (optional).",
-                                    "items": {
-                                        "type": "string"
+                                    "properties": {
+                                        "value": {
+                                            "type": "string",
+                                            "title": "Value",
+                                            "description": "Value to return when this choice is selected."
+                                        },
+                                        "action": {
+                                            "type": "object",
+                                            "title": "Action",
+                                            "description": "Card action for the choice."
+                                        },
+                                        "synonyms": {
+                                            "type": "array",
+                                            "title": "Synonyms",
+                                            "description": "List of synonyms to recognize in addition to the value (optional).",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
                                     }
                                 }
-                            }
+                            ]
                         }
                     ]
                 },
