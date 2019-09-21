@@ -18,6 +18,6 @@
 - Enter a value for {toLower(property)}
 
 >>> Help messages <<<
-# helpEnum(property)
+# helpProperty(property)
 - Possible values for {toLower(property)} include: \[{join(turn.schema[property].enum, ',')}\]
 

@@ -2,6 +2,6 @@
 - [askEnum('Cheese')]
 
 # HelpCheese
-- [helpEnum('Cheese')]
+- [helpProperty('Cheese')]
 
 [sandwich-common.en-us.lg](./sandwich-common.en-us.lg)
