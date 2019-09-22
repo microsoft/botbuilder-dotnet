@@ -1,0 +1,16 @@
+{
+  "id": "message_id",
+  "roomId": "room_id",
+  "roomType": "direct",
+  "toPersonId": null,
+  "toPersonEmail": null,
+  "text": "Hello!",
+  "markdown": "Hello!",
+  "files": null,
+  "personId": "person_id",
+  "personEmail": "test_email@webex.bot",
+  "created": "2019-08-26T19:03:00.205Z",
+  "mentionedPeople": null,
+  "mentionedGroups": null,
+  "html": "<p><spark-mention data-object-type=\"person\" data-object-id=\"Y2lzY29zcGFyazovL3VzL1BFT1BMRS9lN2RhNmNkNC01MGYxLTQ1MWYtYWY1OC1iOXEwZDM2YTk3Yzc\">Webex-sample-bot</spark-mention> Hello!</p>"
+}

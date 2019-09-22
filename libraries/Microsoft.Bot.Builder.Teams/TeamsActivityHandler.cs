@@ -6,14 +6,62 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Schema.Teams;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Teams
 {
-    public class TeamsActivityHandler : ActivityHandler
+    public class TeamsActivityHandler : ActivityHandler, ITeamsInfo
     {
+        private TeamsRosterClient _teamsRosterClient = null;
+
+        public async Task<TeamDetails> GetTeamDetailsAsync(ITurnContext turnContext, CancellationToken cancellationToken = default)
+        {
+            if (turnContext == null)
+            {
+                throw new ArgumentNullException(nameof(turnContext));
+            }
+
+            if (_teamsRosterClient == null)
+            {
+                throw new NotImplementedException("This method is only implemented for the MS Teams channel.");
+            }
+
+            return await _teamsRosterClient.GetTeamDetailsAsync(turnContext, cancellationToken).ConfigureAwait(false);
+        }
+
+        public async Task<IList<ChannelInfo>> GetChannelsAsync(ITurnContext turnContext, CancellationToken cancellationToken = default)
+        {
+            if (turnContext == null)
+            {
+                throw new ArgumentNullException(nameof(turnContext));
+            }
+
+            if (_teamsRosterClient == null)
+            {
+                throw new NotImplementedException("This method is only implemented for the MS Teams channel.");
+            }
+
+            return await _teamsRosterClient.GetChannelsAsync(turnContext, cancellationToken).ConfigureAwait(false);
+        }
+
+        public async Task<IEnumerable<TeamsChannelAccount>> GetMembersAsync(ITurnContext turnContext, CancellationToken cancellationToken = default)
+        {
+            if (turnContext == null)
+            {
+                throw new ArgumentNullException(nameof(turnContext));
+            }
+
+            if (_teamsRosterClient == null)
+            {
+                throw new NotImplementedException("This method is only implemented for the MS Teams channel.");
+            }
+
+            return await _teamsRosterClient.GetMembersAsync(turnContext, cancellationToken).ConfigureAwait(false);
+        }
+
         public override async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (turnContext == null)
@@ -29,6 +77,11 @@ namespace Microsoft.Bot.Builder.Teams
             if (turnContext.Activity.Type == null)
             {
                 throw new ArgumentException($"{nameof(turnContext)}.Activity must have non-null Type.");
+            }
+
+            if (turnContext.Activity.ChannelId == Channels.Msteams)
+            {
+                _teamsRosterClient = new TeamsRosterClient((ConnectorClient)turnContext.TurnState.Get<IConnectorClient>());
             }
 
             switch (turnContext.Activity.Type)
@@ -90,11 +143,17 @@ namespace Microsoft.Bot.Builder.Teams
                     case "composeExtension/setting":
                         return CreateInvokeResponse(await OnTeamsMessagingExtensionConfigurationSettingsAsync(turnContext, cancellationToken).ConfigureAwait(false));
 
+                    case "composeExtension/onCardButtonClicked":
+                        await OnTeamsMessagingExtensionCardButtonClickedAsync(turnContext, cancellationToken).ConfigureAwait(false);
+                        return CreateInvokeResponse();
+
                     case "task/fetch":
-                        return CreateInvokeResponse(await OnTeamsTaskModuleFetchAsync(turnContext, cancellationToken).ConfigureAwait(false));
+                        var fetchResponse = await OnTeamsTaskModuleFetchAsync(turnContext, SafeCast<TaskModuleRequest>(turnContext.Activity.Value), cancellationToken).ConfigureAwait(false);
+                        return CreateInvokeResponse(new TaskModuleResponse { Task = new TaskModuleContinueResponse(fetchResponse) });
 
                     case "task/submit":
-                        return CreateInvokeResponse(await OnTeamsTaskModuleSubmitAsync(turnContext, cancellationToken).ConfigureAwait(false));
+                        var submitResponse = await OnTeamsTaskModuleSubmitAsync(turnContext, SafeCast<TaskModuleRequest>(turnContext.Activity.Value), cancellationToken).ConfigureAwait(false);
+                        return CreateInvokeResponse(new TaskModuleResponse { Task = submitResponse });
 
                     default:
                         return null;
@@ -173,8 +232,8 @@ namespace Microsoft.Bot.Builder.Teams
                     case "edit":
                         return await OnTeamsMessagingExtensionBotMessagePreviewEditAsync(turnContext, action, cancellationToken).ConfigureAwait(false);
 
-                    case "submit":
-                        return await OnTeamsMessagingExtensionBotMessagePreviewSubmitAsync(turnContext, action, cancellationToken).ConfigureAwait(false);
+                    case "send":
+                        return await OnTeamsMessagingExtensionBotMessagePreviewSendAsync(turnContext, action, cancellationToken).ConfigureAwait(false);
 
                     default:
                         return null;
@@ -196,7 +255,7 @@ namespace Microsoft.Bot.Builder.Teams
             return Task.FromResult<MessagingExtensionActionResponse>(null);
         }
 
-        protected virtual Task<MessagingExtensionActionResponse> OnTeamsMessagingExtensionBotMessagePreviewSubmitAsync(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionAction action, CancellationToken cancellationToken)
+        protected virtual Task<MessagingExtensionActionResponse> OnTeamsMessagingExtensionBotMessagePreviewSendAsync(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionAction action, CancellationToken cancellationToken)
         {
             return Task.FromResult<MessagingExtensionActionResponse>(null);
         }
@@ -211,14 +270,19 @@ namespace Microsoft.Bot.Builder.Teams
             return Task.FromResult<MessagingExtensionResponse>(null);
         }
 
-        protected virtual Task<TaskModuleResponse> OnTeamsTaskModuleFetchAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
+        protected virtual Task OnTeamsMessagingExtensionCardButtonClickedAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
         {
-            return Task.FromResult<TaskModuleResponse>(null);
+            return Task.CompletedTask;
         }
 
-        protected virtual Task<TaskModuleResponse> OnTeamsTaskModuleSubmitAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
+        protected virtual Task<TaskModuleTaskInfo> OnTeamsTaskModuleFetchAsync(ITurnContext<IInvokeActivity> turnContext, TaskModuleRequest taskModuleRequest, CancellationToken cancellationToken)
         {
-            return Task.FromResult<TaskModuleResponse>(null);
+            return Task.FromResult<TaskModuleTaskInfo>(null);
+        }
+
+        protected virtual Task<TaskModuleResponseBase> OnTeamsTaskModuleSubmitAsync(ITurnContext<IInvokeActivity> turnContext, TaskModuleRequest taskModuleRequest, CancellationToken cancellationToken)
+        {
+            return Task.FromResult<TaskModuleResponseBase>(null);
         }
 
         protected override Task OnConversationUpdateActivityAsync(ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29123.89
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.705
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConversationUpdate", "ConversationUpdate\ConversationUpdate.csproj", "{D62F48FD-D7F4-41D9-958F-421D51536B54}"
 EndProject
@@ -10,8 +10,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TeamsFileBot", "FileUpload\TeamsFileBot.csproj", "{9F2EA9EE-023D-4E41-B0E0-68EF593E458B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Roster", "Roster\Roster.csproj", "{AEE5C25E-74CC-48D9-815D-BE5C17D16737}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CardActions", "CardActions\CardActions.csproj", "{8A654F21-A762-4317-963E-8F112758C9A8}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LinkUnfurling", "LinkUnfurling\LinkUnfurling.csproj", "{6CD3219E-A8C4-415B-B008-0E6B265E8E88}"
 EndProject
@@ -43,11 +41,19 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Schema", "..\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Connector", "..\..\libraries\Microsoft.Bot.Connector\Microsoft.Bot.Connector.csproj", "{A7DC47A2-4F88-44AE-AD9B-46C943964B4D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SearchBasedMessagingExtension", "SearchBasedMessagingExtension\SearchBasedMessagingExtension.csproj", "{6E2FC58C-1A10-49C0-92BB-8CBACB8B02CF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdaptiveCards", "AdaptiveCards\AdaptiveCards.csproj", "{5CE0D599-F1F5-4F50-B5E5-A39724EE9AD5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ActionBasedMessagingExtension", "ActionBasedMessagingExtension\ActionBasedMessagingExtension.csproj", "{1279B32B-92E0-43E2-A1D5-D4D252E37F8C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mentions", "Mentions\Mentions.csproj", "{8485C374-3111-4A82-9A0C-CC38DE99AE75}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ActionBasedMessagingExtensionFetchTask", "ActionBasedMessagingExtension-FetchTask\ActionBasedMessagingExtensionFetchTask.csproj", "{746CEEA6-3A8F-49AB-976B-69F54A84C8D4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SearchBasedMessagingExtension", "SearchBasedMessagingExtension\SearchBasedMessagingExtension.csproj", "{45A96B17-2878-424C-929C-4CCD0B186AFA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ActionBasedMessagingExtension", "ActionBasedMessagingExtension\ActionBasedMessagingExtension.csproj", "{BC4553C0-E2CB-47A1-84A6-5D27A6EB7DEC}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ActionBasedMessagingExtensionFetchTask", "ActionBasedMessagingExtension-FetchTask\ActionBasedMessagingExtensionFetchTask.csproj", "{A26E1445-E2D7-44C2-9C33-CBFC3846537A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProactiveMessages", "ProactiveMessages\ProactiveMessages.csproj", "{FED44219-2A75-49A1-B925-954929D09BD8}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NotificationOnly", "NotificationOnly\NotificationOnly.csproj", "{ED2CF41C-3B02-4602-AD2E-654B83374DC5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -80,12 +86,6 @@ Global
 		{AEE5C25E-74CC-48D9-815D-BE5C17D16737}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AEE5C25E-74CC-48D9-815D-BE5C17D16737}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AEE5C25E-74CC-48D9-815D-BE5C17D16737}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8A654F21-A762-4317-963E-8F112758C9A8}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{8A654F21-A762-4317-963E-8F112758C9A8}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
-		{8A654F21-A762-4317-963E-8F112758C9A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8A654F21-A762-4317-963E-8F112758C9A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8A654F21-A762-4317-963E-8F112758C9A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8A654F21-A762-4317-963E-8F112758C9A8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6CD3219E-A8C4-415B-B008-0E6B265E8E88}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
 		{6CD3219E-A8C4-415B-B008-0E6B265E8E88}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{6CD3219E-A8C4-415B-B008-0E6B265E8E88}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -188,6 +188,54 @@ Global
 		{746CEEA6-3A8F-49AB-976B-69F54A84C8D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{746CEEA6-3A8F-49AB-976B-69F54A84C8D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{746CEEA6-3A8F-49AB-976B-69F54A84C8D4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{88633DE8-E3CF-4493-B679-0B6EDCC88FEE}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{88633DE8-E3CF-4493-B679-0B6EDCC88FEE}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
+		{88633DE8-E3CF-4493-B679-0B6EDCC88FEE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{88633DE8-E3CF-4493-B679-0B6EDCC88FEE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{88633DE8-E3CF-4493-B679-0B6EDCC88FEE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{88633DE8-E3CF-4493-B679-0B6EDCC88FEE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ED2CF41C-3B02-4602-AD2E-654B83374DC5}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED2CF41C-3B02-4602-AD2E-654B83374DC5}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
+		{ED2CF41C-3B02-4602-AD2E-654B83374DC5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED2CF41C-3B02-4602-AD2E-654B83374DC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ED2CF41C-3B02-4602-AD2E-654B83374DC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ED2CF41C-3B02-4602-AD2E-654B83374DC5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FED44219-2A75-49A1-B925-954929D09BD8}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{FED44219-2A75-49A1-B925-954929D09BD8}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
+		{FED44219-2A75-49A1-B925-954929D09BD8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FED44219-2A75-49A1-B925-954929D09BD8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FED44219-2A75-49A1-B925-954929D09BD8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FED44219-2A75-49A1-B925-954929D09BD8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5CE0D599-F1F5-4F50-B5E5-A39724EE9AD5}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{5CE0D599-F1F5-4F50-B5E5-A39724EE9AD5}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
+		{5CE0D599-F1F5-4F50-B5E5-A39724EE9AD5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5CE0D599-F1F5-4F50-B5E5-A39724EE9AD5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5CE0D599-F1F5-4F50-B5E5-A39724EE9AD5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5CE0D599-F1F5-4F50-B5E5-A39724EE9AD5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8485C374-3111-4A82-9A0C-CC38DE99AE75}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{8485C374-3111-4A82-9A0C-CC38DE99AE75}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
+		{8485C374-3111-4A82-9A0C-CC38DE99AE75}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8485C374-3111-4A82-9A0C-CC38DE99AE75}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8485C374-3111-4A82-9A0C-CC38DE99AE75}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8485C374-3111-4A82-9A0C-CC38DE99AE75}.Release|Any CPU.Build.0 = Release|Any CPU
+		{45A96B17-2878-424C-929C-4CCD0B186AFA}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{45A96B17-2878-424C-929C-4CCD0B186AFA}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
+		{45A96B17-2878-424C-929C-4CCD0B186AFA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{45A96B17-2878-424C-929C-4CCD0B186AFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{45A96B17-2878-424C-929C-4CCD0B186AFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{45A96B17-2878-424C-929C-4CCD0B186AFA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BC4553C0-E2CB-47A1-84A6-5D27A6EB7DEC}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC4553C0-E2CB-47A1-84A6-5D27A6EB7DEC}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
+		{BC4553C0-E2CB-47A1-84A6-5D27A6EB7DEC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC4553C0-E2CB-47A1-84A6-5D27A6EB7DEC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC4553C0-E2CB-47A1-84A6-5D27A6EB7DEC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BC4553C0-E2CB-47A1-84A6-5D27A6EB7DEC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A26E1445-E2D7-44C2-9C33-CBFC3846537A}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{A26E1445-E2D7-44C2-9C33-CBFC3846537A}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
+		{A26E1445-E2D7-44C2-9C33-CBFC3846537A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A26E1445-E2D7-44C2-9C33-CBFC3846537A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A26E1445-E2D7-44C2-9C33-CBFC3846537A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A26E1445-E2D7-44C2-9C33-CBFC3846537A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
