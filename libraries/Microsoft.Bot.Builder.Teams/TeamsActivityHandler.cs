@@ -135,7 +135,7 @@ namespace Microsoft.Bot.Builder.Teams
                         return CreateInvokeResponse(await OnTeamsMessagingExtensionSubmitActionDispatchAsync(turnContext, SafeCast<MessagingExtensionAction>(turnContext.Activity.Value), cancellationToken).ConfigureAwait(false));
 
                     case "composeExtension/fetchTask":
-                        return CreateInvokeResponse(await OnTeamsMessagingExtensionFetchTaskAsync(turnContext, cancellationToken).ConfigureAwait(false));
+                        return CreateInvokeResponse(await OnTeamsMessagingExtensionFetchTaskAsync(turnContext, SafeCast<MessagingExtensionQuery>(turnContext.Activity.Value),  cancellationToken).ConfigureAwait(false));
 
                     case "composeExtension/querySettingsUrl":
                         return CreateInvokeResponse(await OnTeamsMessagingExtensionConfigurationQuerySettingsUrlAsync(turnContext, cancellationToken).ConfigureAwait(false));
@@ -218,7 +218,7 @@ namespace Microsoft.Bot.Builder.Teams
             return Task.FromResult<MessagingExtensionResponse>(null);
         }
 
-        protected virtual Task<MessagingExtensionActionResponse> OnTeamsMessagingExtensionFetchTaskAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
+        protected virtual Task<MessagingExtensionActionResponse> OnTeamsMessagingExtensionFetchTaskAsync(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionQuery query, CancellationToken cancellationToken)
         {
             return Task.FromResult<MessagingExtensionActionResponse>(null);
         }
