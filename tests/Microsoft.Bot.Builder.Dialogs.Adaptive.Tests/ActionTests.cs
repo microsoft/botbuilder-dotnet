@@ -608,7 +608,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 Property = "user.color",
                                 Prompt = new ActivityTemplate("Please select a color:"),
                                 UnrecognizedPrompt = new ActivityTemplate("Please select a color:"),
-                                Choices= new ChoiceSet("user.choices"),
+                                Choices = new ChoiceSet("user.choices"),
                                 AlwaysPrompt = true,
                                 Style = ListStyle.Inline
                             },

@@ -246,7 +246,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
 
             return new TestFlow(adapter, handler);
         }
-
     }
 
     public class MockLanguageGenerator : ILanguageGenerator
