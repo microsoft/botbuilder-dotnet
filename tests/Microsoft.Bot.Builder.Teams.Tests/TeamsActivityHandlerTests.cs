@@ -463,7 +463,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
         }
 
         [TestMethod]
-        public async Task TestMessagingExtensionSubmitActionPreviewActionSubmit()
+        public async Task TestMessagingExtensionSubmitActionPreviewActionSend()
         {
             // Arrange
             var activity = new Activity
@@ -472,7 +472,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 Name = "composeExtension/submitAction",
                 Value = JObject.FromObject(new MessagingExtensionAction
                 {
-                    BotMessagePreviewAction = "submit",
+                    BotMessagePreviewAction = "send",
                 }),
             };
 
@@ -492,7 +492,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             Assert.AreEqual(3, bot.Record.Count);
             Assert.AreEqual("OnInvokeActivityAsync", bot.Record[0]);
             Assert.AreEqual("OnTeamsMessagingExtensionSubmitActionDispatchAsync", bot.Record[1]);
-            Assert.AreEqual("OnTeamsMessagingExtensionBotMessagePreviewSubmitAsync", bot.Record[2]);
+            Assert.AreEqual("OnTeamsMessagingExtensionBotMessagePreviewSendAsync", bot.Record[2]);
             Assert.IsNotNull(activitiesToSend);
             Assert.AreEqual(1, activitiesToSend.Length);
             Assert.IsInstanceOfType(activitiesToSend[0].Value, typeof(InvokeResponse));
@@ -775,16 +775,22 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 return base.OnTeamsMessagingExtensionBotMessagePreviewEditAsync(turnContext, action, cancellationToken);
             }
 
-            protected override Task<MessagingExtensionActionResponse> OnTeamsMessagingExtensionBotMessagePreviewSubmitAsync(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionAction action, CancellationToken cancellationToken)
+            protected override Task<MessagingExtensionActionResponse> OnTeamsMessagingExtensionBotMessagePreviewSendAsync(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionAction action, CancellationToken cancellationToken)
             {
                 Record.Add(MethodBase.GetCurrentMethod().Name);
-                return base.OnTeamsMessagingExtensionBotMessagePreviewSubmitAsync(turnContext, action, cancellationToken);
+                return base.OnTeamsMessagingExtensionBotMessagePreviewSendAsync(turnContext, action, cancellationToken);
             }
 
             protected override Task<MessagingExtensionResponse> OnTeamsMessagingExtensionConfigurationSettingsAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
             {
                 Record.Add(MethodBase.GetCurrentMethod().Name);
                 return base.OnTeamsMessagingExtensionConfigurationSettingsAsync(turnContext, cancellationToken);
+            }
+
+            protected override Task OnTeamsMessagingExtensionCardButtonClickedAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
+            {
+                Record.Add(MethodBase.GetCurrentMethod().Name);
+                return base.OnTeamsMessagingExtensionCardButtonClickedAsync(turnContext, cancellationToken);
             }
 
             protected override Task<MessagingExtensionActionResponse> OnTeamsMessagingExtensionFetchTaskAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
