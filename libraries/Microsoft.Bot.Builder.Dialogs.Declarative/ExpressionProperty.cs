@@ -12,7 +12,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
     /// <typeparam name="T">type of object the expression should evaluate to</typeparam>
     public class ExpressionProperty<T> : IExpressionProperty
     {
+#pragma warning disable SA1401 // Fields should be private
         protected Expression expression;
+#pragma warning restore SA1401 // Fields should be private
 
         public ExpressionProperty()
         {
@@ -33,18 +35,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
             this.Value = value;
         }
 
-        public void SetValue(object value)
-        {
-            if (value is string expression)
-            {
-                this.Expression = expression;
-            }
-            else
-            {
-                this.Value = ConvertObject(value);
-            }
-        }
-
         /// <summary>
         /// Gets or sets expression to use to get the value from data
         /// </summary>
@@ -59,6 +49,27 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
         /// </summary>
         public T Value { get; set; }
 
+        /// <summary>
+        /// Set the value
+        /// </summary>
+        /// <param name="value">vfalue to set</param>
+        public virtual void SetValue(object value)
+        {
+            if (value is string expression)
+            {
+                this.Expression = expression;
+            }
+            else
+            {
+                this.Value = ConvertObject(value);
+            }
+        }
+
+        /// <summary>
+        /// Get the value 
+        /// </summary>
+        /// <param name="data">data to use for expression binding</param>
+        /// <returns>value</returns>
         public virtual T GetValue(object data)
         {
             if (Value != null)
@@ -81,8 +92,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
         /// <remarks>
         /// This method is called whenever an object is fected via expression or is deserialized from raw text.
         /// </remarks>
-        /// <param name="result"></param>
-        /// <returns></returns>
+        /// <param name="result">result to convert to object of type T</param>
+        /// <returns>object of type T</returns>
         protected virtual T ConvertObject(object result)
         {
             if (result is T)

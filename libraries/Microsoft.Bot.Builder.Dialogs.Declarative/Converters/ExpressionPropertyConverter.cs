@@ -44,5 +44,4 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
             serializer.Serialize(writer, value);
         }
     }
-
 }
