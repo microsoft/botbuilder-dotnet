@@ -51,7 +51,7 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core
 
                         var conversationId = string.Empty;
                         var conversation = body["conversation"];
-                        if (!string.IsNullOrWhiteSpace(conversation.ToString()))
+                        if (!string.IsNullOrWhiteSpace(conversation?.ToString()))
                         {
                             conversationId = (string)conversation["id"];
                         }

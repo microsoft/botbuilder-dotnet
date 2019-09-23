@@ -34,7 +34,7 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi
                     {
                         var userId = string.Empty;
                         var from = body["from"];
-                        if (!string.IsNullOrWhiteSpace(from.ToString()))
+                        if (!string.IsNullOrWhiteSpace(from?.ToString()))
                         {
                             userId = (string)from["id"];
                         }
@@ -43,7 +43,7 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi
 
                         var conversationId = string.Empty;
                         var conversation = body["conversation"];
-                        if (!string.IsNullOrWhiteSpace(conversation.ToString()))
+                        if (!string.IsNullOrWhiteSpace(conversation?.ToString()))
                         {
                             conversationId = (string)conversation["id"];
                         }
