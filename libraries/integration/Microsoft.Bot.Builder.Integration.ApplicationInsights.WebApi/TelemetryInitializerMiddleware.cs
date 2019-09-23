@@ -30,7 +30,7 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <seealso cref="ITurnContext"/>
         /// <seealso cref="Bot.Schema.IActivity"/>
-        public async Task OnTurnAsync(ITurnContext context, NextDelegate nextTurn, CancellationToken cancellationToken)
+        public virtual async Task OnTurnAsync(ITurnContext context, NextDelegate nextTurn, CancellationToken cancellationToken)
         {
             BotAssert.ContextNotNull(context);
 
