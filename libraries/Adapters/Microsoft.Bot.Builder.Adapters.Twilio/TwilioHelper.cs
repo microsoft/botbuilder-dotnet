@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
-using Twilio.Exceptions;
 using Twilio.Rest.Api.V2010.Account;
 using Twilio.Security;
 
@@ -69,7 +68,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// <param name="authToken">The authentication token for the Twilio app.</param>
         /// <returns>The activity object.</returns>
         /// <seealso cref="TwilioAdapter.ProcessAsync(HttpRequest, HttpResponse, IBot, System.Threading.CancellationToken)"/>
-        /// <seealso cref="ITwilioAdapterOptions.ValidationUrl"/>
+        /// <seealso cref="TwilioAdapterOptions.ValidationUrl"/>
         public static Activity RequestToActivity(HttpRequest httpRequest, Uri validationUrl, string authToken)
         {
             if (httpRequest == null)
@@ -124,10 +123,10 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         {
             var twilioSignature = httpRequest.Headers["x-twilio-signature"];
             var urlString = validationUrl?.ToString();
-            if (string.IsNullOrEmpty(urlString))
+            if (string.IsNullOrWhiteSpace(urlString))
             {
                 urlString = httpRequest.Headers["x-forwarded-proto"][0];
-                if (string.IsNullOrEmpty(urlString))
+                if (string.IsNullOrWhiteSpace(urlString))
                 {
                     urlString = httpRequest.Protocol + "://" + httpRequest.Host + httpRequest.Path;
                 }

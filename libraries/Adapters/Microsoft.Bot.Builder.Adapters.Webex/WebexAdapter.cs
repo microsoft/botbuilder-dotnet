@@ -28,7 +28,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// AccessToken: An access token for the bot.
         /// PublicAddress: The root URL of the bot application.
         /// Secret: The secret used to validate incoming webhooks.
-        /// Secret: A name for the webhook subscription.
+        /// WebhookName: A name for the webhook subscription.
         /// </remarks>
         public WebexAdapter(IConfiguration configuration)
             : this(new WebexClientWrapper(new WebexAdapterOptions(configuration["AccessToken"], new Uri(configuration["PublicAddress"]), configuration["Secret"], configuration["WebhookName"])))
