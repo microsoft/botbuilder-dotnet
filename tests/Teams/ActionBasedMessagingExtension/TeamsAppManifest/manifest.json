@@ -1,64 +1,106 @@
 {
-  "$schema": "https://github.com/OfficeDev/microsoft-teams-app-schema/blob/preview/DevPreview/MicrosoftTeams.schema.json",
-  "manifestVersion": "1.5",
-  "version": "1.0",
-  "id": "f0a41ea1-87b1-4d28-bf94-539cd3d623f7",
-  "packageName": "com.teams.sample.linkunfurling",
-  "developer": {
-    "name": "Link Unfurling",
-    "websiteUrl": "https://www.microsoft.com",
-    "privacyUrl": "https://www.teams.com/privacy",
-    "termsOfUseUrl": "https://www.teams.com/termsofuser"
-  },
-  "icons": {
-    "color": "color.png",
-    "outline": "outline.png"
-  },
-  "name": {
-    "short": "Link Unfurling",
-    "full": "Link Unfurling"
-  },
-  "description": {
-    "short": "Link Unfurling",
-    "full": "Link Unfurling"
-  },
-  "accentColor": "#FFFFFF",
-  "bots": [
-    {
-      "botId": "f0a41ea1-87b1-4d28-bf94-539cd3d623f7",
-      "scopes": [ "personal", "team" ]
-    }
-  ],
-  "composeExtensions": [
-    {
-      "botId": "f0a41ea1-87b1-4d28-bf94-539cd3d623f7",
-      "commands": [
+    "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.5/MicrosoftTeams.schema.json",
+    "manifestVersion": "1.5",
+    "version": "1.0",
+    "id": "",
+    "packageName": "com.teams.sample.parameters.extension",
+    "developer": {
+        "name": "Microsoft",
+        "websiteUrl": "https://www.microsoft.com",
+        "privacyUrl": "https://www.teams.com/privacy",
+        "termsOfUseUrl": "https://www.teams.com/termsofuser"
+    },
+    "icons": {
+        "color": "color.png",
+        "outline": "outline.png"
+    },
+    "name": {
+        "short": "Action Based Ext",
+        "full": "Action Based Messaging Extension"
+    },
+    "description": {
+        "short": "Messaging Extension with parameters",
+        "full": "Demonstrates a Messaging Extension with parameters"
+    },
+    "accentColor": "#FFFFFF",
+    "bots": [
         {
-          "id": "searchQuery",
-          "context": [ "compose", "commandBox" ],
-          "description": "Test command to run query",
-          "title": "Search",
-          "type": "query",
-          "parameters": [
-            {
-              "name": "searchQuery",
-              "title": "Search Query",
-              "description": "Your search query",
-              "inputType": "text"
-            }
-          ]
+            "botId": "",
+            "scopes": [
+                "personal",
+                "team",
+                "groupchat"
+            ],
+            "supportsFiles": false,
+            "isNotificationOnly": false
         }
-      ],
-      "messageHandlers": [
+    ],
+    "composeExtensions": [
         {
-          "type": "link",
-          "value": {
-            "domains": [
-              "tzadik.com"
+            "botId": "",
+            "canUpdateConfiguration": false,
+            "commands": [
+                {
+                    "id": "testCommand",
+                    "type": "action",
+                    "title": "Test Command Title",
+                    "description": "",
+                    "initialRun": false,
+                    "fetchTask": false,
+                    "context": [
+                        "commandBox",
+                        "compose",
+                        "message"
+                    ],
+                    "parameters": [
+                        {
+                            "name": "Question",
+                            "title": "Enter text for Question:",
+                            "description": "Question text here",
+                            "inputType": "text"
+                        },
+                        {
+                            "name": "MultiSelect",
+                            "title": "Is Multi-Select:",
+                            "description": "",
+                            "inputType": "choiceset",
+                            "choices": [
+                                {
+                                    "title": "False",
+                                    "value": "false"
+                                },
+                                {
+                                    "title": "True",
+                                    "value": "true"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Option1",
+                            "title": "Option 1:",
+                            "description": "Option 1 here",
+                            "inputType": "text"
+                        },
+                        {
+                            "name": "Option2",
+                            "title": "Option 2:",
+                            "description": "Option 2 here",
+                            "inputType": "text"
+                        },
+                        {
+                            "name": "Option3",
+                            "title": "Option 3:",
+                            "description": "Option 3 here",
+                            "inputType": "text"
+                        }
+                    ]
+                }
             ]
-          }
         }
-      ]
-    }
-  ]
+    ],
+    "permissions": [
+        "identity",
+        "messageTeamMembers"
+    ],
+    "validDomains": []
 }
