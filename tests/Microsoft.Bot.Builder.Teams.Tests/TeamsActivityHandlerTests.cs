@@ -507,6 +507,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             {
                 Type = ActivityTypes.Invoke,
                 Name = "composeExtension/fetchTask",
+                Value = JObject.Parse(@"{""commandId"":""testCommand""}"),
             };
 
             Activity[] activitiesToSend = null;
@@ -793,10 +794,10 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 return base.OnTeamsMessagingExtensionCardButtonClickedAsync(turnContext, cancellationToken);
             }
 
-            protected override Task<MessagingExtensionActionResponse> OnTeamsMessagingExtensionFetchTaskAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
+            protected override Task<MessagingExtensionActionResponse> OnTeamsMessagingExtensionFetchTaskAsync(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionQuery query, CancellationToken cancellationToken)
             {
                 Record.Add(MethodBase.GetCurrentMethod().Name);
-                return base.OnTeamsMessagingExtensionFetchTaskAsync(turnContext, cancellationToken);
+                return base.OnTeamsMessagingExtensionFetchTaskAsync(turnContext, query, cancellationToken);
             }
 
             protected override Task<MessagingExtensionResponse> OnTeamsMessagingExtensionConfigurationQuerySettingsUrlAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
