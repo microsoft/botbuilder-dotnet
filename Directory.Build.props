@@ -29,6 +29,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>$(NoWarn),1573,1591,1712</NoWarn>
+    <SignAssembly>true</SignAssembly>
+    <DelaySign>true</DelaySign>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(SignAssembly)'=='true' ">
+    <DefineConstants>SIGNASSEMBLY</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
