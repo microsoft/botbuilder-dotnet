@@ -1,6 +1,6 @@
 ﻿# ActionBasedMessagingExtension
 
-This bot has been created using [Bot Framework](https://dev.botframework.com), it demonstrates fetching a Messaging Extension Task and displaying the result in the compose window.  The resulting card can then be submitted to the chat, where users can interact with it and submit responses.  These responses arrive at the bot in the Teams Activity Handler's OnTeamsMessagingExtensionCardButtonClickedAsync event.'
+This bot has been created using [Bot Framework](https://dev.botframework.com), it demonstrated create a message from parameters in the Manifest.  The result are sent to the bot, processed and displaye in the compose window.  The resulting card can then be submitted to the chat, where users can interact with it and submit responses.  These responses arrive at the bot in the Teams Activity Handler's OnTeamsMessagingExtensionCardButtonClickedAsync event.
 
 ## Prerequisites
 
@@ -79,21 +79,13 @@ git clone https://github.com/microsoft/botbuilder-dotnet.git
 ### Uploading the bot to Teams
 
 1. In file explorer navigate to the TeamsAppManifest folder in the project 
-
 2. Select the 3 files and zip them 
-
 3. Open Teams 
-
 4. Click on "Apps" 
-
 5. Select "Upload a custom app" on the left at the bottom 
-
 6. Select the zip  
-
 7. Select for you  
-
 8. (optionally) click install if prompted 
-
 9. Click open 
 
    
@@ -128,10 +120,10 @@ git clone https://github.com/microsoft/botbuilder-dotnet.git
 2. Click the bot's icon below the Compose Box
     - ![Bot Icon In Compose Box](BotIconInComposeBox.png)
 
-3. This will trigger the OnTeamsMessagingExtensionFetchTaskAsync event in the TeamsActivityHandler and display the card returned in TaskModuleInfo.  Fill out the fields and click Submit:
-    - ![Task Module Fields](TaskModuleFields.png)
+3. This will trigger the Paramterized Fields dialog.  Fill out the fields and click Submit:
+    - ![Parameterized Fields](ParameterizedFields.png)
 
-4. Submitting the Task Module will trigger the OnTeamsMessagingExtensionSubmitActionAsync event in the TeamsActivityHandler.  Within the handler for this event, we construct and return a MessagingExtensionResult of type 'result' containing a MessagingExtensionAttachment with the dynamically constructed Adaptive Card.  This is displayed in the Compose Window:
+4. Submitting will trigger the OnTeamsMessagingExtensionSubmitActionAsync event in the TeamsActivityHandler.  Within the handler for this event, we construct and return a MessagingExtensionResult of type 'result' containing a MessagingExtensionAttachment with the dynamically constructed Adaptive Card.  This is displayed in the Compose Window:
     - ![Card In Compose Window](CardInComposeWindow.png)
 
 5. After sending the Card to the chat, users will be able to ineract with it and submit their responses.  User responses will arrive at the bot in the OnTeamsMessagingExtensionCardButtonClickedAsync event.
