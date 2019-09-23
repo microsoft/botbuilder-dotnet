@@ -123,7 +123,11 @@ git clone https://github.com/Microsoft/botbuilder-samples.git
 ### Interacting with the bot
 
 1. Send a message to your bot in Teams
-2. Type any valid url, ie http://www.bing.com, wait until the url is bolded, hit the space key and you should see a thumbnail card for the url info populated, like below.
+2. Type any valid url, ie http://www.bing.com, wait until the url is bolded, hit the space key and you should see a thumbnail card for the url info populated, like below. 
    ![1569017810114](1569017810114.png)
 
-3.  Url already typed in in earlier chat is cached and you might not see the thumbnail if you enter the same url.  Try step #2 with different url.
+### Notes
+1. Url already typed in in earlier chat is cached and you might not see the thumbnail if you enter the same url.  Try step #2 with different url.
+2. If you install multiple bots which handle link unfurling, the first one returned which be displayed
+3. If the bot returns multiple results, the first result will be displayed
+4. Link unfurling action is handled by OnTeamsAppBasedLinkQueryAsync method in the bot code
