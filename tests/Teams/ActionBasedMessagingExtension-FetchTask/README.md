@@ -18,7 +18,7 @@ This sample **requires** prerequisites in order to run.
 ### Clone the repository
 
 ```bash
-git clone https://github.com/Microsoft/botbuilder-samples.git
+git clone https://github.com/microsoft/botbuilder-dotnet.git
 ```
 
 ### Ngrok setup
