@@ -65,8 +65,6 @@ namespace Helpers
                 throw new ArgumentNullException("The Teams ChannelData Team properity is null.");
             }
 
-            channelData.Channel = activity.GetGeneralChannel();
-
             if (activity.Conversation == null)
             {
                 activity.Conversation = new ConversationAccount
