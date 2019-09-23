@@ -19,6 +19,7 @@
     <PackageId>Microsoft.Bot.Schema.Teams</PackageId>
     <Description>Library for building bots using Microsoft Bot Framework</Description>
     <Summary>Library for building bots using Microsoft Bot Framework</Summary>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
   
   <ItemGroup>

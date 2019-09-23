@@ -4,6 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Version>4.0.0-local</Version>
     <Description>LUIS V3 endpoint Middleware and Recognizers for the Microsoft Bot Builder SDK</Description>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
