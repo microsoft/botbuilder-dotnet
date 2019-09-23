@@ -56,9 +56,12 @@ _**Note**: When clicking in the `Add bot` button, the bot's credentials will be 
 
 4 - Using a tunneling tool like [Ngrok](https://ngrok.com/download), expose the bot's endpoint.
 
-5 - Set the credentials in the botConfigure the Messaging Webhook with the https URL generated in the previous step adding '/api/messages' to it.
+5 - Create/Update the webhooks for messages and attachment for the bot using https://developer.webex.com/docs/api/v1/webhooks 
+    (TODO: need detailed documentation here)
 
-6 - Back in the bot project, set the credentials in _appsettings.json_.
+6 - Set the credentials in the botConfigure the Messaging Webhook with the https URL generated in the previous step adding '/api/messages' to it.
+
+7 - Back in the bot project, set the credentials in _appsettings.json_.
 
     Access Token (the one obtained in step 3)
     Public Address (the url obtained in step 4)

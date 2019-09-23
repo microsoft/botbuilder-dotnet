@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         private const string MessageUrl = "https://api.ciscospark.com/v1/messages";
         private const string ActionsUrl = "https://api.ciscospark.com/v1/attachment/actions";
 
-        private TeamsAPIClient _api;
+        private readonly TeamsAPIClient _api;
         private readonly WebexAdapterOptions _config;
 
         /// <summary>
@@ -46,48 +46,8 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
             {
                 throw new ArgumentException(nameof(config.PublicAddress));
             }
-        }
 
-        /// <summary>
-        /// Gets the identity of the bot.
-        /// </summary>
-        /// <value>
-        /// The identity of the bot.
-        /// </value>
-        public Person Identity { get; private set; }
-
-        /// <summary>
-        /// Initializes the Webex Client.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public async Task InitAsync()
-        {
-            CreateClient(_config.AccessToken);
-
-            await RegisterWebhookSubscriptionsAsync().ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// Creates a Webex client by supplying the access token.
-        /// </summary>
-        /// <param name="accessToken">The access token of the Webex account.</param>
-        public virtual void CreateClient(string accessToken)
-        {
-            _api = TeamsAPI.CreateVersion1Client(accessToken);
-        }
-
-        /// <summary>
-        /// Load the bot's identity via the WebEx API.
-        /// MUST be called by BotBuilder bots in order to filter messages sent by the bot.
-        /// </summary>
-        /// <param name="cancellationToken">A cancellation token for the task.</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public async Task GetIdentityAsync(CancellationToken cancellationToken)
-        {
-            await GetMeAsync(cancellationToken).ContinueWith(
-                task => { Identity = task.Result; }, TaskScheduler.Current).ConfigureAwait(false);
-
-            var id = Identity.Id;
+            _api = TeamsAPI.CreateVersion1Client(_config.AccessToken);
         }
 
         /// <summary>
@@ -341,7 +301,6 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         public virtual async Task<Person> GetMeAsync(CancellationToken cancellationToken)
         {
             var resultPerson = await _api.GetMeAsync(cancellationToken).ConfigureAwait(false);
-
             return resultPerson.GetData(false);
         }
 
@@ -425,7 +384,6 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <returns>The created <see cref="Webhook"/>.</returns>
         public virtual async Task<Webhook> CreateAdaptiveCardsWebhookAsync(string name, Uri targetUri, EventType type, string secret, string token, CancellationToken cancellationToken)
         {
-            Webhook result;
             var url = WebhookUrl;
 
             var data = new NameValueCollection
@@ -443,7 +401,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
 
                 var response = await client.UploadValuesTaskAsync(new Uri(url), "POST", data).ConfigureAwait(false);
 
-                result = JsonConvert.DeserializeObject<Webhook>(Encoding.ASCII.GetString(response));
+                var result = JsonConvert.DeserializeObject<Webhook>(Encoding.ASCII.GetString(response));
 
                 return result;
             }

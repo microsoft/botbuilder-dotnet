@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Schema;
+using Microsoft.Extensions.Configuration;
 using Moq;
 using Newtonsoft.Json;
 using Thrzn41.WebexTeams.Version1;
@@ -25,7 +26,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         [Fact]
         public void ConstructorShouldFailWithNullClient()
         {
-            Assert.Throws<Exception>(() => { new WebexAdapter(null); });
+            Assert.Throws<ArgumentNullException>(() => { new WebexAdapter((WebexClientWrapper)null); });
         }
 
         [Fact]

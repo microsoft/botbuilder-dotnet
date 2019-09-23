@@ -1,11 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
-//
-// Generated with Bot Builder V4 SDK Template for Visual Studio EchoBot v4.3.0
 
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Bot.Builder.Integration.AspNet.Core;
 
 namespace Microsoft.Bot.Builder.Adapters.Webex.TestBot.Controllers
 {
@@ -16,10 +15,10 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.TestBot.Controllers
     [ApiController]
     public class BotController : ControllerBase
     {
-        private readonly WebexAdapter _adapter;
+        private readonly IBotFrameworkHttpAdapter _adapter;
         private readonly IBot _bot;
 
-        public BotController(WebexAdapter adapter, IBot bot)
+        public BotController(IBotFrameworkHttpAdapter adapter, IBot bot)
         {
             _adapter = adapter;
             _bot = bot;
