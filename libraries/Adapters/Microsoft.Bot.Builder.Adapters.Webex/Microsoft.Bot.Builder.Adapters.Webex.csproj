@@ -19,6 +19,10 @@
     <DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Builder.Adapters.Webex.xml</DocumentationFile>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(SignAssembly)'=='true' ">
+    <DefineConstants>SIGNASSEMBLY</DefineConstants>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Thrzn41.WebexTeams" Version="1.6.2" />
   </ItemGroup>
