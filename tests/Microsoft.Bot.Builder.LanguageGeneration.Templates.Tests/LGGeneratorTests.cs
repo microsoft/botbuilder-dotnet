@@ -159,7 +159,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             await CreateFlow("en-us", async (turnContext, cancellationToken) =>
             {
                 var resource = resourceExplorer.GetResource("test.dialog");
-                var dialog = (AdaptiveDialog)DeclarativeTypeLoader.Load<Dialog>(resource, resourceExplorer, DebugSupport.SourceRegistry);
+                var dialog = (AdaptiveDialog)DeclarativeTypeLoader.Load<Dialog>(resource, resourceExplorer, DebugSupport.SourceMap);
                 DialogManager dm = new DialogManager(dialog);
                 await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
             })

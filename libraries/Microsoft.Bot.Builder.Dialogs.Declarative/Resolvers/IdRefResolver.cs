@@ -16,12 +16,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resolvers
 
         private readonly JToken rootDocument;
         private readonly ResourceExplorer resourceExplorer;
-        private readonly Source.IRegistry registry;
+        private readonly ISourceMap sourceMap;
 
-        public IdRefResolver(ResourceExplorer resourceExplorer, Source.IRegistry registry, JToken rootDocument = null)
+        public IdRefResolver(ResourceExplorer resourceExplorer, ISourceMap sourceMap, JToken rootDocument = null)
         {
             this.resourceExplorer = resourceExplorer ?? throw new ArgumentNullException(nameof(resourceExplorer));
-            this.registry = registry;
+            this.sourceMap = sourceMap;
             this.rootDocument = rootDocument;
         }
 
@@ -72,7 +72,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resolvers
             // if we have a source path for the resource, then make it available to InterfaceConverter
             if (resource is FileResource fileResource)
             {
-                registry.Add(json, new Source.Range() { Path = fileResource.FullName });
+                sourceMap.Add(json, new SourceRange() { Path = fileResource.FullName });
             }
 
             return json;

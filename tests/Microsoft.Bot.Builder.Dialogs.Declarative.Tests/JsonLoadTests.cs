@@ -315,7 +315,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
                 .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
 
             var resource = resourceExplorer.GetResource(resourceName);
-            var dialog = DeclarativeTypeLoader.Load<Dialog>(resource, resourceExplorer, DebugSupport.SourceRegistry);
+            var dialog = DeclarativeTypeLoader.Load<Dialog>(resource, resourceExplorer, DebugSupport.SourceMap);
             DialogManager dm = new DialogManager(dialog);
 
             return new TestFlow(adapter, async (turnContext, cancellationToken) =>
