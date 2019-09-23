@@ -31,7 +31,7 @@
   ],
   "composeExtensions": [
     {
-      "botId": "f0a41ea1-87b1-4d28-bf94-539cd3d623f7",
+      "botId": "",
       "commands": [
         {
           "id": "searchQuery",
@@ -54,7 +54,10 @@
           "type": "link",
           "value": {
             "domains": [
-              "tzadik.com"
+              "microsoft.com",
+              "github.com",
+              "linkedin.com",
+              "bing.com"
             ]
           }
         }
