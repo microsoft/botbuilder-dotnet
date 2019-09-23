@@ -67,9 +67,9 @@
           "title": "Share Message",
           "parameters": [
             {
-              "name": "useAdaptiveCard",
-              "title": "Use Adaptive Card",
-              "description": "Use Adaptive Card or Hero Card to share message (defaults to Hero Card)",
+              "name": "includeImage",
+              "title": "Include Image",
+              "description": "Include image in Hero Card",
               "inputType": "toggle"
             }
           ]

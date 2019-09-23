@@ -21,10 +21,6 @@ namespace Microsoft.BotBuilderSamples.Bots
 
         protected override async Task<MessagingExtensionActionResponse> OnTeamsMessagingExtensionSubmitActionAsync(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionAction action, CancellationToken cancellationToken)
         {
-            var response = action;
-            var t = "hello";
-            // Need to convert action.data to a base class that has Id:
-            // 
             switch (action.CommandId)
             {
                 case "createCard":
@@ -45,11 +41,16 @@ namespace Microsoft.BotBuilderSamples.Bots
                 ComposeExtension = new MessagingExtensionResult
                 {
                     AttachmentLayout = "list",
-                    Type = "list",
+                    Type = "result",
                 },
             };
 
-            var card = new HeroCard();
+            var card = new HeroCard
+            {
+                Title = actionData.Title,
+                Subtitle = actionData.Subtitle,
+                Text = actionData.Text,
+            };
 
             var attachments = new List<MessagingExtensionAttachment>();
             attachments.Add(new MessagingExtensionAttachment
@@ -59,14 +60,62 @@ namespace Microsoft.BotBuilderSamples.Bots
                 Preview = card.ToAttachment(),
             });
 
+            response.ComposeExtension.Attachments = attachments;
             return response;
         }
 
         private MessagingExtensionActionResponse HandleShareMessageCommand(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionAction action)
         {
+            var heroCard = new HeroCard
+            {
+                Title = $"{action.MessagePayload.From.User.DisplayName} sent this message:",
+                Text = action.MessagePayload.Body.Content,
+            };
+            var includeImageData = (action.Data as JObject).ToObject<IncludeImageData>();
+            if (includeImageData.IncludeImage)
+            {
+                heroCard.Images = new List<CardImage>
+                {
+                    new CardImage
+                    {
+                        Url = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQtB3AwMUeNoq4gUBGe6Ocj8kyh3bXa9ZbV7u1fVKQoyKFHdkqU",
+                    },
+                };
+            }
+
             var response = new MessagingExtensionActionResponse();
+            response.ComposeExtension = new MessagingExtensionResult
+            {
+                Type = "result",
+                AttachmentLayout = "list",
+                Attachments = new List<MessagingExtensionAttachment>
+                {
+                    new MessagingExtensionAttachment
+                    {
+                        Content = heroCard,
+                        ContentType = HeroCard.ContentType,
+                        Preview = heroCard.ToAttachment(),
+                    },
+                },
+            };
 
             return response;
+        }
+
+        private class CreateCardData
+        {
+            public string Id { get; set; }
+
+            public string Title { get; set; }
+
+            public string Subtitle { get; set; }
+
+            public string Text { get; set; }
+        }
+
+        private class IncludeImageData
+        {
+            public bool IncludeImage { get; set; }
         }
     }
 }
