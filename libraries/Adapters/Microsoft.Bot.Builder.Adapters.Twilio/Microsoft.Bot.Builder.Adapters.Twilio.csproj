@@ -11,7 +11,6 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <!-- The Twilio package isn't signed, so supress the warning. There seems to not be a way to supress this for ONLY Twilio. -->
     <NoWarn>$(NoWarn),CS8002</NoWarn>
-    <DefineConstants></DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU' ">
@@ -20,10 +19,6 @@
     <AssemblyOriginatorKeyFile>..\..\..\build\35MSSharedLib1024.snk</AssemblyOriginatorKeyFile>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Builder.Adapters.Twilio.xml</DocumentationFile>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(SignAssembly)'=='true' ">
-    <DefineConstants>SIGNASSEMBLY</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
