@@ -9,6 +9,7 @@ using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs.Memory;
 using Microsoft.Bot.Builder.Dialogs.Memory.Scopes;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Tests
 {
@@ -27,12 +28,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             {
                 var memory = memoryScope.GetMemory(dc);
                 Assert.IsNotNull(memory, "should get memory without any set");
-                ObjectPath.SetValue(memory, "test", 15);
+                ObjectPath.SetPathValue(memory, "test", 15);
                 memory = memoryScope.GetMemory(dc);
-                Assert.AreEqual(15, ObjectPath.GetValue<int>(memory, "test"), "Should roundtrip memory");
-                ObjectPath.SetValue(memory, "test", 25);
+                Assert.AreEqual(15, ObjectPath.GetPathValue<int>(memory, "test"), "Should roundtrip memory");
+                ObjectPath.SetPathValue(memory, "test", 25);
                 memory = memoryScope.GetMemory(dc);
-                Assert.AreEqual(25, ObjectPath.GetValue<int>(memory, "test"), "Should roundtrip memory2");
+                Assert.AreEqual(25, ObjectPath.GetPathValue<int>(memory, "test"), "Should roundtrip memory2");
             }
         }
 
@@ -127,9 +128,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
         private void ValidateValue(DialogContext dc, string alias, string path)
         {
-            Assert.IsNotNull(dc.State.GetValue<object>(path));
-            Assert.IsNotNull(dc.State.GetValue<object>(alias));
-            Assert.AreEqual(dc.State.GetValue<object>(alias), dc.State.GetValue<object>(path), $"{alias} should be same as {path}");
+            var p = dc.State.GetValue<object>(path);
+            Assert.IsNotNull(p);
+            var a = dc.State.GetValue<object>(alias);
+            Assert.IsNotNull(a);
+
+            Assert.AreEqual(JsonConvert.SerializeObject(p), JsonConvert.SerializeObject(a), $"{alias} should be same as {path}");
         }
 
         private void ValidateRemoveValue(DialogContext dc, string alias, string path)

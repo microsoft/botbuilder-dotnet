@@ -145,6 +145,5 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
             Assert.AreEqual("Test", foo.Name);
             Assert.AreEqual(22, foo.Age);
         }
-
     }
 }
