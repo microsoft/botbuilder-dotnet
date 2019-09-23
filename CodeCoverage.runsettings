@@ -32,6 +32,12 @@
               <Exclude>
                 <Source>.*\\WebexMessageRequest.cs</Source>
                 <Source>.*\\WebexClientWrapper.cs</Source>
+                <Source>.*\\NewSlackMessage.cs</Source>
+                <Source>.*\\SlackResponse.cs</Source>
+                <Source>.*\\ActivityResourceResponse.cs</Source>
+                <Source>.*\\SlackAdapterOptions.cs</Source>
+                <Source>.*\\SlackClientWrapper.cs</Source>
+                <Source>.*\\SlackMessage.cs</Source>
               </Exclude>
             </Sources>
           </CodeCoverage>

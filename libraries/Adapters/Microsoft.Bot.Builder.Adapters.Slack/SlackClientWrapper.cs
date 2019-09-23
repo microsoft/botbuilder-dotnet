@@ -661,7 +661,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
             }
 
             // multi-team mode
-            var userId = await Options.GetBotUserByTeam(activity.Conversation.Properties["team"].ToString()).ConfigureAwait(false);
+            var userId = await Options.GetBotUserByTeamAsync(activity.Conversation.Properties["team"].ToString()).ConfigureAwait(false);
             return !string.IsNullOrWhiteSpace(userId) ? userId : throw new Exception("Missing credentials for team.");
         }
 
@@ -742,13 +742,12 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
             {
                 Identity = await TestAuthAsync(cancellationToken).ConfigureAwait(false);
             }
-            else
+            else if (string.IsNullOrWhiteSpace(Options.ClientId) ||
+                     string.IsNullOrWhiteSpace(Options.ClientSecret) ||
+                     Options.RedirectUri != null ||
+                     Options.GetScopes().Length > 0)
             {
-                if (string.IsNullOrWhiteSpace(Options.ClientId) || string.IsNullOrWhiteSpace(Options.ClientSecret) ||
-                Options.RedirectUri != null || Options.GetScopes().Length > 0)
-                {
-                    throw new Exception("Missing Slack API credentials! Provide clientId, clientSecret, scopes and redirectUri as part of the SlackAdapter options.");
-                }
+                throw new Exception("Missing Slack API credentials! Provide clientId, clientSecret, scopes and redirectUri as part of the SlackAdapter options.");
             }
         }
     }

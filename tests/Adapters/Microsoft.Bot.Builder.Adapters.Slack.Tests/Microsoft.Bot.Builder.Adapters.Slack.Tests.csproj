@@ -24,7 +24,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Files\VerificationMessageBody.json">
+    <None Update="Files\BlockBody.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Files\SlashCommandBody.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Files\URLVerificationBody.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Files\MessageBody.json">

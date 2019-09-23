@@ -61,7 +61,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// </summary>
         /// <param name="teamId">Team ID.</param>
         /// <returns>The bot token associated with the team.</returns>
-        public Task<string> GetTokenForTeam(string teamId)
+        public Task<string> GetTokenForTeamAsync(string teamId)
         {
             throw new NotImplementedException();
         }
@@ -71,7 +71,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// </summary>
         /// <param name="teamId">Team ID.</param>
         /// <returns>The bot user id associated with that team.</returns>
-        public virtual Task<string> GetBotUserByTeam(string teamId)
+        public virtual Task<string> GetBotUserByTeamAsync(string teamId)
         {
             throw new NotImplementedException();
         }
