@@ -54,7 +54,9 @@
           "type": "link",
           "value": {
             "domains": [
-              "*.com"
+              "microsoft.com",
+              "github.com",
+              "linkedin.com"
             ]
           }
         }
