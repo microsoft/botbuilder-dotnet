@@ -56,7 +56,8 @@
             "domains": [
               "microsoft.com",
               "github.com",
-              "linkedin.com"
+              "linkedin.com",
+              "bing.com"
             ]
           }
         }
