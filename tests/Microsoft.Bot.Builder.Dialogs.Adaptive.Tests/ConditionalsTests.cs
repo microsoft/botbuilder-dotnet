@@ -138,6 +138,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .AssertReply(nameof(OnMessageDeleteActivity))
             .Send(new Activity(ActivityTypes.MessageUpdate, text: nameof(OnMessageUpdateActivity)))
                 .AssertReply(nameof(OnMessageUpdateActivity))
+            .Send(new Activity(ActivityTypes.Typing, text: nameof(OnTypingActivity)))
+                .AssertReply(nameof(OnTypingActivity))
             .Send(new Activity(ActivityTypes.ConversationUpdate, text: nameof(OnConversationUpdateActivity)))
                 .AssertReply(nameof(OnConversationUpdateActivity))
             .Send(new Activity(ActivityTypes.EndOfConversation, text: nameof(OnEndOfConversationActivity)))
@@ -162,86 +164,114 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 {
                     Condition = "turn.test == 1"
                 },
-                "((turn.activity.type == 'message') && ((turn.dialogEvent.name == 'activityReceived') && (turn.test == 1)))");
+                $"((turn.activity.type == '{ActivityTypes.Message}') && ((turn.dialogEvent.name == '{AdaptiveEvents.ActivityReceived}') && (turn.test == 1)))");
 
             AssertExpression(
                 new OnEventActivity()
                 {
                     Condition = "turn.test == 1"
                 },
-                "((turn.activity.type == 'event') && ((turn.dialogEvent.name == 'activityReceived') && (turn.test == 1)))");
+                $"((turn.activity.type == '{ActivityTypes.Event}') && ((turn.dialogEvent.name == '{AdaptiveEvents.ActivityReceived}') && (turn.test == 1)))");
 
             AssertExpression(
                 new OnConversationUpdateActivity()
                 {
                     Condition = "turn.test == 1"
                 },
-                "((turn.activity.type == 'conversationUpdate') && ((turn.dialogEvent.name == 'activityReceived') && (turn.test == 1)))");
+                $"((turn.activity.type == '{ActivityTypes.ConversationUpdate}') && ((turn.dialogEvent.name == '{AdaptiveEvents.ActivityReceived}') && (turn.test == 1)))");
 
             AssertExpression(
                 new OnTypingActivity()
                 {
                     Condition = "turn.test == 1"
                 },
-                "((turn.activity.type == 'typing') && ((turn.dialogEvent.name == 'activityReceived') && (turn.test == 1)))");
+                $"((turn.activity.type == '{ActivityTypes.Typing}') && ((turn.dialogEvent.name == '{AdaptiveEvents.ActivityReceived}') && (turn.test == 1)))");
 
             AssertExpression(
                 new OnEndOfConversationActivity()
                 {
                     Condition = "turn.test == 1"
                 },
-                "((turn.activity.type == 'endOfConversation') && ((turn.dialogEvent.name == 'activityReceived') && (turn.test == 1)))");
+                $"((turn.activity.type == '{ActivityTypes.EndOfConversation}') && ((turn.dialogEvent.name == '{AdaptiveEvents.ActivityReceived}') && (turn.test == 1)))");
 
             AssertExpression(
                 new OnEventActivity()
                 {
                     Condition = "turn.test == 1"
                 },
-                "((turn.activity.type == 'event') && ((turn.dialogEvent.name == 'activityReceived') && (turn.test == 1)))");
+                $"((turn.activity.type == '{ActivityTypes.Event}') && ((turn.dialogEvent.name == '{AdaptiveEvents.ActivityReceived}') && (turn.test == 1)))");
 
             AssertExpression(
                 new OnHandoffActivity()
                 {
                     Condition = "turn.test == 1"
                 },
-                "((turn.activity.type == 'handoff') && ((turn.dialogEvent.name == 'activityReceived') && (turn.test == 1)))");
+                $"((turn.activity.type == '{ActivityTypes.Handoff}') && ((turn.dialogEvent.name == '{AdaptiveEvents.ActivityReceived}') && (turn.test == 1)))");
 
             AssertExpression(
                 new OnMessageReactionActivity()
                 {
                     Condition = "turn.test == 1"
                 },
-                "((turn.activity.type == 'messageReaction') && ((turn.dialogEvent.name == 'activityReceived') && (turn.test == 1)))");
+                $"((turn.activity.type == '{ActivityTypes.MessageReaction}') && ((turn.dialogEvent.name == '{AdaptiveEvents.ActivityReceived}') && (turn.test == 1)))");
 
             AssertExpression(
                 new OnMessageUpdateActivity()
                 {
                     Condition = "turn.test == 1"
                 },
-                "((turn.activity.type == 'messageUpdate') && ((turn.dialogEvent.name == 'activityReceived') && (turn.test == 1)))");
+                $"((turn.activity.type == '{ActivityTypes.MessageUpdate}') && ((turn.dialogEvent.name == '{AdaptiveEvents.ActivityReceived}') && (turn.test == 1)))");
 
             AssertExpression(
                 new OnMessageDeleteActivity()
                 {
                     Condition = "turn.test == 1"
                 },
-                "((turn.activity.type == 'messageDelete') && ((turn.dialogEvent.name == 'activityReceived') && (turn.test == 1)))");
+                $"((turn.activity.type == '{ActivityTypes.MessageDelete}') && ((turn.dialogEvent.name == '{AdaptiveEvents.ActivityReceived}') && (turn.test == 1)))");
 
             AssertExpression(
                 new OnIntent()
                 {
                     Intent = "Intent",
-                    Entities = new List<string>() { "@foo", "@@bar", "turn.recognized.entities.blat", "gronk"},
+                    Entities = new List<string>() { "@foo", "@@bar", "turn.recognized.entities.blat", "gronk" },
                     Condition = "turn.test == 1"
                 },
-                "(((turn.recognized.intent == 'Intent') && (exists(@foo) && exists(@@bar) && exists(turn.recognized.entities.blat) && exists(@gronk))) && ((turn.dialogEvent.name == 'recognizedIntent') && (turn.test == 1)))");
+                $"(((turn.recognized.intent == 'Intent') && (exists(@foo) && exists(@@bar) && exists(turn.recognized.entities.blat) && exists(@gronk))) && ((turn.dialogEvent.name == '{AdaptiveEvents.RecognizedIntent}') && (turn.test == 1)))");
+
+            AssertExpression(
+                new OnUnknownIntent()
+                {
+                    Condition = "turn.test == 1"
+                },
+                $"((turn.dialogEvent.name == '{AdaptiveEvents.UnknownIntent}') && (turn.test == 1))");
 
             AssertExpression(
                 new OnBeginDialog()
                 {
                     Condition = "turn.test == 1"
                 },
-                "((turn.dialogEvent.name == 'beginDialog') && (turn.test == 1))");
+                $"((turn.dialogEvent.name == '{DialogEvents.BeginDialog}') && (turn.test == 1))");
+
+            AssertExpression(
+                new OnCancelDialog()
+                {
+                    Condition = "turn.test == 1"
+                },
+                $"((turn.dialogEvent.name == '{DialogEvents.CancelDialog}') && (turn.test == 1))");
+
+            AssertExpression(
+                new OnRepromptDialog()
+                {
+                    Condition = "turn.test == 1"
+                },
+                $"((turn.dialogEvent.name == '{DialogEvents.RepromptDialog}') && (turn.test == 1))");
+
+            AssertExpression(
+                new OnError()
+                {
+                    Condition = "turn.test == 1"
+                },
+                $"((turn.dialogEvent.name == '{DialogEvents.Error}') && (turn.test == 1))");
 
             AssertExpression(
                 new OnCustomEvent()

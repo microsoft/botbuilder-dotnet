@@ -259,6 +259,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                             handled = await this.ProcessEventAsync(sequenceContext, dialogEvent: recognizedIntentEvent, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
                         }
 
+                        // Has an interruption occured?
+                        // - Setting this value to true causes any running inputs to re-prompt when they're
+                        //   continued.  The developer can clear this flag if they want the input to instead
+                        //   process the users uterrance when its continued.
+                        if (handled)
+                        {
+                            sequenceContext.State.SetValue(TurnPath.INTERRUPTED, true);
+                        }
+
                         break;
                 }
             }
@@ -291,6 +300,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                             }
                         }
 
+                        // Has an interruption occured?
+                        // - Setting this value to true causes any running inputs to re-prompt when they're
+                        //   continued.  The developer can clear this flag if they want the input to instead
+                        //   process the users uterrance when its continued.
+                        if (handled)
+                        {
+                            sequenceContext.State.SetValue(TurnPath.INTERRUPTED, true);
+                        }
+
                         break;
                 }
             }
@@ -300,9 +318,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
         protected override string OnComputeId()
         {
-            if (DebugSupport.SourceRegistry.TryGetValue(this, out var range))
+            if (DebugSupport.SourceMap.TryGetValue(this, out var range))
             {
-                return $"{this.GetType().Name}({Path.GetFileName(range.Path)}:{range.Start.LineIndex})";
+                return $"{this.GetType().Name}({Path.GetFileName(range.Path)}:{range.StartPoint.LineIndex})";
             }
 
             return $"{this.GetType().Name}[]";
@@ -347,12 +365,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     // Call begin dialog on our next step, passing the effective options we computed
                     result = await action.BeginDialogAsync(nextAction.DialogId, effectiveOptions, cancellationToken).ConfigureAwait(false);
                 }
-
-                // Increment turns step count
-                // This helps dialogs being resumed from an interruption to determine if they
-                // should re-prompt or not.
-                var stepCount = sequenceContext.State.GetValue<int>(TurnPath.STEPCOUNT, () => 0);
-                sequenceContext.State.SetValue(TurnPath.STEPCOUNT, stepCount + 1);
 
                 // Is the step waiting for input or were we cancelled?
                 if (result.Status == DialogTurnStatus.Waiting || this.GetUniqueInstanceId(sequenceContext) != instanceId)

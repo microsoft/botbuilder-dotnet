@@ -157,22 +157,38 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         }
 
         /// <summary>
-        /// Get resource by filename.
+        /// Get resource by id
         /// </summary>
-        /// <param name="id">The file name.</param>
-        /// <returns>The resource.</returns>
+        /// <param name="id">The resource id .</param>
+        /// <returns>The resource, or throws if not found.</returns>
         public IResource GetResource(string id)
+        {
+            if (TryGetResource(id, out var resource))
+            {
+                return resource;
+            }
+
+            throw new ArgumentException($"Could not find resource '{id}'", paramName: id);
+        }
+
+        /// <summary>
+        /// Try to get the resource by id
+        /// </summary>
+        /// <param name="id">id</param>
+        /// <param name="resource">resource that was found or null</param>
+        /// <returns>true if found</returns>
+        public bool TryGetResource(string id, out IResource resource)
         {
             foreach (var resourceProvider in this.resourceProviders)
             {
-                var resource = resourceProvider.GetResource(id);
-                if (resource != null)
+                if (resourceProvider.TryGetResource(id, out resource))
                 {
-                    return resource;
+                    return true;
                 }
             }
 
-            return null;
+            resource = null;
+            return false;
         }
 
         public void Dispose()

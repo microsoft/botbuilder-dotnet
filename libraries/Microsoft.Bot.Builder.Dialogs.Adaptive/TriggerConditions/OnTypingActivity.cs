@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
 {
     /// <summary>
-    /// Event for Typing Activity.
+    /// Actions triggered when a TypingActivity is received.
     /// </summary>
     public class OnTypingActivity : OnActivity
     {

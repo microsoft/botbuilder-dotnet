@@ -8,9 +8,9 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
 {
     /// <summary>
-    /// Rule triggered when a dialog is started via BeginDialog().
+    /// Actions triggered when a dialog is started via BeginDialog().
     /// </summary>
-    public class OnBeginDialog : OnCustomEvent
+    public class OnBeginDialog : OnDialogEvent
     {
         [JsonConstructor]
         public OnBeginDialog(List<Dialog> actions = null, string condition = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)

@@ -8,6 +8,9 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
 {
+    /// <summary>
+    /// "string" => Expression object converter
+    /// </summary>
     public class ExpressionConverter : JsonConverter
     {
         public override bool CanRead => true;

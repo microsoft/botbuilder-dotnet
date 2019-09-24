@@ -4,6 +4,7 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
+using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Converters;
@@ -20,10 +21,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         {
             // Conditionals
             yield return new TypeRegistration<OnCondition>("Microsoft.OnCondition");
+            yield return new TypeRegistration<OnError>("Microsoft.OnError");
+
+            yield return new TypeRegistration<OnDialogEvent>("Microsoft.OnDialogEvent");
             yield return new TypeRegistration<OnCustomEvent>("Microsoft.OnCustomEvent");
+
+            yield return new TypeRegistration<OnBeginDialog>("Microsoft.OnBeginDialog");
+            yield return new TypeRegistration<OnCancelDialog>("Microsoft.OnCancelDialog");
+            yield return new TypeRegistration<OnRepromptDialog>("Microsoft.OnRepromptDialog");
+
             yield return new TypeRegistration<OnIntent>("Microsoft.OnIntent");
             yield return new TypeRegistration<OnUnknownIntent>("Microsoft.OnUnknownIntent");
-            yield return new TypeRegistration<OnBeginDialog>("Microsoft.OnBeginDialog");
+
             yield return new TypeRegistration<OnActivity>("Microsoft.OnActivity");
             yield return new TypeRegistration<OnMessageActivity>("Microsoft.OnMessageActivity");
             yield return new TypeRegistration<OnMessageUpdateActivity>("Microsoft.OnMessageUpdateActivity");
@@ -99,9 +108,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             yield return new TypeRegistration<AdaptiveDialog>("Microsoft.AdaptiveDialog");
         }
 
-        public override IEnumerable<JsonConverter> GetConverters(Source.IRegistry registry, IRefResolver refResolver, Stack<string> paths)
+        public override IEnumerable<JsonConverter> GetConverters(ISourceMap sourceMap, IRefResolver refResolver, Stack<string> paths)
         {
-            yield return new InterfaceConverter<OnCondition>(refResolver, registry, paths);
+            yield return new InterfaceConverter<OnCondition>(refResolver, sourceMap, paths);
+            yield return new ExpressionPropertyConverter<ChoiceSet>();
         }
     }
 }

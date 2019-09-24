@@ -15,7 +15,7 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
 {
     /// <summary>
-    /// Defines most promitive declarative implementation of a OnCondition 
+    /// Actions triggered when condition is true
     /// </summary>
     [DebuggerDisplay("{GetIdentity()}")]
     public class OnCondition : IItemIdentity, IDialogDependencies
@@ -189,11 +189,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         {
             if (path != null)
             {
-                DebugSupport.SourceRegistry.Add(this, new Source.Range()
+                DebugSupport.SourceMap.Add(this, new SourceRange()
                 {
                     Path = path,
-                    Start = new Source.Point() { LineIndex = lineNumber, CharIndex = 0 },
-                    After = new Source.Point() { LineIndex = lineNumber + 1, CharIndex = 0 },
+                    StartPoint = new SourcePoint() { LineIndex = lineNumber, CharIndex = 0 },
+                    EndPoint = new SourcePoint() { LineIndex = lineNumber + 1, CharIndex = 0 },
                 });
             }
         }
