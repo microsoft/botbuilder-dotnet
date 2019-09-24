@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
@@ -123,7 +124,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             // Evaluate events and queue up step changes
             var dialogEvent = new DialogEvent()
             {
-                Name = AdaptiveEvents.BeginDialog,
+                Name = DialogEvents.BeginDialog,
                 Value = options,
                 Bubble = false
             };
@@ -210,53 +211,131 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             return await this.ProcessEventAsync(sequenceContext, dialogEvent, preBubble: false, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
-        protected async Task<bool> ProcessEventAsync(SequenceContext sequenceContext, DialogEvent dialogEvent, bool preBubble, CancellationToken cancellationToken = default(CancellationToken))
+        protected async Task<bool> ProcessEventAsync(SequenceContext sc, DialogEvent dialogEvent, bool preBubble, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Save into turn
-            sequenceContext.State.SetValue(TurnPath.DIALOGEVENT, dialogEvent);
+            sc.State.SetValue(TurnPath.DIALOGEVENT, dialogEvent);
+
+            if (preBubble)
+            {
+                // --- always process rules---
+                // There is some processing we always do regardless if something was handled or not
+                // In this case we detect new User and new Conversation as "interuptions" to whatever plan was handled
+                switch (dialogEvent.Name)
+                {
+                    case DialogEvents.ActivityReceived:
+                        {
+                            var activity = sc.Context.Activity;
+
+                            // detect new conversation emit event
+                            var newConversation = !sc.State.TryGetValue<string>(ConversationPath.ID, out string conversationId);
+                            if (newConversation)
+                            {
+                                sc.State.SetValue(ConversationPath.ID, activity.Conversation.Id);
+                                await sc.EmitEventAsync(AdaptiveEvents.NewConversation, activity.Conversation, bubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
+                                // restore turn.dialogevent
+                                sc.State.SetValue(TurnPath.DIALOGEVENT, dialogEvent);
+                            }
+
+                            // detect new user and emit event
+                            var newUser = !sc.State.TryGetValue<string>(UserPath.ID, out string userId);
+                            if (newUser)
+                            {
+                                sc.State.SetValue(UserPath.ID, activity.From.Id);
+                                await sc.EmitEventAsync(AdaptiveEvents.NewUser, activity.From, bubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
+                                // restore turn.dialogevent
+                                sc.State.SetValue(TurnPath.DIALOGEVENT, dialogEvent);
+                            }
+
+                            switch (activity.Type)
+                            {
+                                case ActivityTypes.ConversationUpdate:
+                                    {
+                                        if (activity.MembersAdded != null)
+                                        {
+                                            foreach (var member in activity.MembersAdded)
+                                            {
+                                                await sc.EmitEventAsync(AdaptiveEvents.MemberAdded, member, bubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
+                                            }
+                                        }
+
+                                        if (activity.MembersRemoved != null)
+                                        {
+                                            foreach (var member in activity.MembersRemoved)
+                                            {
+                                                await sc.EmitEventAsync(AdaptiveEvents.MemberRemoved, member, bubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
+                                            }
+                                        }
+
+                                        // restore turn.dialogevent
+                                        sc.State.SetValue(TurnPath.DIALOGEVENT, dialogEvent);
+                                        break;
+                                    }
+
+                                case ActivityTypes.EndOfConversation:
+                                    {
+                                        await sc.EmitEventAsync(AdaptiveEvents.EndConversation, null, bubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
+                                        sc.State.SetValue(TurnPath.DIALOGEVENT, dialogEvent);
+                                        break;
+                                    }
+
+                                case ActivityTypes.DeleteUserData:
+                                    {
+                                        await sc.EmitEventAsync(AdaptiveEvents.DeleteUser, activity.From, bubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
+                                        sc.State.SetValue(TurnPath.DIALOGEVENT, dialogEvent);
+                                        break;
+                                    }
+                            }
+                        }
+
+                        break;
+                }
+            }
 
             // Look for triggered evt
-            var handled = await this.QueueFirstMatchAsync(sequenceContext, dialogEvent, preBubble, cancellationToken).ConfigureAwait(false);
-
+            var handled = await this.QueueFirstMatchAsync(sc, dialogEvent, preBubble, cancellationToken).ConfigureAwait(false);
             if (handled)
             {
                 return true;
             }
 
-            // Default processing
+            // Default processing if handled
             if (preBubble)
             {
                 switch (dialogEvent.Name)
                 {
-                    case AdaptiveEvents.BeginDialog:
+                    case DialogEvents.BeginDialog:
                         // Emit leading ActivityReceived event
-                        var activityReceivedEvent = new DialogEvent() { Name = AdaptiveEvents.ActivityReceived, Value = sequenceContext.Context.Activity, Bubble = false };
-                        handled = await this.ProcessEventAsync(sequenceContext, dialogEvent: activityReceivedEvent, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
+                        var activityReceivedEvent = new DialogEvent() { Name = DialogEvents.ActivityReceived, Value = sc.Context.Activity, Bubble = false };
+                        handled = await this.ProcessEventAsync(sc, dialogEvent: activityReceivedEvent, preBubble: preBubble, cancellationToken: cancellationToken).ConfigureAwait(false);
                         break;
 
-                    case AdaptiveEvents.ActivityReceived:
+                    case DialogEvents.ActivityReceived:
+                        var activity = sc.Context.Activity;
 
-                        var activity = sequenceContext.Context.Activity;
-
-                        if (activity.Type == ActivityTypes.Message)
+                        switch (activity.Type)
                         {
-                            // Recognize utterance
-                            var recognized = await this.OnRecognize(sequenceContext, cancellationToken).ConfigureAwait(false);
+                            case ActivityTypes.Message:
+                                {
+                                    // Recognize utterance
+                                    var recognized = await this.OnRecognize(sc, cancellationToken).ConfigureAwait(false);
 
-                            sequenceContext.State.SetValue(TurnPath.RECOGNIZED, recognized);
+                                    sc.State.SetValue(TurnPath.RECOGNIZED, recognized);
 
-                            var (name, score) = recognized.GetTopScoringIntent();
-                            sequenceContext.State.SetValue(TurnPath.TOPINTENT, name);
-                            sequenceContext.State.SetValue(TurnPath.TOPSCORE, score);
+                                    var (name, score) = recognized.GetTopScoringIntent();
+                                    sc.State.SetValue(TurnPath.TOPINTENT, name);
+                                    sc.State.SetValue(TurnPath.TOPSCORE, score);
 
-                            if (this.Recognizer != null)
-                            {
-                                await sequenceContext.DebuggerStepAsync(Recognizer, AdaptiveEvents.RecognizedIntent, cancellationToken).ConfigureAwait(false);
-                            }
+                                    if (this.Recognizer != null)
+                                    {
+                                        await sc.DebuggerStepAsync(Recognizer, AdaptiveEvents.RecognizedIntent, cancellationToken).ConfigureAwait(false);
+                                    }
 
-                            // Emit leading RecognizedIntent event
-                            var recognizedIntentEvent = new DialogEvent() { Name = AdaptiveEvents.RecognizedIntent, Value = recognized, Bubble = false };
-                            handled = await this.ProcessEventAsync(sequenceContext, dialogEvent: recognizedIntentEvent, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
+                                    // Emit leading RecognizedIntent event
+                                    var recognizedIntentEvent = new DialogEvent() { Name = AdaptiveEvents.RecognizedIntent, Value = recognized, Bubble = false };
+                                    handled = await this.ProcessEventAsync(sc, dialogEvent: recognizedIntentEvent, preBubble: preBubble, cancellationToken: cancellationToken).ConfigureAwait(false);
+                                    break;
+                                }
                         }
 
                         // Has an interruption occured?
@@ -265,7 +344,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                         //   process the users uterrance when its continued.
                         if (handled)
                         {
-                            sequenceContext.State.SetValue(TurnPath.INTERRUPTED, true);
+                            sc.State.SetValue(TurnPath.INTERRUPTED, true);
                         }
 
                         break;
@@ -275,29 +354,33 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             {
                 switch (dialogEvent.Name)
                 {
-                    case AdaptiveEvents.BeginDialog:
-                        var activityReceivedEvent = new DialogEvent() { Name = AdaptiveEvents.ActivityReceived, Value = sequenceContext.Context.Activity, Bubble = false };
-                        handled = await this.ProcessEventAsync(sequenceContext, dialogEvent: activityReceivedEvent, preBubble: false, cancellationToken: cancellationToken).ConfigureAwait(false);
-
+                    case DialogEvents.BeginDialog:
+                        var activityReceivedEvent = new DialogEvent() { Name = DialogEvents.ActivityReceived, Value = sc.Context.Activity, Bubble = false };
+                        handled = await this.ProcessEventAsync(sc, dialogEvent: activityReceivedEvent, preBubble: false, cancellationToken: cancellationToken).ConfigureAwait(false);
                         break;
 
-                    case AdaptiveEvents.ActivityReceived:
+                    case DialogEvents.ActivityReceived:
 
-                        var activity = sequenceContext.Context.Activity;
+                        var activity = sc.Context.Activity;
 
-                        if (activity.Type == ActivityTypes.Message)
+                        switch (activity.Type)
                         {
-                            // Empty sequence?
-                            if (!sequenceContext.Actions.Any())
-                            {
-                                // Emit trailing unknownIntent event
-                                var unknownIntentEvent = new DialogEvent() { Name = AdaptiveEvents.UnknownIntent, Bubble = false };
-                                handled = await this.ProcessEventAsync(sequenceContext, dialogEvent: unknownIntentEvent, preBubble: false, cancellationToken: cancellationToken).ConfigureAwait(false);
-                            }
-                            else
-                            {
-                                handled = false;
-                            }
+                            case ActivityTypes.Message:
+                                {
+                                    // Empty sequence?
+                                    if (!sc.Actions.Any())
+                                    {
+                                        // Emit trailing unknownIntent event
+                                        var unknownIntentEvent = new DialogEvent() { Name = AdaptiveEvents.UnknownIntent, Bubble = false };
+                                        handled = await this.ProcessEventAsync(sc, dialogEvent: unknownIntentEvent, preBubble: false, cancellationToken: cancellationToken).ConfigureAwait(false);
+                                    }
+                                    else
+                                    {
+                                        handled = false;
+                                    }
+
+                                    break;
+                                }
                         }
 
                         // Has an interruption occured?
@@ -306,7 +389,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                         //   process the users uterrance when its continued.
                         if (handled)
                         {
-                            sequenceContext.State.SetValue(TurnPath.INTERRUPTED, true);
+                            sc.State.SetValue(TurnPath.INTERRUPTED, true);
                         }
 
                         break;
@@ -590,3 +673,4 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         }
     }
 }
+

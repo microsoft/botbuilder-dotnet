@@ -165,13 +165,21 @@ namespace Microsoft.Bot.Builder
         {
             if (File.Exists(transcriptFile))
             {
-                using (var stream = File.OpenRead(transcriptFile))
+                for (int i = 0; i < 3; i++)
                 {
-                    using (var reader = new StreamReader(stream) as TextReader)
+                    try
                     {
-                        var json = await reader.ReadToEndAsync().ConfigureAwait(false);
-                        return JsonConvert.DeserializeObject<Activity[]>(json);
+
+                        using (var stream = File.OpenRead(transcriptFile))
+                        {
+                            using (var reader = new StreamReader(stream) as TextReader)
+                            {
+                                var json = await reader.ReadToEndAsync().ConfigureAwait(false);
+                                return JsonConvert.DeserializeObject<Activity[]>(json);
+                            }
+                        }
                     }
+                    catch { }
                 }
             }
 

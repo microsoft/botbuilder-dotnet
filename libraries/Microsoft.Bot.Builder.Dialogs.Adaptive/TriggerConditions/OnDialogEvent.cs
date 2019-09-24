@@ -28,7 +28,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
 
         public override string GetIdentity()
         {
-            return $"{this.GetType().Name}({this.Event})";
+            if (this.GetType() == typeof(OnDialogEvent))
+            {
+                return $"{this.GetType().Name}({this.Event})[{this.Condition}]";
+            }
+
+            return $"{this.GetType().Name}[{this.Condition}]";
         }
 
         public override Expression GetExpression(IExpressionParser factory)

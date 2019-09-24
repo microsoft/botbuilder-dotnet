@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
@@ -83,6 +84,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 },
                 Triggers = new List<OnCondition>()
                 {
+                    new OnNewConversation(actions: new List<Dialog>() { new SendActivity("Welcome to my unit test!") }),
+                    new OnNewUser(actions: new List<Dialog>() { new SendActivity("Hi {turn.activity.from.name}!") }),
                     new OnIntent(
                         intent: "addColor",
                         entities: new List<string>() { "color" },
@@ -92,6 +95,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             };
 
             await CreateFlow(planningDialog)
+            .SendConversationUpdate()
+                .AssertReply("Welcome to my unit test!")
+                .AssertReply("Hi User1!")
             .Send("I want red")
                 .AssertReply("You picked red")
             .Send("I want")
@@ -101,9 +107,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             .StartTestAsync();
         }
 
-        public OnCondition TestCondition(OnCondition conditional)
+        public OnCondition TestCondition(OnCondition conditional, string matchText = null)
         {
-            conditional.Condition = $"turn.activity.text == '{conditional.GetType().Name}'";
+            conditional.Condition = $"turn.activity.text == '{matchText ?? conditional.GetType().Name}'";
             conditional.Actions.Add(new SendActivity(conditional.GetType().Name));
             return conditional;
         }
@@ -116,6 +122,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 AutoEndDialog = false,
                 Triggers = new List<OnCondition>()
                 {
+                    TestCondition(new OnNewConversation(), "OnMessageActivity"),
+                    TestCondition(new OnEndConversation(), "OnMessageActivity"),
+                    TestCondition(new OnNewUser(), "OnMessageActivity"),
+                    TestCondition(new OnDeleteUser()),
+                    TestCondition(new OnMemberAdded(), "OnConversationUpdateActivity"),
+                    TestCondition(new OnMemberRemoved(), "OnConversationUpdateActivity"),
                     TestCondition(new OnMessageActivity()),
                     TestCondition(new OnEventActivity()),
                     TestCondition(new OnConversationUpdateActivity()),
@@ -129,9 +141,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 }
             };
 
+            var conversationUpdate = (Activity)Activity.CreateConversationUpdateActivity();
+            conversationUpdate.MembersAdded.Add(new ChannelAccount(id: "userx", name: "User X"));
+            conversationUpdate.MembersRemoved.Add(new ChannelAccount(id: "usery", name: "User Y"));
+            conversationUpdate.Text = nameof(OnConversationUpdateActivity);
+
             await CreateFlow(planningDialog)
             .Send(new Activity(ActivityTypes.Message, text: nameof(OnMessageActivity)))
+                .AssertReply(nameof(OnNewConversation))
+                .AssertReply(nameof(OnNewUser))
                 .AssertReply(nameof(OnMessageActivity))
+            .Send(conversationUpdate)
+                .AssertReply(nameof(OnMemberAdded))
+                .AssertReply(nameof(OnMemberRemoved))
+                .AssertReply(nameof(OnConversationUpdateActivity))
             .Send(new Activity(ActivityTypes.MessageReaction, text: nameof(OnMessageReactionActivity)))
                 .AssertReply(nameof(OnMessageReactionActivity))
             .Send(new Activity(ActivityTypes.MessageDelete, text: nameof(OnMessageDeleteActivity)))
@@ -146,6 +169,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .AssertReply(nameof(OnEndOfConversationActivity))
             .Send(new Activity(ActivityTypes.Event, text: nameof(OnEventActivity)) { Name = nameof(OnEventActivity) })
                 .AssertReply(nameof(OnEventActivity))
+            .Send(new Activity(type: ActivityTypes.DeleteUserData) { Value = conversationUpdate.MembersAdded[0], Text = nameof(OnDeleteUser) })
+                .AssertReply(nameof(OnDeleteUser))
             .StartTestAsync();
         }
 
@@ -271,7 +296,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 {
                     Condition = "turn.test == 1"
                 },
-                $"((turn.dialogEvent.name == '{DialogEvents.Error}') && (turn.test == 1))");
+                $"((turn.dialogEvent.name == '{AdaptiveEvents.Error}') && (turn.test == 1))");
 
             AssertExpression(
                 new OnCustomEvent()

@@ -80,7 +80,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 // Clear current change list
                 this.Context.TurnState[changeKey] = null;
 
-                // Apply each queued set of changes
+                // Apply each queued set of changes, in reverse order
+                changes.Reverse();
                 foreach (var change in changes)
                 {
                     // Apply memory changes to turn state
