@@ -296,10 +296,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
 
             activity.Recipient.Id = await client.GetBotUserByTeamAsync(activity, cancellationToken).ConfigureAwait(false);
 
-            // activity.GetChannelData<NewSlackMessage>().team = slack.TeamId;
-
-            // add the team id to the conversation record
-            activity.Conversation.Properties["team"] = slack.TeamId; // activity.GetChannelData<NewSlackMessage>().team;
+            activity.Conversation.Properties["team"] = slack.TeamId;
 
             return activity;
         }

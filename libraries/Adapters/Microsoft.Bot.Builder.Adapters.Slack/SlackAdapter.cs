@@ -176,7 +176,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
                 throw new ArgumentNullException(nameof(logic));
             }
 
-            var request = reference.GetContinuationActivity().ApplyConversationReference(reference, true); // TODO: check on this
+            var request = reference.GetContinuationActivity().ApplyConversationReference(reference, true);
 
             using (var context = new TurnContext(this, request))
             {
