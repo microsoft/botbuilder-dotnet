@@ -16,8 +16,6 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
 {
     public class SlackAdapter : BotAdapter, IBotFrameworkHttpAdapter
     {
-        private const string SlackOAuthUrl = "https://slack.com/oauth/authorize?client_id=";
-
         private readonly SlackClientWrapper _slackClient;
 
         /// <summary>
