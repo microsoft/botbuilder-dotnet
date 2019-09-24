@@ -24,10 +24,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Files\BlockBody.json">
+    <None Update="Files\InteractiveMessageBody.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Files\SlashCommandBody.json">
+    <None Update="Files\SlashCommandBody.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Files\URLVerificationBody.json">
