@@ -161,6 +161,7 @@ namespace Microsoft.Bot.Builder.Teams
                         {
                             return CreateInvokeResponse(new TaskModuleResponse { Task = submitResponse });
                         }
+
                     default:
                         return null;
                 }
