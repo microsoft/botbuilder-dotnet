@@ -5,9 +5,9 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.TriggerHandlers;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
@@ -30,7 +30,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             var testDialog = new AdaptiveDialog("planningTest");
 
-            testDialog.AddTriggerHandlers(new List<TriggerHandler>()
+            testDialog.Triggers.AddRange(new List<OnCondition>()
             {
                 new OnUnknownIntent(
                     new List<Dialog>()
@@ -89,7 +89,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             var dialog = new AdaptiveDialog("traceActivity");
 
-            dialog.AddTriggerHandlers(new List<TriggerHandler>()
+            dialog.Triggers.AddRange(new List<OnCondition>()
             {
                 new OnUnknownIntent(
                     new List<Dialog>()
@@ -138,7 +138,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         public async Task Action_IfCondition()
         {
             var testDialog = new AdaptiveDialog("planningTest");
-            testDialog.AddTriggerHandlers(new List<TriggerHandler>()
+            testDialog.Triggers.AddRange(new List<OnCondition>()
             {
                 new OnUnknownIntent(
                     new List<Dialog>()
@@ -178,7 +178,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             var testDialog = new AdaptiveDialog("planningTest")
             {
-                Triggers = new List<TriggerHandler>()
+                Triggers = new List<OnCondition>()
                 {
                     new OnBeginDialog()
                     {
@@ -216,7 +216,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             var testDialog = new AdaptiveDialog("planningTest")
             {
-                Triggers = new List<TriggerHandler>()
+                Triggers = new List<OnCondition>()
                 {
                     new OnBeginDialog()
                     {
@@ -254,7 +254,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             var testDialog = new AdaptiveDialog("planningTest")
             {
-                Triggers = new List<TriggerHandler>()
+                Triggers = new List<OnCondition>()
                 {
                     new OnBeginDialog()
                     {
@@ -292,7 +292,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             var testDialog = new AdaptiveDialog("planningTest")
             {
-                Triggers = new List<TriggerHandler>()
+                Triggers = new List<OnCondition>()
                 {
                     new OnBeginDialog()
                     {
@@ -329,7 +329,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             var testDialog = new AdaptiveDialog("planningTest");
 
-            testDialog.AddTriggerHandlers(new List<TriggerHandler>()
+            testDialog.Triggers.AddRange(new List<OnCondition>()
             {
                 new OnUnknownIntent(
                     new List<Dialog>()
@@ -370,7 +370,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             var testDialog = new AdaptiveDialog("planningTest");
 
-            testDialog.AddTriggerHandlers(new List<TriggerHandler>()
+            testDialog.Triggers.AddRange(new List<OnCondition>()
             {
                 new OnUnknownIntent()
                 {
@@ -402,7 +402,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var testDialog = new AdaptiveDialog("planningTest")
             {
                 AutoEndDialog = false,
-                Triggers = new List<TriggerHandler>()
+                Triggers = new List<OnCondition>()
                 {
                     new OnBeginDialog()
                     {
@@ -455,7 +455,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var testDialog = new AdaptiveDialog("planningTest")
             {
                 AutoEndDialog = false,
-                Triggers = new List<TriggerHandler>()
+                Triggers = new List<OnCondition>()
                 {
                     new OnBeginDialog()
                     {
@@ -466,7 +466,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 Property = "user.color",
                                 Prompt = new ActivityTemplate("Please select a color:"),
                                 UnrecognizedPrompt = new ActivityTemplate("Not a color. Please select a color:"),
-                                Choices = new List<Choice>() { new Choice("red"), new Choice("green"), new Choice("blue") },
+                                Choices = new ChoiceSet(new List<Choice>() { new Choice("red"), new Choice("green"), new Choice("blue") }),
                                 Style = ListStyle.Inline
                             },
                             new SendActivity("{user.color}"),
@@ -475,7 +475,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 Property = "user.color",
                                 Prompt = new ActivityTemplate("Please select a color:"),
                                 UnrecognizedPrompt = new ActivityTemplate("Please select a color:"),
-                                Choices = new List<Choice>() { new Choice("red"), new Choice("green"), new Choice("blue") },
+                                Choices = new ChoiceSet(new List<Choice>() { new Choice("red"), new Choice("green"), new Choice("blue") }),
                                 AlwaysPrompt = true,
                                 Style = ListStyle.Inline
                             },
@@ -485,7 +485,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 Property = "user.color",
                                 Prompt = new ActivityTemplate("Please select a color:"),
                                 UnrecognizedPrompt = new ActivityTemplate("Please select a color:"),
-                                Choices = new List<Choice>() { new Choice("red"), new Choice("green"), new Choice("blue") },
+                                Choices = new ChoiceSet(new List<Choice>() { new Choice("red"), new Choice("green"), new Choice("blue") }),
                                 AlwaysPrompt = true,
                                 Style = ListStyle.Inline
                             },
@@ -514,7 +514,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var testDialog = new AdaptiveDialog("planningTest")
             {
                 AutoEndDialog = false,
-                Triggers = new List<TriggerHandler>()
+                Triggers = new List<OnCondition>()
                 {
                     new OnBeginDialog()
                     {
@@ -525,7 +525,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 Property = "user.color",
                                 Prompt = new ActivityTemplate("Please select a color:"),
                                 UnrecognizedPrompt = new ActivityTemplate("Not a color. Please select a color:"),
-                                Choices = new List<Choice>() { new Choice("red"), new Choice("green"), new Choice("blue") },
+                                Choices = new ChoiceSet(new List<Choice>() { new Choice("red"), new Choice("green"), new Choice("blue") }),
                                 Style = ListStyle.Inline
                             },
                             new SendActivity("{user.color}"),
@@ -534,7 +534,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 Property = "user.color",
                                 Prompt = new ActivityTemplate("Please select a color:"),
                                 UnrecognizedPrompt = new ActivityTemplate("Please select a color:"),
-                                Choices = new List<Choice>() { new Choice("red"), new Choice("green"), new Choice("blue") },
+                                Choices = new ChoiceSet(new List<Choice>() { new Choice("red"), new Choice("green"), new Choice("blue") }),
                                 AlwaysPrompt = true,
                                 Style = ListStyle.Inline
                             },
@@ -544,7 +544,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 Property = "user.color",
                                 Prompt = new ActivityTemplate("Please select a color:"),
                                 UnrecognizedPrompt = new ActivityTemplate("Please select a color:"),
-                                Choices = new List<Choice>() { new Choice("red"), new Choice("green"), new Choice("blue") },
+                                Choices = new ChoiceSet(new List<Choice>() { new Choice("red"), new Choice("green"), new Choice("blue") }),
                                 AlwaysPrompt = true,
                                 Style = ListStyle.Inline
                             },
@@ -573,7 +573,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var testDialog = new AdaptiveDialog("planningTest")
             {
                 AutoEndDialog = false,
-                Triggers = new List<TriggerHandler>()
+                Triggers = new List<OnCondition>()
                 {
                     new OnBeginDialog()
                     {
@@ -589,7 +589,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 Property = "user.color",
                                 Prompt = new ActivityTemplate("Please select a color:"),
                                 UnrecognizedPrompt = new ActivityTemplate("Not a color. Please select a color:"),
-                                ChoicesProperty = "user.choices",
+                                Choices = new ChoiceSet("user.choices"),
                                 Style = ListStyle.Inline
                             },
                             new SendActivity("{user.color}"),
@@ -598,7 +598,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 Property = "user.color",
                                 Prompt = new ActivityTemplate("Please select a color:"),
                                 UnrecognizedPrompt = new ActivityTemplate("Please select a color:"),
-                                ChoicesProperty = "user.choices",
+                                Choices = new ChoiceSet("user.choices"),
                                 AlwaysPrompt = true,
                                 Style = ListStyle.Inline
                             },
@@ -608,7 +608,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 Property = "user.color",
                                 Prompt = new ActivityTemplate("Please select a color:"),
                                 UnrecognizedPrompt = new ActivityTemplate("Please select a color:"),
-                                ChoicesProperty = "user.choices",
+                                Choices = new ChoiceSet("user.choices"),
                                 AlwaysPrompt = true,
                                 Style = ListStyle.Inline
                             },
@@ -637,7 +637,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var testDialog = new AdaptiveDialog("planningTest")
             {
                 AutoEndDialog = false,
-                Triggers = new List<TriggerHandler>()
+                Triggers = new List<OnCondition>()
                 {
                     new OnBeginDialog()
                     {
@@ -653,7 +653,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 Property = "user.color",
                                 Prompt = new ActivityTemplate("Please select a color:"),
                                 UnrecognizedPrompt = new ActivityTemplate("Not a color. Please select a color:"),
-                                ChoicesProperty = "user.choices",
+                                Choices = new ChoiceSet("user.choices"),
                                 Style = ListStyle.Inline
                             },
                             new SendActivity("{user.color}"),
@@ -662,7 +662,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 Property = "user.color",
                                 Prompt = new ActivityTemplate("Please select a color:"),
                                 UnrecognizedPrompt = new ActivityTemplate("Please select a color:"),
-                                ChoicesProperty = "user.choices",
+                                Choices = new ChoiceSet("user.choices"),
                                 AlwaysPrompt = true,
                                 Style = ListStyle.Inline
                             },
@@ -672,7 +672,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 Property = "user.color",
                                 Prompt = new ActivityTemplate("Please select a color:"),
                                 UnrecognizedPrompt = new ActivityTemplate("Please select a color:"),
-                                ChoicesProperty = "user.choices",
+                                Choices = new ChoiceSet("user.choices"),
                                 AlwaysPrompt = true,
                                 Style = ListStyle.Inline
                             },
@@ -703,7 +703,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 AutoEndDialog = false
             };
 
-            testDialog.AddTriggerHandlers(new List<TriggerHandler>()
+            testDialog.Triggers.AddRange(new List<OnCondition>()
             {
                 new OnUnknownIntent(
                     new List<Dialog>()
@@ -743,7 +743,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 AutoEndDialog = false
             };
 
-            testDialog.AddTriggerHandlers(new List<TriggerHandler>()
+            testDialog.Triggers.AddRange(new List<OnCondition>()
             {
                 new OnUnknownIntent(
                     new List<Dialog>()
@@ -770,7 +770,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             var testDialog = new AdaptiveDialog("planningTest");
 
-            testDialog.AddTriggerHandlers(new List<TriggerHandler>()
+            testDialog.Triggers.AddRange(new List<OnCondition>()
             {
                 new OnUnknownIntent(
                     new List<Dialog>()
@@ -821,7 +821,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 }
             };
 
-            testDialog.AddTriggerHandlers(new List<TriggerHandler>()
+            testDialog.Triggers.AddRange(new List<OnCondition>()
             {
                 new OnUnknownIntent()
                 {
@@ -870,66 +870,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
-        public async Task Action_EditActionsWithTags()
-        {
-            var testDialog = new AdaptiveDialog("planningTest")
-            {
-                Recognizer = new RegexRecognizer()
-                {
-                    Intents = new List<IntentPattern>()
-                    {
-                        new IntentPattern("Insert", "(?i)insert"),
-                        new IntentPattern("Execute", "(?i)execute"),
-                    }
-                }
-            };
-
-            testDialog.AddTriggerHandlers(new List<TriggerHandler>()
-            {
-                new OnBeginDialog()
-                {
-                    Actions = new List<Dialog>()
-                    {
-                        new EndTurn(),
-                        new SendActivity("One") { Tags = { "a" } },
-                        new SendActivity("Three") { Tags = { "c" } },
-                    }
-                },
-                new OnIntent()
-                {
-                    Intent = "Insert",
-                    Actions = new List<Dialog>()
-                    {
-                        new SendActivity("Inserted"),
-                        new EditActions()
-                        {
-                            ChangeType = ActionChangeType.InsertActionsBeforeTags,
-                            Tags = { "c" },
-                            Actions = new List<Dialog>() { new SendActivity("Two") }
-                        }
-                    }
-                }
-            });
-
-            await CreateFlow(testDialog)
-            .SendConversationUpdate()
-            .Send("insert")
-                .AssertReply("Inserted")
-            .Send("Execute")
-                .AssertReply("One")
-                .AssertReply("Two")
-                .AssertReply("Three")
-            .StartTestAsync();
-        }
-
-        [TestMethod]
         public async Task Action_DoActions()
         {
             var testDialog = new AdaptiveDialog("planningTest");
 
             testDialog.Recognizer = new RegexRecognizer() { Intents = new List<IntentPattern>() { new IntentPattern("JokeIntent", "joke") } };
 
-            testDialog.AddTriggerHandlers(new List<TriggerHandler>()
+            testDialog.Triggers.AddRange(new List<OnCondition>()
             {
                 new OnIntent(
                     "JokeIntent",
@@ -977,7 +924,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             var tellJokeDialog = new AdaptiveDialog("TellJokeDialog")
             {
-                Triggers = new List<TriggerHandler>()
+                Triggers = new List<OnCondition>()
                 {
                     new OnUnknownIntent()
                     {
@@ -993,7 +940,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             var askNameDialog = new AdaptiveDialog("AskNameDialog")
             {
-                Triggers = new List<TriggerHandler>()
+                Triggers = new List<OnCondition>()
                 {
                     new OnBeginDialog()
                     {
@@ -1022,7 +969,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             testDialog.Recognizer = new RegexRecognizer() { Intents = new List<IntentPattern>() { new IntentPattern("JokeIntent", "joke") } };
 
-            testDialog.AddTriggerHandlers(new List<TriggerHandler>()
+            testDialog.Triggers.AddRange(new List<OnCondition>()
             {
                 new OnBeginDialog()
                 {
@@ -1044,7 +991,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         new SendActivity("I'm a joke bot. To get started say 'tell me a joke'")
                     }),
             });
-            testDialog.AddDialog(askNameDialog);
+            testDialog.Dialogs.Add(askNameDialog);
 
             await CreateFlow(testDialog)
             .SendConversationUpdate()
@@ -1061,7 +1008,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         public async Task Action_ReplaceDialog()
         {
             var tellJokeDialog = new AdaptiveDialog("TellJokeDialog");
-            tellJokeDialog.AddTriggerHandlers(new List<TriggerHandler>()
+            tellJokeDialog.Triggers.AddRange(new List<OnCondition>()
             {
                 new OnUnknownIntent(
                     new List<Dialog>()
@@ -1074,7 +1021,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             var askNameDialog = new AdaptiveDialog("AskNameDialog")
             {
-                Triggers = new List<TriggerHandler>()
+                Triggers = new List<OnCondition>()
                 {
                     new OnBeginDialog()
                     {
@@ -1104,7 +1051,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             testDialog.AutoEndDialog = false;
             testDialog.Recognizer = new RegexRecognizer() { Intents = new List<IntentPattern>() { new IntentPattern("JokeIntent", "joke") } };
 
-            testDialog.AddTriggerHandler(new OnBeginDialog()
+            testDialog.Triggers.Add(new OnBeginDialog()
             {
                 Actions = new List<Dialog>()
                 {
@@ -1113,7 +1060,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 }
             });
 
-            testDialog.AddTriggerHandlers(new List<TriggerHandler>()
+            testDialog.Triggers.AddRange(new List<OnCondition>()
             {
                 new OnIntent(
                     "JokeIntent",
@@ -1123,11 +1070,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     }),
             });
 
-            testDialog.AddDialogs(new List<Dialog>()
-            {
-                tellJokeDialog,
-                askNameDialog
-            });
+            testDialog.Dialogs.Add(tellJokeDialog);
+            testDialog.Dialogs.Add(askNameDialog);
 
             await CreateFlow(testDialog)
             .SendConversationUpdate()
@@ -1150,7 +1094,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             testDialog.Recognizer = new RegexRecognizer() { Intents = new List<IntentPattern>() { new IntentPattern("EndIntent", "end") } };
 
             var tellJokeDialog = new AdaptiveDialog("TellJokeDialog");
-            tellJokeDialog.AddTriggerHandlers(new List<TriggerHandler>()
+            tellJokeDialog.Triggers.AddRange(new List<OnCondition>()
             {
                 new OnIntent(
                     "EndIntent",
@@ -1168,7 +1112,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             });
             tellJokeDialog.Recognizer = new RegexRecognizer() { Intents = new List<IntentPattern>() { new IntentPattern("EndIntent", "end") } };
 
-            testDialog.AddTriggerHandlers(new List<TriggerHandler>()
+            testDialog.Triggers.AddRange(new List<OnCondition>()
             {
                 new OnUnknownIntent(
                     new List<Dialog>()
@@ -1178,7 +1122,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     })
             });
 
-            testDialog.AddDialog(tellJokeDialog);
+            testDialog.Dialogs.Add(tellJokeDialog);
 
             await CreateFlow(testDialog)
             .Send("hi")
@@ -1193,7 +1137,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         {
             var testDialog = new AdaptiveDialog("testDialog")
             {
-                Triggers = new List<TriggerHandler>()
+                Triggers = new List<OnCondition>()
                 {
                     new OnBeginDialog()
                     {
@@ -1235,7 +1179,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         new IntentPattern("CowboyIntent", "moo")
                     }
                 },
-                Triggers = new List<TriggerHandler>()
+                Triggers = new List<OnCondition>()
                 {
                     new OnIntent(intent: "CowboyIntent")
                     {
@@ -1260,7 +1204,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             var rootDialog = new AdaptiveDialog("root")
             {
-                Triggers = new List<TriggerHandler>()
+                Triggers = new List<OnCondition>()
                 {
                     new OnBeginDialog()
                     {
@@ -1270,9 +1214,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                         }
                     },
 
-                    new OnDialogEvent()
+                    new OnCustomEvent()
                     {
-                        Events = new List<string>() { "CustomEvent" },
+                        Event = "CustomEvent",
                         Actions = new List<Dialog>()
                         {
                             new SendActivity("CustomEventFired")
@@ -1280,7 +1224,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     }
                 }
             };
-            rootDialog.AddDialog(outer);
+            rootDialog.Dialogs.Add(outer);
 
             await CreateFlow(rootDialog)
             .Send("moo")
@@ -1300,7 +1244,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             var rootDialog = new AdaptiveDialog("root")
             {
-                Triggers = new List<TriggerHandler>()
+                Triggers = new List<OnCondition>()
                 {
                     new OnBeginDialog()
                     {
@@ -1362,7 +1306,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
 
             var rootDialog = new AdaptiveDialog("root")
             {
-                Triggers = new List<TriggerHandler>()
+                Triggers = new List<OnCondition>()
                 {
                     new OnBeginDialog()
                     {

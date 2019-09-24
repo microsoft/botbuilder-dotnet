@@ -1,23 +1,16 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
-    "$role": "unionType(Microsoft.Dialog)",
+    "$role": "unionType(Microsoft.IDialog)",
     "title": "End Dialog",
     "description": "Command which ends the current dialog, returning the resultProperty as the result of the dialog.",
     "type": "object",
-    "allOf": [
-        {
-            "$ref": "./baseActionSchema.json"
-        },
-        {
-            "properties": {
-                "value": {
-                    "$role": "expression",
-                    "description": "Specifies a value expression for the result to be returned to the caller.",
-                    "examples": [
-                        "dialog.name"
-                    ]
-                }
-            }
+    "properties": {
+        "value": {
+            "$role": "expression",
+            "description": "Specifies a value expression for the result to be returned to the caller.",
+            "examples": [
+                "dialog.name"
+            ]
         }
-    ]
+    }
 }

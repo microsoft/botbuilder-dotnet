@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.TriggerHandlers;
 using Microsoft.Bot.Builder.Dialogs.Choices;
@@ -62,7 +63,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                 Prompt = new ActivityTemplate("What declarative sample do you want to run?"),
                 Property = "conversation.dialogChoice",
                 AlwaysPrompt = true,
-                Choices = new List<Choice>()
+                Choices = new ChoiceSet(new List<Choice>())
             };
 
             var handleChoice = new SwitchCondition()
@@ -76,7 +77,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                 try
                 {
                     var name = Path.GetFileNameWithoutExtension(Path.GetFileNameWithoutExtension(resource.Id));
-                    choiceInput.Choices.Add(new Choice(name));
+                    choiceInput.Choices.Value.Add(new Choice(name));
                     var dialog = DeclarativeTypeLoader.Load<Dialog>(resource, this.resourceExplorer, DebugSupport.SourceRegistry);
                     handleChoice.Cases.Add(new Case($"{name}", new List<Dialog>() { dialog }));
                 }

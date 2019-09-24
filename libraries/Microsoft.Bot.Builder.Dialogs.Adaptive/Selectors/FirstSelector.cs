@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.TriggerHandlers;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Expressions;
 using Microsoft.Bot.Builder.Expressions.Parser;
 
@@ -13,49 +13,49 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
     /// </summary>
     public class FirstSelector : ITriggerSelector
     {
-        private List<TriggerHandler> _triggerHandlers;
+        private List<OnCondition> _conditionals;
         private bool _evaluate;
         private readonly IExpressionParser _parser = new ExpressionEngine();
 
-        public void Initialize(IEnumerable<TriggerHandler> triggers, bool evaluate)
+        public void Initialize(IEnumerable<OnCondition> conditionals, bool evaluate)
         {
-            _triggerHandlers = triggers.ToList();
+            _conditionals = conditionals.ToList();
             _evaluate = evaluate;
         }
 
-        public Task<IReadOnlyList<TriggerHandler>> Select(SequenceContext context, CancellationToken cancel)
+        public Task<IReadOnlyList<OnCondition>> Select(SequenceContext context, CancellationToken cancel)
         {
             TriggerHandler selection = null;
             if (_evaluate)
             {
-                for (var i = 0; i < _triggerHandlers.Count; i++)
+                for (var i = 0; i < _conditionals.Count; i++)
                 {
-                    var triggerHandler = _triggerHandlers[i];
-                    var expression = triggerHandler.GetExpression(_parser);
+                    var conditional = _conditionals[i];
+                    var expression = conditional.GetExpression(_parser);
                     var (value, error) = expression.TryEvaluate(context.State);
                     var eval = error == null && (bool)value;
                     if (eval == true)
                     {
-                        selection = triggerHandler;
+                        selection = conditional;
                         break;
                     }
                 }
             }
             else
             {
-                if (_triggerHandlers.Count > 0)
+                if (_conditionals.Count > 0)
                 {
-                    selection = _triggerHandlers[0];
+                    selection = _conditionals[0];
                 }
             }
 
-            var result = new List<TriggerHandler>();
+            var result = new List<OnCondition>();
             if (selection != null)
             {
                 result.Add(selection);
             }
 
-            return Task.FromResult((IReadOnlyList<TriggerHandler>)result);
+            return Task.FromResult((IReadOnlyList<OnCondition>)result);
         }
     }
 }

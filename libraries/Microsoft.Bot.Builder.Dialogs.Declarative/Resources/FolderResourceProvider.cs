@@ -85,17 +85,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Resources
         /// GetResource by id.
         /// </summary>
         /// <param name="id">Resource ID.</param>
-        /// <returns>Resource.</returns>
-        public IResource GetResource(string id)
+        /// <param name="resource">the found resource </param>
+        /// <returns>true if resource was found.</returns>
+        public bool TryGetResource(string id, out IResource resource)
         {
             lock (this.resources)
             {
                 if (this.resources.TryGetValue(id, out FileResource fileResource))
                 {
-                    return fileResource;
+                    resource = fileResource;
+                    return true;
                 }
 
-                throw new ArgumentException($"Could not find resource '{id}'", paramName: id);
+                resource = null;
+                return false;
             }
         }
 

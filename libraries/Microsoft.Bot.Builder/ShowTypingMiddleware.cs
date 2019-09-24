@@ -10,7 +10,7 @@ namespace Microsoft.Bot.Builder
 {
     /// <summary>
     /// When added, this middleware will send typing activities back to the user when a Message activity
-    /// is receieved to let them know that the bot has receieved the message and is working on the response.
+    /// is received to let them know that the bot has received the message and is working on the response.
     /// You can specify a delay in milliseconds before the first typing activity is sent and then a frequency,
     /// also in milliseconds which determines how often another typing activity is sent. Typing activities
     /// will continue to be sent until your bot sends another message back to the user.
@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
-        /// Processess an incoming activity.
+        /// Processes an incoming activity.
         /// </summary>
         /// <param name="turnContext">The context object for this turn.</param>
         /// <param name="next">The delegate to call to continue the bot middleware pipeline.</param>
@@ -64,7 +64,7 @@ namespace Microsoft.Bot.Builder
                     cts = new CancellationTokenSource();
                     cancellationToken.Register(() => cts.Cancel());
 
-                    // do not await task - we want this to run in thw background and we wil cancel it when its done
+                    // do not await task - we want this to run in the background and we will cancel it when its done
                     var task = Task.Run(() => SendTypingAsync(turnContext, _delay, _period, cts.Token), cancellationToken);
                 }
 

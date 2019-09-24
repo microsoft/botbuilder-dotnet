@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.TriggerHandlers;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Expressions;
 using Microsoft.Bot.Builder.Expressions.Parser;
 
@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
     /// </summary>
     public class RandomSelector : ITriggerSelector
     {
-        private List<TriggerHandler> _triggerHandlers;
+        private List<OnCondition> _conditionals;
         private bool _evaluate;
         private Random _rand;
         private int _seed = -1;
@@ -37,9 +37,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
             }
         }
 
-        public void Initialize(IEnumerable<TriggerHandler> triggerHandlers, bool evaluate)
+        public void Initialize(IEnumerable<OnCondition> conditionals, bool evaluate)
         {
-            _triggerHandlers = triggerHandlers.ToList();
+            _conditionals = conditionals.ToList();
             _evaluate = evaluate;
             if (_rand == null)
             {
@@ -47,20 +47,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
             }
         }
 
-        public Task<IReadOnlyList<TriggerHandler>> Select(SequenceContext context, CancellationToken cancel = default(CancellationToken))
+        public Task<IReadOnlyList<OnCondition>> Select(SequenceContext context, CancellationToken cancel = default(CancellationToken))
         {
-            var candidates = _triggerHandlers;
+            var candidates = _conditionals;
             if (_evaluate)
             {
-                candidates = new List<TriggerHandler>();
-                foreach (var triggerHandler in _triggerHandlers)
+                candidates = new List<OnCondition>();
+                foreach (var conditional in _conditionals)
                 {
-                    var expression = triggerHandler.GetExpression(_parser);
+                    var expression = conditional.GetExpression(_parser);
                     var (value, error) = expression.TryEvaluate(context.State);
                     var eval = error == null && (bool)value;
                     if (eval == true)
                     {
-                        candidates.Add(triggerHandler);
+                        candidates.Add(conditional);
                     }
                 }
             }
@@ -72,7 +72,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
                 result.Add(candidates[selection]);
             }
 
-            return Task.FromResult((IReadOnlyList<TriggerHandler>)result);
+            return Task.FromResult((IReadOnlyList<OnCondition>)result);
         }
     }
 }

@@ -8,9 +8,10 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.TriggerHandlers;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
+using Microsoft.Bot.Builder.Expressions.Parser;
 using Microsoft.Bot.Builder.LanguageGeneration;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json.Linq;
@@ -54,7 +55,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// <summary>
         /// Gets or sets trigger handlers to respond to conditions which modifying the executing plan. 
         /// </summary>
-        public virtual List<TriggerHandler> Triggers { get; set; } = new List<TriggerHandler>();
+        public virtual List<OnCondition> Triggers { get; set; } = new List<OnCondition>();
 
         /// <summary>
         /// Gets or sets a value indicating whether to end the dialog when there are no actions to execute.
@@ -80,6 +81,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// Gets or sets the property to return as the result when the dialog ends when there are no more Actions and AutoEndDialog = true.
         /// </value>
         public string DefaultResultProperty { get; set; } = "dialog.result";
+
+        /// <summary>
+        /// Gets the dialogs which make up the AdaptiveDialog 
+        /// </summary>
+        public DialogSet Dialogs => this._dialogs;
 
         public override IBotTelemetryClient TelemetryClient
         {
@@ -162,28 +168,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 // for the active step
                 var stepDc = new DialogContext(_dialogs, turnContext, state.Actions[0]);
                 await stepDc.RepromptDialogAsync(cancellationToken).ConfigureAwait(false);
-            }
-        }
-
-        public void AddTriggerHandler(TriggerHandler trigger)
-        {
-            trigger.Actions.ForEach(action => _dialogs.Add(action));
-            this.Triggers.Add(trigger);
-        }
-
-        public void AddTriggerHandlers(IEnumerable<TriggerHandler> triggers)
-        {
-            foreach (var evt in triggers)
-            {
-                this.AddTriggerHandler(evt);
-            }
-        }
-
-        public void AddDialogs(IEnumerable<Dialog> dialogs)
-        {
-            foreach (var dialog in dialogs)
-            {
-                this._dialogs.Add(dialog);
             }
         }
 
@@ -273,6 +257,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                             handled = await this.ProcessEventAsync(sequenceContext, dialogEvent: recognizedIntentEvent, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
                         }
 
+                        // Has an interruption occured?
+                        // - Setting this value to true causes any running inputs to re-prompt when they're
+                        //   continued.  The developer can clear this flag if they want the input to instead
+                        //   process the users uterrance when its continued.
+                        if (handled)
+                        {
+                            sequenceContext.State.SetValue(TurnPath.INTERRUPTED, true);
+                        }
+
                         break;
                 }
             }
@@ -303,6 +296,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                             {
                                 handled = false;
                             }
+                        }
+
+                        // Has an interruption occured?
+                        // - Setting this value to true causes any running inputs to re-prompt when they're
+                        //   continued.  The developer can clear this flag if they want the input to instead
+                        //   process the users uterrance when its continued.
+                        if (handled)
+                        {
+                            sequenceContext.State.SetValue(TurnPath.INTERRUPTED, true);
                         }
 
                         break;
@@ -361,12 +363,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                     // Call begin dialog on our next step, passing the effective options we computed
                     result = await action.BeginDialogAsync(nextAction.DialogId, effectiveOptions, cancellationToken).ConfigureAwait(false);
                 }
-
-                // Increment turns step count
-                // This helps dialogs being resumed from an interruption to determine if they
-                // should re-prompt or not.
-                var stepCount = sequenceContext.State.GetValue<int>(TurnPath.STEPCOUNT, () => 0);
-                sequenceContext.State.SetValue(TurnPath.STEPCOUNT, stepCount + 1);
 
                 // Is the step waiting for input or were we cancelled?
                 if (result.Status == DialogTurnStatus.Waiting || this.GetUniqueInstanceId(sequenceContext) != instanceId)
@@ -499,7 +495,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             {
                 var evt = selection.First();
                 await sequenceContext.DebuggerStepAsync(evt, dialogEvent, cancellationToken).ConfigureAwait(false);
-                System.Diagnostics.Trace.TraceInformation($"Executing Dialog: {this.Id} Rule[{selection}]: {evt.GetType().Name}: {evt.GetExpression(null)}");
+                System.Diagnostics.Trace.TraceInformation($"Executing Dialog: {this.Id} Rule[{selection}]: {evt.GetType().Name}: {evt.GetExpression(new ExpressionEngine())}");
                 var changes = await evt.ExecuteAsync(sequenceContext).ConfigureAwait(false);
 
                 if (changes != null && changes.Count() > 0)
@@ -541,7 +537,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
                     foreach (var @event in this.Triggers)
                     {
-                        AddDialogs(@event.Actions);
+                        if (@event is IDialogDependencies depends)
+                        {
+                            foreach (var dlg in depends.GetDependencies())
+                            {
+                                this.Dialogs.Add(dlg);
+                            }
+                        }
                     }
 
                     // Wire up selector

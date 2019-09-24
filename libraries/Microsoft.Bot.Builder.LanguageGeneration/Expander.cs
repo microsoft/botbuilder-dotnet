@@ -66,12 +66,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         public override List<string> VisitNormalTemplateBody([NotNull] LGFileParser.NormalTemplateBodyContext context)
         {
-            var normalTemplateStrs = context.normalTemplateString();
+            var normalTemplateStrs = context.templateString();
             var result = new List<string>();
 
             foreach (var normalTemplateStr in normalTemplateStrs)
             {
-                result.AddRange(Visit(normalTemplateStr));
+                result.AddRange(Visit(normalTemplateStr.normalTemplateString()));
             }
 
             return result;

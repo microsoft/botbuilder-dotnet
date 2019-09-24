@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.AI.TriggerTrees;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.TriggerHandlers;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Expressions.Parser;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
@@ -22,30 +22,29 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
         /// </value>
         public ITriggerSelector Selector { get; set; }
 
-        public void Initialize(IEnumerable<TriggerHandler> triggerHandlers, bool evaluate)
+        public void Initialize(IEnumerable<OnCondition> conditionals, bool evaluate)
         {
             var parser = new ExpressionEngine(TriggerTree.LookupFunction);
-            foreach (var triggerHandler in triggerHandlers)
+            foreach (var conditional in conditionals)
             {
-                _tree.AddTrigger(triggerHandler.GetExpression(parser), triggerHandler);
+                _tree.AddTrigger(conditional.GetExpression(parser), conditional);
             }
         }
 
-        public virtual async Task<IReadOnlyList<TriggerHandler>> Select(SequenceContext context, CancellationToken cancel)
+        public virtual async Task<IReadOnlyList<OnCondition>> Select(SequenceContext context, CancellationToken cancel)
         {
             var nodes = _tree.Matches(context.State);
-            var matches = new List<TriggerHandler>();
-            foreach (var node in nodes)
-            {
-                foreach (var trigger in node.AllTriggers)
+                var matches = new List<OnCondition>();
+                foreach (var node in nodes)
                 {
-                    matches.Add((TriggerHandler)trigger.Action);
+                    foreach (var condition in node.AllTriggers)
+                    {
+                        matches.Add(condition);
+                    }
                 }
-            }
-
             IReadOnlyList<TriggerHandler> selections = matches;
             if (Selector != null)
-            { 
+            {
                 Selector.Initialize(matches, false);
                 selections = await Selector.Select(context, cancel).ConfigureAwait(false);
             }

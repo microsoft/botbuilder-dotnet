@@ -6,14 +6,19 @@
     "description": "These are all of the types that can be created by the loader.",
     "oneOf": [
         {
+            "title": "Microsoft.ActivityTemplate",
+            "description": "",
+            "$ref": "#/definitions/Microsoft.ActivityTemplate"
+        },
+        {
             "title": "Microsoft.AdaptiveDialog",
             "description": "Configures a data driven dialog via a collection of actions/dialogs.",
             "$ref": "#/definitions/Microsoft.AdaptiveDialog"
         },
         {
-            "title": "Microsoft.Ask",
-            "description": "This is an action which sends an activity to the user when a response is expected",
-            "$ref": "#/definitions/Microsoft.Ask"
+            "title": "Microsoft.AgeEntityRecognizer",
+            "description": "Recognizer which recognizes age.",
+            "$ref": "#/definitions/Microsoft.AgeEntityRecognizer"
         },
         {
             "title": "Microsoft.AttachmentInput",
@@ -46,6 +51,21 @@
             "$ref": "#/definitions/Microsoft.ConfirmInput"
         },
         {
+            "title": "Microsoft.ConfirmationEntityRecognizer",
+            "description": "Recognizer which recognizes confirmation choices (yes/no).",
+            "$ref": "#/definitions/Microsoft.ConfirmationEntityRecognizer"
+        },
+        {
+            "title": "Microsoft.CurrencyEntityRecognizer",
+            "description": "Recognizer which recognizes currency.",
+            "$ref": "#/definitions/Microsoft.CurrencyEntityRecognizer"
+        },
+        {
+            "title": "Microsoft.DateTimeEntityRecognizer",
+            "description": "Recognizer which recognizes dates and time fragments.",
+            "$ref": "#/definitions/Microsoft.DateTimeEntityRecognizer"
+        },
+        {
             "title": "Microsoft.DateTimeInput",
             "description": "This represents a dialog which gathers Date or Time or DateTime from the user",
             "$ref": "#/definitions/Microsoft.DateTimeInput"
@@ -61,6 +81,11 @@
             "$ref": "#/definitions/Microsoft.DeleteProperty"
         },
         {
+            "title": "Microsoft.DimensionEntityRecognizer",
+            "description": "Recognizer which recognizes dimension.",
+            "$ref": "#/definitions/Microsoft.DimensionEntityRecognizer"
+        },
+        {
             "title": "Microsoft.EditActions",
             "description": "Edit current dialog with changeType and Actions",
             "$ref": "#/definitions/Microsoft.EditActions"
@@ -69,6 +94,11 @@
             "title": "Microsoft.EditArray",
             "description": "This is a action which allows you to modify an array in memory",
             "$ref": "#/definitions/Microsoft.EditArray"
+        },
+        {
+            "title": "Microsoft.EmailEntityRecognizer",
+            "description": "Recognizer which recognizes email.",
+            "$ref": "#/definitions/Microsoft.EmailEntityRecognizer"
         },
         {
             "title": "Microsoft.EmitEvent",
@@ -101,9 +131,14 @@
             "$ref": "#/definitions/Microsoft.ForeachPage"
         },
         {
-            "title": "Microsoft.FormDialog",
-            "description": "Configures a data driven dialog via a schema and a collection of mapping rules.",
-            "$ref": "#/definitions/Microsoft.FormDialog"
+            "title": "Microsoft.GuidEntityRecognizer",
+            "description": "Recognizer which recognizes guids.",
+            "$ref": "#/definitions/Microsoft.GuidEntityRecognizer"
+        },
+        {
+            "title": "Microsoft.HashtagEntityRecognizer",
+            "description": "Recognizer which recognizes Hashtags.",
+            "$ref": "#/definitions/Microsoft.HashtagEntityRecognizer"
         },
         {
             "title": "Microsoft.HttpRequest",
@@ -121,8 +156,13 @@
             "$ref": "#/definitions/Microsoft.InitProperty"
         },
         {
+            "title": "Microsoft.IpEntityRecognizer",
+            "description": "Recognizer which recognizes internet IP patterns (like 192.1.1.1).",
+            "$ref": "#/definitions/Microsoft.IpEntityRecognizer"
+        },
+        {
             "title": "Microsoft.LanguagePolicy",
-            "description": "This represents a dialog which gathers a DateTime in a specified range",
+            "description": "This represents a policy map for locales lookups to use for language",
             "$ref": "#/definitions/Microsoft.LanguagePolicy"
         },
         {
@@ -136,6 +176,11 @@
             "$ref": "#/definitions/Microsoft.LuisRecognizer"
         },
         {
+            "title": "Microsoft.MentionEntityRecognizer",
+            "description": "Recognizer which recognizes @Mentions",
+            "$ref": "#/definitions/Microsoft.MentionEntityRecognizer"
+        },
+        {
             "title": "Microsoft.MostSpecificSelector",
             "description": "Select most specific true events with optional additional selector",
             "$ref": "#/definitions/Microsoft.MostSpecificSelector"
@@ -146,9 +191,19 @@
             "$ref": "#/definitions/Microsoft.MultiLanguageRecognizer"
         },
         {
+            "title": "Microsoft.NumberEntityRecognizer",
+            "description": "Recognizer which recognizes numbers.",
+            "$ref": "#/definitions/Microsoft.NumberEntityRecognizer"
+        },
+        {
             "title": "Microsoft.NumberInput",
             "description": "This represents a dialog which gathers a decimal number in a specified range",
             "$ref": "#/definitions/Microsoft.NumberInput"
+        },
+        {
+            "title": "Microsoft.NumberRangeEntityRecognizer",
+            "description": "Recognizer which recognizes ranges of numbers (Example:2 to 5).",
+            "$ref": "#/definitions/Microsoft.NumberRangeEntityRecognizer"
         },
         {
             "title": "Microsoft.OAuthInput",
@@ -157,13 +212,8 @@
         },
         {
             "title": "Microsoft.OnActivity",
-            "description": "This defines the actions to take when an custom activity is received",
+            "description": "Defines the actions to take when an arbitrary activity is received",
             "$ref": "#/definitions/Microsoft.OnActivity"
-        },
-        {
-            "title": "Microsoft.OnAsk",
-            "description": "This defines the actions to take when an OnAsk event is raised",
-            "$ref": "#/definitions/Microsoft.OnAsk"
         },
         {
             "title": "Microsoft.OnBeginDialog",
@@ -171,24 +221,14 @@
             "$ref": "#/definitions/Microsoft.OnBeginDialog"
         },
         {
-            "title": "Microsoft.OnChooseSlot",
-            "description": "This defines the actions to take when a ChooseSlot event is raised",
-            "$ref": "#/definitions/Microsoft.OnChooseSlot"
+            "title": "Microsoft.OnCancelDialog",
+            "description": "This defines the actions to take when a CancelDialog event has been emitted",
+            "$ref": "#/definitions/Microsoft.OnCancelDialog"
         },
         {
-            "title": "Microsoft.OnChooseSlotValue",
-            "description": "This defines the actions to take when a ChooseSlot event is raised",
-            "$ref": "#/definitions/Microsoft.OnChooseSlotValue"
-        },
-        {
-            "title": "Microsoft.OnClarifySlotValue",
-            "description": "This defines the actions to take when a ClarifySlotValue event is raised",
-            "$ref": "#/definitions/Microsoft.OnClarifySlotValue"
-        },
-        {
-            "title": "Microsoft.OnClearSlot",
-            "description": "This defines the actions to take when a ClearSlot event is raised",
-            "$ref": "#/definitions/Microsoft.OnClearSlot"
+            "title": "Microsoft.OnCondition",
+            "description": "Defines actions which are executed when a condition is true",
+            "$ref": "#/definitions/Microsoft.OnCondition"
         },
         {
             "title": "Microsoft.OnConversationUpdateActivity",
@@ -196,8 +236,13 @@
             "$ref": "#/definitions/Microsoft.OnConversationUpdateActivity"
         },
         {
+            "title": "Microsoft.OnCustomEvent",
+            "description": "Defines a actions which are executed when custom event is detected",
+            "$ref": "#/definitions/Microsoft.OnCustomEvent"
+        },
+        {
             "title": "Microsoft.OnDialogEvent",
-            "description": "Defines a rule for an event which is triggered by some source",
+            "description": "Defines a actions which are executed when a dialog event matching event is is true",
             "$ref": "#/definitions/Microsoft.OnDialogEvent"
         },
         {
@@ -206,13 +251,13 @@
             "$ref": "#/definitions/Microsoft.OnEndOfConversationActivity"
         },
         {
-            "title": "Microsoft.OnEvent",
-            "description": "Defines a rule for an event which is triggered by some source",
-            "$ref": "#/definitions/Microsoft.OnEvent"
+            "title": "Microsoft.OnError",
+            "description": "This defines the actions to take when an Error dialog event is emitted",
+            "$ref": "#/definitions/Microsoft.OnError"
         },
         {
             "title": "Microsoft.OnEventActivity",
-            "description": "This defines the actions to take when an Event activity is received",
+            "description": "This defines the actions to take when an Activity.Type == 'Event' is received",
             "$ref": "#/definitions/Microsoft.OnEventActivity"
         },
         {
@@ -247,18 +292,13 @@
         },
         {
             "title": "Microsoft.OnMessageUpdateActivity",
-            "description": "This defines the actions to take when an MessageUpdate ctivity is received",
+            "description": "This defines the actions to take when an MessageUpdate Activity is received",
             "$ref": "#/definitions/Microsoft.OnMessageUpdateActivity"
         },
         {
-            "title": "Microsoft.OnNextForm",
-            "description": "This defines the actions to take when a NextForm event is raised",
-            "$ref": "#/definitions/Microsoft.OnNextForm"
-        },
-        {
-            "title": "Microsoft.OnSetSlot",
-            "description": "This defines the actions to take when a SetSlot event is raised",
-            "$ref": "#/definitions/Microsoft.OnSetSlot"
+            "title": "Microsoft.OnRepromptDialog",
+            "description": "This defines the actions to take when a RepromptDialog event has been emitted",
+            "$ref": "#/definitions/Microsoft.OnRepromptDialog"
         },
         {
             "title": "Microsoft.OnTypingActivity",
@@ -271,6 +311,21 @@
             "$ref": "#/definitions/Microsoft.OnUnknownIntent"
         },
         {
+            "title": "Microsoft.OrdinalEntityRecognizer",
+            "description": "Recognizer which recognizes ordinals (example: first, second, 3rd).",
+            "$ref": "#/definitions/Microsoft.OrdinalEntityRecognizer"
+        },
+        {
+            "title": "Microsoft.PercentageEntityRecognizer",
+            "description": "Recognizer which recognizes percentages.",
+            "$ref": "#/definitions/Microsoft.PercentageEntityRecognizer"
+        },
+        {
+            "title": "Microsoft.PhoneNumberEntityRecognizer",
+            "description": "Recognizer which recognizes phone numbers.",
+            "$ref": "#/definitions/Microsoft.PhoneNumberEntityRecognizer"
+        },
+        {
             "title": "Microsoft.QnAMakerDialog",
             "description": "This represents a dialog which is driven by a call to QnAMaker.ai knowledge base",
             "$ref": "#/definitions/Microsoft.QnAMakerDialog"
@@ -279,6 +334,11 @@
             "title": "Microsoft.RandomSelector",
             "description": "Select most specific true rule",
             "$ref": "#/definitions/Microsoft.RandomSelector"
+        },
+        {
+            "title": "Microsoft.RegExEntityRecognizer",
+            "description": "Recognizer which recognizes patterns of input based on regex.",
+            "$ref": "#/definitions/Microsoft.RegExEntityRecognizer"
         },
         {
             "title": "Microsoft.RegexRecognizer",
@@ -306,14 +366,29 @@
             "$ref": "#/definitions/Microsoft.SetProperty"
         },
         {
+            "title": "Microsoft.StaticActivityTemplate",
+            "description": "This allows you to defina static Activity object",
+            "$ref": "#/definitions/Microsoft.StaticActivityTemplate"
+        },
+        {
             "title": "Microsoft.SwitchCondition",
             "description": "Action which conditionally decides which action to execute next.",
             "$ref": "#/definitions/Microsoft.SwitchCondition"
         },
         {
+            "title": "Microsoft.TemperatureEntityRecognizer",
+            "description": "Recognizer which recognizes temperatures.",
+            "$ref": "#/definitions/Microsoft.TemperatureEntityRecognizer"
+        },
+        {
             "title": "Microsoft.TextInput",
             "description": "This represents a dialog which gathers a text from the user",
             "$ref": "#/definitions/Microsoft.TextInput"
+        },
+        {
+            "title": "Microsoft.TextTemplate",
+            "description": "Lg tempalte to evaluate to create text",
+            "$ref": "#/definitions/Microsoft.TextTemplate"
         },
         {
             "title": "Microsoft.TraceActivity",
@@ -324,9 +399,71 @@
             "title": "Microsoft.TrueSelector",
             "description": "Selector for all true events",
             "$ref": "#/definitions/Microsoft.TrueSelector"
+        },
+        {
+            "title": "Microsoft.UrlEntityRecognizer",
+            "description": "Recognizer which recognizes urls (example: http://bing.com)",
+            "$ref": "#/definitions/Microsoft.UrlEntityRecognizer"
         }
     ],
     "definitions": {
+        "Microsoft.ActivityTemplate": {
+            "$role": "unionType(Microsoft.IActivityTemplate)",
+            "title": "Microsoft ActivityTemplate",
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.ActivityTemplate"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "template": {
+                    "title": "Template",
+                    "Description": "Language Generator template to use to create the activity",
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "template",
+                        "$type"
+                    ]
+                }
+            ]
+        },
         "Microsoft.AdaptiveDialog": {
             "$role": "unionType(Microsoft.IDialog)",
             "title": "Adaptive Dialog",
@@ -360,43 +497,7 @@
                 "id": {
                     "type": "string",
                     "title": "Id",
-                    "description": "(Optional) id for the dialog",
-                    "examples": [
-                        "Dialog2"
-                    ]
-                },
-                "tags": {
-                    "type": "array",
-                    "title": "Tags",
-                    "description": "Tags are optional strings that you can use to organize components",
-                    "examples": [
-                        "input",
-                        "confirmation"
-                    ],
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "inputBindings": {
-                    "type": "object",
-                    "title": "Input Bindings",
-                    "description": "This defines properties which be passed as arguments to this dialog",
-                    "examples": [
-                        "value.birthday"
-                    ],
-                    "additionalProperties": {
-                        "type": "string"
-                    }
-                },
-                "outputBinding": {
-                    "$role": "memoryPath",
-                    "title": "Output Property binding",
-                    "description": "This is the property which the EndDialog(result) will be set to when EndDialog() is called",
-                    "examples": [
-                        "value.birthday"
-                    ],
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
+                    "description": "Optional id for the dialog"
                 },
                 "autoEndDialog": {
                     "type": "boolean",
@@ -417,23 +518,23 @@
                     "$ref": "#/definitions/Microsoft.IRecognizer"
                 },
                 "generator": {
-                    "$type": "Microsoft.ILanguageGenerator",
+                    "$type": "Microsoft.LanguageGenerator",
                     "title": "Language Generator",
                     "description": "Language generator to use for this dialog. (aka: LG file)",
-                    "$ref": "#/definitions/Microsoft.ILanguageGenerator"
+                    "$ref": "#/definitions/Microsoft.LanguageGenerator"
                 },
                 "selector": {
                     "$type": "Microsoft.ITriggerSelector",
                     "title": "Selector",
-                    "description": "Policy for how to select rule to execute next",
+                    "description": "Policy for how to select trigger to execute",
                     "$ref": "#/definitions/Microsoft.ITriggerSelector"
                 },
-                "events": {
+                "triggers": {
                     "type": "array",
-                    "description": "Events to use to evaluate conversation",
+                    "description": "Trigger Handlers to use to evaluate conversation",
                     "items": {
-                        "$type": "Microsoft.IOnEvent",
-                        "$ref": "#/definitions/Microsoft.IOnEvent"
+                        "$type": "Microsoft.ITriggerCondition",
+                        "$ref": "#/definitions/Microsoft.ITriggerCondition"
                     }
                 }
             },
@@ -458,10 +559,10 @@
                 }
             ]
         },
-        "Microsoft.Ask": {
-            "$role": "unionType(Microsoft.IDialog)",
-            "title": "Send Activity to Ask a question",
-            "description": "This is an action which sends an activity to the user when a response is expected",
+        "Microsoft.AgeEntityRecognizer": {
+            "$role": "unionType(Microsoft.EntityRecognizers)",
+            "title": "Age Entity Recognizer",
+            "description": "Recognizer which recognizes age.",
             "type": "object",
             "properties": {
                 "$type": {
@@ -469,7 +570,7 @@
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.Ask"
+                    "const": "Microsoft.AgeEntityRecognizer"
                 },
                 "$copy": {
                     "title": "$copy",
@@ -487,40 +588,6 @@
                     "title": "$designer",
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
-                },
-                "id": {
-                    "type": "string",
-                    "title": "Id",
-                    "description": "(Optional) id for the dialog",
-                    "examples": [
-                        "Dialog2"
-                    ]
-                },
-                "tags": {
-                    "type": "array",
-                    "title": "Tags",
-                    "description": "Tags are optional strings that you can use to organize components",
-                    "examples": [
-                        "input",
-                        "confirmation"
-                    ],
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "activity": {
-                    "$type": "Microsoft.IActivityTemplate",
-                    "title": "Activity",
-                    "description": "Activity to send to the user",
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
-                },
-                "expectedSlots": {
-                    "type": "array",
-                    "title": "Expected Slots",
-                    "description": "Slots expected to be filled by entities from the user",
-                    "items": {
-                        "type": "string"
-                    }
                 }
             },
             "additionalProperties": false,
@@ -577,22 +644,7 @@
                 "id": {
                     "type": "string",
                     "title": "Id",
-                    "description": "(Optional) id for the dialog",
-                    "examples": [
-                        "Dialog2"
-                    ]
-                },
-                "tags": {
-                    "type": "array",
-                    "title": "Tags",
-                    "description": "Tags are optional strings that you can use to organize components",
-                    "examples": [
-                        "input",
-                        "confirmation"
-                    ],
-                    "items": {
-                        "type": "string"
-                    }
+                    "description": "Optional id for the dialog"
                 },
                 "prompt": {
                     "$type": "Microsoft.IActivityTemplate",
@@ -621,6 +673,15 @@
                     ],
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
+                "defaultValueResponse": {
+                    "$type": "Microsoft.IActivityTemplate",
+                    "title": "Default Value Response",
+                    "description": "The message to send to when max turn count has been exceeded and the default value is selected as the value.",
+                    "examples": [
+                        "I didn't understand your responses, so I will just use the default value of 10.  Let me know if you want to change it."
+                    ],
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                },
                 "maxTurnCount": {
                     "type": "integer",
                     "title": "Max Turn Count",
@@ -639,12 +700,6 @@
                         "type": "string",
                         "description": "String must contain an expression."
                     }
-                },
-                "value": {
-                    "$role": "expression",
-                    "title": "Value",
-                    "description": "The expression that you evaluated for input.",
-                    "type": "string"
                 },
                 "property": {
                     "$role": "expression",
@@ -746,31 +801,11 @@
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
                 },
-                "id": {
-                    "type": "string",
-                    "title": "Id",
-                    "description": "(Optional) id for the dialog",
-                    "examples": [
-                        "Dialog2"
-                    ]
-                },
-                "tags": {
-                    "type": "array",
-                    "title": "Tags",
-                    "description": "Tags are optional strings that you can use to organize components",
-                    "examples": [
-                        "input",
-                        "confirmation"
-                    ],
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "dialogId": {
-                    "$role": "expression",
-                    "title": "Dialog Id",
-                    "description": "The Id the dialog to call.",
-                    "type": "string"
+                "dialog": {
+                    "$type": "Microsoft.IDialog",
+                    "title": "Dialog",
+                    "description": "This is the dialog to call.",
+                    "$ref": "#/definitions/Microsoft.IDialog"
                 },
                 "options": {
                     "type": "object",
@@ -781,10 +816,10 @@
                         "title": "Options"
                     }
                 },
-                "property": {
+                "resultProperty": {
                     "$role": "expression",
                     "title": "Property",
-                    "description": "The property to bind to the dialog and store the result in",
+                    "description": "The property to store the result in",
                     "examples": [
                         "user.name"
                     ],
@@ -842,26 +877,6 @@
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
                 },
-                "id": {
-                    "type": "string",
-                    "title": "Id",
-                    "description": "(Optional) id for the dialog",
-                    "examples": [
-                        "Dialog2"
-                    ]
-                },
-                "tags": {
-                    "type": "array",
-                    "title": "Tags",
-                    "description": "Tags are optional strings that you can use to organize components",
-                    "examples": [
-                        "input",
-                        "confirmation"
-                    ],
-                    "items": {
-                        "type": "string"
-                    }
-                },
                 "eventName": {
                     "title": "Event Name",
                     "description": "The name of event to emit",
@@ -900,34 +915,6 @@
             "title": "ChoiceInput Dialog",
             "description": "This represents a dialog which gathers a choice responses",
             "type": "object",
-            "definitions": {
-                "choice": {
-                    "type": "object",
-                    "properties": {
-                        "value": {
-                            "type": "string",
-                            "title": "Value",
-                            "description": "the value to return when selected."
-                        },
-                        "action": {
-                            "title": "Action",
-                            "description": "Card action for the choice",
-                            "type": "object"
-                        },
-                        "synonyms": {
-                            "type": "array",
-                            "title": "Synonyms",
-                            "description": "the list of synonyms to recognize in addition to the value. This is optional.",
-                            "items": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                },
-                "cardAction": {
-                    "type": "object"
-                }
-            },
             "properties": {
                 "$type": {
                     "title": "$type",
@@ -956,22 +943,7 @@
                 "id": {
                     "type": "string",
                     "title": "Id",
-                    "description": "(Optional) id for the dialog",
-                    "examples": [
-                        "Dialog2"
-                    ]
-                },
-                "tags": {
-                    "type": "array",
-                    "title": "Tags",
-                    "description": "Tags are optional strings that you can use to organize components",
-                    "examples": [
-                        "input",
-                        "confirmation"
-                    ],
-                    "items": {
-                        "type": "string"
-                    }
+                    "description": "Optional id for the dialog"
                 },
                 "prompt": {
                     "$type": "Microsoft.IActivityTemplate",
@@ -1000,6 +972,15 @@
                     ],
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
+                "defaultValueResponse": {
+                    "$type": "Microsoft.IActivityTemplate",
+                    "title": "Default Value Response",
+                    "description": "The message to send to when max turn count has been exceeded and the default value is selected as the value.",
+                    "examples": [
+                        "I didn't understand your responses, so I will just use the default value of 10.  Let me know if you want to change it."
+                    ],
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                },
                 "maxTurnCount": {
                     "type": "integer",
                     "title": "Max Turn Count",
@@ -1018,12 +999,6 @@
                         "type": "string",
                         "description": "String must contain an expression."
                     }
-                },
-                "value": {
-                    "$role": "expression",
-                    "title": "Value",
-                    "description": "The expression that you evaluated for input.",
-                    "type": "string"
                 },
                 "property": {
                     "$role": "expression",
@@ -1074,30 +1049,48 @@
                     "default": "value"
                 },
                 "choices": {
-                    "type": "array",
-                    "items": [
+                    "anyOf": [
                         {
-                            "type": "object",
-                            "properties": {
-                                "value": {
-                                    "type": "string",
-                                    "title": "Value",
-                                    "description": "the value to return when selected."
-                                },
-                                "action": {
-                                    "title": "Action",
-                                    "description": "Card action for the choice",
-                                    "type": "object"
-                                },
-                                "synonyms": {
-                                    "type": "array",
-                                    "title": "Synonyms",
-                                    "description": "the list of synonyms to recognize in addition to the value. This is optional.",
-                                    "items": {
-                                        "type": "string"
+                            "$role": "expression",
+                            "type": "string",
+                            "description": "String must contain an expression."
+                        },
+                        {
+                            "type": "array",
+                            "items": [
+                                {
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "array",
+                            "items": [
+                                {
+                                    "title": "Choice",
+                                    "type": "object",
+                                    "properties": {
+                                        "value": {
+                                            "type": "string",
+                                            "title": "Value",
+                                            "description": "the value to return when selected."
+                                        },
+                                        "action": {
+                                            "type": "object",
+                                            "title": "Action",
+                                            "description": "Card action for the choice"
+                                        },
+                                        "synonyms": {
+                                            "type": "array",
+                                            "title": "Synonyms",
+                                            "description": "the list of synonyms to recognize in addition to the value. This is optional.",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
                                     }
                                 }
-                            }
+                            ]
                         }
                     ]
                 },
@@ -1197,7 +1190,7 @@
         },
         "Microsoft.ConditionalSelector": {
             "$role": "unionType(Microsoft.ITriggerSelector)",
-            "title": "Condtional Event Selector",
+            "title": "Condtional Trigger Selector",
             "description": "Use a rule selector based on a condition",
             "type": "object",
             "properties": {
@@ -1268,34 +1261,6 @@
             "title": "ConfirmInput Dialog",
             "description": "This represents a dialog which gathers a yes/no style responses",
             "type": "object",
-            "definitions": {
-                "choice": {
-                    "type": "object",
-                    "properties": {
-                        "value": {
-                            "type": "string",
-                            "title": "Value",
-                            "description": "the value to return when selected."
-                        },
-                        "action": {
-                            "title": "Action",
-                            "description": "Card action for the choice",
-                            "type": "object"
-                        },
-                        "synonyms": {
-                            "type": "array",
-                            "title": "Synonyms",
-                            "description": "The list of synonyms to recognize in addition to the value. This is optional.",
-                            "items": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                },
-                "CardAction": {
-                    "type": "object"
-                }
-            },
             "properties": {
                 "$type": {
                     "title": "$type",
@@ -1324,22 +1289,7 @@
                 "id": {
                     "type": "string",
                     "title": "Id",
-                    "description": "(Optional) id for the dialog",
-                    "examples": [
-                        "Dialog2"
-                    ]
-                },
-                "tags": {
-                    "type": "array",
-                    "title": "Tags",
-                    "description": "Tags are optional strings that you can use to organize components",
-                    "examples": [
-                        "input",
-                        "confirmation"
-                    ],
-                    "items": {
-                        "type": "string"
-                    }
+                    "description": "Optional id for the dialog"
                 },
                 "prompt": {
                     "$type": "Microsoft.IActivityTemplate",
@@ -1368,6 +1318,15 @@
                     ],
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
+                "defaultValueResponse": {
+                    "$type": "Microsoft.IActivityTemplate",
+                    "title": "Default Value Response",
+                    "description": "The message to send to when max turn count has been exceeded and the default value is selected as the value.",
+                    "examples": [
+                        "I didn't understand your responses, so I will just use the default value of 10.  Let me know if you want to change it."
+                    ],
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                },
                 "maxTurnCount": {
                     "type": "integer",
                     "title": "Max Turn Count",
@@ -1386,12 +1345,6 @@
                         "type": "string",
                         "description": "String must contain an expression."
                     }
-                },
-                "value": {
-                    "$role": "expression",
-                    "title": "Value",
-                    "description": "The expression that you evaluated for input.",
-                    "type": "string"
                 },
                 "property": {
                     "$role": "expression",
@@ -1492,9 +1445,9 @@
                                     "description": "the value to return when selected."
                                 },
                                 "action": {
+                                    "type": "object",
                                     "title": "Action",
-                                    "description": "Card action for the choice",
-                                    "type": "object"
+                                    "description": "Card action for the choice"
                                 },
                                 "synonyms": {
                                     "type": "array",
@@ -1507,6 +1460,162 @@
                             }
                         }
                     ]
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$type"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.ConfirmationEntityRecognizer": {
+            "$role": "unionType(Microsoft.EntityRecognizers)",
+            "title": "Confirmation Entity Recognizer",
+            "description": "Recognizer which recognizes confirmation choices (yes/no).",
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.ConfirmationEntityRecognizer"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$type"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.CurrencyEntityRecognizer": {
+            "$role": "unionType(Microsoft.EntityRecognizers)",
+            "title": "Currency Entity Recognizer",
+            "description": "Recognizer which recognizes currency.",
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.CurrencyEntityRecognizer"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$type"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.DateTimeEntityRecognizer": {
+            "$role": "unionType(Microsoft.EntityRecognizers)",
+            "title": "DateTime Entity Recognizer",
+            "description": "Recognizer which recognizes dates and time fragments.",
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.DateTimeEntityRecognizer"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
                 }
             },
             "additionalProperties": false,
@@ -1563,22 +1672,7 @@
                 "id": {
                     "type": "string",
                     "title": "Id",
-                    "description": "(Optional) id for the dialog",
-                    "examples": [
-                        "Dialog2"
-                    ]
-                },
-                "tags": {
-                    "type": "array",
-                    "title": "Tags",
-                    "description": "Tags are optional strings that you can use to organize components",
-                    "examples": [
-                        "input",
-                        "confirmation"
-                    ],
-                    "items": {
-                        "type": "string"
-                    }
+                    "description": "Optional id for the dialog"
                 },
                 "prompt": {
                     "$type": "Microsoft.IActivityTemplate",
@@ -1607,6 +1701,15 @@
                     ],
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
+                "defaultValueResponse": {
+                    "$type": "Microsoft.IActivityTemplate",
+                    "title": "Default Value Response",
+                    "description": "The message to send to when max turn count has been exceeded and the default value is selected as the value.",
+                    "examples": [
+                        "I didn't understand your responses, so I will just use the default value of 10.  Let me know if you want to change it."
+                    ],
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                },
                 "maxTurnCount": {
                     "type": "integer",
                     "title": "Max Turn Count",
@@ -1625,12 +1728,6 @@
                         "type": "string",
                         "description": "String must contain an expression."
                     }
-                },
-                "value": {
-                    "$role": "expression",
-                    "title": "Value",
-                    "description": "The expression that you evaluated for input.",
-                    "type": "string"
                 },
                 "property": {
                     "$role": "expression",
@@ -1727,26 +1824,6 @@
                     "title": "$designer",
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
-                },
-                "id": {
-                    "type": "string",
-                    "title": "Id",
-                    "description": "(Optional) id for the dialog",
-                    "examples": [
-                        "Dialog2"
-                    ]
-                },
-                "tags": {
-                    "type": "array",
-                    "title": "Tags",
-                    "description": "Tags are optional strings that you can use to organize components",
-                    "examples": [
-                        "input",
-                        "confirmation"
-                    ],
-                    "items": {
-                        "type": "string"
-                    }
                 }
             },
             "additionalProperties": false,
@@ -1800,26 +1877,6 @@
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
                 },
-                "id": {
-                    "type": "string",
-                    "title": "Id",
-                    "description": "(Optional) id for the dialog",
-                    "examples": [
-                        "Dialog2"
-                    ]
-                },
-                "tags": {
-                    "type": "array",
-                    "title": "Tags",
-                    "description": "Tags are optional strings that you can use to organize components",
-                    "examples": [
-                        "input",
-                        "confirmation"
-                    ],
-                    "items": {
-                        "type": "string"
-                    }
-                },
                 "property": {
                     "$role": "expression",
                     "title": "Property",
@@ -1844,6 +1901,58 @@
                     "title": "Type",
                     "required": [
                         "property",
+                        "$type"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.DimensionEntityRecognizer": {
+            "$role": "unionType(Microsoft.EntityRecognizers)",
+            "title": "Dimension Entity Recognizer",
+            "description": "Recognizer which recognizes dimension.",
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.DimensionEntityRecognizer"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
                         "$type"
                     ]
                 }
@@ -1878,26 +1987,6 @@
                     "title": "$designer",
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
-                },
-                "id": {
-                    "type": "string",
-                    "title": "Id",
-                    "description": "(Optional) id for the dialog",
-                    "examples": [
-                        "Dialog2"
-                    ]
-                },
-                "tags": {
-                    "type": "array",
-                    "title": "Tags",
-                    "description": "Tags are optional strings that you can use to organize components",
-                    "examples": [
-                        "input",
-                        "confirmation"
-                    ],
-                    "items": {
-                        "type": "string"
-                    }
                 },
                 "changeType": {
                     "type": "string",
@@ -1974,26 +2063,6 @@
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
                 },
-                "id": {
-                    "type": "string",
-                    "title": "Id",
-                    "description": "(Optional) id for the dialog",
-                    "examples": [
-                        "Dialog2"
-                    ]
-                },
-                "tags": {
-                    "type": "array",
-                    "title": "Tags",
-                    "description": "Tags are optional strings that you can use to organize components",
-                    "examples": [
-                        "input",
-                        "confirmation"
-                    ],
-                    "items": {
-                        "type": "string"
-                    }
-                },
                 "changeType": {
                     "type": "string",
                     "title": "Change Type",
@@ -2006,16 +2075,16 @@
                         "Clear"
                     ]
                 },
-                "arrayProperty": {
+                "itemsProperty": {
                     "$role": "expression",
-                    "title": "Array Property",
-                    "description": "Memory expression of the array to manipulate.",
+                    "title": "Items Property",
+                    "description": "Memory expression of the collection of items to manipulate.",
                     "type": "string"
                 },
                 "resultProperty": {
                     "$role": "expression",
                     "title": "Result Property",
-                    "description": "Memory expression of the result of this action.",
+                    "description": "The path expression to store the result of the action.",
                     "type": "string"
                 },
                 "value": {
@@ -2045,7 +2114,59 @@
                     "title": "Type",
                     "required": [
                         "changeType",
-                        "arrayProperty",
+                        "itemsProperty",
+                        "$type"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.EmailEntityRecognizer": {
+            "$role": "unionType(Microsoft.EntityRecognizers)",
+            "title": "Email Entity Recognizer",
+            "description": "Recognizer which recognizes email.",
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.EmailEntityRecognizer"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
                         "$type"
                     ]
                 }
@@ -2080,26 +2201,6 @@
                     "title": "$designer",
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
-                },
-                "id": {
-                    "type": "string",
-                    "title": "Id",
-                    "description": "(Optional) id for the dialog",
-                    "examples": [
-                        "Dialog2"
-                    ]
-                },
-                "tags": {
-                    "type": "array",
-                    "title": "Tags",
-                    "description": "Tags are optional strings that you can use to organize components",
-                    "examples": [
-                        "input",
-                        "confirmation"
-                    ],
-                    "items": {
-                        "type": "string"
-                    }
                 },
                 "eventName": {
                     "title": "Event Name",
@@ -2190,29 +2291,9 @@
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
                 },
-                "id": {
-                    "type": "string",
-                    "title": "Id",
-                    "description": "(Optional) id for the dialog",
-                    "examples": [
-                        "Dialog2"
-                    ]
-                },
-                "tags": {
-                    "type": "array",
-                    "title": "Tags",
-                    "description": "Tags are optional strings that you can use to organize components",
-                    "examples": [
-                        "input",
-                        "confirmation"
-                    ],
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "property": {
+                "value": {
                     "$role": "expression",
-                    "description": "Specifies a path to memory should be returned as the result to the calling dialog.",
+                    "description": "Specifies a value expression for the result to be returned to the caller.",
                     "examples": [
                         "dialog.name"
                     ],
@@ -2269,26 +2350,6 @@
                     "title": "$designer",
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
-                },
-                "id": {
-                    "type": "string",
-                    "title": "Id",
-                    "description": "(Optional) id for the dialog",
-                    "examples": [
-                        "Dialog2"
-                    ]
-                },
-                "tags": {
-                    "type": "array",
-                    "title": "Tags",
-                    "description": "Tags are optional strings that you can use to organize components",
-                    "examples": [
-                        "input",
-                        "confirmation"
-                    ],
-                    "items": {
-                        "type": "string"
-                    }
                 }
             },
             "additionalProperties": false,
@@ -2312,9 +2373,107 @@
                 }
             ]
         },
+        "Microsoft.EntityRecognizers": {
+            "$role": "unionType",
+            "title": "Entity Recognizers",
+            "description": "Union of components which derive from EntityRecognizer abstract class.",
+            "type": "object",
+            "oneOf": [
+                {
+                    "title": "Microsoft.AgeEntityRecognizer",
+                    "description": "Recognizer which recognizes age.",
+                    "$ref": "#/definitions/Microsoft.AgeEntityRecognizer"
+                },
+                {
+                    "title": "Microsoft.ConfirmationEntityRecognizer",
+                    "description": "Recognizer which recognizes confirmation choices (yes/no).",
+                    "$ref": "#/definitions/Microsoft.ConfirmationEntityRecognizer"
+                },
+                {
+                    "title": "Microsoft.CurrencyEntityRecognizer",
+                    "description": "Recognizer which recognizes currency.",
+                    "$ref": "#/definitions/Microsoft.CurrencyEntityRecognizer"
+                },
+                {
+                    "title": "Microsoft.DateTimeEntityRecognizer",
+                    "description": "Recognizer which recognizes dates and time fragments.",
+                    "$ref": "#/definitions/Microsoft.DateTimeEntityRecognizer"
+                },
+                {
+                    "title": "Microsoft.DimensionEntityRecognizer",
+                    "description": "Recognizer which recognizes dimension.",
+                    "$ref": "#/definitions/Microsoft.DimensionEntityRecognizer"
+                },
+                {
+                    "title": "Microsoft.EmailEntityRecognizer",
+                    "description": "Recognizer which recognizes email.",
+                    "$ref": "#/definitions/Microsoft.EmailEntityRecognizer"
+                },
+                {
+                    "title": "Microsoft.GuidEntityRecognizer",
+                    "description": "Recognizer which recognizes guids.",
+                    "$ref": "#/definitions/Microsoft.GuidEntityRecognizer"
+                },
+                {
+                    "title": "Microsoft.HashtagEntityRecognizer",
+                    "description": "Recognizer which recognizes Hashtags.",
+                    "$ref": "#/definitions/Microsoft.HashtagEntityRecognizer"
+                },
+                {
+                    "title": "Microsoft.IpEntityRecognizer",
+                    "description": "Recognizer which recognizes internet IP patterns (like 192.1.1.1).",
+                    "$ref": "#/definitions/Microsoft.IpEntityRecognizer"
+                },
+                {
+                    "title": "Microsoft.MentionEntityRecognizer",
+                    "description": "Recognizer which recognizes @Mentions",
+                    "$ref": "#/definitions/Microsoft.MentionEntityRecognizer"
+                },
+                {
+                    "title": "Microsoft.NumberEntityRecognizer",
+                    "description": "Recognizer which recognizes numbers.",
+                    "$ref": "#/definitions/Microsoft.NumberEntityRecognizer"
+                },
+                {
+                    "title": "Microsoft.NumberRangeEntityRecognizer",
+                    "description": "Recognizer which recognizes ranges of numbers (Example:2 to 5).",
+                    "$ref": "#/definitions/Microsoft.NumberRangeEntityRecognizer"
+                },
+                {
+                    "title": "Microsoft.OrdinalEntityRecognizer",
+                    "description": "Recognizer which recognizes ordinals (example: first, second, 3rd).",
+                    "$ref": "#/definitions/Microsoft.OrdinalEntityRecognizer"
+                },
+                {
+                    "title": "Microsoft.PercentageEntityRecognizer",
+                    "description": "Recognizer which recognizes percentages.",
+                    "$ref": "#/definitions/Microsoft.PercentageEntityRecognizer"
+                },
+                {
+                    "title": "Microsoft.PhoneNumberEntityRecognizer",
+                    "description": "Recognizer which recognizes phone numbers.",
+                    "$ref": "#/definitions/Microsoft.PhoneNumberEntityRecognizer"
+                },
+                {
+                    "title": "Microsoft.RegExEntityRecognizer",
+                    "description": "Recognizer which recognizes patterns of input based on regex.",
+                    "$ref": "#/definitions/Microsoft.RegExEntityRecognizer"
+                },
+                {
+                    "title": "Microsoft.TemperatureEntityRecognizer",
+                    "description": "Recognizer which recognizes temperatures.",
+                    "$ref": "#/definitions/Microsoft.TemperatureEntityRecognizer"
+                },
+                {
+                    "title": "Microsoft.UrlEntityRecognizer",
+                    "description": "Recognizer which recognizes urls (example: http://bing.com)",
+                    "$ref": "#/definitions/Microsoft.UrlEntityRecognizer"
+                }
+            ]
+        },
         "Microsoft.FirstSelector": {
             "$role": "unionType(Microsoft.ITriggerSelector)",
-            "title": "First Event Selector",
+            "title": "First Trigger Selector",
             "description": "Selector for first true rule",
             "type": "object",
             "properties": {
@@ -2394,30 +2553,10 @@
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
                 },
-                "id": {
-                    "type": "string",
-                    "title": "Id",
-                    "description": "(Optional) id for the dialog",
-                    "examples": [
-                        "Dialog2"
-                    ]
-                },
-                "tags": {
-                    "type": "array",
-                    "title": "Tags",
-                    "description": "Tags are optional strings that you can use to organize components",
-                    "examples": [
-                        "input",
-                        "confirmation"
-                    ],
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "listProperty": {
+                "itemsProperty": {
                     "$role": "expression",
-                    "title": "ListProperty",
-                    "description": "Expression to evaluate.",
+                    "title": "Items Property",
+                    "description": "Property path expression to the collection of items.",
                     "examples": [
                         "user.todoList"
                     ],
@@ -2431,20 +2570,6 @@
                         "$type": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
-                },
-                "indexProperty": {
-                    "$role": "expression",
-                    "title": "Index Property",
-                    "description": "The memory path which refers to the index of the item",
-                    "default": "dialog.index",
-                    "type": "string"
-                },
-                "valueProperty": {
-                    "$role": "expression",
-                    "title": "Value Property",
-                    "description": "The memory path which refers to the value of the item",
-                    "default": "dialog.value",
-                    "type": "string"
                 }
             },
             "additionalProperties": false,
@@ -2463,7 +2588,7 @@
                 {
                     "title": "Type",
                     "required": [
-                        "listProperty",
+                        "itemsProperty",
                         "actions",
                         "$type"
                     ]
@@ -2500,30 +2625,10 @@
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
                 },
-                "id": {
-                    "type": "string",
-                    "title": "Id",
-                    "description": "(Optional) id for the dialog",
-                    "examples": [
-                        "Dialog2"
-                    ]
-                },
-                "tags": {
-                    "type": "array",
-                    "title": "Tags",
-                    "description": "Tags are optional strings that you can use to organize components",
-                    "examples": [
-                        "input",
-                        "confirmation"
-                    ],
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "listProperty": {
+                "itemsProperty": {
                     "$role": "expression",
-                    "title": "ListProperty",
-                    "description": "Expression to evaluate.",
+                    "title": "Items Property",
+                    "description": "Property path expression to the collection of items.",
                     "examples": [
                         "user.todoList"
                     ],
@@ -2543,13 +2648,6 @@
                     "title": "Page Size",
                     "description": "The page size",
                     "default": 10
-                },
-                "valueProperty": {
-                    "$role": "expression",
-                    "title": "Value Property",
-                    "description": "The memory path which refers to the value of the item",
-                    "default": "dialog.value",
-                    "type": "string"
                 }
             },
             "additionalProperties": false,
@@ -2568,17 +2666,17 @@
                 {
                     "title": "Type",
                     "required": [
-                        "listProperty",
+                        "itemsProperty",
                         "actions",
                         "$type"
                     ]
                 }
             ]
         },
-        "Microsoft.FormDialog": {
-            "$role": "unionType(Microsoft.IDialog)",
-            "title": "Form Dialog",
-            "description": "Configures a data driven dialog via a schema and a collection of mapping rules.",
+        "Microsoft.GuidEntityRecognizer": {
+            "$role": "unionType(Microsoft.EntityRecognizers)",
+            "title": "Guid Entity Recognizer",
+            "description": "Recognizer which recognizes guids.",
             "type": "object",
             "properties": {
                 "$type": {
@@ -2586,7 +2684,7 @@
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.FormDialog"
+                    "const": "Microsoft.GuidEntityRecognizer"
                 },
                 "$copy": {
                     "title": "$copy",
@@ -2604,99 +2702,58 @@
                     "title": "$designer",
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
-                },
-                "id": {
-                    "type": "string",
-                    "title": "Id",
-                    "description": "(Optional) id for the dialog",
-                    "examples": [
-                        "Dialog2"
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
                     ]
                 },
-                "tags": {
-                    "type": "array",
-                    "title": "Tags",
-                    "description": "Tags are optional strings that you can use to organize components",
-                    "examples": [
-                        "input",
-                        "confirmation"
-                    ],
-                    "items": {
-                        "type": "string"
-                    }
+                {
+                    "title": "Type",
+                    "required": [
+                        "$type"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.HashtagEntityRecognizer": {
+            "$role": "unionType(Microsoft.EntityRecognizers)",
+            "title": "Hashtag Entity Recognizer",
+            "description": "Recognizer which recognizes Hashtags.",
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.HashtagEntityRecognizer"
                 },
-                "inputBindings": {
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
                     "type": "object",
-                    "title": "Input Bindings",
-                    "description": "This defines properties which be passed as arguments to this dialog",
-                    "examples": [
-                        "value.birthday"
-                    ],
-                    "additionalProperties": {
-                        "type": "string"
-                    }
-                },
-                "outputBinding": {
-                    "$role": "memoryPath",
-                    "title": "Output Property binding",
-                    "description": "This is the property which the EndDialog(result) will be set to when EndDialog() is called",
-                    "examples": [
-                        "value.birthday"
-                    ],
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$"
-                },
-                "autoEndDialog": {
-                    "type": "boolean",
-                    "title": "Auto End Dialog",
-                    "description": "If this is true the dialog will automatically end when there are no more actions to run.  If this is false it is the responsbility of the author to call EndDialog at an appropriate time.",
-                    "default": "true"
-                },
-                "defaultResultProperty": {
-                    "type": "string",
-                    "title": "Default Result Property",
-                    "description": "Property path to the memory to return as the result of this dialog ending because AutoEndDialog is true and there are no more actions to execute.",
-                    "default": "dialog.result"
-                },
-                "recognizer": {
-                    "$type": "Microsoft.IRecognizer",
-                    "title": "Recognizer",
-                    "description": "Configured recognizer to generate intent and entites from user utterance",
-                    "$ref": "#/definitions/Microsoft.IRecognizer"
-                },
-                "generator": {
-                    "$type": "Microsoft.ILanguageGenerator",
-                    "title": "Language Generator",
-                    "description": "Language generator to use for this dialog. (aka: LG file)",
-                    "$ref": "#/definitions/Microsoft.ILanguageGenerator"
-                },
-                "selector": {
-                    "$type": "Microsoft.ITriggerSelector",
-                    "title": "Selector",
-                    "description": "Policy for how to select rule to execute next",
-                    "$ref": "#/definitions/Microsoft.ITriggerSelector"
-                },
-                "events": {
-                    "type": "array",
-                    "description": "Events to use to evaluate conversation",
-                    "items": {
-                        "$type": "Microsoft.IOnEvent",
-                        "$ref": "#/definitions/Microsoft.IOnEvent"
-                    }
-                },
-                "schema": {
-                    "anyOf": [
-                        {
-                            "$comment": "Eventually we should allow at least some subset of JSON schema here.",
-                            "title": "The form schema to be filled in.",
-                            "type": "object",
-                            "additionalProperties": true
-                        },
-                        {
-                            "type": "string",
-                            "title": "String pointing to schema file."
-                        }
-                    ]
+                    "description": "Extra information for the Bot Framework Designer."
                 }
             },
             "additionalProperties": false,
@@ -2750,26 +2807,6 @@
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
                 },
-                "id": {
-                    "type": "string",
-                    "title": "Id",
-                    "description": "(Optional) id for the dialog",
-                    "examples": [
-                        "Dialog2"
-                    ]
-                },
-                "tags": {
-                    "type": "array",
-                    "title": "Tags",
-                    "description": "Tags are optional strings that you can use to organize components",
-                    "examples": [
-                        "input",
-                        "confirmation"
-                    ],
-                    "items": {
-                        "type": "string"
-                    }
-                },
                 "method": {
                     "type": "string",
                     "title": "Method",
@@ -2797,10 +2834,10 @@
                     "description": "The body to send in the HTTP call  (supports data binding)",
                     "additionalProperties": true
                 },
-                "property": {
+                "resultProperty": {
                     "$role": "expression",
-                    "title": "Property",
-                    "description": "The property to store the result of the HTTP call in (as object or string)",
+                    "title": "Result Property",
+                    "description": "The property to store the result of the HTTP call in. The result will have 4 properties from the http response: statusCode|reasonPhrase|content|headers.  If the content is json it will be an deserialized object, otherwise it will be a string",
                     "examples": [
                         "dialog.contosodata"
                     ],
@@ -2849,32 +2886,35 @@
             ]
         },
         "Microsoft.IActivityTemplate": {
-            "title": "Microsoft ActivityTemplate",
-            "description": "Union of components which implement the IActivityTemplate interface",
+            "title": "Microsoft ActivityTemplates",
+            "description": "Components which are IActivityTemplates",
             "$role": "unionType",
             "oneOf": [
                 {
-                    "$role": "lg",
+                    "title": "Microsoft.ActivityTemplate",
+                    "description": "",
+                    "$ref": "#/definitions/Microsoft.ActivityTemplate"
+                },
+                {
+                    "title": "Microsoft.StaticActivityTemplate",
+                    "description": "This allows you to defina static Activity object",
+                    "$ref": "#/definitions/Microsoft.StaticActivityTemplate"
+                },
+                {
                     "type": "string",
-                    "description": "String is used for language generation.",
                     "title": "string"
                 }
             ]
         },
         "Microsoft.IDialog": {
-            "title": "Microsoft IDialog",
-            "description": "Union of components which implement the IDialog interface",
+            "title": "Microsoft Dialogs",
+            "description": "Union of components which implement the Dialog contract",
             "$role": "unionType",
             "oneOf": [
                 {
                     "title": "Microsoft.AdaptiveDialog",
                     "description": "Configures a data driven dialog via a collection of actions/dialogs.",
                     "$ref": "#/definitions/Microsoft.AdaptiveDialog"
-                },
-                {
-                    "title": "Microsoft.Ask",
-                    "description": "This is an action which sends an activity to the user when a response is expected",
-                    "$ref": "#/definitions/Microsoft.Ask"
                 },
                 {
                     "title": "Microsoft.AttachmentInput",
@@ -2952,11 +2992,6 @@
                     "$ref": "#/definitions/Microsoft.ForeachPage"
                 },
                 {
-                    "title": "Microsoft.FormDialog",
-                    "description": "Configures a data driven dialog via a schema and a collection of mapping rules.",
-                    "$ref": "#/definitions/Microsoft.FormDialog"
-                },
-                {
                     "title": "Microsoft.HttpRequest",
                     "description": "This is a action which replaces the current dialog with the target dialog",
                     "$ref": "#/definitions/Microsoft.HttpRequest"
@@ -3032,58 +3067,25 @@
                 }
             ]
         },
-        "Microsoft.ITriggerSelector": {
-            "title": "Microsoft ITriggerSelector",
-            "description": "Union of components which implement the ITriggerSelector interface",
+        "Microsoft.IRecognizer": {
+            "title": "Microsoft IRecognizer",
+            "description": "Union of components which implement the IRecognizer interface",
             "$role": "unionType",
             "oneOf": [
                 {
-                    "title": "Microsoft.ConditionalSelector",
-                    "description": "Use a rule selector based on a condition",
-                    "$ref": "#/definitions/Microsoft.ConditionalSelector"
+                    "title": "Microsoft.LuisRecognizer",
+                    "description": "LUIS recognizer.",
+                    "$ref": "#/definitions/Microsoft.LuisRecognizer"
                 },
                 {
-                    "title": "Microsoft.FirstSelector",
-                    "description": "Selector for first true rule",
-                    "$ref": "#/definitions/Microsoft.FirstSelector"
+                    "title": "Microsoft.MultiLanguageRecognizer",
+                    "description": "Recognizer which allows you to configure the recognizer per language, and to define the policy for using them",
+                    "$ref": "#/definitions/Microsoft.MultiLanguageRecognizer"
                 },
                 {
-                    "title": "Microsoft.MostSpecificSelector",
-                    "description": "Select most specific true events with optional additional selector",
-                    "$ref": "#/definitions/Microsoft.MostSpecificSelector"
-                },
-                {
-                    "title": "Microsoft.RandomSelector",
-                    "description": "Select most specific true rule",
-                    "$ref": "#/definitions/Microsoft.RandomSelector"
-                },
-                {
-                    "title": "Microsoft.TrueSelector",
-                    "description": "Selector for all true events",
-                    "$ref": "#/definitions/Microsoft.TrueSelector"
-                }
-            ]
-        },
-        "Microsoft.ILanguageGenerator": {
-            "title": "Microsoft ILanguageGenerator",
-            "description": "Union of components which implement the ILanguageGenerator interface",
-            "$role": "unionType",
-            "oneOf": [
-                {
-                    "type": "string",
-                    "title": "string"
-                }
-            ]
-        },
-        "Microsoft.ILanguagePolicy": {
-            "title": "Microsoft Language Policy",
-            "description": "Union of components which implement the ILanguagePolicy interface",
-            "$role": "unionType",
-            "oneOf": [
-                {
-                    "title": "Microsoft.LanguagePolicy",
-                    "description": "This represents a dialog which gathers a DateTime in a specified range",
-                    "$ref": "#/definitions/Microsoft.LanguagePolicy"
+                    "title": "Microsoft.RegexRecognizer",
+                    "description": "Recognizer which uses regex expressions to generate intents and entities.",
+                    "$ref": "#/definitions/Microsoft.RegexRecognizer"
                 },
                 {
                     "type": "string",
@@ -3091,20 +3093,31 @@
                 }
             ]
         },
-        "Microsoft.IOnEvent": {
-            "title": "Microsoft IOnEvent",
-            "description": "Union of components which implement the IOnEvent interface",
+        "Microsoft.ITextTemplate": {
+            "title": "Microsoft TextTemplate",
+            "description": "Union of components which implement the TextTemplate",
             "$role": "unionType",
+            "oneOf": [
+                {
+                    "title": "Microsoft.TextTemplate",
+                    "description": "Lg tempalte to evaluate to create text",
+                    "$ref": "#/definitions/Microsoft.TextTemplate"
+                },
+                {
+                    "type": "string",
+                    "title": "string"
+                }
+            ]
+        },
+        "Microsoft.ITriggerCondition": {
+            "$role": "unionType",
+            "title": "Microsoft Triggers",
+            "description": "Union of components which implement the OnCondition",
             "oneOf": [
                 {
                     "title": "Microsoft.OnActivity",
-                    "description": "This defines the actions to take when an custom activity is received",
+                    "description": "Defines the actions to take when an arbitrary activity is received",
                     "$ref": "#/definitions/Microsoft.OnActivity"
-                },
-                {
-                    "title": "Microsoft.OnAsk",
-                    "description": "This defines the actions to take when an OnAsk event is raised",
-                    "$ref": "#/definitions/Microsoft.OnAsk"
                 },
                 {
                     "title": "Microsoft.OnBeginDialog",
@@ -3112,24 +3125,14 @@
                     "$ref": "#/definitions/Microsoft.OnBeginDialog"
                 },
                 {
-                    "title": "Microsoft.OnChooseSlot",
-                    "description": "This defines the actions to take when a ChooseSlot event is raised",
-                    "$ref": "#/definitions/Microsoft.OnChooseSlot"
+                    "title": "Microsoft.OnCancelDialog",
+                    "description": "This defines the actions to take when a CancelDialog event has been emitted",
+                    "$ref": "#/definitions/Microsoft.OnCancelDialog"
                 },
                 {
-                    "title": "Microsoft.OnChooseSlotValue",
-                    "description": "This defines the actions to take when a ChooseSlot event is raised",
-                    "$ref": "#/definitions/Microsoft.OnChooseSlotValue"
-                },
-                {
-                    "title": "Microsoft.OnClarifySlotValue",
-                    "description": "This defines the actions to take when a ClarifySlotValue event is raised",
-                    "$ref": "#/definitions/Microsoft.OnClarifySlotValue"
-                },
-                {
-                    "title": "Microsoft.OnClearSlot",
-                    "description": "This defines the actions to take when a ClearSlot event is raised",
-                    "$ref": "#/definitions/Microsoft.OnClearSlot"
+                    "title": "Microsoft.OnCondition",
+                    "description": "Defines actions which are executed when a condition is true",
+                    "$ref": "#/definitions/Microsoft.OnCondition"
                 },
                 {
                     "title": "Microsoft.OnConversationUpdateActivity",
@@ -3137,8 +3140,13 @@
                     "$ref": "#/definitions/Microsoft.OnConversationUpdateActivity"
                 },
                 {
+                    "title": "Microsoft.OnCustomEvent",
+                    "description": "Defines a actions which are executed when custom event is detected",
+                    "$ref": "#/definitions/Microsoft.OnCustomEvent"
+                },
+                {
                     "title": "Microsoft.OnDialogEvent",
-                    "description": "Defines a rule for an event which is triggered by some source",
+                    "description": "Defines a actions which are executed when a dialog event matching event is is true",
                     "$ref": "#/definitions/Microsoft.OnDialogEvent"
                 },
                 {
@@ -3147,13 +3155,13 @@
                     "$ref": "#/definitions/Microsoft.OnEndOfConversationActivity"
                 },
                 {
-                    "title": "Microsoft.OnEvent",
-                    "description": "Defines a rule for an event which is triggered by some source",
-                    "$ref": "#/definitions/Microsoft.OnEvent"
+                    "title": "Microsoft.OnError",
+                    "description": "This defines the actions to take when an Error dialog event is emitted",
+                    "$ref": "#/definitions/Microsoft.OnError"
                 },
                 {
                     "title": "Microsoft.OnEventActivity",
-                    "description": "This defines the actions to take when an Event activity is received",
+                    "description": "This defines the actions to take when an Activity.Type == 'Event' is received",
                     "$ref": "#/definitions/Microsoft.OnEventActivity"
                 },
                 {
@@ -3188,18 +3196,13 @@
                 },
                 {
                     "title": "Microsoft.OnMessageUpdateActivity",
-                    "description": "This defines the actions to take when an MessageUpdate ctivity is received",
+                    "description": "This defines the actions to take when an MessageUpdate Activity is received",
                     "$ref": "#/definitions/Microsoft.OnMessageUpdateActivity"
                 },
                 {
-                    "title": "Microsoft.OnNextForm",
-                    "description": "This defines the actions to take when a NextForm event is raised",
-                    "$ref": "#/definitions/Microsoft.OnNextForm"
-                },
-                {
-                    "title": "Microsoft.OnSetSlot",
-                    "description": "This defines the actions to take when a SetSlot event is raised",
-                    "$ref": "#/definitions/Microsoft.OnSetSlot"
+                    "title": "Microsoft.OnRepromptDialog",
+                    "description": "This defines the actions to take when a RepromptDialog event has been emitted",
+                    "$ref": "#/definitions/Microsoft.OnRepromptDialog"
                 },
                 {
                     "title": "Microsoft.OnTypingActivity",
@@ -3213,40 +3216,35 @@
                 }
             ]
         },
-        "Microsoft.IRecognizer": {
-            "title": "Microsoft IRecognizer",
-            "description": "Union of components which implement the IRecognizer interface",
+        "Microsoft.ITriggerSelector": {
             "$role": "unionType",
+            "title": "Selectors",
+            "description": "Union of components which are trigger selectors",
             "oneOf": [
                 {
-                    "title": "Microsoft.LuisRecognizer",
-                    "description": "LUIS recognizer.",
-                    "$ref": "#/definitions/Microsoft.LuisRecognizer"
+                    "title": "Microsoft.ConditionalSelector",
+                    "description": "Use a rule selector based on a condition",
+                    "$ref": "#/definitions/Microsoft.ConditionalSelector"
                 },
                 {
-                    "title": "Microsoft.MultiLanguageRecognizer",
-                    "description": "Recognizer which allows you to configure the recognizer per language, and to define the policy for using them",
-                    "$ref": "#/definitions/Microsoft.MultiLanguageRecognizer"
+                    "title": "Microsoft.FirstSelector",
+                    "description": "Selector for first true rule",
+                    "$ref": "#/definitions/Microsoft.FirstSelector"
                 },
                 {
-                    "title": "Microsoft.RegexRecognizer",
-                    "description": "Recognizer which uses regex expressions to generate intents and entities.",
-                    "$ref": "#/definitions/Microsoft.RegexRecognizer"
+                    "title": "Microsoft.MostSpecificSelector",
+                    "description": "Select most specific true events with optional additional selector",
+                    "$ref": "#/definitions/Microsoft.MostSpecificSelector"
                 },
                 {
-                    "type": "string",
-                    "title": "string"
-                }
-            ]
-        },
-        "Microsoft.ITextTemplate": {
-            "title": "Microsoft TextTemplate",
-            "description": "Union of components which implement the ITextTemplate interface",
-            "$role": "unionType",
-            "oneOf": [
+                    "title": "Microsoft.RandomSelector",
+                    "description": "Select most specific true rule",
+                    "$ref": "#/definitions/Microsoft.RandomSelector"
+                },
                 {
-                    "type": "string",
-                    "title": "string"
+                    "title": "Microsoft.TrueSelector",
+                    "description": "Selector for all true events",
+                    "$ref": "#/definitions/Microsoft.TrueSelector"
                 }
             ]
         },
@@ -3279,26 +3277,6 @@
                     "title": "$designer",
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
-                },
-                "id": {
-                    "type": "string",
-                    "title": "Id",
-                    "description": "(Optional) id for the dialog",
-                    "examples": [
-                        "Dialog2"
-                    ]
-                },
-                "tags": {
-                    "type": "array",
-                    "title": "Tags",
-                    "description": "Tags are optional strings that you can use to organize components",
-                    "examples": [
-                        "input",
-                        "confirmation"
-                    ],
-                    "items": {
-                        "type": "string"
-                    }
                 },
                 "condition": {
                     "$role": "expression",
@@ -3381,30 +3359,10 @@
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
                 },
-                "id": {
-                    "type": "string",
-                    "title": "Id",
-                    "description": "(Optional) id for the dialog",
-                    "examples": [
-                        "Dialog2"
-                    ]
-                },
-                "tags": {
-                    "type": "array",
-                    "title": "Tags",
-                    "description": "Tags are optional strings that you can use to organize components",
-                    "examples": [
-                        "input",
-                        "confirmation"
-                    ],
-                    "items": {
-                        "type": "string"
-                    }
-                },
                 "property": {
                     "$role": "expression",
                     "title": "Property",
-                    "description": "The property to set the value of",
+                    "description": "The property path to initialize",
                     "examples": [
                         "user.age"
                     ],
@@ -3443,10 +3401,72 @@
                 }
             ]
         },
+        "Microsoft.IpEntityRecognizer": {
+            "$role": "unionType(Microsoft.EntityRecognizers)",
+            "title": "Ip Entity Recognizer",
+            "description": "Recognizer which recognizes internet IP patterns (like 192.1.1.1).",
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.IpEntityRecognizer"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$type"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.LanguageGenerator": {
+            "title": "Microsoft LanguageGenerator",
+            "description": "Union of components which implement the LanguageGenerator interface",
+            "$role": "unionType",
+            "oneOf": [
+                {
+                    "type": "string",
+                    "title": "string"
+                }
+            ]
+        },
         "Microsoft.LanguagePolicy": {
-            "$role": "unionType(Microsoft.ILanguagePolicy)",
             "title": "Language Policy",
-            "description": "This represents a dialog which gathers a DateTime in a specified range",
+            "description": "This represents a policy map for locales lookups to use for language",
             "type": "object",
             "additionalProperties": false,
             "properties": {
@@ -3524,26 +3544,6 @@
                     "title": "$designer",
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
-                },
-                "id": {
-                    "type": "string",
-                    "title": "Id",
-                    "description": "(Optional) id for the dialog",
-                    "examples": [
-                        "Dialog2"
-                    ]
-                },
-                "tags": {
-                    "type": "array",
-                    "title": "Tags",
-                    "description": "Tags are optional strings that you can use to organize components",
-                    "examples": [
-                        "input",
-                        "confirmation"
-                    ],
-                    "items": {
-                        "type": "string"
-                    }
                 },
                 "text": {
                     "type": "string",
@@ -3643,9 +3643,61 @@
                 }
             ]
         },
+        "Microsoft.MentionEntityRecognizer": {
+            "$role": "unionType(Microsoft.EntityRecognizers)",
+            "title": "Mentions Entity Recognizer",
+            "description": "Recognizer which recognizes @Mentions",
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.MentionEntityRecognizer"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$type"
+                    ]
+                }
+            ]
+        },
         "Microsoft.MostSpecificSelector": {
             "$role": "unionType(Microsoft.ITriggerSelector)",
-            "title": "Most Specific Event Selector",
+            "title": "Most Specific Trigger Selector",
             "description": "Select most specific true events with optional additional selector",
             "type": "object",
             "properties": {
@@ -3730,11 +3782,11 @@
                     "description": "Extra information for the Bot Framework Designer."
                 },
                 "languagePolicy": {
-                    "$type": "Microsoft.ILanguagePolicy",
+                    "$type": "Microsoft.LanguagePolicy",
                     "type": "object",
                     "title": "Language Policy",
                     "description": "Defines languages to try per language.",
-                    "$ref": "#/definitions/Microsoft.ILanguagePolicy"
+                    "$ref": "#/definitions/Microsoft.LanguagePolicy"
                 },
                 "recognizers": {
                     "type": "object",
@@ -3763,6 +3815,58 @@
                     "title": "Type",
                     "required": [
                         "recognizers",
+                        "$type"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.NumberEntityRecognizer": {
+            "$role": "unionType(Microsoft.EntityRecognizers)",
+            "title": "Number Entity Recognizer",
+            "description": "Recognizer which recognizes numbers.",
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.NumberEntityRecognizer"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
                         "$type"
                     ]
                 }
@@ -3801,22 +3905,7 @@
                 "id": {
                     "type": "string",
                     "title": "Id",
-                    "description": "(Optional) id for the dialog",
-                    "examples": [
-                        "Dialog2"
-                    ]
-                },
-                "tags": {
-                    "type": "array",
-                    "title": "Tags",
-                    "description": "Tags are optional strings that you can use to organize components",
-                    "examples": [
-                        "input",
-                        "confirmation"
-                    ],
-                    "items": {
-                        "type": "string"
-                    }
+                    "description": "Optional id for the dialog"
                 },
                 "prompt": {
                     "$type": "Microsoft.IActivityTemplate",
@@ -3845,6 +3934,15 @@
                     ],
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
+                "defaultValueResponse": {
+                    "$type": "Microsoft.IActivityTemplate",
+                    "title": "Default Value Response",
+                    "description": "The message to send to when max turn count has been exceeded and the default value is selected as the value.",
+                    "examples": [
+                        "I didn't understand your responses, so I will just use the default value of 10.  Let me know if you want to change it."
+                    ],
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                },
                 "maxTurnCount": {
                     "type": "integer",
                     "title": "Max Turn Count",
@@ -3863,12 +3961,6 @@
                         "type": "string",
                         "description": "String must contain an expression."
                     }
-                },
-                "value": {
-                    "$role": "expression",
-                    "title": "Value",
-                    "description": "The expression that you evaluated for input.",
-                    "type": "string"
                 },
                 "property": {
                     "$role": "expression",
@@ -3946,6 +4038,58 @@
                 }
             ]
         },
+        "Microsoft.NumberRangeEntityRecognizer": {
+            "$role": "unionType(Microsoft.EntityRecognizers)",
+            "title": "NumberRange Entity Recognizer",
+            "description": "Recognizer which recognizes ranges of numbers (Example:2 to 5).",
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.NumberRangeEntityRecognizer"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$type"
+                    ]
+                }
+            ]
+        },
         "Microsoft.OAuthInput": {
             "$role": "unionType(Microsoft.IDialog)",
             "title": "OAuthInput Dialog",
@@ -3979,22 +4123,7 @@
                 "id": {
                     "type": "string",
                     "title": "Id",
-                    "description": "(Optional) id for the dialog",
-                    "examples": [
-                        "Dialog2"
-                    ]
-                },
-                "tags": {
-                    "type": "array",
-                    "title": "Tags",
-                    "description": "Tags are optional strings that you can use to organize components",
-                    "examples": [
-                        "input",
-                        "confirmation"
-                    ],
-                    "items": {
-                        "type": "string"
-                    }
+                    "description": "Optional id for the dialog"
                 },
                 "prompt": {
                     "$type": "Microsoft.IActivityTemplate",
@@ -4023,6 +4152,15 @@
                     ],
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
+                "defaultValueResponse": {
+                    "$type": "Microsoft.IActivityTemplate",
+                    "title": "Default Value Response",
+                    "description": "The message to send to when max turn count has been exceeded and the default value is selected as the value.",
+                    "examples": [
+                        "I didn't understand your responses, so I will just use the default value of 10.  Let me know if you want to change it."
+                    ],
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                },
                 "maxTurnCount": {
                     "type": "integer",
                     "title": "Max Turn Count",
@@ -4041,12 +4179,6 @@
                         "type": "string",
                         "description": "String must contain an expression."
                     }
-                },
-                "value": {
-                    "$role": "expression",
-                    "title": "Value",
-                    "description": "The expression that you evaluated for input.",
-                    "type": "string"
                 },
                 "property": {
                     "$role": "expression",
@@ -4106,6 +4238,12 @@
                     "title": "Timeout",
                     "description": "Time out setting for the OAuth signin card.",
                     "default": "900000"
+                },
+                "tokenProperty": {
+                    "$role": "expression",
+                    "title": "Token Property",
+                    "description": "The memory property path to store the token result in",
+                    "type": "string"
                 }
             },
             "additionalProperties": false,
@@ -4130,9 +4268,9 @@
             ]
         },
         "Microsoft.OnActivity": {
-            "$role": "unionType(Microsoft.IOnEvent)",
+            "$role": "unionType(Microsoft.ITriggerCondition)",
             "title": "OnActivity",
-            "description": "This defines the actions to take when an custom activity is received",
+            "description": "Defines the actions to take when an arbitrary activity is received",
             "type": "object",
             "properties": {
                 "$type": {
@@ -4159,10 +4297,10 @@
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
                 },
-                "constraint": {
+                "condition": {
                     "$role": "expression",
-                    "title": "Constraint",
-                    "description": "Optional constraint to which must be met for this rule to fire",
+                    "title": "Condition",
+                    "description": "Condition which must be met for these actions to be executed",
                     "examples": [
                         "user.vip == true"
                     ],
@@ -4178,8 +4316,8 @@
                 },
                 "type": {
                     "type": "string",
-                    "title": "Type",
-                    "description": "Activity type"
+                    "title": "Activity Type",
+                    "description": "The Activity.Type to match"
                 }
             },
             "additionalProperties": false,
@@ -4205,80 +4343,10 @@
                 }
             ]
         },
-        "Microsoft.OnAsk": {
-            "$role": "unionType(Microsoft.IOnEvent)",
-            "title": "Form Ask Event",
-            "description": "This defines the actions to take when an OnAsk event is raised",
-            "type": "object",
-            "properties": {
-                "$type": {
-                    "title": "$type",
-                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.OnAsk"
-                },
-                "$copy": {
-                    "title": "$copy",
-                    "description": "Copy the definition by id from a .dialog file.",
-                    "type": "string",
-                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
-                },
-                "$id": {
-                    "title": "$id",
-                    "description": "Inline id for reuse of an inline definition",
-                    "type": "string",
-                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
-                },
-                "$designer": {
-                    "title": "$designer",
-                    "type": "object",
-                    "description": "Extra information for the Bot Framework Designer."
-                },
-                "constraint": {
-                    "$role": "expression",
-                    "title": "Constraint",
-                    "description": "Optional constraint to which must be met for this rule to fire",
-                    "examples": [
-                        "user.vip == true"
-                    ],
-                    "type": "string"
-                },
-                "actions": {
-                    "type": "array",
-                    "description": "Sequence of actions or dialogs to execute",
-                    "items": {
-                        "$type": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.IDialog"
-                    }
-                }
-            },
-            "additionalProperties": false,
-            "patternProperties": {
-                "^\\$": {
-                    "type": "string"
-                }
-            },
-            "anyOf": [
-                {
-                    "title": "Reference",
-                    "required": [
-                        "$copy"
-                    ]
-                },
-                {
-                    "title": "Type",
-                    "required": [
-                        "actions",
-                        "$type"
-                    ]
-                }
-            ]
-        },
         "Microsoft.OnBeginDialog": {
+            "$role": "unionType(Microsoft.ITriggerCondition)",
             "title": "OnBeginDialog",
             "description": "This defines the actions to take when a dialog is started via BeginDialog()",
-            "$role": "unionType(Microsoft.IOnEvent)",
             "type": "object",
             "properties": {
                 "$type": {
@@ -4305,10 +4373,10 @@
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
                 },
-                "constraint": {
+                "condition": {
                     "$role": "expression",
-                    "title": "Constraint",
-                    "description": "Optional constraint to which must be met for this rule to fire",
+                    "title": "Condition",
+                    "description": "Condition which must be met for these actions to be executed",
                     "examples": [
                         "user.vip == true"
                     ],
@@ -4345,10 +4413,10 @@
                 }
             ]
         },
-        "Microsoft.OnChooseSlot": {
-            "$role": "unionType(Microsoft.IOnEvent)",
-            "title": "Form ChooseSlot Event",
-            "description": "This defines the actions to take when a ChooseSlot event is raised",
+        "Microsoft.OnCancelDialog": {
+            "$role": "unionType(Microsoft.ITriggerCondition)",
+            "title": "OnCancelDialog",
+            "description": "This defines the actions to take when a CancelDialog event has been emitted",
             "type": "object",
             "properties": {
                 "$type": {
@@ -4356,7 +4424,7 @@
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.OnChooseSlot"
+                    "const": "Microsoft.OnCancelDialog"
                 },
                 "$copy": {
                     "title": "$copy",
@@ -4375,10 +4443,10 @@
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
                 },
-                "constraint": {
+                "condition": {
                     "$role": "expression",
-                    "title": "Constraint",
-                    "description": "Optional constraint to which must be met for this rule to fire",
+                    "title": "Condition",
+                    "description": "Condition which must be met for these actions to be executed",
                     "examples": [
                         "user.vip == true"
                     ],
@@ -4415,10 +4483,10 @@
                 }
             ]
         },
-        "Microsoft.OnChooseSlotValue": {
-            "$role": "unionType(Microsoft.IOnEvent)",
-            "title": "Form ChooseSlot Event",
-            "description": "This defines the actions to take when a ChooseSlot event is raised",
+        "Microsoft.OnCondition": {
+            "$role": "unionType(Microsoft.ITriggerCondition)",
+            "title": "OnCondition",
+            "description": "Defines actions which are executed when a condition is true",
             "type": "object",
             "properties": {
                 "$type": {
@@ -4426,7 +4494,7 @@
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.OnChooseSlotValue"
+                    "const": "Microsoft.OnCondition"
                 },
                 "$copy": {
                     "title": "$copy",
@@ -4445,150 +4513,10 @@
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
                 },
-                "constraint": {
+                "condition": {
                     "$role": "expression",
-                    "title": "Constraint",
-                    "description": "Optional constraint to which must be met for this rule to fire",
-                    "examples": [
-                        "user.vip == true"
-                    ],
-                    "type": "string"
-                },
-                "actions": {
-                    "type": "array",
-                    "description": "Sequence of actions or dialogs to execute",
-                    "items": {
-                        "$type": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.IDialog"
-                    }
-                }
-            },
-            "additionalProperties": false,
-            "patternProperties": {
-                "^\\$": {
-                    "type": "string"
-                }
-            },
-            "anyOf": [
-                {
-                    "title": "Reference",
-                    "required": [
-                        "$copy"
-                    ]
-                },
-                {
-                    "title": "Type",
-                    "required": [
-                        "actions",
-                        "$type"
-                    ]
-                }
-            ]
-        },
-        "Microsoft.OnClarifySlotValue": {
-            "$role": "unionType(Microsoft.IOnEvent)",
-            "title": "Form ClarifySlotValue Event",
-            "description": "This defines the actions to take when a ClarifySlotValue event is raised",
-            "type": "object",
-            "properties": {
-                "$type": {
-                    "title": "$type",
-                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.OnClarifySlotValue"
-                },
-                "$copy": {
-                    "title": "$copy",
-                    "description": "Copy the definition by id from a .dialog file.",
-                    "type": "string",
-                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
-                },
-                "$id": {
-                    "title": "$id",
-                    "description": "Inline id for reuse of an inline definition",
-                    "type": "string",
-                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
-                },
-                "$designer": {
-                    "title": "$designer",
-                    "type": "object",
-                    "description": "Extra information for the Bot Framework Designer."
-                },
-                "constraint": {
-                    "$role": "expression",
-                    "title": "Constraint",
-                    "description": "Optional constraint to which must be met for this rule to fire",
-                    "examples": [
-                        "user.vip == true"
-                    ],
-                    "type": "string"
-                },
-                "actions": {
-                    "type": "array",
-                    "description": "Sequence of actions or dialogs to execute",
-                    "items": {
-                        "$type": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.IDialog"
-                    }
-                }
-            },
-            "additionalProperties": false,
-            "patternProperties": {
-                "^\\$": {
-                    "type": "string"
-                }
-            },
-            "anyOf": [
-                {
-                    "title": "Reference",
-                    "required": [
-                        "$copy"
-                    ]
-                },
-                {
-                    "title": "Type",
-                    "required": [
-                        "actions",
-                        "$type"
-                    ]
-                }
-            ]
-        },
-        "Microsoft.OnClearSlot": {
-            "$role": "unionType(Microsoft.IOnEvent)",
-            "title": "Form ClearSlot Event",
-            "description": "This defines the actions to take when a ClearSlot event is raised",
-            "type": "object",
-            "properties": {
-                "$type": {
-                    "title": "$type",
-                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.OnClearSlot"
-                },
-                "$copy": {
-                    "title": "$copy",
-                    "description": "Copy the definition by id from a .dialog file.",
-                    "type": "string",
-                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
-                },
-                "$id": {
-                    "title": "$id",
-                    "description": "Inline id for reuse of an inline definition",
-                    "type": "string",
-                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
-                },
-                "$designer": {
-                    "title": "$designer",
-                    "type": "object",
-                    "description": "Extra information for the Bot Framework Designer."
-                },
-                "constraint": {
-                    "$role": "expression",
-                    "title": "Constraint",
-                    "description": "Optional constraint to which must be met for this rule to fire",
+                    "title": "Condition",
+                    "description": "Condition which must be met for these actions to be executed",
                     "examples": [
                         "user.vip == true"
                     ],
@@ -4626,7 +4554,7 @@
             ]
         },
         "Microsoft.OnConversationUpdateActivity": {
-            "$role": "unionType(Microsoft.IOnEvent)",
+            "$role": "unionType(Microsoft.ITriggerCondition)",
             "title": "OnConversationUpdateActivity",
             "description": "This defines the actions to take when an ConversationUpdate activity is received",
             "type": "object",
@@ -4655,10 +4583,10 @@
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
                 },
-                "constraint": {
+                "condition": {
                     "$role": "expression",
-                    "title": "Constraint",
-                    "description": "Optional constraint to which must be met for this rule to fire",
+                    "title": "Condition",
+                    "description": "Condition which must be met for these actions to be executed",
                     "examples": [
                         "user.vip == true"
                     ],
@@ -4695,11 +4623,87 @@
                 }
             ]
         },
-        "Microsoft.OnDialogEvent": {
-            "title": "Event Event",
-            "description": "Defines a rule for an event which is triggered by some source",
+        "Microsoft.OnCustomEvent": {
+            "$role": "unionType(Microsoft.ITriggerCondition)",
+            "title": "OnCustomEvent",
+            "description": "Defines a actions which are executed when custom event is detected",
             "type": "object",
-            "$role": "unionType(Microsoft.IOnEvent)",
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.OnCustomEvent"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "condition": {
+                    "$role": "expression",
+                    "title": "Condition",
+                    "description": "Condition which must be met for these actions to be executed",
+                    "examples": [
+                        "user.vip == true"
+                    ],
+                    "type": "string"
+                },
+                "actions": {
+                    "type": "array",
+                    "description": "Sequence of actions or dialogs to execute",
+                    "items": {
+                        "$type": "Microsoft.IDialog",
+                        "$ref": "#/definitions/Microsoft.IDialog"
+                    }
+                },
+                "event": {
+                    "type": "string",
+                    "title": "Custom Event Name",
+                    "description": "Custom event name to match to trigger these actions"
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "actions",
+                        "event",
+                        "$type"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.OnDialogEvent": {
+            "$role": "unionType(Microsoft.ITriggerCondition)",
+            "title": "OnDialogEvent",
+            "description": "Defines a actions which are executed when a dialog event matching event is is true",
+            "type": "object",
             "properties": {
                 "$type": {
                     "title": "$type",
@@ -4725,10 +4729,10 @@
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
                 },
-                "constraint": {
+                "condition": {
                     "$role": "expression",
-                    "title": "Constraint",
-                    "description": "Optional constraint to which must be met for this rule to fire",
+                    "title": "Condition",
+                    "description": "Condition which must be met for these actions to be executed",
                     "examples": [
                         "user.vip == true"
                     ],
@@ -4742,24 +4746,10 @@
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
                 },
-                "events": {
-                    "type": "array",
-                    "description": "Events to trigger this rule for",
-                    "items": {
-                        "type": "string",
-                        "enum": [
-                            "beginDialog",
-                            "consultDialog",
-                            "cancelDialog",
-                            "activityReceived",
-                            "recognizedIntent",
-                            "unknownIntent",
-                            "actionsStarted",
-                            "actionsSaved",
-                            "actionsEnded",
-                            "actionsResumed"
-                        ]
-                    }
+                "event": {
+                    "type": "string",
+                    "title": "Dialog Event Name",
+                    "description": "Dialog event name to match to trigger these actions"
                 }
             },
             "additionalProperties": false,
@@ -4779,14 +4769,14 @@
                     "title": "Type",
                     "required": [
                         "actions",
-                        "events",
+                        "event",
                         "$type"
                     ]
                 }
             ]
         },
         "Microsoft.OnEndOfConversationActivity": {
-            "$role": "unionType(Microsoft.IOnEvent)",
+            "$role": "unionType(Microsoft.ITriggerCondition)",
             "title": "OnEndOfConversationActivity",
             "description": "This defines the actions to take when an EndOfConversation Activity is received",
             "type": "object",
@@ -4815,10 +4805,10 @@
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
                 },
-                "constraint": {
+                "condition": {
                     "$role": "expression",
-                    "title": "Constraint",
-                    "description": "Optional constraint to which must be met for this rule to fire",
+                    "title": "Condition",
+                    "description": "Condition which must be met for these actions to be executed",
                     "examples": [
                         "user.vip == true"
                     ],
@@ -4855,10 +4845,10 @@
                 }
             ]
         },
-        "Microsoft.OnEvent": {
-            "$role": "unionType(Microsoft.IOnEvent)",
-            "title": "Event Event",
-            "description": "Defines a rule for an event which is triggered by some source",
+        "Microsoft.OnError": {
+            "$role": "unionType(Microsoft.ITriggerCondition)",
+            "title": "OnError",
+            "description": "This defines the actions to take when an Error dialog event is emitted",
             "type": "object",
             "properties": {
                 "$type": {
@@ -4866,7 +4856,7 @@
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.OnEvent"
+                    "const": "Microsoft.OnError"
                 },
                 "$copy": {
                     "title": "$copy",
@@ -4885,10 +4875,10 @@
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
                 },
-                "constraint": {
+                "condition": {
                     "$role": "expression",
-                    "title": "Constraint",
-                    "description": "Optional constraint to which must be met for this rule to fire",
+                    "title": "Condition",
+                    "description": "Condition which must be met for these actions to be executed",
                     "examples": [
                         "user.vip == true"
                     ],
@@ -4926,9 +4916,9 @@
             ]
         },
         "Microsoft.OnEventActivity": {
-            "$role": "unionType(Microsoft.IOnEvent)",
+            "$role": "unionType(Microsoft.ITriggerCondition)",
             "title": "OnEventActivity",
-            "description": "This defines the actions to take when an Event activity is received",
+            "description": "This defines the actions to take when an Activity.Type == 'Event' is received",
             "type": "object",
             "properties": {
                 "$type": {
@@ -4955,10 +4945,10 @@
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
                 },
-                "constraint": {
+                "condition": {
                     "$role": "expression",
-                    "title": "Constraint",
-                    "description": "Optional constraint to which must be met for this rule to fire",
+                    "title": "Condition",
+                    "description": "Condition which must be met for these actions to be executed",
                     "examples": [
                         "user.vip == true"
                     ],
@@ -4996,7 +4986,7 @@
             ]
         },
         "Microsoft.OnHandoffActivity": {
-            "$role": "unionType(Microsoft.IOnEvent)",
+            "$role": "unionType(Microsoft.ITriggerCondition)",
             "title": "OnHandoffActivity",
             "description": "This defines the actions to take when an Handoff activity is received",
             "type": "object",
@@ -5025,10 +5015,10 @@
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
                 },
-                "constraint": {
+                "condition": {
                     "$role": "expression",
-                    "title": "Constraint",
-                    "description": "Optional constraint to which must be met for this rule to fire",
+                    "title": "Condition",
+                    "description": "Condition which must be met for these actions to be executed",
                     "examples": [
                         "user.vip == true"
                     ],
@@ -5066,7 +5056,7 @@
             ]
         },
         "Microsoft.OnIntent": {
-            "$role": "unionType(Microsoft.IOnEvent)",
+            "$role": "unionType(Microsoft.ITriggerCondition)",
             "title": "Intent Event",
             "description": "This defines the actions to take when an Intent is recognized (and optionally entities)",
             "type": "object",
@@ -5095,10 +5085,10 @@
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
                 },
-                "constraint": {
+                "condition": {
                     "$role": "expression",
-                    "title": "Constraint",
-                    "description": "Optional constraint to which must be met for this rule to fire",
+                    "title": "Condition",
+                    "description": "Condition which must be met for these actions to be executed",
                     "examples": [
                         "user.vip == true"
                     ],
@@ -5150,7 +5140,7 @@
             ]
         },
         "Microsoft.OnInvokeActivity": {
-            "$role": "unionType(Microsoft.IOnEvent)",
+            "$role": "unionType(Microsoft.ITriggerCondition)",
             "title": "OnInvokeActivity",
             "description": "This defines the actions to take when an Invoke activity is received",
             "type": "object",
@@ -5179,10 +5169,10 @@
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
                 },
-                "constraint": {
+                "condition": {
                     "$role": "expression",
-                    "title": "Constraint",
-                    "description": "Optional constraint to which must be met for this rule to fire",
+                    "title": "Condition",
+                    "description": "Condition which must be met for these actions to be executed",
                     "examples": [
                         "user.vip == true"
                     ],
@@ -5220,7 +5210,7 @@
             ]
         },
         "Microsoft.OnMessageActivity": {
-            "$role": "unionType(Microsoft.IOnEvent)",
+            "$role": "unionType(Microsoft.ITriggerCondition)",
             "title": "OnMessageActivity",
             "description": "This defines the actions to take when an Message activity is received. NOTE: If this triggers it will override any Recognizer/Intent rule calculation",
             "type": "object",
@@ -5249,10 +5239,10 @@
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
                 },
-                "constraint": {
+                "condition": {
                     "$role": "expression",
-                    "title": "Constraint",
-                    "description": "Optional constraint to which must be met for this rule to fire",
+                    "title": "Condition",
+                    "description": "Condition which must be met for these actions to be executed",
                     "examples": [
                         "user.vip == true"
                     ],
@@ -5290,8 +5280,8 @@
             ]
         },
         "Microsoft.OnMessageDeleteActivity": {
-            "$role": "unionType(Microsoft.IOnEvent)",
-            "title": "MessageDeleteActivity",
+            "$role": "unionType(Microsoft.ITriggerCondition)",
+            "title": "OnMessageDeleteActivity",
             "description": "This defines the actions to take when an MessageDelete activity is received",
             "type": "object",
             "properties": {
@@ -5319,10 +5309,10 @@
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
                 },
-                "constraint": {
+                "condition": {
                     "$role": "expression",
-                    "title": "Constraint",
-                    "description": "Optional constraint to which must be met for this rule to fire",
+                    "title": "Condition",
+                    "description": "Condition which must be met for these actions to be executed",
                     "examples": [
                         "user.vip == true"
                     ],
@@ -5360,8 +5350,8 @@
             ]
         },
         "Microsoft.OnMessageReactionActivity": {
-            "$role": "unionType(Microsoft.IOnEvent)",
-            "title": "MessageReactionActivity",
+            "$role": "unionType(Microsoft.ITriggerCondition)",
+            "title": "OnMessageReactionActivity",
             "description": "This defines the actions to take when a MessageReaction activity is received",
             "type": "object",
             "properties": {
@@ -5389,10 +5379,10 @@
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
                 },
-                "constraint": {
+                "condition": {
                     "$role": "expression",
-                    "title": "Constraint",
-                    "description": "Optional constraint to which must be met for this rule to fire",
+                    "title": "Condition",
+                    "description": "Condition which must be met for these actions to be executed",
                     "examples": [
                         "user.vip == true"
                     ],
@@ -5430,9 +5420,9 @@
             ]
         },
         "Microsoft.OnMessageUpdateActivity": {
-            "$role": "unionType(Microsoft.IOnEvent)",
-            "title": "MessageUpdateActivity",
-            "description": "This defines the actions to take when an MessageUpdate ctivity is received",
+            "$role": "unionType(Microsoft.ITriggerCondition)",
+            "title": "OnMessageUpdateActivity",
+            "description": "This defines the actions to take when an MessageUpdate Activity is received",
             "type": "object",
             "properties": {
                 "$type": {
@@ -5459,10 +5449,10 @@
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
                 },
-                "constraint": {
+                "condition": {
                     "$role": "expression",
-                    "title": "Constraint",
-                    "description": "Optional constraint to which must be met for this rule to fire",
+                    "title": "Condition",
+                    "description": "Condition which must be met for these actions to be executed",
                     "examples": [
                         "user.vip == true"
                     ],
@@ -5499,10 +5489,10 @@
                 }
             ]
         },
-        "Microsoft.OnNextForm": {
-            "$role": "unionType(Microsoft.IOnEvent)",
-            "title": "Form NextForm Event",
-            "description": "This defines the actions to take when a NextForm event is raised",
+        "Microsoft.OnRepromptDialog": {
+            "$role": "unionType(Microsoft.ITriggerCondition)",
+            "title": "OnRepromptDialog",
+            "description": "This defines the actions to take when a RepromptDialog event has been emitted",
             "type": "object",
             "properties": {
                 "$type": {
@@ -5510,7 +5500,7 @@
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.OnNextForm"
+                    "const": "Microsoft.OnRepromptDialog"
                 },
                 "$copy": {
                     "title": "$copy",
@@ -5529,80 +5519,10 @@
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
                 },
-                "constraint": {
+                "condition": {
                     "$role": "expression",
-                    "title": "Constraint",
-                    "description": "Optional constraint to which must be met for this rule to fire",
-                    "examples": [
-                        "user.vip == true"
-                    ],
-                    "type": "string"
-                },
-                "actions": {
-                    "type": "array",
-                    "description": "Sequence of actions or dialogs to execute",
-                    "items": {
-                        "$type": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.IDialog"
-                    }
-                }
-            },
-            "additionalProperties": false,
-            "patternProperties": {
-                "^\\$": {
-                    "type": "string"
-                }
-            },
-            "anyOf": [
-                {
-                    "title": "Reference",
-                    "required": [
-                        "$copy"
-                    ]
-                },
-                {
-                    "title": "Type",
-                    "required": [
-                        "actions",
-                        "$type"
-                    ]
-                }
-            ]
-        },
-        "Microsoft.OnSetSlot": {
-            "$role": "unionType(Microsoft.IOnEvent)",
-            "title": "Form SetSlot Event",
-            "description": "This defines the actions to take when a SetSlot event is raised",
-            "type": "object",
-            "properties": {
-                "$type": {
-                    "title": "$type",
-                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.OnSetSlot"
-                },
-                "$copy": {
-                    "title": "$copy",
-                    "description": "Copy the definition by id from a .dialog file.",
-                    "type": "string",
-                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
-                },
-                "$id": {
-                    "title": "$id",
-                    "description": "Inline id for reuse of an inline definition",
-                    "type": "string",
-                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
-                },
-                "$designer": {
-                    "title": "$designer",
-                    "type": "object",
-                    "description": "Extra information for the Bot Framework Designer."
-                },
-                "constraint": {
-                    "$role": "expression",
-                    "title": "Constraint",
-                    "description": "Optional constraint to which must be met for this rule to fire",
+                    "title": "Condition",
+                    "description": "Condition which must be met for these actions to be executed",
                     "examples": [
                         "user.vip == true"
                     ],
@@ -5640,8 +5560,8 @@
             ]
         },
         "Microsoft.OnTypingActivity": {
-            "$role": "unionType(Microsoft.IOnEvent)",
-            "title": "TypingActivity",
+            "$role": "unionType(Microsoft.ITriggerCondition)",
+            "title": "OnTypingActivity",
             "description": "This defines the actions to take when a Typing activity is received",
             "type": "object",
             "properties": {
@@ -5669,10 +5589,10 @@
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
                 },
-                "constraint": {
+                "condition": {
                     "$role": "expression",
-                    "title": "Constraint",
-                    "description": "Optional constraint to which must be met for this rule to fire",
+                    "title": "Condition",
+                    "description": "Condition which must be met for these actions to be executed",
                     "examples": [
                         "user.vip == true"
                     ],
@@ -5712,8 +5632,8 @@
         "Microsoft.OnUnknownIntent": {
             "title": "OnUnknownIntent",
             "description": "This defines the actions to take when an utterence is not recognized (aka, the None Intent). NOTE: UnknownIntent will defer to any specific intent that fires in a parent dialog",
-            "$role": "unionType(Microsoft.IOnEvent)",
             "type": "object",
+            "$role": "unionType(Microsoft.ITriggerCondition)",
             "properties": {
                 "$type": {
                     "title": "$type",
@@ -5739,10 +5659,10 @@
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
                 },
-                "constraint": {
+                "condition": {
                     "$role": "expression",
-                    "title": "Constraint",
-                    "description": "Optional constraint to which must be met for this rule to fire",
+                    "title": "Condition",
+                    "description": "Condition which must be met for these actions to be executed",
                     "examples": [
                         "user.vip == true"
                     ],
@@ -5774,7 +5694,162 @@
                     "title": "Type",
                     "required": [
                         "actions",
-                        "type",
+                        "$type"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.OrdinalEntityRecognizer": {
+            "$role": "unionType(Microsoft.EntityRecognizers)",
+            "title": "Ordinal Entity Recognizer",
+            "description": "Recognizer which recognizes ordinals (example: first, second, 3rd).",
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.OrdinalEntityRecognizer"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$type"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.PercentageEntityRecognizer": {
+            "$role": "unionType(Microsoft.EntityRecognizers)",
+            "title": "Percentage Entity Recognizer",
+            "description": "Recognizer which recognizes percentages.",
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.PercentageEntityRecognizer"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$type"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.PhoneNumberEntityRecognizer": {
+            "$role": "unionType(Microsoft.EntityRecognizers)",
+            "title": "Phone Number Entity Recognizer",
+            "description": "Recognizer which recognizes phone numbers.",
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.PhoneNumberEntityRecognizer"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
                         "$type"
                     ]
                 }
@@ -5929,6 +6004,70 @@
                 }
             ]
         },
+        "Microsoft.RegExEntityRecognizer": {
+            "$role": "unionType(Microsoft.EntityRecognizers)",
+            "title": "Regex Entity Recognizer",
+            "description": "Recognizer which recognizes patterns of input based on regex.",
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.RegExEntityRecognizer"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "name": {
+                    "type": "string",
+                    "title": "Name",
+                    "description": "Name of the entity"
+                },
+                "pattern": {
+                    "type": "string",
+                    "title": "Pattern",
+                    "description": "Pattern expressed as regular expression."
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "name",
+                        "pattern",
+                        "$type"
+                    ]
+                }
+            ]
+        },
         "Microsoft.RegexRecognizer": {
             "$role": "unionType(Microsoft.IRecognizer)",
             "title": "Regex Recognizer",
@@ -5960,11 +6099,32 @@
                     "description": "Extra information for the Bot Framework Designer."
                 },
                 "intents": {
-                    "type": "object",
+                    "type": "array",
                     "title": "RegEx patterns to intents",
-                    "description": "Pattern->Intents mappings",
-                    "additionalProperties": {
-                        "type": "string"
+                    "description": "Collection of patterns to match intents",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "intent": {
+                                "type": "string",
+                                "title": "Intent",
+                                "description": "The intent name"
+                            },
+                            "pattern": {
+                                "type": "string",
+                                "title": "Pattern",
+                                "description": "The regular expression pattern for matching"
+                            }
+                        }
+                    }
+                },
+                "entities": {
+                    "type": "array",
+                    "title": "Entitie Recognizers",
+                    "description": "Entity Recognizers to use",
+                    "items": {
+                        "$type": "Microsoft.EntityRecognizers",
+                        "$ref": "#/definitions/Microsoft.EntityRecognizers"
                     }
                 }
             },
@@ -6019,26 +6179,6 @@
                     "title": "$designer",
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
-                },
-                "id": {
-                    "type": "string",
-                    "title": "Id",
-                    "description": "(Optional) id for the dialog",
-                    "examples": [
-                        "Dialog2"
-                    ]
-                },
-                "tags": {
-                    "type": "array",
-                    "title": "Tags",
-                    "description": "Tags are optional strings that you can use to organize components",
-                    "examples": [
-                        "input",
-                        "confirmation"
-                    ],
-                    "items": {
-                        "type": "string"
-                    }
                 }
             },
             "additionalProperties": false,
@@ -6092,31 +6232,11 @@
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
                 },
-                "id": {
-                    "type": "string",
-                    "title": "Id",
-                    "description": "(Optional) id for the dialog",
-                    "examples": [
-                        "Dialog2"
-                    ]
-                },
-                "tags": {
-                    "type": "array",
-                    "title": "Tags",
-                    "description": "Tags are optional strings that you can use to organize components",
-                    "examples": [
-                        "input",
-                        "confirmation"
-                    ],
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "dialogId": {
-                    "$role": "expression",
-                    "title": "Dialog Id",
-                    "description": "The Id the dialog to call.",
-                    "type": "string"
+                "dialog": {
+                    "$type": "Microsoft.IDialog",
+                    "title": "Dialog",
+                    "description": "This is the dialog to switch to.",
+                    "$ref": "#/definitions/Microsoft.IDialog"
                 },
                 "options": {
                     "type": "object",
@@ -6126,14 +6246,6 @@
                         "type": "string",
                         "title": "Options"
                     }
-                },
-                "property": {
-                    "$role": "expression",
-                    "description": "The property to bind to the dialog and store the result in",
-                    "examples": [
-                        "user.name"
-                    ],
-                    "type": "string"
                 }
             },
             "additionalProperties": false,
@@ -6186,26 +6298,6 @@
                     "title": "$designer",
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
-                },
-                "id": {
-                    "type": "string",
-                    "title": "Id",
-                    "description": "(Optional) id for the dialog",
-                    "examples": [
-                        "Dialog2"
-                    ]
-                },
-                "tags": {
-                    "type": "array",
-                    "title": "Tags",
-                    "description": "Tags are optional strings that you can use to organize components",
-                    "examples": [
-                        "input",
-                        "confirmation"
-                    ],
-                    "items": {
-                        "type": "string"
-                    }
                 },
                 "activity": {
                     "$type": "Microsoft.IActivityTemplate",
@@ -6265,30 +6357,10 @@
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
                 },
-                "id": {
-                    "type": "string",
-                    "title": "Id",
-                    "description": "(Optional) id for the dialog",
-                    "examples": [
-                        "Dialog2"
-                    ]
-                },
-                "tags": {
-                    "type": "array",
-                    "title": "Tags",
-                    "description": "Tags are optional strings that you can use to organize components",
-                    "examples": [
-                        "input",
-                        "confirmation"
-                    ],
-                    "items": {
-                        "type": "string"
-                    }
-                },
                 "property": {
                     "$role": "expression",
                     "title": "Property",
-                    "description": "The property to set the value of",
+                    "description": "The property path to set the value",
                     "examples": [
                         "user.age"
                     ],
@@ -6327,6 +6399,64 @@
                 }
             ]
         },
+        "Microsoft.StaticActivityTemplate": {
+            "$role": "unionType(Microsoft.IActivityTemplate)",
+            "title": "Microsoft Static Activity Template",
+            "description": "This allows you to defina static Activity object",
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.StaticActivityTemplate"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "activity": {
+                    "type": "object",
+                    "title": "Activity",
+                    "Description": "A static Activity to used"
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "activity",
+                        "$type"
+                    ]
+                }
+            ]
+        },
         "Microsoft.SwitchCondition": {
             "$role": "unionType(Microsoft.IDialog)",
             "title": "Switch Action",
@@ -6356,26 +6486,6 @@
                     "title": "$designer",
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
-                },
-                "id": {
-                    "type": "string",
-                    "title": "Id",
-                    "description": "(Optional) id for the dialog",
-                    "examples": [
-                        "Dialog2"
-                    ]
-                },
-                "tags": {
-                    "type": "array",
-                    "title": "Tags",
-                    "description": "Tags are optional strings that you can use to organize components",
-                    "examples": [
-                        "input",
-                        "confirmation"
-                    ],
-                    "items": {
-                        "type": "string"
-                    }
                 },
                 "condition": {
                     "$role": "expression",
@@ -6447,11 +6557,63 @@
                 }
             ]
         },
+        "Microsoft.TemperatureEntityRecognizer": {
+            "$role": "unionType(Microsoft.EntityRecognizers)",
+            "title": "Temperature Entity Recognizer",
+            "description": "Recognizer which recognizes temperatures.",
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.TemperatureEntityRecognizer"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$type"
+                    ]
+                }
+            ]
+        },
         "Microsoft.TextInput": {
             "$role": "unionType(Microsoft.IDialog)",
+            "type": "object",
             "title": "TextInput Dialog",
             "description": "This represents a dialog which gathers a text from the user",
-            "type": "object",
             "properties": {
                 "$type": {
                     "title": "$type",
@@ -6480,22 +6642,7 @@
                 "id": {
                     "type": "string",
                     "title": "Id",
-                    "description": "(Optional) id for the dialog",
-                    "examples": [
-                        "Dialog2"
-                    ]
-                },
-                "tags": {
-                    "type": "array",
-                    "title": "Tags",
-                    "description": "Tags are optional strings that you can use to organize components",
-                    "examples": [
-                        "input",
-                        "confirmation"
-                    ],
-                    "items": {
-                        "type": "string"
-                    }
+                    "description": "Optional id for the dialog"
                 },
                 "prompt": {
                     "$type": "Microsoft.IActivityTemplate",
@@ -6524,6 +6671,15 @@
                     ],
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
+                "defaultValueResponse": {
+                    "$type": "Microsoft.IActivityTemplate",
+                    "title": "Default Value Response",
+                    "description": "The message to send to when max turn count has been exceeded and the default value is selected as the value.",
+                    "examples": [
+                        "I didn't understand your responses, so I will just use the default value of 10.  Let me know if you want to change it."
+                    ],
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                },
                 "maxTurnCount": {
                     "type": "integer",
                     "title": "Max Turn Count",
@@ -6542,12 +6698,6 @@
                         "type": "string",
                         "description": "String must contain an expression."
                     }
-                },
-                "value": {
-                    "$role": "expression",
-                    "title": "Value",
-                    "description": "The expression that you evaluated for input.",
-                    "type": "string"
                 },
                 "property": {
                     "$role": "expression",
@@ -6621,6 +6771,64 @@
                 }
             ]
         },
+        "Microsoft.TextTemplate": {
+            "$role": "unionType(Microsoft.ITextTemplate)",
+            "title": "Microsoft TextTemplate",
+            "description": "Lg tempalte to evaluate to create text",
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.TextTemplate"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "template": {
+                    "title": "Template",
+                    "Description": "Language Generator template to evaluate to create the text",
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "template",
+                        "$type"
+                    ]
+                }
+            ]
+        },
         "Microsoft.TraceActivity": {
             "$role": "unionType(Microsoft.IDialog)",
             "title": "Trace Activity Action",
@@ -6650,26 +6858,6 @@
                     "title": "$designer",
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
-                },
-                "id": {
-                    "type": "string",
-                    "title": "Id",
-                    "description": "(Optional) id for the dialog",
-                    "examples": [
-                        "Dialog2"
-                    ]
-                },
-                "tags": {
-                    "type": "array",
-                    "title": "Tags",
-                    "description": "Tags are optional strings that you can use to organize components",
-                    "examples": [
-                        "input",
-                        "confirmation"
-                    ],
-                    "items": {
-                        "type": "string"
-                    }
                 },
                 "name": {
                     "type": "string",
@@ -6711,7 +6899,7 @@
         },
         "Microsoft.TrueSelector": {
             "$role": "unionType(Microsoft.ITriggerSelector)",
-            "title": "True Event Selector",
+            "title": "True Trigger Selector",
             "description": "Selector for all true events",
             "type": "object",
             "properties": {
@@ -6721,6 +6909,58 @@
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
                     "const": "Microsoft.TrueSelector"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$type"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.UrlEntityRecognizer": {
+            "$role": "unionType(Microsoft.EntityRecognizers)",
+            "title": "Url Entity Recognizer",
+            "description": "Recognizer which recognizes urls (example: http://bing.com)",
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.UrlEntityRecognizer"
                 },
                 "$copy": {
                     "title": "$copy",

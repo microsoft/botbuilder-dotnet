@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace Microsoft.Bot.Builder.Dialogs
 {
     /// <summary>
-    /// A related set of dialogs that can all call each other.
+    /// A collection of <see cref="Dialog"/> objects that can all call each other.
     /// </summary>
     public class DialogSet
     {
@@ -18,6 +18,15 @@ namespace Microsoft.Bot.Builder.Dialogs
 
         private IBotTelemetryClient _telemetryClient;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DialogSet"/> class.
+        /// </summary>
+        /// <param name="dialogState">The state property accessor with which to manage the stack for
+        /// this dialog set.</param>
+        /// <remarks>To start and control the dialogs in this dialog set, create a <see cref="DialogContext"/>
+        /// and use its methods to start, continue, or end dialogs. To create a dialog context,
+        /// call <see cref="CreateContextAsync(ITurnContext, CancellationToken)"/>.
+        /// </remarks>
         public DialogSet(IStatePropertyAccessor<DialogState> dialogState)
         {
             _dialogState = dialogState ?? throw new ArgumentNullException(nameof(dialogState));
@@ -31,10 +40,11 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// Gets or sets the <see cref="IBotTelemetryClient"/> to use.
-        /// When setting this property, all of the contained dialogs' TelemetryClient properties are also set.
+        /// Gets or sets the <see cref="IBotTelemetryClient"/> to use for logging.
         /// </summary>
-        /// <value>The <see cref="IBotTelemetryClient"/> to use when logging.</value>
+        /// <value>The <see cref="IBotTelemetryClient"/> to use for logging.</value>
+        /// <remarks>When this property is set, it sets the <see cref="Dialog.TelemetryClient"/> of each
+        /// dialog in the set to the new value.</remarks>
         public IBotTelemetryClient TelemetryClient
         {
             get
@@ -60,8 +70,9 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// of "duplicate2".
         /// </summary>
         /// <param name="dialog">The dialog to add.</param>
-        /// <returns>The DialogSet for fluent calls to Add().</returns>
-        /// <remarks>Adding a new dialog will inherit the <see cref="IBotTelemetryClient"/> of the DialogSet.</remarks>
+        /// <returns>The dialog set after the operation is complete.</returns>
+        /// <remarks>The added dialog's <see cref="Dialog.TelemetryClient"/> is set to the
+        /// <see cref="TelemetryClient"/> of the dialog set.</remarks>
         public DialogSet Add(Dialog dialog)
         {
             if (dialog == null)
@@ -104,12 +115,17 @@ namespace Microsoft.Bot.Builder.Dialogs
             return this;
         }
 
-        public Task<DialogContext> CreateContextAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            return CreateContextAsync(turnContext, null, null, cancellationToken);
-        }
-
-        public async Task<DialogContext> CreateContextAsync(ITurnContext turnContext, Dictionary<string, object> conversationState, Dictionary<string, object> userState, CancellationToken cancellationToken = default(CancellationToken))
+        /// <summary>
+        /// Creates a <see cref="DialogContext"/> which can be used to work with the dialogs in the
+        /// <see cref="DialogSet"/>.
+        /// </summary>
+        /// <param name="turnContext">Context for the current turn of conversation with the user.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        /// <remarks>If the task is successful, the result contains the created <see cref="DialogContext"/>.
+        /// </remarks>
+        public async Task<DialogContext> CreateContextAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
         {
             BotAssert.ContextNotNull(turnContext);
 
@@ -128,10 +144,10 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// Finds a dialog that was previously added to the set using <see cref="Add(Dialog)"/>.
+        /// Searches the current <see cref="DialogSet"/> for a <see cref="Dialog"/> by its ID.
         /// </summary>
-        /// <param name="dialogId">ID of the dialog/prompt to look up.</param>
-        /// <returns>The dialog if found, otherwise null.</returns>
+        /// <param name="dialogId">ID of the dialog to search for.</param>
+        /// <returns>The dialog if found; otherwise <c>null</c>.</returns>
         public Dialog Find(string dialogId)
         {
             if (string.IsNullOrWhiteSpace(dialogId))

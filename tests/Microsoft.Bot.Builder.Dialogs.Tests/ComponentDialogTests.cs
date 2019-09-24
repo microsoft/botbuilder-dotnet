@@ -359,21 +359,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         }
 
         [TestMethod]
-        public async Task CancelDialogOnFirstActionTest()
-        {
-            var steps = new WaterfallStep[]
-            {
-                CancelledWaterfallStep,
-            };
-            var waterfallDialog = new WaterfallDialog("test-waterfall", steps);
-            var testFlow = CreateTestFlow(waterfallDialog);
-            await testFlow
-                .Send("hello")
-                .AssertReply("Component dialog cancelled (result value is 42).")
-                .StartTestAsync();
-        }
-
-        [TestMethod]
         public async Task CancelDialogOnSecondActionTest()
         {
             var steps = new WaterfallStep[]

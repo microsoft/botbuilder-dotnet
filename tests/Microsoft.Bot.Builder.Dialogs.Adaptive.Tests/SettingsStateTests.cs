@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.TriggerHandlers;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.LanguageGeneration;
 using Microsoft.Bot.Builder.LanguageGeneration.Templates;
@@ -48,7 +48,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var userState = new UserState(new MemoryStorage());
             var dialog = new AdaptiveDialog();
-            dialog.AddTriggerHandlers(new List<TriggerHandler>()
+            dialog.Triggers.AddRange(new List<OnCondition>()
             {
                 new OnUnknownIntent(actions:
                     new List<Dialog>()

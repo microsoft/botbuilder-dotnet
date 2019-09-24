@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.FunctionalTests.Configuration;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -20,12 +21,13 @@ namespace Microsoft.Bot.Builder.FunctionalTests
 
         public GetTokenRefreshTests()
         {
+            testAppId = EnvironmentConfig.TestAppId();
+            testPassword = EnvironmentConfig.TestAppPassword();
         }
 
         [TestMethod]
         public async Task TokenTests_GetCredentialsWorks()
         {
-            GetEnvironmentVarsTestAppIdPassword();
             MicrosoftAppCredentials credentials = new MicrosoftAppCredentials(testAppId, testPassword);
             var result = await credentials.GetTokenAsync();
             Assert.IsNotNull(result);
@@ -34,7 +36,6 @@ namespace Microsoft.Bot.Builder.FunctionalTests
         [TestMethod]
         public async Task TokenTests_RefreshTokenWorks()
         {
-            GetEnvironmentVarsTestAppIdPassword();
             MicrosoftAppCredentials credentials = new MicrosoftAppCredentials(testAppId, testPassword);
             var result = await credentials.GetTokenAsync();
             Assert.IsNotNull(result);
@@ -48,7 +49,6 @@ namespace Microsoft.Bot.Builder.FunctionalTests
         [TestMethod]
         public async Task TokenTests_RefreshTestLoad()
         {
-            GetEnvironmentVarsTestAppIdPassword();
             MicrosoftAppCredentials credentials = new MicrosoftAppCredentials(testAppId, testPassword);
             List<Task<string>> tasks = new List<Task<string>>();
             for (int i = 0; i < 1000; i++)
@@ -104,25 +104,6 @@ namespace Microsoft.Bot.Builder.FunctionalTests
                         // Xunit.Assert.Contains(result, results);
                         Assert.IsTrue(results.Contains(result));
                     }
-                }
-            }
-        }
-
-        private void GetEnvironmentVarsTestAppIdPassword()
-        {
-            if (string.IsNullOrWhiteSpace(testAppId) || string.IsNullOrWhiteSpace(testPassword))
-            {
-                testAppId = Environment.GetEnvironmentVariable("TESTAPPID");
-                if (string.IsNullOrWhiteSpace(testAppId))
-                {
-                    throw new Exception("Environment variable 'TestAppId' not found.");
-                }
-
-                testPassword = Environment.GetEnvironmentVariable("TESTPASSWORD");
-
-                if (string.IsNullOrWhiteSpace(testPassword))
-                {
-                    throw new Exception("Environment variable 'TestPassword' not found.");
                 }
             }
         }

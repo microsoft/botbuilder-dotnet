@@ -1,110 +1,60 @@
 {
-  "text": "Deliver from 12345 VA to 12346 WA",
-  "intents": {
-    "Roles": {
-      "score": 0.999888361
-    },
-    "Delivery": {
-      "score": 0.00234605442
-    },
-    "search": {
-      "score": 9.343347E-06
-    },
-    "Travel": {
-      "score": 3.04712876E-06
-    },
-    "None": {
-      "score": 1.15824787E-06
-    },
-    "Weather_GetForecast": {
-      "score": 1.01009994E-06
-    },
-    "SpecifyName": {
-      "score": 3.01666669E-09
-    },
-    "Greeting": {
-      "score": 1.06875E-09
-    },
-    "Cancel": {
-      "score": 1E-09
-    },
-    "Help": {
-      "score": 1E-09
-    },
-    "EntityTests": {
-      "score": 4.6666665E-10
-    }
-  },
   "entities": {
     "$instance": {
-      "Source": [
-        {
-          "startIndex": 13,
-          "endIndex": 21,
-          "text": "12345 va",
-          "type": "Address",
-          "score": 0.9377045
-        }
-      ],
       "Destination": [
         {
-          "startIndex": 25,
           "endIndex": 33,
-          "text": "12346 wa",
-          "type": "Address",
-          "score": 0.9818967
+          "modelType": "Composite Entity Extractor",
+          "recognitionSources": [
+            "model"
+          ],
+          "score": 0.9818366,
+          "startIndex": 25,
+          "text": "12346 WA",
+          "type": "Address"
+        }
+      ],
+      "Source": [
+        {
+          "endIndex": 21,
+          "modelType": "Composite Entity Extractor",
+          "recognitionSources": [
+            "model"
+          ],
+          "score": 0.9345161,
+          "startIndex": 13,
+          "text": "12345 VA",
+          "type": "Address"
         }
       ]
     },
-    "Source": [
-      {
-        "$instance": {
-          "number": [
-            {
-              "startIndex": 13,
-              "endIndex": 18,
-              "text": "12345",
-              "type": "builtin.number",
-              "subtype": "integer"
-            }
-          ],
-          "State": [
-            {
-              "startIndex": 19,
-              "endIndex": 21,
-              "text": "va",
-              "type": "State",
-              "score": 0.9417667
-            }
-          ]
-        },
-        "number": [
-          12345
-        ],
-        "State": [
-          "va"
-        ]
-      }
-    ],
     "Destination": [
       {
         "$instance": {
           "number": [
             {
-              "startIndex": 25,
               "endIndex": 30,
+              "modelType": "Prebuilt Entity Extractor",
+              "recognitionSources": [
+                "model"
+              ],
+              "startIndex": 25,
+              "subtype": "integer",
               "text": "12346",
-              "type": "builtin.number",
-              "subtype": "integer"
+              "type": "builtin.number"
             }
           ],
           "State": [
             {
-              "startIndex": 31,
               "endIndex": 33,
-              "text": "wa",
-              "type": "State",
-              "score": 0.9899993
+              "modelType": "Entity Extractor",
+              "recognitionSources": [
+                "model"
+              ],
+              "score": 0.9893861,
+              "startIndex": 31,
+              "text": "WA",
+              "type": "State"
             }
           ]
         },
@@ -112,152 +62,403 @@
           12346
         ],
         "State": [
-          "wa"
+          "WA"
+        ]
+      }
+    ],
+    "Source": [
+      {
+        "$instance": {
+          "number": [
+            {
+              "endIndex": 18,
+              "modelType": "Prebuilt Entity Extractor",
+              "recognitionSources": [
+                "model"
+              ],
+              "startIndex": 13,
+              "subtype": "integer",
+              "text": "12345",
+              "type": "builtin.number"
+            }
+          ],
+          "State": [
+            {
+              "endIndex": 21,
+              "modelType": "Entity Extractor",
+              "recognitionSources": [
+                "model"
+              ],
+              "score": 0.941649556,
+              "startIndex": 19,
+              "text": "VA",
+              "type": "State"
+            }
+          ]
+        },
+        "number": [
+          12345
+        ],
+        "State": [
+          "VA"
         ]
       }
     ]
+  },
+  "intents": {
+    "Cancel": {
+      "score": 1.01764708E-09
+    },
+    "Delivery": {
+      "score": 0.00238572317
+    },
+    "EntityTests": {
+      "score": 4.757576E-10
+    },
+    "Greeting": {
+      "score": 1.0875E-09
+    },
+    "Help": {
+      "score": 1.01764708E-09
+    },
+    "None": {
+      "score": 1.17844979E-06
+    },
+    "Roles": {
+      "score": 0.999911964
+    },
+    "search": {
+      "score": 9.494859E-06
+    },
+    "SpecifyName": {
+      "score": 3.0666667E-09
+    },
+    "Travel": {
+      "score": 3.09763345E-06
+    },
+    "Weather_GetForecast": {
+      "score": 1.02792524E-06
+    }
   },
   "sentiment": {
     "label": "neutral",
     "score": 0.5
   },
+  "text": "Deliver from 12345 VA to 12346 WA",
   "v2": {
-    "query": "Deliver from 12345 VA to 12346 WA",
-    "topScoringIntent": {
-      "intent": "Roles",
-      "score": 0.999888361
+    "options": {
+      "IncludeAllIntents": true,
+      "IncludeInstanceData": true,
+      "LogPersonalInformation": false,
+      "Timeout": 100000.0
     },
-    "intents": [
-      {
-        "intent": "Roles",
-        "score": 0.999888361
-      },
-      {
-        "intent": "Delivery",
-        "score": 0.00234605442
-      },
-      {
-        "intent": "search",
-        "score": 9.343347E-06
-      },
-      {
-        "intent": "Travel",
-        "score": 3.04712876E-06
-      },
-      {
-        "intent": "None",
-        "score": 1.15824787E-06
-      },
-      {
-        "intent": "Weather.GetForecast",
-        "score": 1.01009994E-06
-      },
-      {
-        "intent": "SpecifyName",
-        "score": 3.01666669E-09
-      },
-      {
-        "intent": "Greeting",
-        "score": 1.06875E-09
-      },
-      {
-        "intent": "Cancel",
-        "score": 1E-09
-      },
-      {
-        "intent": "Help",
-        "score": 1E-09
-      },
-      {
-        "intent": "EntityTests",
-        "score": 4.6666665E-10
-      }
-    ],
-    "entities": [
-      {
-        "entity": "va",
-        "type": "State",
-        "startIndex": 19,
-        "endIndex": 20,
-        "score": 0.9417667
-      },
-      {
-        "entity": "wa",
-        "type": "State",
-        "startIndex": 31,
-        "endIndex": 32,
-        "score": 0.9899993
-      },
-      {
-        "entity": "12345 va",
-        "type": "Address",
-        "startIndex": 13,
-        "endIndex": 20,
-        "score": 0.9377045,
-        "role": "Source"
-      },
-      {
-        "entity": "12346 wa",
-        "type": "Address",
-        "startIndex": 25,
-        "endIndex": 32,
-        "score": 0.9818967,
-        "role": "Destination"
-      },
-      {
-        "entity": "12345",
-        "type": "builtin.number",
-        "startIndex": 13,
-        "endIndex": 17,
-        "resolution": {
-          "subtype": "integer",
-          "value": "12345"
+    "response": {
+      "compositeEntities": [
+        {
+          "children": [
+            {
+              "type": "builtin.number",
+              "value": "12345"
+            },
+            {
+              "type": "State",
+              "value": "va"
+            }
+          ],
+          "parentType": "Address",
+          "value": "12345 va"
+        },
+        {
+          "children": [
+            {
+              "type": "builtin.number",
+              "value": "12346"
+            },
+            {
+              "type": "State",
+              "value": "wa"
+            }
+          ],
+          "parentType": "Address",
+          "value": "12346 wa"
         }
-      },
-      {
-        "entity": "12346",
-        "type": "builtin.number",
-        "startIndex": 25,
-        "endIndex": 29,
-        "resolution": {
-          "subtype": "integer",
-          "value": "12346"
-        }
-      }
-    ],
-    "compositeEntities": [
-      {
-        "parentType": "Address",
-        "value": "12345 va",
-        "children": [
-          {
-            "type": "builtin.number",
+      ],
+      "entities": [
+        {
+          "endIndex": 20,
+          "entity": "va",
+          "score": 0.941649556,
+          "startIndex": 19,
+          "type": "State"
+        },
+        {
+          "endIndex": 32,
+          "entity": "wa",
+          "score": 0.9893861,
+          "startIndex": 31,
+          "type": "State"
+        },
+        {
+          "endIndex": 20,
+          "entity": "12345 va",
+          "role": "Source",
+          "score": 0.9345161,
+          "startIndex": 13,
+          "type": "Address"
+        },
+        {
+          "endIndex": 32,
+          "entity": "12346 wa",
+          "role": "Destination",
+          "score": 0.9818366,
+          "startIndex": 25,
+          "type": "Address"
+        },
+        {
+          "endIndex": 17,
+          "entity": "12345",
+          "resolution": {
+            "subtype": "integer",
             "value": "12345"
           },
-          {
-            "type": "State",
-            "value": "va"
-          }
-        ]
-      },
-      {
-        "parentType": "Address",
-        "value": "12346 wa",
-        "children": [
-          {
-            "type": "builtin.number",
+          "startIndex": 13,
+          "type": "builtin.number"
+        },
+        {
+          "endIndex": 29,
+          "entity": "12346",
+          "resolution": {
+            "subtype": "integer",
             "value": "12346"
           },
-          {
-            "type": "State",
-            "value": "wa"
-          }
-        ]
+          "startIndex": 25,
+          "type": "builtin.number"
+        }
+      ],
+      "intents": [
+        {
+          "intent": "Roles",
+          "score": 0.999911964
+        },
+        {
+          "intent": "Delivery",
+          "score": 0.00238572317
+        },
+        {
+          "intent": "search",
+          "score": 9.494859E-06
+        },
+        {
+          "intent": "Travel",
+          "score": 3.09763345E-06
+        },
+        {
+          "intent": "None",
+          "score": 1.17844979E-06
+        },
+        {
+          "intent": "Weather.GetForecast",
+          "score": 1.02792524E-06
+        },
+        {
+          "intent": "SpecifyName",
+          "score": 3.0666667E-09
+        },
+        {
+          "intent": "Greeting",
+          "score": 1.0875E-09
+        },
+        {
+          "intent": "Cancel",
+          "score": 1.01764708E-09
+        },
+        {
+          "intent": "Help",
+          "score": 1.01764708E-09
+        },
+        {
+          "intent": "EntityTests",
+          "score": 4.757576E-10
+        }
+      ],
+      "query": "Deliver from 12345 VA to 12346 WA",
+      "sentimentAnalysis": {
+        "label": "neutral",
+        "score": 0.5
+      },
+      "topScoringIntent": {
+        "intent": "Roles",
+        "score": 0.999911964
       }
-    ],
-    "sentimentAnalysis": {
-      "label": "neutral",
-      "score": 0.5
+    }
+  },
+  "v3": {
+    "options": {
+      "IncludeAllIntents": true,
+      "IncludeAPIResults": true,
+      "IncludeInstanceData": true,
+      "Log": true,
+      "PreferExternalEntities": true,
+      "Slot": "production",
+      "Version": "GeoPeople"
+    },
+    "response": {
+      "prediction": {
+        "entities": {
+          "$instance": {
+            "Destination": [
+              {
+                "length": 8,
+                "modelType": "Composite Entity Extractor",
+                "modelTypeId": 4,
+                "recognitionSources": [
+                  "model"
+                ],
+                "role": "Destination",
+                "score": 0.9818366,
+                "startIndex": 25,
+                "text": "12346 WA",
+                "type": "Address"
+              }
+            ],
+            "Source": [
+              {
+                "length": 8,
+                "modelType": "Composite Entity Extractor",
+                "modelTypeId": 4,
+                "recognitionSources": [
+                  "model"
+                ],
+                "role": "Source",
+                "score": 0.9345161,
+                "startIndex": 13,
+                "text": "12345 VA",
+                "type": "Address"
+              }
+            ]
+          },
+          "Destination": [
+            {
+              "$instance": {
+                "number": [
+                  {
+                    "length": 5,
+                    "modelType": "Prebuilt Entity Extractor",
+                    "modelTypeId": 2,
+                    "recognitionSources": [
+                      "model"
+                    ],
+                    "startIndex": 25,
+                    "text": "12346",
+                    "type": "builtin.number"
+                  }
+                ],
+                "State": [
+                  {
+                    "length": 2,
+                    "modelType": "Entity Extractor",
+                    "modelTypeId": 1,
+                    "recognitionSources": [
+                      "model"
+                    ],
+                    "score": 0.9893861,
+                    "startIndex": 31,
+                    "text": "WA",
+                    "type": "State"
+                  }
+                ]
+              },
+              "number": [
+                12346
+              ],
+              "State": [
+                "WA"
+              ]
+            }
+          ],
+          "Source": [
+            {
+              "$instance": {
+                "number": [
+                  {
+                    "length": 5,
+                    "modelType": "Prebuilt Entity Extractor",
+                    "modelTypeId": 2,
+                    "recognitionSources": [
+                      "model"
+                    ],
+                    "startIndex": 13,
+                    "text": "12345",
+                    "type": "builtin.number"
+                  }
+                ],
+                "State": [
+                  {
+                    "length": 2,
+                    "modelType": "Entity Extractor",
+                    "modelTypeId": 1,
+                    "recognitionSources": [
+                      "model"
+                    ],
+                    "score": 0.941649556,
+                    "startIndex": 19,
+                    "text": "VA",
+                    "type": "State"
+                  }
+                ]
+              },
+              "number": [
+                12345
+              ],
+              "State": [
+                "VA"
+              ]
+            }
+          ]
+        },
+        "intents": {
+          "Cancel": {
+            "score": 1.01764708E-09
+          },
+          "Delivery": {
+            "score": 0.00238572317
+          },
+          "EntityTests": {
+            "score": 4.757576E-10
+          },
+          "Greeting": {
+            "score": 1.0875E-09
+          },
+          "Help": {
+            "score": 1.01764708E-09
+          },
+          "None": {
+            "score": 1.17844979E-06
+          },
+          "Roles": {
+            "score": 0.999911964
+          },
+          "search": {
+            "score": 9.494859E-06
+          },
+          "SpecifyName": {
+            "score": 3.0666667E-09
+          },
+          "Travel": {
+            "score": 3.09763345E-06
+          },
+          "Weather.GetForecast": {
+            "score": 1.02792524E-06
+          }
+        },
+        "normalizedQuery": "deliver from 12345 va to 12346 wa",
+        "sentiment": {
+          "label": "neutral",
+          "score": 0.5
+        },
+        "topIntent": "Roles"
+      },
+      "query": "Deliver from 12345 VA to 12346 WA"
     }
   }
 }

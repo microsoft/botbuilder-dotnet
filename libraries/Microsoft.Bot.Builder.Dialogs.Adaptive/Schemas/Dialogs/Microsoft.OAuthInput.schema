@@ -1,12 +1,12 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
-    "$role": "unionType(Microsoft.Dialog)",
+    "$role": "unionType(Microsoft.IDialog)",
     "title": "OAuthInput Dialog",
     "description": "This represents a dialog which gathers an OAuth token from user",
     "type": "object",
     "allOf": [
         {
-            "$ref": "./baseInputSchema.json"
+            "$ref": "./Microsoft.InputDialog.json#"
         },
         {
             "properties": {
@@ -30,6 +30,11 @@
                     "title": "Timeout",
                     "description": "Time out setting for the OAuth signin card.",
                     "default": "900000"
+                },
+                "tokenProperty": {
+                    "$role": "expression",
+                    "title": "Token Property",
+                    "description": "The memory property path to store the token result in"
                 }
             }
         }

@@ -55,7 +55,6 @@ namespace Microsoft.Bot.Builder.Dialogs
             set
             {
                 this.rootDialogId = value.Id;
-                this.dialogSet = new DialogSet();
                 this.dialogSet.Add(value);
             }
         }

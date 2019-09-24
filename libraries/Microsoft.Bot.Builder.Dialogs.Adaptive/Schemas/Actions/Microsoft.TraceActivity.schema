@@ -1,31 +1,24 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
-    "$role": "unionType(Microsoft.Dialog)",
+    "$role": "unionType(Microsoft.IDialog)",
     "title": "Trace Activity Action",
     "description": "This is a action which sends an TraceActivity to the transcript",
     "type": "object",
-    "allOf": [
-        {
-            "$ref": "./baseActionSchema.json"
+    "properties": {
+        "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "Name of the trace activity"
         },
-        {
-            "properties": {
-                "name": {
-                    "type": "string",
-                    "title": "Name",
-                    "description": "Name of the trace activity"
-                },
-                "valueType": {
-                    "type": "string",
-                    "title": "Value Type",
-                    "description": "Value type of the trace activity"
-                },
-                "value": {
-                    "$role": "expression",
-                    "title": "Value",
-                    "description": "Property path to memory object to send as the value of the trace activity"
-                }
-            }
+        "valueType": {
+            "type": "string",
+            "title": "Value Type",
+            "description": "Value type of the trace activity"
+        },
+        "value": {
+            "$role": "expression",
+            "title": "Value",
+            "description": "Property path to memory object to send as the value of the trace activity"
         }
-    ]
+    }
 }

@@ -7,6 +7,7 @@ using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Converters;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resolvers;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
+using Microsoft.Bot.Builder.LanguageGeneration.Generators;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
@@ -23,7 +24,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             if (reader.ValueType == typeof(string))
             {
                 string readerValue = reader.Value.ToString();
-                return TypeFactory.Build<ILanguageGenerator>("DefaultLanguageGenerator", readerValue, serializer);
+
+                return new ResourceMultiLanguageGenerator(readerValue);
             }
 
             return base.ReadJson(reader, objectType, existingValue, serializer);

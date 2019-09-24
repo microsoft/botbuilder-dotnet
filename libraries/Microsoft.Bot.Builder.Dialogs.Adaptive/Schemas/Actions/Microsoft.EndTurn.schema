@@ -1,12 +1,7 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
-    "$role": "unionType(Microsoft.Dialog)",
+    "$role": "unionType(Microsoft.IDialog)",
     "title": "End Turn",
     "description": "End the current turn without ending the dialog.",
-    "type": "object",
-    "allOf": [
-        {
-            "$ref": "./baseActionSchema.json"
-        }
-    ]
+    "type": "object"
 }

@@ -1,12 +1,14 @@
 ﻿#pragma warning disable SA1402
 using System;
 using System.Collections.Generic;
+using System.Net.Http.Headers;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.TriggerHandlers;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
@@ -129,7 +131,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var dialog = new AdaptiveDialog()
             {
                 Generator = new ResourceMultiLanguageGenerator("subDialog.lg"),
-                Triggers = new List<TriggerHandler>()
+                Triggers = new List<OnCondition>()
                 {
                     new OnBeginDialog()
                     {
@@ -164,6 +166,26 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             .Send("hello")
                 .AssertReply("root")
                 .AssertReply("overriden")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task TestNoResourceExplorerLanguageGeneration()
+        {
+            await CreateNoResourceExplorerFlow("en-us", async (turnContext, cancellationToken) =>
+            {
+                var lg = turnContext.TurnState.Get<ILanguageGenerator>();
+                var result = await lg.Generate(turnContext, "This is {test.name}", new
+                {
+                    test = new
+                    {
+                        name = "Tom"
+                    }
+                });
+                await turnContext.SendActivityAsync(result);
+            })
+            .Send("hello")
+                .AssertReply("This is Tom")
             .StartTestAsync();
         }
 
@@ -202,6 +224,24 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
                 .UseResourceExplorer(resourceExplorer)
                 .UseAdaptiveDialogs()
                 .UseLanguageGeneration(resourceExplorer, "test.lg")
+                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
+
+            return new TestFlow(adapter, handler);
+        }
+
+        private TestFlow CreateNoResourceExplorerFlow(string locale, BotCallbackHandler handler)
+        {
+            TypeFactory.Configuration = new ConfigurationBuilder().Build();
+            var storage = new MemoryStorage();
+            var convoState = new ConversationState(storage);
+            var userState = new UserState(storage);
+
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
+            adapter
+                .UseStorage(storage)
+                .UseState(userState, convoState)
+                .UseAdaptiveDialogs()
+                .UseLanguageGeneration()
                 .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
 
             return new TestFlow(adapter, handler);

@@ -13,17 +13,20 @@ using Newtonsoft.Json.Serialization;
 namespace Microsoft.Bot.Connector
 {
     /// <summary>
-    /// ConnectorClient extension.
+    /// Implements a client for the Bot Connector service.
     /// </summary>
     public partial class ConnectorClient
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ConnectorClient"/> class.
         /// </summary>
-        /// <param name="baseUri">Base URI for the Connector service.</param>
-        /// <param name="microsoftAppId">Optional. Your Microsoft app id. If null, this setting is read from settings["MicrosoftAppId"].</param>
-        /// <param name="microsoftAppPassword">Optional. Your Microsoft app password. If null, this setting is read from settings["MicrosoftAppPassword"].</param>
-        /// <param name="handlers">Optional. The delegating handlers to add to the http client pipeline.</param>
+        /// <param name="baseUri">Base URI for the Bot Connector service.</param>
+        /// <param name="microsoftAppId">Optional, the Microsoft app ID for the bot resource.
+        /// If null, this setting is read from the `MicrosoftAppId` setting for the bot's application resource.</param>
+        /// <param name="microsoftAppPassword">Optional, the Microsoft app password for the bot.
+        /// If null, this setting is read from the `MicrosoftAppPassword` setting for the bot's application resource.</param>
+        /// <param name="handlers">Optional, an array of <see cref="DelegatingHandler"/> objects to
+        /// add to the HTTP client pipeline.</param>
         public ConnectorClient(Uri baseUri, string microsoftAppId = null, string microsoftAppPassword = null, params DelegatingHandler[] handlers)
             : this(baseUri, new MicrosoftAppCredentials(microsoftAppId, microsoftAppPassword), handlers: handlers)
         {
@@ -33,10 +36,11 @@ namespace Microsoft.Bot.Connector
         /// <summary>
         /// Initializes a new instance of the <see cref="ConnectorClient"/> class.
         /// </summary>
-        /// <param name="baseUri">Base URI for the Connector service.</param>
-        /// <param name="credentials">Credentials for the Connector service.</param>
-        /// <param name="addJwtTokenRefresher">(DEPRECATED).</param>
-        /// <param name="handlers">Optional. The delegating handlers to add to the http client pipeline.</param>
+        /// <param name="baseUri">Base URI for the Bot Connector service.</param>
+        /// <param name="credentials">Credentials for the Bot Connector service.</param>
+        /// <param name="addJwtTokenRefresher">Deprecated, do not use.</param>
+        /// <param name="handlers">Optional, an array of <see cref="DelegatingHandler"/> objects to
+        /// add to the HTTP client pipeline.</param>
         public ConnectorClient(Uri baseUri, MicrosoftAppCredentials credentials, bool addJwtTokenRefresher = true, params DelegatingHandler[] handlers)
             : this(baseUri, credentials, null, addJwtTokenRefresher, handlers)
         {
@@ -46,11 +50,12 @@ namespace Microsoft.Bot.Connector
         /// <summary>
         /// Initializes a new instance of the <see cref="ConnectorClient"/> class.
         /// </summary>
-        /// <param name="baseUri">Base URI for the Connector service.</param>
-        /// <param name="credentials">Credentials for the Connector service.</param>
-        /// <param name="customHttpClient">The HTTP client to be used by the connector client.</param>
-        /// <param name="addJwtTokenRefresher">(DEPRECATED).</param>
-        /// <param name="handlers">Optional. The delegating handlers to add to the http client pipeline.</param>
+        /// <param name="baseUri">Base URI for the Bot Connector service.</param>
+        /// <param name="credentials">Credentials for the Bot Connector service.</param>
+        /// <param name="addJwtTokenRefresher">Deprecated, do not use.</param>
+        /// <param name="customHttpClient">The HTTP client to use for this connector client.</param>
+        /// <param name="handlers">Optional, an array of <see cref="DelegatingHandler"/> objects to
+        /// add to the HTTP client pipeline.</param>
         public ConnectorClient(Uri baseUri, MicrosoftAppCredentials credentials, HttpClient customHttpClient, bool addJwtTokenRefresher = true, params DelegatingHandler[] handlers)
             : this(baseUri, handlers)
         {
@@ -128,8 +133,8 @@ namespace Microsoft.Bot.Connector
         }
 
         /// <summary>Gets the assembly version for the Azure Bot Service.</summary>
-        /// <typeparam name="T">A type that implement ServiceClient.</typeparam>
-        /// <param name="client">Client.</param>
+        /// <typeparam name="T">The type of REST service client to get the version of.</typeparam>
+        /// <param name="client">The REST service client instance to get the version of.</param>
         /// <returns>The assembly version for the Azure Bot Service.</returns>
         public static string GetClientVersion<T>(T client)
             where T : ServiceClient<T>
@@ -139,6 +144,10 @@ namespace Microsoft.Bot.Connector
             return assembly.GetName().Version.ToString();
         }
 
+        /// <summary>
+        /// Configures an HTTP client to include default headers for the Bot Framework.
+        /// </summary>
+        /// <param name="httpClient">The HTTP client to configure.</param>
         public static void AddDefaultRequestHeaders(HttpClient httpClient)
         {
             // The Schema version is 3.1, put into the Microsoft-BotFramework header
@@ -170,6 +179,10 @@ namespace Microsoft.Bot.Connector
             httpClient.DefaultRequestHeaders.ExpectContinue = false;
         }
 
+        /// <summary>
+        /// Gets the assembly version for this Bot Connector client.
+        /// </summary>
+        /// <returns>The assembly version for this Bot Connector client.</returns>
         private static string GetClientVersion()
         {
             var type = typeof(ConnectorClient).GetType();

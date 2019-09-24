@@ -3,36 +3,46 @@
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
+    /// <summary>
+    /// Indicates in which a dialog-related method is being called.
+    /// </summary>
     public enum DialogReason
     {
         /// <summary>
-        /// A dialog is being started through a call to `DialogContext.BeginAsync()`.
+        /// A dialog was started.
         /// </summary>
+        /// <seealso cref="DialogContext.BeginDialogAsync(string, object, System.Threading.CancellationToken)"/>
+        /// <seealso cref="DialogContext.PromptAsync(string, PromptOptions, System.Threading.CancellationToken)"/>
         BeginCalled,
 
         /// <summary>
-        /// A dialog is being continued through a call to `DialogContext.ContinueDialogAsync()`.
+        /// A dialog was continued.
         /// </summary>
+        /// <seealso cref="DialogContext.ContinueDialogAsync(System.Threading.CancellationToken)"/>
         ContinueCalled,
 
         /// <summary>
-        /// A dialog ended normally through a call to `DialogContext.EndDialogAsync()`.
+        /// A dialog was ended normally.
         /// </summary>
+        /// <seealso cref="DialogContext.EndDialogAsync(object, System.Threading.CancellationToken)"/>
         EndCalled,
 
         /// <summary>
-        /// A dialog is ending because it's being replaced through a call to `DialogContext.ReplaceDialogAsync()`.
+        /// A dialog was ending because it was replaced.
         /// </summary>
+        /// <seealso cref="DialogContext.ReplaceDialogAsync(string, object, System.Threading.CancellationToken)"/>
         ReplaceCalled,
 
         /// <summary>
-        /// A dialog was cancelled as part of a call to `DialogContext.CancelAllDialogsAsync()`.
+        /// A dialog was canceled.
         /// </summary>
+        /// <seealso cref="DialogContext.CancelAllDialogsAsync(System.Threading.CancellationToken)"/>
         CancelCalled,
 
         /// <summary>
-        /// A step was advanced through a call to `WaterfallStepContext.NextAsync()`.
+        /// A preceding step of the dialog was skipped.
         /// </summary>
+        /// <seealso cref="WaterfallStepContext.NextAsync(object, System.Threading.CancellationToken)"/>
         NextCalled,
     }
 }

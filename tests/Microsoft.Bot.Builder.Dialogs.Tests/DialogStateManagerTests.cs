@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.TriggerHandlers;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
 using Microsoft.Bot.Builder.Dialogs.Memory;
@@ -270,7 +270,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         {
             var d2 = new AdaptiveDialog("d2")
             {
-                Triggers = new List<TriggerHandler>()
+                Triggers = new List<OnCondition>()
                 {
                     new OnBeginDialog()
                     {
@@ -288,7 +288,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var testDialog = new AdaptiveDialog("testDialog")
             {
                 AutoEndDialog = false,
-                Triggers = new List<TriggerHandler>()
+                Triggers = new List<OnCondition>()
                 {
                     new OnBeginDialog()
                     {
@@ -311,7 +311,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 }
             };
 
-            testDialog.AddDialog(d2);
+            testDialog.Dialogs.Add(d2);
 
             await CreateFlow(testDialog)
                     .SendConversationUpdate()
@@ -343,7 +343,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                         new IntentPattern("NameIntent", ".*name is (?<name>.*)"),
                     }
                 },
-                Triggers = new List<TriggerHandler>()
+                Triggers = new List<OnCondition>()
                 {
                     new OnBeginDialog()
                     {
@@ -391,7 +391,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var testDialog = new AdaptiveDialog("testDialog")
             {
                 AutoEndDialog = false,
-                Triggers = new List<TriggerHandler>()
+                Triggers = new List<OnCondition>()
                 {
                     new OnBeginDialog()
                     {
@@ -428,7 +428,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         {
             var d2 = new AdaptiveDialog("d2")
             {
-                Triggers = new List<TriggerHandler>()
+                Triggers = new List<OnCondition>()
                 {
                     new OnBeginDialog()
                     {
@@ -445,7 +445,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             {
                 AutoEndDialog = false,
 
-                Triggers = new List<TriggerHandler>()
+                Triggers = new List<OnCondition>()
                 {
                     new OnBeginDialog()
                     {
@@ -456,7 +456,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                             new SendActivity("{dialog.name}"),
                             new AdaptiveDialog("d1")
                             {
-                                Triggers = new List<TriggerHandler>()
+                                Triggers = new List<OnCondition>()
                                 {
                                     new OnBeginDialog()
                                     {
@@ -477,7 +477,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 }
             };
 
-            testDialog.AddDialog(d2);
+            testDialog.Dialogs.Add(d2);
 
             await CreateFlow(testDialog)
                     .SendConversationUpdate()

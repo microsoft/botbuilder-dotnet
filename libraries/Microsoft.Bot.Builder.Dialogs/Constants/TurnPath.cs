@@ -23,14 +23,14 @@
         public const string TOPINTENT = "turn.recognized.intent";
 
         /// <summary>
-        /// Path to the top scoe
+        /// Path to the top score
         /// </summary>
         public const string TOPSCORE = "turn.recognized.score";
 
         /// <summary>
-        /// Current step count
+        /// If true an interruption has occured
         /// </summary>
-        public const string STEPCOUNT = "turn.stepCount";
+        public const string INTERRUPTED = "turn.interrupted";
 
         /// <summary>
         /// The current dialog event (set during event processings)
