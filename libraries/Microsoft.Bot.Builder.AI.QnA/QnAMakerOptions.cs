@@ -69,5 +69,11 @@ namespace Microsoft.Bot.Builder.AI.QnA
         public Metadata[] MetadataBoost { get; set; }
 
         public string NoAnswer { get; set; }
+
+        public string ActiveLearningCardTitle { get; set; }
+
+        public string CardNoMatchText { get; set; }
+
+        public string CardNoMatchResponse { get; set; }
     }
 }

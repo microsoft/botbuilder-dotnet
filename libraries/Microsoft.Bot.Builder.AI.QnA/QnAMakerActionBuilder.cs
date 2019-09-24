@@ -22,23 +22,29 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// </summary>
         public const string QnAMakerDialogName = "qnamaker-dialog";
 
+        // Dialog Options parameters
+        public const float DefaultThreshold = 0.3F;
+        public const int DefaultTopN = 3;
+        public const string DefaultNoAnswer = "No QnAMaker answers found.";
+
+        // Card parameters
+        public const string DefaultCardTitle = "Did you mean:";
+        public const string DefaultCardNoMatchText = "None of the above.";
+        public const string DefaultCardNoMatchResponse = "Thanks for the feedback.";
+
         // Define value names for values tracked inside the dialogs.
+        public const string QnAOptions = "qnaOptions";
         private const string CurrentQuery = "currentQuery";
         private const string QnAData = "qnaData";
-        private const string QnAOptions = "qnaOptions";
         private const string QnAContextData = "qnaContextData";
         private const string PreviousQnAId = "prevQnAId";
 
-        // Dialog Options parameters
-        private const float DefaultThreshold = 0.3F;
-        private const int DefaultTopN = 3;
-
-        // Card parameters
-        private const string CardTitle = "Did you mean:";
-        private const string CardNoMatchText = "None of the above.";
-        private const string CardNoMatchResponse = "Thanks for the feedback.";
-
         private readonly QnAMaker _services;
+
+        /// <summary>
+        /// Gets QnA Maker Dialog.
+        /// </summary>
+        private readonly WaterfallDialog _qnaMakerDialog;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="QnAMakerActionBuilder"/> class.
@@ -47,18 +53,13 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// <param name="services">Bot Services.</param>
         public QnAMakerActionBuilder(QnAMaker services)
         {
-            QnAMakerDialog = new WaterfallDialog(QnAMakerDialogName)
+            _qnaMakerDialog = new WaterfallDialog(QnAMakerDialogName)
                 .AddStep(CallGenerateAnswerAsync)
                 .AddStep(CallTrain)
                 .AddStep(CheckForMultiTurnPrompt)
                 .AddStep(DisplayQnAResult);
             _services = services ?? throw new ArgumentNullException(nameof(services));
         }
-
-        /// <summary>
-        /// Gets QnA Maker Dialog.
-        /// </summary>
-        private WaterfallDialog QnAMakerDialog { get; }
 
         /// <summary>
         /// Build dialog by adding QnAMaker dialog to dialog context.
@@ -72,7 +73,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 return dc;
             }
 
-            dc.Dialogs.Add(QnAMakerDialog);
+            dc.Dialogs.Add(_qnaMakerDialog);
             return dc;
         }
 
@@ -164,7 +165,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
                     }
 
                     // Get active learning suggestion card activity.
-                    var message = QnACardBuilder.GetSuggestionsCard(suggestedQuestions, CardTitle, CardNoMatchText);
+                    var message = QnACardBuilder.GetSuggestionsCard(suggestedQuestions, qnaMakerOptions.ActiveLearningCardTitle, qnaMakerOptions.CardNoMatchText);
                     await stepContext.Context.SendActivityAsync(message).ConfigureAwait(false);
 
                     return new DialogTurnResult(DialogTurnStatus.Waiting);
@@ -174,7 +175,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
             var result = new List<QueryResult>();
             if (response.Any())
             {
-                result.Add(response.FirstOrDefault());
+                result.Add(response.First());
             }
 
             stepContext.Values[QnAData] = result;
@@ -189,6 +190,9 @@ namespace Microsoft.Bot.Builder.AI.QnA
             var currentQuery = stepContext.Values[CurrentQuery] as string;
 
             var reply = stepContext.Context.Activity.Text;
+
+            var dialogOptions = GetDialogOptionsValue(stepContext);
+            var qnaMakerOptions = dialogOptions[QnAOptions] as QnAMakerOptions;
 
             if (trainResponses.Count > 1)
             {
@@ -215,9 +219,9 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
                     return await stepContext.NextAsync(new List<QueryResult>() { qnaResult }, cancellationToken).ConfigureAwait(false);
                 }
-                else if (reply.Equals(CardNoMatchText))
+                else if (reply.Equals(qnaMakerOptions.CardNoMatchText))
                 {
-                    await stepContext.Context.SendActivityAsync(CardNoMatchResponse, cancellationToken: cancellationToken).ConfigureAwait(false);
+                    await stepContext.Context.SendActivityAsync(qnaMakerOptions.CardNoMatchResponse, cancellationToken: cancellationToken).ConfigureAwait(false);
                     return await stepContext.EndDialogAsync().ConfigureAwait(false);
                 }
                 else
@@ -240,11 +244,12 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 // -Wait for the reply
                 // -If no: Skip to next step
 
-                var answer = response.FirstOrDefault();
+                var answer = response.First();
 
                 if (answer.Context != null && answer.Context.Prompts.Count() > 1)
                 {
                     var dialogOptions = GetDialogOptionsValue(stepContext);
+                    var qnaMakerOptions = dialogOptions[QnAOptions] as QnAMakerOptions;
                     var previousContextData = new Dictionary<string, int>();
                     if (dialogOptions.ContainsKey(QnAContextData))
                     {
@@ -261,7 +266,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
                     stepContext.ActiveDialog.State["options"] = dialogOptions;
 
                     // Get multi-turn prompts card activity.
-                    var message = QnACardBuilder.GetQnAPromptsCard(answer, CardNoMatchText);
+                    var message = QnACardBuilder.GetQnAPromptsCard(answer, qnaMakerOptions.CardNoMatchText);
                     await stepContext.Context.SendActivityAsync(message).ConfigureAwait(false);
 
                     return new DialogTurnResult(DialogTurnStatus.Waiting);
@@ -273,14 +278,15 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
         private async Task<DialogTurnResult> DisplayQnAResult(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
+            var dialogOptions = GetDialogOptionsValue(stepContext);
+            var qnaMakerOptions = dialogOptions[QnAOptions] as QnAMakerOptions;
             var reply = stepContext.Context.Activity.Text;
-            if (reply.Equals(CardNoMatchText))
+
+            if (reply.Equals(qnaMakerOptions.CardNoMatchText))
             {
-                await stepContext.Context.SendActivityAsync(CardNoMatchResponse, cancellationToken: cancellationToken).ConfigureAwait(false);
+                await stepContext.Context.SendActivityAsync(qnaMakerOptions.CardNoMatchResponse, cancellationToken: cancellationToken).ConfigureAwait(false);
                 return await stepContext.EndDialogAsync().ConfigureAwait(false);
             }
-
-            var dialogOptions = GetDialogOptionsValue(stepContext);
 
             // If previous QnAId is present, replace the dialog
             var previousQnAId = Convert.ToInt32(dialogOptions[PreviousQnAId]);
@@ -292,20 +298,11 @@ namespace Microsoft.Bot.Builder.AI.QnA
             // If response is present then show that response, else default answer.
             if (stepContext.Result is List<QueryResult> response && response.Count > 0)
             {
-                await stepContext.Context.SendActivityAsync(response[0].Answer, cancellationToken: cancellationToken).ConfigureAwait(false);
+                await stepContext.Context.SendActivityAsync(response.First().Answer, cancellationToken: cancellationToken).ConfigureAwait(false);
             }
             else
             {
-                var msg = "No QnAMaker answers found.";
-                
-                // Getting options
-                if (dialogOptions.ContainsKey(QnAOptions))
-                {
-                    var qnaMakerOptions = dialogOptions[QnAOptions] as QnAMakerOptions;
-                    msg = qnaMakerOptions.NoAnswer ?? msg;
-                }
-
-                await stepContext.Context.SendActivityAsync(msg, cancellationToken: cancellationToken).ConfigureAwait(false);
+                await stepContext.Context.SendActivityAsync(qnaMakerOptions.NoAnswer, cancellationToken: cancellationToken).ConfigureAwait(false);
             }
             
             return await stepContext.EndDialogAsync().ConfigureAwait(false);

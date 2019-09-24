@@ -3,10 +3,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
@@ -20,13 +18,23 @@ namespace Microsoft.Bot.Builder.AI.QnA
     /// </summary>
     public class QnAMakerAction : Dialog
     {
-        private const float DefaultThreshold = 0.3F;
-        private const string DefaultNoAnswer = "No QnAMaker answers found.";
-
         private QnAMaker qnamaker;
         private readonly HttpClient httpClient;
 
-        public QnAMakerAction(string knowledgeBaseId, string endpointKey, string hostName, string noAnswer = DefaultNoAnswer, float threshold = DefaultThreshold, Metadata[] strictFilters = null,   HttpClient httpClient = null, [CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
+        public QnAMakerAction(
+            string knowledgeBaseId, 
+            string endpointKey, 
+            string hostName, 
+            string noAnswer = QnAMakerActionBuilder.DefaultNoAnswer, 
+            float threshold = QnAMakerActionBuilder.DefaultThreshold, 
+            string activeLearningCardTitle = QnAMakerActionBuilder.DefaultCardTitle, 
+            string cardNoMatchText = QnAMakerActionBuilder.DefaultCardNoMatchText, 
+            string cardNoMatchResponse = QnAMakerActionBuilder.DefaultCardNoMatchResponse, 
+            Metadata[] strictFilters = null,  
+            HttpClient httpClient = null, 
+            [CallerFilePath] string sourceFilePath = "", 
+            [CallerLineNumber] int sourceLineNumber = 0
+            )
             : base()
         {
             this.RegisterSourceLocation(sourceFilePath, sourceLineNumber);
@@ -35,6 +43,9 @@ namespace Microsoft.Bot.Builder.AI.QnA
             this.EndpointKey = endpointKey ?? throw new ArgumentNullException(nameof(endpointKey));
             this.Threshold = threshold;
             this.NoAnswer = noAnswer;
+            this.ActiveLearningCardTitle = activeLearningCardTitle;
+            this.CardNoMatchText = cardNoMatchText;
+            this.CardNoMatchResponse = cardNoMatchResponse;
             this.StrictFilters = strictFilters;
             this.httpClient = httpClient;
         }
@@ -61,26 +72,20 @@ namespace Microsoft.Bot.Builder.AI.QnA
         [JsonProperty("noAnswer")]
         public string NoAnswer { get; set; }
 
+        [JsonProperty("activeLearningCardTitle")]
+        public string ActiveLearningCardTitle { get; set; }
+
+        [JsonProperty("cardNoMatchText")]
+        public string CardNoMatchText { get; set; }
+
+        [JsonProperty("cardNoMatchResponse")]
+        public string CardNoMatchResponse { get; set; }
+
         [JsonProperty("strictFilters")]
         public Metadata[] StrictFilters { get; set; }
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (this.EndpointKey == null)
-            {
-                throw new ArgumentNullException(nameof(EndpointKey));
-            }
-
-            if (this.HostName == null)
-            {
-                throw new ArgumentNullException(nameof(HostName));
-            }
-
-            if (this.KnowledgeBaseId == null)
-            {
-                throw new ArgumentNullException(nameof(KnowledgeBaseId));
-            }
-
             var endpoint = new QnAMakerEndpoint
             {
                 EndpointKey = this.EndpointKey,
@@ -106,7 +111,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
             if (dc.Context?.Activity?.Type != ActivityTypes.Message)
             {
-                return Dialog.EndOfTurn;
+                return EndOfTurn;
             }
 
             return await ExecuteAdaptiveQnAMakerDialog(dc, qnamaker, qnamakerOptions, cancellationToken).ConfigureAwait(false);
@@ -140,11 +145,16 @@ namespace Microsoft.Bot.Builder.AI.QnA
         {
             var dialog = new QnAMakerActionBuilder(qnaMaker).BuildDialog(dc);
 
-            // Set default no answer for active dialog.
+            // Set values for active dialog.
             qnamakerOptions.NoAnswer = NoAnswer;
+            qnamakerOptions.ActiveLearningCardTitle = ActiveLearningCardTitle;
+            qnamakerOptions.CardNoMatchText = CardNoMatchText;
+            qnamakerOptions.CardNoMatchResponse = CardNoMatchResponse;
 
-            var dialogOptions = new Dictionary<string, object>();
-            dialogOptions["qnaOptions"] = qnamakerOptions;
+            var dialogOptions = new Dictionary<string, object>
+            {
+                ["qnaOptions"] = qnamakerOptions
+            };
 
             return await dc.BeginDialogAsync(QnAMakerActionBuilder.QnAMakerDialogName, dialogOptions, cancellationToken).ConfigureAwait(false);
         }
