@@ -1,3 +1,12 @@
+### Description
+
+As we are now consuming recognizers-text through the BotBuilder-DotNet repository, we are organizing its results in this folder to maintain the changes in one place. 
+
+This way the user will have all the differences between versions and will let them know what to expect. 
+
+## Changes made
+The user will find the Utterance Changes divided by entity type. In every entity type subfolder the changes are organized in .json files.
+
 ##  Changes
 ### V1.2.6
 **DateTime - Recognize**
