@@ -13,7 +13,10 @@ using static Microsoft.Bot.Builder.Dialogs.DialogContext;
 
 namespace Microsoft.Bot.Builder.Dialogs.Debugging
 {
-    public sealed class DebugAdapter : DebugTransport, IMiddleware, IDialogDebugger
+    /// <summary>
+    /// Class which implements Debug Adapter protocol connected to IDialogDebugger data.
+    /// </summary>
+    public sealed class DialogDebugAdapter : DebugTransport, IMiddleware, IDialogDebugger
     {
         private readonly CancellationTokenSource cancellationToken = new CancellationTokenSource();
 
@@ -32,7 +35,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
         private int sequence = 0;
 
-        public DebugAdapter(int port, ISourceMap sourceMap, IBreakpoints breakpoints, Action terminate, IEvents events = null, ICodeModel codeModel = null, IDataModel dataModel = null, ILogger logger = null, ICoercion coercion = null)
+        public DialogDebugAdapter(int port, ISourceMap sourceMap, IBreakpoints breakpoints, Action terminate, IEvents events = null, ICodeModel codeModel = null, IDataModel dataModel = null, ILogger logger = null, ICoercion coercion = null)
             : base(logger)
         {
             this.events = events ?? new Events<DialogEvents>();
