@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.Bot.Schema;
 
-namespace Microsoft.Bot.Builder.AI.QnA.Utils
+namespace Microsoft.Bot.Builder.AI.QnA.Tests
 {
     public class QnAMakerCardEqualityComparer : IEqualityComparer<IActivity>
     {
