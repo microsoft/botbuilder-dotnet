@@ -62,6 +62,12 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             // deserialize the incoming Activity
             var activity = HttpHelper.ReadRequest(httpRequest);
 
+            if (string.IsNullOrEmpty(activity?.Type))
+            {
+                httpResponse.StatusCode = (int)HttpStatusCode.BadRequest;
+                return;
+            }
+
             // grab the auth header from the inbound http request
             var authHeader = httpRequest.Headers["Authorization"];
 
