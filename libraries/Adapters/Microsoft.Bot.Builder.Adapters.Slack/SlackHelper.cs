@@ -126,7 +126,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// <param name="encoding">The encoding for the text.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public static async Task WriteAsync(this HttpResponse response, HttpStatusCode code, string text, Encoding encoding, CancellationToken cancellationToken = default)
+        public static async Task WriteAsync(HttpResponse response, HttpStatusCode code, string text, Encoding encoding, CancellationToken cancellationToken = default)
         {
             if (response == null)
             {
@@ -349,7 +349,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
             // Check if it's a command event
             if (requestBody.Contains("command=%2F"))
             {
-                var commandBody = SlackHelper.QueryStringToDictionary(requestBody);
+                var commandBody = QueryStringToDictionary(requestBody);
 
                 slackBody = JsonConvert.DeserializeObject<SlackRequestBody>(JsonConvert.SerializeObject(commandBody));
             }

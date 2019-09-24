@@ -496,6 +496,59 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Tests
         }
 
         [Fact]
+        public async void ProcessAsyncShouldFailWithNullHttpRequest()
+        {
+            var options = new Mock<SlackAdapterOptions>();
+            options.Object.VerificationToken = "VerificationToken";
+            options.Object.ClientSigningSecret = "ClientSigningSecret";
+            options.Object.BotToken = "BotToken";
+
+            var slackAdapter = new SlackAdapter(new SlackClientWrapper(options.Object));
+            var httpResponse = new Mock<HttpResponse>();
+
+            await Assert.ThrowsAsync<ArgumentNullException>(async () =>
+            {
+                await slackAdapter.ProcessAsync(null, httpResponse.Object, new Mock<IBot>().Object, default);
+            });
+        }
+
+        [Fact]
+        public async void ProcessAsyncShouldFailWithNullHttpResponse()
+        {
+            var options = new Mock<SlackAdapterOptions>();
+            options.Object.VerificationToken = "VerificationToken";
+            options.Object.ClientSigningSecret = "ClientSigningSecret";
+            options.Object.BotToken = "BotToken";
+
+            var slackAdapter = new SlackAdapter(new SlackClientWrapper(options.Object));
+            var httpRequest = new Mock<HttpRequest>();
+            var bot = new Mock<IBot>();
+
+            await Assert.ThrowsAsync<ArgumentNullException>(async () =>
+            {
+                await slackAdapter.ProcessAsync(httpRequest.Object, null, new Mock<IBot>().Object, default);
+            });
+        }
+
+        [Fact]
+        public async void ProcessAsyncShouldFailWithNullBot()
+        {
+            var options = new Mock<SlackAdapterOptions>();
+            options.Object.VerificationToken = "VerificationToken";
+            options.Object.ClientSigningSecret = "ClientSigningSecret";
+            options.Object.BotToken = "BotToken";
+
+            var slackAdapter = new SlackAdapter(new SlackClientWrapper(options.Object));
+            var httpRequest = new Mock<HttpRequest>();
+            var httpResponse = new Mock<HttpResponse>();
+
+            await Assert.ThrowsAsync<ArgumentNullException>(async () =>
+            {
+                await slackAdapter.ProcessAsync(httpRequest.Object, httpResponse.Object, null, default);
+            });
+        }
+
+        [Fact]
         public async Task ProcessAsyncShouldSucceedOnUrlVerification()
         {
             string actual = null;

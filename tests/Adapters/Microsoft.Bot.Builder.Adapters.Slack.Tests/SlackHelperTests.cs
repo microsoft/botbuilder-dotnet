@@ -4,7 +4,13 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Schema;
+using Moq;
 using Newtonsoft.Json;
 using Xunit;
 
@@ -99,6 +105,112 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Tests
 
             Assert.Equal(slackEvent["event"].text.Value, message.text);
             Assert.Equal(slackEvent["event"].user.Value, message.user);
+        }
+
+        [Fact]
+        public async Task WriteAsyncShouldFailWithNullResponse()
+        {
+            await Assert.ThrowsAsync<ArgumentNullException>(async () =>
+            {
+                await SlackHelper.WriteAsync(null, HttpStatusCode.OK, "testText", Encoding.UTF8, new CancellationToken()).ConfigureAwait(false);
+            });
+        }
+
+        [Fact]
+        public async Task WriteAsyncShouldFailWithNullText()
+        {
+            var httpResponse = new Mock<HttpResponse>();
+
+            await Assert.ThrowsAsync<ArgumentNullException>(async () =>
+            {
+                await SlackHelper.WriteAsync(httpResponse.Object, HttpStatusCode.OK, null, Encoding.UTF8, new CancellationToken()).ConfigureAwait(false);
+            });
+        }
+
+        [Fact]
+        public async Task WriteAsyncShouldFailWithNullEncoding()
+        {
+            var httpResponse = new Mock<HttpResponse>();
+
+            await Assert.ThrowsAsync<ArgumentNullException>(async () =>
+            {
+                await SlackHelper.WriteAsync(httpResponse.Object, HttpStatusCode.OK, "testText", null, new CancellationToken()).ConfigureAwait(false);
+            });
+        }
+
+        [Fact]
+        public async Task EventToActivityAsyncShouldReturnNull()
+        {
+            var options = new Mock<SlackAdapterOptions>();
+            options.Object.VerificationToken = "TestToken";
+            options.Object.ClientSigningSecret = "ClientSigningSecret";
+            options.Object.BotToken = "BotToken";
+
+            var slackApi = new Mock<SlackClientWrapper>(options.Object);
+
+            var activity = await SlackHelper.EventToActivityAsync(null, slackApi.Object, new CancellationToken()).ConfigureAwait(false);
+
+            Assert.Null(activity);
+        }
+
+        [Fact]
+        public async Task EventToActivityAsyncShouldReturnActivity()
+        {
+            var options = new Mock<SlackAdapterOptions>();
+            options.Object.VerificationToken = "TestToken";
+            options.Object.ClientSigningSecret = "ClientSigningSecret";
+            options.Object.BotToken = "BotToken";
+
+            var slackApi = new Mock<SlackClientWrapper>(options.Object);
+
+            var payload = File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\MessageBody.json");
+            var slackBody = JsonConvert.DeserializeObject<SlackRequestBody>(payload);
+
+            var activity = await SlackHelper.EventToActivityAsync(slackBody.Event, slackApi.Object, new CancellationToken()).ConfigureAwait(false);
+
+            Assert.Equal(slackBody.Event.Text, activity.Text);
+        }
+
+        [Fact]
+        public async Task CommandToActivityAsyncShouldReturnNull()
+        {
+            var options = new Mock<SlackAdapterOptions>();
+            options.Object.VerificationToken = "TestToken";
+            options.Object.ClientSigningSecret = "ClientSigningSecret";
+            options.Object.BotToken = "BotToken";
+
+            var slackApi = new Mock<SlackClientWrapper>(options.Object);
+
+            var activity = await SlackHelper.CommandToActivityAsync(null, slackApi.Object, new CancellationToken()).ConfigureAwait(false);
+
+            Assert.Null(activity);
+        }
+
+        [Fact]
+        public async Task CommandToActivityAsyncShouldReturnActivity()
+        {
+            var options = new Mock<SlackAdapterOptions>();
+            options.Object.VerificationToken = "TestToken";
+            options.Object.ClientSigningSecret = "ClientSigningSecret";
+            options.Object.BotToken = "BotToken";
+
+            var slackApi = new Mock<SlackClientWrapper>(options.Object);
+
+            var payload = File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\SlashCommandBody.txt");
+            var commandBody = SlackHelper.QueryStringToDictionary(payload);
+            var slackBody = JsonConvert.DeserializeObject<SlackRequestBody>(JsonConvert.SerializeObject(commandBody));
+
+            var activity = await SlackHelper.CommandToActivityAsync(slackBody, slackApi.Object, new CancellationToken()).ConfigureAwait(false);
+
+            Assert.Equal(slackBody.TriggerId, activity.Id);
+        }
+
+        [Fact]
+        public void PayloadToActivityShouldReturnNull()
+        {
+            var activity = SlackHelper.PayloadToActivity(null);
+
+            Assert.Null(activity);
         }
     }
 }
