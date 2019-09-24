@@ -92,11 +92,6 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
                 throw new InvalidDataException("header length is malformed");
             }
 
-            if (length > 999999 || length < 0)
-            {
-                throw new InvalidDataException("Header length value must be at least 0 and no greater than 999999.");
-            }
-
             header.PayloadLength = length;
 
             if (buffer[LengthDelimeterOffset] != Delimiter)
