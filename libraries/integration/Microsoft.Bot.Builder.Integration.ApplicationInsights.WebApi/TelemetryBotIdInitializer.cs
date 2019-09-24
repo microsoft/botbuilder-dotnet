@@ -28,7 +28,8 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi
             {
                 CacheBody();
 
-                if (telemetry is RequestTelemetry || telemetry is EventTelemetry || telemetry is TraceTelemetry)
+                if (telemetry is RequestTelemetry || telemetry is EventTelemetry
+                    || telemetry is TraceTelemetry || telemetry is DependencyTelemetry)
                 {
                     if (items[BotActivityKey] is JObject body)
                     {
