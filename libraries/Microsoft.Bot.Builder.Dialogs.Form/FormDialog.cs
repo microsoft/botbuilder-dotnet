@@ -1,17 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors;
-using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Form
 {
-    public class FormDialog : AdaptiveDialog
+    public partial class FormDialog : AdaptiveDialog
     {
         // TODO: This should be wired up to be declarative for the selector and for the schemas
         public FormDialog(DialogSchema schema)
@@ -28,7 +26,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
 
         protected async Task<bool> ProcessFormAsync(SequenceContext sequenceContext, CancellationToken cancellationToken)
         {
-            bool handled;
+            var handled = false;
             var queues = Queues.Read(sequenceContext);
             if (queues.Clear.Any())
             {
@@ -60,7 +58,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                 var evt = new DialogEvent() { Name = FormEvents.ClarifySlotValue, Value = queues.Clarify.Dequeue(), Bubble = false };
                 handled = await this.ProcessEventAsync(sequenceContext, dialogEvent: evt, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
             }
-            else
+
+            if (!handled)
             {
                 var evt = new DialogEvent() { Name = FormEvents.Ask, Bubble = false };
                 handled = await this.ProcessEventAsync(sequenceContext, dialogEvent: evt, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
@@ -486,67 +485,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
             CombineNewSlotMappings(queues);
         }
 
-        // Proposed mapping
-        private class SlotEntityInfo
-        {
-            public PropertySchema Slot { get; set; }
-
-            public EntityInfo Entity { get; set; }
-
-            public bool Expected { get; set; }
-
-            public override string ToString()
-            {
-                var expected = Expected ? "expected" : string.Empty;
-                return $"{expected} {Slot} = {Entity.Name}";
-            }
-        }
-
-        // Slot and operation
-        private class SlotOp
-        {
-            public string Slot { get; set; }
-
-            public string Operation { get; set; }
-
-            public override string ToString()
-                => $"{Operation}({Slot})";
-        }
-
-        // Simple mapping
-        private class SlotMapping
-        {
-            public SlotOp Change { get; set; }
-
-            public EntityInfo Entity { get; set; }
-
-            public override string ToString()
-                => $"{Change} = {Entity}";
-        }
-
-        // Select from multiple entities for singleton
-        private class SingletonChoices
-        {
-            public List<EntityInfo> Entities { get; set; } = new List<EntityInfo>();
-
-            public SlotOp Slot { get; set; }
-
-            public override string ToString()
-                => $"Singleton {Slot} = [{Entities}]";
-        }
-
-        // Select which slot entity belongs to
-        private class SlotChoices
-        {
-            public List<SlotOp> Slots { get; set; } = new List<SlotOp>();
-
-            public EntityInfo Entity { get; set; }
-
-            public override string ToString()
-                => $"Slot {Entity} = [{Slots}]";
-        }
-
-        private class Queues
+        public class Queues
         {
             public List<EntityInfo> Unknown { get; } = new List<EntityInfo>();
 
@@ -583,37 +522,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                 SlotChoices.AddRange(queues.SlotChoices);
                 Clear.AddRange(queues.Clear);
             }
-        }
-
-        private class EntityInfo
-        {
-            public string Name { get; set; }
-
-            public object Entity { get; set; }
-
-            public int Start { get; set; }
-
-            public int End { get; set; }
-
-            public double Score { get; set; }
-
-            public string Text { get; set; }
-
-            public string Role { get; set; }
-
-            public string Type { get; set; }
-
-            public int Priority { get; set; }
-
-            public double Coverage { get; set; }
-
-            public int Turn { get; set; }
-
-            public bool Overlaps(EntityInfo entity)
-                => Start <= entity.End && End >= entity.Start;
-
-            public override string ToString()
-                => $"{Name}:{Entity} P{Priority} {Score} {Coverage}";
         }
 
         // For simple singleton slot:

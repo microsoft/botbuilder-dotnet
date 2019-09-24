@@ -32,7 +32,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form.Tests
         [Fact]
         public async Task TestAsk()
         {
-            await BuildTestFlow("TestAsk", @"sandwich.dialog")
+            await BuildTestFlow("TestAsk", @"sandwich.main.dialog")
                 .Send("Order a ham sandwich")
             .StartTestAsync();
         }

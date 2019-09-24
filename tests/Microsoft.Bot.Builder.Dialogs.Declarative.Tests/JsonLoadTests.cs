@@ -24,8 +24,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
     {
         private static ResourceExplorer resourceExplorer;
 
-        private readonly string samplesDirectory = PathUtils.NormalizePath(@"..\..\..\..\..\tests\Microsoft.Bot.Builder.TestBot.Json\Samples\");
-
         public TestContext TestContext { get; set; }
 
         [ClassInitialize]

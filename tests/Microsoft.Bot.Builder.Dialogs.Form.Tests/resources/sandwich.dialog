@@ -1,8 +1,0 @@
-{
-    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/chrimc/map/schemas/sdk.schema",
-    "$type": "Microsoft.FormDialog",
-    "recognizer": "sandwich.lu",
-    "generator": "sandwich.lg",
-    "schema": "sandwich.form",
-    "events": [ "sandwich-BreadAsk.dialog", "sandwich-BreadClarify.dialog", "sandwich-BreadHelp.dialog", "sandwich-CheeseAsk.dialog", "sandwich-CheeseClarify.dialog", "sandwich-CheeseHelp.dialog", "sandwich-MeatAsk.dialog", "sandwich-MeatHelp.dialog", "sandwich-MeatClarify.dialog" ]
-}

@@ -5,7 +5,7 @@
     "actions": [
         {
             "$type": "Microsoft.SendActivity",
-            "activity": "[HelpCheese]"           
+            "activity": "[HelpCheese]"
         }
     ]
 }
