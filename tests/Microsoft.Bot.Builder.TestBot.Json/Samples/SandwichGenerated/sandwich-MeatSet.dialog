@@ -1,0 +1,12 @@
+{
+    "$schema": "..\\..\\..\\..\\source\\repos\\botbuilder-dotnet\\schemas\\sdk.schema",
+    "$type": "Microsoft.OnSetSlot",
+    "constraint": "turn.dialogEvent.Value.Change.Slot == 'Meat'",
+    "actions": [
+        {
+            "$type": "Microsoft.SetProperty",
+            "property": "Meat",
+            "value": "{turn.dialogEvent.Value.Entity.Entity}"
+        }
+    ]
+}

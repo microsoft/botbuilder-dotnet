@@ -31,6 +31,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                 new TypeRegistration<JavascriptAction>("Testbot.JavascriptAction")
             });
             this.UseAdaptiveDialogs();
+            this.UseFormDialogs();
             this.UseLanguageGeneration(resourceExplorer);
             this.UseDebugger(configuration.GetValue<int>("debugport", 4712), events: new Events<AdaptiveEvents>());
 

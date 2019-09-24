@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -25,10 +26,53 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
         [JsonProperty("schema")]
         public DialogSchema Schema { get; }
 
+        protected async Task<bool> ProcessFormAsync(SequenceContext sequenceContext, CancellationToken cancellationToken)
+        {
+            bool handled;
+            var queues = Queues.Read(sequenceContext);
+            if (queues.Clear.Any())
+            {
+                var evt = new DialogEvent() { Name = FormEvents.ClearSlot, Value = queues.Clear.Dequeue(), Bubble = false };
+                handled = await this.ProcessEventAsync(sequenceContext, dialogEvent: evt, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
+            }
+            else if (queues.Set.Any())
+            {
+                var evt = new DialogEvent() { Name = FormEvents.SetSlot, Value = queues.Set.Dequeue(), Bubble = false };
+                handled = await this.ProcessEventAsync(sequenceContext, dialogEvent: evt, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
+            }
+            else if (queues.Unknown.Any())
+            {
+                var evt = new DialogEvent() { Name = FormEvents.UnknownEntity, Value = queues.Unknown.Dequeue(), Bubble = false };
+                handled = await this.ProcessEventAsync(sequenceContext, dialogEvent: evt, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
+            }
+            else if (queues.SlotChoices.Any())
+            {
+                var evt = new DialogEvent() { Name = FormEvents.ChooseSlot, Value = queues.SlotChoices.Dequeue(), Bubble = false };
+                handled = await this.ProcessEventAsync(sequenceContext, dialogEvent: evt, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
+            }
+            else if (queues.SingletonChoice.Any())
+            {
+                var evt = new DialogEvent() { Name = FormEvents.ChooseSlotValue, Value = queues.SingletonChoice.Dequeue(), Bubble = false };
+                handled = await this.ProcessEventAsync(sequenceContext, dialogEvent: evt, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
+            }
+            else if (queues.Clarify.Any())
+            {
+                var evt = new DialogEvent() { Name = FormEvents.ClarifySlotValue, Value = queues.Clarify.Dequeue(), Bubble = false };
+                handled = await this.ProcessEventAsync(sequenceContext, dialogEvent: evt, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
+            }
+            else
+            {
+                var evt = new DialogEvent() { Name = FormEvents.Ask, Bubble = false };
+                handled = await this.ProcessEventAsync(sequenceContext, dialogEvent: evt, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
+            }
+
+            return handled;
+        }
+
         protected override async Task<bool> ProcessEventAsync(SequenceContext sequenceContext, DialogEvent dialogEvent, bool preBubble, CancellationToken cancellationToken = default(CancellationToken))
         {
             var handled = false;
-            // Save into turn
+            // Save schema into turn
             sequenceContext.State.SetValue(TurnPath.SCHEMA, this.Schema.Schema);
             if (preBubble)
             {
@@ -39,6 +83,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                             var queues = Queues.Read(sequenceContext);
                             var entities = NormalizeEntities(sequenceContext);
                             var utterance = sequenceContext.Context.Activity?.AsMessageActivity()?.Text;
+                            // TODO: Only add utterance if it is in expectedSlots or handle specially when mapping
                             // Build in the whole utterance as a string
                             entities["utterance"] = new List<EntityInfo> { new EntityInfo { Priority = int.MaxValue, Coverage = 1.0, Start = 0, End = utterance.Length, Name = "utterance", Score = 0.0, Type = "string", Entity = utterance, Text = utterance } };
                             var newQueues = new Queues();
@@ -47,50 +92,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                             var turn = sequenceContext.State.GetValue<int>("this.turn");
                             CombineOldSlotMappings(queues, turn);
                             queues.Write(sequenceContext);
-
-                            handled = await base.ProcessEventAsync(sequenceContext, dialogEvent, preBubble, cancellationToken);
+                            handled = await ProcessFormAsync(sequenceContext, cancellationToken).ConfigureAwait(false);
                         }
 
                         break;
                     case FormEvents.FillForm:
                         {
-                            var queues = Queues.Read(sequenceContext);
-                            if (queues.Clear.Any())
-                            {
-                                var evt = new DialogEvent() { Name = FormEvents.ClearSlot, Value = queues.Clear.Dequeue(), Bubble = false };
-                                handled = await this.ProcessEventAsync(sequenceContext, dialogEvent: evt, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
-                            }
-                            else if (queues.Set.Any())
-                            {
-                                var evt = new DialogEvent() { Name = FormEvents.SetSlot, Value = queues.Set.Dequeue(), Bubble = false };
-                                handled = await this.ProcessEventAsync(sequenceContext, dialogEvent: evt, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
-                            }
-                            else if (queues.Unknown.Any())
-                            {
-                                var evt = new DialogEvent() { Name = FormEvents.UnknownEntity, Value = queues.Unknown.Dequeue(), Bubble = false };
-                                handled = await this.ProcessEventAsync(sequenceContext, dialogEvent: evt, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
-                            }
-                            else if (queues.SlotChoices.Any())
-                            {
-                                var evt = new DialogEvent() { Name = FormEvents.ChooseSlot, Value = queues.SlotChoices.Dequeue(), Bubble = false };
-                                handled = await this.ProcessEventAsync(sequenceContext, dialogEvent: evt, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
-                            }
-                            else if (queues.SingletonChoice.Any())
-                            {
-                                var evt = new DialogEvent() { Name = FormEvents.ChooseSlotValue, Value = queues.SingletonChoice.Dequeue(), Bubble = false };
-                                handled = await this.ProcessEventAsync(sequenceContext, dialogEvent: evt, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
-                            }
-                            else if (queues.Clarify.Any())
-                            {
-                                var evt = new DialogEvent() { Name = FormEvents.ClarifySlotValue, Value = queues.Clarify.Dequeue(), Bubble = false };
-                                handled = await this.ProcessEventAsync(sequenceContext, dialogEvent: evt, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
-                            }
-                            else
-                            {
-                                var evt = new DialogEvent() { Name = FormEvents.Ask, Bubble = false };
-                                handled = await this.ProcessEventAsync(sequenceContext, dialogEvent: evt, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
-                            }
-
+                            handled = await ProcessFormAsync(sequenceContext, cancellationToken).ConfigureAwait(false);
                             break;
                         }
 
@@ -98,6 +106,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                         handled = await base.ProcessEventAsync(sequenceContext, dialogEvent, preBubble, cancellationToken).ConfigureAwait(false);
                         break;
                 }
+            }
+            else
+            {
+                handled = await base.ProcessEventAsync(sequenceContext, dialogEvent, preBubble, cancellationToken).ConfigureAwait(false);
             }
 
             return handled;
@@ -551,12 +563,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
 
             public static Queues Read(SequenceContext context)
             {
-                Queues queues;
-                if (context.State.TryGetValue("this.mappings", out var obj))
-                {
-                    queues = (Queues)obj;
-                }
-                else
+                if (!context.State.TryGetValue<Queues>("this.mappings", out var queues))
                 {
                     queues = new Queues();
                 }

@@ -1,0 +1,14 @@
+{
+    "$schema": "..\\..\\..\\..\\source\\repos\\botbuilder-dotnet\\schemas\\sdk.schema",
+    "$type": "Microsoft.OnAsk",
+    "constraint": "!this.Meat",
+    "actions": [
+        {
+            "$type": "Microsoft.Ask",
+            "activity": "[askMeat]",
+            "expectedSlots": [
+                "Meat"
+            ]
+        }
+    ]
+}

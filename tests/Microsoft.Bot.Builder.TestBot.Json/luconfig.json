@@ -3,6 +3,7 @@
   "defaultLanguage": "en-us",
   "models": [
     "samples/ToDoLuisBot/ToDoLuis.lu",
-    "samples/Sandwich/OrderSandwichApp.lu"
+    "samples/Sandwich/OrderSandwichApp.lu",
+    "samples/SandwichGenerated/en-us/sandwich.en-us.lu"
   ]
 }

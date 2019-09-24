@@ -13,7 +13,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form.Actions
         [JsonConstructor]
         public Ask(
             string text = null, 
-            IList<string> expectedSlots = null, 
+            List<string> expectedSlots = null, 
             [CallerFilePath] string callerPath = "", 
             [CallerLineNumber] int callerLine = 0)
         : base(text, callerPath, callerLine)
@@ -29,13 +29,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Form.Actions
         /// <value>
         /// Slots expected to be filled by response.
         /// </value>
-        public IList<string> ExpectedSlots { get; set; }
+        public List<string> ExpectedSlots { get; set; } = new List<string>();
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (ExpectedSlots != null)
             {
-                dc.Context.TurnState.Add("expectedSlots", ExpectedSlots);
+                dc.State.SetValue("this.expectedSlots", ExpectedSlots);
             }
 
             return await base.BeginDialogAsync(dc, options, cancellationToken);

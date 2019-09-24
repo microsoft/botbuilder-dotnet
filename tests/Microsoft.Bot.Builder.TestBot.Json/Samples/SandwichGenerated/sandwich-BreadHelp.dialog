@@ -1,0 +1,11 @@
+{
+    "$schema": "..\\..\\..\\..\\source\\repos\\botbuilder-dotnet\\schemas\\sdk.schema",
+    "$type": "Microsoft.OnIntent",
+    "intent": "HelpBread",
+    "actions": [
+        {
+            "$type": "Microsoft.SendActivity",
+            "activity": "[HelpBread]"
+        }
+    ]
+}

@@ -1,0 +1,14 @@
+{
+    "$schema": "..\\..\\..\\..\\source\\repos\\botbuilder-dotnet\\schemas\\sdk.schema",
+    "$type": "Microsoft.OnClarifySlotValue",
+    "constraint": "turn.dialogEvent.Value.Change.Slot == 'Cheese'",
+    "actions": [
+        {
+            "$type": "Microsoft.Ask",
+            "activity": "[clarifyCheese]",
+            "expectedSlots": [
+                "Cheese"
+            ]
+        }
+    ]
+}

@@ -1,0 +1,11 @@
+{
+    "$schema": "..\\..\\..\\..\\source\\repos\\botbuilder-dotnet\\schemas\\sdk.schema",
+    "$type": "Microsoft.OnIntent",
+    "intent": "HelpMeat",
+    "actions": [
+        {
+            "$type": "Microsoft.SendActivity",
+            "activity": "[HelpMeat]"
+        }
+    ]
+}
