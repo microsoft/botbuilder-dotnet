@@ -108,9 +108,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             yield return new TypeRegistration<AdaptiveDialog>("Microsoft.AdaptiveDialog");
         }
 
-        public override IEnumerable<JsonConverter> GetConverters(Source.IRegistry registry, IRefResolver refResolver, Stack<string> paths)
+        public override IEnumerable<JsonConverter> GetConverters(ISourceMap sourceMap, IRefResolver refResolver, Stack<string> paths)
         {
-            yield return new InterfaceConverter<OnCondition>(refResolver, registry, paths);
+            yield return new InterfaceConverter<OnCondition>(refResolver, sourceMap, paths);
             yield return new ExpressionPropertyConverter<ChoiceSet>();
         }
     }

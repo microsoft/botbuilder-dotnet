@@ -19,7 +19,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
             yield break;
         }
 
-        public virtual IEnumerable<JsonConverter> GetConverters(Source.IRegistry registry, IRefResolver refResolver, Stack<string> paths)
+        public virtual IEnumerable<JsonConverter> GetConverters(ISourceMap sourceMap, IRefResolver refResolver, Stack<string> paths)
         {
             yield break;
         }
