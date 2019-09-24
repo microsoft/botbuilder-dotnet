@@ -1,55 +1,48 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
-    "$role": "unionType(Microsoft.Dialog)",
+    "$role": "unionType(Microsoft.IDialog)",
     "title": "Emit Event Action",
     "description": "This is a action which allows you to emit an event",
     "type": "object",
     "required": [
         "eventName"
     ],
-    "allOf": [
-        {
-            "$ref": "./baseActionSchema.json"
-        },
-        {
-            "properties": {
-                "eventName": {
-                    "title": "Event Name",
-                    "description": "The name of event to emit",
-                    "anyOf": [
-                        {
-                            "enum": [
-                                "beginDialog",
-                                "resumeDialog",
-                                "repromptDialog",
-                                "cancelDialog",
-                                "endDialog",
-                                "activityReceived",
-                                "recognizedIntent",
-                                "unknownIntent",
-                                "actionsStarted",
-                                "actionsSaved",
-                                "actionsEnded",
-                                "actionsResumed"
-                            ]
-                        },
-                        {
-                            "type": "string"
-                        }
+    "properties": {
+        "eventName": {
+            "title": "Event Name",
+            "description": "The name of event to emit",
+            "anyOf": [
+                {
+                    "enum": [
+                        "beginDialog",
+                        "resumeDialog",
+                        "repromptDialog",
+                        "cancelDialog",
+                        "endDialog",
+                        "activityReceived",
+                        "recognizedIntent",
+                        "unknownIntent",
+                        "actionsStarted",
+                        "actionsSaved",
+                        "actionsEnded",
+                        "actionsResumed"
                     ]
                 },
-                "eventValue": {
-                    "type": "object",
-                    "title": "Event Value",
-                    "description": "Optional value to emit along with the event",
-                    "additionalProperties": true
-                },
-                "bubbleEvent": {
-                    "type": "boolean",
-                    "title": "Bubble Event",
-                    "description": "If true this event should propagate to parent dialogs"
+                {
+                    "type": "string"
                 }
-            }
+            ]
+        },
+        "eventValue": {
+            "type": "object",
+            "title": "Event Value",
+            "description": "Optional value to emit along with the event",
+            "additionalProperties": true
+        },
+        "bubbleEvent": {
+            "type": "boolean",
+            "title": "Bubble Event",
+            "description": "If true this event should propagate to parent dialogs"
         }
-    ]
+    }
 }

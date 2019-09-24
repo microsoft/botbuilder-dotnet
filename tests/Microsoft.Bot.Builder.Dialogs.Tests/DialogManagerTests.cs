@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.TriggerHandlers;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
@@ -119,7 +119,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         {
             var adaptiveDialog = new AdaptiveDialog("planningTest");
 
-            adaptiveDialog.AddTriggerHandler(
+            adaptiveDialog.Triggers.Add(
                 new OnUnknownIntent(
                     new List<Dialog>()
                     {

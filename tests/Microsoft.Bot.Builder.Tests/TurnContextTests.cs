@@ -6,6 +6,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Connector;
+using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -31,7 +33,7 @@ namespace Microsoft.Bot.Builder.Tests
         {
             var a = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
             var c = new TurnContext(a, null);
-            Assert.Fail("Should Fail due to null Activty");
+            Assert.Fail("Should Fail due to null Activity");
         }
 
         [TestMethod]
@@ -287,6 +289,37 @@ namespace Microsoft.Bot.Builder.Tests
 
             Assert.IsTrue(foundActivity);
             Assert.IsTrue(updateResult.Id == "test");
+        }
+
+        [TestMethod]
+        public async Task UpdateActivityWithMessageFactory()
+        {
+            const string ACTIVITY_ID = "activity ID";
+            const string CONVERSATION_ID = "conversation ID";
+
+            var foundActivity = false;
+
+            void ValidateUpdate(Activity activity)
+            {
+                Assert.IsNotNull(activity);
+                Assert.IsTrue(activity.Id == ACTIVITY_ID);
+                Assert.IsTrue(activity.Conversation.Id == CONVERSATION_ID);
+                foundActivity = true;
+            }
+
+            var a = new SimpleAdapter(ValidateUpdate);
+            var c = new TurnContext(a, new Activity(conversation: new ConversationAccount(id: CONVERSATION_ID)));
+
+            var message = MessageFactory.Text("test text");
+
+            message.Id = ACTIVITY_ID;
+
+            var updateResult = await c.UpdateActivityAsync(message);
+
+            Assert.IsTrue(foundActivity);
+            Assert.IsTrue(updateResult.Id == ACTIVITY_ID);
+
+            c.Dispose();
         }
 
         [TestMethod]

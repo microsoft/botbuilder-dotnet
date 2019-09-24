@@ -1,0 +1,25 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
+    "$role": "unionType(Microsoft.ITriggerCondition)",
+    "title": "OnDialogEvent",
+    "description": "Defines a actions which are executed when a dialog event matching event is is true",
+    "type": "object",
+    "allOf": [
+        {
+            "$ref": "./Microsoft.OnCondition.schema#"
+        },
+        {
+            "properties": {
+                "event": {
+                    "type": "string",
+                    "title": "Dialog Event Name",
+                    "description": "Dialog event name to match to trigger these actions"
+                }
+            }
+        }
+    ],
+    "required": [
+        "actions",
+        "event"
+    ]
+}

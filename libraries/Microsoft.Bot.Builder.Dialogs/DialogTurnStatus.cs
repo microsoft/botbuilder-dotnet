@@ -16,12 +16,14 @@ namespace Microsoft.Bot.Builder.Dialogs
         Waiting,
 
         /// <summary>
-        /// Indicates that the dialog completed successfully, the result is available, and the stack is empty.
+        /// Indicates that a dialog completed successfully, the result is available, and no child
+        /// dialogs to the current context are on the dialog stack.
         /// </summary>
         Complete,
 
         /// <summary>
-        /// Indicates that the dialog was cancelled and the stack is empty.
+        /// Indicates that the dialog was canceled, and no child
+        /// dialogs to the current context are on the dialog stack.
         /// </summary>
         Cancelled,
     }

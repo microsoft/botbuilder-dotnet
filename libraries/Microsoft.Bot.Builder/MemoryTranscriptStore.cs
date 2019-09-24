@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder
     /// The memory transcript store stores transcripts in volatile memory in a Dictionary.
     /// </summary>
     /// <remarks>
-    /// Because this uses an unbounded volitile dictionary this should only be used for unit tests or non-production environments.
+    /// Because this uses an unbounded volatile dictionary this should only be used for unit tests or non-production environments.
     /// </remarks>
     public class MemoryTranscriptStore : ITranscriptStore
     {

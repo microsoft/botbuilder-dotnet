@@ -269,13 +269,13 @@ namespace Microsoft.Bot.Builder.Tests.Adapters
             var tokenResponse = await adapter.GetUserTokenAsync(turnContext, connectionName, null, CancellationToken.None);
             Assert.IsNull(tokenResponse);
 
-            // Can be retreived with magic code
+            // Can be retrieved with magic code
             tokenResponse = await adapter.GetUserTokenAsync(turnContext, connectionName, magicCode, CancellationToken.None);
             Assert.IsNotNull(tokenResponse);
             Assert.AreEqual(token, tokenResponse.Token);
             Assert.AreEqual(connectionName, tokenResponse.ConnectionName);
 
-            // Then can be retreived without magic code
+            // Then can be retrieved without magic code
             tokenResponse = await adapter.GetUserTokenAsync(turnContext, connectionName, null, CancellationToken.None);
             Assert.IsNotNull(tokenResponse);
             Assert.AreEqual(token, tokenResponse.Token);

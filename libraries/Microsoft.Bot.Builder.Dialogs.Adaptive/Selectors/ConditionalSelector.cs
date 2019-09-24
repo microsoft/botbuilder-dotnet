@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.TriggerHandlers;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Expressions;
 using Microsoft.Bot.Builder.Expressions.Parser;
 
@@ -13,7 +13,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
     /// </summary>
     public class ConditionalSelector : ITriggerSelector
     {
-        private IReadOnlyList<TriggerHandler> _triggerHandlers;
+        private IReadOnlyList<OnCondition> _conditionals;
         private bool _evaluate;
         private Expression condition;
 
@@ -45,9 +45,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
         /// </value>
         public ITriggerSelector IfFalse { get; set; }
 
-        public void Initialize(IEnumerable<TriggerHandler> triggerHandlers, bool evaluate = true)
+        public void Initialize(IEnumerable<OnCondition> conditionals, bool evaluate = true)
         {
-            _triggerHandlers = triggerHandlers.ToList();
+            _conditionals = conditionals.ToList();
             _evaluate = evaluate;
         }
 
@@ -59,12 +59,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
             if (eval)
             {
                 selector = IfTrue;
-                IfTrue.Initialize(_triggerHandlers, _evaluate);
+                IfTrue.Initialize(_conditionals, _evaluate);
             }
             else
             {
                 selector = IfFalse;
-                IfFalse.Initialize(_triggerHandlers, _evaluate);
+                IfFalse.Initialize(_conditionals, _evaluate);
             }
 
             return await selector.Select(context, cancel).ConfigureAwait(false);

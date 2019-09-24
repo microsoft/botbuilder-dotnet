@@ -34,7 +34,7 @@ namespace Microsoft.Bot.Builder
     public interface IMiddleware
     {
         /// <summary>
-        /// When implemented in middleware, processess an incoming activity.
+        /// When implemented in middleware, processes an incoming activity.
         /// </summary>
         /// <param name="turnContext">The context object for this turn.</param>
         /// <param name="next">The delegate to call to continue the bot middleware pipeline.</param>

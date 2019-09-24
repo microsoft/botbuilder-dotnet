@@ -1,0 +1,140 @@
+{
+  "entities": {
+    "Airline": [
+      [
+        "Delta"
+      ]
+    ],
+    "datetime": [
+      {
+        "timex": [
+          "T15"
+        ],
+        "type": "time"
+      }
+    ],
+    "dimension": [
+      {
+        "number": 3,
+        "units": "Picometer"
+      }
+    ]
+  },
+  "intents": {
+    "Roles": {
+      "score": 0.446264923
+    }
+  },
+  "sentiment": {
+    "label": "neutral",
+    "score": 0.5
+  },
+  "text": "fly on delta at 3pm",
+  "v2": {
+    "options": {
+      "IncludeAllIntents": false,
+      "IncludeInstanceData": false,
+      "LogPersonalInformation": false,
+      "Timeout": 100000.0
+    },
+    "response": {
+      "entities": [
+        {
+          "endIndex": 18,
+          "entity": "3pm",
+          "resolution": {
+            "values": [
+              {
+                "timex": "T15",
+                "type": "time",
+                "value": "15:00:00"
+              }
+            ]
+          },
+          "startIndex": 16,
+          "type": "builtin.datetimeV2.time"
+        },
+        {
+          "endIndex": 18,
+          "entity": "3pm",
+          "resolution": {
+            "unit": "Picometer",
+            "value": "3"
+          },
+          "startIndex": 16,
+          "type": "builtin.dimension"
+        },
+        {
+          "endIndex": 11,
+          "entity": "delta",
+          "resolution": {
+            "values": [
+              "Delta"
+            ]
+          },
+          "startIndex": 7,
+          "type": "Airline"
+        }
+      ],
+      "query": "fly on delta at 3pm",
+      "sentimentAnalysis": {
+        "label": "neutral",
+        "score": 0.5
+      },
+      "topScoringIntent": {
+        "intent": "Roles",
+        "score": 0.446264923
+      }
+    }
+  },
+  "v3": {
+    "options": {
+      "IncludeAllIntents": false,
+      "IncludeAPIResults": true,
+      "IncludeInstanceData": false,
+      "Log": true,
+      "PreferExternalEntities": true,
+      "Slot": "production"
+    },
+    "response": {
+      "prediction": {
+        "entities": {
+          "Airline": [
+            [
+              "Delta"
+            ]
+          ],
+          "datetimeV2": [
+            {
+              "type": "time",
+              "values": [
+                {
+                  "timex": "T15",
+                  "value": "15:00:00"
+                }
+              ]
+            }
+          ],
+          "dimension": [
+            {
+              "number": 3,
+              "unit": "Picometer"
+            }
+          ]
+        },
+        "intents": {
+          "Roles": {
+            "score": 0.446264923
+          }
+        },
+        "normalizedQuery": "fly on delta at 3pm",
+        "sentiment": {
+          "label": "neutral",
+          "score": 0.5
+        },
+        "topIntent": "Roles"
+      },
+      "query": "fly on delta at 3pm"
+    }
+  }
+}

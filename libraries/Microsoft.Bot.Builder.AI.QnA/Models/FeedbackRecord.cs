@@ -11,29 +11,23 @@ namespace Microsoft.Bot.Builder.AI.QnA
     public class FeedbackRecord
     {
         /// <summary>
-        /// Gets or sets user id.
+        /// Gets or sets the user id.
         /// </summary>
-        /// <value>
-        /// User id.
-        /// </value>
+        /// <value>the user id.</value>
         [JsonProperty("userId")]
         public string UserId { get; set; }
 
         /// <summary>
-        /// Gets or sets user question.
+        /// Gets or sets the user question.
         /// </summary>
-        /// <value>
-        /// User question.
-        /// </value>
+        /// <value>the user question.</value>
         [JsonProperty("userQuestion")]
         public string UserQuestion { get; set; }
 
         /// <summary>
-        /// Gets or sets qnA Id.
+        /// Gets or sets the QnA Id.
         /// </summary>
-        /// <value>
-        /// QnA Id.
-        /// </value>
+        /// <value>the qnaMaker id.</value>
         [JsonProperty("qnaId")]
         public int QnaId { get; set; }
     }

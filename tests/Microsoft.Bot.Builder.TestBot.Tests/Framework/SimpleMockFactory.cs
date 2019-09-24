@@ -42,7 +42,7 @@ namespace Microsoft.BotBuilderSamples.Tests.Framework
         /// Creates a simple <see cref="IRecognizer"/> mock object that returns the desired <see cref="IRecognizerConvert"/> result.
         /// </summary>
         /// <typeparam name="TRecognizer">The type of <see cref="IRecognizer"/>to create.</typeparam>
-        /// <typeparam name="TReturns">Type type of <see cref="IRecognizerConvert"/> to return.</typeparam>
+        /// <typeparam name="TReturns">The type of <see cref="IRecognizerConvert"/> to return.</typeparam>
         /// <param name="returns">The value to return when <see cref="IRecognizer.RecognizeAsync{T}"/> gets called.</param>
         /// <returns>A <see cref="Mock{TRecognizer}"/> instance.</returns>
         public static Mock<TRecognizer> CreateMockLuisRecognizer<TRecognizer, TReturns>(TReturns returns)

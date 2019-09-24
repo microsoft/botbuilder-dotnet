@@ -43,7 +43,7 @@ namespace Microsoft.Bot.Builder
     /// activity.
     /// <para>The activity's <see cref="IActivity.Id"/> indicates the activity in the
     /// conversation to replace.</para>
-    /// <para>If the activity is successfully sent, the <paramref name="next"/> delegater returns
+    /// <para>If the activity is successfully sent, the <paramref name="next"/> delegate returns
     /// a <see cref="ResourceResponse"/> object containing the ID that the receiving
     /// channel assigned to the activity. Use this response object as the return value of this handler.</para>
     /// </remarks>
@@ -74,12 +74,23 @@ namespace Microsoft.Bot.Builder
     public delegate Task DeleteActivityHandler(ITurnContext turnContext, ConversationReference reference, Func<Task> next);
 
     /// <summary>
-    /// A ITurnContext where the inbound Activity property is strongly typed.
+    /// Provides context for a turn of a bot, where the context's <see cref="Activity"/> property is strongly typed.
     /// </summary>
-    /// <typeparam name="T">An IActivity derived type, that is one of IMessageActivity, IConversationUpdateActivity etc.</typeparam>
+    /// <typeparam name="T">The activity type for this turn of the bot.</typeparam>
+    /// <remarks>The <see cref="IActivity"/> interface defines properties shared by every type of activity.
+    /// The interfaces that derive from <see cref="IActivity"/> include properties specific to a specific
+    /// type of activity. For example, <see cref="IMessageActivity"/> includes properties associated with
+    /// message activities, and <see cref="IEventActivity"/> includes properties associated with event activities.</remarks>
+    /// <seealso cref="IActivity"/>
+    /// <seealso cref="ActivityHandler"/>
+    /// <seealso cref="ITurnContext"/>
     public interface ITurnContext<T> : ITurnContext
         where T : IActivity
     {
+        /// <summary>
+        /// Gets the activity for this turn of the bot.
+        /// </summary>
+        /// <value>The activity for this turn of the bot.</value>
         new T Activity { get; }
     }
 
@@ -91,6 +102,7 @@ namespace Microsoft.Bot.Builder
     /// length of the turn.</remarks>
     /// <seealso cref="IBot"/>
     /// <seealso cref="IMiddleware"/>
+    /// <seealso cref="ITurnContext{T}"/>
     public interface ITurnContext
     {
         /// <summary>
@@ -106,15 +118,16 @@ namespace Microsoft.Bot.Builder
         TurnContextStateCollection TurnState { get; }
 
         /// <summary>
-        /// Gets the incoming request.
+        /// Gets the activity for this turn of the bot.
         /// </summary>
-        /// <value>The incoming request.</value>
+        /// <value>The activity for this turn of the bot.</value>
         Activity Activity { get; }
 
         /// <summary>
         /// Gets a value indicating whether at least one response was sent for the current turn.
         /// </summary>
         /// <value><c>true</c> if at least one response was sent for the current turn; otherwise, <c>false</c>.</value>
+        /// <seealso cref="SendActivityAsync(IActivity, CancellationToken)"/>
         bool Responded { get; }
 
         /// <summary>
@@ -125,12 +138,13 @@ namespace Microsoft.Bot.Builder
         /// channel.</param>
         /// <param name="inputHint">Optional, indicates whether your bot is accepting,
         /// expecting, or ignoring user input after the message is delivered to the client.
-        /// One of: "acceptingInput", "ignoringInput", or "expectingInput".
-        /// Default is "acceptingInput".</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <see cref="InputHints"/> defines the possible values.
+        /// Default is <see cref="InputHints.AcceptingInput"/>.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>If the activity is successfully sent, the task result contains
-        /// a <see cref="ResourceResponse"/> object containing the ID that the receiving
+        /// a <see cref="ResourceResponse"/> object that contains the ID that the receiving
         /// channel assigned to the activity.
         /// <para>See the channel's documentation for limits imposed upon the contents of
         /// <paramref name="textReplyToSend"/>.</para>
@@ -149,7 +163,8 @@ namespace Microsoft.Bot.Builder
         /// Sends an activity to the sender of the incoming activity.
         /// </summary>
         /// <param name="activity">The activity to send.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>If the activity is successfully sent, the task result contains
         /// a <see cref="ResourceResponse"/> object containing the ID that the receiving
@@ -165,7 +180,8 @@ namespace Microsoft.Bot.Builder
         /// Sends a set of activities to the sender of the incoming activity.
         /// </summary>
         /// <param name="activities">The activities to send.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>If the activities are successfully sent, the task result contains
         /// an array of <see cref="ResourceResponse"/> objects containing the IDs that
@@ -181,14 +197,15 @@ namespace Microsoft.Bot.Builder
         /// Replaces an existing activity.
         /// </summary>
         /// <param name="activity">New replacement activity.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>If the activity is successfully sent, the task result contains
         /// a <see cref="ResourceResponse"/> object containing the ID that the receiving
         /// channel assigned to the activity.
         /// <para>Before calling this, set the ID of the replacement activity to the ID
         /// of the activity to replace.</para>
-        /// <para>Not all channels support this operation. Channels that don't, may throw an exception.</para></remarks>
+        /// <para>Not all channels support this operation. For channels that don't, this call may throw an exception.</para></remarks>
         /// <seealso cref="OnUpdateActivity(UpdateActivityHandler)"/>
         /// <seealso cref="SendActivitiesAsync(IActivity[], CancellationToken)"/>
         /// <seealso cref="DeleteActivityAsync(ConversationReference, CancellationToken)"/>
@@ -198,9 +215,10 @@ namespace Microsoft.Bot.Builder
         /// Deletes an existing activity.
         /// </summary>
         /// <param name="activityId">The ID of the activity to delete.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
-        /// <remarks>Not all channels support this operation. Channels that don't, may throw an exception.</remarks>
+        /// <para>Not all channels support this operation. For channels that don\'t, this call may throw an exception.</para>
         /// <seealso cref="OnDeleteActivity(DeleteActivityHandler)"/>
         /// <seealso cref="DeleteActivityAsync(ConversationReference, CancellationToken)"/>
         /// <seealso cref="SendActivitiesAsync(IActivity[], CancellationToken)"/>
@@ -211,11 +229,12 @@ namespace Microsoft.Bot.Builder
         /// Deletes an existing activity.
         /// </summary>
         /// <param name="conversationReference">The conversation containing the activity to delete.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects
+        /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
         /// <remarks>The conversation reference's <see cref="ConversationReference.ActivityId"/>
         /// indicates the activity in the conversation to delete.
-        /// <para>Not all channels support this operation. Channels that don't, may throw an exception.</para></remarks>
+        /// <para>Not all channels support this operation. For channels that don't, this call may throw an exception.</para></remarks>
         /// <seealso cref="OnDeleteActivity(DeleteActivityHandler)"/>
         /// <seealso cref="DeleteActivityAsync(string, CancellationToken)"/>
         /// <seealso cref="SendActivitiesAsync(IActivity[], CancellationToken)"/>
@@ -228,7 +247,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="handler">The handler to add to the context object.</param>
         /// <returns>The updated context object.</returns>
         /// <remarks>When the context's <see cref="SendActivityAsync(IActivity, CancellationToken)"/>
-        /// or <see cref="SendActivitiesAsync(IActivity[], CancellationToken)"/> methods are called,
+        /// or <see cref="SendActivitiesAsync(IActivity[], CancellationToken)"/> method is called,
         /// the adapter calls the registered handlers in the order in which they were
         /// added to the context object.
         /// </remarks>

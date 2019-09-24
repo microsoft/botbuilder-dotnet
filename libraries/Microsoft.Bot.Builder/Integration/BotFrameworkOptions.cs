@@ -39,7 +39,7 @@ namespace Microsoft.Bot.Builder.Integration
         public IChannelProvider ChannelProvider { get; set; }
 
         /// <summary>
-        /// Gets or sets an error handler to use to catche exceptions in the middleware or application.
+        /// Gets or sets an error handler to use to catch exceptions in the middleware or application.
         /// </summary>
         /// <value>The error handler.</value>
         public Func<ITurnContext, Exception, Task> OnTurnError { get; set; }

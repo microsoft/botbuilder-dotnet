@@ -1,0 +1,15 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
+    "$role": "unionType(Microsoft.ITriggerCondition)",
+    "title": "OnInvokeActivity",
+    "description": "This defines the actions to take when an Invoke activity is received",
+    "type": "object",
+    "allOf": [
+        {
+            "$ref": "./Microsoft.OnCondition.schema#"
+        }
+    ],
+    "required": [
+        "actions"
+    ]
+}

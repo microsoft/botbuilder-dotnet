@@ -71,6 +71,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         private string ExtractBody(LGFileParser.TemplateDefinitionContext parseTree, string lgfileContent)
         {
             var templateBody = parseTree.templateBody();
+            if (templateBody == null)
+            {
+                return string.Empty;
+            }
+
             var startLine = templateBody.Start.Line - 1;
             var stopLine = templateBody.Stop.Line - 1;
 
