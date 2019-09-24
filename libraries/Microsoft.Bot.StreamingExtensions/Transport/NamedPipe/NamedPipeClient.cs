@@ -15,7 +15,7 @@ namespace Microsoft.Bot.StreamingExtensions.Transport.NamedPipes
     public class NamedPipeClient : IStreamingTransportClient
     {
         private readonly string _baseName;
-        private readonly IRequestHandler _requestHandler;
+        private readonly RequestHandler _requestHandler;
         private readonly IPayloadSender _sender;
         private readonly IPayloadReceiver _receiver;
         private readonly RequestManager _requestManager;
@@ -29,11 +29,11 @@ namespace Microsoft.Bot.StreamingExtensions.Transport.NamedPipes
         /// Throws <see cref="ArgumentNullException"/> if baseName is null, empty, or whitespace.
         /// </summary>
         /// <param name="baseName">The named pipe to connect to.</param>
-        /// <param name="requestHandler">Optional <see cref="IRequestHandler"/> to process incoming messages received by this client.</param>
+        /// <param name="requestHandler">Optional <see cref="RequestHandler"/> to process incoming messages received by this client.</param>
         /// <param name="autoReconnect">Optional setting to determine if the client sould attempt to reconnect
         /// automatically on disconnection events. Defaults to true.
         /// </param>
-        public NamedPipeClient(string baseName, IRequestHandler requestHandler = null, bool autoReconnect = true)
+        public NamedPipeClient(string baseName, RequestHandler requestHandler = null, bool autoReconnect = true)
         {
             if (string.IsNullOrWhiteSpace(baseName))
             {

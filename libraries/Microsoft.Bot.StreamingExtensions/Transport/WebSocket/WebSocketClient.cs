@@ -17,7 +17,7 @@ namespace Microsoft.Bot.StreamingExtensions.Transport.WebSockets
     public class WebSocketClient : IStreamingTransportClient
     {
         private readonly string _url;
-        private readonly IRequestHandler _requestHandler;
+        private readonly RequestHandler _requestHandler;
         private readonly RequestManager _requestManager;
         private readonly ProtocolAdapter _protocolAdapter;
         private readonly IPayloadSender _sender;
@@ -29,9 +29,9 @@ namespace Microsoft.Bot.StreamingExtensions.Transport.WebSockets
         /// Throws <see cref="ArgumentNullException"/> if URL is null, empty, or whitespace.
         /// </summary>
         /// <param name="url">The URL of the remote server to connect to.</param>
-        /// <param name="requestHandler">Optional <see cref="IRequestHandler"/> to process incoming messages received by this server.</param>
-        /// <param name="handlerContext">Optional context for the <see cref="IRequestHandler"/> to operate within.</param>
-        public WebSocketClient(string url, IRequestHandler requestHandler = null, object handlerContext = null)
+        /// <param name="requestHandler">Optional <see cref="RequestHandler"/> to process incoming messages received by this server.</param>
+        /// <param name="handlerContext">Optional context for the <see cref="RequestHandler"/> to operate within.</param>
+        public WebSocketClient(string url, RequestHandler requestHandler = null, object handlerContext = null)
         {
             if (string.IsNullOrWhiteSpace(url))
             {

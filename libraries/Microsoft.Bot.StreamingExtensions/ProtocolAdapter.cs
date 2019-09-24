@@ -12,7 +12,7 @@ namespace Microsoft.Bot.StreamingExtensions
 {
     internal class ProtocolAdapter
     {
-        private readonly IRequestHandler _requestHandler;
+        private readonly RequestHandler _requestHandler;
         private readonly object _handlerContext;
         private readonly IPayloadSender _payloadSender;
         private readonly IPayloadReceiver _payloadReceiver;
@@ -21,7 +21,7 @@ namespace Microsoft.Bot.StreamingExtensions
         private readonly IStreamManager _streamManager;
         private readonly PayloadAssemblerManager _assemblerManager;
 
-        public ProtocolAdapter(IRequestHandler requestHandler, IRequestManager requestManager, IPayloadSender payloadSender, IPayloadReceiver payloadReceiver, object handlerContext = null)
+        public ProtocolAdapter(RequestHandler requestHandler, IRequestManager requestManager, IPayloadSender payloadSender, IPayloadReceiver payloadReceiver, object handlerContext = null)
         {
             _requestHandler = requestHandler;
             _handlerContext = handlerContext;

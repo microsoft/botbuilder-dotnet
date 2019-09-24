@@ -15,7 +15,7 @@ namespace Microsoft.Bot.StreamingExtensions.Transport.WebSockets
     /// </summary>
     public class WebSocketServer : IStreamingTransportServer
     {
-        private readonly IRequestHandler _requestHandler;
+        private readonly RequestHandler _requestHandler;
         private readonly RequestManager _requestManager;
         private readonly ProtocolAdapter _protocolAdapter;
         private readonly IPayloadSender _sender;
@@ -29,8 +29,8 @@ namespace Microsoft.Bot.StreamingExtensions.Transport.WebSockets
         /// Throws <see cref="ArgumentNullException"/> on null arguments.
         /// </summary>
         /// <param name="socket">The <see cref="WebSocket"/> of the underlying connection for this server to be built on top of.</param>
-        /// <param name="requestHandler">A <see cref="IRequestHandler"/> to process incoming messages received by this server.</param>
-        public WebSocketServer(WebSocket socket, IRequestHandler requestHandler)
+        /// <param name="requestHandler">A <see cref="RequestHandler"/> to process incoming messages received by this server.</param>
+        public WebSocketServer(WebSocket socket, RequestHandler requestHandler)
         {
             if (socket == null)
             {

@@ -17,7 +17,7 @@ namespace Microsoft.Bot.StreamingExtensions.Transport.NamedPipes
     public class NamedPipeServer : IStreamingTransportServer
     {
         private readonly string _baseName;
-        private readonly IRequestHandler _requestHandler;
+        private readonly RequestHandler _requestHandler;
         private readonly RequestManager _requestManager;
         private readonly IPayloadSender _sender;
         private readonly IPayloadReceiver _receiver;
@@ -31,11 +31,11 @@ namespace Microsoft.Bot.StreamingExtensions.Transport.NamedPipes
         /// Throws <see cref="ArgumentNullException"/> on null arguments.
         /// </summary>
         /// <param name="baseName">The named pipe to connect to.</param>
-        /// <param name="requestHandler">A <see cref="IRequestHandler"/> to process incoming messages received by this server.</param>
+        /// <param name="requestHandler">A <see cref="RequestHandler"/> to process incoming messages received by this server.</param>
         /// <param name="autoReconnect">Optional setting to determine if the server sould attempt to reconnect
         /// automatically on disconnection events. Defaults to true.
         /// </param>
-        public NamedPipeServer(string baseName, IRequestHandler requestHandler, bool autoReconnect = true)
+        public NamedPipeServer(string baseName, RequestHandler requestHandler, bool autoReconnect = true)
         {
             if (string.IsNullOrWhiteSpace(baseName))
             {
