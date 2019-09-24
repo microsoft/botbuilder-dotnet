@@ -153,8 +153,14 @@ namespace Microsoft.Bot.Builder.Teams
 
                     case "task/submit":
                         var submitResponse = await OnTeamsTaskModuleSubmitAsync(turnContext, SafeCast<TaskModuleRequest>(turnContext.Activity.Value), cancellationToken).ConfigureAwait(false);
-                        return CreateInvokeResponse(new TaskModuleResponse { Task = submitResponse });
-
+                        if (submitResponse == null)
+                        {
+                            return CreateInvokeResponse();
+                        }
+                        else
+                        {
+                            return CreateInvokeResponse(new TaskModuleResponse { Task = submitResponse });
+                        }
                     default:
                         return null;
                 }
