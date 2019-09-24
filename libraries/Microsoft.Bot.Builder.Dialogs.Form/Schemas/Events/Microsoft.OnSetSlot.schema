@@ -1,7 +1,11 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
-    "$ref": "../../../Microsoft.Bot.Builder.Dialogs.Adaptive/Schemas/Events/Microsoft.OnEvent.schema#",
-    "$role": "unionType(Microsoft.IOnEvent)",
+    "$role": "unionType(Microsoft.ITriggerCondition)",
     "title": "Form SetSlot Event",
-    "description": "This defines the actions to take when a SetSlot event is raised"
+    "description": "This defines the actions to take when a SetSlot event is raised",
+    "allOf": [
+        {
+            "$ref": "../../../Microsoft.Bot.Builder.Dialogs.Adaptive/Schemas/TriggerConditions/Microsoft.OnCondition.schema#"
+        }
+    ]
 }

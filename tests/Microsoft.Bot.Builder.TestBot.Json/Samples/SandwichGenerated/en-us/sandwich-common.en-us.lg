@@ -17,6 +17,9 @@
 # askString(property)
 - Enter a value for {toLower(property)}
 
+# clarifyEnum(property)
+- TODO ask clarification
+
 >>> Help messages <<<
 # helpProperty(property)
 - Possible values for {toLower(property)} include: \[{join(turn.schema[property].enum, ',')}\]

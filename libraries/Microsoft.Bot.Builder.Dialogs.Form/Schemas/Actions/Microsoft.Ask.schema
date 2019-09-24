@@ -6,7 +6,7 @@
     "type": "object",
     "allOf": [
         {
-            "$ref": "../../../Microsoft.Bot.Builder.Dialogs.Adaptive/Schemas/Actions/Microsoft.SendActivity.schema"
+            "$ref": "../../../Microsoft.Bot.Builder.Dialogs.Adaptive/Schemas/Actions/Microsoft.SendActivity.schema#"
         },
         {
             "properties": {

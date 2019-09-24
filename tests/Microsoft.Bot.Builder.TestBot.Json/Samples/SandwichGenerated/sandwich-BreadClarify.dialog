@@ -5,7 +5,7 @@
     "actions": [
         {
             "$type": "Microsoft.Ask",
-            "activity": "[clarifyBread]",
+            "activity": "[ClarifyBread]",
             "expectedSlots": [
                 "Bread"
             ]

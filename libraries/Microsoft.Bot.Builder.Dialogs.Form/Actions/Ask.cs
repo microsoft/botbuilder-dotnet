@@ -38,7 +38,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Form.Actions
                 dc.State.SetValue("this.expectedSlots", ExpectedSlots);
             }
 
-            return await base.BeginDialogAsync(dc, options, cancellationToken);
+            await base.BeginDialogAsync(dc, options, cancellationToken);
+
+            return Dialog.EndOfTurn;
         }
     }
 }

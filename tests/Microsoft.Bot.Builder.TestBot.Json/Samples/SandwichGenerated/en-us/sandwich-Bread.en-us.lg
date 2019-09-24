@@ -1,6 +1,9 @@
 # AskBread
 - [askEnum('Bread')]
 
+# ClarifyBread
+- [clarifyEnum('Bread')]
+
 # HelpBread
 - [helpProperty('Bread')]
 

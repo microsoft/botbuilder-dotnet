@@ -19,4 +19,6 @@
     </Reference>
   </ItemGroup>
 
+  <ProjectExtensions><VisualStudio><UserProperties schemas_4events_4microsoft_1onask_1schema__JsonSchema="https://raw.githubusercontent.com/blackbaud/skyux-builder/master/skyuxconfig-schema.json" /></VisualStudio></ProjectExtensions>
+
 </Project>

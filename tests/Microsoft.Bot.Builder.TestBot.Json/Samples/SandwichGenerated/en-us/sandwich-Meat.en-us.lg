@@ -1,6 +1,9 @@
 # AskMeat
 - [askEnum('Meat')]
 
+# ClarifyMeat
+- [clarifyEnum('Meat')]
+
 # HelpMeat
 - [helpProperty('Meat')]
 

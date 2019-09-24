@@ -6,7 +6,7 @@
     "type": "object",
     "allOf": [
         {
-            "$ref": "../../Microsoft.Bot.Builder.Dialogs.Adaptive/Schemas/Dialogs/Microsoft.AdaptiveDialog.schema"
+            "$ref": "../../Microsoft.Bot.Builder.Dialogs.Adaptive/Schemas/Microsoft.AdaptiveDialog.schema"
         },
         {
             "properties": {

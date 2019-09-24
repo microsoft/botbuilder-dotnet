@@ -22,7 +22,7 @@
     <ProjectReference Include="..\Microsoft.Bot.Builder.MockLuis\Microsoft.Bot.Builder.MockLuis.csproj" />
   </ItemGroup>
 
-  <ProjectExtensions><VisualStudio><UserProperties resources_4sandwich_1dialog__JsonSchema="http://json.schemastore.org/2.0.0-csd.2.beta.2018-10-10.json" /></VisualStudio></ProjectExtensions>
+  <ProjectExtensions><VisualStudio><UserProperties /></VisualStudio></ProjectExtensions>
 
 <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
