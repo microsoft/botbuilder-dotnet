@@ -69,7 +69,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
             return handled;
         }
 
-        protected override async Task<bool> ProcessEventAsync(SequenceContext sequenceContext, DialogEvent dialogEvent, bool preBubble, CancellationToken cancellationToken = default(CancellationToken))
+        protected override async Task<bool> ProcessEventAsync(SequenceContext sequenceContext, DialogEvent dialogEvent, bool preBubble, CancellationToken cancellationToken = default)
         {
             var handled = false;
             // Save schema into turn
@@ -497,7 +497,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
 
             public override string ToString()
             {
-                var expected = Expected ? "expected" : "";
+                var expected = Expected ? "expected" : string.Empty;
                 return $"{expected} {Slot} = {Entity.Name}";
             }
         }

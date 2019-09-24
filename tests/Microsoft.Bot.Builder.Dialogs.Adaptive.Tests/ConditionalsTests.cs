@@ -315,7 +315,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .UseLanguageGeneration(explorer)
                 .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
 
-            DialogManager dm = new DialogManager(ruleDialog);
+            var dm = new DialogManager(ruleDialog);
             return new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
                 await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);

@@ -21,13 +21,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
             _evaluate = evaluate;
         }
 
-        public Task<IReadOnlyList<TriggerHandler>> Select(SequenceContext context, CancellationToken cancel = default(CancellationToken))
+        public Task<IReadOnlyList<OnCondition>> Select(SequenceContext context, CancellationToken cancel = default(CancellationToken))
         {
             var candidates = _conditionals;
             if (_evaluate)
             {
                 var parser = new ExpressionEngine();
-                candidates = new List<TriggerHandler>();
+                candidates = new List<OnCondition>();
                 foreach (var conditional in _conditionals)
                 {
                     var expression = conditional.GetExpression(parser);

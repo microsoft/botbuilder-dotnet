@@ -92,11 +92,10 @@ namespace Microsoft.Bot.Builder.MockLuis
                     switch (chunk.Length)
                     {
                         case 4:
-                            k1 = (uint)
-                               (chunk[0]
-                              | chunk[1] << 8
-                              | chunk[2] << 16
-                              | chunk[3] << 24);
+                            k1 = (uint)(chunk[0]
+                                       | chunk[1] << 8
+                                       | chunk[2] << 16
+                                       | chunk[3] << 24);
 
                             k1 *= c1;
                             k1 = Rotl32(k1, 15);
@@ -107,19 +106,17 @@ namespace Microsoft.Bot.Builder.MockLuis
                             h1 = (h1 * 5) + 0xe6546b64;
                             break;
                         case 3:
-                            k1 = (uint)
-                               (chunk[0]
-                              | chunk[1] << 8
-                              | chunk[2] << 16);
+                            k1 = (uint)(chunk[0]
+                                      | chunk[1] << 8
+                                      | chunk[2] << 16);
                             k1 *= c1;
                             k1 = Rotl32(k1, 15);
                             k1 *= c2;
                             h1 ^= k1;
                             break;
                         case 2:
-                            k1 = (uint)
-                               (chunk[0]
-                              | chunk[1] << 8);
+                            k1 = (uint)(chunk[0]
+                                      | chunk[1] << 8);
                             k1 *= c1;
                             k1 = Rotl32(k1, 15);
                             k1 *= c2;

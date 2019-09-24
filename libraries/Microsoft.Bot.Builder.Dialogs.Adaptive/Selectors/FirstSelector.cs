@@ -25,7 +25,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
 
         public Task<IReadOnlyList<OnCondition>> Select(SequenceContext context, CancellationToken cancel)
         {
-            TriggerHandler selection = null;
+            OnCondition selection = null;
             if (_evaluate)
             {
                 for (var i = 0; i < _conditionals.Count; i++)

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Expressions;
@@ -53,6 +54,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         public List<Dialog> Actions { get; set; } = new List<Dialog>();
 
         /// <summary>
+        /// Gets or sets thr rule priority where 0 is the highest.
+        /// </summary>
+        [JsonProperty("priority")]
+        public int Priority { get; set; }
+
+        /// <summary>
         /// Get the expression for this rule by calling GatherConstraints().
         /// </summary>
         /// <param name="parser">Expression parser.</param>
@@ -63,7 +70,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
             {
                 if (this.fullConstraint == null)
                 {
-                    List<Expression> allExpressions = new List<Expression>();
+                    var allExpressions = new List<Expression>();
                     if (!string.IsNullOrWhiteSpace(this.Condition))
                     {
                         try

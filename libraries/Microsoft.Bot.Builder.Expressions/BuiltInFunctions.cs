@@ -400,9 +400,8 @@ namespace Microsoft.Bot.Builder.Expressions
         /// </summary>
         /// <param name="value">Value to check.</param>
         /// <param name="expression">Expression that led to value.</param>
-        /// <param name="number">No function.</param>
         /// <returns>Error or null if valid.</returns>
-        public static string VerifyBoolean(object value, Expression expression, int number)
+        public static string VerifyBoolean(object value, Expression expression)
         {
             string error = null;
             if (!(value is bool))
@@ -753,7 +752,7 @@ namespace Microsoft.Bot.Builder.Expressions
             // NOTE: what about other type of TKey, TValue?
             if (instance is IDictionary<string, object> idict)
             {
-                if (!idict.TryGetValue(property, out value)) 
+                if (!idict.TryGetValue(property, out value))
                 {
                     // fall back to case insensitive
                     var prop = idict.Keys.Where(k => k.ToLower() == property).SingleOrDefault();
@@ -792,7 +791,7 @@ namespace Microsoft.Bot.Builder.Expressions
 
         private static object SetProperty(object instance, string property, object value)
         {
-            object result = value;
+            var result = value;
 
             if (instance is IDictionary<string, object> idict)
             {
@@ -2004,7 +2003,7 @@ namespace Microsoft.Bot.Builder.Expressions
                     else if (products.Count() > 1)
                     {
                         var nodeList = new List<object>();
-                        foreach (JToken item in products)
+                        foreach (var item in products)
                         {
                             nodeList.Add(ResolveValue(item));
                         }

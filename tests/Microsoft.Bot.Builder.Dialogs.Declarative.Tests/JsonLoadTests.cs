@@ -282,15 +282,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         }
 
         [TestMethod]
-        public async Task JsonDialogLoad_ToDoLuisBot()
-        {
-            await BuildTestFlow("ToDoLuisBot.main.dialog")
-            .Send(new Activity(ActivityTypes.ConversationUpdate, membersAdded: new List<ChannelAccount>() { new ChannelAccount("bot", "Bot") }))
-            .SendConversationUpdate()
-            .StartTestAsync();
-        }
-
-        [TestMethod]
         public async Task JsonDialogLoad_HttpRequest()
         {
             await BuildTestFlow("HttpRequest.main.dialog")

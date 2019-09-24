@@ -20,12 +20,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
     public class OnUnknownIntent : OnDialogEvent
     {
         [JsonConstructor]
-        public OnUnknownIntent(List<Dialog> actions = null, string constraint = null, int priority = 0, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public OnUnknownIntent(List<Dialog> actions = null, string condition = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base(
                 @event: AdaptiveEvents.UnknownIntent,
                 actions: actions,
-                constraint: constraint,
-                priority: priority,
+                condition: condition,
                 callerPath: callerPath, 
                 callerLine: callerLine)
         {

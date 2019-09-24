@@ -18,12 +18,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
     public class OnIntent : OnDialogEvent
     {
         [JsonConstructor]
-        public OnIntent(string intent = null, List<string> entities = null, List<Dialog> actions = null, string constraint = null, int priority = 0, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public OnIntent(string intent = null, List<string> entities = null, List<Dialog> actions = null, string condition = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base(
                 @event: AdaptiveEvents.RecognizedIntent,
                 actions: actions,
-                constraint: constraint,
-                priority: priority,
+                condition: condition,
                 callerPath: callerPath,
                 callerLine: callerLine)
         {

@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.TriggerHandlers;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 
 namespace Microsoft.Bot.Builder.Dialogs.Form
 {
@@ -17,13 +17,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
             _selector = selector;
         }
 
-        public void Initialize(IEnumerable<TriggerHandler> rules, bool evaluate = true) 
+        public void Initialize(IEnumerable<OnCondition> rules, bool evaluate = true) 
             => _selector.Initialize(rules);
 
-        public async Task<IReadOnlyList<TriggerHandler>> Select(SequenceContext context, CancellationToken cancel = default(CancellationToken))
+        public async Task<IReadOnlyList<OnCondition>> Select(SequenceContext context, CancellationToken cancel = default)
         {
             var candidates = await _selector.Select(context, cancel);
-            var choices = new List<TriggerHandler>();
+            var choices = new List<OnCondition>();
             if (candidates.Any())
             {
                 var candidate = candidates.First();
@@ -32,7 +32,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                 choices.Add(choice);
             }
 
-            return (IReadOnlyList<TriggerHandler>)choices;
+            return (IReadOnlyList<OnCondition>)choices;
         }
     }
 }

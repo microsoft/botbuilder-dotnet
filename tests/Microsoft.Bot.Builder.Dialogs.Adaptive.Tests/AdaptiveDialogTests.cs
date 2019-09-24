@@ -892,7 +892,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     new OnEventActivity(actions: new List<Dialog>() { new SendActivity("EventActivityEvent") }),
                     new OnHandoffActivity(actions: new List<Dialog>() { new SendActivity("HandoffActivityEvent") }),
                     new OnTypingActivity(actions: new List<Dialog>() { new SendActivity("TypingActivityEvent") }),
-                    new OnMessageActivity(constraint: "turn.activity.text == 'constraint'", actions: new List<Dialog>() { new SendActivity("constraint") }),
+                    new OnMessageActivity(condition: "turn.activity.text == 'constraint'", actions: new List<Dialog>() { new SendActivity("constraint") }),
                 }
             };
 
@@ -940,7 +940,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 Triggers = new List<OnCondition>()
                 {
                     new OnIntent(intent: "JokeIntent", actions: new List<Dialog>() { new SendActivity("chicken joke") }),
-                    new OnMessageActivity(constraint: "turn.activity.text == 'magic'", actions: new List<Dialog>() { new SendActivity("abracadabra") }),
+                    new OnMessageActivity(condition: "turn.activity.text == 'magic'", actions: new List<Dialog>() { new SendActivity("abracadabra") }),
                 }
             };
 

@@ -14,8 +14,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
     public class OnInvokeActivity : OnActivity
     {
         [JsonConstructor]
-        public OnInvokeActivity(List<Dialog> actions = null, string constraint = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
-            : base(type: ActivityTypes.Invoke, actions: actions, constraint: constraint, callerPath: callerPath, callerLine: callerLine)
+        public OnInvokeActivity(List<Dialog> actions = null, string condition = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+            : base(type: ActivityTypes.Invoke, actions: actions, condition: condition, callerPath: callerPath, callerLine: callerLine)
         {
         }
     }

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.TriggerHandlers;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Form.Events
@@ -11,12 +11,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Form.Events
     public class OnSetSlot : OnDialogEvent
     {
         [JsonConstructor]
-        public OnSetSlot(List<Dialog> actions = null, string constraint = null, int priority = 0, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public OnSetSlot(List<Dialog> actions = null, string condition = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base(
-                events: new List<string>() { FormEvents.Ask },
+                @event: FormEvents.SetSlot,
                 actions: actions,
-                constraint: constraint,
-                priority: priority,
+                condition: condition,
                 callerPath: callerPath,
                 callerLine: callerLine)
         {
