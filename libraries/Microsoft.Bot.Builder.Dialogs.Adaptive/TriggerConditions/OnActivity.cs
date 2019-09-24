@@ -10,9 +10,9 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
 {
     /// <summary>
-    /// Event triggered when a Activity of a given type is received. 
+    /// Actions triggered when a Activity of a given type is received. 
     /// </summary>
-    public class OnActivity : OnCustomEvent
+    public class OnActivity : OnDialogEvent
     {
         [JsonConstructor]
         public OnActivity(string type = null, List<Dialog> actions = null, string constraint = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)

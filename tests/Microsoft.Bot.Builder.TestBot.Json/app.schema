@@ -221,6 +221,11 @@
             "$ref": "#/definitions/Microsoft.OnBeginDialog"
         },
         {
+            "title": "Microsoft.OnCancelDialog",
+            "description": "This defines the actions to take when a CancelDialog event has been emitted",
+            "$ref": "#/definitions/Microsoft.OnCancelDialog"
+        },
+        {
             "title": "Microsoft.OnCondition",
             "description": "Defines actions which are executed when a condition is true",
             "$ref": "#/definitions/Microsoft.OnCondition"
@@ -244,6 +249,11 @@
             "title": "Microsoft.OnEndOfConversationActivity",
             "description": "This defines the actions to take when an EndOfConversation Activity is received",
             "$ref": "#/definitions/Microsoft.OnEndOfConversationActivity"
+        },
+        {
+            "title": "Microsoft.OnError",
+            "description": "This defines the actions to take when an Error dialog event is emitted",
+            "$ref": "#/definitions/Microsoft.OnError"
         },
         {
             "title": "Microsoft.OnEventActivity",
@@ -284,6 +294,11 @@
             "title": "Microsoft.OnMessageUpdateActivity",
             "description": "This defines the actions to take when an MessageUpdate Activity is received",
             "$ref": "#/definitions/Microsoft.OnMessageUpdateActivity"
+        },
+        {
+            "title": "Microsoft.OnRepromptDialog",
+            "description": "This defines the actions to take when a RepromptDialog event has been emitted",
+            "$ref": "#/definitions/Microsoft.OnRepromptDialog"
         },
         {
             "title": "Microsoft.OnTypingActivity",
@@ -1043,37 +1058,49 @@
                     "description": "The output format.",
                     "default": "value"
                 },
-                "choicesProperty": {
-                    "type": "string",
-                    "title": "Choices Property",
-                    "description": "expression collection of choices to present to user."
-                },
                 "choices": {
-                    "type": "array",
-                    "items": [
+                    "anyOf": [
                         {
-                            "title": "Choice",
-                            "type": "object",
-                            "properties": {
-                                "value": {
-                                    "type": "string",
-                                    "title": "Value",
-                                    "description": "the value to return when selected."
-                                },
-                                "action": {
+                            "$role": "expression",
+                            "type": "string",
+                            "description": "String must contain an expression."
+                        },
+                        {
+                            "type": "array",
+                            "items": [
+                                {
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "array",
+                            "items": [
+                                {
+                                    "title": "Choice",
                                     "type": "object",
-                                    "title": "Action",
-                                    "description": "Card action for the choice"
-                                },
-                                "synonyms": {
-                                    "type": "array",
-                                    "title": "Synonyms",
-                                    "description": "the list of synonyms to recognize in addition to the value. This is optional.",
-                                    "items": {
-                                        "type": "string"
+                                    "properties": {
+                                        "value": {
+                                            "type": "string",
+                                            "title": "Value",
+                                            "description": "the value to return when selected."
+                                        },
+                                        "action": {
+                                            "type": "object",
+                                            "title": "Action",
+                                            "description": "Card action for the choice"
+                                        },
+                                        "synonyms": {
+                                            "type": "array",
+                                            "title": "Synonyms",
+                                            "description": "the list of synonyms to recognize in addition to the value. This is optional.",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
                                     }
                                 }
-                            }
+                            ]
                         }
                     ]
                 },
@@ -3118,6 +3145,11 @@
                     "$ref": "#/definitions/Microsoft.OnBeginDialog"
                 },
                 {
+                    "title": "Microsoft.OnCancelDialog",
+                    "description": "This defines the actions to take when a CancelDialog event has been emitted",
+                    "$ref": "#/definitions/Microsoft.OnCancelDialog"
+                },
+                {
                     "title": "Microsoft.OnCondition",
                     "description": "Defines actions which are executed when a condition is true",
                     "$ref": "#/definitions/Microsoft.OnCondition"
@@ -3141,6 +3173,11 @@
                     "title": "Microsoft.OnEndOfConversationActivity",
                     "description": "This defines the actions to take when an EndOfConversation Activity is received",
                     "$ref": "#/definitions/Microsoft.OnEndOfConversationActivity"
+                },
+                {
+                    "title": "Microsoft.OnError",
+                    "description": "This defines the actions to take when an Error dialog event is emitted",
+                    "$ref": "#/definitions/Microsoft.OnError"
                 },
                 {
                     "title": "Microsoft.OnEventActivity",
@@ -3181,6 +3218,11 @@
                     "title": "Microsoft.OnMessageUpdateActivity",
                     "description": "This defines the actions to take when an MessageUpdate Activity is received",
                     "$ref": "#/definitions/Microsoft.OnMessageUpdateActivity"
+                },
+                {
+                    "title": "Microsoft.OnRepromptDialog",
+                    "description": "This defines the actions to take when a RepromptDialog event has been emitted",
+                    "$ref": "#/definitions/Microsoft.OnRepromptDialog"
                 },
                 {
                     "title": "Microsoft.OnTypingActivity",
@@ -4391,6 +4433,76 @@
                 }
             ]
         },
+        "Microsoft.OnCancelDialog": {
+            "$role": "unionType(Microsoft.ITriggerCondition)",
+            "title": "OnCancelDialog",
+            "description": "This defines the actions to take when a CancelDialog event has been emitted",
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.OnCancelDialog"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "condition": {
+                    "$role": "expression",
+                    "title": "Condition",
+                    "description": "Condition which must be met for these actions to be executed",
+                    "examples": [
+                        "user.vip == true"
+                    ],
+                    "type": "string"
+                },
+                "actions": {
+                    "type": "array",
+                    "description": "Sequence of actions or dialogs to execute",
+                    "items": {
+                        "$type": "Microsoft.IDialog",
+                        "$ref": "#/definitions/Microsoft.IDialog"
+                    }
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "actions",
+                        "$type"
+                    ]
+                }
+            ]
+        },
         "Microsoft.OnCondition": {
             "$role": "unionType(Microsoft.ITriggerCondition)",
             "title": "OnCondition",
@@ -4695,6 +4807,76 @@
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
                     "const": "Microsoft.OnEndOfConversationActivity"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "condition": {
+                    "$role": "expression",
+                    "title": "Condition",
+                    "description": "Condition which must be met for these actions to be executed",
+                    "examples": [
+                        "user.vip == true"
+                    ],
+                    "type": "string"
+                },
+                "actions": {
+                    "type": "array",
+                    "description": "Sequence of actions or dialogs to execute",
+                    "items": {
+                        "$type": "Microsoft.IDialog",
+                        "$ref": "#/definitions/Microsoft.IDialog"
+                    }
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "actions",
+                        "$type"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.OnError": {
+            "$role": "unionType(Microsoft.ITriggerCondition)",
+            "title": "OnError",
+            "description": "This defines the actions to take when an Error dialog event is emitted",
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.OnError"
                 },
                 "$copy": {
                     "title": "$copy",
@@ -5269,6 +5451,76 @@
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
                     "const": "Microsoft.OnMessageUpdateActivity"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "condition": {
+                    "$role": "expression",
+                    "title": "Condition",
+                    "description": "Condition which must be met for these actions to be executed",
+                    "examples": [
+                        "user.vip == true"
+                    ],
+                    "type": "string"
+                },
+                "actions": {
+                    "type": "array",
+                    "description": "Sequence of actions or dialogs to execute",
+                    "items": {
+                        "$type": "Microsoft.IDialog",
+                        "$ref": "#/definitions/Microsoft.IDialog"
+                    }
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "actions",
+                        "$type"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.OnRepromptDialog": {
+            "$role": "unionType(Microsoft.ITriggerCondition)",
+            "title": "OnRepromptDialog",
+            "description": "This defines the actions to take when a RepromptDialog event has been emitted",
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.OnRepromptDialog"
                 },
                 "$copy": {
                     "title": "$copy",

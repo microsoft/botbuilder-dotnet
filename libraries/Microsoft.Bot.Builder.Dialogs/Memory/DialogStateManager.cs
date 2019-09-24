@@ -144,7 +144,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
             path = this.TransformPath(path ?? throw new ArgumentNullException(nameof(path)));
             var memoryScope = this.ResolveMemoryScope(ref path);
             var memory = memoryScope.GetMemory(this.dialogContext);
-            return ObjectPath.TryGetValue<T>(memory, path, out value);
+            return ObjectPath.TryGetPathValue<T>(memory, path, out value);
         }
 
         /// <summary>
@@ -218,7 +218,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
             else
             {
                 var memory = memoryScope.GetMemory(this.dialogContext);
-                ObjectPath.SetValue(memory, path, value);
+                ObjectPath.SetPathValue(memory, path, value);
             }
         }
 
@@ -231,7 +231,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
             path = this.TransformPath(path ?? throw new ArgumentNullException(nameof(path)));
             var memoryScope = this.ResolveMemoryScope(ref path);
             var memory = memoryScope.GetMemory(this.dialogContext);
-            ObjectPath.RemoveProperty(memory, path);
+            ObjectPath.RemovePathValue(memory, path);
         }
 
         /// <summary>

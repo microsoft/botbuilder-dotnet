@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
 {
     /// <summary>
-    ///  triggered when a dialog event matching event is emitted.
+    ///  Actions triggered when a dialog event is emitted.
     /// </summary>
     public class OnDialogEvent : OnCondition
     {

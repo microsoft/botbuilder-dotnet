@@ -32,9 +32,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
             // Best effort
             try
             {
-                // Get stepCount from memory
-                var stepCount = dc.State.GetValue<int>(TurnPath.STEPCOUNT, () => 0);
-
                 // Compute path
                 var path = string.Empty;
                 var connector = string.Empty;
@@ -51,7 +48,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 var stepState = dc is SequenceContext sc ? sc.Actions : new List<ActionState>();
                 var actionsIds = stepState.Select(s => s.DialogId);
 
-                Debug.WriteLine($"{path}: {stepCount} actions executed and {actionsIds.Count()} remaining.");
+                Debug.WriteLine($"{path}: {actionsIds.Count()} actions remaining.");
             }
             catch (Exception ex)
             {

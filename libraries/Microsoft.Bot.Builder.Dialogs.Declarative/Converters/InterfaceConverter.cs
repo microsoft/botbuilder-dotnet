@@ -15,13 +15,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
         where T : class
     {
         private readonly IRefResolver refResolver;
-        private readonly Source.IRegistry registry;
+        private readonly ISourceMap sourceMap;
         private readonly Stack<string> paths;
 
-        public InterfaceConverter(IRefResolver refResolver, Source.IRegistry registry, Stack<string> paths)
+        public InterfaceConverter(IRefResolver refResolver, ISourceMap sourceMap, Stack<string> paths)
         {
             this.refResolver = refResolver ?? throw new ArgumentNullException(nameof(refResolver));
-            this.registry = registry ?? throw new ArgumentNullException(nameof(registry));
+            this.sourceMap = sourceMap ?? throw new ArgumentNullException(nameof(sourceMap));
             this.paths = paths ?? throw new ArgumentNullException(nameof(paths));
         }
 
@@ -34,7 +34,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            var jsonObject = Source.Point.Read(reader, JToken.Load, out var start, out var after);
+            var jsonObject = SourcePoint.ReadObjectWithSourcePoints(reader, JToken.Load, out SourcePoint startPoint, out SourcePoint endPoint);
 
             if (refResolver.IsRef(jsonObject))
             {
@@ -52,7 +52,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
 
             // if IdRefResolver made a path available for the JToken, then add it to the path stack
             // this maintains the stack of paths used as the source of json data
-            var found = this.registry.TryGetValue(jsonObject, out var range);
+            var found = this.sourceMap.TryGetValue(jsonObject, out var range);
             if (found)
             {
                 paths.Push(range.Path);
@@ -61,9 +61,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
             T result = TypeFactory.Build<T>(typeName, jsonObject, serializer);
 
             // combine the "path for the most recent JToken from IdRefResolver" or the "top root path"
-            // with the line information for this particular json fragment and add it to the registry
-            range = new Source.Range() { Path = paths.Peek(), Start = start, After = after };
-            this.registry.Add(result, range);
+            // with the line information for this particular json fragment and add it to the sourceMap
+            range = new SourceRange() { Path = paths.Peek(), StartPoint = startPoint, EndPoint = endPoint };
+            this.sourceMap.Add(result, range);
 
             if (found)
             {

@@ -1,8 +1,8 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Bot.Builder.Expressions;
-using Microsoft.Bot.Builder.Expressions.Parser;
+using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
@@ -19,64 +19,14 @@ namespace Microsoft.Bot.Builder.Dialogs
             NullValueHandling = NullValueHandling.Ignore,
         };
 
-        public static bool HasValue(object obj, Expression pathExpression)
-        {
-            return TryGetValue<object>(obj, pathExpression, out var value);
-        }
-
-        public static T GetValue<T>(object obj, Expression pathExpression)
-        {
-            if (TryGetValue<T>(obj, pathExpression, out var value))
-            {
-                return value;
-            }
-
-            throw new KeyNotFoundException(pathExpression.ToString());
-        }
-
-        public static T GetValue<T>(object obj, Expression pathExpression, T defaultValue)
-        {
-            if (TryGetValue<T>(obj, pathExpression, out var value))
-            {
-                return value;
-            }
-
-            return defaultValue;
-        }
-
-        public static bool TryGetValue<T>(object o, Expression expression, out T value)
-        {
-            value = default(T);
-
-            if (expression == null)
-            {
-                return false;
-            }
-
-            // normal expression
-            var (val, error) = expression.TryEvaluate(o);
-            if (error != null)
-            {
-                return false;
-            }
-
-            if (val == null)
-            {
-                return false;
-            }
-
-            value = MapTo<T>(val);
-            return true;
-        }
-
         public static bool HasValue(object obj, string pathExpression)
         {
-            return TryGetValue<object>(obj, pathExpression, out var value);
+            return TryGetPathValue<object>(obj, pathExpression, out var value);
         }
 
-        public static T GetValue<T>(object obj, string pathExpression)
+        public static T GetPathValue<T>(object obj, string pathExpression)
         {
-            if (TryGetValue<T>(obj, pathExpression, out var value))
+            if (TryGetPathValue<T>(obj, pathExpression, out var value))
             {
                 return value;
             }
@@ -84,9 +34,9 @@ namespace Microsoft.Bot.Builder.Dialogs
             throw new KeyNotFoundException(pathExpression);
         }
 
-        public static T GetValue<T>(object obj, string pathExpression, T defaultValue)
+        public static T GetPathValue<T>(object obj, string path, T defaultValue)
         {
-            if (TryGetValue<T>(obj, pathExpression, out var value))
+            if (TryGetPathValue<T>(obj, path, out var value))
             {
                 return value;
             }
@@ -94,7 +44,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             return defaultValue;
         }
 
-        public static bool TryGetValue<T>(object obj, string pathExpression, out T value)
+        public static bool TryGetPathValue<T>(object obj, string pathExpression, out T value)
         {
             value = default(T);
 
@@ -110,115 +60,71 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             if (pathExpression == string.Empty)
             {
-                value = MapTo<T>(obj);
+                value = MapValueTo<T>(obj);
                 return true;
             }
 
-            // if JPath expression
-            JToken result = null;
-            if (pathExpression.StartsWith("$."))
+            string[] segments = pathExpression.Split('.').Select(segment => segment.ToLower()).ToArray();
+            dynamic current = obj;
+            for (var i = 0; i < segments.Length; i++)
             {
-                // jpath
-                if (obj != null && obj.GetType() == typeof(JArray))
+                current = ResolveSegment(current, segments[i]);
+                if (current == null)
                 {
-                    int index = 0;
-                    if (int.TryParse(pathExpression, out index) && index < JArray.FromObject(obj).Count)
-                    {
-                        result = JArray.FromObject(obj)[index];
-                    }
+                    return false;
                 }
-                else if (obj != null && obj is JObject)
-                {
-                    result = ((JObject)obj).SelectToken(pathExpression);
-                }
-                else
-                {
-                    result = JToken.FromObject(obj).SelectToken(pathExpression);
-                }
-            }
-            else
-            {
-                // normal expression
-                var exp = new ExpressionEngine().Parse(pathExpression);
-                return TryGetValue<T>(obj, exp, out value);
             }
 
-            return false;
+            value = MapValueTo<T>(current);
+            return true;
         }
 
-        public static string SetValue(object o, string pathExpression, object value)
+        public static void SetPathValue(object o, string pathExpression, object value, bool json = true)
         {
-            return SetValue(o, new ExpressionEngine().Parse(pathExpression), value);
-        }
-
-        public static string SetValue(object o, Expression pathExpression, object value, bool json = true)
-        {
-            object val;
-            if (json)
-            {
-                if (value is JToken || value is JObject || value is JArray)
-                {
-                    val = (JToken)value;
-                }
-                else if (value == null)
-                {
-                    val = null;
-                }
-                else if (value is string || value is byte || value is bool ||
-                        value is short || value is int || value is long ||
-                        value is ushort || value is uint || value is ulong ||
-                        value is decimal || value is float || value is double)
-                {
-                    val = JValue.FromObject(value);
-                }
-                else
-                {
-                    val = (JToken)JsonConvert.DeserializeObject(JsonConvert.SerializeObject(value, expressionCaseSettings));
-                }
-            }
-            else
-            {
-                val = value;
-            }
-
-            var (result, error) = Expression.SetPathToValue(pathExpression, val).TryEvaluate(o);
-            return error;
-        }
-
-        public static void RemoveProperty(object o, string pathExpression)
-        {
-            // TODO-- use expression library to resolve pathexpression. 
-
-            // If the json path does not exist
             string[] segments = pathExpression.Split('.').Select(segment => segment.ToLower()).ToArray();
             dynamic current = o;
 
-            var deleted = false;
             for (var i = 0; i < segments.Length - 1; i++)
             {
-                var segment = segments[i];
-                if (current is IDictionary<string, object> curDict)
-                {
-                    if (!curDict.TryGetValue(segment, out var segVal) || segVal == null)
-                    {
-                        deleted = true;
-                        break;
-                    }
-
-                    current = curDict[segment];
-                }
+                dynamic next = ResolveSegment(current, segments[i], addMissing: true);
+                current = next;
             }
 
-            if (!deleted)
-            {
-                current.Remove(segments.Last());
-            }
+            SetObjectProperty(current, segments.Last(), value);
         }
 
-        public static void RemoveProperty(object o, Expression pathExpression)
+        public static void RemovePathValue(object o, string pathExpression)
         {
-            // TODO-- use expression library to resolve pathexpression.
-            RemoveProperty(o, pathExpression.ToString());
+            string[] segments = pathExpression.Split('.').Select(segment => segment.ToLower()).ToArray();
+            dynamic next = o;
+            for (var i = 0; i < segments.Length - 1; i++)
+            {
+                next = ResolveSegment(next, segments[i], addMissing: true);
+            }
+
+            if (next != null)
+            {
+                var segment = segments.Last();
+                int iIndexerStart = segment.IndexOf('[');
+                if (iIndexerStart > 0)
+                {
+                    var index = int.Parse(segment.Substring(iIndexerStart + 1).TrimEnd(']'));
+                    segment = segment.Substring(0, iIndexerStart);
+                    next = ObjectPath.GetObjectProperty(next, segment);
+                    next[index] = null;
+                }
+                else
+                {
+                    try
+                    {
+                        next.Remove(segment);
+                    }
+                    catch (Exception)
+                    {
+                        ObjectPath.SetObjectProperty(next, segment, null);
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -291,32 +197,239 @@ namespace Microsoft.Bot.Builder.Dialogs
             return (Type)Activator.CreateInstance(type);
         }
 
-        private static T MapTo<T>(object val)
+        private static T MapValueTo<T>(object val)
         {
-            if (val is T)
+            if (val is JValue)
             {
-                return (T)val;
+                return ((JValue)val).ToObject<T>();
             }
-            else if (typeof(T) == typeof(JArray))
+            else if (val is JArray)
             {
-                return (T)(object)JArray.FromObject(val);
+                return ((JArray)val).ToObject<T>();
+            }
+            else if (val is JObject)
+            {
+                return ((JObject)val).ToObject<T>();
             }
             else if (typeof(T) == typeof(JObject))
             {
                 return (T)(object)JObject.FromObject(val);
             }
-            else if (typeof(T) == typeof(JToken))
+            else if (typeof(T) == typeof(JArray))
             {
-                return (T)(object)JToken.FromObject(val);
+                return (T)(object)JArray.FromObject(val);
             }
-            else if (val is JToken)
+            else if (typeof(T) == typeof(JValue))
             {
-                return ((JToken)val).ToObject<T>();
+                return (T)(object)JValue.FromObject(val);
+            }
+            else if (val is T)
+            {
+                return (T)val;
             }
             else
             {
-                return (T)Convert.ChangeType(val, typeof(T));
+                return JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(val, expressionCaseSettings));
             }
+        }
+
+        private static object GetObjectProperty(object obj, string property)
+        {
+            if (obj is IDictionary<string, object> dict)
+            {
+                var key = dict.Keys.Where(k => k.ToLower() == property.ToLower()).FirstOrDefault();
+                if (key != null && dict.TryGetValue(key, out var value))
+                {
+                    return value;
+                }
+
+                return null;
+            }
+
+            if (obj is JObject jobj)
+            {
+                jobj.TryGetValue(property, StringComparison.InvariantCultureIgnoreCase, out var value);
+                return value;
+            }
+
+            var prop = obj.GetType().GetProperties().Where(p => p.Name.ToLower() == property.ToLower()).FirstOrDefault();
+            if (prop != null)
+            {
+                return prop.GetValue(obj);
+            }
+
+            return null;
+        }
+
+        private static void SetObjectProperty(object obj, string property, object value, bool json = true)
+        {
+            object val;
+
+            if (json)
+            {
+                if (value is JToken || value is JObject || value is JArray)
+                {
+                    val = (JToken)value;
+                }
+                else if (value == null)
+                {
+                    val = null;
+                }
+                else if (value is string || value is byte || value is bool ||
+                        value is short || value is int || value is long ||
+                        value is ushort || value is uint || value is ulong ||
+                        value is decimal || value is float || value is double)
+                {
+                    val = JValue.FromObject(value);
+                }
+                else
+                {
+                    val = (JToken)JsonConvert.DeserializeObject(JsonConvert.SerializeObject(value, expressionCaseSettings));
+                }
+            }
+            else
+            {
+                val = value;
+            }
+
+            int iIndexerStart = property.IndexOf('[');
+            if (iIndexerStart > 0)
+            {
+                var index = int.Parse(property.Substring(iIndexerStart + 1).TrimEnd(']'));
+                property = property.Substring(0, iIndexerStart);
+
+                dynamic array = GetObjectProperty(obj, property);
+                if (array == null)
+                {
+                    SetObjectProperty(obj, property, new JArray());
+                    array = GetObjectProperty(obj, property);
+                }
+
+                // expand nodes
+                for (int i = ((ICollection)array).Count; i <= index; i++)
+                {
+                    array.Add(null);
+                }
+
+                array[index] = JToken.FromObject(val);
+            }
+            else
+            {
+                if (obj is IDictionary<string, object> dict)
+                {
+                    dict[property] = val;
+                    return;
+                }
+
+                if (obj is JObject jobj)
+                {
+                    jobj[property] = (val != null) ? JToken.FromObject(val) : null;
+                    return;
+                }
+
+                var prop = obj.GetType().GetProperty(property);
+                if (prop != null)
+                {
+                    prop.SetValue(obj, val);
+                }
+            }
+        }
+
+        private static void RemoveObjectProperty(object obj, string property)
+        {
+            if (obj is IDictionary<string, object> dict)
+            {
+                var key = dict.Keys.Where(k => k.ToLower() == property.ToLower()).FirstOrDefault();
+                if (key != null)
+                {
+                    dict.Remove(key);
+                }
+
+                return;
+            }
+
+            if (obj is JObject jobj)
+            {
+                var key = jobj.Properties().Where(p => p.Name.ToLower() == property.ToLower()).FirstOrDefault();
+                if (key != null)
+                {
+                    jobj.Remove(key.Name);
+                }
+
+                return;
+            }
+
+            var prop = obj.GetType().GetProperties().Where(p => p.Name.ToLower() == property.ToLower()).FirstOrDefault();
+            if (prop != null)
+            {
+                try
+                {
+                    prop.SetValue(obj, null);
+                }
+                catch (Exception)
+                {
+                }
+            }
+        }
+
+        private static dynamic ResolveSegment(dynamic node, string segment, bool addMissing = false)
+        {
+            dynamic next;
+            int iIndexerStart = segment.IndexOf('[');
+            if (iIndexerStart > 0)
+            {
+                var index = int.Parse(segment.Substring(iIndexerStart + 1).TrimEnd(']'));
+                segment = segment.Substring(0, iIndexerStart);
+
+                next = GetObjectProperty(node, segment);
+                if (next == null)
+                {
+                    // then no array
+                    if (addMissing)
+                    {
+                        var missing = new JArray();
+                        SetObjectProperty(node, segment, missing);
+                        next = GetObjectProperty(node, segment);
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
+
+                if (((ICollection)next).Count <= index)
+                {
+                    // then array is too small
+                    if (addMissing)
+                    {
+                        // expand nodes
+                        for (int i = ((ICollection)next).Count; i <= index; i++)
+                        {
+                            ((JArray)next)[i] = null;
+                        }
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
+
+                next = next[index];
+            }
+            else
+            {
+                next = GetObjectProperty(node, segment);
+                if (next == null)
+                {
+                    if (addMissing)
+                    {
+                        SetObjectProperty(node, segment, new JObject());
+                        next = GetObjectProperty(node, segment);
+                    }
+                }
+            }
+
+            return next;
         }
     }
 }
