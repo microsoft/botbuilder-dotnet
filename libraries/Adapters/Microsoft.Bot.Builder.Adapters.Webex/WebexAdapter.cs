@@ -1,4 +1,4 @@
-﻿// Copyright(c) Microsoft Corporation.All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
 using System;
@@ -7,15 +7,33 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Schema;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Thrzn41.WebexTeams.Version1;
 
 namespace Microsoft.Bot.Builder.Adapters.Webex
 {
-    public class WebexAdapter : BotAdapter
+    public class WebexAdapter : BotAdapter, IBotFrameworkHttpAdapter
     {
         private readonly WebexClientWrapper _webexClient;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WebexAdapter"/> class using configuration settings.
+        /// </summary>
+        /// <param name="configuration">An <see cref="IConfiguration"/> instance.</param>
+        /// <remarks>
+        /// The configuration keys are:
+        /// AccessToken: An access token for the bot.
+        /// PublicAddress: The root URL of the bot application.
+        /// Secret: The secret used to validate incoming webhooks.
+        /// WebhookName: A name for the webhook subscription.
+        /// </remarks>
+        public WebexAdapter(IConfiguration configuration)
+            : this(new WebexClientWrapper(new WebexAdapterOptions(configuration["AccessToken"], new Uri(configuration["PublicAddress"]), configuration["Secret"], configuration["WebhookName"])))
+        {
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WebexAdapter"/> class.
@@ -24,9 +42,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// <param name="webexClient">A Webex API interface.</param>
         public WebexAdapter(WebexClientWrapper webexClient)
         {
-            _webexClient = webexClient ?? throw new Exception("Could not create the Webex Teams API client");
-
-            _webexClient.InitAsync().ConfigureAwait(false);
+            _webexClient = webexClient ?? throw new ArgumentNullException(nameof(webexClient));
         }
 
         /// <summary>
@@ -177,11 +193,10 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                 throw new ArgumentNullException(nameof(bot));
             }
 
-            await _webexClient.GetIdentityAsync(cancellationToken).ConfigureAwait(false);
+            var identity = await _webexClient.GetMeAsync(cancellationToken).ConfigureAwait(false);
 
             WebhookEventData payload;
             string json;
-
             using (var bodyStream = new StreamReader(request.Body))
             {
                 json = bodyStream.ReadToEnd();
@@ -194,12 +209,11 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
             }
 
             Activity activity;
-
             if (payload.Resource == EventResource.Message && payload.EventType == EventType.Created)
             {
                 var decryptedMessage = await WebexHelper.GetDecryptedMessageAsync(payload, _webexClient.GetMessageAsync, cancellationToken).ConfigureAwait(false);
 
-                activity = WebexHelper.DecryptedMessageToActivity(decryptedMessage, _webexClient.Identity);
+                activity = WebexHelper.DecryptedMessageToActivity(decryptedMessage, identity);
             }
             else if (payload.Resource.Name == "attachmentActions" && payload.EventType == EventType.Created)
             {
@@ -207,15 +221,15 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
 
                 var data = JsonConvert.SerializeObject(extraData);
 
-                var jsongData = JsonConvert.DeserializeObject<AttachmentActionData>(data);
+                var jsonData = JsonConvert.DeserializeObject<AttachmentActionData>(data);
 
-                var decryptedMessage = await _webexClient.GetAttachmentActionAsync(jsongData.Id, cancellationToken).ConfigureAwait(false);
+                var decryptedMessage = await _webexClient.GetAttachmentActionAsync(jsonData.Id, cancellationToken).ConfigureAwait(false);
 
-                activity = WebexHelper.AttachmentActionToActivity(decryptedMessage, _webexClient.Identity);
+                activity = WebexHelper.AttachmentActionToActivity(decryptedMessage, identity);
             }
             else
             {
-                activity = WebexHelper.PayloadToActivity(payload, _webexClient.Identity);
+                activity = WebexHelper.PayloadToActivity(payload, identity);
             }
 
             using (var context = new TurnContext(this, activity))

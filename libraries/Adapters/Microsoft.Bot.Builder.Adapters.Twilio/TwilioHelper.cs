@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
-using Twilio.Exceptions;
 using Twilio.Rest.Api.V2010.Account;
 using Twilio.Security;
 
@@ -69,8 +68,8 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// <param name="authToken">The authentication token for the Twilio app.</param>
         /// <returns>The activity object.</returns>
         /// <seealso cref="TwilioAdapter.ProcessAsync(HttpRequest, HttpResponse, IBot, System.Threading.CancellationToken)"/>
-        /// <seealso cref="ITwilioAdapterOptions.ValidationUrl"/>
-        public static Activity RequestToActivity(HttpRequest httpRequest, string validationUrl, string authToken)
+        /// <seealso cref="TwilioAdapterOptions.ValidationUrl"/>
+        public static Activity RequestToActivity(HttpRequest httpRequest, Uri validationUrl, string authToken)
         {
             if (httpRequest == null)
             {
@@ -120,12 +119,21 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// generated URL signature used to validate incoming requests.</param>
         /// <param name="authToken">The authentication token for the Twilio app.</param>
         /// <exception cref="AuthenticationException">Validation failed.</exception>
-        private static void ValidateRequest(HttpRequest httpRequest, Dictionary<string, string> body, string validationUrl, string authToken)
+        private static void ValidateRequest(HttpRequest httpRequest, Dictionary<string, string> body, Uri validationUrl, string authToken)
         {
             var twilioSignature = httpRequest.Headers["x-twilio-signature"];
-            validationUrl = validationUrl ?? (httpRequest.Headers["x-forwarded-proto"][0] ?? httpRequest.Protocol + "://" + httpRequest.Host + httpRequest.Path);
+            var urlString = validationUrl?.ToString();
+            if (string.IsNullOrWhiteSpace(urlString))
+            {
+                urlString = httpRequest.Headers["x-forwarded-proto"][0];
+                if (string.IsNullOrWhiteSpace(urlString))
+                {
+                    urlString = httpRequest.Protocol + "://" + httpRequest.Host + httpRequest.Path;
+                }
+            }
+
             var requestValidator = new RequestValidator(authToken);
-            if (!requestValidator.Validate(validationUrl, body, twilioSignature))
+            if (!requestValidator.Validate(urlString, body, twilioSignature))
             {
                 throw new AuthenticationException("Request does not match provided signature");
             }
