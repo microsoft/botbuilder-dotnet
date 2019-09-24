@@ -30,6 +30,9 @@
     <None Update="Files\SlashCommandBody.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Files\UnknownEvent.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Files\URLVerificationBody.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

@@ -41,9 +41,6 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         [JsonProperty(PropertyName = "thread_ts")]
         public string ThreadTS { get; set; }
 
-        [JsonProperty(PropertyName = "team_id")]
-        public string TeamId { get; set; }
-
         [JsonProperty(PropertyName = "user")]
         public string User { get; set; }
 

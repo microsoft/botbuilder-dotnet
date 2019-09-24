@@ -654,6 +654,30 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Tests
         }
 
         [Fact]
+        public async Task ProcessAsyncShouldFailWithUnknownEventType()
+        {
+            var options = new Mock<SlackAdapterOptions>();
+            options.Object.VerificationToken = "testToken";
+            options.Object.ClientSigningSecret = "ClientSigningSecret";
+            options.Object.BotToken = "BotToken";
+
+            var slackApi = new Mock<SlackClientWrapper>(options.Object);
+            slackApi.Setup(x => x.VerifySignature(It.IsAny<HttpRequest>(), It.IsAny<string>())).Returns(true);
+
+            var slackAdapter = new SlackAdapter(slackApi.Object);
+
+            var payload = File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\UnknownEvent.json");
+            var stream = new MemoryStream(Encoding.UTF8.GetBytes(payload.ToString()));
+
+            var httpRequest = new Mock<HttpRequest>();
+            httpRequest.SetupGet(req => req.Body).Returns(stream);
+
+            var httpResponse = new Mock<HttpResponse>();
+
+            await Assert.ThrowsAsync<Exception>(async () => { await slackAdapter.ProcessAsync(httpRequest.Object, httpResponse.Object, new Mock<IBot>().Object, default); });
+        }
+
+        [Fact]
         public async Task ProcessAsyncShouldSucceedOnEventCallback()
         {
             var callback = false;

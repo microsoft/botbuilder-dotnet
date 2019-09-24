@@ -172,6 +172,46 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Tests
         }
 
         [Fact]
+        public async Task EventToActivityAsyncShouldReturnActivityWithTeamId()
+        {
+            var options = new Mock<SlackAdapterOptions>();
+            options.Object.VerificationToken = "TestToken";
+            options.Object.ClientSigningSecret = "ClientSigningSecret";
+            options.Object.BotToken = "BotToken";
+
+            var slackApi = new Mock<SlackClientWrapper>(options.Object);
+
+            var payload = File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\MessageBody.json");
+            var slackBody = JsonConvert.DeserializeObject<SlackRequestBody>(payload);
+            slackBody.Event.Channel = null;
+
+            var activity = await SlackHelper.EventToActivityAsync(slackBody.Event, slackApi.Object, new CancellationToken()).ConfigureAwait(false);
+
+            Assert.Equal(slackBody.Event.Team, activity.Conversation.Id);
+        }
+
+        [Fact]
+        public async Task EventToActivityAsyncShouldReturnActivityWithItemChannel()
+        {
+            var options = new Mock<SlackAdapterOptions>();
+            options.Object.VerificationToken = "TestToken";
+            options.Object.ClientSigningSecret = "ClientSigningSecret";
+            options.Object.BotToken = "BotToken";
+
+            var slackApi = new Mock<SlackClientWrapper>(options.Object);
+
+            var payload = File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\MessageBody.json");
+            var slackBody = JsonConvert.DeserializeObject<SlackRequestBody>(payload);
+            slackBody.Event.Channel = null;
+            slackBody.Event.Item = "testItem";
+            slackBody.Event.ItemChannel = "testItemChannel";
+
+            var activity = await SlackHelper.EventToActivityAsync(slackBody.Event, slackApi.Object, new CancellationToken()).ConfigureAwait(false);
+
+            Assert.Equal(slackBody.Event.ItemChannel, activity.Conversation.Id);
+        }
+
+        [Fact]
         public async Task CommandToActivityAsyncShouldReturnNull()
         {
             var options = new Mock<SlackAdapterOptions>();
@@ -211,6 +251,32 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Tests
             var activity = SlackHelper.PayloadToActivity(null);
 
             Assert.Null(activity);
+        }
+
+        [Fact]
+        public void QueryStringToDictionaryShouldReturnEmptyDictionary()
+        {
+            var dictionary = SlackHelper.QueryStringToDictionary(null);
+
+            Assert.Empty(dictionary);
+        }
+
+        [Fact]
+        public void QueryStringToDictionaryShouldReturnDictionary()
+        {
+            var payload = File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\SlashCommandBody.txt");
+
+            var dictionary = SlackHelper.QueryStringToDictionary(payload);
+
+            Assert.True(dictionary.Count > 0);
+        }
+
+        [Fact]
+        public void DeserializeBodyShouldReturnNull()
+        {
+            var body = SlackHelper.DeserializeBody(null);
+
+            Assert.Null(body);
         }
     }
 }

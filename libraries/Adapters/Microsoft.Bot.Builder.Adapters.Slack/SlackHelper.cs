@@ -185,7 +185,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
             };
 
             activity.Conversation.Properties["thread_ts"] = slack.ThreadTS;
-            activity.Conversation.Properties["team"] = slack.TeamId;
+            activity.Conversation.Properties["team"] = slack.Team;
 
             if ((slack.Type == "block_actions" || slack.Type == "interactive_message") && slack.Actions != null)
             {
@@ -242,7 +242,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
                 }
                 else
                 {
-                    activity.Conversation.Id = slack.TeamId;
+                    activity.Conversation.Id = slack.Team;
                 }
             }
 
