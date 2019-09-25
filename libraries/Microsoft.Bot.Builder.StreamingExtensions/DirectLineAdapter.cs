@@ -368,9 +368,13 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
             else
             {
                 // This is a proactive message that will need a new streaming connection opened.
+                // The ServiceUrl of a streaming connection follows the pattern "urn:[ChannelName]:[Protocol]:[Host]".
                 // TODO: This connection needs authentication headers added to it.
                 var connection = new ClientWebSocket();
-                await connection.ConnectAsync(new Uri(activity.ServiceUrl), cancellationToken);
+                var uri = activity.ServiceUrl.Split(':');
+                var protocol = uri[uri.Length - 2];
+                var host = uri[uri.Length - 1];
+                await connection.ConnectAsync(new Uri(protocol + host + "/api/messages"), cancellationToken);
                 var handler = new StreamingRequestHandler(_logger, this, connection);
 
                 if (_requestHandlers == null)

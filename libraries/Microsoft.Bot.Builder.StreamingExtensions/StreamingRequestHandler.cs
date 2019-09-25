@@ -370,8 +370,11 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
                 }
             }
 
-            var uri = ServiceUrl.Split(':').Last();
-            await clientWebSocket.ConnectAsync(new Uri("wss://" + uri + _reconnectPath), CancellationToken.None).ConfigureAwait(false);
+            // The ServiceUrl of a streaming connection follows the pattern "urn:[ChannelName]:[Protocol]:[Host]".
+            var uri = ServiceUrl.Split(':');
+            var protocol = uri[uri.Length - 2];
+            var host = uri[uri.Length - 1];
+            await clientWebSocket.ConnectAsync(new Uri(protocol + host + _reconnectPath), CancellationToken.None).ConfigureAwait(false);
             _server = new WebSocketServer(clientWebSocket, this);
         }
 
