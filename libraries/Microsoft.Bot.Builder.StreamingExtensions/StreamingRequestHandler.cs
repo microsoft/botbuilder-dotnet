@@ -52,6 +52,7 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
             LastUpdated = DateTime.Now;
             _userAgent = GetUserAgent();
             _server = new WebSocketServer(socket, this);
+            _server.Disconnected += Server_Disconnected;
         }
 
         /// <summary>
@@ -75,6 +76,7 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
             LastUpdated = DateTime.Now;
             _userAgent = GetUserAgent();
             _server = new NamedPipeServer(pipeName, this);
+            _server.Disconnected += Server_Disconnected;
         }
 
         /// <summary>
@@ -92,6 +94,8 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
         /// The <see cref="DateTime"/>  of the most recent update to this StreamingRequestHandler's conversation list.
         /// </value>
         public DateTime LastUpdated { get; private set; }
+
+        private bool ServerIsConnected { get; set; }
 
         /// <summary>
         /// Begins listening for incoming requests over this StreamingRequestHandler's server.
@@ -244,7 +248,11 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
 
             try
             {
-                // TODO: Add server reconnect logic if it is disconnected when attempting to send.
+                if (!ServerIsConnected)
+                {
+                    await Reconnect();
+                }
+
                 var serverResponse = await _server.SendAsync(request, cancellationToken).ConfigureAwait(false);
 
                 if (serverResponse.StatusCode == (int)HttpStatusCode.OK)
@@ -270,7 +278,11 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
         {
             try
             {
-                // TODO: Add server reconnect logic if it is disconnected when attempting to send.
+                if (!ServerIsConnected)
+                {
+                    await Reconnect();
+                }
+
                 var serverResponse = await _server.SendAsync(request, cancellationToken).ConfigureAwait(false);
 
                 if (serverResponse.StatusCode == (int)HttpStatusCode.OK)
@@ -326,7 +338,12 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
             return null;
         }
 
-        private async void Reconnect(IDictionary<string, string> requestHeaders = null)
+        private void Server_Disconnected(object sender, DisconnectedEventArgs e)
+        {
+            ServerIsConnected = false;
+        }
+
+        private async Task Reconnect(IDictionary<string, string> requestHeaders = null)
         {
             // TODO: Need to get authentication headers from the httpClient on the adapter.
             var clientWebSocket = new ClientWebSocket();
