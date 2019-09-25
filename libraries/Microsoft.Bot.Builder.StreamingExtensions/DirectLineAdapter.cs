@@ -352,7 +352,7 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
                 {
                     // The conversation has moved to a new connection and the former StreamingRequestHandler needs to be told to forget about it.
                     var correctHandler = possibleHandlers.OrderBy(x => x.LastUpdated).Last();
-                    foreach (var handler in _requestHandlers.Where(x => x.ServiceUrl == activity.ServiceUrl).Where(y => y.HasConversation(activity.Conversation.Id)))
+                    foreach (var handler in possibleHandlers)
                     {
                         if (handler != correctHandler)
                         {
