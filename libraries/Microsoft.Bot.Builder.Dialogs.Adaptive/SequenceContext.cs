@@ -11,6 +11,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 {
     public class SequenceContext : DialogContext
     {
+#pragma warning disable SA1310 // Field should not contain underscore.
+        private const string WAIT_FOR_INPUT_PATH = "turn.waitForInput";
+#pragma warning restore SA1310 // Field should not contain underscore.
+
         private readonly string changeKey;
 
         private DialogSet actionDialogs;
@@ -43,6 +47,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         {
             get { return this.Context.TurnState.Get<List<ActionChangeList>>(changeKey); }
             private set { this.Context.TurnState[changeKey] = value; }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether the active AdaptiveDialog should wait for user input.
+        /// </summary>
+        /// <value>
+        /// Should the AdaptiveDialog wait for user input.
+        /// </value>
+        public bool WaitForInput
+        {
+            get { return this.State.GetBoolValue(WAIT_FOR_INPUT_PATH); }
+            private set { this.State.SetValue(WAIT_FOR_INPUT_PATH, value); }
         }
 
         /// <summary>

@@ -33,9 +33,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
             }
         }
 
-        public static async Task<T> LoadAsync<T>(IResource resource, ResourceExplorer resourceExplorer, Source.IRegistry registry)
+        public static async Task<T> LoadAsync<T>(IResource resource, ResourceExplorer resourceExplorer, ISourceMap sourceMap)
         {
-            IRefResolver refResolver = new IdRefResolver(resourceExplorer, registry);
+            IRefResolver refResolver = new IdRefResolver(resourceExplorer, sourceMap);
 
             string id = resource.Id;
             var paths = new Stack<string>();
@@ -49,7 +49,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
             {
                 var json = await resource.ReadTextAsync();
 
-                return Load<T>(registry, refResolver, paths, json);
+                return Load<T>(sourceMap, refResolver, paths, json);
             }
             catch (Exception err)
             {
@@ -65,9 +65,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
             }
         }
 
-        public static T Load<T>(IResource resource, ResourceExplorer resourceExplorer, Source.IRegistry registry)
+        public static T Load<T>(IResource resource, ResourceExplorer resourceExplorer, ISourceMap sourceMap)
         {
-            return LoadAsync<T>(resource, resourceExplorer, registry).GetAwaiter().GetResult();
+            return LoadAsync<T>(resource, resourceExplorer, sourceMap).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -93,12 +93,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
             return value;
         }
 
-        private static T Load<T>(Source.IRegistry registry, IRefResolver refResolver, Stack<string> paths, string json)
+        private static T Load<T>(ISourceMap sourceMap, IRefResolver refResolver, Stack<string> paths, string json)
         {
             var converters = new List<JsonConverter>();
             foreach (var component in components)
             {
-                var result = component.GetConverters(registry, refResolver, paths);
+                var result = component.GetConverters(sourceMap, refResolver, paths);
                 if (result.Any())
                 {
                     converters.AddRange(result);

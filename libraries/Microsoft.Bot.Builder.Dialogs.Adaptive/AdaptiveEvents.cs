@@ -7,5 +7,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
     {
         public const string RecognizedIntent = "recognizedIntent";
         public const string UnknownIntent = "unknownIntent";
+        public const string EndOfActions = "endOfActions";
     }
 }

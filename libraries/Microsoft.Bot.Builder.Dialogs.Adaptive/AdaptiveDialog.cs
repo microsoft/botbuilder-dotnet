@@ -316,9 +316,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
         protected override string OnComputeId()
         {
-            if (DebugSupport.SourceRegistry.TryGetValue(this, out var range))
+            if (DebugSupport.SourceMap.TryGetValue(this, out var range))
             {
-                return $"{this.GetType().Name}({Path.GetFileName(range.Path)}:{range.Start.LineIndex})";
+                return $"{this.GetType().Name}({Path.GetFileName(range.Path)}:{range.StartPoint.LineIndex})";
             }
 
             return $"{this.GetType().Name}[]";
@@ -402,17 +402,36 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
         protected async Task<DialogTurnResult> OnEndOfActionsAsync(SequenceContext sequenceContext, CancellationToken cancellationToken = default(CancellationToken))
         {
-            // End dialog and return result
+            // Is the current dialog still on the stack?
             if (sequenceContext.ActiveDialog != null)
             {
-                if (this.ShouldEnd(sequenceContext))
+                // Are we waiting for non-modal input?
+                if (sequenceContext.WaitForInput)
                 {
-                    sequenceContext.State.TryGetValue<object>(DefaultResultProperty, out var result);
-                    return await sequenceContext.EndDialogAsync(result, cancellationToken).ConfigureAwait(false);
+                    return Dialog.EndOfTurn;
                 }
                 else
                 {
-                    return Dialog.EndOfTurn;
+                    // Raise EndOfActions event
+                    var endOfActionsEvent = new DialogEvent() { Name = AdaptiveEvents.EndOfActions, Bubble = false };
+                    var handled = await OnDialogEventAsync(sequenceContext, endOfActionsEvent, cancellationToken).ConfigureAwait(false);
+
+                    if (handled)
+                    {
+                        // EndOfActions event was handled
+                        return await ContinueActionsAsync(sequenceContext, null, cancellationToken).ConfigureAwait(false);
+                    }
+                    else if (!this.ShouldEnd(sequenceContext))
+                    {
+                        // The dialog is being held open for a turn
+                        return Dialog.EndOfTurn;
+                    }
+                    else
+                    {
+                        // The dialog should be ended
+                        sequenceContext.State.TryGetValue<object>(DefaultResultProperty, out var result);
+                        return await sequenceContext.EndDialogAsync(result, cancellationToken).ConfigureAwait(false);
+                    }
                 }
             }
             else

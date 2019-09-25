@@ -14,8 +14,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 {
     public class LanguageGeneratorConverter : InterfaceConverter<ILanguageGenerator>
     {
-        public LanguageGeneratorConverter(IRefResolver refResolver, Source.IRegistry registry, Stack<string> paths)
-            : base(refResolver, registry, paths)
+        public LanguageGeneratorConverter(IRefResolver refResolver, ISourceMap sourceMap, Stack<string> paths)
+            : base(refResolver, sourceMap, paths)
         {
         }
 

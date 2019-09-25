@@ -77,7 +77,7 @@ namespace Microsoft.Bot.Builder.TestBot.Json
                 {
                     var name = Path.GetFileNameWithoutExtension(Path.GetFileNameWithoutExtension(resource.Id));
                     choiceInput.Choices.Value.Add(new Choice(name));
-                    var dialog = DeclarativeTypeLoader.Load<Dialog>(resource, this.resourceExplorer, DebugSupport.SourceRegistry);
+                    var dialog = DeclarativeTypeLoader.Load<Dialog>(resource, this.resourceExplorer, DebugSupport.SourceMap);
                     handleChoice.Cases.Add(new Case($"{name}", new List<Dialog>() { dialog }));
                 }
                 catch (SyntaxErrorException err)
