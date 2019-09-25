@@ -154,14 +154,7 @@ namespace Microsoft.Bot.Builder.Teams
 
                         case "task/submit":
                             var submitResponse = await OnTeamsTaskModuleSubmitAsync(turnContext, SafeCast<TaskModuleRequest>(turnContext.Activity.Value), cancellationToken).ConfigureAwait(false);
-                            if (submitResponse == null)
-                            {
-                                return CreateInvokeResponse();
-                            }
-                            else
-                            {
-                                return CreateInvokeResponse(new TaskModuleResponse { Task = submitResponse });
-                            }
+                            return CreateInvokeResponse(submitResponse != null ? new TaskModuleResponse(submitResponse) : null);
 
                         default:
                             throw new NotImplementedException();
