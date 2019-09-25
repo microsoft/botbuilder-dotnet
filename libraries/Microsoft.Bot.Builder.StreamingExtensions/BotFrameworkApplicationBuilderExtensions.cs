@@ -17,7 +17,6 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
     {
         /// <summary>
         /// Maps various endpoint handlers for the registered bot into the request execution pipeline using the V4 protocol.
-        /// Throws <see cref="ArgumentNullException"/> if application is null.
         /// </summary>
         /// <param name="applicationBuilder">The application builder that defines the bot's pipeline.<see cref="IApplicationBuilder"/>.</param>
         /// <param name="onTurnError">Optional function to perform on turn errors.</param>

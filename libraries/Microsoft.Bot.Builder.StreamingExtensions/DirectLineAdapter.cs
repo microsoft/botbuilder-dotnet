@@ -7,7 +7,9 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.WebSockets;
 using System.Security.Claims;
+using System.Security.Cryptography.X509Certificates;
 using System.Security.Principal;
 using System.Threading;
 using System.Threading.Tasks;
@@ -33,9 +35,8 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
     /// <summary>
     /// A Bot Builder Adapter implementation used to handle Bot Framework HTTP and streaming requests. Supports the Bot Framework Protocol v3 with Streaming Extensions.
     /// </summary>
-    public class DirectLineAdapter : BotFrameworkAdapter, IRequestHandler, IBotFrameworkHttpAdapter
+    public class DirectLineAdapter : BotFrameworkAdapter, IBotFrameworkHttpAdapter
     {
-        private const string DefaultPipeName = "bfv4.pipes";
         private const string AuthHeaderName = "authorization";
         private const string ChannelIdHeaderName = "channelid";
         private const string InvokeResponseKey = "DirectLineAdapter.InvokeResponse";
@@ -46,8 +47,7 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
         private readonly ILogger _logger;
         private IBot _bot;
         private ClaimsIdentity _claimsIdentity;
-        private HttpClient _httpClient;
-        private IStreamingTransportServer _transportServer;
+        private IList<StreamingRequestHandler> _requestHandlers;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DirectLineAdapter"/> class for processing HTTP or streaming requests.
@@ -109,39 +109,6 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DirectLineAdapter"/> class for processing streaming requests over Named Pipe connections.
-        /// Throws <see cref="ArgumentNullException"/> if arguments are null.
-        /// </summary>
-        /// <param name="onTurnError">Optional function to perform on turn errors.</param>
-        /// <param name="bot">The <see cref="IBot"/> to be used for all requests to this handler.</param>
-        /// <param name="pipeName">The name of the named pipe to use when creating the server.</param>
-        /// <param name="logger">The ILogger implementation this adapter should use.</param>
-        public DirectLineAdapter(Func<ITurnContext, Exception, Task> onTurnError, IBot bot, string pipeName = null, ILogger<BotFrameworkHttpAdapter> logger = null)
-             : base(new SimpleCredentialProvider())
-        {
-            if (string.IsNullOrWhiteSpace(pipeName))
-            {
-                pipeName = DefaultPipeName;
-            }
-
-            OnTurnError = onTurnError;
-            _bot = bot ?? throw new ArgumentNullException(nameof(bot));
-            _transportServer = new NamedPipeServer(pipeName, this);
-            _httpClient = new StreamingHttpClient(_transportServer, _logger);
-            _claimsIdentity = new ClaimsIdentity();
-            if (logger != null)
-            {
-                _logger = logger;
-            }
-            else
-            {
-                _logger = NullLogger.Instance;
-            }
-
-            _userAgent = GetUserAgent();
-        }
-
-        /// <summary>
         ///  Initializes a new instance of the <see cref="DirectLineAdapter"/> class for processing HTTP requests.
         /// </summary>
         /// <param name="configuration"> The configuration containing credential and channel provider details for this adapter. </param>
@@ -157,32 +124,6 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
                 ChannelValidation.OpenIdMetadataUrl = openIdEndpoint;
                 GovernmentChannelValidation.OpenIdMetadataUrl = openIdEndpoint;
             }
-        }
-
-        /// <summary>
-        /// Returns an adapter configured for use with the specified Named Pipe.
-        /// Unlike other connections the Named Pipe connection is created as part of the Bot's startup procedure,
-        /// this requires exposing a method of binding a Named Pipe to a specific adapter instance prior to any
-        /// messages being received. In line with the typical patterns used in Bot startup configurations this
-        /// method allows for a dependency injection friendly path of newing up an adapter for use with a
-        /// streaming connection over a Named Pipe.
-        /// </summary>
-        /// <param name="onTurnError">Optional function to perform on turn errors.</param>
-        /// <param name="bot">The <see cref="IBot"/> to be used for all requests to this handler.</param>
-        /// <param name="pipeName">The name of the named pipe to use when creating the server.</param>
-        /// <param name="logger">The ILogger implementation this adapter should use.</param>
-        /// <returns>A task that runs until the server is disconnected.</returns>
-        public DirectLineAdapter CreateAdapterListeningOnNamedPipe(Func<ITurnContext, Exception, Task> onTurnError, IBot bot, string pipeName = DefaultPipeName, ILogger<BotFrameworkHttpAdapter> logger = null)
-        {
-            var adapter = new DirectLineAdapter(onTurnError, bot, pipeName, logger);
-
-            // We don't want to await for the connection to complete, as that means the session is over.
-            // In the DI model there is nothing waiting for the session to complete, so there is no
-            // need to watch for the completion of this task. Simply start the session and hand
-            // up the adapter.
-            _ = adapter.ConnectNamedPipe();
-
-            return adapter;
         }
 
         /// <summary>
@@ -221,16 +162,12 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
                 return response;
             }
 
-            if (string.Equals(request.Verb, StreamingRequest.POST, StringComparison.InvariantCultureIgnoreCase) &&
-                         string.Equals(request.Path, "/api/messages", StringComparison.InvariantCultureIgnoreCase))
+            // We accept all POSTs regardless of path.
+            if (string.Equals(request.Verb, StreamingRequest.POST, StringComparison.InvariantCultureIgnoreCase))
             {
                 return await ProcessStreamingRequestAsync(request, response, cancellationToken).ConfigureAwait(false);
             }
 
-            response.StatusCode = (int)HttpStatusCode.NotFound;
-            logger.LogError($"Unknown verb and path: {request.Verb} {request.Path}");
-
-            return response;
         }
 
         /// <summary>
@@ -360,11 +297,6 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
         /// <returns>A task that represents the work queued to execute.</returns>
         public override async Task<ResourceResponse[]> SendActivitiesAsync(ITurnContext turnContext, Activity[] activities, CancellationToken cancellationToken)
         {
-            if (!(_httpClient is StreamingHttpClient))
-            {
-                return await base.SendActivitiesAsync(turnContext, activities, cancellationToken);
-            }
-
             if (turnContext == null)
             {
                 throw new ArgumentNullException(nameof(turnContext));
@@ -407,40 +339,23 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
                 {
                     // if it is a Trace activity we only send to the channel if it's the emulator.
                 }
-
-                string requestPath;
-                if (!string.IsNullOrWhiteSpace(activity.ReplyToId) && activity.ReplyToId.Length >= 1)
+                else if (activity.ServiceUrl.StartsWith("u"))
                 {
-                    requestPath = $"/v3/conversations/{activity.Conversation?.Id}/activities/{activity.ReplyToId}";
+                    // The ServiceUrl for streaming channels begin with the string "urn" and contain
+                    // information unique to streaming connections. If the ServiceUrl for this
+                    // activity begins with a "u" we hand it off to be processed via a new or
+                    // existing streaming connection.
+                    response = await SendStreamingActivityAsync(activity);
+                }
+                else if (!string.IsNullOrWhiteSpace(activity.ReplyToId))
+                {
+                    var connectorClient = turnContext.TurnState.Get<IConnectorClient>();
+                    response = await connectorClient.Conversations.ReplyToActivityAsync(activity, cancellationToken).ConfigureAwait(false);
                 }
                 else
                 {
-                    requestPath = $"/v3/conversations/{activity.Conversation?.Id}/activities";
-                }
-
-                var streamAttachments = UpdateAttachmentStreams(activity);
-                var request = StreamingRequest.CreatePost(requestPath);
-                request.SetBody(activity);
-                if (streamAttachments != null)
-                {
-                    foreach (var attachment in streamAttachments)
-                    {
-                        request.AddStream(attachment);
-                    }
-                }
-
-                try
-                {
-                    var serverResponse = await (_httpClient as StreamingHttpClient).SendAsync(request, cancellationToken).ConfigureAwait(false);
-
-                    if (serverResponse.StatusCode == (int)HttpStatusCode.OK)
-                    {
-                        response = serverResponse.ReadBodyAsJson<ResourceResponse>();
-                    }
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex.Message);
+                    var connectorClient = turnContext.TurnState.Get<IConnectorClient>();
+                    response = await connectorClient.Conversations.SendToConversationAsync(activity, cancellationToken).ConfigureAwait(false);
                 }
 
                 // If No response is set, then default to a "simple" response. This can't really be done
@@ -463,13 +378,41 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
             return responses;
         }
 
+        private async Task<ResourceResponse> SendStreamingActivityAsync(Activity activity, CancellationToken cancellationToken = default)
+        {
+            // Check to see if any of this adapter's StreamingRequestHandlers is associated with this conversation.
+            var possibleHandlers = _requestHandlers.Where(x => x.HasConversation(activity.Conversation.Id));
+
+            if (possibleHandlers.Count() > 0)
+            {
+                foreach (var handler in possibleHandlers)
+                {
+                    if (handler.ServiceUrl == activity.ServiceUrl)
+                    {
+                        return await handler.SendActivityAsync(activity, cancellationToken);
+                    }
+                }
+            }
+            else
+            {
+                // This is a proactive message that will need a new streaming connection opened.
+                // TODO: This connection needs authentication headers added to it.
+                var connection = new ClientWebSocket();
+                await connection.ConnectAsync(new Uri(activity.ServiceUrl), cancellationToken);
+                var handler = new StreamingRequestHandler(_logger, this, connection);
+
+                return await handler.SendActivityAsync(activity, cancellationToken);
+            }
+
+            return null;
+        }
+
         /// <summary>
         /// Primary adapter method for processing activities sent from streaming channel.
         /// Creates a turn context and runs the middleware pipeline for an incoming activity.
         /// Throws <see cref="ArgumentNullException"/> on null arguments.
         /// </summary>
         /// <param name="activity">The <see cref="Activity"/> to process.</param>
-        /// <param name="callback">The code to run at the end of the adapter's middleware pipeline.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute. If the activity type
@@ -482,14 +425,9 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
         /// then an <see cref="InvokeResponse"/> is returned, otherwise null is returned.
         /// <para>This method registers the following services for the turn.<list type="bullet"/></para>
         /// </remarks>
-        public async Task<InvokeResponse> ProcessActivityAsync(Activity activity, BotCallbackHandler callback, CancellationToken cancellationToken = default)
+        public async Task<InvokeResponse> ProcessActivityAsync(Activity activity, CancellationToken cancellationToken = default)
         {
             BotAssert.ActivityNotNull(activity);
-
-            if (callback == null)
-            {
-                throw new ArgumentNullException(nameof(callback));
-            }
 
             _logger.LogInformation($"Received an incoming activity.  ActivityId: {activity.Id}");
 
@@ -499,7 +437,7 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
                 var connectorClient = CreateStreamingConnectorClient(activity);
                 context.TurnState.Add(connectorClient);
 
-                await RunPipelineAsync(context, callback, cancellationToken).ConfigureAwait(false);
+                await RunPipelineAsync(context, _bot.OnTurnAsync, cancellationToken).ConfigureAwait(false);
 
                 if (activity.Type == ActivityTypes.Invoke)
                 {
@@ -519,6 +457,26 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
         }
 
         /// <summary>
+        /// Creates a new StreamingRequestHandler to listen to the specififed Named Pipe
+        /// and pass requests to this adapter.
+        /// </summary>
+        /// <param name="pipeName">The name of the Named Pipe to connect to.</param>
+        /// <returns>A task that completes only once the StreamingRequestHandler has stopped listening
+        /// for incoming requests on the Named Pipe.</returns>
+        public async Task AddNamedPipeConnection(string pipeName)
+        {
+            if (_requestHandlers == null)
+            {
+                _requestHandlers = new List<StreamingRequestHandler>();
+            }
+
+            var requestHandler = new StreamingRequestHandler(_logger, this, pipeName);
+            _requestHandlers.Add(requestHandler);
+
+            await requestHandler.StartListening();
+        }
+
+        /// <summary>
         /// Build and return versioning information used for telemetry, including:
         /// The Schema version is 3.1, put into the Microsoft-BotFramework header,
         /// Protocol Extension Info,
@@ -535,12 +493,6 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
                 ConnectorClient.GetASPNetVersion(),
                 ConnectorClient.GetOsVersion(),
                 ConnectorClient.GetArchitecture());
-
-        /// <summary>
-        /// Starts the adapter listening to the named pipe created.
-        /// </summary>
-        /// <returns>A task.</returns>
-        private async Task ConnectNamedPipe() => await _transportServer.StartAsync();
 
         /// <summary>
         /// Process the initial request to establish a long lived connection via a streaming server.
@@ -576,10 +528,9 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
             try
             {
                 var socket = await httpRequest.HttpContext.WebSockets.AcceptWebSocketAsync().ConfigureAwait(false);
-                _transportServer = new WebSocketServer(socket, this);
-                _httpClient = new StreamingHttpClient(_transportServer, _logger);
+                var requestHandler = new StreamingRequestHandler(_logger, this, socket);
 
-                await _transportServer.StartAsync().ConfigureAwait(false);
+                await requestHandler.StartListening().ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -598,28 +549,6 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
             var connectorClient = new ConnectorClient(new Uri(activity.ServiceUrl), emptyCredentials, customHttpClient: _httpClient);
             return connectorClient;
         }
-
-        private IEnumerable<HttpContent> UpdateAttachmentStreams(Activity activity)
-    {
-        if (activity == null || activity.Attachments == null)
-        {
-            return null;
-        }
-
-        var streamAttachments = activity.Attachments.Where(a => a.Content is Stream);
-        if (streamAttachments.Any())
-        {
-            activity.Attachments = activity.Attachments.Where(a => !(a.Content is Stream)).ToList();
-            return streamAttachments.Select(streamAttachment =>
-            {
-                var streamContent = new StreamContent(streamAttachment.Content as Stream);
-                streamContent.Headers.TryAddWithoutValidation("Content-Type", streamAttachment.ContentType);
-                return streamContent;
-            });
-        }
-
-        return null;
-    }
 
         private async Task<bool> AuthCheck(HttpRequest httpRequest)
         {
@@ -670,58 +599,6 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
         {
             httpRequest.HttpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
             await httpRequest.HttpContext.Response.WriteAsync($"Unable to authentiate. Missing header: {headerName}").ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// Performs the actual processing of a request, handing it off to the adapter and returning the response.
-        /// </summary>
-        /// <param name="request">A ReceiveRequest from the connected channel.</param>
-        /// <param name="response">The response to update and return, ultimately sent to client.</param>
-        /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns>The response ready to send to the client.</returns>
-        private async Task<StreamingResponse> ProcessStreamingRequestAsync(ReceiveRequest request, StreamingResponse response, CancellationToken cancellationToken)
-        {
-            var body = string.Empty;
-
-            try
-            {
-                body = request.ReadBodyAsString();
-            }
-            catch (Exception ex)
-            {
-                response.StatusCode = (int)HttpStatusCode.BadRequest;
-                _logger.LogError("Request body missing or malformed: " + ex.Message);
-
-                return response;
-            }
-
-            try
-            {
-                var bot = _bot ?? throw new Exception("Unable to find bot when processing request.");
-                var invokeResponse = await ProcessActivityAsync(body, request.Streams, _bot.OnTurnAsync, cancellationToken).ConfigureAwait(false);
-
-                if (invokeResponse == null)
-                {
-                    response.StatusCode = (int)HttpStatusCode.OK;
-                }
-                else
-                {
-                    response.StatusCode = invokeResponse.Status;
-                    if (invokeResponse.Body != null)
-                    {
-                        response.SetBody(invokeResponse.Body);
-                    }
-                }
-
-                invokeResponse = null;
-            }
-            catch (Exception ex)
-            {
-                response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                _logger.LogError(ex.Message);
-            }
-
-            return response;
         }
     }
 }
