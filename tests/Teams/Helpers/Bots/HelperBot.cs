@@ -32,8 +32,9 @@ namespace Microsoft.BotBuilderSamples.Bots
                 var channels = await GetChannelsAsync(turnContext, cancellationToken);
                 Random random = new Random();
                 var channel = random.Next(0, channels.Count);
+                var channelName = channels[channel].Name == null ? "General" : channels[channel].Name;
 
-                var msg = MessageFactory.Text($"I will send this to the {channels[channel].Name} channel");
+                var msg = MessageFactory.Text($"I will send this to the {channelName} channel");
 
                 await turnContext.SendActivityAsync(msg, cancellationToken);
                 await turnContext.TeamsSendToChannelAsync(channels[channel].Id, msg, cancellationToken);
