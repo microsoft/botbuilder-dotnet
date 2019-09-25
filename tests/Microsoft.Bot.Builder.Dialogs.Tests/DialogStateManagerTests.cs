@@ -16,6 +16,7 @@ using Microsoft.Bot.Builder.Expressions.Parser;
 using Microsoft.Bot.Builder.LanguageGeneration;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Tests
@@ -200,6 +201,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             Assert.AreEqual(null, state.GetValue<string>("user.xxx"));
             Assert.AreEqual("default", state.GetValue<string>("user.xxx", () => "default"));
+
+            foreach (var key in state.Keys)
+            {
+                Assert.AreEqual(state.GetValue<object>(key), state[key]);
+            }
         }
 
         [TestMethod]
