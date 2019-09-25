@@ -12,11 +12,11 @@
         },
         "options": {
             "type": "object",
-            "title": "Value",
-            "description": "One or more values that are passed to the replacing dialog.",
+            "title": "Options",
+            "description": "One or more options that are passed to the dialog that is called.",
             "additionalProperties": {
                 "type": "string",
-                "title": "Value"
+                "title": "Options"
             }
         }
     }

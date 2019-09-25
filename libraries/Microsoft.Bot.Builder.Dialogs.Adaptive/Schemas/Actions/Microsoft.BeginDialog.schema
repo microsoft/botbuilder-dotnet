@@ -1,8 +1,8 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
     "$role": "unionType(Microsoft.IDialog)",
-    "title": "Call a dialog",
-    "description": "Call another dialog.",
+    "title": "Begin a dialog",
+    "description": "Begin another dialog.",
     "type": "object",
     "properties": {
         "dialog": {
@@ -15,11 +15,11 @@
         },
         "options": {
             "type": "object",
-            "title": "Value",
-            "description": "One or more values that are passed to the dialog that is called.",
+            "title": "Options",
+            "description": "One or more options that are passed to the dialog that is called.",
             "additionalProperties": {
                 "type": "string",
-                "title": "Value"
+                "title": "Options"
             }
         },
         "resultProperty": {

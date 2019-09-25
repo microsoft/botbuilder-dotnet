@@ -8,7 +8,7 @@
         "value": {
             "$role": "expression",
             "title": "Value",
-            "description": "Value that will be passed back to the parent dialog.",
+            "description": "Result value returned to the parent dialog.",
             "examples": [
                 "dialog.userName",
                 "'tomato'"

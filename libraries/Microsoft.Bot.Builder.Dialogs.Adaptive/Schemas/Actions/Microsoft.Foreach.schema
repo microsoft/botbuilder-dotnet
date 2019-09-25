@@ -1,8 +1,8 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
     "$role": "unionType(Microsoft.IDialog)",
-    "title": "For-each loop",
-    "description": "Execute actions on each item in an array.",
+    "title": "For-each item",
+    "description": "Execute actions on each item in an a collection.",
     "type": "object",
     "properties": {
         "itemsProperty": {
@@ -19,7 +19,7 @@
                 "$type": "Microsoft.IDialog"
             },
             "title": "Actions",
-            "description": "Actions to execute for each item."
+            "description": "Actions to execute for each item. Use '$foreach.value' to access the value of each item."
         }
     },
     "required": [

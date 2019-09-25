@@ -1,8 +1,8 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
     "$role": "unionType(Microsoft.IDialog)",
-    "title": "Change conversation flow",
-    "description": "Change the current conversation flow to respond to an interruption.",
+    "title": "Edit actions.",
+    "description": "Edit the current list of actions.",
     "type": "object",
     "required": [
         "changeType",
@@ -12,7 +12,7 @@
         "changeType": {
             "type": "string",
             "title": "Type of change",
-            "description": "Type of change to apply to the current conversation flow.",
+            "description": "Type of change to apply to the current actions.",
             "enum": [
                 "InsertActions",
                 "InsertActionsBeforeTags",
@@ -27,7 +27,7 @@
                 "$type": "Microsoft.IDialog"
             },
             "title": "Actions",
-            "description": "Actions to execute in response to the interruption."
+            "description": "Actions to apply as part of the edit operation."
         }
     }
 }

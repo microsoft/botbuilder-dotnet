@@ -35,7 +35,7 @@
         "selector": {
             "$type": "Microsoft.ITriggerSelector",
             "title": "Selector",
-            "description": "Policy to determine which trigger is executed."
+            "description": "Policy to determine which trigger is executed. Defaults to a 'best match' selector (optional)."
         },
         "triggers": {
             "type": "array",

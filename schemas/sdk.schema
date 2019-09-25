@@ -27,7 +27,7 @@
         },
         {
             "title": "Microsoft.BeginDialog",
-            "description": "Call another dialog.",
+            "description": "Begin another dialog.",
             "$ref": "#/definitions/Microsoft.BeginDialog"
         },
         {
@@ -72,7 +72,7 @@
         },
         {
             "title": "Microsoft.DebugBreak",
-            "description": "If debugger is attached, do a debugger break at this point",
+            "description": "If debugger is attached, stop the execution at this point in the conversation.",
             "$ref": "#/definitions/Microsoft.DebugBreak"
         },
         {
@@ -87,7 +87,7 @@
         },
         {
             "title": "Microsoft.EditActions",
-            "description": "Change the current conversation flow to respond to an interruption.",
+            "description": "Edit the current list of actions.",
             "$ref": "#/definitions/Microsoft.EditActions"
         },
         {
@@ -112,7 +112,7 @@
         },
         {
             "title": "Microsoft.EndTurn",
-            "description": "End the current action without ending the dialog.",
+            "description": "End the current turn without ending the dialog.",
             "$ref": "#/definitions/Microsoft.EndTurn"
         },
         {
@@ -122,7 +122,7 @@
         },
         {
             "title": "Microsoft.Foreach",
-            "description": "Execute actions on each item in an array.",
+            "description": "Execute actions on each item in an a collection.",
             "$ref": "#/definitions/Microsoft.Foreach"
         },
         {
@@ -232,7 +232,7 @@
         },
         {
             "title": "Microsoft.OnConversationUpdateActivity",
-            "description": "Actions to perform on receipt of an activity with type ConversationUpdate.",
+            "description": "Actions to perform on receipt of an activity with type 'ConversationUpdate'.",
             "$ref": "#/definitions/Microsoft.OnConversationUpdateActivity"
         },
         {
@@ -247,7 +247,7 @@
         },
         {
             "title": "Microsoft.OnEndOfConversationActivity",
-            "description": "Actions to perform on receipt of an activity with type EndOfConversation.",
+            "description": "Actions to perform on receipt of an activity with type 'EndOfConversation'.",
             "$ref": "#/definitions/Microsoft.OnEndOfConversationActivity"
         },
         {
@@ -257,12 +257,12 @@
         },
         {
             "title": "Microsoft.OnEventActivity",
-            "description": "Actions to perform on receipt of an activity with type Event.",
+            "description": "Actions to perform on receipt of an activity with type 'Event'.",
             "$ref": "#/definitions/Microsoft.OnEventActivity"
         },
         {
             "title": "Microsoft.OnHandoffActivity",
-            "description": "Actions to perform on receipt of an activity with type HandOff.",
+            "description": "Actions to perform on receipt of an activity with type 'HandOff'.",
             "$ref": "#/definitions/Microsoft.OnHandoffActivity"
         },
         {
@@ -272,27 +272,27 @@
         },
         {
             "title": "Microsoft.OnInvokeActivity",
-            "description": "Actions to perform on receipt of an activity with type Invoke.",
+            "description": "Actions to perform on receipt of an activity with type 'Invoke'.",
             "$ref": "#/definitions/Microsoft.OnInvokeActivity"
         },
         {
             "title": "Microsoft.OnMessageActivity",
-            "description": "Actions to perform on receipt of an activity with type Message. Overrides Intent trigger.",
+            "description": "Actions to perform on receipt of an activity with type 'Message'. Overrides Intent trigger.",
             "$ref": "#/definitions/Microsoft.OnMessageActivity"
         },
         {
             "title": "Microsoft.OnMessageDeleteActivity",
-            "description": "Actions to perform on receipt of an activity with type MessageDelete.",
+            "description": "Actions to perform on receipt of an activity with type 'MessageDelete'.",
             "$ref": "#/definitions/Microsoft.OnMessageDeleteActivity"
         },
         {
             "title": "Microsoft.OnMessageReactionActivity",
-            "description": "Actions to perform on receipt of an activity with type MessageReaction.",
+            "description": "Actions to perform on receipt of an activity with type 'MessageReaction'.",
             "$ref": "#/definitions/Microsoft.OnMessageReactionActivity"
         },
         {
             "title": "Microsoft.OnMessageUpdateActivity",
-            "description": "Actions to perform on receipt of an activity with type MessageUpdate.",
+            "description": "Actions to perform on receipt of an activity with type 'MessageUpdate'.",
             "$ref": "#/definitions/Microsoft.OnMessageUpdateActivity"
         },
         {
@@ -302,7 +302,7 @@
         },
         {
             "title": "Microsoft.OnTypingActivity",
-            "description": "Actions to perform on receipt of an activity with type Typing.",
+            "description": "Actions to perform on receipt of an activity with type 'Typing'.",
             "$ref": "#/definitions/Microsoft.OnTypingActivity"
         },
         {
@@ -357,7 +357,7 @@
         },
         {
             "title": "Microsoft.SendActivity",
-            "description": "Respond with a message.",
+            "description": "Respond with an activity.",
             "$ref": "#/definitions/Microsoft.SendActivity"
         },
         {
@@ -372,7 +372,7 @@
         },
         {
             "title": "Microsoft.SwitchCondition",
-            "description": "Multi-way branch the conversation flow based on a condition.",
+            "description": "Execute different actions based on the value of a condition.",
             "$ref": "#/definitions/Microsoft.SwitchCondition"
         },
         {
@@ -526,7 +526,7 @@
                 "selector": {
                     "$type": "Microsoft.ITriggerSelector",
                     "title": "Selector",
-                    "description": "Policy to determine which trigger is executed.",
+                    "description": "Policy to determine which trigger is executed. Defaults to a 'best match' selector (optional).",
                     "$ref": "#/definitions/Microsoft.ITriggerSelector"
                 },
                 "triggers": {
@@ -785,8 +785,8 @@
         },
         "Microsoft.BeginDialog": {
             "$role": "unionType(Microsoft.IDialog)",
-            "title": "Call a dialog",
-            "description": "Call another dialog.",
+            "title": "Begin a dialog",
+            "description": "Begin another dialog.",
             "type": "object",
             "properties": {
                 "$type": {
@@ -824,11 +824,11 @@
                 },
                 "options": {
                     "type": "object",
-                    "title": "Value",
-                    "description": "One or more values that are passed to the dialog that is called.",
+                    "title": "Options",
+                    "description": "One or more options that are passed to the dialog that is called.",
                     "additionalProperties": {
                         "type": "string",
-                        "title": "Value"
+                        "title": "Options"
                     }
                 },
                 "resultProperty": {
@@ -1846,7 +1846,7 @@
         "Microsoft.DebugBreak": {
             "$role": "unionType(Microsoft.IDialog)",
             "title": "Debugger break",
-            "description": "If debugger is attached, do a debugger break at this point",
+            "description": "If debugger is attached, stop the execution at this point in the conversation.",
             "type": "object",
             "properties": {
                 "$type": {
@@ -2008,8 +2008,8 @@
         },
         "Microsoft.EditActions": {
             "$role": "unionType(Microsoft.IDialog)",
-            "title": "Change conversation flow",
-            "description": "Change the current conversation flow to respond to an interruption.",
+            "title": "Edit actions.",
+            "description": "Edit the current list of actions.",
             "type": "object",
             "properties": {
                 "$type": {
@@ -2039,7 +2039,7 @@
                 "changeType": {
                     "type": "string",
                     "title": "Type of change",
-                    "description": "Type of change to apply to the current conversation flow.",
+                    "description": "Type of change to apply to the current actions.",
                     "enum": [
                         "InsertActions",
                         "InsertActionsBeforeTags",
@@ -2051,7 +2051,7 @@
                 "actions": {
                     "type": "array",
                     "title": "Actions",
-                    "description": "Actions to execute in response to the interruption.",
+                    "description": "Actions to apply as part of the edit operation.",
                     "items": {
                         "$type": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
@@ -2344,7 +2344,7 @@
                 "value": {
                     "$role": "expression",
                     "title": "Value",
-                    "description": "Value that will be passed back to the parent dialog.",
+                    "description": "Result value returned to the parent dialog.",
                     "examples": [
                         "dialog.userName",
                         "'tomato'"
@@ -2376,7 +2376,7 @@
         "Microsoft.EndTurn": {
             "$role": "unionType(Microsoft.IDialog)",
             "title": "End turn",
-            "description": "End the current action without ending the dialog.",
+            "description": "End the current turn without ending the dialog.",
             "type": "object",
             "properties": {
                 "$type": {
@@ -2577,8 +2577,8 @@
         },
         "Microsoft.Foreach": {
             "$role": "unionType(Microsoft.IDialog)",
-            "title": "For-each loop",
-            "description": "Execute actions on each item in an array.",
+            "title": "For-each item",
+            "description": "Execute actions on each item in an a collection.",
             "type": "object",
             "properties": {
                 "$type": {
@@ -2617,7 +2617,7 @@
                 "actions": {
                     "type": "array",
                     "title": "Actions",
-                    "description": "Actions to execute for each item.",
+                    "description": "Actions to execute for each item. Use '$foreach.value' to access the value of each item.",
                     "items": {
                         "$type": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
@@ -2975,7 +2975,7 @@
                 },
                 {
                     "title": "Microsoft.BeginDialog",
-                    "description": "Call another dialog.",
+                    "description": "Begin another dialog.",
                     "$ref": "#/definitions/Microsoft.BeginDialog"
                 },
                 {
@@ -3000,7 +3000,7 @@
                 },
                 {
                     "title": "Microsoft.DebugBreak",
-                    "description": "If debugger is attached, do a debugger break at this point",
+                    "description": "If debugger is attached, stop the execution at this point in the conversation.",
                     "$ref": "#/definitions/Microsoft.DebugBreak"
                 },
                 {
@@ -3010,7 +3010,7 @@
                 },
                 {
                     "title": "Microsoft.EditActions",
-                    "description": "Change the current conversation flow to respond to an interruption.",
+                    "description": "Edit the current list of actions.",
                     "$ref": "#/definitions/Microsoft.EditActions"
                 },
                 {
@@ -3030,12 +3030,12 @@
                 },
                 {
                     "title": "Microsoft.EndTurn",
-                    "description": "End the current action without ending the dialog.",
+                    "description": "End the current turn without ending the dialog.",
                     "$ref": "#/definitions/Microsoft.EndTurn"
                 },
                 {
                     "title": "Microsoft.Foreach",
-                    "description": "Execute actions on each item in an array.",
+                    "description": "Execute actions on each item in an a collection.",
                     "$ref": "#/definitions/Microsoft.Foreach"
                 },
                 {
@@ -3090,7 +3090,7 @@
                 },
                 {
                     "title": "Microsoft.SendActivity",
-                    "description": "Respond with a message.",
+                    "description": "Respond with an activity.",
                     "$ref": "#/definitions/Microsoft.SendActivity"
                 },
                 {
@@ -3100,7 +3100,7 @@
                 },
                 {
                     "title": "Microsoft.SwitchCondition",
-                    "description": "Multi-way branch the conversation flow based on a condition.",
+                    "description": "Execute different actions based on the value of a condition.",
                     "$ref": "#/definitions/Microsoft.SwitchCondition"
                 },
                 {
@@ -3188,7 +3188,7 @@
                 },
                 {
                     "title": "Microsoft.OnConversationUpdateActivity",
-                    "description": "Actions to perform on receipt of an activity with type ConversationUpdate.",
+                    "description": "Actions to perform on receipt of an activity with type 'ConversationUpdate'.",
                     "$ref": "#/definitions/Microsoft.OnConversationUpdateActivity"
                 },
                 {
@@ -3203,7 +3203,7 @@
                 },
                 {
                     "title": "Microsoft.OnEndOfConversationActivity",
-                    "description": "Actions to perform on receipt of an activity with type EndOfConversation.",
+                    "description": "Actions to perform on receipt of an activity with type 'EndOfConversation'.",
                     "$ref": "#/definitions/Microsoft.OnEndOfConversationActivity"
                 },
                 {
@@ -3213,12 +3213,12 @@
                 },
                 {
                     "title": "Microsoft.OnEventActivity",
-                    "description": "Actions to perform on receipt of an activity with type Event.",
+                    "description": "Actions to perform on receipt of an activity with type 'Event'.",
                     "$ref": "#/definitions/Microsoft.OnEventActivity"
                 },
                 {
                     "title": "Microsoft.OnHandoffActivity",
-                    "description": "Actions to perform on receipt of an activity with type HandOff.",
+                    "description": "Actions to perform on receipt of an activity with type 'HandOff'.",
                     "$ref": "#/definitions/Microsoft.OnHandoffActivity"
                 },
                 {
@@ -3228,27 +3228,27 @@
                 },
                 {
                     "title": "Microsoft.OnInvokeActivity",
-                    "description": "Actions to perform on receipt of an activity with type Invoke.",
+                    "description": "Actions to perform on receipt of an activity with type 'Invoke'.",
                     "$ref": "#/definitions/Microsoft.OnInvokeActivity"
                 },
                 {
                     "title": "Microsoft.OnMessageActivity",
-                    "description": "Actions to perform on receipt of an activity with type Message. Overrides Intent trigger.",
+                    "description": "Actions to perform on receipt of an activity with type 'Message'. Overrides Intent trigger.",
                     "$ref": "#/definitions/Microsoft.OnMessageActivity"
                 },
                 {
                     "title": "Microsoft.OnMessageDeleteActivity",
-                    "description": "Actions to perform on receipt of an activity with type MessageDelete.",
+                    "description": "Actions to perform on receipt of an activity with type 'MessageDelete'.",
                     "$ref": "#/definitions/Microsoft.OnMessageDeleteActivity"
                 },
                 {
                     "title": "Microsoft.OnMessageReactionActivity",
-                    "description": "Actions to perform on receipt of an activity with type MessageReaction.",
+                    "description": "Actions to perform on receipt of an activity with type 'MessageReaction'.",
                     "$ref": "#/definitions/Microsoft.OnMessageReactionActivity"
                 },
                 {
                     "title": "Microsoft.OnMessageUpdateActivity",
-                    "description": "Actions to perform on receipt of an activity with type MessageUpdate.",
+                    "description": "Actions to perform on receipt of an activity with type 'MessageUpdate'.",
                     "$ref": "#/definitions/Microsoft.OnMessageUpdateActivity"
                 },
                 {
@@ -3258,7 +3258,7 @@
                 },
                 {
                     "title": "Microsoft.OnTypingActivity",
-                    "description": "Actions to perform on receipt of an activity with type Typing.",
+                    "description": "Actions to perform on receipt of an activity with type 'Typing'.",
                     "$ref": "#/definitions/Microsoft.OnTypingActivity"
                 },
                 {
@@ -3302,7 +3302,7 @@
         },
         "Microsoft.IfCondition": {
             "$role": "unionType(Microsoft.IDialog)",
-            "title": "If-else branch",
+            "title": "If condition",
             "description": "Two-way branch the conversation flow based on a condition.",
             "type": "object",
             "properties": {
@@ -4630,7 +4630,7 @@
         "Microsoft.OnConversationUpdateActivity": {
             "$role": "unionType(Microsoft.ITriggerCondition)",
             "title": "On ConversationUpdate activity",
-            "description": "Actions to perform on receipt of an activity with type ConversationUpdate.",
+            "description": "Actions to perform on receipt of an activity with type 'ConversationUpdate'.",
             "type": "object",
             "properties": {
                 "$type": {
@@ -4852,7 +4852,7 @@
         "Microsoft.OnEndOfConversationActivity": {
             "$role": "unionType(Microsoft.ITriggerCondition)",
             "title": "On EndOfConversation activity",
-            "description": "Actions to perform on receipt of an activity with type EndOfConversation.",
+            "description": "Actions to perform on receipt of an activity with type 'EndOfConversation'.",
             "type": "object",
             "properties": {
                 "$type": {
@@ -4992,7 +4992,7 @@
         "Microsoft.OnEventActivity": {
             "$role": "unionType(Microsoft.ITriggerCondition)",
             "title": "On Event activity",
-            "description": "Actions to perform on receipt of an activity with type Event.",
+            "description": "Actions to perform on receipt of an activity with type 'Event'.",
             "type": "object",
             "properties": {
                 "$type": {
@@ -5062,7 +5062,7 @@
         "Microsoft.OnHandoffActivity": {
             "$role": "unionType(Microsoft.ITriggerCondition)",
             "title": "On Handoff activity",
-            "description": "Actions to perform on receipt of an activity with type HandOff.",
+            "description": "Actions to perform on receipt of an activity with type 'HandOff'.",
             "type": "object",
             "properties": {
                 "$type": {
@@ -5216,7 +5216,7 @@
         "Microsoft.OnInvokeActivity": {
             "$role": "unionType(Microsoft.ITriggerCondition)",
             "title": "On Invoke activity",
-            "description": "Actions to perform on receipt of an activity with type Invoke.",
+            "description": "Actions to perform on receipt of an activity with type 'Invoke'.",
             "type": "object",
             "properties": {
                 "$type": {
@@ -5286,7 +5286,7 @@
         "Microsoft.OnMessageActivity": {
             "$role": "unionType(Microsoft.ITriggerCondition)",
             "title": "On Message activity",
-            "description": "Actions to perform on receipt of an activity with type Message. Overrides Intent trigger.",
+            "description": "Actions to perform on receipt of an activity with type 'Message'. Overrides Intent trigger.",
             "type": "object",
             "properties": {
                 "$type": {
@@ -5356,7 +5356,7 @@
         "Microsoft.OnMessageDeleteActivity": {
             "$role": "unionType(Microsoft.ITriggerCondition)",
             "title": "On MessageDelete activity",
-            "description": "Actions to perform on receipt of an activity with type MessageDelete.",
+            "description": "Actions to perform on receipt of an activity with type 'MessageDelete'.",
             "type": "object",
             "properties": {
                 "$type": {
@@ -5426,7 +5426,7 @@
         "Microsoft.OnMessageReactionActivity": {
             "$role": "unionType(Microsoft.ITriggerCondition)",
             "title": "On MessageReaction activity",
-            "description": "Actions to perform on receipt of an activity with type MessageReaction.",
+            "description": "Actions to perform on receipt of an activity with type 'MessageReaction'.",
             "type": "object",
             "properties": {
                 "$type": {
@@ -5496,7 +5496,7 @@
         "Microsoft.OnMessageUpdateActivity": {
             "$role": "unionType(Microsoft.ITriggerCondition)",
             "title": "On MessageUpdate activity",
-            "description": "Actions to perform on receipt of an activity with type MessageUpdate.",
+            "description": "Actions to perform on receipt of an activity with type 'MessageUpdate'.",
             "type": "object",
             "properties": {
                 "$type": {
@@ -5636,7 +5636,7 @@
         "Microsoft.OnTypingActivity": {
             "$role": "unionType(Microsoft.ITriggerCondition)",
             "title": "On Typing activity",
-            "description": "Actions to perform on receipt of an activity with type Typing.",
+            "description": "Actions to perform on receipt of an activity with type 'Typing'.",
             "type": "object",
             "properties": {
                 "$type": {
@@ -6314,11 +6314,11 @@
                 },
                 "options": {
                     "type": "object",
-                    "title": "Value",
-                    "description": "One or more values that are passed to the replacing dialog.",
+                    "title": "Options",
+                    "description": "One or more options that are passed to the dialog that is called.",
                     "additionalProperties": {
                         "type": "string",
-                        "title": "Value"
+                        "title": "Options"
                     }
                 }
             },
@@ -6345,8 +6345,8 @@
         },
         "Microsoft.SendActivity": {
             "$role": "unionType(Microsoft.IDialog)",
-            "title": "Send a response",
-            "description": "Respond with a message.",
+            "title": "Send an activity",
+            "description": "Respond with an activity.",
             "type": "object",
             "properties": {
                 "$type": {
@@ -6376,7 +6376,7 @@
                 "activity": {
                     "$type": "Microsoft.IActivityTemplate",
                     "title": "Response",
-                    "description": "Information included in the message.",
+                    "description": "Response activity.",
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 }
             },
@@ -6535,8 +6535,8 @@
         },
         "Microsoft.SwitchCondition": {
             "$role": "unionType(Microsoft.IDialog)",
-            "title": "Multi-way branch",
-            "description": "Multi-way branch the conversation flow based on a condition.",
+            "title": "Switch condition",
+            "description": "Execute different actions based on the value of a condition.",
             "type": "object",
             "properties": {
                 "$type": {

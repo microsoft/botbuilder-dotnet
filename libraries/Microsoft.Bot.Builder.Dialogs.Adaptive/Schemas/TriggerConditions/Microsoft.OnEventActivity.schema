@@ -2,7 +2,7 @@
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
     "$role": "unionType(Microsoft.ITriggerCondition)",
     "title": "On Event activity",
-    "description": "Actions to perform on receipt of an activity with type Event.",
+    "description": "Actions to perform on receipt of an activity with type 'Event'.",
     "type": "object",
     "allOf": [
         {
