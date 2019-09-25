@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,9 +13,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Form.Actions
     {
         [JsonConstructor]
         public Ask(
-            string text = null, 
-            List<string> expectedSlots = null, 
-            [CallerFilePath] string callerPath = "", 
+            string text = null,
+            List<string> expectedSlots = null,
+            [CallerFilePath] string callerPath = "",
             [CallerLineNumber] int callerLine = 0)
         : base(text, callerPath, callerLine)
         {
@@ -33,14 +34,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Form.Actions
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (ExpectedSlots != null)
-            {
-                dc.State.SetValue("this.expectedSlots", ExpectedSlots);
-            }
-
-            await base.BeginDialogAsync(dc, options, cancellationToken);
-
-            return Dialog.EndOfTurn;
+            dc.State.SetValue("dialog.expectedSlots", ExpectedSlots);
+            return await base.BeginDialogAsync(dc, options, cancellationToken);
         }
     }
 }

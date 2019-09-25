@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,10 +16,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
         public FormDialog(DialogSchema schema)
         {
             Schema = schema;
-            Selector = new FormSelector(new MostSpecificSelector
+            Selector = new MostSpecificSelector
             {
                 Selector = new FirstSelector()
-            });
+            };
         }
 
         [JsonProperty("schema")]
@@ -112,6 +113,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
             }
 
             return handled;
+        }
+
+        protected override async Task<DialogTurnResult> OnEndOfActionsAsync(SequenceContext sequenceContext, CancellationToken cancellationToken = default)
+        {
+            if (sequenceContext.ActiveDialog != null)
+            {
+                if (sequenceContext.State.TryGetValue("dialog.expectedSlots", out var expected))
+                {
+                    // Wait for user input
+                    return Dialog.EndOfTurn;
+                }
+                else
+                {
+                    // TODO: Not sure this is right
+                    await ProcessFormAsync(sequenceContext, cancellationToken);
+                }
+            }
+
+            return await base.OnEndOfActionsAsync(sequenceContext, cancellationToken);
         }
 
         // A big issue is that we want multiple firings.  We can get this from quantification, but not arrays.
