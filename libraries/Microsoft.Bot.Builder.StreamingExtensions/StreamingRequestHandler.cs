@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.IO;
@@ -6,6 +8,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.WebSockets;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Connector;
@@ -25,7 +28,7 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
         private readonly ILogger _logger;
         private readonly DirectLineAdapter _adapter;
         private readonly string _userAgent;
-        private readonly SortedSet<string> _conversations;
+        private readonly IDictionary<string, DateTime> _conversations;
 
         // TODO: this is a placeholder until the well defined reconnection path is determined.
         private string _reconnectPath = "api/reconnect";
@@ -48,10 +51,10 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
                 throw new ArgumentNullException(nameof(socket));
             }
 
-            _conversations = new SortedSet<string>();
-            LastUpdated = DateTime.Now;
+            _conversations = new ConcurrentDictionary<string, DateTime>();
             _userAgent = GetUserAgent();
             _server = new WebSocketServer(socket, this);
+            ServerIsConnected = true;
             _server.Disconnected += Server_Disconnected;
         }
 
@@ -72,10 +75,10 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
                 throw new ArgumentNullException(nameof(pipeName));
             }
 
-            _conversations = new SortedSet<string>();
-            LastUpdated = DateTime.Now;
+            _conversations = new ConcurrentDictionary<string, DateTime>();
             _userAgent = GetUserAgent();
             _server = new NamedPipeServer(pipeName, this);
+            ServerIsConnected = true;
             _server.Disconnected += Server_Disconnected;
         }
 
@@ -86,14 +89,6 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
         /// The URL of the channel endpoint this StreamingRequestHandler receives requests from.
         /// </value>
         public string ServiceUrl { get; private set; }
-
-        /// <summary>
-        /// Gets the <see cref="DateTime"/>  of the most recent update to this StreamingRequestHandler's conversation list.
-        /// </summary>
-        /// <value>
-        /// The <see cref="DateTime"/>  of the most recent update to this StreamingRequestHandler's conversation list.
-        /// </value>
-        public DateTime LastUpdated { get; private set; }
 
         private bool ServerIsConnected { get; set; }
 
@@ -114,7 +109,23 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
         /// <returns>True if the conversation ID was found in this StreamingRequestHandler's conversation set.</returns>
         public bool HasConversation(string conversationId)
         {
-            return _conversations.Contains(conversationId);
+            return _conversations.ContainsKey(conversationId);
+        }
+
+        /// <summary>
+        /// Gets the <see cref="DateTime"/> when the conversation was added to this request handler.
+        /// </summary>
+        /// <param name="conversationId">The id of the conversation.</param>
+        /// <returns><see cref="DateTime.MinValue"/> if conversation is not found, otherwise the <see cref="DateTime"/>
+        /// the conversation was added to this <see cref="StreamingRequestHandler"/>.</returns>
+        public DateTime ConversationAddedTime(string conversationId)
+        {
+            if (!_conversations.TryGetValue(conversationId, out DateTime addedTime))
+            {
+                addedTime = DateTime.MinValue;
+            }
+
+            return addedTime;
         }
 
         /// <summary>
@@ -162,8 +173,12 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
                     ServiceUrl = activity.ServiceUrl;
                 }
 
-                _conversations.Add(activity.Conversation.Id);
-                LastUpdated = DateTime.Now;
+                // If this is the first time the handler has seen this conversation it needs to be added to the dictionary so the
+                // adapter is able to route requests to the correct handler.
+                if (!HasConversation(activity.Conversation.Id))
+                {
+                    _conversations.Add(activity.Conversation.Id, DateTime.Now);
+                }
 
                 /*
                  * Any content sent as part of a StreamingRequest, including the request body
