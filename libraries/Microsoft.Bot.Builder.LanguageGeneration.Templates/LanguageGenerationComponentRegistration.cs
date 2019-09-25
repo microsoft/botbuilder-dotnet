@@ -23,9 +23,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             yield return new TypeRegistration<StaticActivityTemplate>("Microsoft.StaticActivityTemplate");
         }
 
-        public override IEnumerable<JsonConverter> GetConverters(Source.IRegistry registry, IRefResolver refResolver, Stack<string> paths)
+        public override IEnumerable<JsonConverter> GetConverters(ISourceMap sourceMap, IRefResolver refResolver, Stack<string> paths)
         {
-            yield return new LanguageGeneratorConverter(refResolver, registry, paths);
+            yield return new LanguageGeneratorConverter(refResolver, sourceMap, paths);
             yield return new ActivityTemplateConverter();
         }
     }
