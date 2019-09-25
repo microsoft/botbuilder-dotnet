@@ -23,6 +23,7 @@ namespace Microsoft.BotBuilderSamples.Bots
         {
             switch (action.CommandId)
             {
+                // These commandIds are defined in the Teams App Manifest.
                 case "createCard":
                     return HandleCreateCardCommands(turnContext, action);
 
@@ -35,7 +36,8 @@ namespace Microsoft.BotBuilderSamples.Bots
 
         private MessagingExtensionActionResponse HandleCreateCardCommands(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionAction action)
         {
-            var actionData = (action.Data as JObject).ToObject<CreateCardData>();
+            var actionData = action.Data;
+            var createCardData = ((JObject)actionData).ToObject<CreateCardData>();
             var response = new MessagingExtensionActionResponse
             {
                 ComposeExtension = new MessagingExtensionResult
@@ -47,9 +49,9 @@ namespace Microsoft.BotBuilderSamples.Bots
 
             var card = new HeroCard
             {
-                Title = actionData.Title,
-                Subtitle = actionData.Subtitle,
-                Text = actionData.Text,
+                Title = createCardData.Title,
+                Subtitle = createCardData.Subtitle,
+                Text = createCardData.Text,
             };
 
             var attachments = new List<MessagingExtensionAttachment>();
@@ -71,7 +73,8 @@ namespace Microsoft.BotBuilderSamples.Bots
                 Title = $"{action.MessagePayload.From.User.DisplayName} sent this message:",
                 Text = action.MessagePayload.Body.Content,
             };
-            var includeImageData = (action.Data as JObject).ToObject<IncludeImageData>();
+            var actionData = action.Data;
+            var includeImageData = ((JObject)actionData).ToObject<IncludeImageData>();
             if (includeImageData.IncludeImage)
             {
                 heroCard.Images = new List<CardImage>
