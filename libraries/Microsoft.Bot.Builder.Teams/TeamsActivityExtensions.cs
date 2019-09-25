@@ -8,7 +8,13 @@ namespace Microsoft.Bot.Builder.Teams
 {
     public static class TeamsActivityExtensions
     {
-        public static void NotifyUser(this Activity activity)
+        public static string TeamsGetTeamId(this IActivity activity)
+        {
+            var channelData = activity.GetChannelData<TeamsChannelData>();
+            return channelData?.Team?.Id;
+        }
+
+        public static void TeamsNotifyUser(this IActivity activity)
         {
             var teamsChannelData = activity.ChannelData as TeamsChannelData;
             if (teamsChannelData == null)

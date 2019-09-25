@@ -23,21 +23,14 @@ namespace Microsoft.Bot.Builder.Teams
         public static Task<ResourceResponse> TeamsSendToGeneralChannelAsync(this ITurnContext turnContext, IActivity activity, CancellationToken cancellationToken = default)
         {
             // The Team Id is also the Id of the general channel
-            var teamId = turnContext.TeamsGetTeamId();
-            return turnContext.TeamsSendToChannelAsync(teamId, activity, cancellationToken);
-        }
-
-        public static string TeamsGetTeamId(this ITurnContext turnContext)
-        {
-            var channelData = turnContext.Activity.GetChannelData<TeamsChannelData>();
-            var teamId = channelData?.Team?.Id;
+            var teamId = turnContext.Activity.TeamsGetTeamId();
 
             if (string.IsNullOrEmpty(teamId))
             {
                 throw new Exception("The current Activity was not sent from a Teams Team.");
             }
 
-            return teamId;
+            return turnContext.TeamsSendToChannelAsync(teamId, activity, cancellationToken);
         }
     }
 }
