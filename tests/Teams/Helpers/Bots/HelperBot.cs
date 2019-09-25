@@ -36,8 +36,8 @@ namespace Microsoft.BotBuilderSamples.Bots
 
                 var msg = MessageFactory.Text($"I will send this to the {channelName} channel");
 
-                await turnContext.SendActivityAsync(msg, cancellationToken);
                 await turnContext.TeamsSendToChannelAsync(channels[channel].Id, msg, cancellationToken);
+                await turnContext.SendActivityAsync(msg, cancellationToken);
             }
             else if (turnContext.Activity.Text == "general")
             {
