@@ -3,14 +3,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Teams;
 using Microsoft.Bot.Schema;
-using Microsoft.Bot.Schema.Teams;
-using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Microsoft.BotBuilderSamples.Bots
 {
@@ -23,7 +20,7 @@ namespace Microsoft.BotBuilderSamples.Bots
             if (turnContext.Activity.Text == "notify")
             {
                 var msg = MessageFactory.Text("This message will contain a notification");
-                msg.NotifyUser();
+                msg.TeamsNotifyUser();
 
                 await turnContext.SendActivityAsync(msg, cancellationToken);
             }
@@ -33,7 +30,7 @@ namespace Microsoft.BotBuilderSamples.Bots
                 var msg = MessageFactory.Text("hi");
                 msg.Attachments = new List<Attachment> { heroCard.ToAttachment() };
                 msg.Summary = "This text will show in the activity feed as preview text";
-                msg.NotifyUser();
+                msg.TeamsNotifyUser();
 
                 await turnContext.SendActivityAsync(msg, cancellationToken);
             }
