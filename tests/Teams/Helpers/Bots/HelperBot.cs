@@ -27,6 +27,16 @@ namespace Microsoft.BotBuilderSamples.Bots
 
                 await turnContext.SendActivityAsync(msg, cancellationToken);
             }
+            else if (turnContext.Activity.Text == "card")
+            {
+                var heroCard = new HeroCard(text: "You will receive a notification in your Activity feed.");
+                var msg = MessageFactory.Text("hi");
+                msg.Attachments = new List<Attachment> { heroCard.ToAttachment() };
+                msg.Summary = "This text will show in the activity feed as preview text";
+                msg.NotifyUser();
+
+                await turnContext.SendActivityAsync(msg, cancellationToken);
+            }
             else if (turnContext.Activity.Text == "random")
             {
                 var channels = await GetChannelsAsync(turnContext, cancellationToken);
@@ -47,7 +57,7 @@ namespace Microsoft.BotBuilderSamples.Bots
             else
             {
                 var msg = MessageFactory.Text("Send me \"notify\" to get a notificaiton. Send me \"random\" to send a message to a random channel." +
-                    "Send me \"general\" to send a message to the general channel");
+                    "Send me \"general\" to send a message to the general channel. Send me \"card\" to receive a card notification.");
                 await turnContext.SendActivityAsync(msg, cancellationToken);
             }
         }
