@@ -363,7 +363,7 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
                     return await correctHandler.SendActivityAsync(activity, cancellationToken);
                 }
 
-                return await possibleHandlers.Where(x => x.ServiceUrl == activity.ServiceUrl).FirstOrDefault().SendActivityAsync(activity, cancellationToken);
+                return await possibleHandlers.FirstOrDefault().SendActivityAsync(activity, cancellationToken);
             }
             else
             {
