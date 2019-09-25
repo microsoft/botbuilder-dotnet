@@ -440,6 +440,9 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
 
         private IConnectorClient CreateStreamingConnectorClient(Activity activity, StreamingRequestHandler requestHandler)
         {
+            // TODO: When this is merged into the existing adapter it should be moved inside of
+            // the existing CreateConnectorClient and use the serviceURL to determine which
+            // version of the connector to construct.
             var emptyCredentials = (_channelProvider != null && _channelProvider.IsGovernment()) ?
                     MicrosoftGovernmentAppCredentials.Empty :
                     MicrosoftAppCredentials.Empty;
