@@ -219,7 +219,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
                     return await stepContext.NextAsync(new List<QueryResult>() { qnaResult }, cancellationToken).ConfigureAwait(false);
                 }
-                else if (reply.Equals(qnaMakerOptions.CardNoMatchText))
+                else if (reply.Equals(qnaMakerOptions.CardNoMatchText, StringComparison.OrdinalIgnoreCase))
                 {
                     await stepContext.Context.SendActivityAsync(qnaMakerOptions.CardNoMatchResponse, cancellationToken: cancellationToken).ConfigureAwait(false);
                     return await stepContext.EndDialogAsync().ConfigureAwait(false);
@@ -282,7 +282,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
             var qnaMakerOptions = dialogOptions[QnAOptions] as QnAMakerOptions;
             var reply = stepContext.Context.Activity.Text;
 
-            if (reply.Equals(qnaMakerOptions.CardNoMatchText))
+            if (reply.Equals(qnaMakerOptions.CardNoMatchText, StringComparison.OrdinalIgnoreCase))
             {
                 await stepContext.Context.SendActivityAsync(qnaMakerOptions.CardNoMatchResponse, cancellationToken: cancellationToken).ConfigureAwait(false);
                 return await stepContext.EndDialogAsync().ConfigureAwait(false);

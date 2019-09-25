@@ -25,6 +25,11 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             var activity1 = x.AsMessageActivity();
             var activity2 = y.AsMessageActivity();
 
+            if (activity1 == null || activity2 == null)
+            {
+                return false;
+            }
+
             // Check for text 
             if (activity1.Text.Trim() != activity2.Text.Trim())
             {

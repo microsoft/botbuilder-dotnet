@@ -8,6 +8,8 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Builder.Expressions;
+using Microsoft.Bot.Builder.Expressions.Parser;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
@@ -20,6 +22,8 @@ namespace Microsoft.Bot.Builder.AI.QnA
     {
         private QnAMaker qnamaker;
         private readonly HttpClient httpClient;
+        private Expression knowledgebaseId;
+        private Expression endpointkey;
 
         public QnAMakerAction(
             string knowledgeBaseId, 
@@ -33,8 +37,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
             Metadata[] strictFilters = null,  
             HttpClient httpClient = null, 
             [CallerFilePath] string sourceFilePath = "", 
-            [CallerLineNumber] int sourceLineNumber = 0
-            )
+            [CallerLineNumber] int sourceLineNumber = 0)
             : base()
         {
             this.RegisterSourceLocation(sourceFilePath, sourceLineNumber);
@@ -58,13 +61,22 @@ namespace Microsoft.Bot.Builder.AI.QnA
         }
 
         [JsonProperty("knowledgeBaseId")]
-        public string KnowledgeBaseId { get; set; }
+        public string KnowledgeBaseId
+        {
+            get { return knowledgebaseId?.ToString(); }
+            set { knowledgebaseId = value != null ? new ExpressionEngine().Parse(value) : null;  }
+        }
 
         [JsonProperty("hostname")]
-        public string HostName { get; set; }
+        public string HostName
+        { get; set; }
 
         [JsonProperty("endpointKey")]
-        public string EndpointKey { get; set; }
+        public string EndpointKey
+        {
+            get { return endpointkey?.ToString(); }
+            set { endpointkey = value != null ? new ExpressionEngine().Parse(value) : null; }
+        }
 
         [JsonProperty("threshold")]
         public float Threshold { get; set; }
@@ -153,7 +165,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
             var dialogOptions = new Dictionary<string, object>
             {
-                ["qnaOptions"] = qnamakerOptions
+                [QnAMakerActionBuilder.QnAOptions] = qnamakerOptions
             };
 
             return await dc.BeginDialogAsync(QnAMakerActionBuilder.QnAMakerDialogName, dialogOptions, cancellationToken).ConfigureAwait(false);
