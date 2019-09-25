@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.WebSockets;
+using System.Runtime.CompilerServices;
 using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading;
@@ -280,7 +281,11 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
             BotAssert.ActivityNotNull(activity);
 
             _logger.LogInformation($"Received an incoming activity.  ActivityId: {activity.Id}");
-            var requestHandler = _requestHandlers.Where(x => x.HasConversation(activity.Conversation.Id)).Where(y => y.ServiceUrl == activity.ServiceUrl).FirstOrDefault();
+
+            // If a conversation has moved from one connection to another for the same Channel or Skill and
+            // hasn't been forgotten by the previous StreamingRequestHandler. The last requestHandler
+            // the conversation has been associated with should always be the active connection.
+            var requestHandler = _requestHandlers.Where(x => x.ServiceUrl == activity.ServiceUrl).Where(y => y.HasConversation(activity.Conversation.Id)).LastOrDefault();
             using (var context = new TurnContext(this, activity))
             {
                 context.TurnState.Add<IIdentity>(BotIdentityKey, _claimsIdentity);
@@ -339,17 +344,26 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
         private async Task<ResourceResponse> SendStreamingActivityAsync(Activity activity, CancellationToken cancellationToken = default)
         {
             // Check to see if any of this adapter's StreamingRequestHandlers is associated with this conversation.
-            var possibleHandlers = _requestHandlers.Where(x => x.HasConversation(activity.Conversation.Id));
+            var possibleHandlers = _requestHandlers.Where(x => x.ServiceUrl == activity.ServiceUrl).Where(y => y.HasConversation(activity.Conversation.Id));
 
             if (possibleHandlers.Count() > 0)
             {
-                foreach (var handler in possibleHandlers)
+                if (possibleHandlers.Count() > 1)
                 {
-                    if (handler.ServiceUrl == activity.ServiceUrl)
+                    // The conversation has moved to a new connection and the former StreamingRequestHandler needs to be told to forget about it.
+                    var correctHandler = possibleHandlers.OrderBy(x => x.LastUpdated).Last();
+                    foreach (var handler in _requestHandlers.Where(x => x.ServiceUrl == activity.ServiceUrl).Where(y => y.HasConversation(activity.Conversation.Id)))
                     {
-                        return await handler.SendActivityAsync(activity, cancellationToken);
+                        if (handler != correctHandler)
+                        {
+                            handler.ForgetConversation(activity.Conversation.Id);
+                        }
                     }
+
+                    return await correctHandler.SendActivityAsync(activity, cancellationToken);
                 }
+
+                return await possibleHandlers.Where(x => x.ServiceUrl == activity.ServiceUrl).FirstOrDefault().SendActivityAsync(activity, cancellationToken);
             }
             else
             {
@@ -368,8 +382,6 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
 
                 return await handler.SendActivityAsync(activity, cancellationToken);
             }
-
-            return null;
         }
 
         /// <summary>

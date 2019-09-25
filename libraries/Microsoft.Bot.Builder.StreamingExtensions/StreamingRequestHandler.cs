@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -48,6 +49,7 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
             }
 
             _conversations = new SortedSet<string>();
+            LastUpdated = DateTime.Now;
             _userAgent = GetUserAgent();
             _server = new WebSocketServer(socket, this);
         }
@@ -70,6 +72,7 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
             }
 
             _conversations = new SortedSet<string>();
+            LastUpdated = DateTime.Now;
             _userAgent = GetUserAgent();
             _server = new NamedPipeServer(pipeName, this);
         }
@@ -81,6 +84,14 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
         /// The URL of the channel endpoint this StreamingRequestHandler receives requests from.
         /// </value>
         public string ServiceUrl { get; private set; }
+
+        /// <summary>
+        /// Gets the <see cref="DateTime"/>  of the most recent update to this StreamingRequestHandler's conversation list.
+        /// </summary>
+        /// <value>
+        /// The <see cref="DateTime"/>  of the most recent update to this StreamingRequestHandler's conversation list.
+        /// </value>
+        public DateTime LastUpdated { get; private set; }
 
         /// <summary>
         /// Begins listening for incoming requests over this StreamingRequestHandler's server.
@@ -100,6 +111,16 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
         public bool HasConversation(string conversationId)
         {
             return _conversations.Contains(conversationId);
+        }
+
+        /// <summary>
+        /// Removes the given conversation from this instance of the StreamingRequestHandler's collection
+        /// of tracked conversations.
+        /// </summary>
+        /// <param name="conversationId">The ID of the conversation to remove.</param>
+        public void ForgetConversation(string conversationId)
+        {
+            _conversations.Remove(conversationId);
         }
 
         public override async Task<StreamingResponse> ProcessRequestAsync(ReceiveRequest request, ILogger<RequestHandler> logger = null, object context = null, CancellationToken cancellationToken = default)
@@ -138,6 +159,7 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
                 }
 
                 _conversations.Add(activity.Conversation.Id);
+                LastUpdated = DateTime.Now;
 
                 /*
                  * Any content sent as part of a StreamingRequest, including the request body
