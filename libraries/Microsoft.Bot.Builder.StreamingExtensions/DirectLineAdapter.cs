@@ -3,13 +3,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.WebSockets;
 using System.Security.Claims;
-using System.Security.Cryptography.X509Certificates;
 using System.Security.Principal;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,16 +17,9 @@ using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
-using Microsoft.Bot.StreamingExtensions;
-using Microsoft.Bot.StreamingExtensions.Payloads;
-using Microsoft.Bot.StreamingExtensions.Transport;
-using Microsoft.Bot.StreamingExtensions.Transport.NamedPipes;
-using Microsoft.Bot.StreamingExtensions.Transport.WebSockets;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.StreamingExtensions
 {
@@ -41,7 +32,6 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
         private const string ChannelIdHeaderName = "channelid";
         private const string InvokeResponseKey = "DirectLineAdapter.InvokeResponse";
         private const string BotIdentityKey = "BotIdentity";
-        private readonly string _userAgent;
         private readonly IChannelProvider _channelProvider;
         private readonly ICredentialProvider _credentialProvider;
         private readonly ILogger _logger;
@@ -97,7 +87,6 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
         {
             OnTurnError = onTurnError;
             _bot = bot ?? throw new ArgumentNullException(nameof(bot));
-            _userAgent = GetUserAgent();
             if (logger != null)
             {
                 _logger = logger;
@@ -124,117 +113,6 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
                 ChannelValidation.OpenIdMetadataUrl = openIdEndpoint;
                 GovernmentChannelValidation.OpenIdMetadataUrl = openIdEndpoint;
             }
-        }
-
-        /// <summary>
-        /// Checks the validity of the request and attempts to map it the correct virtual endpoint,
-        /// then generates and returns a response if appropriate.
-        /// </summary>
-        /// <param name="request">A ReceiveRequest from the connected channel.</param>
-        /// <param name="logger">Optional logger used to log request information and error details.</param>
-        /// <param name="context">Optional context to operate within. Unused in bot implementation.</param>
-        /// /// <param name="cancellationToken">Optional cancellation token.</param>
-        /// <returns>A response created by the BotAdapter to be sent to the client that originated the request.</returns>
-        public async Task<StreamingResponse> ProcessRequestAsync(ReceiveRequest request, ILogger logger, object context = null, CancellationToken cancellationToken = default)
-        {
-            // If a specific logger is passed in, use it for this request. Otherwise use the adapter's logger.
-            if (logger == null)
-            {
-                logger = _logger;
-            }
-
-            var response = new StreamingResponse();
-
-            if (request == null || string.IsNullOrEmpty(request.Verb) || string.IsNullOrEmpty(request.Path))
-            {
-                response.StatusCode = (int)HttpStatusCode.BadRequest;
-                logger.LogError("Request missing verb and/or path.");
-
-                return response;
-            }
-
-            if (string.Equals(request.Verb, StreamingRequest.GET, StringComparison.InvariantCultureIgnoreCase) &&
-                         string.Equals(request.Path, "/api/version", StringComparison.InvariantCultureIgnoreCase))
-            {
-                response.StatusCode = (int)HttpStatusCode.OK;
-                response.SetBody(new VersionInfo() { UserAgent = _userAgent });
-
-                return response;
-            }
-
-            // We accept all POSTs regardless of path.
-            if (string.Equals(request.Verb, StreamingRequest.POST, StringComparison.InvariantCultureIgnoreCase))
-            {
-                return await ProcessStreamingRequestAsync(request, response, cancellationToken).ConfigureAwait(false);
-            }
-
-        }
-
-        /// <summary>
-        /// Overload for processing activities when given the activity a json string representation of a request body.
-        /// Creates a turn context and runs the middleware pipeline for an incoming activity.
-        /// Throws <see cref="ArgumentNullException"/> on null arguments.
-        /// </summary>
-        /// <param name="body">The json string to deserialize into an <see cref="Activity"/>.</param>
-        /// <param name="streams">A set of streams associated with but not attached to the <see cref="Activity"/>.</param>
-        /// <param name="callback">The code to run at the end of the adapter's middleware pipeline.</param>
-        /// <param name="cancellationToken">A cancellation token that can be used by other objects
-        /// or threads to receive notice of cancellation.</param>
-        /// <returns>A task that represents the work queued to execute. If the activity type
-        /// was 'Invoke' and the corresponding key (channelId + activityId) was found
-        /// then an InvokeResponse is returned, otherwise null is returned.</returns>
-        /// <remarks>Call this method to reactively send a message to a conversation.
-        /// If the task completes successfully, then if the activity's <see cref="Activity.Type"/>
-        /// is <see cref="ActivityTypes.Invoke"/> and the corresponding key
-        /// (<see cref="Activity.ChannelId"/> + <see cref="Activity.Id"/>) is found
-        /// then an <see cref="InvokeResponse"/> is returned, otherwise null is returned.
-        /// <para>This method registers the following services for the turn.<list type="bullet"/></para>
-        /// </remarks>
-        public async Task<InvokeResponse> ProcessActivityAsync(string body, List<IContentStream> streams, BotCallbackHandler callback, CancellationToken cancellationToken = default)
-        {
-            if (string.IsNullOrWhiteSpace(body))
-            {
-                throw new ArgumentNullException(nameof(body));
-            }
-
-            if (streams == null)
-            {
-                throw new ArgumentNullException(nameof(streams));
-            }
-
-            if (callback == null)
-            {
-                throw new ArgumentNullException(nameof(callback));
-            }
-
-            var activity = JsonConvert.DeserializeObject<Activity>(body, SerializationSettings.DefaultDeserializationSettings);
-
-            /*
-             * Any content sent as part of a StreamingRequest, including the request body
-             * and inline attachments, appear as streams added to the same collection. The first
-             * stream of any request will be the body, which is parsed and passed into this method
-             * as the first argument, 'body'. Any additional streams are inline attachents that need
-             * to be iterated over and added to the Activity as attachments to be sent to the Bot.
-             */
-            if (streams.Count > 1)
-            {
-                var streamAttachments = new List<Attachment>();
-                for (var i = 1; i < streams.Count; i++)
-                {
-                    streamAttachments.Add(new Attachment() { ContentType = streams[i].ContentType, Content = streams[i].Stream });
-                }
-
-                if (activity.Attachments != null)
-                {
-                    activity.Attachments = activity.Attachments.Concat(streamAttachments).ToArray();
-                }
-                else
-                {
-                    activity.Attachments = streamAttachments.ToArray();
-                }
-            }
-
-            return await ProcessActivityAsync(activity, callback, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -289,7 +167,8 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
         }
 
         /// <summary>
-        /// Overrides HTTP implementation in the base adapter, but defers to it if the conversation is not associated with a streaming connection.
+        /// Replaces the implementation in the base adapter in order to add
+        /// support for streaming connections.
         /// </summary>
         /// <param name="turnContext">The current turn context.</param>
         /// <param name="activities">The collection of activities to send to the channel.</param>
@@ -378,35 +257,6 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
             return responses;
         }
 
-        private async Task<ResourceResponse> SendStreamingActivityAsync(Activity activity, CancellationToken cancellationToken = default)
-        {
-            // Check to see if any of this adapter's StreamingRequestHandlers is associated with this conversation.
-            var possibleHandlers = _requestHandlers.Where(x => x.HasConversation(activity.Conversation.Id));
-
-            if (possibleHandlers.Count() > 0)
-            {
-                foreach (var handler in possibleHandlers)
-                {
-                    if (handler.ServiceUrl == activity.ServiceUrl)
-                    {
-                        return await handler.SendActivityAsync(activity, cancellationToken);
-                    }
-                }
-            }
-            else
-            {
-                // This is a proactive message that will need a new streaming connection opened.
-                // TODO: This connection needs authentication headers added to it.
-                var connection = new ClientWebSocket();
-                await connection.ConnectAsync(new Uri(activity.ServiceUrl), cancellationToken);
-                var handler = new StreamingRequestHandler(_logger, this, connection);
-
-                return await handler.SendActivityAsync(activity, cancellationToken);
-            }
-
-            return null;
-        }
-
         /// <summary>
         /// Primary adapter method for processing activities sent from streaming channel.
         /// Creates a turn context and runs the middleware pipeline for an incoming activity.
@@ -425,16 +275,16 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
         /// then an <see cref="InvokeResponse"/> is returned, otherwise null is returned.
         /// <para>This method registers the following services for the turn.<list type="bullet"/></para>
         /// </remarks>
-        public async Task<InvokeResponse> ProcessActivityAsync(Activity activity, CancellationToken cancellationToken = default)
+        public async Task<InvokeResponse> ProcessActivityForStreamingChannelAsync(Activity activity, CancellationToken cancellationToken = default)
         {
             BotAssert.ActivityNotNull(activity);
 
             _logger.LogInformation($"Received an incoming activity.  ActivityId: {activity.Id}");
-
+            var requestHandler = _requestHandlers.Where(x => x.HasConversation(activity.Conversation.Id)).Where(y => y.ServiceUrl == activity.ServiceUrl).FirstOrDefault();
             using (var context = new TurnContext(this, activity))
             {
                 context.TurnState.Add<IIdentity>(BotIdentityKey, _claimsIdentity);
-                var connectorClient = CreateStreamingConnectorClient(activity);
+                var connectorClient = CreateStreamingConnectorClient(activity, requestHandler);
                 context.TurnState.Add(connectorClient);
 
                 await RunPipelineAsync(context, _bot.OnTurnAsync, cancellationToken).ConfigureAwait(false);
@@ -461,15 +311,17 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
         /// and pass requests to this adapter.
         /// </summary>
         /// <param name="pipeName">The name of the Named Pipe to connect to.</param>
+        /// <param name="bot">The bot to use when processing activities received over the Named Pipe.</param>
         /// <returns>A task that completes only once the StreamingRequestHandler has stopped listening
         /// for incoming requests on the Named Pipe.</returns>
-        public async Task AddNamedPipeConnection(string pipeName)
+        public async Task AddNamedPipeConnection(string pipeName, IBot bot)
         {
             if (_requestHandlers == null)
             {
                 _requestHandlers = new List<StreamingRequestHandler>();
             }
 
+            _bot = bot ?? throw new ArgumentNullException(nameof(bot));
             var requestHandler = new StreamingRequestHandler(_logger, this, pipeName);
             _requestHandlers.Add(requestHandler);
 
@@ -477,22 +329,48 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
         }
 
         /// <summary>
-        /// Build and return versioning information used for telemetry, including:
-        /// The Schema version is 3.1, put into the Microsoft-BotFramework header,
-        /// Protocol Extension Info,
-        /// The Client SDK Version
-        ///  https://github.com/Microsoft/botbuilder-dotnet/blob/d342cd66d159a023ac435aec0fdf791f93118f5f/doc/UserAgents.md,
-        /// Additional Info.
-        /// https://github.com/Microsoft/botbuilder-dotnet/blob/d342cd66d159a023ac435aec0fdf791f93118f5f/doc/UserAgents.md.
+        /// Sends activities over streaming connections.
+        /// If an existing connection is known the adapter will look for it and make use of it.
+        /// If no existing connection is found a new connection will be opened.
         /// </summary>
-        /// <returns>A string containing versioning information.</returns>
-        private static string GetUserAgent() =>
-            string.Format(
-                "Microsoft-BotFramework/3.1 Streaming-Extensions/1.0 BotBuilder/{0} ({1}; {2}; {3})",
-                ConnectorClient.GetClientVersion(new ConnectorClient(new Uri("http://localhost"))),
-                ConnectorClient.GetASPNetVersion(),
-                ConnectorClient.GetOsVersion(),
-                ConnectorClient.GetArchitecture());
+        /// <param name="activity">The <see cref="Activity"/> to send.</param>
+        /// <param name="cancellationToken">A cancellation token.</param>
+        /// <returns>A task that resolves to a <see cref="ResourceResponse"/>.</returns>
+        private async Task<ResourceResponse> SendStreamingActivityAsync(Activity activity, CancellationToken cancellationToken = default)
+        {
+            // Check to see if any of this adapter's StreamingRequestHandlers is associated with this conversation.
+            var possibleHandlers = _requestHandlers.Where(x => x.HasConversation(activity.Conversation.Id));
+
+            if (possibleHandlers.Count() > 0)
+            {
+                foreach (var handler in possibleHandlers)
+                {
+                    if (handler.ServiceUrl == activity.ServiceUrl)
+                    {
+                        return await handler.SendActivityAsync(activity, cancellationToken);
+                    }
+                }
+            }
+            else
+            {
+                // This is a proactive message that will need a new streaming connection opened.
+                // TODO: This connection needs authentication headers added to it.
+                var connection = new ClientWebSocket();
+                await connection.ConnectAsync(new Uri(activity.ServiceUrl), cancellationToken);
+                var handler = new StreamingRequestHandler(_logger, this, connection);
+
+                if (_requestHandlers == null)
+                {
+                    _requestHandlers = new List<StreamingRequestHandler>();
+                }
+
+                _requestHandlers.Add(handler);
+
+                return await handler.SendActivityAsync(activity, cancellationToken);
+            }
+
+            return null;
+        }
 
         /// <summary>
         /// Process the initial request to establish a long lived connection via a streaming server.
@@ -530,6 +408,13 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
                 var socket = await httpRequest.HttpContext.WebSockets.AcceptWebSocketAsync().ConfigureAwait(false);
                 var requestHandler = new StreamingRequestHandler(_logger, this, socket);
 
+                if (_requestHandlers == null)
+                {
+                    _requestHandlers = new List<StreamingRequestHandler>();
+                }
+
+                _requestHandlers.Add(requestHandler);
+
                 await requestHandler.StartListening().ConfigureAwait(false);
             }
             catch (Exception ex)
@@ -541,12 +426,13 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
             }
         }
 
-        private IConnectorClient CreateStreamingConnectorClient(Activity activity)
+        private IConnectorClient CreateStreamingConnectorClient(Activity activity, StreamingRequestHandler requestHandler)
         {
             var emptyCredentials = (_channelProvider != null && _channelProvider.IsGovernment()) ?
                     MicrosoftGovernmentAppCredentials.Empty :
                     MicrosoftAppCredentials.Empty;
-            var connectorClient = new ConnectorClient(new Uri(activity.ServiceUrl), emptyCredentials, customHttpClient: _httpClient);
+            var streamingClient = new StreamingHttpClient(requestHandler, _logger);
+            var connectorClient = new ConnectorClient(new Uri(activity.ServiceUrl), emptyCredentials, customHttpClient: streamingClient);
             return connectorClient;
         }
 

@@ -13,15 +13,21 @@ using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Microsoft.Bot.Builder.StreamingExtensions
 {
-    public class StreamingHttpClient : HttpClient
+    internal class StreamingHttpClient : HttpClient
     {
-        private IStreamingTransportServer _server;
+        private StreamingRequestHandler _requestHandler;
         private readonly ILogger _logger;
 
-        public StreamingHttpClient(IStreamingTransportServer server, ILogger logger = null)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StreamingHttpClient"/> class.
+        /// An implementation of <see cref="HttpClient"/> that adds compatibility with streaming connections.
+        /// </summary>
+        /// <param name="requestHandler">The <see cref="StreamingRequestHandler"/> to send requests through.</param>
+        /// <param name="logger">A logger.</param>
+        public StreamingHttpClient(StreamingRequestHandler requestHandler, ILogger logger = null)
         {
-            this._server = server;
-            this._logger = logger ?? NullLogger.Instance;
+            _requestHandler = requestHandler ?? throw new ArgumentNullException(nameof(requestHandler));
+            _logger = logger ?? NullLogger.Instance;
         }
 
         public override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken = default)
@@ -36,13 +42,13 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
             return await this.SendRequestAsync<HttpResponseMessage>(streamingRequest, cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<ReceiveResponse> SendAsync(StreamingRequest streamingRequest, CancellationToken cancellationToken = default) => await this._server.SendAsync(streamingRequest, cancellationToken).ConfigureAwait(false);
+        public async Task<ReceiveResponse> SendAsync(StreamingRequest streamingRequest, CancellationToken cancellationToken = default) => await this._requestHandler.SendStreamingRequestAsync(streamingRequest, cancellationToken).ConfigureAwait(false);
 
         private async Task<T> SendRequestAsync<T>(StreamingRequest request, CancellationToken cancellation = default)
         {
             try
             {
-                var serverResponse = await this._server.SendAsync(request, cancellation).ConfigureAwait(false);
+                var serverResponse = await _requestHandler.SendStreamingRequestAsync(request, cancellation).ConfigureAwait(false);
 
                 if (serverResponse.StatusCode == (int)HttpStatusCode.OK)
                 {

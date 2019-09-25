@@ -11,6 +11,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.StreamingExtensions;
 using Microsoft.Bot.StreamingExtensions.Transport;
@@ -22,17 +23,24 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.StreamingExtensions
 {
-
     internal class StreamingRequestHandler : RequestHandler
     {
         private readonly ILogger _logger;
         private readonly DirectLineAdapter _adapter;
+        private readonly string _userAgent;
         private SortedSet<string> _conversations;
 
         // TODO: this is a placeholder until the well defined reconnection path is determined.
         private string _reconnectPath = "api/reconnect";
         private IStreamingTransportServer _server;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StreamingRequestHandler"/> class and
+        /// establishes a connection over a WebSocket to a streaming channel.
+        /// </summary>
+        /// <param name="logger">A logger.</param>
+        /// <param name="adapter">The adapter for use when processing incoming requests.</param>
+        /// <param name="socket">The base socket to use when connecting to the channel.</param>
         public StreamingRequestHandler(ILogger logger, DirectLineAdapter adapter, WebSocket socket)
         {
             _logger = logger ?? NullLogger.Instance;
@@ -43,9 +51,17 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
                 throw new ArgumentNullException(nameof(socket));
             }
 
+            _userAgent = GetUserAgent();
             _server = new WebSocketServer(socket, this);
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StreamingRequestHandler"/> class and
+        /// establishes a connection over a Named Pipe to a streaming channel.
+        /// </summary>
+        /// <param name="logger">A logger.</param>
+        /// <param name="adapter">The adapter for use when processing incoming requests.</param>
+        /// <param name="pipeName">The name of the Named Pipe to use when connecting to the channel.</param>
         public StreamingRequestHandler(ILogger logger, DirectLineAdapter adapter, string pipeName)
         {
             _logger = logger ?? NullLogger.Instance;
@@ -56,6 +72,7 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
                 throw new ArgumentNullException(nameof(pipeName));
             }
 
+            _userAgent = GetUserAgent();
             _server = new NamedPipeServer(pipeName, this);
         }
 
@@ -87,11 +104,17 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
             return _conversations.Contains(conversationId);
         }
 
-        public override async Task<StreamingResponse> ProcessRequestAsync(ReceiveRequest request, ILogger<RequestHandler> logger, object context = null, CancellationToken cancellationToken = default)
+        public override async Task<StreamingResponse> ProcessRequestAsync(ReceiveRequest request, ILogger<RequestHandler> logger = null, object context = null, CancellationToken cancellationToken = default)
         {
             var response = new StreamingResponse();
 
-            // First we convert the StreamingRequest into an activity the adapter can understand.
+            // We accept all POSTs regardless of path, but anything else requires special treatment.
+            if (!string.Equals(request.Verb, StreamingRequest.POST, StringComparison.InvariantCultureIgnoreCase))
+            {
+                return HandleCustomPaths(request);
+            }
+
+            // Convert the StreamingRequest into an activity the adapter can understand.
             string body;
             try
             {
@@ -144,7 +167,7 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
                 }
 
                 // Now that the request has been converted into an activity we can send it to the adapter.
-                var adapterResponse = await _adapter.ProcessActivityAsync(activity, cancellationToken).ConfigureAwait(false);
+                var adapterResponse = await _adapter.ProcessActivityForStreamingChannelAsync(activity, cancellationToken).ConfigureAwait(false);
 
                 // Now we convert the invokeResponse returned by the adapter into a StreamingResponse we can send back to the channel.
                 if (adapterResponse == null)
@@ -217,6 +240,50 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
             return null;
         }
 
+        /// <summary>
+        /// Sends a <see cref="StreamingRequest"/> to the connected streaming channel.
+        /// </summary>
+        /// <param name="request">The request to send.</param>
+        /// <param name="cancellationToken">A cancellation token.</param>
+        /// <returns>A task that resolves to a <see cref="ReceiveResponse"/>.</returns>
+        public async Task<ReceiveResponse> SendStreamingRequestAsync(StreamingRequest request, CancellationToken cancellationToken)
+        {
+            try
+            {
+                // TODO: Add server reconnect logic if it is disconnected when attempting to send.
+                var serverResponse = await _server.SendAsync(request, cancellationToken).ConfigureAwait(false);
+
+                if (serverResponse.StatusCode == (int)HttpStatusCode.OK)
+                {
+                    return serverResponse.ReadBodyAsJson<ReceiveResponse>();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Build and return versioning information used for telemetry, including:
+        /// The Schema version is 3.1, put into the Microsoft-BotFramework header,
+        /// Protocol Extension Info,
+        /// The Client SDK Version
+        ///  https://github.com/Microsoft/botbuilder-dotnet/blob/d342cd66d159a023ac435aec0fdf791f93118f5f/doc/UserAgents.md,
+        /// Additional Info.
+        /// https://github.com/Microsoft/botbuilder-dotnet/blob/d342cd66d159a023ac435aec0fdf791f93118f5f/doc/UserAgents.md.
+        /// </summary>
+        /// <returns>A string containing versioning information.</returns>
+        private static string GetUserAgent() =>
+            string.Format(
+                "Microsoft-BotFramework/3.1 Streaming-Extensions/1.0 BotBuilder/{0} ({1}; {2}; {3})",
+                ConnectorClient.GetClientVersion(new ConnectorClient(new Uri("http://localhost"))),
+                ConnectorClient.GetASPNetVersion(),
+                ConnectorClient.GetOsVersion(),
+                ConnectorClient.GetArchitecture());
+
         private IEnumerable<HttpContent> UpdateAttachmentStreams(Activity activity)
         {
             if (activity == null || activity.Attachments == null)
@@ -253,6 +320,36 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
 
             await clientWebSocket.ConnectAsync(new Uri(ServiceUrl + _reconnectPath), CancellationToken.None).ConfigureAwait(false);
             _server = new WebSocketServer(clientWebSocket, this);
+        }
+
+        /// <summary>
+        /// Checks the validity of the request and attempts to map it the correct custom endpoint,
+        /// then generates and returns a response if appropriate.
+        /// </summary>
+        /// <param name="request">A ReceiveRequest from the connected channel.</param>
+        /// <returns>A response if the given request matches against a defined path.</returns>
+        private StreamingResponse HandleCustomPaths(ReceiveRequest request)
+        {
+            var response = new StreamingResponse();
+
+            if (request == null || string.IsNullOrEmpty(request.Verb) || string.IsNullOrEmpty(request.Path))
+            {
+                response.StatusCode = (int)HttpStatusCode.BadRequest;
+                _logger.LogError("Request missing verb and/or path.");
+
+                return response;
+            }
+
+            if (string.Equals(request.Verb, StreamingRequest.GET, StringComparison.InvariantCultureIgnoreCase) &&
+                         string.Equals(request.Path, "/api/version", StringComparison.InvariantCultureIgnoreCase))
+            {
+                response.StatusCode = (int)HttpStatusCode.OK;
+                response.SetBody(new VersionInfo() { UserAgent = _userAgent });
+
+                return response;
+            }
+
+            return null;
         }
     }
 }

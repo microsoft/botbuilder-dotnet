@@ -19,11 +19,9 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
         /// Maps various endpoint handlers for the registered bot into the request execution pipeline using the V4 protocol.
         /// </summary>
         /// <param name="applicationBuilder">The application builder that defines the bot's pipeline.<see cref="IApplicationBuilder"/>.</param>
-        /// <param name="onTurnError">Optional function to perform on turn errors.</param>
         /// <param name="pipeName">The name of the named pipe to use when creating the server.</param>
-        /// <param name="logger">The ILogger implementation this adapter should use.</param>
         /// <returns>A reference to this instance after the operation has completed.</returns>
-        public static IApplicationBuilder UseBotFrameworkNamedPipe(this IApplicationBuilder applicationBuilder, Func<ITurnContext, Exception, Task> onTurnError, string pipeName = null, ILogger<BotFrameworkHttpAdapter> logger = null)
+        public static IApplicationBuilder UseBotFrameworkNamedPipe(this IApplicationBuilder applicationBuilder, string pipeName = "bfv4.pipes")
         {
             if (applicationBuilder == null)
             {
@@ -31,7 +29,7 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
             }
 
             var bot = applicationBuilder.ApplicationServices.GetService(typeof(IBot)) as IBot;
-            (applicationBuilder.ApplicationServices.GetService(typeof(IBotFrameworkHttpAdapter)) as DirectLineAdapter).CreateAdapterListeningOnNamedPipe(onTurnError, bot, pipeName, logger);
+            _ = (applicationBuilder.ApplicationServices.GetService(typeof(IBotFrameworkHttpAdapter)) as DirectLineAdapter).AddNamedPipeConnection(pipeName, bot);
 
             return applicationBuilder;
         }
