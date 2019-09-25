@@ -46,6 +46,12 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi
             // deserialize the incoming Activity
             var activity = await HttpHelper.ReadRequestAsync(httpRequest, cancellationToken).ConfigureAwait(false);
 
+            if (string.IsNullOrEmpty(activity?.Type))
+            {
+                httpResponse.StatusCode = HttpStatusCode.BadRequest;
+                return;
+            }
+
             // grab the auth header from the inbound http request
             var authHeader = httpRequest.Headers.Authorization?.ToString();
 
