@@ -2,11 +2,8 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
-using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Bot.Builder.StreamingExtensions
 {

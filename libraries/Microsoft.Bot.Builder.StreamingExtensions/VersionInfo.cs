@@ -3,12 +3,7 @@
 
 namespace Microsoft.Bot.Builder.StreamingExtensions
 {
-#if DEBUG
-    public
-#else
-    internal
-#endif
-    class VersionInfo
+    internal class VersionInfo
     {
         public string UserAgent { get; set; }
     }

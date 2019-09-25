@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Net.Sockets;
 using System.Net.WebSockets;
-using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Connector;
@@ -23,12 +19,12 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.StreamingExtensions
 {
-    public class StreamingRequestHandler : RequestHandler
+    internal class StreamingRequestHandler : RequestHandler
     {
         private readonly ILogger _logger;
         private readonly DirectLineAdapter _adapter;
         private readonly string _userAgent;
-        private SortedSet<string> _conversations;
+        private readonly SortedSet<string> _conversations;
 
         // TODO: this is a placeholder until the well defined reconnection path is determined.
         private string _reconnectPath = "api/reconnect";
@@ -51,6 +47,7 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
                 throw new ArgumentNullException(nameof(socket));
             }
 
+            _conversations = new SortedSet<string>();
             _userAgent = GetUserAgent();
             _server = new WebSocketServer(socket, this);
         }
@@ -72,6 +69,7 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
                 throw new ArgumentNullException(nameof(pipeName));
             }
 
+            _conversations = new SortedSet<string>();
             _userAgent = GetUserAgent();
             _server = new NamedPipeServer(pipeName, this);
         }
