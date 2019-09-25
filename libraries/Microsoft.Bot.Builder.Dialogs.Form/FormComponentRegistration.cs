@@ -25,9 +25,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
             yield return new TypeRegistration<OnSetSlot>("Microsoft.OnSetSlot");
         }
 
-        public override IEnumerable<JsonConverter> GetConverters(Source.IRegistry registry, IRefResolver refResolver, Stack<string> paths)
+        public override IEnumerable<JsonConverter> GetConverters(ISourceMap sourceMap, IRefResolver refResolver, Stack<string> paths)
         {
-            yield return new DialogSchemaConverter(refResolver, registry);
+            yield return new DialogSchemaConverter(refResolver, sourceMap);
         }
     }
 }

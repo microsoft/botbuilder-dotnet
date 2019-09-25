@@ -14,12 +14,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Form.Converters
     public class DialogSchemaConverter : JsonConverter
     {
         private readonly IRefResolver refResolver;
-        private readonly Source.IRegistry registry;
+        private readonly ISourceMap sourceMap;
 
-        public DialogSchemaConverter(IRefResolver refResolver, Source.IRegistry registry)
+        public DialogSchemaConverter(IRefResolver refResolver, ISourceMap sourceMap)
         {
             this.refResolver = refResolver ?? throw new ArgumentNullException(nameof(refResolver));
-            this.registry = registry ?? throw new ArgumentNullException(nameof(registry));
+            this.sourceMap = sourceMap ?? throw new ArgumentNullException(nameof(sourceMap));
         }
 
         public override bool CanRead => true;
@@ -29,7 +29,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form.Converters
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            var jsonObject = Source.Point.Read(reader, JToken.Load, out var start, out var after);
+            var jsonObject = SourcePoint.ReadObjectWithSourcePoints(reader, JToken.Load, out var start, out var after);
 
             if (refResolver.IsRef(jsonObject))
             {

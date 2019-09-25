@@ -114,26 +114,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
 
             return handled;
         }
-
-        protected override async Task<DialogTurnResult> OnEndOfActionsAsync(SequenceContext sequenceContext, CancellationToken cancellationToken = default)
-        {
-            if (sequenceContext.ActiveDialog != null)
-            {
-                if (sequenceContext.State.TryGetValue("dialog.expectedSlots", out var expected))
-                {
-                    // Wait for user input
-                    return Dialog.EndOfTurn;
-                }
-                else
-                {
-                    // TODO: Not sure this is right
-                    await ProcessFormAsync(sequenceContext, cancellationToken);
-                }
-            }
-
-            return await base.OnEndOfActionsAsync(sequenceContext, cancellationToken);
-        }
-
+  
         // A big issue is that we want multiple firings.  We can get this from quantification, but not arrays.
         // If we have a rule for value ambiguity we would want it to fire for each value ambiguity.
         // Possibly:
