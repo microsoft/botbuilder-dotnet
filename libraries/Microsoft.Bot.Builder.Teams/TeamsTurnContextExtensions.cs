@@ -22,6 +22,7 @@ namespace Microsoft.Bot.Builder.Teams
 
         public static Task<ResourceResponse> TeamsSendToGeneralChannelAsync(this ITurnContext turnContext, IActivity activity, CancellationToken cancellationToken = default)
         {
+            // The Team Id is also the Id of the general channel
             var teamId = turnContext.TeamsGetTeamId();
             return turnContext.TeamsSendToChannelAsync(teamId, activity, cancellationToken);
         }
