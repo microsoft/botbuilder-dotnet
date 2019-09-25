@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
                 throw new ArgumentNullException(nameof(dc));
             }
 
-            return dc.Parent?.ActiveDialog?.State ?? dc.ActiveDialog.State;
+            return dc.Parent?.ActiveDialog?.State ?? dc.ActiveDialog?.State;
         }
 
         public override void SetMemory(DialogContext dc, object memory)
