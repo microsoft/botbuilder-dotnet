@@ -370,7 +370,8 @@ namespace Microsoft.Bot.Builder.StreamingExtensions
                 }
             }
 
-            await clientWebSocket.ConnectAsync(new Uri(ServiceUrl + _reconnectPath), CancellationToken.None).ConfigureAwait(false);
+            var uri = ServiceUrl.Split(':').Last();
+            await clientWebSocket.ConnectAsync(new Uri("wss://" + uri + _reconnectPath), CancellationToken.None).ConfigureAwait(false);
             _server = new WebSocketServer(clientWebSocket, this);
         }
 
