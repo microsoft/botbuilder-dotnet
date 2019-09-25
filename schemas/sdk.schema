@@ -2051,7 +2051,7 @@
                 "actions": {
                     "type": "array",
                     "title": "Actions",
-                    "description": "Actions to apply as part of the edit operation.",
+                    "description": "Actions to apply.",
                     "items": {
                         "$type": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"

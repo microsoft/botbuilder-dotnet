@@ -27,7 +27,7 @@
                 "$type": "Microsoft.IDialog"
             },
             "title": "Actions",
-            "description": "Actions to apply as part of the edit operation."
+            "description": "Actions to apply."
         }
     }
 }
