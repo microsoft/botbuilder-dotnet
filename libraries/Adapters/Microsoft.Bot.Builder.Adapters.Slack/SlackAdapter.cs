@@ -27,8 +27,6 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
             : base()
         {
             _slackClient = slackClient ?? throw new ArgumentNullException(nameof(slackClient));
-
-            _slackClient.LoginWithSlackAsync(default).Wait();
         }
 
         /// <summary>
