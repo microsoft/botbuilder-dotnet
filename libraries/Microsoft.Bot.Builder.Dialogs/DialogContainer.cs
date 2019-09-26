@@ -1,9 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System.Collections.Generic;
+
 namespace Microsoft.Bot.Builder.Dialogs
 {
-    public abstract class DialogContainer : Dialog
+    public abstract class DialogContainer : Dialog, IDialogDependencies
     {
 #pragma warning disable SA1401 // Fields should be private
         protected readonly DialogSet _dialogs = new DialogSet();
@@ -19,6 +21,11 @@ namespace Microsoft.Bot.Builder.Dialogs
         public virtual Dialog FindDialog(string dialogId)
         {
             return this._dialogs.Find(dialogId);
+        }
+
+        public IEnumerable<Dialog> GetDependencies()
+        {
+            return _dialogs.GetDialogs();
         }
     }
 }
