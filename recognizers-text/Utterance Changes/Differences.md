@@ -1,13 +1,13 @@
 ### Description
 
-As we are now consuming recognizers-text through the BotBuilder-DotNet repository, we are organizing its results in this folder to maintain the changes in one place. 
-
-This way the user will have all the differences between versions and will let them know what to expect. 
+This folder includes the changes that result from consuming recognizers-text through BotBuilder-DotNet. The output with all the differences between recognizers versions (the older and the new one) will be organized, showing new inputs as well as updates.
+ 
+This way the user will have the comparison after running the tests between versions and will let them know what to expect.
 
 ## Changes made
 The user will find the Utterance Changes divided by entity type. In every entity type subfolder the changes are organized in .json files.
 
-##  Changes
+##  Output
 ### V1.2.6
 **DateTime - Recognize**
 
