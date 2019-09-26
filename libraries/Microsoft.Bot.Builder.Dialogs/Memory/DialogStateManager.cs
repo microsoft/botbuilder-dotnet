@@ -244,7 +244,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
 
             foreach (var scope in DialogStateManager.MemoryScopes)
             {
-                result[scope.Name] = JToken.FromObject(scope.GetMemory(this.dialogContext));
+                var memory = scope.GetMemory(this.dialogContext);
+                if (memory != null)
+                {
+                    result[scope.Name] = JToken.FromObject(memory);
+                }
             }
 
             return result;
