@@ -282,7 +282,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             }
         }
 
-        public class D1Dialog : ComponentDialog
+        public class D1Dialog : ComponentDialog, IDialogDependencies
         {
             public D1Dialog()
                 : base("d1")
@@ -299,6 +299,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 await dc.Context.SendActivityAsync(dc.State.GetValue<string>("dialog.aaa"));
                 await dc.Context.SendActivityAsync(dc.State.GetValue<string>("$aaa"));
                 return await dc.BeginDialogAsync("d2", options: new { test = "123" });
+            }
+
+            public IEnumerable<Dialog> GetDependencies()
+            {
+                return _dialogs.GetDialogs();
             }
 
             public async override Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default)
@@ -377,7 +382,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             }
         }
 
-        public class NestedContainerDialog : ComponentDialog
+        public class NestedContainerDialog : ComponentDialog, IDialogDependencies
         {
             public NestedContainerDialog()
                 : base(nameof(NestedContainerDialog))
@@ -394,6 +399,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 name = dc.State.GetValue<String>("dialog.name");
                 await dc.Context.SendActivityAsync(name);
                 return await dc.BeginDialogAsync("d1");
+            }
+
+            public IEnumerable<Dialog> GetDependencies()
+            {
+                return _dialogs.GetDialogs();
             }
 
             public async override Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default)

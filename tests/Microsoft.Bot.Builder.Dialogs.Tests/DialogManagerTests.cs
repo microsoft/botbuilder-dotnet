@@ -133,7 +133,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             });
         }
 
-        public class AskForNameDialog : ComponentDialog
+        public class AskForNameDialog : ComponentDialog, IDialogDependencies
         {
             public AskForNameDialog(string id, string property)
                 : base(id)
@@ -161,6 +161,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     },
                     cancellationToken: cancellationToken)
                     .ConfigureAwait(false);
+            }
+
+            public IEnumerable<Dialog> GetDependencies()
+            {
+                return this._dialogs.GetDialogs();
             }
 
             public async override Task<DialogTurnResult> ResumeDialogAsync(DialogContext outerDc, DialogReason reason, object result = null, CancellationToken cancellationToken = default)
