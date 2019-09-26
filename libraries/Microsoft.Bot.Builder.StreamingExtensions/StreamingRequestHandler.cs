@@ -23,7 +23,7 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.StreamingExtensions
 {
-    internal class StreamingRequestHandler : RequestHandler
+    public class StreamingRequestHandler : RequestHandler
     {
         private readonly ILogger _logger;
         private readonly DirectLineAdapter _adapter;
