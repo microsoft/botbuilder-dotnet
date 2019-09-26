@@ -117,16 +117,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             }
 
             var interrupted = dc.State.GetValue<bool>(TurnPath.INTERRUPTED, () => false);
-
-            if (interrupted)
-            {
-                return await this.PromptUser(dc, InputState.Missing).ConfigureAwait(false);
-            }
-
             var turnCount = dc.State.GetValue<int>(TURN_COUNT_PROPERTY, () => 0);
 
             // Perform base recognition
-            var state = await this.RecognizeInput(dc);
+            var state = interrupted ? InputState.Missing : await this.RecognizeInput(dc);
 
             if (state == InputState.Valid)
             {

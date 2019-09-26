@@ -1,6 +1,5 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using static Microsoft.Bot.Builder.Dialogs.Debugging.Source;
 
 namespace Microsoft.Bot.Builder.Dialogs.Debugging
 {
@@ -9,41 +8,48 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
     /// </summary>
     public static class DebugSupport
     {
-        public interface IDebugger
-        {
-            Task StepAsync(DialogContext context, object item, string more, CancellationToken cancellationToken);
-        }
+        public static ISourceMap SourceMap { get; set; } = Debugging.SourceMap.Instance;
 
-        public static IRegistry SourceRegistry { get; set; } = NullRegistry.Instance;
+        /// <summary>
+        /// Extension method to get IDialogDebugger from TurnContext
+        /// </summary>
+        /// <param name="context">turnContext</param>
+        /// <returns>IDialogDebugger</returns>
+        public static IDialogDebugger GetDebugger(this ITurnContext context) =>
+            context.TurnState.Get<IDialogDebugger>() ?? NullDialogDebugger.Instance;
 
-        public static IDebugger GetDebugger(this ITurnContext context) =>
-            context.TurnState.Get<IDebugger>() ?? NullDebugger.Instance;
-
-        public static IDebugger GetDebugger(this DialogContext context) =>
+        /// <summary>
+        /// Extension method to get IDialogDebugger from DialogContext
+        /// </summary>
+        /// <param name="context">dialogContext</param>
+        /// <returns>IDialogDebugger</returns>
+        public static IDialogDebugger GetDebugger(this DialogContext context) =>
             context.Context.GetDebugger();
 
+        /// <summary>
+        /// Call into active IDialogDebugger and let it know that we are at given point in the dialog
+        /// </summary>
+        /// <param name="context">dialogContext</param>
+        /// <param name="dialog">dialog</param>
+        /// <param name="more">lbael</param>
+        /// <param name="cancellationToken">cancellation token for async operations</param>
+        /// <returns>async task</returns>
         public static async Task DebuggerStepAsync(this DialogContext context, Dialog dialog, string more, CancellationToken cancellationToken)
         {
             await context.GetDebugger().StepAsync(context, dialog, more, cancellationToken).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Call into active IDialogDebugger and let it know that we are at given point in the Recognizer
+        /// </summary>
+        /// <param name="context">dialogContext</param>
+        /// <param name="recognizer">recognizer</param>
+        /// <param name="more">lbael</param>
+        /// <param name="cancellationToken">cancellation token for async operations</param>
+        /// <returns>async task</returns>
         public static async Task DebuggerStepAsync(this DialogContext context, IRecognizer recognizer, string more, CancellationToken cancellationToken)
         {
             await context.GetDebugger().StepAsync(context, recognizer, more, cancellationToken).ConfigureAwait(false);
-        }
-
-        private sealed class NullDebugger : IDebugger
-        {
-            public static readonly IDebugger Instance = new NullDebugger();
-
-            private NullDebugger()
-            {
-            }
-
-            Task IDebugger.StepAsync(DialogContext context, object item, string more, CancellationToken cancellationToken)
-            {
-                return Task.CompletedTask;
-            }
         }
     }
 }

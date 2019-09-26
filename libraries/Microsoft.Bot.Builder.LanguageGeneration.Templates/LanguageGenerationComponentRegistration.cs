@@ -18,15 +18,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     {
         public override IEnumerable<TypeRegistration> GetTypes()
         {
-            yield return new TypeRegistration<ResourceMultiLanguageGenerator>("DefaultLanguageGenerator") { CustomDeserializer = new LanguageGeneratorLoader() };
             yield return new TypeRegistration<TextTemplate>("Microsoft.TextTemplate");
             yield return new TypeRegistration<ActivityTemplate>("Microsoft.ActivityTemplate");
             yield return new TypeRegistration<StaticActivityTemplate>("Microsoft.StaticActivityTemplate");
         }
 
-        public override IEnumerable<JsonConverter> GetConverters(Source.IRegistry registry, IRefResolver refResolver, Stack<string> paths)
+        public override IEnumerable<JsonConverter> GetConverters(ISourceMap sourceMap, IRefResolver refResolver, Stack<string> paths)
         {
-            yield return new LanguageGeneratorConverter(refResolver, registry, paths);
+            yield return new LanguageGeneratorConverter(refResolver, sourceMap, paths);
             yield return new ActivityTemplateConverter();
         }
     }

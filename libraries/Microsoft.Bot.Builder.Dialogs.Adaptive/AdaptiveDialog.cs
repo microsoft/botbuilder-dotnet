@@ -318,9 +318,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
         protected override string OnComputeId()
         {
-            if (DebugSupport.SourceRegistry.TryGetValue(this, out var range))
+            if (DebugSupport.SourceMap.TryGetValue(this, out var range))
             {
-                return $"{this.GetType().Name}({Path.GetFileName(range.Path)}:{range.Start.LineIndex})";
+                return $"{this.GetType().Name}({Path.GetFileName(range.Path)}:{range.StartPoint.LineIndex})";
             }
 
             return $"{this.GetType().Name}[]";

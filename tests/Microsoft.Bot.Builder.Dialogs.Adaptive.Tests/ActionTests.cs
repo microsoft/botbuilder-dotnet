@@ -466,7 +466,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 Property = "user.color",
                                 Prompt = new ActivityTemplate("Please select a color:"),
                                 UnrecognizedPrompt = new ActivityTemplate("Not a color. Please select a color:"),
-                                Choices = new List<Choice>() { new Choice("red"), new Choice("green"), new Choice("blue") },
+                                Choices = new ChoiceSet(new List<Choice>() { new Choice("red"), new Choice("green"), new Choice("blue") }),
                                 Style = ListStyle.Inline
                             },
                             new SendActivity("{user.color}"),
@@ -475,7 +475,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 Property = "user.color",
                                 Prompt = new ActivityTemplate("Please select a color:"),
                                 UnrecognizedPrompt = new ActivityTemplate("Please select a color:"),
-                                Choices = new List<Choice>() { new Choice("red"), new Choice("green"), new Choice("blue") },
+                                Choices = new ChoiceSet(new List<Choice>() { new Choice("red"), new Choice("green"), new Choice("blue") }),
                                 AlwaysPrompt = true,
                                 Style = ListStyle.Inline
                             },
@@ -485,7 +485,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 Property = "user.color",
                                 Prompt = new ActivityTemplate("Please select a color:"),
                                 UnrecognizedPrompt = new ActivityTemplate("Please select a color:"),
-                                Choices = new List<Choice>() { new Choice("red"), new Choice("green"), new Choice("blue") },
+                                Choices = new ChoiceSet(new List<Choice>() { new Choice("red"), new Choice("green"), new Choice("blue") }),
                                 AlwaysPrompt = true,
                                 Style = ListStyle.Inline
                             },
@@ -525,7 +525,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 Property = "user.color",
                                 Prompt = new ActivityTemplate("Please select a color:"),
                                 UnrecognizedPrompt = new ActivityTemplate("Not a color. Please select a color:"),
-                                Choices = new List<Choice>() { new Choice("red"), new Choice("green"), new Choice("blue") },
+                                Choices = new ChoiceSet(new List<Choice>() { new Choice("red"), new Choice("green"), new Choice("blue") }),
                                 Style = ListStyle.Inline
                             },
                             new SendActivity("{user.color}"),
@@ -534,7 +534,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 Property = "user.color",
                                 Prompt = new ActivityTemplate("Please select a color:"),
                                 UnrecognizedPrompt = new ActivityTemplate("Please select a color:"),
-                                Choices = new List<Choice>() { new Choice("red"), new Choice("green"), new Choice("blue") },
+                                Choices = new ChoiceSet(new List<Choice>() { new Choice("red"), new Choice("green"), new Choice("blue") }),
                                 AlwaysPrompt = true,
                                 Style = ListStyle.Inline
                             },
@@ -544,7 +544,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 Property = "user.color",
                                 Prompt = new ActivityTemplate("Please select a color:"),
                                 UnrecognizedPrompt = new ActivityTemplate("Please select a color:"),
-                                Choices = new List<Choice>() { new Choice("red"), new Choice("green"), new Choice("blue") },
+                                Choices = new ChoiceSet(new List<Choice>() { new Choice("red"), new Choice("green"), new Choice("blue") }),
                                 AlwaysPrompt = true,
                                 Style = ListStyle.Inline
                             },
@@ -589,7 +589,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 Property = "user.color",
                                 Prompt = new ActivityTemplate("Please select a color:"),
                                 UnrecognizedPrompt = new ActivityTemplate("Not a color. Please select a color:"),
-                                ChoicesProperty = "user.choices",
+                                Choices = new ChoiceSet("user.choices"),
                                 Style = ListStyle.Inline
                             },
                             new SendActivity("{user.color}"),
@@ -598,7 +598,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 Property = "user.color",
                                 Prompt = new ActivityTemplate("Please select a color:"),
                                 UnrecognizedPrompt = new ActivityTemplate("Please select a color:"),
-                                ChoicesProperty = "user.choices",
+                                Choices = new ChoiceSet("user.choices"),
                                 AlwaysPrompt = true,
                                 Style = ListStyle.Inline
                             },
@@ -608,7 +608,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 Property = "user.color",
                                 Prompt = new ActivityTemplate("Please select a color:"),
                                 UnrecognizedPrompt = new ActivityTemplate("Please select a color:"),
-                                ChoicesProperty = "user.choices",
+                                Choices = new ChoiceSet("user.choices"),
                                 AlwaysPrompt = true,
                                 Style = ListStyle.Inline
                             },
@@ -653,7 +653,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 Property = "user.color",
                                 Prompt = new ActivityTemplate("Please select a color:"),
                                 UnrecognizedPrompt = new ActivityTemplate("Not a color. Please select a color:"),
-                                ChoicesProperty = "user.choices",
+                                Choices = new ChoiceSet("user.choices"),
                                 Style = ListStyle.Inline
                             },
                             new SendActivity("{user.color}"),
@@ -662,7 +662,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 Property = "user.color",
                                 Prompt = new ActivityTemplate("Please select a color:"),
                                 UnrecognizedPrompt = new ActivityTemplate("Please select a color:"),
-                                ChoicesProperty = "user.choices",
+                                Choices = new ChoiceSet("user.choices"),
                                 AlwaysPrompt = true,
                                 Style = ListStyle.Inline
                             },
@@ -672,7 +672,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                 Property = "user.color",
                                 Prompt = new ActivityTemplate("Please select a color:"),
                                 UnrecognizedPrompt = new ActivityTemplate("Please select a color:"),
-                                ChoicesProperty = "user.choices",
+                                Choices = new ChoiceSet("user.choices"),
                                 AlwaysPrompt = true,
                                 Style = ListStyle.Inline
                             },
