@@ -96,7 +96,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         }
     }
 
-    internal class PathResolverTestDialog : Dialog
+    internal class PathResolverTestDialog : ComponentDialog
     {
         private string[] entities = new string[] { "test1", "test2" };
 
