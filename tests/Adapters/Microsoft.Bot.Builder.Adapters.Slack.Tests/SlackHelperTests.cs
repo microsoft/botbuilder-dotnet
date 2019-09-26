@@ -42,8 +42,8 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Tests
 
             var message = SlackHelper.ActivityToSlack(activity);
 
-            Assert.Equal(activity.Conversation.Id, message.channel);
-            Assert.Equal(activity.Attachments[0].Name, message.attachments[0].author_name);
+            Assert.Equal(activity.Conversation.Id, message.Channel);
+            Assert.Equal(activity.Attachments[0].Name, message.Attachments[0].author_name);
         }
 
         [Fact]
@@ -58,7 +58,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Tests
                 Recipient = new ChannelAccount("testRecipientId"),
                 ChannelData = new NewSlackMessage
                 {
-                    text = messageText,
+                    Text = messageText,
                     Ephemeral = "testEphimeral",
                     IconUrl = new Uri(ImageUrl),
                 },
@@ -67,7 +67,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Tests
 
             var message = SlackHelper.ActivityToSlack(activity);
 
-            Assert.Equal(messageText, message.text);
+            Assert.Equal(messageText, message.Text);
             Assert.False(message.AsUser);
         }
 
@@ -85,8 +85,8 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Tests
 
             var message = SlackHelper.ActivityToSlack(activity);
 
-            Assert.Equal(activity.Conversation.Id, message.channel);
-            Assert.Equal(activity.Conversation.Properties["thread_ts"], message.thread_ts);
+            Assert.Equal(activity.Conversation.Id, message.Channel);
+            Assert.Equal(activity.Conversation.Properties["thread_ts"], message.ThreadTS);
         }
 
         [Fact]
