@@ -24,49 +24,26 @@ namespace Microsoft.BotBuilderSamples.Bots
             await turnContext.SendActivityAsync(MessageFactory.Text($"echo: {turnContext.Activity.Text}"), cancellationToken);
         }
 
-        protected override async Task<MessagingExtensionResponse> OnTeamsMessagingExtensionConfigurationQuerySettingsUrlAsync(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionResponse query, CancellationToken cancellationToken)
+        protected override async Task<MessagingExtensionResponse> OnTeamsMessagingExtensionConfigurationQuerySettingsUrlAsync(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionQuery query, CancellationToken cancellationToken)
         {
-
-
-
             var messageExtensionResponse = new MessagingExtensionResponse
             {
-                ComposeExtension = new SuggestedActions
+                ComposeExtension = new MessagingExtensionResult
                 {
-                    Actions = new List<CardAction>
+                    Type = "config",
+                    SuggestedActions = new MessagingExtensionSuggestedAction
                     {
-                        new CardAction
+                        Actions = new List<CardAction>
                         {
-                            Type = "whatever I want",
-                            Title = "This will show only if the extension hasn't been installed and you want something there",
-                            Value = "To the url you want people to go to when they actually click \"Settings\"",
+                            new CardAction
+                            {
+                                Type = ActionTypes.OpenUrl,
+                                Value = "https://teamssettingspagescenario.azurewebsites.net",
+                            },
                         },
                     },
-                    
                 },
             };
-                
-                /*
-            var cardAction = new CardAction
-            {
-                Type = ActionTypes.OpenUrl,
-                Title = "setting config",
-                Value = "https://teamssettingspagescenario.azurewebsites.net",
-            };
-
-            var suggestedAction = new MessagingExtensionSuggestedAction
-            {
-                Actions = new List<CardAction> { cardAction },
-            };
-
-            var composeExtensionResponse = new MessagingExtensionResponse
-            {
-                ComposeExtension =
-                {
-                    SuggestedActions = suggestedAction,
-                    Type = "config",
-                },
-            };*/
 
             return messageExtensionResponse;
         }

@@ -139,11 +139,9 @@ namespace Microsoft.Bot.Builder.Teams
                             return CreateInvokeResponse(await OnTeamsMessagingExtensionFetchTaskAsync(turnContext, SafeCast<MessagingExtensionQuery>(turnContext.Activity.Value), cancellationToken).ConfigureAwait(false));
 
                         case "composeExtension/querySettingUrl":
-                            return CreateInvokeResponse(await OnTeamsMessagingExtensionConfigurationQuerySettingsUrlAsync(turnContext, SafeCast<MessagingExtensionResponse>(turnContext.Activity.Value), cancellationToken).ConfigureAwait(false));
+                            return CreateInvokeResponse(await OnTeamsMessagingExtensionConfigurationQuerySettingsUrlAsync(turnContext, SafeCast<MessagingExtensionQuery>(turnContext.Activity.Value), cancellationToken).ConfigureAwait(false));
 
                         case "composeExtension/setting":
-                            // This will return 2 things, a JObject of the properites the developer defined for whatever mechanism they used to get here (tabs sdk)
-                            // There will also be a state property that serves as a pseudo callback so devs can coorelate 
                             return CreateInvokeResponse(await OnTeamsMessagingExtensionConfigurationSettingsAsync(turnContext, turnContext.Activity.Value as JObject, cancellationToken).ConfigureAwait(false));
 
                         case "composeExtension/onCardButtonClicked":
@@ -267,7 +265,7 @@ namespace Microsoft.Bot.Builder.Teams
             throw new NotImplementedException();
         }
 
-        protected virtual Task<MessagingExtensionResponse> OnTeamsMessagingExtensionConfigurationQuerySettingsUrlAsync(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionResponse query, CancellationToken cancellationToken)
+        protected virtual Task<MessagingExtensionResponse> OnTeamsMessagingExtensionConfigurationQuerySettingsUrlAsync(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionQuery query, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
