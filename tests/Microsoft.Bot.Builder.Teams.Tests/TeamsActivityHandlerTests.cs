@@ -154,33 +154,6 @@ namespace Microsoft.Bot.Builder.Teams.Tests
         }
 
         [TestMethod]
-        public async Task TestInvoke()
-        {
-            // Arrange
-            var activity = new Activity
-            {
-                Type = ActivityTypes.Invoke,
-                Name = "gibberish",
-            };
-
-            Activity[] activitiesToSend = null;
-            void CaptureSend(Activity[] arg)
-            {
-                activitiesToSend = arg;
-            }
-
-            var turnContext = new TurnContext(new SimpleAdapter(CaptureSend), activity);
-
-            // Act
-            var bot = new TestActivityHandler();
-            await ((IBot)bot).OnTurnAsync(turnContext);
-
-            // Assert
-            Assert.AreEqual(1, bot.Record.Count);
-            Assert.AreEqual("OnInvokeActivityAsync", bot.Record[0]);
-        }
-
-        [TestMethod]
         public async Task TestFileConsentAccept()
         {
             // Arrange
