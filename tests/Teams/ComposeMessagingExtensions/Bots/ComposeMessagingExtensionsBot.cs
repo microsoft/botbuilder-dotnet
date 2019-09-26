@@ -1,10 +1,13 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System.Collections;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveCards;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Teams;
 using Microsoft.Bot.Schema;
@@ -21,9 +24,51 @@ namespace Microsoft.BotBuilderSamples.Bots
             await turnContext.SendActivityAsync(MessageFactory.Text($"echo: {turnContext.Activity.Text}"), cancellationToken);
         }
 
-        protected override async Task<MessagingExtensionResponse> OnTeamsMessagingExtensionConfigurationQuerySettingsUrlAsync(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionQuery query, CancellationToken cancellationToken)
+        protected override async Task<MessagingExtensionResponse> OnTeamsMessagingExtensionConfigurationQuerySettingsUrlAsync(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionResponse query, CancellationToken cancellationToken)
         {
-            return null;
+
+
+
+            var messageExtensionResponse = new MessagingExtensionResponse
+            {
+                ComposeExtension = new SuggestedActions
+                {
+                    Actions = new List<CardAction>
+                    {
+                        new CardAction
+                        {
+                            Type = "whatever I want",
+                            Title = "This will show only if the extension hasn't been installed and you want something there",
+                            Value = "To the url you want people to go to when they actually click \"Settings\"",
+                        },
+                    },
+                    
+                },
+            };
+                
+                /*
+            var cardAction = new CardAction
+            {
+                Type = ActionTypes.OpenUrl,
+                Title = "setting config",
+                Value = "https://teamssettingspagescenario.azurewebsites.net",
+            };
+
+            var suggestedAction = new MessagingExtensionSuggestedAction
+            {
+                Actions = new List<CardAction> { cardAction },
+            };
+
+            var composeExtensionResponse = new MessagingExtensionResponse
+            {
+                ComposeExtension =
+                {
+                    SuggestedActions = suggestedAction,
+                    Type = "config",
+                },
+            };*/
+
+            return messageExtensionResponse;
         }
 
         protected override async Task<MessagingExtensionResponse> OnTeamsMessagingExtensionConfigurationSettingsAsync(ITurnContext<IInvokeActivity> turnContext, JObject settings, CancellationToken cancellationToken)
