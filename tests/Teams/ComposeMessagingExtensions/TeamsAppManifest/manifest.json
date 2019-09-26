@@ -2,7 +2,7 @@
   "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.5/MicrosoftTeams.schema.json",
   "manifestVersion": "1.5",
   "version": "1.0",
-  "id": "b6b52a0b-88df-455d-8e5c-7169f394f337",
+  "id": "",
   "packageName": "com.teams.sample.composeextension",
   "developer": {
     "name": "Microsoft",
@@ -23,9 +23,16 @@
     "full": "ComposeExtensions"
   },
   "accentColor": "#FFFFFF",
+  "configurableTabs": [
+    {
+      "configurationUrl": "https://teamssettingspagescenario.azurewebsites.net",
+      "canUpdateConfiguration": false,
+      "scopes": ["groupchat", "team"]
+    }
+  ],
   "bots": [
     {
-      "botId": "b6b52a0b-88df-455d-8e5c-7169f394f337",
+      "botId": "",
       "scopes": [
         "personal",
         "team",
@@ -37,12 +44,27 @@
   ],
   "composeExtensions": [
     {
-      "botId": "b6b52a0b-88df-455d-8e5c-7169f394f337",
+      "botId": "",
       "canUpdateConfiguration": true,
       "commands": [
         {
-          "id": "searchQuery",
-          "context": [ "compose", "commandBox" ],
+          "id": "searchQueryCommand",
+          "context": [ "commandBox" ],
+          "description": "Test command to run query",
+          "title": "Search",
+          "type": "query",
+          "parameters": [
+            {
+              "name": "searchQuery",
+              "title": "Search Query",
+              "description": "Your search query",
+              "inputType": "text"
+            }
+          ]
+        },
+        {
+          "id": "searchQueryCompose",
+          "context": [ "compose" ],
           "description": "Test command to run query",
           "title": "Search",
           "type": "query",
@@ -69,6 +91,6 @@
     }
   ],
   "validDomains": [
-    "*.bing.com"
+    "*.azurewebsites.net"
   ]
 }

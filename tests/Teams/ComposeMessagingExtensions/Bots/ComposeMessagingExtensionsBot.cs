@@ -48,52 +48,12 @@ namespace Microsoft.BotBuilderSamples.Bots
             return messageExtensionResponse;
         }
 
-        protected override async Task<MessagingExtensionResponse> OnTeamsMessagingExtensionConfigurationSettingsAsync(ITurnContext<IInvokeActivity> turnContext, JObject settings, CancellationToken cancellationToken)
+        /// <inheritdoc/>
+        protected override async Task OnTeamsMessagingExtensionConfigurationSettingsAsync(ITurnContext<IInvokeActivity> turnContext, JObject settings, CancellationToken cancellationToken)
         {
-            return null;
-        }
-
-        protected override async Task<MessagingExtensionActionResponse> OnTeamsMessagingExtensionFetchTaskAsync(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionQuery query, CancellationToken cancellationToken)
-        {
-            var reply = MessageFactory.Text("OnTeamsMessagingExtensionFetchTaskAsync MessagingExtensionQuery: " + JsonConvert.SerializeObject(query));
+            // This event is fired when the settings page is submitted
+            var reply = MessageFactory.Text("onTeamsMessagingExtensionSettings event fired with " + JsonConvert.SerializeObject(settings));
             await turnContext.SendActivityAsync(reply, cancellationToken);
-
-            return new MessagingExtensionActionResponse
-            {
-                Task = new TaskModuleContinueResponse
-                {
-                    Value = new TaskModuleTaskInfo()
-                    {
-                        Card = new Attachment
-                        {
-                            Content = GetTaskModuleAdaptiveCard(),
-                            ContentType = AdaptiveCard.ContentType,
-                        },
-                        Height = 450,
-                        Width = 450,
-                        Title = "Task Module Example",
-                    },
-                },
-            };
-        }
-
-        protected override async Task<MessagingExtensionActionResponse> OnTeamsMessagingExtensionSubmitActionAsync(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionAction action, CancellationToken cancellationToken)
-        {
-            var reply = MessageFactory.Text("OnTeamsMessagingExtensionSubmitActionAsync MessagingExtensionAction: " + JsonConvert.SerializeObject(action));
-            await turnContext.SendActivityAsync(reply, cancellationToken);
-
-            var adaptiveCard = GetCardFromSubmitExampleData(JsonConvert.DeserializeObject<SubmitExampleData>(action.Data.ToString()));
-
-            return new MessagingExtensionActionResponse
-            {
-                ComposeExtension = new MessagingExtensionResult
-                {
-                    Type = "result",
-                    Attachments = new[] { new MessagingExtensionAttachment(AdaptiveCard.ContentType, content: adaptiveCard) },
-                    Text = "Testing Action Based Messaging Extension",
-                    AttachmentLayout = AttachmentLayoutTypes.List,
-                },
-            };
         }
 
         /// <inheritdoc/>

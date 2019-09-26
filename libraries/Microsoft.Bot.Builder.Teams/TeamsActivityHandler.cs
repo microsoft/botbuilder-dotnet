@@ -142,7 +142,8 @@ namespace Microsoft.Bot.Builder.Teams
                             return CreateInvokeResponse(await OnTeamsMessagingExtensionConfigurationQuerySettingsUrlAsync(turnContext, SafeCast<MessagingExtensionQuery>(turnContext.Activity.Value), cancellationToken).ConfigureAwait(false));
 
                         case "composeExtension/setting":
-                            return CreateInvokeResponse(await OnTeamsMessagingExtensionConfigurationSettingsAsync(turnContext, turnContext.Activity.Value as JObject, cancellationToken).ConfigureAwait(false));
+                            await OnTeamsMessagingExtensionConfigurationSettingsAsync(turnContext, turnContext.Activity.Value as JObject, cancellationToken).ConfigureAwait(false)
+                            return CreateInvokeResponse();
 
                         case "composeExtension/onCardButtonClicked":
                             await OnTeamsMessagingExtensionCardButtonClickedAsync(turnContext, turnContext.Activity.Value as JObject, cancellationToken).ConfigureAwait(false);
@@ -270,7 +271,7 @@ namespace Microsoft.Bot.Builder.Teams
             throw new NotImplementedException();
         }
 
-        protected virtual Task<MessagingExtensionResponse> OnTeamsMessagingExtensionConfigurationSettingsAsync(ITurnContext<IInvokeActivity> turnContext, JObject settings, CancellationToken cancellationToken)
+        protected virtual Task OnTeamsMessagingExtensionConfigurationSettingsAsync(ITurnContext<IInvokeActivity> turnContext, JObject settings, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
