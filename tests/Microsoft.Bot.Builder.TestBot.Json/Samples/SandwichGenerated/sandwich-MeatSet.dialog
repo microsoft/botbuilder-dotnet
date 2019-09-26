@@ -5,8 +5,8 @@
     "actions": [
         {
             "$type": "Microsoft.SetProperty",
-            "property": "this.Meat",
-            "value": "turn.dialogEvent.Value.Entity.Entityx"
+            "property": "dialog.Meat",
+            "value": "turn.dialogEvent.Value.Entity.Entity"
         }
     ]
 }

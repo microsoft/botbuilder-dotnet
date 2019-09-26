@@ -35,7 +35,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Form.Actions
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             dc.State.SetValue("dialog.expectedSlots", ExpectedSlots);
-            return await base.BeginDialogAsync(dc, options, cancellationToken);
+            var result = await base.BeginDialogAsync(dc, options, cancellationToken).ConfigureAwait(false);
+            result.Status = DialogTurnStatus.CompleteAndWait;
+            return result;
         }
     }
 }

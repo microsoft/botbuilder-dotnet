@@ -5,8 +5,8 @@
     "actions": [
         {
             "$type": "Microsoft.SetProperty",
-            "property": "this.Cheese",
-            "value": "turn.dialogEvent.Value.Entity.Entityx"
+            "property": "dialog.Cheese",
+            "value": "turn.dialogEvent.Value.Entity.Entity"
         }
     ]
 }

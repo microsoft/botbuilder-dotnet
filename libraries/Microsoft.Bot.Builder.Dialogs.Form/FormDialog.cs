@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
@@ -66,6 +67,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                 handled = await this.ProcessEventAsync(sequenceContext, dialogEvent: evt, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
+            queues.Write(sequenceContext);
+
             return handled;
         }
 
@@ -92,15 +95,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                             var turn = sequenceContext.State.GetValue<int>("this.turn");
                             CombineOldSlotMappings(queues, turn);
                             queues.Write(sequenceContext);
-                            handled = await ProcessFormAsync(sequenceContext, cancellationToken).ConfigureAwait(false);
+                            handled = await base.ProcessEventAsync(sequenceContext, dialogEvent, preBubble, cancellationToken);
                         }
 
                         break;
-                    case FormEvents.FillForm:
-                        {
-                            handled = await ProcessFormAsync(sequenceContext, cancellationToken).ConfigureAwait(false);
-                            break;
-                        }
+
+                    case AdaptiveEvents.EndOfActions:
+                        handled = await ProcessFormAsync(sequenceContext, cancellationToken).ConfigureAwait(false);
+                        break;
 
                     default:
                         handled = await base.ProcessEventAsync(sequenceContext, dialogEvent, preBubble, cancellationToken).ConfigureAwait(false);
@@ -274,7 +276,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
         {
             foreach (var infos in entities.Values)
             {
-                infos.RemoveAll(e => e != entity && e.Overlaps(entity));
+                infos.RemoveAll(e => e.Overlaps(entity));
             }
         }
 

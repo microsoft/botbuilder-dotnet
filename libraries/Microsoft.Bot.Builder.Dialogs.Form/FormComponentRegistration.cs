@@ -21,7 +21,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
             yield return new TypeRegistration<OnChooseSlotValue>("Microsoft.OnChooseSlotValue");
             yield return new TypeRegistration<OnClarifySlotValue>("Microsoft.OnClarifySlotValue");
             yield return new TypeRegistration<OnClearSlot>("Microsoft.OnClearSlot");
-            yield return new TypeRegistration<OnNextFormEvent>("Microsoft.OnNextFormEvent");
             yield return new TypeRegistration<OnSetSlot>("Microsoft.OnSetSlot");
         }
 

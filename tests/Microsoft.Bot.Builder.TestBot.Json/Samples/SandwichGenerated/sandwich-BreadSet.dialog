@@ -5,8 +5,8 @@
     "actions": [
         {
             "$type": "Microsoft.SetProperty",
-            "property": "this.Bread",
-            "value": "turn.dialogEvent.Value.Entity.Entityx"
+            "property": "dialog.Bread",
+            "value": "turn.dialogEvent.Value.Entity.Entity"
         }
     ]
 }

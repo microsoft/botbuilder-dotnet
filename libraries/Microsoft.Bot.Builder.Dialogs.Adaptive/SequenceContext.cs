@@ -50,18 +50,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         }
 
         /// <summary>
-        /// Gets a value indicating whether the active AdaptiveDialog should wait for user input.
-        /// </summary>
-        /// <value>
-        /// Should the AdaptiveDialog wait for user input.
-        /// </value>
-        public bool WaitForInput
-        {
-            get { return this.State.GetBoolValue(WAIT_FOR_INPUT_PATH); }
-            private set { this.State.SetValue(WAIT_FOR_INPUT_PATH, value); }
-        }
-
-        /// <summary>
         /// Queues up a set of changes that will be applied when ApplyChanges is called.
         /// </summary>
         /// <param name="changes">Plan changes to queue up.</param>

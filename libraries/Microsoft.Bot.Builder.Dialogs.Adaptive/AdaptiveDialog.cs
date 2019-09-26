@@ -373,6 +373,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 // End current step
                 await this.EndCurrentActionAsync(sequenceContext, cancellationToken).ConfigureAwait(false);
 
+                if (result.Status == DialogTurnStatus.CompleteAndWait)
+                {
+                    // Waiting in next step
+                    result.Status = DialogTurnStatus.Waiting;
+                    return result;
+                }
+
                 // Execute next step
                 // We call continueDialog() on the root dialog to ensure any changes queued up
                 // by the previous actions are applied.
@@ -405,33 +412,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             // Is the current dialog still on the stack?
             if (sequenceContext.ActiveDialog != null)
             {
-                // Are we waiting for non-modal input?
-                if (sequenceContext.WaitForInput)
+                // Raise EndOfActions event
+                var endOfActionsEvent = new DialogEvent() { Name = AdaptiveEvents.EndOfActions, Bubble = false };
+                var handled = await OnDialogEventAsync(sequenceContext, endOfActionsEvent, cancellationToken).ConfigureAwait(false);
+
+                if (handled)
                 {
+                    // EndOfActions event was handled
+                    return await ContinueActionsAsync(sequenceContext, null, cancellationToken).ConfigureAwait(false);
+                }
+                else if (!this.ShouldEnd(sequenceContext))
+                {
+                    // The dialog is being held open for a turn
                     return Dialog.EndOfTurn;
                 }
                 else
                 {
-                    // Raise EndOfActions event
-                    var endOfActionsEvent = new DialogEvent() { Name = AdaptiveEvents.EndOfActions, Bubble = false };
-                    var handled = await OnDialogEventAsync(sequenceContext, endOfActionsEvent, cancellationToken).ConfigureAwait(false);
-
-                    if (handled)
-                    {
-                        // EndOfActions event was handled
-                        return await ContinueActionsAsync(sequenceContext, null, cancellationToken).ConfigureAwait(false);
-                    }
-                    else if (!this.ShouldEnd(sequenceContext))
-                    {
-                        // The dialog is being held open for a turn
-                        return Dialog.EndOfTurn;
-                    }
-                    else
-                    {
-                        // The dialog should be ended
-                        sequenceContext.State.TryGetValue<object>(DefaultResultProperty, out var result);
-                        return await sequenceContext.EndDialogAsync(result, cancellationToken).ConfigureAwait(false);
-                    }
+                    // The dialog should be ended
+                    sequenceContext.State.TryGetValue<object>(DefaultResultProperty, out var result);
+                    return await sequenceContext.EndDialogAsync(result, cancellationToken).ConfigureAwait(false);
                 }
             }
             else

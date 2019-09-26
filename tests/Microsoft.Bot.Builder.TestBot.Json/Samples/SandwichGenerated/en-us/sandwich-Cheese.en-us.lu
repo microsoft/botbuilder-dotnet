@@ -7,3 +7,13 @@ $Cheese:pepper jack=
 $Cheese:provolone=
 $Cheese:swiss=
 $Cheese:none=
+
+# None
+- american
+- cheddar
+- feta
+- gouda
+- pepper jack
+- provolone
+- swiss
+- none

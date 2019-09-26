@@ -7,3 +7,13 @@ $Meat:roast beef=
 $Meat:salami=
 $Meat:turkey=
 $Meat:none=
+
+# None
+- bacon
+- chicken
+- ham
+- pulled pork
+- roast beef
+- salami
+- turkey
+- none

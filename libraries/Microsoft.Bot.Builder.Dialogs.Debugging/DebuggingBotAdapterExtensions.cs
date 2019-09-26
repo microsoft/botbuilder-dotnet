@@ -37,7 +37,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             return botAdapter.Use(
                 new DialogDebugAdapter(
                     port: port, 
-                    sourceMap: sourceMap ?? sourceMap, 
+                    sourceMap: DebugSupport.SourceMap, 
                     breakpoints: breakpoints ?? sourceMap as IBreakpoints ?? debuggerSourceMap,
                     terminate: terminate, 
                     events: events,

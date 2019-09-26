@@ -21,7 +21,6 @@
 
   <ItemGroup>
     <Folder Include="CustomDialogs\" />
-    <Folder Include="Samples\SandwichGenerated\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>
 
