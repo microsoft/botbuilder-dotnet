@@ -333,13 +333,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     .StartTestAsync();
         }
 
-
         public class DialogCommandScopeDialog : ComponentDialog
         {
             public DialogCommandScopeDialog()
                 : base(nameof(DialogCommandScopeDialog))
             {
-
             }
 
             public override Task<DialogTurnResult> BeginDialogAsync(DialogContext outerDc, object options = null, CancellationToken cancellationToken = default)

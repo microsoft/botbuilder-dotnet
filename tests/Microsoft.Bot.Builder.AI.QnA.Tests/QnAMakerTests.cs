@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
+#pragma warning disable SA1201 // Elements should appear in the correct order
 
 using System;
 using System.Collections.Generic;
