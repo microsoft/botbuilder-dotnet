@@ -78,7 +78,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         }
     }
 
-    internal class MemoryScopeTestDialog : Dialog
+    internal class MemoryScopeTestDialog : ComponentDialog
     {
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -96,7 +96,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         }
     }
 
-    internal class PathResolverTestDialog : Dialog
+    internal class PathResolverTestDialog : ComponentDialog
     {
         private string[] entities = new string[] { "test1", "test2" };
 
