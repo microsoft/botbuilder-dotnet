@@ -78,7 +78,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         }
     }
 
-    internal class MemoryScopeTestDialog : ComponentDialog
+    internal class MemoryScopeTestDialog : Dialog
     {
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
