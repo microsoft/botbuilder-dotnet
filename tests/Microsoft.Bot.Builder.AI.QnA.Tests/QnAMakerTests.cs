@@ -1424,7 +1424,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             });
         }
 
-        public class QnaMakerTestDialog : ComponentDialog
+        public class QnaMakerTestDialog : ComponentDialog, IDialogDependencies
         {
             public QnaMakerTestDialog(QnAMaker qnaMaker)
                 : base(nameof(QnaMakerTestDialog))
@@ -1448,6 +1448,11 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 {
                     return await dc.BeginDialogAsync("qnaDialog");
                 }
+            }
+
+            public IEnumerable<Dialog> GetDependencies()
+            {
+                return _dialogs.GetDialogs();
             }
 
             public async override Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default)
