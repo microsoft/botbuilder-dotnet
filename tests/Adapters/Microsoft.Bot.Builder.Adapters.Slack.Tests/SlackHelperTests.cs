@@ -90,24 +90,6 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Tests
         }
 
         [Fact]
-        public void GetMessageFromSlackEventShouldReturnNull()
-        {
-            Assert.Null(SlackHelper.GetMessageFromSlackEvent(null));
-        }
-
-        [Fact]
-        public void GetMessageFromSlackEventShouldReturnMessage()
-        {
-            var json = File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\MessageBody.json");
-            dynamic slackEvent = JsonConvert.DeserializeObject(json);
-
-            var message = SlackHelper.GetMessageFromSlackEvent(slackEvent);
-
-            Assert.Equal(slackEvent["event"].text.Value, message.text);
-            Assert.Equal(slackEvent["event"].user.Value, message.user);
-        }
-
-        [Fact]
         public async Task WriteAsyncShouldFailWithNullResponse()
         {
             await Assert.ThrowsAsync<ArgumentNullException>(async () =>

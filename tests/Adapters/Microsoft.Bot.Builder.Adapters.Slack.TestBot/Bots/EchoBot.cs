@@ -34,7 +34,14 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.TestBot.Bots
         /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
         protected override async Task OnEventActivityAsync(ITurnContext<IEventActivity> turnContext, CancellationToken cancellationToken)
         {
-            System.Diagnostics.Debug.WriteLine($"You sent: /test");
+            if (turnContext.Activity.GetChannelData<SlackEvent>().SubType == "file_share")
+            {
+                await turnContext.SendActivityAsync(MessageFactory.Text($"Echo: I received an attachment"), cancellationToken);
+            }
+            else if (turnContext.Activity.GetChannelData<SlackEvent>().Message?.Attachments != null)
+            {
+                await turnContext.SendActivityAsync(MessageFactory.Text($"Echo: I received a link share"), cancellationToken);
+            }
         }
 
         /// <summary>

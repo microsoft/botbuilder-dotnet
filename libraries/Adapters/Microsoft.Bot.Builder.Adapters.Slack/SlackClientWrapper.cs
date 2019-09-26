@@ -713,8 +713,8 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
             var data = new NameValueCollection
             {
                 ["token"] = Options.BotToken,
-                ["channel"] = message.channel,
-                ["text"] = message.text,
+                ["channel"] = message.Channel,
+                ["text"] = message.Text,
                 ["thread_ts"] = message.ThreadTS,
             };
 

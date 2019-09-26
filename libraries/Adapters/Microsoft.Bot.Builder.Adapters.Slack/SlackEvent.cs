@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using SlackAPI;
 
 namespace Microsoft.Bot.Builder.Adapters.Slack
 {
@@ -58,5 +59,11 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
 
         [JsonProperty(PropertyName = "item_channel")]
         public string ItemChannel { get; set; }
+
+        [JsonProperty(PropertyName = "files")]
+        public List<File> Files { get; set; }
+
+        [JsonProperty(PropertyName = "message")]
+        public NewSlackMessage Message { get; set; }
     }
 }
