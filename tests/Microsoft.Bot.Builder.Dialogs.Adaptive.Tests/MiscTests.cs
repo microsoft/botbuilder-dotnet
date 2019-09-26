@@ -109,7 +109,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                     {
                         Actions = new List<Dialog>()
                         {
-                            new TextInput() { Prompt = new ActivityTemplate("Hello, what is your name?"), Property = "user.name", AllowInterruptions = AllowInterruptions.Always },
+                            new TextInput() { Prompt = new ActivityTemplate("Hello, what is your name?"), Property = "user.name", AllowInterruptions = "true" },
                             new SendActivity("Hello {user.name}, nice to meet you!"),
                             new NumberInput() { Prompt = new ActivityTemplate("What is your age?"), Property = "user.age" },
                             new SendActivity("{user.age} is a good age to be!"),

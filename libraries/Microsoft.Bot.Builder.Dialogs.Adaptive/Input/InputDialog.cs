@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Choices;
+using Microsoft.Bot.Builder.Expressions;
 using Microsoft.Bot.Builder.Expressions.Parser;
 using Microsoft.Bot.Builder.LanguageGeneration;
 using Microsoft.Bot.Schema;
@@ -25,15 +26,26 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         protected const string PROCESS_INPUT_PROPERTY = "turn.processInput";
 #pragma warning restore SA1310 // Field should not contain underscore.
 
+        private Expression allowInterruptions;
+
         /// <summary>
         /// Gets or sets a value indicating whether the input should always prompt the user regardless of there being a value or not.
         /// </summary>
+        [JsonProperty("alwaysPrompt")]
         public bool AlwaysPrompt { get; set; } = false;
 
         /// <summary>
-        /// Gets or sets intteruption policy.
+        /// Gets or sets intteruption policy. 
         /// </summary>
-        public AllowInterruptions AllowInterruptions { get; set; } = AllowInterruptions.NotRecognized;
+        /// <example>
+        /// "true".
+        /// </example>
+        [JsonProperty("allowInterruptions")]
+        public string AllowInterruptions
+        {
+            get { return allowInterruptions?.ToString(); }
+            set { allowInterruptions = value != null ? new ExpressionEngine().Parse(value) : null; }
+        }
 
         /// <summary>
         /// Gets or sets the value expression which the input will be bound to
@@ -44,36 +56,43 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// <summary>
         /// Gets or sets the activity to send to the user.
         /// </summary>
+        [JsonProperty("prompt")]
         public ITemplate<Activity> Prompt { get; set; }
 
         /// <summary>
         /// Gets or sets the activity template for retrying prompt.
         /// </summary>
+        [JsonProperty("unrecognizedPrompt")]
         public ITemplate<Activity> UnrecognizedPrompt { get; set; }
 
         /// <summary>
         /// Gets or sets the activity template to send to the user whenever the value provided is invalid.
         /// </summary>
+        [JsonProperty("invalidPrompt")]
         public ITemplate<Activity> InvalidPrompt { get; set; }
 
         /// <summary>
         /// Gets or sets the activity template to send when MaxTurnCount has been reached and the default value is used.
         /// </summary>
+        [JsonProperty("defaultValueResponse")]
         public ITemplate<Activity> DefaultValueResponse { get; set; }
 
         /// <summary>
         /// Gets or sets the expressions to run to validate the input.
         /// </summary>
+        [JsonProperty("validations")]
         public List<string> Validations { get; set; } = new List<string>();
 
         /// <summary>
         /// Gets or sets maximum number of times to ask the user for this value before the dilog gives up.
         /// </summary>
+        [JsonProperty("maxTurnCount")]
         public int? MaxTurnCount { get; set; }
 
         /// <summary>
         /// Gets or sets the default value for the input dialog when MaxTurnCount is exceeded.
         /// </summary>
+        [JsonProperty("defaultValue")]
         public string DefaultValue { get; set; }
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options, CancellationToken cancellationToken = default(CancellationToken))
@@ -172,29 +191,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         {
             if (e.Name == DialogEvents.ActivityReceived && dc.Context.Activity.Type == ActivityTypes.Message)
             {
-                switch (this.AllowInterruptions)
+                // Ask parent to perform recognition
+                await dc.Parent.EmitEventAsync(AdaptiveEvents.RecognizeUtterance, value: dc.Context.Activity, bubble: false, cancellationToken: cancellationToken).ConfigureAwait(false);
+
+                // Should we allow interruptions
+                var canInterrupt = true;
+                if (allowInterruptions != null)
                 {
-                    case AllowInterruptions.Always:
-                        return false;
-
-                    case AllowInterruptions.Never:
-                        return true;
-
-                    case AllowInterruptions.NotRecognized:
-                        var state = await this.RecognizeInput(dc).ConfigureAwait(false);
-
-                        // RecognizedInput can come back with different InputState enum values. 
-                        // We need to have predictible behavior for users here so when NotRecognized is set
-                        //    we do not bubble up when InputState is either Valid or Invalid. 
-                        //    not consulting on Invalid is critical so the bot can continue to re-prompt the user 
-                        //    or in the ideal case, render 'InvalidPrompt' if user has specified one. 
-                        // RecognizeInput => 
-                        //      InputState.Invalid      -> Do not bubble up -> return true
-                        //      InputState.Valid        -> Do not bubble up -> return true
-                        //      InputState.Missing      -> bubble up        -> return false
-                        //      InputState.Unrecognized -> bubble up        -> return false
-                        return state == InputState.Valid || state == InputState.Invalid;
+                    var (value, error) = allowInterruptions.TryEvaluate(dc.State);
+                    canInterrupt = error == null && value != null && (bool)value;
                 }
+
+                // Stop bubbling if interruptions ar NOT allowed
+                return !canInterrupt;
             }
 
             return false;

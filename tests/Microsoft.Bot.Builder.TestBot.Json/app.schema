@@ -737,16 +737,11 @@
                 },
                 "allowInterruptions": {
                     "type": "string",
-                    "enum": [
-                        "always",
-                        "never",
-                        "notRecognized"
-                    ],
                     "title": "Allow Interruptions",
-                    "description": "Always will always consult parent dialogs first, never will not consult parent dialogs, notRecognized will consult parent only when it's not recognized",
-                    "default": "notRecognized",
+                    "description": "A boolean expression that determines whether the parent should be allowed to interrupt the input.",
+                    "default": "true",
                     "examples": [
-                        "notRecognized"
+                        "true"
                     ]
                 },
                 "outputFormat": {
@@ -1036,16 +1031,11 @@
                 },
                 "allowInterruptions": {
                     "type": "string",
-                    "enum": [
-                        "always",
-                        "never",
-                        "notRecognized"
-                    ],
                     "title": "Allow Interruptions",
-                    "description": "Always will always consult parent dialogs first, never will not consult parent dialogs, notRecognized will consult parent only when it's not recognized",
-                    "default": "notRecognized",
+                    "description": "A boolean expression that determines whether the parent should be allowed to interrupt the input.",
+                    "default": "true",
                     "examples": [
-                        "notRecognized"
+                        "true"
                     ]
                 },
                 "outputFormat": {
@@ -1382,16 +1372,11 @@
                 },
                 "allowInterruptions": {
                     "type": "string",
-                    "enum": [
-                        "always",
-                        "never",
-                        "notRecognized"
-                    ],
                     "title": "Allow Interruptions",
-                    "description": "Always will always consult parent dialogs first, never will not consult parent dialogs, notRecognized will consult parent only when it's not recognized",
-                    "default": "notRecognized",
+                    "description": "A boolean expression that determines whether the parent should be allowed to interrupt the input.",
+                    "default": "true",
                     "examples": [
-                        "notRecognized"
+                        "true"
                     ]
                 },
                 "defaultLocale": {
@@ -1765,16 +1750,11 @@
                 },
                 "allowInterruptions": {
                     "type": "string",
-                    "enum": [
-                        "always",
-                        "never",
-                        "notRecognized"
-                    ],
                     "title": "Allow Interruptions",
-                    "description": "Always will always consult parent dialogs first, never will not consult parent dialogs, notRecognized will consult parent only when it's not recognized",
-                    "default": "notRecognized",
+                    "description": "A boolean expression that determines whether the parent should be allowed to interrupt the input.",
+                    "default": "true",
                     "examples": [
-                        "notRecognized"
+                        "true"
                     ]
                 },
                 "defaultLocale": {
@@ -4008,16 +3988,11 @@
                 },
                 "allowInterruptions": {
                     "type": "string",
-                    "enum": [
-                        "always",
-                        "never",
-                        "notRecognized"
-                    ],
                     "title": "Allow Interruptions",
-                    "description": "Always will always consult parent dialogs first, never will not consult parent dialogs, notRecognized will consult parent only when it's not recognized",
-                    "default": "notRecognized",
+                    "description": "A boolean expression that determines whether the parent should be allowed to interrupt the input.",
+                    "default": "true",
                     "examples": [
-                        "notRecognized"
+                        "true"
                     ]
                 },
                 "outputFormat": {
@@ -4226,16 +4201,11 @@
                 },
                 "allowInterruptions": {
                     "type": "string",
-                    "enum": [
-                        "always",
-                        "never",
-                        "notRecognized"
-                    ],
                     "title": "Allow Interruptions",
-                    "description": "Always will always consult parent dialogs first, never will not consult parent dialogs, notRecognized will consult parent only when it's not recognized",
-                    "default": "notRecognized",
+                    "description": "A boolean expression that determines whether the parent should be allowed to interrupt the input.",
+                    "default": "true",
                     "examples": [
-                        "notRecognized"
+                        "true"
                     ]
                 },
                 "connectionName": {
@@ -6745,16 +6715,11 @@
                 },
                 "allowInterruptions": {
                     "type": "string",
-                    "enum": [
-                        "always",
-                        "never",
-                        "notRecognized"
-                    ],
                     "title": "Allow Interruptions",
-                    "description": "Always will always consult parent dialogs first, never will not consult parent dialogs, notRecognized will consult parent only when it's not recognized",
-                    "default": "notRecognized",
+                    "description": "A boolean expression that determines whether the parent should be allowed to interrupt the input.",
+                    "default": "true",
                     "examples": [
-                        "notRecognized"
+                        "true"
                     ]
                 },
                 "outputFormat": {
