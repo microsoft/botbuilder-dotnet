@@ -513,13 +513,14 @@ namespace Microsoft.Bot.Builder.Teams.Tests
         }
 
         [TestMethod]
-        public async Task TestMessagingExtensionConfigurationQuerySettingsUrl()
+        public async Task TestMessagingExtensionConfigurationQuerySettingUrl()
         {
             // Arrange
             var activity = new Activity
             {
                 Type = ActivityTypes.Invoke,
-                Name = "composeExtension/querySettingsUrl",
+                Name = "composeExtension/querySettingUrl",
+                Value = JObject.Parse(@"{""commandId"":""testCommand""}"),
             };
 
             Activity[] activitiesToSend = null;
@@ -537,7 +538,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             // Assert
             Assert.AreEqual(2, bot.Record.Count);
             Assert.AreEqual("OnInvokeActivityAsync", bot.Record[0]);
-            Assert.AreEqual("OnTeamsMessagingExtensionConfigurationQuerySettingsUrlAsync", bot.Record[1]);
+            Assert.AreEqual("OnTeamsMessagingExtensionConfigurationQuerySettingUrlAsync", bot.Record[1]);
             Assert.IsNotNull(activitiesToSend);
             Assert.AreEqual(1, activitiesToSend.Length);
             Assert.IsInstanceOfType(activitiesToSend[0].Value, typeof(InvokeResponse));
@@ -552,6 +553,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             {
                 Type = ActivityTypes.Invoke,
                 Name = "composeExtension/setting",
+                Value = JObject.Parse(@"{""commandId"":""testCommand""}"),
             };
 
             Activity[] activitiesToSend = null;
@@ -569,7 +571,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             // Assert
             Assert.AreEqual(2, bot.Record.Count);
             Assert.AreEqual("OnInvokeActivityAsync", bot.Record[0]);
-            Assert.AreEqual("OnTeamsMessagingExtensionConfigurationSettingsAsync", bot.Record[1]);
+            Assert.AreEqual("OnTeamsMessagingExtensionConfigurationSettingAsync", bot.Record[1]);
             Assert.IsNotNull(activitiesToSend);
             Assert.AreEqual(1, activitiesToSend.Length);
             Assert.IsInstanceOfType(activitiesToSend[0].Value, typeof(InvokeResponse));
@@ -774,16 +776,16 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 return Task.FromResult(new MessagingExtensionActionResponse());
             }
 
-            protected override Task<MessagingExtensionResponse> OnTeamsMessagingExtensionConfigurationQuerySettingsUrlAsync(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionQuery query, CancellationToken cancellationToken)
+            protected override Task<MessagingExtensionResponse> OnTeamsMessagingExtensionConfigurationQuerySettingUrlAsync(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionQuery query, CancellationToken cancellationToken)
             {
                 Record.Add(MethodBase.GetCurrentMethod().Name);
                 return Task.FromResult(new MessagingExtensionResponse());
             }
 
-            protected override Task OnTeamsMessagingExtensionConfigurationSettingsAsync(ITurnContext<IInvokeActivity> turnContext, JObject obj, CancellationToken cancellationToken)
+            protected override Task OnTeamsMessagingExtensionConfigurationSettingAsync(ITurnContext<IInvokeActivity> turnContext, JObject obj, CancellationToken cancellationToken)
             {
                 Record.Add(MethodBase.GetCurrentMethod().Name);
-                return base.OnTeamsMessagingExtensionConfigurationSettingsAsync(turnContext, obj, cancellationToken);
+                return Task.CompletedTask;
             }
 
             protected override Task<MessagingExtensionResponse> OnTeamsMessagingExtensionQueryAsync(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionQuery query, CancellationToken cancellationToken)

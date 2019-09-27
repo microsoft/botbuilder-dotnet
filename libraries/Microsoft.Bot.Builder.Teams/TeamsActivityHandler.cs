@@ -139,10 +139,10 @@ namespace Microsoft.Bot.Builder.Teams
                             return CreateInvokeResponse(await OnTeamsMessagingExtensionFetchTaskAsync(turnContext, SafeCast<MessagingExtensionQuery>(turnContext.Activity.Value), cancellationToken).ConfigureAwait(false));
 
                         case "composeExtension/querySettingUrl":
-                            return CreateInvokeResponse(await OnTeamsMessagingExtensionConfigurationQuerySettingsUrlAsync(turnContext, SafeCast<MessagingExtensionQuery>(turnContext.Activity.Value), cancellationToken).ConfigureAwait(false));
+                            return CreateInvokeResponse(await OnTeamsMessagingExtensionConfigurationQuerySettingUrlAsync(turnContext, SafeCast<MessagingExtensionQuery>(turnContext.Activity.Value), cancellationToken).ConfigureAwait(false));
 
                         case "composeExtension/setting":
-                            await OnTeamsMessagingExtensionConfigurationSettingsAsync(turnContext, turnContext.Activity.Value as JObject, cancellationToken).ConfigureAwait(false);
+                            await OnTeamsMessagingExtensionConfigurationSettingAsync(turnContext, turnContext.Activity.Value as JObject, cancellationToken).ConfigureAwait(false);
                             return CreateInvokeResponse();
 
                         case "composeExtension/onCardButtonClicked":
@@ -266,12 +266,12 @@ namespace Microsoft.Bot.Builder.Teams
             throw new NotImplementedException();
         }
 
-        protected virtual Task<MessagingExtensionResponse> OnTeamsMessagingExtensionConfigurationQuerySettingsUrlAsync(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionQuery query, CancellationToken cancellationToken)
+        protected virtual Task<MessagingExtensionResponse> OnTeamsMessagingExtensionConfigurationQuerySettingUrlAsync(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionQuery query, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
 
-        protected virtual Task OnTeamsMessagingExtensionConfigurationSettingsAsync(ITurnContext<IInvokeActivity> turnContext, JObject settings, CancellationToken cancellationToken)
+        protected virtual Task OnTeamsMessagingExtensionConfigurationSettingAsync(ITurnContext<IInvokeActivity> turnContext, JObject settings, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
