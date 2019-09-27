@@ -783,7 +783,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
             protected override Task OnTeamsMessagingExtensionConfigurationSettingsAsync(ITurnContext<IInvokeActivity> turnContext, JObject obj, CancellationToken cancellationToken)
             {
                 Record.Add(MethodBase.GetCurrentMethod().Name);
-                return Task.CompleteTask;
+                return base.OnTeamsMessagingExtensionConfigurationSettingsAsync(turnContext, obj, cancellationToken);
             }
 
             protected override Task<MessagingExtensionResponse> OnTeamsMessagingExtensionQueryAsync(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionQuery query, CancellationToken cancellationToken)
