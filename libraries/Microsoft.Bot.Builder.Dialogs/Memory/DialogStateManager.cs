@@ -58,7 +58,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
 
         public ICollection<string> Keys => MemoryScopes.Select(ms => ms.Name).ToList();
 
-        public ICollection<object> Values => MemoryScopes.Cast<object>().ToList();
+        public ICollection<object> Values => MemoryScopes.Select(ms => ms.GetMemory(this.dialogContext)).ToList();
 
         public int Count => MemoryScopes.Count;
 
@@ -290,7 +290,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         {
             foreach (var ms in MemoryScopes)
             {
-                array[arrayIndex++] = new KeyValuePair<string, object>(ms.Name, ms);
+                array[arrayIndex++] = new KeyValuePair<string, object>(ms.Name, ms.GetMemory(this.dialogContext));
             }
         }
 
@@ -303,7 +303,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         {
             foreach (var ms in MemoryScopes)
             {
-                yield return new KeyValuePair<string, object>(ms.Name, ms);
+                yield return new KeyValuePair<string, object>(ms.Name, ms.GetMemory(this.dialogContext));
             }
         }
 
@@ -311,7 +311,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         {
             foreach (var ms in MemoryScopes)
             {
-                yield return new KeyValuePair<string, object>(ms.Name, ms);
+                yield return new KeyValuePair<string, object>(ms.Name, ms.GetMemory(this.dialogContext));
             }
         }
 
