@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
         [Fact]
         public void ActivityToTwilio_Should_Return_MessageOptions_With_MediaUrl()
         {
-            var activity = JsonConvert.DeserializeObject<Activity>(File.ReadAllText(Directory.GetCurrentDirectory() + @"\files\Activities.json"));
+            var activity = JsonConvert.DeserializeObject<Activity>(File.ReadAllText(PathUtils.NormalizePath(Directory.GetCurrentDirectory() + @"\files\Activities.json")));
             activity.Attachments = new List<Attachment> { new Attachment(contentUrl: "http://example.com") };
             var messageOption = TwilioHelper.ActivityToTwilio(activity, "123456789");
 
@@ -54,7 +54,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
         [Fact]
         public void ActivityToTwilio_Should_Return_Empty_MediaUrl_With_Null_MediaUrls()
         {
-            var activity = JsonConvert.DeserializeObject<Activity>(File.ReadAllText(Directory.GetCurrentDirectory() + @"\files\Activities.json"));
+            var activity = JsonConvert.DeserializeObject<Activity>(File.ReadAllText(PathUtils.NormalizePath(Directory.GetCurrentDirectory() + @"\files\Activities.json")));
             activity.Attachments = null;
             var messageOption = TwilioHelper.ActivityToTwilio(activity, "123456789");
 
@@ -105,7 +105,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
             var hmac = new HMACSHA1(Encoding.UTF8.GetBytes(AuthTokenString));
             var builder = new StringBuilder(_validationUrlString.ToString());
 
-            var bodyString = File.ReadAllText(Directory.GetCurrentDirectory() + @"\files\NoMediaPayload.txt");
+            var bodyString = File.ReadAllText(PathUtils.NormalizePath(Directory.GetCurrentDirectory() + @"\files\NoMediaPayload.txt"));
             var byteArray = Encoding.ASCII.GetBytes(bodyString);
             var stream = new MemoryStream(byteArray);
 
@@ -154,7 +154,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
             var hmac = new HMACSHA1(Encoding.UTF8.GetBytes(AuthTokenString));
             var builder = new StringBuilder(_validationUrlString.ToString());
 
-            var bodyString = File.ReadAllText(Directory.GetCurrentDirectory() + @"\files\NoMediaPayload.txt");
+            var bodyString = File.ReadAllText(PathUtils.NormalizePath(Directory.GetCurrentDirectory() + @"\files\NoMediaPayload.txt"));
             var byteArray = Encoding.ASCII.GetBytes(bodyString);
             var stream = new MemoryStream(byteArray);
 
@@ -199,7 +199,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
             var hmac = new HMACSHA1(Encoding.UTF8.GetBytes(AuthTokenString));
             var builder = new StringBuilder(_validationUrlString.ToString());
 
-            var bodyString = File.ReadAllText(Directory.GetCurrentDirectory() + @"\files\MediaPayload.txt");
+            var bodyString = File.ReadAllText(PathUtils.NormalizePath(Directory.GetCurrentDirectory() + @"\files\MediaPayload.txt"));
             var byteArray = Encoding.ASCII.GetBytes(bodyString);
             var stream = new MemoryStream(byteArray);
 
@@ -244,7 +244,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
             var hmac = new HMACSHA1(Encoding.UTF8.GetBytes(AuthTokenString));
             var builder = new StringBuilder(_validationUrlString.ToString());
 
-            var bodyString = File.ReadAllText(Directory.GetCurrentDirectory() + @"\files\MediaPayload.txt");
+            var bodyString = File.ReadAllText(PathUtils.NormalizePath(Directory.GetCurrentDirectory() + @"\files\MediaPayload.txt"));
 
             // Replace NumMedia with a number > the number of attachments
             bodyString = bodyString.Replace("NumMedia=1", "NumMedia=2");

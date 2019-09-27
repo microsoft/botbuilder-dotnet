@@ -5,18 +5,10 @@
     <Version Condition=" '$(PackageVersion)' != '' ">$(PackageVersion)</Version>
     <PackageVersion Condition=" '$(PackageVersion)' == '' ">4.6.0-local</PackageVersion>
     <PackageVersion Condition=" '$(PackageVersion)' != '' ">$(PackageVersion)</PackageVersion>
-    <Configurations>Debug;Release;Debug-Windows;Release-Windows</Configurations>
+    <Configurations>Debug;Release</Configurations>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DefineConstants>SIGNASSEMBLY</DefineConstants>
-    <SignAssembly>true</SignAssembly>
-    <DelaySign>true</DelaySign>
-    <AssemblyOriginatorKeyFile>..\..\build\35MSSharedLib1024.snk</AssemblyOriginatorKeyFile>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-Windows|AnyCPU'">
     <DefineConstants>SIGNASSEMBLY</DefineConstants>
     <SignAssembly>true</SignAssembly>
     <DelaySign>true</DelaySign>
