@@ -19,10 +19,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Tests
 
         public TestContext TestContext { get; set; }
 
-        [ClassInitialize]
-        public static void ClassInitialize(TestContext context)
+        [TestInitialize]
+        public void TestInitialize()
         {
-            foreach (var file in Directory.EnumerateFiles(Environment.CurrentDirectory, "*.dialog"))
+            var path = Path.GetFullPath(PathUtils.NormalizePath(Path.Combine(Environment.CurrentDirectory, @"..\..")));
+            foreach (var file in Directory.EnumerateFiles(path, "*.dialog"))
             {
                 File.Delete(file);
             }
