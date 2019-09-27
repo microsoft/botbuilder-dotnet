@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net.WebSockets;
-using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
-using Microsoft.Bot.StreamingExtensions;
-using Microsoft.Bot.StreamingExtensions.Payloads;
+using Microsoft.Bot.Streaming;
+using Microsoft.Bot.Streaming.Payloads;
 using Newtonsoft.Json;
 using Xunit;
 
@@ -303,6 +302,25 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
             {
                 throw new NotImplementedException();
             }
+        }
+
+        private class FakeContentStream : IContentStream
+        {
+            public FakeContentStream(Guid id, string contentType, Stream stream)
+            {
+                Id = id;
+                ContentType = contentType;
+                Stream = stream;
+                Length = int.Parse(stream.Length.ToString());
+            }
+
+            public Guid Id { get; set; }
+
+            public string ContentType { get; set; }
+
+            public int? Length { get; set; }
+
+            public Stream Stream { get; set; }
         }
     }
 }

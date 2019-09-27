@@ -1,14 +1,11 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Integration;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
-using Microsoft.Bot.Builder.Streaming;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Rest.Serialization;
@@ -20,16 +17,6 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
 {
     public class DirectLineAdapterTests
     {
-        [Fact]
-        public async Task Test1()
-        {
-            // Arrange
-
-            // Act
-
-            // Assert
-        }
-
         [Fact]
         public async Task BasicMessageActivity()
         {
