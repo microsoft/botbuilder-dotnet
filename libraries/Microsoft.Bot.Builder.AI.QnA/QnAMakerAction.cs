@@ -26,6 +26,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         private readonly HttpClient httpClient;
         private Expression knowledgebaseId;
         private Expression endpointkey;
+        private Expression hostname;
 
         public QnAMakerAction(
             string knowledgeBaseId, 
@@ -70,7 +71,11 @@ namespace Microsoft.Bot.Builder.AI.QnA
         }
 
         [JsonProperty("hostname")]
-        public string HostName { get; set; }
+        public string HostName
+        {
+            get { return hostname?.ToString(); }
+            set { hostname = value != null ? new ExpressionEngine().Parse(value) : null; }
+        }
 
         [JsonProperty("endpointKey")]
         public string EndpointKey
@@ -99,11 +104,16 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (dc == null)
+            {
+                throw new ArgumentNullException(nameof(dc));
+            }
+
             var endpoint = new QnAMakerEndpoint
             {
-                EndpointKey = this.EndpointKey,
-                Host = this.HostName,
-                KnowledgeBaseId = this.KnowledgeBaseId
+                EndpointKey = endpointkey.TryEvaluate(dc.State).error == null ? endpointkey.TryEvaluate(dc.State).value.ToString() : this.EndpointKey,
+                Host = endpointkey.TryEvaluate(dc.State).error == null ? hostname.TryEvaluate(dc.State).value.ToString() : this.HostName,
+                KnowledgeBaseId = endpointkey.TryEvaluate(dc.State).error == null ? knowledgebaseId.TryEvaluate(dc.State).value.ToString() : this.KnowledgeBaseId
             };
 
             var qnamakerOptions = new QnAMakerOptions
@@ -115,11 +125,6 @@ namespace Microsoft.Bot.Builder.AI.QnA
             if (qnamaker == null)
             {
                 qnamaker = new QnAMaker(endpoint, qnamakerOptions, httpClient);
-            }
-
-            if (dc == null)
-            {
-                throw new ArgumentNullException(nameof(dc));
             }
 
             if (dc.Context?.Activity?.Type != ActivityTypes.Message)

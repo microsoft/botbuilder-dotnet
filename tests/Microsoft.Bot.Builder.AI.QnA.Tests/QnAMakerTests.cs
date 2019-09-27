@@ -1615,6 +1615,9 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             var client = new HttpClient(mockHttp);
 
             var noAnswerActivity = new ActivityTemplate("No match found, please as another question.");
+            var host = "'https://dummy-hostname.azurewebsites.net/qnamaker'";
+            var knowlegeBaseId = "'dummy-id'";
+            var endpointKey = "'dummy-key'";
 
             var outerDialog = new AdaptiveDialog("outer")
             {
@@ -1625,7 +1628,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                     {
                         Actions = new List<Dialog>()
                         {
-                            new QnAMakerAction(knowledgeBaseId: _knowlegeBaseId, hostName: _hostname, endpointKey: _endpointKey, httpClient: client)
+                            new QnAMakerAction(knowledgeBaseId: knowlegeBaseId, hostName: host, endpointKey: endpointKey, httpClient: client)
                             {
                                 NoAnswer = noAnswerActivity
                             }
