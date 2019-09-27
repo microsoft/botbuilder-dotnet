@@ -168,7 +168,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var testLocales = new TestLocale[]
             {
                 new TestLocale(Chinese, "(1) 是的 要么 (2) 不", "是的", "不"),
-                new TestLocale(Danish, "(1) Ja of (2) Nej", "Ja", "Nej"),
+                new TestLocale(Danish, "(1) Ja eller (2) Nej", "Ja", "Nej"),
                 new TestLocale(Dutch, "(1) Ja of (2) Nee", "Ja", "Nee"),
                 new TestLocale(English, "(1) Yes or (2) No", "Yes", "No"),
                 new TestLocale(French, "(1) Oui ou (2) Non", "Oui", "Non"),
