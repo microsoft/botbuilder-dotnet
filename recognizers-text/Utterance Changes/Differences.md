@@ -1,6 +1,6 @@
 ### Description
 
-This folder includes the changes that result from consuming recognizers-text through BotBuilder-DotNet. The output with all the differences between recognizers versions (the older and the new one) will be organized, showing new inputs as well as updates.
+This folder includes the changes in recognized utterances resulting from consuming different versions of recognizers-text through BotBuilder-DotNet.
  
 This way the user will have the comparison after running the tests between versions and will let them know what to expect.
 
