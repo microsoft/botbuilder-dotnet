@@ -243,11 +243,9 @@ Global
 		{7BCEBDC1-D57F-4717-9B15-4FACD5473489}.Release-Windows|Any CPU.ActiveCfg = Release-Windows|Any CPU
 		{7BCEBDC1-D57F-4717-9B15-4FACD5473489}.Release-Windows|Any CPU.Build.0 = Release-Windows|Any CPU
 		{BD0B82EF-1601-4E87-B78A-B43DE7EB36B0}.Debug|Any CPU.ActiveCfg = Debug-Windows|Any CPU
-		{BD0B82EF-1601-4E87-B78A-B43DE7EB36B0}.Debug|Any CPU.Build.0 = Debug-Windows|Any CPU
 		{BD0B82EF-1601-4E87-B78A-B43DE7EB36B0}.Debug-Windows|Any CPU.ActiveCfg = Debug-Windows|Any CPU
 		{BD0B82EF-1601-4E87-B78A-B43DE7EB36B0}.Debug-Windows|Any CPU.Build.0 = Debug-Windows|Any CPU
 		{BD0B82EF-1601-4E87-B78A-B43DE7EB36B0}.Release|Any CPU.ActiveCfg = Release-Windows|Any CPU
-		{BD0B82EF-1601-4E87-B78A-B43DE7EB36B0}.Release|Any CPU.Build.0 = Release-Windows|Any CPU
 		{BD0B82EF-1601-4E87-B78A-B43DE7EB36B0}.Release-Windows|Any CPU.ActiveCfg = Release-Windows|Any CPU
 		{BD0B82EF-1601-4E87-B78A-B43DE7EB36B0}.Release-Windows|Any CPU.Build.0 = Release-Windows|Any CPU
 		{053BD8B8-B5C1-4C45-81D4-C9BA8D5B3CE2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
