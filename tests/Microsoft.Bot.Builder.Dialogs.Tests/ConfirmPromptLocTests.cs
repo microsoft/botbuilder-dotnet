@@ -167,14 +167,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         {
             var testLocales = new TestLocale[]
             {
+                new TestLocale(Chinese, "(1) 是的 要么 (2) 不", "是的", "不"),
+                new TestLocale(Danish, "(1) Ja of (2) Nej", "Ja", "Nej"),
                 new TestLocale(Dutch, "(1) Ja of (2) Nee", "Ja", "Nee"),
-                new TestLocale(Spanish, "(1) Sí o (2) No", "Sí", "No"),
                 new TestLocale(English, "(1) Yes or (2) No", "Yes", "No"),
                 new TestLocale(French, "(1) Oui ou (2) Non", "Oui", "Non"),
                 new TestLocale(German, "(1) Ja oder (2) Nein", "Ja", "Nein"),
                 new TestLocale(Japanese, "(1) はい または (2) いいえ", "はい", "いいえ"),
                 new TestLocale(Portuguese, "(1) Sim ou (2) Não", "Sim", "Não"),
-                new TestLocale(Chinese, "(1) 是的 要么 (2) 不", "是的", "不"),
+                new TestLocale(Spanish, "(1) Sí o (2) No", "Sí", "No"),
             };
 
             foreach (var locale in testLocales)
