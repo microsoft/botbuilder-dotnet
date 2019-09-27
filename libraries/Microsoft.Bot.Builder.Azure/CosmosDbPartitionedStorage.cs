@@ -212,7 +212,7 @@ namespace Microsoft.Bot.Builder.Azure
         /// <summary>
         /// Internal data structure for storing items in a CosmosDB Collection.
         /// </summary>
-        private class DocumentStoreItem
+        private class DocumentStoreItem : IStoreItem
         {
             /// <summary>
             /// Gets the PartitionKey path to be used for this document type.
