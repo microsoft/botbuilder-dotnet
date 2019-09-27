@@ -7,19 +7,19 @@
     "additionalProperties": false,
   "properties": {
     "knowledgeBaseId": {
-      "type": "string",
+      "type": "expression",
       "title": "KnowledgeBase Id",
       "description": "KnowledgeBase Id of your QnA Maker KnowledgeBase.",
       "default": "settings.qna.knowledgebaseid"
     },
     "endpointKey": {
-      "type": "string",
+      "type": "expression",
       "title": "Endpoint Key",
       "description": "Endpoint key for the QnA Maker KB.",
       "default": "settings.qna.endpointkey"
     },
     "hostname": {
-      "type": "string",
+      "type": "expression",
       "title": "Hostname",
       "description": "Hostname for your QnA Maker service.",
       "default": "settings.qna.hostname",
@@ -28,8 +28,8 @@
       ]
     },
     "noAnswer": {
-      "type": "string",
-      "title": "Initial Prompt",
+      "type": "Microsoft.IActivityTemplate",
+      "title": "Fallback answer",
       "description": "Default answer to return when none found in KB.",
       "default": "Sorry, I did not find an answer."
     },
@@ -52,7 +52,7 @@
       "default": "None of the above."
     },
     "cardNoMatchResponse ": {
-      "type": "string",
+      "type": "Microsoft.IActivityTemplate",
       "title": "Card no match response",
       "description": "Custom response when no match option was selected.",
       "default": "Thanks for the feedback."
