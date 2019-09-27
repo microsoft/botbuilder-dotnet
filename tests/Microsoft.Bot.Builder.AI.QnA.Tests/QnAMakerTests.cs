@@ -18,6 +18,7 @@ using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
 using Microsoft.Bot.Builder.LanguageGeneration;
+using Microsoft.Bot.Builder.LanguageGeneration.Templates;
 using Microsoft.Bot.Configuration;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
@@ -94,6 +95,8 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
         {
             var rootDialog = QnAMakerAction_ActiveLearningDialogBase();
 
+            var noAnswerActivity = "No match found, please as another question.";
+
             var suggestionList = new List<string> { "Q1", "Q2", "Q3" };
             var suggestionActivity = QnACardBuilder.GetSuggestionsCard(suggestionList, "Did you mean:", "None of the above.");
             var qnAMakerCardEqualityComparer = new QnAMakerCardEqualityComparer();
@@ -102,7 +105,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             .Send("Q11")
                 .AssertReply(suggestionActivity, equalityComparer: qnAMakerCardEqualityComparer)
             .Send("Q12")
-                .AssertReply("No match found, please as another question.")
+                .AssertReply(noAnswerActivity)
             .StartTestAsync();
         }
 
@@ -1611,7 +1614,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
         {
             var client = new HttpClient(mockHttp);
 
-            var noAnswer = "No match found, please as another question.";
+            var noAnswerActivity = new ActivityTemplate("No match found, please as another question.");
 
             var outerDialog = new AdaptiveDialog("outer")
             {
@@ -1622,7 +1625,10 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                     {
                         Actions = new List<Dialog>()
                         {
-                            new QnAMakerAction(knowledgeBaseId: _knowlegeBaseId, hostName: _hostname, endpointKey: _endpointKey, noAnswer: noAnswer, httpClient: client)
+                            new QnAMakerAction(knowledgeBaseId: _knowlegeBaseId, hostName: _hostname, endpointKey: _endpointKey, httpClient: client)
+                            {
+                                NoAnswer = noAnswerActivity
+                            }
                         }
                     }
                 }

@@ -10,6 +10,8 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Expressions;
 using Microsoft.Bot.Builder.Expressions.Parser;
+using Microsoft.Bot.Builder.LanguageGeneration;
+using Microsoft.Bot.Builder.LanguageGeneration.Templates;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
@@ -29,11 +31,11 @@ namespace Microsoft.Bot.Builder.AI.QnA
             string knowledgeBaseId, 
             string endpointKey, 
             string hostName, 
-            string noAnswer = QnAMakerActionBuilder.DefaultNoAnswer, 
+            Activity noAnswer = null, 
             float threshold = QnAMakerActionBuilder.DefaultThreshold, 
             string activeLearningCardTitle = QnAMakerActionBuilder.DefaultCardTitle, 
-            string cardNoMatchText = QnAMakerActionBuilder.DefaultCardNoMatchText, 
-            string cardNoMatchResponse = QnAMakerActionBuilder.DefaultCardNoMatchResponse, 
+            string cardNoMatchText = QnAMakerActionBuilder.DefaultCardNoMatchText,
+            Activity cardNoMatchResponse = null, 
             Metadata[] strictFilters = null,  
             HttpClient httpClient = null, 
             [CallerFilePath] string sourceFilePath = "", 
@@ -45,12 +47,12 @@ namespace Microsoft.Bot.Builder.AI.QnA
             this.HostName = hostName ?? throw new ArgumentNullException(nameof(hostName));
             this.EndpointKey = endpointKey ?? throw new ArgumentNullException(nameof(endpointKey));
             this.Threshold = threshold;
-            this.NoAnswer = noAnswer;
             this.ActiveLearningCardTitle = activeLearningCardTitle;
             this.CardNoMatchText = cardNoMatchText;
-            this.CardNoMatchResponse = cardNoMatchResponse;
             this.StrictFilters = strictFilters;
             this.httpClient = httpClient;
+            this.NoAnswer = new StaticActivityTemplate(noAnswer);
+            this.CardNoMatchResponse = new StaticActivityTemplate(cardNoMatchResponse);
         }
 
         [JsonConstructor]
@@ -68,8 +70,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         }
 
         [JsonProperty("hostname")]
-        public string HostName
-        { get; set; }
+        public string HostName { get; set; }
 
         [JsonProperty("endpointKey")]
         public string EndpointKey
@@ -82,7 +83,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         public float Threshold { get; set; }
 
         [JsonProperty("noAnswer")]
-        public string NoAnswer { get; set; }
+        public ITemplate<Activity> NoAnswer { get; set; }
 
         [JsonProperty("activeLearningCardTitle")]
         public string ActiveLearningCardTitle { get; set; }
@@ -91,7 +92,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         public string CardNoMatchText { get; set; }
 
         [JsonProperty("cardNoMatchResponse")]
-        public string CardNoMatchResponse { get; set; }
+        public ITemplate<Activity> CardNoMatchResponse { get; set; }
 
         [JsonProperty("strictFilters")]
         public Metadata[] StrictFilters { get; set; }
@@ -129,43 +130,23 @@ namespace Microsoft.Bot.Builder.AI.QnA
             return await ExecuteAdaptiveQnAMakerDialog(dc, qnamaker, qnamakerOptions, cancellationToken).ConfigureAwait(false);
         }
 
-        private async Task<DialogTurnResult> ExecuteQnAMakerDialog(DialogContext dc, QnAMaker qnaMaker, QnAMakerOptions qnamakerOptions, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            var questionResults = await qnamaker.GetAnswersAsync(dc.Context, qnamakerOptions).ConfigureAwait(false);
-
-            if (questionResults == null || questionResults.Length == 0)
-            {
-                await dc.Context.SendActivityAsync(this.NoAnswer, cancellationToken: cancellationToken).ConfigureAwait(false);
-                return await dc.EndDialogAsync(false, cancellationToken: cancellationToken).ConfigureAwait(false);
-            }
-            else
-            {
-                if (questionResults.Length > 0)
-                {
-                    await dc.Context.SendActivityAsync(questionResults[0].Answer, cancellationToken: cancellationToken).ConfigureAwait(false);
-                }
-                else
-                {
-                    await dc.Context.SendActivityAsync(this.NoAnswer, cancellationToken: cancellationToken).ConfigureAwait(false);
-                }
-            }
-
-            return await dc.EndDialogAsync(false, cancellationToken: cancellationToken).ConfigureAwait(false);
-        }
-
         private async Task<DialogTurnResult> ExecuteAdaptiveQnAMakerDialog(DialogContext dc, QnAMaker qnaMaker, QnAMakerOptions qnamakerOptions, CancellationToken cancellationToken = default(CancellationToken))
         {
             var dialog = new QnAMakerActionBuilder(qnaMaker).BuildDialog(dc);
 
             // Set values for active dialog.
-            qnamakerOptions.NoAnswer = NoAnswer;
-            qnamakerOptions.ActiveLearningCardTitle = ActiveLearningCardTitle;
-            qnamakerOptions.CardNoMatchText = CardNoMatchText;
-            qnamakerOptions.CardNoMatchResponse = CardNoMatchResponse;
+            var qnaDialogResponseOptions = new QnADialogResponseOptions
+            {
+                NoAnswer = NoAnswer,
+                ActiveLearningCardTitle = ActiveLearningCardTitle,
+                CardNoMatchText = CardNoMatchText,
+                CardNoMatchResponse = CardNoMatchResponse
+            };
 
             var dialogOptions = new Dictionary<string, object>
             {
-                [QnAMakerActionBuilder.QnAOptions] = qnamakerOptions
+                [QnAMakerActionBuilder.QnAOptions] = qnamakerOptions,
+                [QnAMakerActionBuilder.QnADialogResponseOptions] = qnaDialogResponseOptions
             };
 
             return await dc.BeginDialogAsync(QnAMakerActionBuilder.QnAMakerDialogName, dialogOptions, cancellationToken).ConfigureAwait(false);
