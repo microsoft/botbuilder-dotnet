@@ -20,15 +20,5 @@
     <Description>Library for building bots using Microsoft Bot Framework</Description>
     <Summary>Library for building bots using Microsoft Bot Framework</Summary>
   </PropertyGroup>
-  
-  <ItemGroup>
-    <PackageReference Include="HtmlAgilityPack" Version="1.11.12" />   
-    <PackageReference Include="Newtonsoft.Json" Version="11.0.1" />
-    <PackageReference Include="Microsoft.Bot.Schema" Condition=" '$(PackageVersion)' == '' " Version="4.0.0-local" />
-    <PackageReference Include="Microsoft.Bot.Schema" Condition=" '$(PackageVersion)' != '' " Version="$(PackageVersion)" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Microsoft.Bot.Schema\Microsoft.Bot.Schema.csproj" />
-  </ItemGroup>
+ 
 </Project>
