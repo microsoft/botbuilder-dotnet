@@ -38,6 +38,10 @@
                 <Source>.*\\SlackAdapterOptions.cs</Source>
                 <Source>.*\\SlackClientWrapper.cs</Source>
                 <Source>.*\\SlackMessage.cs</Source>
+                <Source>.*\\SlackAction.cs</Source>
+                <Source>.*\\SlackEvent.cs</Source>
+                <Source>.*\\SlackPayload.cs</Source>
+                <Source>.*\\SlackRequestBody.cs</Source>
               </Exclude>
             </Sources>
           </CodeCoverage>

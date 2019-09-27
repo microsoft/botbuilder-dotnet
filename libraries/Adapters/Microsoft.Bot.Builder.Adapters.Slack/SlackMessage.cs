@@ -1,4 +1,4 @@
-﻿// Copyright(c) Microsoft Corporation.All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
 namespace Microsoft.Bot.Builder.Adapters.Slack
@@ -30,7 +30,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// Gets or sets the TS property.
         /// </summary>
         /// <value>The timestamp of the message.</value>
-        public string TS { get; set; }
+        public string Ts { get; set; }
 
         /// <summary>
         /// Gets or sets the Username property.

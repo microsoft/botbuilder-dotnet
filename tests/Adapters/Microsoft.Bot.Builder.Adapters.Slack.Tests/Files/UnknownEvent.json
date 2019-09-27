@@ -1,5 +1,5 @@
 {
-  "token": "testToken",
+  "token": "VerificationToken",
   "team_id": "teamId",
   "api_app_id": "apiAppId",
   "event": {

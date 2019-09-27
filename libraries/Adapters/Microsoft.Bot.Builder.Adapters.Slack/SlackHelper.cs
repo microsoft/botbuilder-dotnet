@@ -1,4 +1,4 @@
-﻿// Copyright(c) Microsoft Corporation.All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
 using System;
@@ -41,7 +41,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
 
             if (activity.Timestamp != null)
             {
-                message.TS = activity.Timestamp.Value.DateTime.ToString(CultureInfo.InvariantCulture);
+                message.Ts = activity.Timestamp.Value.DateTime.ToString(CultureInfo.InvariantCulture);
             }
 
             message.Text = activity.Text;
@@ -76,7 +76,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
 
             if (!string.IsNullOrWhiteSpace(activity.Conversation.Properties["thread_ts"]?.ToString()))
             {
-                message.ThreadTS = activity.Conversation.Properties["thread_ts"].ToString();
+                message.ThreadTs = activity.Conversation.Properties["thread_ts"].ToString();
             }
 
             // if channelData is specified, overwrite any fields in message object
@@ -196,7 +196,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
 
             var activity = new Activity()
             {
-                Id = slack.EventTS,
+                Id = slack.EventTs,
                 Timestamp = default(DateTime),
                 ChannelId = "slack",
                 Conversation = new ConversationAccount()
@@ -216,9 +216,9 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
                 Type = ActivityTypes.Event,
             };
 
-            if (slack.ThreadTS != null)
+            if (slack.ThreadTs != null)
             {
-                activity.Conversation.Properties["thread_ts"] = slack.ThreadTS;
+                activity.Conversation.Properties["thread_ts"] = slack.ThreadTs;
             }
 
             if (activity.Conversation.Id == null)
@@ -323,11 +323,9 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// <returns>A dictionary with the query values.</returns>
         public static SlackRequestBody DeserializeBody(string requestBody)
         {
-            SlackRequestBody slackBody = null;
-
             if (string.IsNullOrWhiteSpace(requestBody))
             {
-                return slackBody;
+                return null;
             }
 
             // Check if it's a command event
@@ -338,10 +336,10 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
                 return JsonConvert.DeserializeObject<SlackRequestBody>(JsonConvert.SerializeObject(commandBody));
             }
 
-            if (requestBody.Contains("payload"))
+            if (requestBody.Contains("payload="))
             {
                 // Decode and remove "payload=" from the body
-                var decodedBody = System.Uri.UnescapeDataString(requestBody).Remove(0, 8);
+                var decodedBody = Uri.UnescapeDataString(requestBody).Remove(0, 8);
 
                 var payload = JsonConvert.DeserializeObject<SlackPayload>(decodedBody);
 

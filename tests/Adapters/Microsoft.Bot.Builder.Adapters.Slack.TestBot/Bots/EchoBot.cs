@@ -1,10 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
-//
-// Generated with Bot Builder V4 SDK Template for Visual Studio EchoBot v4.3.0
 
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
@@ -53,11 +52,11 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.TestBot.Bots
             {
                 if (turnContext.Activity.GetChannelData<SlackEvent>().SubType == "file_share")
                 {
-                    await turnContext.SendActivityAsync(MessageFactory.Text($"Echo: I received an attachment"), cancellationToken);
+                    await turnContext.SendActivityAsync(MessageFactory.Text("Echo: I received an attachment"), cancellationToken);
                 }
                 else if (turnContext.Activity.GetChannelData<SlackEvent>().Message?.Attachments != null)
                 {
-                    await turnContext.SendActivityAsync(MessageFactory.Text($"Echo: I received a link share"), cancellationToken);
+                    await turnContext.SendActivityAsync(MessageFactory.Text("Echo: I received a link share"), cancellationToken);
                 }
             }
         }
@@ -85,12 +84,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.TestBot.Bots
             var interactiveMessageJson = System.IO.File.ReadAllText(filePath);
             var adaptiveCardAttachment = JsonConvert.DeserializeObject<Block[]>(interactiveMessageJson);
 
-            var blockList = new List<Block>();
-
-            foreach (var block in adaptiveCardAttachment)
-            {
-                blockList.Add(block);
-            }
+            var blockList = adaptiveCardAttachment.ToList();
 
             var attachment = new Attachment
             {

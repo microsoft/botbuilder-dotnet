@@ -1,7 +1,8 @@
-﻿// Copyright(c) Microsoft Corporation.All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Builder.Adapters.Slack
@@ -12,13 +13,26 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
     public class SlackAdapterOptions
     {
         /// <summary>
+        /// Initializes a new instance of the <see cref="SlackAdapterOptions"/> class.
+        /// </summary>
+        /// <param name="verificationToken">A token for validating the origin of incoming webhooks.</param>
+        /// <param name="botToken">A token for a bot to work on a single workspace.</param>
+        /// <param name="clientSigningSecret">The token used to validate that incoming webhooks are originated from Slack.</param>
+        public SlackAdapterOptions(string verificationToken, string botToken, string clientSigningSecret)
+        {
+            VerificationToken = verificationToken;
+            BotToken = botToken;
+            ClientSigningSecret = clientSigningSecret;
+        }
+
+        /// <summary>
         /// Gets or Sets the token for validating the origin of incoming webhooks.
         /// </summary>
         /// <value>The verification token.</value>
         public string VerificationToken { get; set; }
 
         /// <summary>
-        /// Gets or Sets a token used to validate that incoming webhooks originated with Slack.
+        /// Gets or Sets a token used to validate that incoming webhooks are originated from Slack.
         /// </summary>
         /// <value>The Client Signing Secret.</value>
         public string ClientSigningSecret { get; set; }
@@ -60,8 +74,9 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// A method that receives a Slack team id and returns the bot token associated with that team. Required for multi-team apps.
         /// </summary>
         /// <param name="teamId">Team ID.</param>
+        /// <param name="cancellationToken">A <see cref="CancellationToken"/> for the task.</param>
         /// <returns>The bot token associated with the team.</returns>
-        public Task<string> GetTokenForTeamAsync(string teamId)
+        public Task<string> GetTokenForTeamAsync(string teamId, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
@@ -70,8 +85,9 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// A method that receives a Slack team id and returns the bot user id associated with that team. Required for multi-team apps.
         /// </summary>
         /// <param name="teamId">Team ID.</param>
+        /// <param name="cancellationToken">A <see cref="CancellationToken"/> for the task.</param>
         /// <returns>The bot user id associated with that team.</returns>
-        public virtual Task<string> GetBotUserByTeamAsync(string teamId)
+        public virtual Task<string> GetBotUserByTeamAsync(string teamId, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }

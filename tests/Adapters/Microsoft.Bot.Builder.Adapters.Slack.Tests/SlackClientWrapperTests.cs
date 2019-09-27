@@ -1,4 +1,4 @@
-﻿// Copyright(c) Microsoft Corporation.All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
 using System.IO;
@@ -10,15 +10,12 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Tests
 {
     public class SlackClientWrapperTests
     {
+        private readonly SlackAdapterOptions _testOptions = new SlackAdapterOptions("VerificationToken", "ClientSigningSecret", "BotToken");
+
         [Fact]
         public void VerifySignatureShouldReturnFalseWithNullParameters()
         {
-            var options = new Mock<SlackAdapterOptions>();
-            options.Object.VerificationToken = "VerificationToken";
-            options.Object.ClientSigningSecret = "ClientSigningSecret";
-            options.Object.BotToken = "BotToken";
-
-            var slackApi = new SlackClientWrapper(options.Object);
+            var slackApi = new SlackClientWrapper(_testOptions);
 
             Assert.False(slackApi.VerifySignature(null, null));
         }
@@ -26,19 +23,14 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.Tests
         [Fact]
         public void VerifySignatureShouldReturnTrue()
         {
-            var options = new Mock<SlackAdapterOptions>();
-            options.Object.VerificationToken = "VerificationToken";
-            options.Object.ClientSigningSecret = "ClientSigningSecret";
-            options.Object.BotToken = "BotToken";
-
-            var slackApi = new SlackClientWrapper(options.Object);
+            var slackApi = new SlackClientWrapper(_testOptions);
 
             var body = File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\MessageBody.json");
 
             var httpRequest = new Mock<HttpRequest>();
             httpRequest.Setup(req => req.Headers.ContainsKey(It.IsAny<string>())).Returns(true);
             httpRequest.SetupGet(req => req.Headers["X-Slack-Request-Timestamp"]).Returns("0001-01-01T00:00:00+00:00");
-            httpRequest.SetupGet(req => req.Headers["X-Slack-Signature"]).Returns("V0=B53049CFD9F1DD2818B6DD952C905A2D38055BCB55958DF560B8E5E5AE4D62E0");
+            httpRequest.SetupGet(req => req.Headers["X-Slack-Signature"]).Returns("V0=D213A711894A04CF10B2DAB9C6904436DCF1A7469E21C843BB4242E1F8E62EB0");
 
             Assert.True(slackApi.VerifySignature(httpRequest.Object, body));
         }

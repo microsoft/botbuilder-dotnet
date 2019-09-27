@@ -1,4 +1,4 @@
-﻿// Copyright(c) Microsoft Corporation.All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
 using System;
@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Schema;
+using Microsoft.Extensions.Configuration;
 
 namespace Microsoft.Bot.Builder.Adapters.Slack
 {
@@ -19,12 +20,26 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         private readonly SlackClientWrapper _slackClient;
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="SlackAdapter"/> class using configuration settings.
+        /// </summary>
+        /// <param name="configuration">An <see cref="IConfiguration"/> instance.</param>
+        /// <remarks>
+        /// The configuration keys are:
+        /// VerificationToken: A token for validating the origin of incoming webhooks.
+        /// BotToken: A token for a bot to work on a single workspace.
+        /// ClientSigningSecret: The token used to validate that incoming webhooks are originated from Slack.
+        /// </remarks>
+        public SlackAdapter(IConfiguration configuration)
+            : this(new SlackClientWrapper(new SlackAdapterOptions(configuration["VerificationToken"], configuration["BotToken"], configuration["ClientSigningSecret"])))
+        {
+        }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="SlackAdapter"/> class.
         /// Create a Slack adapter.
         /// </summary>
         /// <param name="slackClient">An initialized instance of the SlackClientWrapper class.</param>
         public SlackAdapter(SlackClientWrapper slackClient)
-            : base()
         {
             _slackClient = slackClient ?? throw new ArgumentNullException(nameof(slackClient));
         }
@@ -50,10 +65,8 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
 
             var responses = new List<ResourceResponse>();
 
-            for (var i = 0; i < activities.Length; i++)
+            foreach (var activity in activities)
             {
-                var activity = activities[i];
-
                 if (activity.Type == ActivityTypes.Message)
                 {
                     var message = SlackHelper.ActivityToSlack(activity);
@@ -64,14 +77,14 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
                     {
                         var resourceResponse = new ActivityResourceResponse()
                         {
-                            Id = slackResponse.TS,
-                            ActivityId = slackResponse.TS,
+                            Id = slackResponse.Ts,
+                            ActivityId = slackResponse.Ts,
                             Conversation = new ConversationAccount()
                             {
                                 Id = slackResponse.Channel,
                             },
                         };
-                        responses.Add(resourceResponse as ResourceResponse);
+                        responses.Add(resourceResponse);
                     }
                 }
             }
@@ -150,7 +163,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
                 throw new ArgumentException(nameof(turnContext.Activity.Timestamp));
             }
 
-            var results = await _slackClient.DeleteMessageAsync(reference.ChannelId, turnContext.Activity.Timestamp.Value.DateTime, cancellationToken).ConfigureAwait(false);
+            await _slackClient.DeleteMessageAsync(reference.ChannelId, turnContext.Activity.Timestamp.Value.DateTime, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -225,7 +238,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
 
             if (!_slackClient.VerifySignature(request, body))
             {
-                var text = $"Rejected due to mismatched header signature";
+                const string text = "Rejected due to mismatched header signature";
 
                 await SlackHelper.WriteAsync(response, HttpStatusCode.Unauthorized, text, Encoding.UTF8, cancellationToken).ConfigureAwait(false);
 
@@ -268,11 +281,11 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
 
                 await RunPipelineAsync(context, bot.OnTurnAsync, cancellationToken).ConfigureAwait(false);
 
-                // send http response back
-                var statusCode = Convert.ToInt32(context.TurnState.Get<string>("httpStatus"), System.Globalization.CultureInfo.InvariantCulture);
+                var code = Convert.ToInt32(context.TurnState.Get<string>("httpStatus"), System.Globalization.CultureInfo.InvariantCulture);
+                var statusCode = (HttpStatusCode)code;
                 var text = (context.TurnState.Get<object>("httpBody") != null) ? context.TurnState.Get<object>("httpBody").ToString() : string.Empty;
 
-                await SlackHelper.WriteAsync(response, HttpStatusCode.OK, text, Encoding.UTF8, cancellationToken).ConfigureAwait(false);
+                await SlackHelper.WriteAsync(response, statusCode, text, Encoding.UTF8, cancellationToken).ConfigureAwait(false);
             }
         }
     }

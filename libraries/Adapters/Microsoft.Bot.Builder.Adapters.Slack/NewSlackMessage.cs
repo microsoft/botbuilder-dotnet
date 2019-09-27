@@ -1,10 +1,9 @@
-﻿// Copyright(c) Microsoft Corporation.All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
 using System;
 using System.Collections.Generic;
 using SlackAPI;
-using SlackAPI.WebSocketMessages;
 
 namespace Microsoft.Bot.Builder.Adapters.Slack
 {
@@ -41,7 +40,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// Gets or Sets the timestamp of the thread.
         /// </summary>
         /// <value>Provide another message's timestamp value to make this message a reply.</value>
-        public string ThreadTS { get; set; }
+        public string ThreadTs { get; set; }
 
         /// <summary>
         /// Gets or sets the user.
@@ -71,13 +70,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// Gets or sets the timestamp.
         /// </summary>
         /// <value>The timestamp for the message.</value>
-        public string TS { get; set; }
-
-        /// <summary>
-        /// Gets or sets the thread ts.
-        /// </summary>
-        /// <value>The ID of another un-threaded message to reply to.</value>
-        public string ThreadTs { get; set; }
+        public string Ts { get; set; }
 
         /// <summary>
         /// Gets or sets the username.
@@ -101,12 +94,14 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         /// Gets or sets the blocks that could come with the message.
         /// </summary>
         /// <value>The blocks that could come with the message.</value>
-        public List<Block> Blocks { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "it needs to be set in ActivityToSlack method")]
+        public List<Block> Blocks { get; set; } = new List<Block>();
 
         /// <summary>
         /// Gets or sets the attachments that could come with the message.
         /// </summary>
         /// <value>The attachments that could come with the message.</value>
-        public List<Attachment> Attachments { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "it needs to be set in ActivityToSlack method")]
+        public List<Attachment> Attachments { get; set; } = new List<Attachment>();
     }
 }

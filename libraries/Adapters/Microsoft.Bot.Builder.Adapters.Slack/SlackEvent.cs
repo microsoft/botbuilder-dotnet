@@ -1,4 +1,4 @@
-﻿// Copyright(c) Microsoft Corporation.All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
@@ -34,13 +34,13 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         public string ChannelId { get; set; }
 
         [JsonProperty(PropertyName = "event_ts")]
-        public string EventTS { get; set; }
+        public string EventTs { get; set; }
 
         [JsonProperty(PropertyName = "channel_type")]
         public string ChannelType { get; set; }
 
         [JsonProperty(PropertyName = "thread_ts")]
-        public string ThreadTS { get; set; }
+        public string ThreadTs { get; set; }
 
         [JsonProperty(PropertyName = "user")]
         public string User { get; set; }
@@ -61,7 +61,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         public string ItemChannel { get; set; }
 
         [JsonProperty(PropertyName = "files")]
-        public List<File> Files { get; set; }
+        public List<File> Files { get; } = new List<File>();
 
         [JsonProperty(PropertyName = "message")]
         public NewSlackMessage Message { get; set; }
