@@ -37,7 +37,7 @@ namespace Microsoft.BotBuilderSamples.Bots
                         {
                             new CardAction
                             {
-                                Type = "openUrl",
+                                Type = ActionTypes.OpenUrl,
                                 Value = "https://teamssettingspagescenario.azurewebsites.net",
                             },
                         },
