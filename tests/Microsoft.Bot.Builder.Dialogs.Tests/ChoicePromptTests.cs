@@ -661,7 +661,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             var dialogs = new DialogSet(dialogState);
             dialogs.Add(new ChoicePrompt("ChoicePrompt", defaultLocale: Culture.English));
-            ChoicePrompt.CustomLocaleOptions = new Dictionary<string, ChoiceFactoryOptions>()
+            ChoicePrompt.CustomDefaultChoiceOptions = new Dictionary<string, ChoiceFactoryOptions>()
             {
                 {
                     Culture.English, new ChoiceFactoryOptions
@@ -695,7 +695,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 .AssertReply((activity) =>
                 {
                     Assert.AreEqual("favorite color? red customSeparator green customOrMore blue", activity.AsMessageActivity().Text);
-                    ChoicePrompt.CustomLocaleOptions = null;
+                    ChoicePrompt.CustomDefaultChoiceOptions = null;
                 })
                 .StartTestAsync();
         }
