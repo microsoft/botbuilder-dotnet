@@ -11,7 +11,6 @@
 namespace Microsoft.Bot.Schema.Teams
 {
     using Newtonsoft.Json;
-    using System;
     using System.Linq;
 
     /// <summary>
@@ -45,5 +44,6 @@ namespace Microsoft.Bot.Schema.Teams
         /// </summary>
         [JsonProperty(PropertyName = "composeExtension")]
         public MessagingExtensionResult ComposeExtension { get; set; }
+
     }
 }

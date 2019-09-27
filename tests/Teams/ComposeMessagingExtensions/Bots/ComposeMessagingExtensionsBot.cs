@@ -24,7 +24,7 @@ namespace Microsoft.BotBuilderSamples.Bots
             await turnContext.SendActivityAsync(MessageFactory.Text($"echo: {turnContext.Activity.Text}"), cancellationToken);
         }
 
-        protected override async Task<MessagingExtensionResponse> OnTeamsMessagingExtensionConfigurationQuerySettingsUrlAsync(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionQuery query, CancellationToken cancellationToken)
+        protected override async Task<MessagingExtensionResponse> OnTeamsMessagingExtensionConfigurationQuerySettingUrlAsync(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionQuery query, CancellationToken cancellationToken)
         {
             var messageExtensionResponse = new MessagingExtensionResponse
             {
@@ -49,10 +49,10 @@ namespace Microsoft.BotBuilderSamples.Bots
         }
 
         /// <inheritdoc/>
-        protected override async Task OnTeamsMessagingExtensionConfigurationSettingsAsync(ITurnContext<IInvokeActivity> turnContext, JObject settings, CancellationToken cancellationToken)
+        protected override async Task OnTeamsMessagingExtensionConfigurationSettingAsync(ITurnContext<IInvokeActivity> turnContext, JObject settings, CancellationToken cancellationToken)
         {
             // This event is fired when the settings page is submitted
-            var reply = MessageFactory.Text("onTeamsMessagingExtensionSettings event fired with " + JsonConvert.SerializeObject(settings));
+            var reply = MessageFactory.Text($"onTeamsMessagingExtensionSettings event fired with {settings}");
             await turnContext.SendActivityAsync(reply, cancellationToken);
         }
     }
