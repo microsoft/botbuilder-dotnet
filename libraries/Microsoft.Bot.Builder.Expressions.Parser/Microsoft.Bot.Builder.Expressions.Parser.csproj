@@ -72,10 +72,6 @@
     <CodeAnalysisRuleSet>Microsoft.Bot.Builder.Expressions.Parser.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug - NuGet Packages|AnyCPU'">
-    <CodeAnalysisRuleSet>Microsoft.Bot.Builder.Expressions.Parser.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="Antlr4.CodeGenerator" Version="4.6.6">
       <PrivateAssets>all</PrivateAssets>

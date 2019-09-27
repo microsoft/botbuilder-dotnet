@@ -5,15 +5,8 @@
 		<Version Condition=" '$(PackageVersion)' != '' ">$(PackageVersion)</Version>
 		<PackageVersion Condition=" '$(PackageVersion)' == '' ">4.6.0-local</PackageVersion>
 		<PackageVersion Condition=" '$(PackageVersion)' != '' ">$(PackageVersion)</PackageVersion>
-		<Configurations>Debug;Release;Debug-Windows;Release-Windows</Configurations>
+    <Configurations>Debug-Windows;Release-Windows</Configurations>
 	</PropertyGroup>
-
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-		<SignAssembly>true</SignAssembly>
-		<DelaySign>true</DelaySign>
-		<AssemblyOriginatorKeyFile>..\..\..\build\35MSSharedLib1024.snk</AssemblyOriginatorKeyFile>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-  </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-Windows|AnyCPU'">
     <SignAssembly>true</SignAssembly>
@@ -33,10 +26,6 @@
 		<AssemblyName>Microsoft.Bot.Builder.Integration.AspNet.WebApi</AssemblyName>
 		<RootNamespace>Microsoft.Bot.Builder.Integration.AspNet.NetFx</RootNamespace>
   </PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-		<DocumentationFile>bin\$(Configuration)\net461\Microsoft.Bot.Builder.Integration.AspNet.WebApi.xml</DocumentationFile>		
-	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-Windows|AnyCPU'">
 	  <DocumentationFile>bin\$(Configuration)\net461\Microsoft.Bot.Builder.Integration.AspNet.WebApi.xml</DocumentationFile>

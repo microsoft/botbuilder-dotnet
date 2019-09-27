@@ -5,7 +5,7 @@
     <Version Condition=" '$(PackageVersion)' != '' ">$(PackageVersion)</Version>
     <PackageVersion Condition=" '$(PackageVersion)' == '' ">4.6.0-local</PackageVersion>
     <PackageVersion Condition=" '$(PackageVersion)' != '' ">$(PackageVersion)</PackageVersion>
-    <Configurations>Debug;Release;Debug-Windows;Release-Windows</Configurations>
+    <Configurations>Debug-Windows;Release-Windows</Configurations>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -34,17 +34,8 @@
     <RootNamespace>Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi</RootNamespace>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>bin\$(Configuration)\net461\Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi.xml</DocumentationFile>
-  </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-Windows|AnyCPU'">
     <DocumentationFile>bin\$(Configuration)\net461\Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi.xml</DocumentationFile>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DebugType>full</DebugType>
-    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-Windows|AnyCPU'">

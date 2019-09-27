@@ -72,10 +72,6 @@
     <CodeAnalysisRuleSet>Microsoft.Bot.Builder.LanguageGeneration.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug - NuGet Packages|AnyCPU'">
-    <CodeAnalysisRuleSet>Microsoft.Bot.Builder.LanguageGeneration.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="AdaptiveCards" Version="1.1.2" />
     <PackageReference Include="Antlr4.CodeGenerator" Version="4.6.6">
