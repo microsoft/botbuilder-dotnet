@@ -374,12 +374,8 @@ Global
 		{3F4A0DD8-4D47-4B9C-939A-3146E68C84F7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3F4A0DD8-4D47-4B9C-939A-3146E68C84F7}.Release-Windows|Any CPU.ActiveCfg = Release-Windows|Any CPU
 		{3F4A0DD8-4D47-4B9C-939A-3146E68C84F7}.Release-Windows|Any CPU.Build.0 = Release-Windows|Any CPU
-		{400BB78F-AFDC-4B1C-AD85-BE159B576FCE}.Debug|Any CPU.ActiveCfg = Debug-Windows|Any CPU
-		{400BB78F-AFDC-4B1C-AD85-BE159B576FCE}.Debug|Any CPU.Build.0 = Debug-Windows|Any CPU
 		{400BB78F-AFDC-4B1C-AD85-BE159B576FCE}.Debug-Windows|Any CPU.ActiveCfg = Debug-Windows|Any CPU
 		{400BB78F-AFDC-4B1C-AD85-BE159B576FCE}.Debug-Windows|Any CPU.Build.0 = Debug-Windows|Any CPU
-		{400BB78F-AFDC-4B1C-AD85-BE159B576FCE}.Release|Any CPU.ActiveCfg = Release-Windows|Any CPU
-		{400BB78F-AFDC-4B1C-AD85-BE159B576FCE}.Release|Any CPU.Build.0 = Release-Windows|Any CPU
 		{400BB78F-AFDC-4B1C-AD85-BE159B576FCE}.Release-Windows|Any CPU.ActiveCfg = Release-Windows|Any CPU
 		{400BB78F-AFDC-4B1C-AD85-BE159B576FCE}.Release-Windows|Any CPU.Build.0 = Release-Windows|Any CPU
 		{873BCC1F-ED12-424E-93FA-D76F4BA022C2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
