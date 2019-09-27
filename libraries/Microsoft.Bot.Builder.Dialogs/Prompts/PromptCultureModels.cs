@@ -7,8 +7,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Prompts
     /// </summary>
     public static class PromptCultureModels
     {
-        public static IPromptCultureModel Chinese =>
-            new IPromptCultureModel
+        public static PromptCultureModel Chinese =>
+            new PromptCultureModel
             {
                 InlineOr = " 要么 ",
                 InlineOrMore = "， 要么 ",
@@ -18,8 +18,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Prompts
                 YesInLanguage = "是的",
             };
 
-        public static IPromptCultureModel Dutch =>
-            new IPromptCultureModel
+        public static PromptCultureModel Dutch =>
+            new PromptCultureModel
             {
                 InlineOr = " of ",
                 InlineOrMore = ", of ",
@@ -29,8 +29,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Prompts
                 YesInLanguage = "Ja",
             };
 
-        public static IPromptCultureModel English =>
-            new IPromptCultureModel
+        public static PromptCultureModel English =>
+            new PromptCultureModel
             {
                 InlineOr = " or ",
                 InlineOrMore = ", or ",
@@ -40,8 +40,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Prompts
                 YesInLanguage = "Yes",
             };
 
-        public static IPromptCultureModel French =>
-            new IPromptCultureModel
+        public static PromptCultureModel French =>
+            new PromptCultureModel
             {
                 InlineOr = " ou ",
                 InlineOrMore = ", ou ",
@@ -51,8 +51,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Prompts
                 YesInLanguage = "Oui",
             };
 
-        public static IPromptCultureModel German =>
-            new IPromptCultureModel
+        public static PromptCultureModel German =>
+            new PromptCultureModel
             {
                 InlineOr = " oder ",
                 InlineOrMore = ", oder ",
@@ -62,8 +62,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Prompts
                 YesInLanguage = "Ja",
             };
 
-        public static IPromptCultureModel Japanese =>
-            new IPromptCultureModel
+        public static PromptCultureModel Japanese =>
+            new PromptCultureModel
             {
                 InlineOr = " または ",
                 InlineOrMore = "、 または ",
@@ -73,8 +73,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Prompts
                 YesInLanguage = "はい",
             };
 
-        public static IPromptCultureModel Portuguese =>
-            new IPromptCultureModel
+        public static PromptCultureModel Portuguese =>
+            new PromptCultureModel
             {
                 InlineOr = " ou ",
                 InlineOrMore = ", ou ",
@@ -84,8 +84,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Prompts
                 YesInLanguage = "Sim",
             };
 
-        public static IPromptCultureModel Spanish =>
-            new IPromptCultureModel
+        public static PromptCultureModel Spanish =>
+            new PromptCultureModel
             {
                 InlineOr = " o ",
                 InlineOrMore = ", o ",
@@ -103,17 +103,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Prompts
         /// <returns>Normalized locale.</returns>
         public static string MapToNearestLanguage(string culture) => Culture.MapToNearestLanguage(culture);
 
-        public static IPromptCultureModel[] GetSupportedCultures() => new IPromptCultureModel[]
-            {
-                Chinese,
-                Danish,
-                Dutch,
-                English,
-                French,
-                German,
-                Japanese,
-                Portuguese,
-                Spanish,
-            };
+        public static PromptCultureModel[] GetSupportedCultures() => new PromptCultureModel[]
+        {
+            Chinese,
+            Dutch,
+            English,
+            French,
+            German,
+            Japanese,
+            Portuguese,
+            Spanish,
+        };
     }
 }

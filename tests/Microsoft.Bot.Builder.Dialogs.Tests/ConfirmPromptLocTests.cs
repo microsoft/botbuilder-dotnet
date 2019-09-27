@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -113,6 +114,29 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         public async Task ConfirmPrompt_Locale_Variations(string activityLocale, string defaultLocale, string prompt, string utterance, string expectedResponse)
         {
             await ConfirmPrompt_Locale_Impl(activityLocale, defaultLocale, prompt, utterance, expectedResponse);
+        }
+
+        [TestMethod]
+        [DataRow(Culture.English, Culture.English, "(1) customYes customOr (2) customNo", "customYes", "1")]
+        public async Task ShouldUseCustomChoiceDefaultsDictionary(string activityLocale, string defaultLocale, string prompt, string utterance, string expectedResponse)
+        {
+            ConfirmPrompt.CustomChoiceDefaults = new Dictionary<string, (Choice, Choice, ChoiceFactoryOptions)>()
+            {
+                {
+                    Culture.English,
+                    (new Choice("customYes"),
+                    new Choice("customNo"),
+                    new ChoiceFactoryOptions
+                    {
+                        IncludeNumbers = true,
+                        InlineOr = " customOr ",
+                        InlineOrMore = " customOrMore ",
+                        InlineSeparator = " customSeparator ",
+                    })
+                },
+            };
+            await ConfirmPrompt_Locale_Impl(activityLocale, defaultLocale, prompt, utterance, expectedResponse);
+            ConfirmPrompt.CustomChoiceDefaults = null;
         }
 
         private async Task ConfirmPrompt_Locale_Impl(string activityLocale, string defaultLocale, string prompt, string utterance, string expectedResponse)
