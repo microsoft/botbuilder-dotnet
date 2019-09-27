@@ -23,12 +23,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReplyToChannel", "ReplyToCh
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SDK", "SDK", "{ABD9A0F4-37FD-4E02-A74D-996005AC1B8F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Schema.Teams", "..\..\libraries\Microsoft.Bot.Schema.Teams\Microsoft.Bot.Schema.Teams.csproj", "{52734B94-9985-4924-98E3-65E20CAA7E58}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Connector.Teams", "..\..\libraries\Microsoft.Bot.Connector.Teams\Microsoft.Bot.Connector.Teams.csproj", "{A1F18062-8ED7-4E26-869F-24C7E1FBDC96}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Teams", "..\..\libraries\Microsoft.Bot.Builder.Teams\Microsoft.Bot.Builder.Teams.csproj", "{DEEAD70B-539A-4304-A7A6-BCB657D2DE24}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Integration.AspNet.Core", "..\..\libraries\integration\Microsoft.Bot.Builder.Integration.AspNet.Core\Microsoft.Bot.Builder.Integration.AspNet.Core.csproj", "{ABA27014-ECEF-4BEE-BB7C-ADF41C027CB9}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TaskModule", "TaskModule\TaskModule.csproj", "{71C198B6-DA9C-4159-8724-A3A6704D6585}"
@@ -54,7 +48,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProactiveMessages", "ProactiveMessages\ProactiveMessages.csproj", "{FED44219-2A75-49A1-B925-954929D09BD8}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NotificationOnly", "NotificationOnly\NotificationOnly.csproj", "{ED2CF41C-3B02-4602-AD2E-654B83374DC5}"
+EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Helpers", "Helpers\Helpers.csproj", "{EA395207-51E9-4D06-B230-6E54DDADA6DE}"
+EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ComposeMessagingExtensions", "ComposeMessagingExtensions\ComposeMessagingExtensions.csproj", "{7824D509-81E9-4C08-9E9A-666915A2935D}"
 EndProject
 Global
@@ -118,24 +114,6 @@ Global
 		{2CCA3B1B-79C2-44BA-A434-AB1E5652547A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2CCA3B1B-79C2-44BA-A434-AB1E5652547A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2CCA3B1B-79C2-44BA-A434-AB1E5652547A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{52734B94-9985-4924-98E3-65E20CAA7E58}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug - NuGet Packages|Any CPU
-		{52734B94-9985-4924-98E3-65E20CAA7E58}.Debug - NuGet Packages|Any CPU.Build.0 = Debug - NuGet Packages|Any CPU
-		{52734B94-9985-4924-98E3-65E20CAA7E58}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{52734B94-9985-4924-98E3-65E20CAA7E58}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{52734B94-9985-4924-98E3-65E20CAA7E58}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{52734B94-9985-4924-98E3-65E20CAA7E58}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A1F18062-8ED7-4E26-869F-24C7E1FBDC96}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug - NuGet Packages|Any CPU
-		{A1F18062-8ED7-4E26-869F-24C7E1FBDC96}.Debug - NuGet Packages|Any CPU.Build.0 = Debug - NuGet Packages|Any CPU
-		{A1F18062-8ED7-4E26-869F-24C7E1FBDC96}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A1F18062-8ED7-4E26-869F-24C7E1FBDC96}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A1F18062-8ED7-4E26-869F-24C7E1FBDC96}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A1F18062-8ED7-4E26-869F-24C7E1FBDC96}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DEEAD70B-539A-4304-A7A6-BCB657D2DE24}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug - NuGet Packages|Any CPU
-		{DEEAD70B-539A-4304-A7A6-BCB657D2DE24}.Debug - NuGet Packages|Any CPU.Build.0 = Debug - NuGet Packages|Any CPU
-		{DEEAD70B-539A-4304-A7A6-BCB657D2DE24}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DEEAD70B-539A-4304-A7A6-BCB657D2DE24}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DEEAD70B-539A-4304-A7A6-BCB657D2DE24}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DEEAD70B-539A-4304-A7A6-BCB657D2DE24}.Release|Any CPU.Build.0 = Release|Any CPU
 		{ABA27014-ECEF-4BEE-BB7C-ADF41C027CB9}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug - NuGet Packages|Any CPU
 		{ABA27014-ECEF-4BEE-BB7C-ADF41C027CB9}.Debug - NuGet Packages|Any CPU.Build.0 = Debug - NuGet Packages|Any CPU
 		{ABA27014-ECEF-4BEE-BB7C-ADF41C027CB9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -231,9 +209,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{52734B94-9985-4924-98E3-65E20CAA7E58} = {ABD9A0F4-37FD-4E02-A74D-996005AC1B8F}
-		{A1F18062-8ED7-4E26-869F-24C7E1FBDC96} = {ABD9A0F4-37FD-4E02-A74D-996005AC1B8F}
-		{DEEAD70B-539A-4304-A7A6-BCB657D2DE24} = {ABD9A0F4-37FD-4E02-A74D-996005AC1B8F}
 		{ABA27014-ECEF-4BEE-BB7C-ADF41C027CB9} = {ABD9A0F4-37FD-4E02-A74D-996005AC1B8F}
 		{7A78CB97-EFD6-4FFC-BE79-32A127E47204} = {ABD9A0F4-37FD-4E02-A74D-996005AC1B8F}
 		{FA874A93-2CDB-482E-9C46-7BDE82B609CA} = {ABD9A0F4-37FD-4E02-A74D-996005AC1B8F}
