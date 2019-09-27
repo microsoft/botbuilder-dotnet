@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.StreamingExte
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.StreamingExtensions", "libraries\Microsoft.Bot.Builder.StreamingExtensions\Microsoft.Bot.Builder.StreamingExtensions.csproj", "{8EF81962-00E6-4223-A12D-B6F4780C7271}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Builder.StreamingExtensions.tests", "Microsoft.Bot.Builder.StreamingExtensions.tests\Microsoft.Bot.Builder.StreamingExtensions.tests.csproj", "{932E301C-A0BB-4159-91B5-8BEA5714F938}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Builder.StreamingExtensions.Tests", "Microsoft.Bot.Builder.StreamingExtensions.tests\Microsoft.Bot.Builder.StreamingExtensions.Tests.csproj", "{932E301C-A0BB-4159-91B5-8BEA5714F938}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
