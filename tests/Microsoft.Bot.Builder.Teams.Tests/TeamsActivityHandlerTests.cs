@@ -762,10 +762,10 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 return Task.FromResult(new MessagingExtensionActionResponse());
             }
 
-            protected override Task OnTeamsMessagingExtensionCardButtonClickedAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
+            protected override Task OnTeamsMessagingExtensionCardButtonClickedAsync(ITurnContext<IInvokeActivity> turnContext, JObject obj, CancellationToken cancellationToken)
             {
                 Record.Add(MethodBase.GetCurrentMethod().Name);
-                return base.OnTeamsMessagingExtensionCardButtonClickedAsync(turnContext, cancellationToken);
+                return base.OnTeamsMessagingExtensionCardButtonClickedAsync(turnContext, obj, cancellationToken);
             }
 
             protected override Task<MessagingExtensionActionResponse> OnTeamsMessagingExtensionFetchTaskAsync(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionQuery query, CancellationToken cancellationToken)
@@ -774,13 +774,13 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 return Task.FromResult(new MessagingExtensionActionResponse());
             }
 
-            protected override Task<MessagingExtensionResponse> OnTeamsMessagingExtensionConfigurationQuerySettingsUrlAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
+            protected override Task<MessagingExtensionResponse> OnTeamsMessagingExtensionConfigurationQuerySettingsUrlAsync(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionQuery query, CancellationToken cancellationToken)
             {
                 Record.Add(MethodBase.GetCurrentMethod().Name);
                 return Task.FromResult(new MessagingExtensionResponse());
             }
 
-            protected override Task<MessagingExtensionResponse> OnTeamsMessagingExtensionConfigurationSettingsAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
+            protected override Task<MessagingExtensionResponse> OnTeamsMessagingExtensionConfigurationSettingsAsync(ITurnContext<IInvokeActivity> turnContext, JObject obj, CancellationToken cancellationToken)
             {
                 Record.Add(MethodBase.GetCurrentMethod().Name);
                 return Task.FromResult(new MessagingExtensionResponse());
