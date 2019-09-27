@@ -10,7 +10,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         /// </summary>
         /// <param name="botAdapter">The <see cref="BotAdapter"/> to enable.</param>
         /// <param name="port">port to listen on.</param>
-        /// <param name="registry">IRegistry to use (default will be SourceMap()).</param>
+        /// <param name="sourceMap">ISourceMap to use (default will be SourceMap()).</param>
         /// <param name="breakpoints">IBreakpoints to use (default will be SourceMap()).</param>
         /// <param name="terminate">Termination function (Default is Environment.Exit().</param>
         /// <param name="events">IEvents to use (Default is Events).</param>
@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
         public static BotAdapter UseDebugger(
             this BotAdapter botAdapter, 
             int port, 
-            Source.IRegistry registry = null, 
+            ISourceMap sourceMap = null, 
             IBreakpoints breakpoints = null, 
             Action terminate = null, 
             IEvents events = null, 
@@ -32,13 +32,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             ICoercion coercion = null)
         {
             codeModel = codeModel ?? new CodeModel();
-            var sourceMap = new SourceMap(codeModel);
-            DebugSupport.SourceRegistry = registry ?? sourceMap;
+            var debuggerSourceMap = new DebuggerSourceMap(codeModel);
+            DebugSupport.SourceMap = sourceMap ?? debuggerSourceMap;
             return botAdapter.Use(
-                new DebugAdapter(
+                new DialogDebugAdapter(
                     port: port, 
-                    registry: registry ?? sourceMap, 
-                    breakpoints: breakpoints ?? registry as IBreakpoints ?? sourceMap, 
+                    sourceMap: sourceMap ?? sourceMap, 
+                    breakpoints: breakpoints ?? sourceMap as IBreakpoints ?? debuggerSourceMap,
                     terminate: terminate, 
                     events: events,
                     codeModel: codeModel,

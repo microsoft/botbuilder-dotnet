@@ -13,13 +13,16 @@ using static Microsoft.Bot.Builder.Dialogs.DialogContext;
 
 namespace Microsoft.Bot.Builder.Dialogs.Debugging
 {
-    public sealed class DebugAdapter : DebugTransport, IMiddleware, DebugSupport.IDebugger
+    /// <summary>
+    /// Class which implements Debug Adapter protocol connected to IDialogDebugger data.
+    /// </summary>
+    public sealed class DialogDebugAdapter : DebugTransport, IMiddleware, IDialogDebugger
     {
         private readonly CancellationTokenSource cancellationToken = new CancellationTokenSource();
 
         private readonly ICodeModel codeModel;
         private readonly IDataModel dataModel;
-        private readonly Source.IRegistry registry;
+        private readonly ISourceMap sourceMap;
         private readonly IBreakpoints breakpoints;
         private readonly IEvents events;
         private readonly Action terminate;
@@ -32,13 +35,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
         private int sequence = 0;
 
-        public DebugAdapter(int port, Source.IRegistry registry, IBreakpoints breakpoints, Action terminate, IEvents events = null, ICodeModel codeModel = null, IDataModel dataModel = null, ILogger logger = null, ICoercion coercion = null)
+        public DialogDebugAdapter(int port, ISourceMap sourceMap, IBreakpoints breakpoints, Action terminate, IEvents events = null, ICodeModel codeModel = null, IDataModel dataModel = null, ILogger logger = null, ICoercion coercion = null)
             : base(logger)
         {
             this.events = events ?? new Events<DialogEvents>();
             this.codeModel = codeModel ?? new CodeModel();
             this.dataModel = dataModel ?? new DataModel(coercion ?? new Coercion());
-            this.registry = registry ?? throw new ArgumentNullException(nameof(registry));
+            this.sourceMap = sourceMap ?? throw new ArgumentNullException(nameof(sourceMap));
             this.breakpoints = breakpoints ?? throw new ArgumentNullException(nameof(breakpoints));
             this.terminate = terminate ?? new Action(() => Environment.Exit(0));
             this.task = ListenAsync(new IPEndPoint(IPAddress.Any, port), cancellationToken.Token);
@@ -108,7 +111,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
             return text;
         }
 
-        async Task DebugSupport.IDebugger.StepAsync(DialogContext context, object item, string more, CancellationToken cancellationToken)
+        async Task IDialogDebugger.StepAsync(DialogContext context, object item, string more, CancellationToken cancellationToken)
         {
             try
             {
@@ -199,7 +202,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                 thread.Run.Post(Phase.Started);
                 await UpdateThreadPhaseAsync(thread, null, cancellationToken).ConfigureAwait(false);
 
-                DebugSupport.IDebugger trace = this;
+                IDialogDebugger trace = this;
                 turnContext.TurnState.Add(trace);
                 await next(cancellationToken).ConfigureAwait(false);
             }
@@ -358,13 +361,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
 
         private async Task OutputAsync(string text, object item, CancellationToken cancellationToken)
         {
-            bool found = this.registry.TryGetValue(item, out var range);
+            bool found = this.sourceMap.TryGetValue(item, out var range);
 
             var body = new
             {
                 output = text + Environment.NewLine,
                 source = found ? new Protocol.Source(range.Path) : null,
-                line = found ? (int?)range.Start.LineIndex : null,
+                line = found ? (int?)range.StartPoint.LineIndex : null,
             };
 
             await SendAsync(Protocol.Event.From(NextSeq, "output", body), cancellationToken).ConfigureAwait(false);
@@ -467,9 +470,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Debugging
                         Name = frame.Name
                     };
 
-                    if (this.registry.TryGetValue(frame.Item, out var range))
+                    if (this.sourceMap.TryGetValue(frame.Item, out var range))
                     {
-                        SourceMap.Assign(stackFrame, range);
+                        DebuggerSourceMap.Assign(stackFrame, range);
                     }
 
                     stackFrames.Add(stackFrame);

@@ -157,6 +157,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
                 .AssertReply(activity =>
                 {
                     var trace = (Activity)activity;
+                    Assert.AreEqual("https://www.botframework.com/schemas/botState", trace.ValueType, "value type should be memory");
+                    Assert.AreEqual(ActivityTypes.Trace, trace.Type, "should be trace of memory dumpactivity");
+                })
+                .AssertReply(activity =>
+                {
+                    var trace = (Activity)activity;
                     Assert.AreEqual(ActivityTypes.Trace, trace.Type, "should be trace activity");
                     Assert.AreEqual("memory", trace.ValueType, "value type should be memory");
                     Assert.AreEqual("Carlos", ((IDictionary<string, object>)trace.Value)["name"].ToString(), "value should be user object with name='Carlos'");
@@ -315,12 +321,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
                 .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
 
             var resource = resourceExplorer.GetResource(resourceName);
-            if (resource == null)
-            {
-                throw new Exception($"Resource[{resourceName}] not found");
-            }
-
-            var dialog = DeclarativeTypeLoader.Load<Dialog>(resource, resourceExplorer, DebugSupport.SourceRegistry);
+            var dialog = DeclarativeTypeLoader.Load<Dialog>(resource, resourceExplorer, DebugSupport.SourceMap);
             DialogManager dm = new DialogManager(dialog);
 
             return new TestFlow(adapter, async (turnContext, cancellationToken) =>

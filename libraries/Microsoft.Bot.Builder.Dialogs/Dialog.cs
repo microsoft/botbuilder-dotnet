@@ -240,11 +240,11 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             if (!string.IsNullOrEmpty(path))
             {
-                DebugSupport.SourceRegistry.Add(this, new Source.Range()
+                DebugSupport.SourceMap.Add(this, new SourceRange()
                 {
                     Path = path,
-                    Start = new Source.Point() { LineIndex = lineNumber, CharIndex = 0 },
-                    After = new Source.Point() { LineIndex = lineNumber + 1, CharIndex = 0 },
+                    StartPoint = new SourcePoint() { LineIndex = lineNumber, CharIndex = 0 },
+                    EndPoint = new SourcePoint() { LineIndex = lineNumber + 1, CharIndex = 0 },
                 });
             }
         }
