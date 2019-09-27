@@ -57,12 +57,6 @@
     <!-- For debug builds, we don't generate documentation. Supress the StyleCop rule that warns about this. -->
     <NoWarn>$(NoWarn);SA0001</NoWarn>
   </PropertyGroup>
-  <PropertyGroup Condition="$(Configuration) == 'Debug - NuGet Packages'">
-    <!-- For debug Nuget builds, we don't generate documentation. Supress the StyleCop rule that warns about this. -->
-    <NoWarn>$(NoWarn);SA0001</NoWarn>
-
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-  </PropertyGroup>
   
   <PropertyGroup>
     <DefaultItemExcludes>.git\**;**\node_modules\**;$(DefaultItemExcludes)</DefaultItemExcludes>
