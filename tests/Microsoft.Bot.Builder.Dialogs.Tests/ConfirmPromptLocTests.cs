@@ -5,6 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.Dialogs.Choices;
+using Microsoft.Bot.Builder.Dialogs.Prompts;
 using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -115,6 +117,68 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             await ConfirmPrompt_Locale_Impl(activityLocale, defaultLocale, prompt, utterance, expectedResponse);
         }
 
+        [TestMethod]
+        [DataRow("custom-custom", "custom-custom", "(1) customYes customOr (2) customNo", "customYes", "1")]
+        [DataRow("custom-custom", "custom-custom", "(1) customYes customOr (2) customNo", "customNo", "0")]
+        public async Task ConfirmPrompt_Locale_Override_ChoiceDefaults(string activityLocale, string defaultLocale, string prompt, string utterance, string expectedResponse)
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+
+            var adapter = new TestAdapter()
+                .Use(new AutoSaveStateMiddleware(convoState));
+
+            // Create new DialogSet.
+            var dialogs = new DialogSet(dialogState);
+
+            var culture = new PromptCultureModel()
+            {
+                InlineOr = " customOr ",
+                InlineOrMore = " customOrMore ",
+                Locale = "custom-custom",
+                Separator = "customSeparator",
+                NoInLanguage = "customNo",
+                YesInLanguage = "customYes",
+            };
+
+            var customDict = new Dictionary<string, (Choice, Choice, ChoiceFactoryOptions)>()
+            {
+                { culture.Locale, (new Choice(culture.YesInLanguage), new Choice(culture.NoInLanguage), new ChoiceFactoryOptions(culture.Separator, culture.InlineOr, culture.InlineOrMore, true)) },
+            };
+
+            // Prompt should default to English if locale is a non-supported value
+            dialogs.Add(new ConfirmPrompt("ConfirmPrompt", null, defaultLocale, customDict));
+
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                turnContext.Activity.Locale = activityLocale;
+
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+
+                var results = await dc.ContinueDialogAsync(cancellationToken);
+                if (results.Status == DialogTurnStatus.Empty)
+                {
+                    await dc.PromptAsync("ConfirmPrompt", new PromptOptions { Prompt = new Activity { Type = ActivityTypes.Message, Text = "Prompt." } }, cancellationToken);
+                }
+                else if (results.Status == DialogTurnStatus.Complete)
+                {
+                    if ((bool)results.Result)
+                    {
+                        await turnContext.SendActivityAsync(MessageFactory.Text("1"), cancellationToken);
+                    }
+                    else
+                    {
+                        await turnContext.SendActivityAsync(MessageFactory.Text("0"), cancellationToken);
+                    }
+                }
+            })
+            .Send("hello")
+            .AssertReply("Prompt. " + prompt)
+            .Send(utterance)
+            .AssertReply(expectedResponse)
+            .StartTestAsync();
+        }
+
         private async Task ConfirmPrompt_Locale_Impl(string activityLocale, string defaultLocale, string prompt, string utterance, string expectedResponse)
         {
             var convoState = new ConversationState(new MemoryStorage());
@@ -168,7 +232,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var testLocales = new TestLocale[]
             {
                 new TestLocale(Chinese, "(1) 是的 要么 (2) 不", "是的", "不"),
-                new TestLocale(Danish, "(1) Ja eller (2) Nej", "Ja", "Nej"),
                 new TestLocale(Dutch, "(1) Ja of (2) Nee", "Ja", "Nee"),
                 new TestLocale(English, "(1) Yes or (2) No", "Yes", "No"),
                 new TestLocale(French, "(1) Oui ou (2) Non", "Oui", "Non"),

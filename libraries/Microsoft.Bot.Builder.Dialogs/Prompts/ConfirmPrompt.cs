@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Choices;
@@ -18,6 +19,18 @@ namespace Microsoft.Bot.Builder.Dialogs
     public class ConfirmPrompt : Prompt<bool>
     {
         /// <summary>
+        /// A dictionary of Default Choices based on <seealso cref="GetSupportedCultures"/>.
+        /// Can be replaced by user using the constructor that contains choiceDefaults.
+        /// </summary>
+        private readonly Dictionary<string, (Choice, Choice, ChoiceFactoryOptions)> _choiceDefaults =
+            new Dictionary<string, (Choice, Choice, ChoiceFactoryOptions)>(
+            GetSupportedCultures().ToDictionary(
+                culture => culture.Locale, culture =>
+                (new Choice(culture.YesInLanguage),
+                    new Choice(culture.NoInLanguage),
+                    new ChoiceFactoryOptions(culture.Separator, culture.InlineOr, culture.InlineOrMore, true))));
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="ConfirmPrompt"/> class.
         /// </summary>
         /// <param name="dialogId">The ID to assign to this prompt.</param>
@@ -25,6 +38,8 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// custom validation for this prompt.</param>
         /// <param name="defaultLocale">Optional, the default locale used to determine language-specific behavior of the prompt.
         /// The locale is a 2, 3, or 4 character ISO 639 code that represents a language or language family.</param>
+        /// <param name="choiceDefaults">Overrides the dictionary of Bot Framework SDK-supported ChoiceDefaults (for prompt localization).
+        /// Must be passed in to each ConfirmPrompt that needs the custom choice defaults.</param>
         /// <remarks>The value of <paramref name="dialogId"/> must be unique within the
         /// <see cref="DialogSet"/> or <see cref="ComponentDialog"/> to which the prompt is added.
         /// <para>If the <see cref="Activity.Locale"/>
@@ -32,11 +47,12 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// is specified, then that local is used to determine language specific behavior; otherwise
         /// the <paramref name="defaultLocale"/> is used. US-English is the used if no language or
         /// default locale is available, or if the language or locale is not otherwise supported.</para></remarks>
-        public ConfirmPrompt(string dialogId, PromptValidator<bool> validator = null, string defaultLocale = null)
+        public ConfirmPrompt(string dialogId, PromptValidator<bool> validator = null, string defaultLocale = null, Dictionary<string, (Choice, Choice, ChoiceFactoryOptions)> choiceDefaults = null)
             : base(dialogId, validator)
         {
             Style = ListStyle.Auto;
             DefaultLocale = defaultLocale;
+            _choiceDefaults = choiceDefaults ?? _choiceDefaults;
         }
 
         /// <summary>
@@ -67,23 +83,6 @@ namespace Microsoft.Bot.Builder.Dialogs
         public Tuple<Choice, Choice> ConfirmChoices { get; set; }
 
         /// <summary>
-        /// Gets a dictionary of Default Choices based on Microsoft.Bot.Builder.Dialogs.Prompts.PromptCultureModels.GetSupportedCultures.
-        /// </summary>
-        private static Dictionary<string, (Choice, Choice, ChoiceFactoryOptions)> ChoiceDefaults
-        {
-            get
-            {
-                var defaults = new Dictionary<string, (Choice, Choice, ChoiceFactoryOptions)>();
-                foreach (var culture in GetSupportedCultures())
-                {
-                    defaults.Add(culture.Locale, (new Choice(culture.YesInLanguage), new Choice(culture.NoInLanguage), new ChoiceFactoryOptions(culture.Separator, culture.InlineOr, culture.InlineOrMore, true)));
-                }
-
-                return defaults;
-            }
-        }
-
-        /// <summary>
         /// Prompts the user for input.
         /// </summary>
         /// <param name="turnContext">Context for the current turn of conversation with the user.</param>
@@ -111,7 +110,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             IMessageActivity prompt;
             var channelId = turnContext.Activity.ChannelId;
             var culture = DetermineCulture(turnContext.Activity);
-            var defaults = ChoiceDefaults[culture];
+            var defaults = _choiceDefaults[culture];
             var choiceOptions = ChoiceOptions ?? defaults.Item3;
             var confirmChoices = ConfirmChoices ?? Tuple.Create(defaults.Item1, defaults.Item2);
             var choices = new List<Choice> { confirmChoices.Item1, confirmChoices.Item2 };
@@ -165,7 +164,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 else
                 {
                     // First check whether the prompt was sent to the user with numbers - if it was we should recognize numbers
-                    var defaults = ChoiceDefaults[culture];
+                    var defaults = _choiceDefaults[culture];
                     var choiceOptions = ChoiceOptions ?? defaults.Item3;
 
                     // This logic reflects the fact that IncludeNumbers is nullable and True is the default set in Inline style
@@ -190,7 +189,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         private string DetermineCulture(Activity activity)
         {
             var culture = MapToNearestLanguage(activity.Locale ?? DefaultLocale ?? English.Locale);
-            if (string.IsNullOrEmpty(culture) || !ChoiceDefaults.ContainsKey(culture))
+            if (string.IsNullOrEmpty(culture) || !_choiceDefaults.ContainsKey(culture))
             {
                 culture = English.Locale;
             }

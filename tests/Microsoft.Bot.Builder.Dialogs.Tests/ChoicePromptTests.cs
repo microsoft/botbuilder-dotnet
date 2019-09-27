@@ -764,7 +764,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var testLocales = new TestLocale[]
             {
                 new TestLocale(Chinese),
-                new TestLocale(Danish),
                 new TestLocale(Dutch),
                 new TestLocale(English),
                 new TestLocale(French),
