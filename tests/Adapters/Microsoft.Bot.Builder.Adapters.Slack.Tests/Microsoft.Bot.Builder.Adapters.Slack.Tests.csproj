@@ -24,7 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Files\InteractiveMessageBody.json">
+    <None Update="Files\InteractiveMessageBody.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Files\SlashCommandBody.txt">
