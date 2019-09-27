@@ -52,7 +52,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         public string BotId { get; set; }
 
         [JsonProperty(PropertyName = "actions")]
-        public List<string> Actions { get; set; }
+        public List<string> Actions { get; } = new List<string>();
 
         [JsonProperty(PropertyName = "item")]
         public string Item { get; set; }

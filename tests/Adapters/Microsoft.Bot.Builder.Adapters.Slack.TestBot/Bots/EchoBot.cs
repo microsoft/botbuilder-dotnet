@@ -4,9 +4,13 @@
 // Generated with Bot Builder V4 SDK Template for Visual Studio EchoBot v4.3.0
 
 using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
+using Newtonsoft.Json;
+using SlackAPI;
+using Attachment = Microsoft.Bot.Schema.Attachment;
 
 namespace Microsoft.Bot.Builder.Adapters.Slack.TestBot.Bots
 {
@@ -34,13 +38,27 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.TestBot.Bots
         /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
         protected override async Task OnEventActivityAsync(ITurnContext<IEventActivity> turnContext, CancellationToken cancellationToken)
         {
-            if (turnContext.Activity.GetChannelData<SlackEvent>().SubType == "file_share")
+            if (turnContext.Activity.TryGetChannelData(out SlackRequestBody _))
             {
-                await turnContext.SendActivityAsync(MessageFactory.Text($"Echo: I received an attachment"), cancellationToken);
+                if (turnContext.Activity.GetChannelData<SlackRequestBody>().Command == "/test")
+                {
+                    var interactiveMessage = MessageFactory.Attachment(
+                        CreateInteractiveMessage(
+                            Directory.GetCurrentDirectory() + @"\Resources\InteractiveMessage.json"));
+                    await turnContext.SendActivityAsync(interactiveMessage, cancellationToken);
+                }
             }
-            else if (turnContext.Activity.GetChannelData<SlackEvent>().Message?.Attachments != null)
+
+            if (turnContext.Activity.TryGetChannelData(out SlackEvent _))
             {
-                await turnContext.SendActivityAsync(MessageFactory.Text($"Echo: I received a link share"), cancellationToken);
+                if (turnContext.Activity.GetChannelData<SlackEvent>().SubType == "file_share")
+                {
+                    await turnContext.SendActivityAsync(MessageFactory.Text($"Echo: I received an attachment"), cancellationToken);
+                }
+                else if (turnContext.Activity.GetChannelData<SlackEvent>().Message?.Attachments != null)
+                {
+                    await turnContext.SendActivityAsync(MessageFactory.Text($"Echo: I received a link share"), cancellationToken);
+                }
             }
         }
 
@@ -60,6 +78,28 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.TestBot.Bots
                     await turnContext.SendActivityAsync(MessageFactory.Text($"Hello and Welcome!"), cancellationToken);
                 }
             }
+        }
+
+        private static Attachment CreateInteractiveMessage(string filePath)
+        {
+            var interactiveMessageJson = System.IO.File.ReadAllText(filePath);
+            var adaptiveCardAttachment = JsonConvert.DeserializeObject<Block[]>(interactiveMessageJson);
+
+            var blockList = new List<Block>();
+
+            foreach (var block in adaptiveCardAttachment)
+            {
+                blockList.Add(block);
+            }
+
+            var attachment = new Attachment
+            {
+                Content = blockList,
+                ContentType = "application/json",
+                Name = "blocks",
+            };
+
+            return attachment;
         }
     }
 }

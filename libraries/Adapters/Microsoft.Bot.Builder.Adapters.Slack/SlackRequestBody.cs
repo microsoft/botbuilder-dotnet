@@ -30,7 +30,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         public string EventTime { get; set; }
 
         [JsonProperty(PropertyName = "authed_users")]
-        public List<string> AuthedUsers { get; set; }
+        public List<string> AuthedUsers { get; } = new List<string>();
 
         [JsonProperty(PropertyName = "trigger_id")]
         public string TriggerId { get; set; }
@@ -48,7 +48,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack
         public string Command { get; set; }
 
         [JsonProperty(PropertyName = "payload")]
-        public SlackEvent Payload { get; set; }
+        public SlackPayload Payload { get; set; }
 
         [JsonProperty(PropertyName = "event")]
         public SlackEvent Event { get; set; }

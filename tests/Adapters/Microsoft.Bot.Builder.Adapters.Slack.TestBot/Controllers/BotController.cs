@@ -3,7 +3,7 @@
 //
 // Generated with Bot Builder V4 SDK Template for Visual Studio EchoBot v4.3.0
 
-using System.Threading;
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,8 +16,8 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.TestBot.Controllers
     [ApiController]
     public class BotController : ControllerBase
     {
-        private readonly SlackAdapter adapter;
-        private readonly IBot bot;
+        private readonly SlackAdapter _adapter;
+        private readonly IBot _bot;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BotController"/> class.
@@ -26,8 +26,8 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.TestBot.Controllers
         /// <param name="bot">bot for the BotController.</param>
         public BotController(SlackAdapter adapter, IBot bot)
         {
-            this.adapter = adapter;
-            this.bot = bot;
+            _adapter = adapter;
+            _bot = bot;
         }
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace Microsoft.Bot.Builder.Adapters.Slack.TestBot.Controllers
         {
             // Delegate the processing of the HTTP POST to the adapter.
             // The adapter will invoke the bot.
-            await this.adapter.ProcessAsync(this.Request, this.Response, this.bot, new CancellationToken());
+            await _adapter.ProcessAsync(Request, Response, _bot, default);
         }
     }
 }
