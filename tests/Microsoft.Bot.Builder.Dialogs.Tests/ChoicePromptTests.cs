@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs.Choices;
+using Microsoft.Bot.Builder.Dialogs.Prompts;
 using Microsoft.Bot.Schema;
 using Microsoft.Recognizers.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -644,6 +645,67 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                         InlineOr = inlineOr,
                         InlineOrMore = inlineOrMore,
                         InlineSeparator = separator,
+                    }).Text;
+                    Assert.AreEqual($"favorite color?{expectedChoices}", activity.AsMessageActivity().Text);
+                })
+                .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task ShouldAcceptAndRecognizeCustomLocaleDict()
+        {
+            var convoState = new ConversationState(new MemoryStorage());
+            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
+
+            var adapter = new TestAdapter()
+                .Use(new AutoSaveStateMiddleware(convoState));
+
+            // Create new DialogSet.
+            var dialogs = new DialogSet(dialogState);
+
+            var culture = new PromptCultureModel()
+            {
+                InlineOr = " customOr ",
+                InlineOrMore = " customOrMore ",
+                Locale = "custom-custom",
+                Separator = "customSeparator",
+                NoInLanguage = "customNo",
+                YesInLanguage = "customYes",
+            };
+
+            var customDict = new Dictionary<string, ChoiceFactoryOptions>()
+            {
+                { culture.Locale, new ChoiceFactoryOptions(culture.Separator, culture.InlineOr, culture.InlineOrMore, true) },
+            };
+
+            dialogs.Add(new ChoicePrompt("ChoicePrompt", null, culture.Locale, customDict));
+
+            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
+            {
+                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
+
+                var results = await dc.ContinueDialogAsync(cancellationToken);
+                if (results.Status == DialogTurnStatus.Empty)
+                {
+                    await dc.PromptAsync(
+                        "ChoicePrompt",
+                        new PromptOptions
+                        {
+                            Prompt = new Activity { Type = ActivityTypes.Message, Text = "favorite color?", Locale = culture.Locale },
+                            Choices = _colorChoices,
+                        },
+                        cancellationToken);
+                }
+            })
+                .Send("hello")
+                .AssertReply((activity) =>
+                {
+                    // Use ChoiceFactory to build the expected answer, manually
+                    var expectedChoices = ChoiceFactory.Inline(_colorChoices, null, null, new ChoiceFactoryOptions()
+                    {
+                        InlineOr = culture.InlineOr,
+                        InlineOrMore = culture.InlineOrMore,
+                        InlineSeparator = culture.Separator,
                     }).Text;
                     Assert.AreEqual($"favorite color?{expectedChoices}", activity.AsMessageActivity().Text);
                 })

@@ -151,7 +151,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
-                turnContext.Activity.Locale = activityLocale;
+                turnContext.Activity.Locale = culture.Locale;
 
                 var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
 

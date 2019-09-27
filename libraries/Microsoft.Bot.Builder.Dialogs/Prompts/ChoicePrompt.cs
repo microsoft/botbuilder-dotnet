@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Choices;
@@ -16,6 +17,16 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// </summary>
     public class ChoicePrompt : Prompt<FoundChoice>
     {
+        /// <summary>
+        /// A dictionary of Default Choices based on <seealso cref="GetSupportedCultures"/>.
+        /// Can be replaced by user using the constructor that contains choiceDefaults.
+        /// </summary>
+        private readonly Dictionary<string, ChoiceFactoryOptions> _choiceDefaults =
+            new Dictionary<string, ChoiceFactoryOptions>(
+            GetSupportedCultures().ToDictionary(
+                culture => culture.Locale, culture =>
+                new ChoiceFactoryOptions { InlineSeparator = culture.Separator, InlineOr = culture.InlineOr, InlineOrMore = culture.InlineOrMore, IncludeNumbers = true }));
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ChoicePrompt"/> class.
         /// </summary>
@@ -31,11 +42,12 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// is specified, then that local is used to determine language specific behavior; otherwise
         /// the <paramref name="defaultLocale"/> is used. US-English is the used if no language or
         /// default locale is available, or if the language or locale is not otherwise supported.</para></remarks>
-        public ChoicePrompt(string dialogId, PromptValidator<FoundChoice> validator = null, string defaultLocale = null)
+        public ChoicePrompt(string dialogId, PromptValidator<FoundChoice> validator = null, string defaultLocale = null, Dictionary<string, ChoiceFactoryOptions> choiceDefaults = null)
             : base(dialogId, validator)
         {
             Style = ListStyle.Auto;
             DefaultLocale = defaultLocale;
+            _choiceDefaults = choiceDefaults ?? _choiceDefaults;
         }
 
         /// <summary>
@@ -65,23 +77,6 @@ namespace Microsoft.Bot.Builder.Dialogs
         public FindChoicesOptions RecognizerOptions { get; set; }
 
         /// <summary>
-        /// Gets a dictionary of Default ChoiceOptions based on Microsoft.Bot.Builder.Dialogs.Prompts.PromptCultureModels.GetSupportedCultures.
-        /// </summary>
-        private static Dictionary<string, ChoiceFactoryOptions> DefaultChoiceOptions
-        {
-            get
-            {
-                var defaults = new Dictionary<string, ChoiceFactoryOptions>();
-                foreach (var culture in GetSupportedCultures())
-                {
-                    defaults.Add(culture.Locale, new ChoiceFactoryOptions { InlineSeparator = culture.Separator, InlineOr = culture.InlineOr, InlineOrMore = culture.InlineOrMore, IncludeNumbers = true });
-                }
-
-                return defaults;
-            }
-        }
-
-        /// <summary>
         /// Prompts the user for input.
         /// </summary>
         /// <param name="turnContext">Context for the current turn of conversation with the user.</param>
@@ -107,7 +102,7 @@ namespace Microsoft.Bot.Builder.Dialogs
 
             // Determine culture
             var culture = MapToNearestLanguage(turnContext.Activity.Locale ?? DefaultLocale);
-            if (string.IsNullOrEmpty(culture) || !DefaultChoiceOptions.ContainsKey(culture))
+            if (string.IsNullOrEmpty(culture) || !_choiceDefaults.ContainsKey(culture))
             {
                 culture = English.Locale;
             }
@@ -116,7 +111,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             IMessageActivity prompt;
             var choices = options.Choices ?? new List<Choice>();
             var channelId = turnContext.Activity.ChannelId;
-            var choiceOptions = ChoiceOptions ?? DefaultChoiceOptions[culture];
+            var choiceOptions = ChoiceOptions ?? _choiceDefaults[culture];
             var choiceStyle = options.Style ?? Style;
             if (isRetry && options.RetryPrompt != null)
             {
