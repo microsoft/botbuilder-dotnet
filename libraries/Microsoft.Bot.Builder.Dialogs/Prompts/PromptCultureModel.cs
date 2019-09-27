@@ -3,7 +3,7 @@
     /// <summary>
     /// Culture model used in Choice and Confirm Prompts.
     /// </summary>
-    public class IPromptCultureModel
+    public class PromptCultureModel
     {
         /// <summary>
         /// Gets or Sets Culture Model's Locale.

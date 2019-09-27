@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Linq;
 using Microsoft.Recognizers.Text;
 
@@ -9,10 +10,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Prompts
     /// </summary>
     public static class PromptCultureModels
     {
-        private static readonly string[] SupportedCultureCodes = GetSupportedCultures().Select(c => c.Locale).ToArray();
-
-        public static IPromptCultureModel Chinese =>
-            new IPromptCultureModel
+        public static PromptCultureModel Chinese =>
+            new PromptCultureModel
             {
                 InlineOr = " 要么 ",
                 InlineOrMore = "， 要么 ",
@@ -22,19 +21,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Prompts
                 YesInLanguage = "是的",
             };
 
-        public static IPromptCultureModel Danish =>
-            new IPromptCultureModel
-            {
-                InlineOr = " eller ",
-                InlineOrMore = "， eller ",
-                Locale = "da-DK",
-                NoInLanguage = "Nej",
-                Separator = "， ",
-                YesInLanguage = "Ja",
-            };
-
-        public static IPromptCultureModel Dutch =>
-            new IPromptCultureModel
+        public static PromptCultureModel Dutch =>
+            new PromptCultureModel
             {
                 InlineOr = " of ",
                 InlineOrMore = ", of ",
@@ -44,8 +32,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Prompts
                 YesInLanguage = "Ja",
             };
 
-        public static IPromptCultureModel English =>
-            new IPromptCultureModel
+        public static PromptCultureModel English =>
+            new PromptCultureModel
             {
                 InlineOr = " or ",
                 InlineOrMore = ", or ",
@@ -55,8 +43,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Prompts
                 YesInLanguage = "Yes",
             };
 
-        public static IPromptCultureModel French =>
-            new IPromptCultureModel
+        public static PromptCultureModel French =>
+            new PromptCultureModel
             {
                 InlineOr = " ou ",
                 InlineOrMore = ", ou ",
@@ -66,8 +54,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Prompts
                 YesInLanguage = "Oui",
             };
 
-        public static IPromptCultureModel German =>
-            new IPromptCultureModel
+        public static PromptCultureModel German =>
+            new PromptCultureModel
             {
                 InlineOr = " oder ",
                 InlineOrMore = ", oder ",
@@ -77,8 +65,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Prompts
                 YesInLanguage = "Ja",
             };
 
-        public static IPromptCultureModel Japanese =>
-            new IPromptCultureModel
+        public static PromptCultureModel Japanese =>
+            new PromptCultureModel
             {
                 InlineOr = " または ",
                 InlineOrMore = "、 または ",
@@ -88,8 +76,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Prompts
                 YesInLanguage = "はい",
             };
 
-        public static IPromptCultureModel Portuguese =>
-            new IPromptCultureModel
+        public static PromptCultureModel Portuguese =>
+            new PromptCultureModel
             {
                 InlineOr = " ou ",
                 InlineOrMore = ", ou ",
@@ -99,8 +87,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Prompts
                 YesInLanguage = "Sim",
             };
 
-        public static IPromptCultureModel Spanish =>
-            new IPromptCultureModel
+        public static PromptCultureModel Spanish =>
+            new PromptCultureModel
             {
                 InlineOr = " o ",
                 InlineOrMore = ", o ",
@@ -117,47 +105,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Prompts
         /// </summary>
         /// <param name="cultureCode">Represents locale. Examples: "en-US, en-us, EN".</param>
         /// <returns>Normalized locale.</returns>
-        public static string MapToNearestLanguage(string cultureCode)
+        public static string MapToNearestLanguage(string cultureCode) => Culture.MapToNearestLanguage(cultureCode);
+
+        public static PromptCultureModel[] GetSupportedCultures() => new PromptCultureModel[]
         {
-            cultureCode = cultureCode.ToLowerInvariant();
-
-            if (SupportedCultureCodes.All(o => o != cultureCode))
-            {
-                // Handle cases like EnglishOthers with cultureCode "en-*"
-                var fallbackCultureCodes = SupportedCultureCodes
-                    .Where(o => o.EndsWith("*", StringComparison.Ordinal) &&
-                                cultureCode.StartsWith(o.Split('-').First(), StringComparison.Ordinal)).ToList();
-
-                if (fallbackCultureCodes.Count == 1)
-                {
-                    return fallbackCultureCodes.First();
-                }
-
-                // If there is no cultureCode like "-*", map only the prefix
-                // For example, "es-mx" will be mapped to "es-es"
-                fallbackCultureCodes = SupportedCultureCodes
-                    .Where(o => cultureCode.StartsWith(o.Split('-').First(), StringComparison.Ordinal)).ToList();
-
-                if (fallbackCultureCodes.Any())
-                {
-                    return fallbackCultureCodes.First();
-                }
-            }
-
-            return cultureCode;
-        }
-
-        public static IPromptCultureModel[] GetSupportedCultures() => new IPromptCultureModel[]
-            {
-                Chinese,
-                Danish,
-                Dutch,
-                English,
-                French,
-                German,
-                Japanese,
-                Portuguese,
-                Spanish,
-            };
+            Chinese,
+            Dutch,
+            English,
+            French,
+            German,
+            Japanese,
+            Portuguese,
+            Spanish,
+        };
     }
 }
