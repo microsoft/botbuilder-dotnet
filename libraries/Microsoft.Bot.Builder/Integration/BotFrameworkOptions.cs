@@ -32,6 +32,13 @@ namespace Microsoft.Bot.Builder.Integration
         public ICredentialProvider CredentialProvider { get; set; } = new SimpleCredentialProvider();
 
         /// <summary>
+        /// Gets or sets an <see cref="AppCredentials"/> that should be used to store and retrieve the
+        /// credentials used during authentication with the Bot Framework Service.
+        /// </summary>
+        /// <value>The credential provider.</value>
+        public AppCredentials AppCredentials { get; set; }
+
+        /// <summary>
         /// Gets or sets an <see cref="IChannelProvider"/> that should be used to provide configuration for
         /// how to validate authentication tokens received from the Bot Framework Service.
         /// </summary>

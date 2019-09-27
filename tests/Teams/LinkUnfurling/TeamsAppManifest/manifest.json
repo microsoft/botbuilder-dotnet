@@ -2,7 +2,7 @@
   "$schema": "https://github.com/OfficeDev/microsoft-teams-app-schema/blob/preview/DevPreview/MicrosoftTeams.schema.json",
   "manifestVersion": "1.5",
   "version": "1.0",
-  "id": "f0a41ea1-87b1-4d28-bf94-539cd3d623f7",
+  "id": "",
   "packageName": "com.teams.sample.linkunfurling",
   "developer": {
     "name": "Link Unfurling",
@@ -25,13 +25,13 @@
   "accentColor": "#FFFFFF",
   "bots": [
     {
-      "botId": "f0a41ea1-87b1-4d28-bf94-539cd3d623f7",
+      "botId": "",
       "scopes": [ "personal", "team" ]
     }
   ],
   "composeExtensions": [
     {
-      "botId": "f0a41ea1-87b1-4d28-bf94-539cd3d623f7",
+      "botId": "",
       "commands": [
         {
           "id": "searchQuery",
@@ -54,7 +54,10 @@
           "type": "link",
           "value": {
             "domains": [
-              "tzadik.com"
+              "microsoft.com",
+              "github.com",
+              "linkedin.com",
+              "bing.com"
             ]
           }
         }

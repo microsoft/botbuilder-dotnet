@@ -43,6 +43,10 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>C:\source\GitHub\botbuilder-dotnet\\BotBuilder-DotNet.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug - NuGet Packages|AnyCPU'">
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <OutputPath>bin\Debug\</OutputPath>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
