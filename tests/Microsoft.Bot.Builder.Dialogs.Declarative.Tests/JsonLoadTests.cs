@@ -157,6 +157,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
                 .AssertReply(activity =>
                 {
                     var trace = (Activity)activity;
+                    Assert.AreEqual("https://www.botframework.com/schemas/botState", trace.ValueType, "value type should be memory");
+                    Assert.AreEqual(ActivityTypes.Trace, trace.Type, "should be trace of memory dumpactivity");
+                })
+                .AssertReply(activity =>
+                {
+                    var trace = (Activity)activity;
                     Assert.AreEqual(ActivityTypes.Trace, trace.Type, "should be trace activity");
                     Assert.AreEqual("memory", trace.ValueType, "value type should be memory");
                     Assert.AreEqual("Carlos", ((IDictionary<string, object>)trace.Value)["name"].ToString(), "value should be user object with name='Carlos'");
