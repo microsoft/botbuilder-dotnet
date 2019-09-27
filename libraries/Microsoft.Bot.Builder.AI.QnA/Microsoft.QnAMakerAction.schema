@@ -2,7 +2,7 @@
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
     "$role": "unionType(Microsoft.Dialog)",
     "title": "QnAMaker Action",
-    "description": "This represents an action which is driven by a call to QnAMaker.ai knowledge base.",
+    "description": "This represents an action which is driven by a call to QnAMaker knowledgebase to get an answer.",
     "type": "object",
     "additionalProperties": false,
   "properties": {
