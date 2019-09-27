@@ -10,7 +10,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
     internal class TestLocale
     {
         public TestLocale(
-            PromptCultureModel cultureModel,
+            IPromptCultureModel cultureModel,
             string expectedPrompt = null,
             string inputThatResultsInOne = null,
             string inputThatResultsInZero = null)
@@ -61,7 +61,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
         public string InlineOrMore => Culture.InlineOrMore;
 
-        private PromptCultureModel Culture { get; }
+        private IPromptCultureModel Culture { get; }
 
         private string GetCapEnding(string validLocale)
         {

@@ -650,56 +650,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 .StartTestAsync();
         }
 
-        [TestMethod]
-        public async Task ShouldUseCustomChoiceOptionsDictionary()
-        {
-            var convoState = new ConversationState(new MemoryStorage());
-            var dialogState = convoState.CreateProperty<DialogState>("dialogState");
-
-            var adapter = new TestAdapter()
-                .Use(new AutoSaveStateMiddleware(convoState));
-
-            var dialogs = new DialogSet(dialogState);
-            dialogs.Add(new ChoicePrompt("ChoicePrompt", defaultLocale: Culture.English));
-            ChoicePrompt.CustomDefaultChoiceOptions = new Dictionary<string, ChoiceFactoryOptions>()
-            {
-                {
-                    Culture.English, new ChoiceFactoryOptions
-                    {
-                        IncludeNumbers = false,
-                        InlineOr = " customOr ",
-                        InlineOrMore = " customOrMore ",
-                        InlineSeparator = " customSeparator ",
-                    }
-                },
-            };
-
-            await new TestFlow(adapter, async (turnContext, cancellationToken) =>
-            {
-                var dc = await dialogs.CreateContextAsync(turnContext, cancellationToken);
-
-                var results = await dc.ContinueDialogAsync(cancellationToken);
-                if (results.Status == DialogTurnStatus.Empty)
-                {
-                    await dc.PromptAsync(
-                        "ChoicePrompt",
-                        new PromptOptions
-                        {
-                            Prompt = new Activity { Type = ActivityTypes.Message, Text = "favorite color?" },
-                            Choices = _colorChoices,
-                        },
-                        cancellationToken);
-                }
-            })
-                .Send("hello")
-                .AssertReply((activity) =>
-                {
-                    Assert.AreEqual("favorite color? red customSeparator green customOrMore blue", activity.AsMessageActivity().Text);
-                    ChoicePrompt.CustomDefaultChoiceOptions = null;
-                })
-                .StartTestAsync();
-        }
-
         /*
         [TestMethod]
         public async Task ShouldHandleAnUndefinedRequest()
