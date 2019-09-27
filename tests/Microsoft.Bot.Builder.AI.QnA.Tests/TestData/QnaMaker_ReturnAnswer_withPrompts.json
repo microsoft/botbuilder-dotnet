@@ -1,0 +1,38 @@
+﻿{
+  "answers": [
+    {
+      "questions": [
+        "Issues related to KB"
+      ],
+      "answer": "Please select one of the following KB issues. ",
+      "score": 98.0,
+      "id": 27,
+      "source": "Editorial",
+      "metadata": [],
+      "context": {
+        "isContextOnly": false,
+        "prompts": [
+          {
+            "displayOrder": 0,
+            "qnaId": 1,
+            "qna": null,
+            "displayText": "Accidently deleted KB"
+          },
+          {
+            "displayOrder": 0,
+            "qnaId": 3,
+            "qna": null,
+            "displayText": "KB Size Limits"
+          },
+          {
+            "displayOrder": 0,
+            "qnaId": 29,
+            "qna": null,
+            "displayText": "Other Issues"
+          }
+        ]
+      }
+    }
+  ],
+  "activeLearningEnabled": false
+}

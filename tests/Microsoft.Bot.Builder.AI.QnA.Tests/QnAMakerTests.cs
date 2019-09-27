@@ -13,6 +13,15 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Builder.Dialogs.Adaptive;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
+using Microsoft.Bot.Builder.Dialogs.Declarative;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
+using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
+using Microsoft.Bot.Builder.LanguageGeneration;
+using Microsoft.Bot.Builder.LanguageGeneration.Templates;
 using Microsoft.Bot.Configuration;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
@@ -49,6 +58,102 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 .AssertReply("BaseCamp: You can use a damp rag to clean around the Power Pack")
             .Send("moo")
                 .AssertReply("Yippee ki-yay!")
+            .StartTestAsync();
+        }
+
+        public AdaptiveDialog QnAMakerAction_ActiveLearningDialogBase()
+        {
+            TypeFactory.Configuration = new ConfigurationBuilder().Build();
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Q11\",\"top\":3,\"strictFilters\":[],\"metadataBoost\":[],\"scoreThreshold\":0.3,\"context\":null,\"qnaId\":0}")
+                .Respond("application/json", GetResponse("QnaMaker_TopNAnswer.json"));
+            mockHttp.When(HttpMethod.Post, GetTrainRequestUrl())
+                .Respond(HttpStatusCode.NoContent, "application/json", "{ }");
+            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Q12\",\"top\":3,\"strictFilters\":[],\"metadataBoost\":[],\"scoreThreshold\":0.3,\"context\":null,\"qnaId\":0}")
+               .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswer_WhenNoAnswerFoundInKb.json"));
+
+            return CreateQnAMakerActionDialog(mockHttp);
+        }
+
+        [TestMethod]
+        public async Task QnAMakerAction_ActiveLearningDialog_WithProperResponse()
+        {
+            var rootDialog = QnAMakerAction_ActiveLearningDialogBase();
+
+            var suggestionList = new List<string> { "Q1", "Q2", "Q3" };
+            var suggestionActivity = QnACardBuilder.GetSuggestionsCard(suggestionList, "Did you mean:", "None of the above.");
+            var qnAMakerCardEqualityComparer = new QnAMakerCardEqualityComparer();
+
+            await CreateFlow(rootDialog)
+            .Send("Q11")
+                .AssertReply(suggestionActivity, equalityComparer: qnAMakerCardEqualityComparer)
+            .Send("Q1")
+                .AssertReply("A1")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task QnAMakerAction_ActiveLearningDialog_WithNoResponse()
+        {
+            var rootDialog = QnAMakerAction_ActiveLearningDialogBase();
+
+            var noAnswerActivity = "No match found, please as another question.";
+
+            var suggestionList = new List<string> { "Q1", "Q2", "Q3" };
+            var suggestionActivity = QnACardBuilder.GetSuggestionsCard(suggestionList, "Did you mean:", "None of the above.");
+            var qnAMakerCardEqualityComparer = new QnAMakerCardEqualityComparer();
+
+            await CreateFlow(rootDialog)
+            .Send("Q11")
+                .AssertReply(suggestionActivity, equalityComparer: qnAMakerCardEqualityComparer)
+            .Send("Q12")
+                .AssertReply(noAnswerActivity)
+            .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task QnAMakerAction_ActiveLearningDialog_WithNoneOfAboveQuery()
+        {
+            var rootDialog = QnAMakerAction_ActiveLearningDialogBase();
+
+            var suggestionList = new List<string> { "Q1", "Q2", "Q3" };
+            var suggestionActivity = QnACardBuilder.GetSuggestionsCard(suggestionList, "Did you mean:", "None of the above.");
+            var qnAMakerCardEqualityComparer = new QnAMakerCardEqualityComparer();
+
+            await CreateFlow(rootDialog)
+            .Send("Q11")
+                .AssertReply(suggestionActivity, equalityComparer: qnAMakerCardEqualityComparer)
+            .Send("None of the above.")
+                .AssertReply("Thanks for the feedback.")
+            .StartTestAsync();
+        }
+
+        public AdaptiveDialog QnAMakerAction_MultiTurnDialogBase()
+        {
+            TypeFactory.Configuration = new ConfigurationBuilder().Build();
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"I have issues related to KB\",\"top\":3,\"strictFilters\":[],\"metadataBoost\":[],\"scoreThreshold\":0.3,\"context\":null,\"qnaId\":0}")
+                .Respond("application/json", GetResponse("QnaMaker_ReturnAnswer_withPrompts.json"));
+            mockHttp.When(HttpMethod.Post, GetRequestUrl()).WithContent("{\"question\":\"Accidently deleted KB\",\"top\":3,\"strictFilters\":[],\"metadataBoost\":[],\"scoreThreshold\":0.3,\"context\":{\"previousQnAId\":27,\"previousUserQuery\":\"\"},\"qnaId\":1}")
+               .Respond("application/json", GetResponse("QnaMaker_ReturnAnswer_MultiTurnLevel1.json"));
+
+            return CreateQnAMakerActionDialog(mockHttp);
+        }
+
+        [TestMethod]
+        public async Task QnAMakerAction_MultiTurnDialogBase_WithAnswer()
+        {
+            var rootDialog = QnAMakerAction_MultiTurnDialogBase();
+
+            var response = JsonConvert.DeserializeObject<QueryResults>(File.ReadAllText(GetFilePath("QnaMaker_ReturnAnswer_withPrompts.json")));
+            var promptsActivity = QnACardBuilder.GetQnAPromptsCard(response.Answers[0], "None of the above.");
+            var qnAMakerCardEqualityComparer = new QnAMakerCardEqualityComparer();
+
+            await CreateFlow(rootDialog)
+            .Send("I have issues related to KB")
+                .AssertReply(promptsActivity, equalityComparer: qnAMakerCardEqualityComparer)
+            .Send("Accidently deleted KB")
+                .AssertReply("All deletes are permanent, including question and answer pairs, files, URLs, custom questions and answers, knowledge bases, or Azure resources. Make sure you export your knowledge base from the Settings**page before deleting any part of your knowledge base.")
             .StartTestAsync();
         }
 
@@ -1485,6 +1590,59 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             return new QnaMakerTestDialog(qna);
         }
 
+        private AdaptiveDialog CreateQnAMakerActionDialog(MockHttpMessageHandler mockHttp)
+        {
+            var client = new HttpClient(mockHttp);
+
+            var noAnswerActivity = new ActivityTemplate("No match found, please as another question.");
+            var host = "'https://dummy-hostname.azurewebsites.net/qnamaker'";
+            var knowlegeBaseId = "'dummy-id'";
+            var endpointKey = "'dummy-key'";
+
+            var outerDialog = new AdaptiveDialog("outer")
+            {
+                AutoEndDialog = false,
+                Triggers = new List<OnCondition>()
+                {
+                    new OnUnknownIntent()
+                    {
+                        Actions = new List<Dialog>()
+                        {
+                            new QnAMakerAction(knowledgeBaseId: knowlegeBaseId, hostName: host, endpointKey: endpointKey, httpClient: client)
+                            {
+                                NoAnswer = noAnswerActivity
+                            }
+                        }
+                    }
+                }
+            };
+
+            var rootDialog = new AdaptiveDialog("root")
+            {
+                Triggers = new List<OnCondition>()
+                {
+                    new OnBeginDialog()
+                    {
+                        Actions = new List<Dialog>()
+                        {
+                            new BeginDialog(outerDialog.Id)
+                        }
+                    },
+                    new OnDialogEvent()
+                    {
+                        Event = "UnhandledUnknownIntent",
+                        Actions = new List<Dialog>()
+                        {
+                            new EditArray(),
+                            new SendActivity("magenta")
+                        }
+                    }
+                }
+            };
+            rootDialog.Dialogs.Add(outerDialog);
+            return rootDialog;
+        }
+
         private string GetV2LegacyRequestUrl() => $"{_hostname}/v2.0/knowledgebases/{_knowlegeBaseId}/generateanswer";
 
         private string GetV3LegacyRequestUrl() => $"{_hostname}/v3.0/knowledgebases/{_knowlegeBaseId}/generateanswer";
@@ -1495,8 +1653,13 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
 
         private Stream GetResponse(string fileName)
         {
-            var path = Path.Combine(Environment.CurrentDirectory, "TestData", fileName);
+            var path = GetFilePath(fileName);
             return File.OpenRead(path);
+        }
+
+        private string GetFilePath(string fileName)
+        {
+            return Path.Combine(Environment.CurrentDirectory, "TestData", fileName);
         }
 
         /// <summary>
