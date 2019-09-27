@@ -106,10 +106,11 @@ namespace Microsoft.Bot.Builder.Azure
 
             foreach (var documentStoreItem in documentStoreItems)
             {
+                var item = documentStoreItem.Document.ToObject(typeof(object), _jsonSerializer);
                 if (documentStoreItem is IStoreItem storeItem)
                 {
                     storeItem.ETag = documentStoreItem.ETag;
-                    storeItems.Add(documentStoreItem.RealId, storeItem);
+                    storeItems.Add(documentStoreItem.RealId, item);
                 }
             }
 
