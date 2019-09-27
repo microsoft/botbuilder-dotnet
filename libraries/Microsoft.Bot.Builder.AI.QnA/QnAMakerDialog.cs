@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Builder.LanguageGeneration.Templates;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 
@@ -47,9 +46,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 var topResult = questionResults.OrderByDescending(r => r.Score).FirstOrDefault();
                 if (topResult != null && topResult.Score > 0)
                 {
-                    var template = new ActivityTemplate(topResult.Answer);
-                    var activity = await template.BindToData(dc.Context, dc.State).ConfigureAwait(false);
-                    var response = await dc.Context.SendActivityAsync(activity, cancellationToken).ConfigureAwait(false);
+                    var response = await dc.Context.SendActivityAsync(topResult.Answer, cancellationToken: cancellationToken).ConfigureAwait(false);
                     return await dc.EndDialogAsync(true, cancellationToken).ConfigureAwait(false);
                 }
             }
