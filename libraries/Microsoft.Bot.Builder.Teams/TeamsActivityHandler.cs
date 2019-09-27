@@ -142,7 +142,7 @@ namespace Microsoft.Bot.Builder.Teams
                             return CreateInvokeResponse(await OnTeamsMessagingExtensionConfigurationQuerySettingsUrlAsync(turnContext, SafeCast<MessagingExtensionQuery>(turnContext.Activity.Value), cancellationToken).ConfigureAwait(false));
 
                         case "composeExtension/setting":
-                            await OnTeamsMessagingExtensionConfigurationSettingsAsync(turnContext, turnContext.Activity.Value as JObject, cancellationToken).ConfigureAwait(false)
+                            await OnTeamsMessagingExtensionConfigurationSettingsAsync(turnContext, turnContext.Activity.Value as JObject, cancellationToken).ConfigureAwait(false);
                             return CreateInvokeResponse();
 
                         case "composeExtension/onCardButtonClicked":
