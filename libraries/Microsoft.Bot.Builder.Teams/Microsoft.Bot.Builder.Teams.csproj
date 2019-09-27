@@ -21,20 +21,4 @@
     <Summary>Library for building bots using Microsoft Bot Framework</Summary>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(PackageVersion)' == '' " Version="4.0.0-local" />
-    <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(PackageVersion)' != '' " Version="$(PackageVersion)" />
-
-    <!-- This may move to the root level dir.props file at some point. -->
-    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.4">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Microsoft.Bot.Connector.Teams\Microsoft.Bot.Connector.Teams.csproj" Exclude="Runtime" DevelopmentDependency="true" />
-    <ProjectReference Include="..\Microsoft.Bot.Schema.Teams\Microsoft.Bot.Schema.Teams.csproj" />
-    <ProjectReference Include="..\Microsoft.Bot.Builder\Microsoft.Bot.Builder.csproj" />
-  </ItemGroup>
 </Project>
