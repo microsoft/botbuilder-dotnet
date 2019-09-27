@@ -5,6 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{873BCC1F-ED12-424E-93FA-D76F4BA022C2}</ProjectGuid>
+    <RuntimeIdentifier>win</RuntimeIdentifier>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Microsoft.Bot.ApplicationInsights.WebApi.Tests</RootNamespace>

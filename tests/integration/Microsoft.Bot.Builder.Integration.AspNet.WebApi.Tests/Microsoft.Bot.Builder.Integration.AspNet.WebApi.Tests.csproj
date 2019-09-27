@@ -6,6 +6,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{2614D290-1345-4A41-BE90-F85F817CEADE}</ProjectGuid>
     <OutputType>Library</OutputType>
+    <RuntimeIdentifier>win</RuntimeIdentifier>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Microsoft.Bot.Builder.Integration.AspNet.WebApi.Tests</RootNamespace>
     <AssemblyName>Microsoft.Bot.Builder.Integration.AspNet.WebApi.Tests</AssemblyName>
