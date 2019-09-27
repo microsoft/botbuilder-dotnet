@@ -120,7 +120,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [DataRow(Culture.English, Culture.English, "(1) customYes customOr (2) customNo", "customYes", "1")]
         public async Task ShouldUseCustomChoiceDefaultsDictionary(string activityLocale, string defaultLocale, string prompt, string utterance, string expectedResponse)
         {
-            ConfirmPrompt.CustomChoiceDefaults = new Dictionary<string, (Choice, Choice, ChoiceFactoryOptions)>()
+            ConfirmPrompt.CustomLocaleOptions = new Dictionary<string, (Choice, Choice, ChoiceFactoryOptions)>()
             {
                 {
                     Culture.English,
@@ -136,7 +136,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 },
             };
             await ConfirmPrompt_Locale_Impl(activityLocale, defaultLocale, prompt, utterance, expectedResponse);
-            ConfirmPrompt.CustomChoiceDefaults = null;
+            ConfirmPrompt.CustomLocaleOptions = null;
         }
 
         private async Task ConfirmPrompt_Locale_Impl(string activityLocale, string defaultLocale, string prompt, string utterance, string expectedResponse)
