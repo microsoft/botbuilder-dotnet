@@ -35,6 +35,8 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// custom validation for this prompt.</param>
         /// <param name="defaultLocale">Optional, the default locale used to determine language-specific behavior of the prompt.
         /// The locale is a 2, 3, or 4 character ISO 639 code that represents a language or language family.</param>
+        /// <param name="choiceDefaults">Overrides the dictionary of Bot Framework SDK-supported _choiceDefaults (for prompt localization).
+        /// Must be passed in to each ConfirmPrompt that needs the custom choice defaults.</param>
         /// <remarks>The value of <paramref name="dialogId"/> must be unique within the
         /// <see cref="DialogSet"/> or <see cref="ComponentDialog"/> to which the prompt is added.
         /// <para>If the <see cref="Activity.Locale"/>
