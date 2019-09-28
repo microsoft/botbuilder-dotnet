@@ -17,7 +17,6 @@
     <AssemblyOriginatorKeyFile>..\..\..\build\35MSSharedLib1024.snk</AssemblyOriginatorKeyFile>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Builder.Adapters.WeChat.xml</DocumentationFile>
-    <DefineConstants>SIGNASSEMBLY</DefineConstants>
   </PropertyGroup>
   
   <ItemGroup>
