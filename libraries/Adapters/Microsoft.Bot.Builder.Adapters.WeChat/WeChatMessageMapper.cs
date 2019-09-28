@@ -375,7 +375,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
             else
             {
                 // Event message don't have Id;
-                activity.Id = new Guid().ToString();
+                activity.Id = Guid.NewGuid().ToString();
                 activity.Type = ActivityTypes.Event;
             }
 
@@ -913,7 +913,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 bytesData = AttachmentHelper.DecodeBase64String(content, out contentType);
             }
 
-            name = name ?? new Guid().ToString();
+            name = name ?? Guid.NewGuid().ToString();
 
             // should be lower by WeChat.
 #pragma warning disable CA1308

@@ -7,7 +7,7 @@ using System.Text;
 
 namespace Microsoft.Bot.Builder.Adapters.WeChat
 {
-    public class AttachmentHash : IAttachmentHash
+    internal class AttachmentHash : IAttachmentHash
     {
         /// <summary>
         /// Calculates the hash value, used to ignore same file when upload media.

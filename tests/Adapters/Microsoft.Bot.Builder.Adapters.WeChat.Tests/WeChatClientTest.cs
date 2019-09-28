@@ -78,7 +78,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests
             var result3 = await mockClient.UploadNewsAsync(new News[] { new News { Title = "test" } }, true) as UploadTemporaryMediaResult;
             var result4 = await mockClient.UploadMediaAsync(mockAttachemntData, false, 10000) as UploadPersistentMediaResult;
             var result5 = await mockClient.UploadNewsAsync(new News[] { new News { Title = "test" } }, false) as UploadPersistentMediaResult;
-            var result6 = await mockClient.UploadNewsImageAsync(mockAttachemntData) as UploadPersistentMediaResult;
+            var result6 = await mockClient.UploadNewsImageAsync(mockAttachemntData);
             Assert.Equal("mediaId", result1.MediaId);
             Assert.Equal("mediaId", result2.MediaId);
             Assert.Equal(MediaTypes.News, result3.Type);

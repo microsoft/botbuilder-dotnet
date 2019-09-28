@@ -680,7 +680,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests
             return attachmentList;
         }
 
-        public static WeChatSettings MockWeChatSettings(bool isTemp = true)
+        public static WeChatSettings MockWeChatSettings(bool isTemp = true, bool passiveResponseMode = false)
         {
             return new WeChatSettings
             {
@@ -689,7 +689,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests
                 EncodingAesKey = "P7PIjIGpA7axbjbffRoWYq7G0BsIaEpqdawIir4KqCt",
                 AppSecret = "secret",
                 UploadTemporaryMedia = isTemp,
-                PassiveResponseMode = false,
+                PassiveResponseMode = passiveResponseMode,
             };
         }
 

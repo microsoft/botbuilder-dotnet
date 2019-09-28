@@ -66,9 +66,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         public async Task<string> GetMediaUrlAsync(string mediaId)
         {
             var accessToken = await GetAccessTokenAsync().ConfigureAwait(false);
-            var mediaUrl = $"{ApiHost}/cgi-bin/media/get?access_token={accessToken}&media_id={mediaId}";
-
-            return mediaUrl;
+            return $"{ApiHost}/cgi-bin/media/get?access_token={accessToken}&media_id={mediaId}";
         }
 
         /// <summary>
@@ -80,17 +78,11 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         public async Task<WeChatJsonResult> SendMessageToUser(object data, int timeout = 10000)
         {
             _logger.LogInformation("Send message to user.");
-            var accessToken = await GetAccessTokenAsync().ConfigureAwait(false);
-            var url = GetMessageApiEndPoint(accessToken);
+            var url = await GetMessageApiEndPoint().ConfigureAwait(false);
 
             var bytes = await SendHttpRequestAsync(HttpMethod.Post, url, data, null, timeout).ConfigureAwait(false);
             var sendResult = ConvertBytesToType<WeChatJsonResult>(bytes);
-            if (sendResult.ErrorCode != 0)
-            {
-                var exception = new Exception($"{sendResult}");
-                _logger.LogError(exception, "Send message to user failed.");
-                throw exception;
-            }
+            CheckWeChatApiResponse(sendResult);
 
             return sendResult;
         }
@@ -122,17 +114,12 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         public virtual async Task<string> GetAccessTokenAsync()
         {
             var token = await _tokenStorage.GetAsync(_settings.AppId).ConfigureAwait(false);
-            if (token == null || token.ExpireTime.ToUnixTimeSeconds() <= DateTimeOffset.UtcNow.ToUnixTimeSeconds())
+            if (token == null)
             {
                 var url = GetAccessTokenEndPoint(_settings.AppId, _settings.AppSecret);
                 var bytes = await SendHttpRequestAsync(HttpMethod.Get, url).ConfigureAwait(false);
                 var tokenResult = ConvertBytesToType<AccessTokenResult>(bytes);
-                if (tokenResult.ErrorCode != 0)
-                {
-                    var exception = new Exception(tokenResult.ToString());
-                    _logger.LogError(exception, "Get access token failed.");
-                    throw exception;
-                }
+                CheckWeChatApiResponse(tokenResult);
 
                 token = new WeChatAccessToken()
                 {
@@ -150,7 +137,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// <summary>
         /// Upload temporary media (originally uploaded media files api).
         /// </summary>
-        /// <param name="attachmentData">attachment data to be uploaded.</param>
+        /// <param name="attachmentData">The <seealso cref="AttachmentData" /> to be uploaded.</param>
         /// <param name="isTemporary">If upload media as a temporary media.</param>
         /// <param name="timeout">Upload temporary media timeout.</param>
         /// <returns>Result of upload Temporary media.</returns>
@@ -158,12 +145,12 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         {
             var mediaHash = _attachmentHash.ComputeHash(attachmentData.OriginalBase64) + isTemporary;
             var cachedResult = await _attachmentStorage.GetAsync(mediaHash).ConfigureAwait(false);
-            var accessToken = await GetAccessTokenAsync().ConfigureAwait(false);
-            var url = GetUploadMediaEndPoint(accessToken, attachmentData.Type, isTemporary);
-            if (cachedResult == null || cachedResult.Expired())
+            var url = await GetUploadMediaEndPoint(attachmentData.Type, isTemporary).ConfigureAwait(false);
+            if (cachedResult == null)
             {
                 var uploadResult = await UploadMediaAsync(attachmentData, url, isTemporary, timeout).ConfigureAwait(false);
-                await CheckAndUpdateAttachmentStorage(mediaHash, uploadResult).ConfigureAwait(false);
+                CheckWeChatApiResponse(uploadResult);
+                await _attachmentStorage.SaveAsync(mediaHash, uploadResult).ConfigureAwait(false);
                 return uploadResult;
             }
 
@@ -171,7 +158,8 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         }
 
         /// <summary>
-        /// Added other types of permanent material.
+        /// Upload image need to show inside the News.
+        /// Must be persistent media.
         /// </summary>
         /// <param name="attachmentData">Attachment data to be uploaded.</param>
         /// <param name="timeout">Upload persistent media timeout.</param>
@@ -180,12 +168,12 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         {
             var mediaHash = _attachmentHash.ComputeHash(attachmentData.OriginalBase64);
             var cachedResult = await _attachmentStorage.GetAsync(mediaHash).ConfigureAwait(false);
-            if (cachedResult == null || cachedResult.Expired())
+            if (cachedResult == null)
             {
-                var accessToken = await GetAccessTokenAsync().ConfigureAwait(false);
-                var url = GetAcquireMediaUrlEndPoint(accessToken);
+                var url = await GetAcquireMediaUrlEndPoint().ConfigureAwait(false);
                 var uploadResult = await UploadMediaAsync(attachmentData, url, false, timeout).ConfigureAwait(false);
-                await CheckAndUpdateAttachmentStorage(mediaHash, uploadResult).ConfigureAwait(false);
+                CheckWeChatApiResponse(uploadResult);
+                await _attachmentStorage.SaveAsync(mediaHash, uploadResult).ConfigureAwait(false);
                 return uploadResult;
             }
 
@@ -203,9 +191,8 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         {
             var mediaHash = _attachmentHash.ComputeHash(JsonConvert.SerializeObject(newsList)) + isTemporary;
             var cachedResult = await _attachmentStorage.GetAsync(mediaHash).ConfigureAwait(false);
-            var accessToken = await GetAccessTokenAsync().ConfigureAwait(false);
-            var url = GetUploadNewsEndPoint(accessToken, isTemporary);
-            if (cachedResult == null || cachedResult.Expired())
+            var url = await GetUploadNewsEndPoint(isTemporary).ConfigureAwait(false);
+            if (cachedResult == null)
             {
                 var data = new
                 {
@@ -222,7 +209,8 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                     uploadResult = ConvertBytesToType<UploadPersistentMediaResult>(bytes);
                 }
 
-                await CheckAndUpdateAttachmentStorage(mediaHash, uploadResult).ConfigureAwait(false);
+                CheckWeChatApiResponse(uploadResult);
+                await _attachmentStorage.SaveAsync(mediaHash, uploadResult).ConfigureAwait(false);
                 return uploadResult;
             }
 
@@ -644,55 +632,9 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
             }
         }
 
-        private static string GetMessageApiEndPoint(string accessToken)
-        {
-            return $"{ApiHost}/cgi-bin/message/custom/send?access_token={accessToken}";
-        }
-
         private static string GetAccessTokenEndPoint(string appId, string appSecret)
         {
             return $"{ApiHost}/cgi-bin/token?grant_type=client_credential&appid={appId}&secret={appSecret}";
-        }
-
-        private static string GetUploadMediaEndPoint(string accessToken, string type, bool isTemporaryMedia)
-        {
-            // Get fixed type using in the url parameter.
-            if (type.IndexOf(MediaTypes.Image, StringComparison.InvariantCultureIgnoreCase) >= 0)
-            {
-                type = MediaTypes.Image;
-            }
-
-            if (type.IndexOf(MediaTypes.Video, StringComparison.InvariantCultureIgnoreCase) >= 0)
-            {
-                type = MediaTypes.Video;
-            }
-
-            if (type.IndexOf(MediaTypes.Voice, StringComparison.InvariantCultureIgnoreCase) >= 0)
-            {
-                type = MediaTypes.Voice;
-            }
-
-            if (isTemporaryMedia)
-            {
-                return $"{ApiHost}/cgi-bin/media/upload?access_token={accessToken}&type={type}";
-            }
-
-            return $"{ApiHost}/cgi-bin/material/add_material?access_token={accessToken}&type={type}";
-        }
-
-        private static string GetUploadNewsEndPoint(string accessToken, bool isTemporaryNews)
-        {
-            if (isTemporaryNews)
-            {
-                return $"{ApiHost}/cgi-bin/media/uploadnews?access_token={accessToken}";
-            }
-
-            return $"{ApiHost}/cgi-bin/material/add_news?access_token={accessToken}";
-        }
-
-        private static string GetAcquireMediaUrlEndPoint(string accessToken)
-        {
-            return $"{ApiHost}/cgi-bin/media/uploadimg?access_token={accessToken}";
         }
 
         /// <summary>
@@ -731,6 +673,56 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
             return $".{ext}";
         }
 
+        private async Task<string> GetMessageApiEndPoint()
+        {
+            var accessToken = await GetAccessTokenAsync().ConfigureAwait(false);
+            return $"{ApiHost}/cgi-bin/message/custom/send?access_token={accessToken}";
+        }
+
+        private async Task<string> GetUploadMediaEndPoint(string type, bool isTemporaryMedia)
+        {
+            // Get fixed type using in the url parameter.
+            if (type.IndexOf(MediaTypes.Image, StringComparison.InvariantCultureIgnoreCase) >= 0)
+            {
+                type = MediaTypes.Image;
+            }
+
+            if (type.IndexOf(MediaTypes.Video, StringComparison.InvariantCultureIgnoreCase) >= 0)
+            {
+                type = MediaTypes.Video;
+            }
+
+            if (type.IndexOf(MediaTypes.Voice, StringComparison.InvariantCultureIgnoreCase) >= 0)
+            {
+                type = MediaTypes.Voice;
+            }
+
+            var accessToken = await GetAccessTokenAsync().ConfigureAwait(false);
+            if (isTemporaryMedia)
+            {
+                return $"{ApiHost}/cgi-bin/media/upload?access_token={accessToken}&type={type}";
+            }
+
+            return $"{ApiHost}/cgi-bin/material/add_material?access_token={accessToken}&type={type}";
+        }
+
+        private async Task<string> GetUploadNewsEndPoint(bool isTemporaryNews)
+        {
+            var accessToken = await GetAccessTokenAsync().ConfigureAwait(false);
+            if (isTemporaryNews)
+            {
+                return $"{ApiHost}/cgi-bin/media/uploadnews?access_token={accessToken}";
+            }
+
+            return $"{ApiHost}/cgi-bin/material/add_news?access_token={accessToken}";
+        }
+
+        private async Task<string> GetAcquireMediaUrlEndPoint()
+        {
+            var accessToken = await GetAccessTokenAsync().ConfigureAwait(false);
+            return $"{ApiHost}/cgi-bin/media/uploadimg?access_token={accessToken}";
+        }
+
         /// <summary>
         /// Convert result byte array from http call to a specific type.
         /// </summary>
@@ -746,19 +738,13 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// <summary>
         /// Check if upload media successful then update attachment storage.
         /// </summary>
-        /// <param name="mediaHash">Hash value of the media.</param>
-        /// <param name="uploadResult">Upload media result.</param>
-        /// <returns>Task of updating media.</returns>
-        private async Task CheckAndUpdateAttachmentStorage(string mediaHash, UploadMediaResult uploadResult)
+        /// <param name="callingResult">Response content of calling WeChat API.</param>
+        private void CheckWeChatApiResponse(WeChatJsonResult callingResult)
         {
-            if (uploadResult.ErrorCode == 0)
+            if (callingResult == null || callingResult.ErrorCode != 0)
             {
-                await _attachmentStorage.SaveAsync(mediaHash, uploadResult).ConfigureAwait(false);
-            }
-            else
-            {
-                var exception = new Exception($"{uploadResult}");
-                _logger.LogError(exception, $"Upload media to WeChat failed.");
+                var exception = new Exception($"{callingResult}");
+                _logger.LogError(exception, $"Calling WeChat API failed.");
                 throw exception;
             }
         }
@@ -787,7 +773,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                     var contentByte = new ByteArrayContent(attachmentData.OriginalBase64);
                     contentByte.Headers.Remove("Content-Disposition");
                     var ext = GetMediaExtension(attachmentData.Name, attachmentData.Type);
-                    contentByte.Headers.TryAddWithoutValidation("Content-Disposition", $"form-data; name=\"media\";filename=\"{attachmentData.Name + ext}\"" + string.Empty);
+                    contentByte.Headers.TryAddWithoutValidation("Content-Disposition", $"form-data; name=\"media\";filename=\"{attachmentData.Name + ext}\"");
                     contentByte.Headers.Remove("Content-Type");
                     contentByte.Headers.TryAddWithoutValidation("Content-Type", attachmentData.Type);
                     mutipartDataContent.Add(contentByte);
@@ -800,7 +786,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
 
                         // Important! name must be "description"
                         stringContent = new StringContent(additionalForm);
-                        mutipartDataContent.Add(stringContent, "\"" + "description" + "\"");
+                        mutipartDataContent.Add(stringContent, "\"description\"");
                     }
 
                     _logger.LogInformation($"Upload {attachmentData.Type} to WeChat", Severity.Information);

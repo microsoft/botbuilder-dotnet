@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
@@ -131,7 +130,6 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// <remarks>Call this method to proactively send a message to a conversation.
         /// Most _channels require a user to initiate a conversation with a bot
         /// before the bot can send activities to the user.</remarks>
-        /// <seealso cref="RunPipelineAsync(ITurnContext, BotCallbackHandler, CancellationToken)"/>
         public override async Task ContinueConversationAsync(string botAppId, ConversationReference reference, BotCallbackHandler callback, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(botAppId))
@@ -162,11 +160,10 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// <param name="httpResponse">The HTTP response object.</param>
         /// <param name="bot">The bot implementation.</param>
         /// <param name="secretInfo">The secret info provide by WeChat.</param>
-        /// <param name="passiveResponse">If WeChat adapter running in passive response mode.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
-        public async Task ProcessAsync(HttpRequest httpRequest, HttpResponse httpResponse, IBot bot, SecretInfo secretInfo, bool passiveResponse, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task ProcessAsync(HttpRequest httpRequest, HttpResponse httpResponse, IBot bot, SecretInfo secretInfo, CancellationToken cancellationToken = default(CancellationToken))
         {
             _logger.LogInformation("Receive a new request from WeChat.");
             if (httpRequest == null)
@@ -194,11 +191,20 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 throw new UnauthorizedAccessException("Signature verification failed.");
             }
 
+            // Return echo string when request is setting up the endpoint.
             if (!string.IsNullOrEmpty(secretInfo.EchoString))
             {
-                var echoStringBytes = Encoding.UTF8.GetBytes(secretInfo.EchoString);
-                httpResponse.Body.Write(echoStringBytes, 0, echoStringBytes.Length);
+                await httpResponse.WriteAsync(secretInfo.EchoString, cancellationToken).ConfigureAwait(false);
                 return;
+            }
+
+            // Directly return OK header to prevent WeChat from retrying.
+            if (!_settings.PassiveResponseMode)
+            {
+                httpResponse.StatusCode = (int)HttpStatusCode.OK;
+                httpResponse.ContentType = "text/event-stream";
+                await httpResponse.WriteAsync(string.Empty).ConfigureAwait(false);
+                await httpResponse.Body.FlushAsync().ConfigureAwait(false);
             }
 
             try
@@ -207,18 +213,15 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                 var wechatResponse = await ProcessWeChatRequest(
                                 wechatRequest,
                                 bot.OnTurnAsync,
-                                passiveResponse,
                                 cancellationToken).ConfigureAwait(false);
 
                 // Reply WeChat(User) request have two ways, set response in http response or use background task to process the request async.
-                if (passiveResponse)
+                if (_settings.PassiveResponseMode)
                 {
                     httpResponse.StatusCode = (int)HttpStatusCode.OK;
                     httpResponse.ContentType = "text/xml";
-
                     var xmlString = WeChatMessageFactory.ConvertResponseToXml(wechatResponse);
-                    var requestBytes = Encoding.UTF8.GetBytes(xmlString);
-                    httpResponse.Body.Write(requestBytes, 0, requestBytes.Length);
+                    await httpResponse.WriteAsync(xmlString).ConfigureAwait(false);
                 }
             }
             catch (Exception ex)
@@ -237,37 +240,17 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         private static string GetResponseKey(string conversationId, string acitvityId) => $"{conversationId}:{acitvityId}";
 
         /// <summary>
-        /// Get XDocument from stream.
-        /// </summary>
-        /// <param name="stream">The stream contain the xml.</param>
-        /// <returns>Stream content as XDocument.</returns>
-        private static XDocument Convert(Stream stream)
-        {
-            if (stream.CanSeek)
-            {
-                stream.Seek(0, SeekOrigin.Begin);
-            }
-
-            using (var xr = XmlReader.Create(stream))
-            {
-                return XDocument.Load(xr);
-            }
-        }
-
-        /// <summary>
         /// Process the request from WeChat.
         /// </summary>
         /// <param name="wechatRequest">Request message entity from wechat.</param>
         /// <param name="callback"> Bot callback handler.</param>
-        /// <param name="passiveResponse">Marked the message whether it needs passive reply or not. </param>
         /// <param name="cancellationToken">Cancellation Token of this Task.</param>
         /// <returns>Response message entity.</returns>
-        private async Task<object> ProcessWeChatRequest(IRequestMessageBase wechatRequest, BotCallbackHandler callback, bool passiveResponse, CancellationToken cancellationToken)
+        private async Task<object> ProcessWeChatRequest(IRequestMessageBase wechatRequest, BotCallbackHandler callback, CancellationToken cancellationToken)
         {
             var activity = await _wechatMessageMapper.ToConnectorMessage(wechatRequest).ConfigureAwait(false);
             BotAssert.ActivityNotNull(activity);
-            _settings.PassiveResponseMode = passiveResponse;
-            return await ProcessActivityAsync(activity, callback, cancellationToken).ConfigureAwait(false);
+            return ProcessActivityAsync(activity, callback, cancellationToken);
         }
 
         /// <summary>
@@ -278,26 +261,34 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         /// <returns>Decrypted WeChat RequestMessage instance.</returns>
         private IRequestMessageBase GetRequestMessage(Stream requestStream, SecretInfo secretInfo)
         {
-            var postDataDocument = Convert(requestStream);
-
-            // decrypt xml document message and parse to message
-            var postDataStr = postDataDocument.ToString();
-            var decryptDoc = postDataDocument;
-
-            if (secretInfo != null
-                && !string.IsNullOrWhiteSpace(_settings.Token)
-                && postDataDocument.Root.Element("Encrypt") != null
-                && !string.IsNullOrEmpty(postDataDocument.Root.Element("Encrypt").Value))
+            if (requestStream.CanSeek)
             {
-                var msgCrype = new MessageCryptography(secretInfo, _settings);
-                var msgXml = msgCrype.DecryptMessage(postDataStr);
-
-                decryptDoc = XDocument.Parse(msgXml);
+                requestStream.Seek(0, SeekOrigin.Begin);
             }
 
-            var requestMessage = WeChatMessageFactory.GetRequestEntity(decryptDoc, _logger);
+            using (var xr = XmlReader.Create(requestStream))
+            {
+                var postDataDocument = XDocument.Load(xr);
 
-            return requestMessage;
+                // decrypt xml document message and parse to message
+                var postDataStr = postDataDocument.ToString();
+                var decryptDoc = postDataDocument;
+
+                if (secretInfo != null
+                    && !string.IsNullOrWhiteSpace(_settings.Token)
+                    && postDataDocument.Root.Element("Encrypt") != null
+                    && !string.IsNullOrEmpty(postDataDocument.Root.Element("Encrypt").Value))
+                {
+                    var msgCrype = new MessageCryptography(secretInfo, _settings);
+                    var msgXml = msgCrype.DecryptMessage(postDataStr);
+
+                    decryptDoc = XDocument.Parse(msgXml);
+                }
+
+                var requestMessage = WeChatMessageFactory.GetRequestEntity(decryptDoc, _logger);
+
+                return requestMessage;
+            }
         }
 
         /// <summary>
@@ -323,7 +314,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
                         var activities = responses.ContainsKey(key) ? responses[key] : new List<Activity>();
                         if (_settings.PassiveResponseMode)
                         {
-                            return await ProcessBotResponse(activities, activity.From.Id).ConfigureAwait(false);
+                            return ProcessBotResponse(activities, activity.From.Id);
                         }
 
                         // Running a background task, Get bot response and parse it from activity to WeChat response message

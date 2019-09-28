@@ -4,7 +4,6 @@
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Bot.Builder.Adapters.WeChat.Extensions;
 using Moq;
 using Newtonsoft.Json;
 using Xunit;
@@ -13,27 +12,24 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests
 {
     public class AdapterTest
     {
-        private readonly WeChatHttpAdapter testAdapter;
-        private readonly WeChatHttpAdapter testAdapterUseTempMedia;
-
-        public AdapterTest()
-        {
-            var storage = new MemoryStorage();
-            var taskQueue = new BackgroundTaskQueue();
-            testAdapter = new WeChatHttpAdapter(MockDataUtility.MockWeChatSettings(), storage, taskQueue);
-            testAdapterUseTempMedia = new WeChatHttpAdapter(MockDataUtility.MockWeChatSettings(false), storage, taskQueue);
-        }
-
         [Fact]
         public async Task WeChatHttpAdapterTest()
         {
             var request = CreateMockRequest(MockDataUtility.XmlEncrypt).Object;
             var response = CreateMockResponse().Object;
             var secretInfo = MockDataUtility.GetMockSecretInfo();
+            var storage = new MemoryStorage();
+            var taskQueue = new BackgroundTaskQueue();
             var bot = new EchoBot();
-            await testAdapter.ProcessAsync(request, response, bot, secretInfo, true);
-            await testAdapter.ProcessAsync(request, response, bot, secretInfo, false);
-            await testAdapterUseTempMedia.ProcessAsync(request, response, bot, secretInfo, false);
+            var testAdapter1 = new WeChatHttpAdapter(MockDataUtility.MockWeChatSettings(true, false), storage, taskQueue);
+            var testAdapter2 = new WeChatHttpAdapter(MockDataUtility.MockWeChatSettings(false, true), storage, taskQueue);
+            var testAdapter3 = new WeChatHttpAdapter(MockDataUtility.MockWeChatSettings(true, true), storage, taskQueue);
+            var testAdapter4 = new WeChatHttpAdapter(MockDataUtility.MockWeChatSettings(false, false), storage, taskQueue);
+
+            await testAdapter1.ProcessAsync(request, response, bot, secretInfo);
+            await testAdapter2.ProcessAsync(request, response, bot, secretInfo);
+            await testAdapter3.ProcessAsync(request, response, bot, secretInfo);
+            await testAdapter4.ProcessAsync(request, response, bot, secretInfo);
         }
 
         private static Mock<HttpRequest> CreateMockRequest(object body)
