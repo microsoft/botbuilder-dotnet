@@ -35,7 +35,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
     /// <summary>
     /// A WeChat client is used to communicate with WeChat API.
     /// </summary>
-    internal class WeChatClient
+    internal class WeChatClient : IDisposable
     {
         private const string ApiHost = "https://api.weixin.qq.com";
         private static readonly HttpClient HttpClient = new HttpClient();
@@ -587,6 +587,29 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
             }
 
             return await SendMessageToUser(data, timeout).ConfigureAwait(false);
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                // free managed resources
+                if (_attachmentStorage != null)
+                {
+                    _attachmentStorage.Dispose();
+                }
+
+                if (_tokenStorage != null)
+                {
+                    _tokenStorage.Dispose();
+                }
+            }
         }
 
         /// <summary>

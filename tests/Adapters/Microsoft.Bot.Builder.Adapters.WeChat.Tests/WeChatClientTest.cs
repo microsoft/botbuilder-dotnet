@@ -40,6 +40,15 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.Tests
         };
 
         [Fact]
+        public async Task ClientDisposeTest()
+        {
+            var storage = new MemoryStorage();
+            var mockClient = new WeChatClient(settings, storage);
+            await mockClient.SendHttpRequestAsync(HttpMethod.Get, "https://dev.botframework.com");
+            mockClient.Dispose();
+        }
+
+        [Fact]
         public async Task SendRequestTest()
         {
             var storage = new MemoryStorage();
