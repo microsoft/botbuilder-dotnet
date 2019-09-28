@@ -37,6 +37,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     var resources = rootResource.DiscoverDependencies(importResolver);
                     totalLGResources.AddRange(resources);
                 }
+
                 var deduplicatedLGResources = totalLGResources.GroupBy(x => x.Id).Select(x => x.First()).ToList();
                 templates = deduplicatedLGResources.SelectMany(x => x.Templates).ToList();
             }
@@ -131,6 +132,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                         var evaluator = new Evaluator(Templates, baseExpressionEngine);
                         _expressionParser = evaluator.ExpressionEngine;
                     }
+
                     return _expressionParser;
                 }
             }
@@ -479,6 +481,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     result.Add(BuildLGDiagnostic(e.Message + $" in template reference `{exp}`", context: context));
                     return result;
                 }
+
                 return result;
             }
 

@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
         [Fact]
         public void Constructor_Should_Fail_With_Null_TwilioNumber()
         {
-            var options = new TwilioAdapterOptions(null, "Test", "Test", "Test");
+            var options = new TwilioAdapterOptions(null, "Test", "Test", new Uri("http://contoso.com"));
 
             Assert.Throws<ArgumentException>(() => { new TwilioAdapter(options, new Mock<TwilioClientWrapper>().Object); });
         }
@@ -32,7 +32,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
         [Fact]
         public void Constructor_Should_Fail_With_Null_AccountSid()
         {
-            var options = new TwilioAdapterOptions("Test", null, "Test", "Test");
+            var options = new TwilioAdapterOptions("Test", null, "Test", new Uri("http://contoso.com"));
 
             Assert.Throws<ArgumentException>(() => { new TwilioAdapter(options, new Mock<TwilioClientWrapper>().Object); });
         }
@@ -40,7 +40,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
         [Fact]
         public void Constructor_Should_Fail_With_Null_AuthToken()
         {
-            var options = new TwilioAdapterOptions("Test", "Test", null, "Test");
+            var options = new TwilioAdapterOptions("Test", "Test", null, new Uri("http://contoso.com"));
 
             Assert.Throws<ArgumentException>(() => { new TwilioAdapter(options, new Mock<TwilioClientWrapper>().Object); });
         }
@@ -48,7 +48,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
         [Fact]
         public void Constructor_Should_Fail_With_Null_TwilioApi()
         {
-            var options = new TwilioAdapterOptions("Test", "Test", "Test", "Test");
+            var options = new TwilioAdapterOptions("Test", "Test", "Test", new Uri("http://contoso.com"));
 
             Assert.Throws<ArgumentNullException>(() => { new TwilioAdapter(options, null); });
         }
@@ -56,7 +56,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
         [Fact]
         public void Constructor_WithArguments_Succeeds()
         {
-            var options = new TwilioAdapterOptions("Test", "Test", "Test", "Test");
+            var options = new TwilioAdapterOptions("Test", "Test", "Test", new Uri("http://contoso.com"));
 
             Assert.NotNull(new TwilioAdapter(options, new Mock<TwilioClientWrapper>().Object));
         }
@@ -64,7 +64,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
         [Fact]
         public async void SendActivitiesAsync_Should_Fail_With_ActivityType_Not_Message()
         {
-            var options = new TwilioAdapterOptions("Test", "Test", "Test", "Test");
+            var options = new TwilioAdapterOptions("Test", "Test", "Test", new Uri("http://contoso.com"));
 
             var twilioAdapter = new TwilioAdapter(options, new Mock<TwilioClientWrapper>().Object);
 
@@ -84,7 +84,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
         [Fact]
         public async void ProcessAsync_Should_Fail_With_Null_HttpRequest()
         {
-            var options = new TwilioAdapterOptions("Test", "Test", "Test", "Test");
+            var options = new TwilioAdapterOptions("Test", "Test", "Test", new Uri("http://contoso.com"));
 
             var twilioAdapter = new TwilioAdapter(options, new Mock<TwilioClientWrapper>().Object);
             var httpResponse = new Mock<HttpResponse>();
@@ -99,7 +99,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
         [Fact]
         public async void ProcessAsync_Should_Fail_With_Null_HttpResponse()
         {
-            var options = new TwilioAdapterOptions("Test", "Test", "Test", "Test");
+            var options = new TwilioAdapterOptions("Test", "Test", "Test", new Uri("http://contoso.com"));
 
             var twilioAdapter = new TwilioAdapter(options, new Mock<TwilioClientWrapper>().Object);
             var httpRequest = new Mock<HttpRequest>();
@@ -114,7 +114,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
         [Fact]
         public async void ProcessAsync_Should_Fail_With_Null_Bot()
         {
-            var options = new TwilioAdapterOptions("Test", "Test", "Test", "Test");
+            var options = new TwilioAdapterOptions("Test", "Test", "Test", new Uri("http://contoso.com"));
 
             var twilioAdapter = new TwilioAdapter(options, new Mock<TwilioClientWrapper>().Object);
             var httpRequest = new Mock<HttpRequest>();
@@ -129,7 +129,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
         [Fact(Skip = "Can't mock extension methods")]
         public async void ProcessAsync_Should_Succeed_With_HttpBody()
         {
-            var options = new TwilioAdapterOptions("Test", "Test", "Test", "Test");
+            var options = new TwilioAdapterOptions("Test", "Test", "Test", new Uri("http://contoso.com"));
 
             var twilioAdapter = new TwilioAdapter(options, new Mock<TwilioClientWrapper>().Object);
             var httpRequest = new Mock<HttpRequest>();
@@ -144,7 +144,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
         [Fact(Skip = "Can't mock extension methods")]
         public async void ProcessAsync_Should_Succeed_With_Null_HttpBody()
         {
-            var options = new TwilioAdapterOptions("Test", "Test", "Test", "Test");
+            var options = new TwilioAdapterOptions("Test", "Test", "Test", new Uri("http://contoso.com"));
 
             var twilioAdapter = new TwilioAdapter(options, new Mock<TwilioClientWrapper>().Object);
             var httpRequest = new Mock<HttpRequest>();
@@ -159,7 +159,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
         [Fact]
         public async void UpdateActivityAsync_Should_Throw_NotSupportedException()
         {
-            var options = new TwilioAdapterOptions("Test", "Test", "Test", "Test");
+            var options = new TwilioAdapterOptions("Test", "Test", "Test", new Uri("http://contoso.com"));
 
             var twilioAdapter = new TwilioAdapter(options, new Mock<TwilioClientWrapper>().Object);
             var activity = new Activity();
@@ -171,7 +171,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
         [Fact]
         public async void DeleteActivityAsync_Should_Throw_NotSupportedException()
         {
-            var options = new TwilioAdapterOptions("Test", "Test", "Test", "Test");
+            var options = new TwilioAdapterOptions("Test", "Test", "Test", new Uri("http://contoso.com"));
 
             var twilioAdapter = new TwilioAdapter(options, new Mock<TwilioClientWrapper>().Object);
             var activity = new Activity();
@@ -184,7 +184,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
         [Fact]
         public async void ContinueConversationAsync_Should_Fail_With_Null_ConversationReference()
         {
-            var options = new TwilioAdapterOptions("Test", "Test", "Test", "Test");
+            var options = new TwilioAdapterOptions("Test", "Test", "Test", new Uri("http://contoso.com"));
 
             var twilioAdapter = new TwilioAdapter(options, new Mock<TwilioClientWrapper>().Object);
 
@@ -199,7 +199,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
         [Fact]
         public async void ContinueConversationAsync_Should_Fail_With_Null_Logic()
         {
-            var options = new TwilioAdapterOptions("Test", "Test", "Test", "Test");
+            var options = new TwilioAdapterOptions("Test", "Test", "Test", new Uri("http://contoso.com"));
 
             var twilioAdapter = new TwilioAdapter(options, new Mock<TwilioClientWrapper>().Object);
             var conversationReference = new ConversationReference();
@@ -211,7 +211,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
         public async void ContinueConversationAsync_Should_Succeed()
         {
             bool callbackInvoked = false;
-            var options = new TwilioAdapterOptions("Test", "Test", "Test", "Test");
+            var options = new TwilioAdapterOptions("Test", "Test", "Test", new Uri("http://contoso.com"));
 
             var twilioAdapter = new TwilioAdapter(options, new Mock<TwilioClientWrapper>().Object);
             var conversationReference = new ConversationReference();
@@ -230,7 +230,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
         public async void SendActivitiesAsync_Should_Succeed()
         {
             // Setup mocked ITwilioAdapterOptions
-            var options = new TwilioAdapterOptions("Test", "Test", "Test", "Test");
+            var options = new TwilioAdapterOptions("Test", "Test", "Test", new Uri("http://contoso.com"));
 
             // Setup mocked Activity and get the message option
             var activity = new Mock<Activity>().SetupAllProperties();

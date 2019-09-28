@@ -116,6 +116,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 {
                     result.Union(AnalyzeExpression(expression[0].GetText()));
                 }
+
                 if (iterNode.normalTemplateBody() != null)
                 {
                     result.Union(Visit(iterNode.normalTemplateBody()));

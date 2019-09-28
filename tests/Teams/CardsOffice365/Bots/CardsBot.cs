@@ -17,7 +17,14 @@ namespace Cards.Bots
     {
         protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
-            await turnContext.SendActivityAsync(MessageFactory.Attachment(Cards.CreateSampleO365ConnectorCard().ToAttachment()));
+            var card = Cards.CreateSampleO365ConnectorCard();
+            var cardAttachment = new Attachment
+            {
+                Content = card,
+                ContentType = O365ConnectorCard.ContentType,
+            };
+
+            await turnContext.SendActivityAsync(MessageFactory.Attachment(cardAttachment));
         }
 
         protected override async Task OnTeamsO365ConnectorCardActionAsync(ITurnContext<IInvokeActivity> turnContext, O365ConnectorCardActionQuery query, CancellationToken cancellationToken)

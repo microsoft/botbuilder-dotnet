@@ -28,19 +28,26 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 
         public static Activity ReadRequest(HttpRequest request)
         {
-            if (request == null)
+            try
             {
-                throw new ArgumentNullException(nameof(request));
+                if (request == null)
+                {
+                    throw new ArgumentNullException(nameof(request));
+                }
+
+                var activity = default(Activity);
+
+                using (var bodyReader = new JsonTextReader(new StreamReader(request.Body, Encoding.UTF8)))
+                {
+                    activity = BotMessageSerializer.Deserialize<Activity>(bodyReader);
+                }
+
+                return activity;
             }
-
-            var activity = default(Activity);
-
-            using (var bodyReader = new JsonTextReader(new StreamReader(request.Body, Encoding.UTF8)))
+            catch (JsonException)
             {
-                activity = BotMessageSerializer.Deserialize<Activity>(bodyReader);
+                return null;
             }
-
-            return activity;
         }
 
         public static void WriteResponse(HttpResponse response, InvokeResponse invokeResponse)
