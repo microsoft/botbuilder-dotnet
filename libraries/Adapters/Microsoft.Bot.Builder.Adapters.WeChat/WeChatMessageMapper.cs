@@ -50,11 +50,6 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         private const string CoverImageUrlKey = "coverImageUrl";
 
         /// <summary>
-        /// Default word break when join two word.
-        /// </summary>
-        private const string WordBreak = "  ";
-
-        /// <summary>
         /// New line string.
         /// </summary>
         private const string NewLine = "\r\n";
@@ -288,27 +283,6 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
         }
 
         /// <summary>
-        /// Add text break and append the new text.
-        /// </summary>
-        /// <param name="text">The origin text.</param>
-        /// <param name="newText">Text need to be attached.</param>
-        /// <returns>Combined new text string.</returns>
-        private static string AddText(string text, string newText)
-        {
-            if (string.IsNullOrEmpty(newText))
-            {
-                return text;
-            }
-
-            if (string.IsNullOrEmpty(text))
-            {
-                return newText;
-            }
-
-            return text + WordBreak + newText;
-        }
-
-        /// <summary>
         /// Chunk the text message and return it as WeChat response.
         /// </summary>
         /// <param name="activity">Message activity from bot.</param>
@@ -485,17 +459,16 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
             // Add items, grouping text only ones into a single post
             foreach (var item in receiptCard.Items ?? new List<ReceiptItem>())
             {
-                body = AddText(item.Title, item.Price);
+                body = AddLine(body, $"{item.Title}: {item.Price}");
                 body = AddLine(body, item.Subtitle);
                 body = AddLine(body, item.Text);
-                messages.AddRange(GetFixedMessages(activity, body));
             }
 
             // Add totals
-            body = $"Tax:  {receiptCard.Tax}";
+            body = AddLine(body, $"Tax:  {receiptCard.Tax}");
             body = AddLine(body, $"Total:  {receiptCard.Total}");
-            messages.AddRange(ProcessCardActions(activity, receiptCard.Buttons));
             messages.AddRange(GetFixedMessages(activity, body));
+            messages.AddRange(ProcessCardActions(activity, receiptCard.Buttons));
 
             return messages;
         }

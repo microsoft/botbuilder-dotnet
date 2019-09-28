@@ -57,6 +57,20 @@ namespace Microsoft.Bot.Connector
         /// <param name="handlers">Optional, an array of <see cref="DelegatingHandler"/> objects to
         /// add to the HTTP client pipeline.</param>
         public ConnectorClient(Uri baseUri, MicrosoftAppCredentials credentials, HttpClient customHttpClient, bool addJwtTokenRefresher = true, params DelegatingHandler[] handlers)
+            : this(baseUri, credentials as ServiceClientCredentials, customHttpClient, addJwtTokenRefresher, handlers)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConnectorClient"/> class.
+        /// </summary>
+        /// <param name="baseUri">Base URI for the Bot Connector service.</param>
+        /// <param name="credentials">Credentials for the Bot Connector service.</param>
+        /// <param name="addJwtTokenRefresher">Deprecated, do not use.</param>
+        /// <param name="customHttpClient">The HTTP client to use for this connector client.</param>
+        /// <param name="handlers">Optional, an array of <see cref="DelegatingHandler"/> objects to
+        /// add to the HTTP client pipeline.</param>
+        public ConnectorClient(Uri baseUri, ServiceClientCredentials credentials, HttpClient customHttpClient, bool addJwtTokenRefresher = true, params DelegatingHandler[] handlers)
             : this(baseUri, handlers)
         {
             this.Credentials = credentials;
