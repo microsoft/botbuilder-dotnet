@@ -13,3 +13,4 @@ This will update all of the .schema files and make them accessible through urls 
  * __component.schema__: `https://raw.githubusercontent.com/Microsoft/botbuilder-dotnet/{branch}/schemas/component.schema` 
  * __sdk.shema__: `https://raw.githubusercontent.com/Microsoft/botbuilder-dotnet/{branch}/schemas/sdk.schema`
 
+  d
