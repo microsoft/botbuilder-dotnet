@@ -22,7 +22,6 @@ namespace Microsoft.BotBuilderSamples.Bots
         {
             var message = $"You said {turnContext.Activity.Text}";
             await SendMessageAndLogActivityId(turnContext, message, cancellationToken);
-    
         }
 
         private async Task SendMessageAndLogActivityId(ITurnContext turnContext, string text, CancellationToken cancellationToken)

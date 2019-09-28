@@ -35,6 +35,7 @@
                 result += " - ";
                 result += End.ToString();
             }
+
             return result;
         }
     }

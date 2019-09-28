@@ -1,0 +1,19 @@
+{
+  "id": "test_id",
+  "roomId": "room_id",
+  "roomType": "direct",
+  "toPersonId": null,
+  "toPersonEmail": null,
+  "text": "Two attachments",
+  "markdown": null,
+  "files": [
+    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQtB3AwMUeNoq4gUBGe6Ocj8kyh3bXa9ZbV7u1fVKQoyKFHdkqU",
+    "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQtB3AwMUeNoq4gUBGe6Ocj8kyh3bXa9ZbV7u1fVKQoyKFHdkqU"
+  ],
+  "personId": "person_id",
+  "personEmail": "test_email",
+  "created": "2019-08-29T15:02:13.982Z",
+  "mentionedPeople": null,
+  "mentionedGroups": null,
+  "html": null
+}
