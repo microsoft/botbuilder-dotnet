@@ -1,17 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Version Condition=" '$(PackageVersion)' == '' ">4.5.0-local</Version>
-    <Version Condition=" '$(PackageVersion)' != '' ">$(PackageVersion)</Version>
-    <PackageVersion Condition=" '$(PackageVersion)' == '' ">4.5.0-local</PackageVersion>
-    <PackageVersion Condition=" '$(PackageVersion)' != '' ">$(PackageVersion)</PackageVersion>
-    <Configurations>Debug;Release;Documentation;Debug - NuGet Packages;</Configurations>
+    <Version Condition=" '$(PreviewPackageVersion)' == '' ">4.6.0-local</Version>
+    <Version Condition=" '$(PreviewPackageVersion)' != '' ">$(PreviewPackageVersion)</Version>
+    <PackageVersion Condition=" '$(PreviewPackageVersion)' == '' ">4.6.0-local</PackageVersion>
+    <PackageVersion Condition=" '$(PreviewPackageVersion)' != '' ">$(PreviewPackageVersion)</PackageVersion>
+    <Configurations>Debug;Release</Configurations>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <SignAssembly>true</SignAssembly>
     <DelaySign>true</DelaySign>
     <AssemblyOriginatorKeyFile>..\..\build\35MSSharedLib1024.snk</AssemblyOriginatorKeyFile>
+    <DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Builder.Expressions.xml</DocumentationFile>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
@@ -42,10 +43,6 @@
     <DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Builder.Expressions.xml</DocumentationFile>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Builder.Expressions.xml</DocumentationFile>
-  </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DebugType>full</DebugType>
     <DebugSymbols>true</DebugSymbols>
@@ -59,14 +56,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Schemas\Microsoft.IActivityTemplate.schema" />
-    <None Remove="Schemas\Microsoft.ITextTemplate.schema" />
-    <None Remove="Schemas\Microsoft.StaticActivityTemplate.schema" />
-  </ItemGroup>
-  <ItemGroup>
+    <PackageReference Include="Microsoft.Bot.Builder.Dialogs" Condition=" '$(PackageVersion)' == '' " Version="4.6.0-local" />
     <PackageReference Include="Microsoft.Bot.Builder.Dialogs" Condition=" '$(PackageVersion)' != '' " Version="$(PackageVersion)" />
-    <PackageReference Include="Microsoft.Bot.Builder.LanguageGeneration" Condition=" '$(PackageVersion)' != '' " Version="$(PackageVersion)" />
-    <PackageReference Include="Microsoft.Bot.Builder.Dialogs.Declarative" Condition=" '$(PackageVersion)' != '' " Version="$(PackageVersion)" />
+    <PackageReference Include="Microsoft.Bot.Builder.Dialogs.Declarative" Condition=" '$(PreviewPackageVersion)' == '' " Version="4.6.0-local" />
+    <PackageReference Include="Microsoft.Bot.Builder.Dialogs.Declarative" Condition=" '$(PreviewPackageVersion)' != '' " Version="$(PreviewPackageVersion)" />
+    <PackageReference Include="Microsoft.Bot.Builder.LanguageGeneration" Condition=" '$(PreviewPackageVersion)' == '' " Version="4.6.0-local" />
+    <PackageReference Include="Microsoft.Bot.Builder.LanguageGeneration" Condition=" '$(PreviewPackageVersion)' != '' " Version="$(PreviewPackageVersion)" />
   </ItemGroup>
 
   <ItemGroup>

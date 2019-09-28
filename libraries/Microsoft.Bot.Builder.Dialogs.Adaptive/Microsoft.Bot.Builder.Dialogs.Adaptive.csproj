@@ -1,11 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Version Condition=" '$(PackageVersion)' == '' ">4.5.0-local</Version>
-    <Version Condition=" '$(PackageVersion)' != '' ">$(PackageVersion)</Version>
-    <PackageVersion Condition=" '$(PackageVersion)' == '' ">4.5.0-local</PackageVersion>
-    <PackageVersion Condition=" '$(PackageVersion)' != '' ">$(PackageVersion)</PackageVersion>
-    <Configurations>Debug;Release;Documentation;Debug - NuGet Packages;</Configurations>
+    <Version Condition=" '$(PreviewPackageVersion)' == '' ">4.6.0-local</Version>
+    <Version Condition=" '$(PreviewPackageVersion)' != '' ">$(PreviewPackageVersion)</Version>
+    <PackageVersion Condition=" '$(PreviewPackageVersion)' == '' ">4.6.0-local</PackageVersion>
+    <PackageVersion Condition=" '$(PreviewPackageVersion)' != '' ">$(PreviewPackageVersion)</PackageVersion>
+    <Configurations>Debug;Release</Configurations>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -53,12 +53,19 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Schemas\Microsoft.Dialog.schema" />
-    <None Remove="Schemas\TriggerConditions\Microsoft.OnCancelDialog.schema" />
-    <None Remove="Schemas\TriggerConditions\Microsoft.OnDialogEvent.schema" />
-    <None Remove="Schemas\TriggerConditions\Microsoft.OnError.schema" />
-    <None Remove="Schemas\TriggerConditions\Microsoft.OnRepromptDialog.schema" />
-    <None Remove="Schemas\TriggerHandlers\Microsoft.OnCondition.schema" />
+    <PackageReference Include="Microsoft.Recognizers.Text" Version="1.2.6.1" />
+    <PackageReference Include="Microsoft.Recognizers.Text.Choice" Version="1.2.6.1" />
+    <PackageReference Include="Microsoft.Recognizers.Text.DateTime" Version="1.2.6.1" />
+    <PackageReference Include="Microsoft.Recognizers.Text.Number" Version="1.2.6.1" />
+    <PackageReference Include="Microsoft.Recognizers.Text.Sequence" Version="1.2.6.1" />
+    <PackageReference Include="Microsoft.Bot.Builder.Dialogs" Condition=" '$(PackageVersion)' == '' " Version="4.6.0-local" />
+    <PackageReference Include="Microsoft.Bot.Builder.Dialogs" Condition=" '$(PackageVersion)' != '' " Version="$(PackageVersion)" />
+    <PackageReference Include="Microsoft.Bot.Builder.AI.TriggerTrees" Condition=" '$(PreviewPackageVersion)' == '' " Version="4.6.0-local" />
+    <PackageReference Include="Microsoft.Bot.Builder.AI.TriggerTrees" Condition=" '$(PreviewPackageVersion)' != '' " Version="$(PreviewPackageVersion)" />
+    <PackageReference Include="Microsoft.Bot.Builder.Expressions.Parser" Condition=" '$(PreviewPackageVersion)' == '' " Version="4.6.0-local" />
+    <PackageReference Include="Microsoft.Bot.Builder.Expressions.Parser" Condition=" '$(PreviewPackageVersion)' != '' " Version="$(PreviewPackageVersion)" />
+    <PackageReference Include="Microsoft.Bot.Builder.LanguageGeneration.Templates" Condition=" '$(PreviewPackageVersion)' == '' " Version="4.6.0-local" />
+    <PackageReference Include="Microsoft.Bot.Builder.LanguageGeneration.Templates" Condition=" '$(PreviewPackageVersion)' != '' " Version="$(PreviewPackageVersion)" />
   </ItemGroup>
 
   <ItemGroup>
@@ -66,14 +73,6 @@
     <ProjectReference Include="..\Microsoft.Bot.Builder.Dialogs\Microsoft.Bot.Builder.Dialogs.csproj" />
     <ProjectReference Include="..\Microsoft.Bot.Builder.Expressions.Parser\Microsoft.Bot.Builder.Expressions.Parser.csproj" />
     <ProjectReference Include="..\Microsoft.Bot.Builder.LanguageGeneration.Templates\Microsoft.Bot.Builder.LanguageGeneration.Templates.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Recognizers.Text" Version="1.2.6.1" />
-    <PackageReference Include="Microsoft.Recognizers.Text.Choice" Version="1.2.6.1" />
-    <PackageReference Include="Microsoft.Recognizers.Text.DateTime" Version="1.2.6.1" />
-    <PackageReference Include="Microsoft.Recognizers.Text.Number" Version="1.2.6.1" />
-    <PackageReference Include="Microsoft.Recognizers.Text.Sequence" Version="1.2.6.1" />
   </ItemGroup>
 
   <ProjectExtensions>

@@ -71,19 +71,19 @@ namespace Microsoft.BotBuilderSamples.Tests.Dialogs
                 AddDialog(new TextPrompt(nameof(TextPrompt)));
                 var steps = new WaterfallStep[]
                 {
-                    PromptAction,
-                    FinalAction,
+                    PromptStep,
+                    FinalStep,
                 };
                 AddDialog(new WaterfallDialog("testWaterfall", steps));
                 InitialDialogId = "testWaterfall";
             }
 
-            private async Task<DialogTurnResult> PromptAction(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+            private async Task<DialogTurnResult> PromptStep(WaterfallStepContext stepContext, CancellationToken cancellationToken)
             {
                 return await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions { Prompt = MessageFactory.Text("Hi there") }, cancellationToken);
             }
 
-            private Task<DialogTurnResult> FinalAction(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+            private Task<DialogTurnResult> FinalStep(WaterfallStepContext stepContext, CancellationToken cancellationToken)
             {
                 throw new NotImplementedException();
             }

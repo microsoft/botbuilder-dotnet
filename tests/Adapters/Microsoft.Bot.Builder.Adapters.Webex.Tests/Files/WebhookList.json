@@ -1,0 +1,34 @@
+{
+  "items": [
+    {
+      "id": "test_webhook_id1",
+      "name": "Webex AttachmentActions",
+      "targetUrl": "https://contoso.com/api/messages",
+      "resource": "all",
+      "event": "all",
+      "filter": null,
+      "secret": "test-secret-1234",
+      "status": "active",
+      "created": "2019-07-17T16:58:37.164Z",
+      "orgId": "test_org_id",
+      "createdBy": "test_creator_id",
+      "appId": "test_app_id",
+      "ownedBy": "creator"
+    },
+    {
+      "id": "test_webhook_id2",
+      "name": "Webex Firehose",
+      "targetUrl": "https://contoso.com/api/messages",
+      "resource": "all",
+      "event": "all",
+      "filter": null,
+      "secret": "test-secret-1234",
+      "status": "active",
+      "created": "2019-07-17T12:14:37.522Z",
+      "orgId": "test_org_id",
+      "createdBy": "test_creator_id",
+      "appId": "test_app_id",
+      "ownedBy": "creator"
+    }
+  ]
+}

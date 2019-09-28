@@ -4,6 +4,7 @@
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <IsPackable>false</IsPackable>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <Configurations>Debug;Release</Configurations>
   </PropertyGroup>
 
   <ItemGroup>
@@ -22,8 +23,8 @@
   <ItemGroup>
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.AI.LUIS\Microsoft.Bot.Builder.AI.Luis.csproj" />
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder\Microsoft.Bot.Builder.csproj" />
+    <ProjectReference Include="..\..\libraries\Microsoft.Bot.Schema\Microsoft.Bot.Schema.csproj" />
     <ProjectReference Include="..\Microsoft.Bot.Builder.AI.Luis.TestUtils\Microsoft.Bot.Builder.AI.Luis.TestUtils.csproj" />
-    <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.LanguageGeneration.Templates\Microsoft.Bot.Builder.LanguageGeneration.Templates.csproj" />
     <ProjectReference Include="..\Microsoft.Bot.Builder.Tests\Microsoft.Bot.Builder.Tests.csproj" />
   </ItemGroup>
 

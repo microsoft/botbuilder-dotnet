@@ -1,22 +1,18 @@
 ﻿#pragma warning disable SA1402 // File may only contain a single type
+#pragma warning disable SA1201 // Elements should appear in the correct order
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
+using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.Dialogs.Adaptive;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
 using Microsoft.Bot.Builder.Dialogs.Memory;
 using Microsoft.Bot.Builder.Dialogs.Memory.PathResolvers;
-using Microsoft.Bot.Builder.Expressions.Parser;
-using Microsoft.Bot.Builder.LanguageGeneration;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Tests
@@ -234,16 +230,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var dialogs = new DialogSet();
             var dc = new DialogContext(dialogs, new TurnContext(new TestAdapter(), new Schema.Activity()), (DialogState)new DialogState());
             DialogStateManager state = new DialogStateManager(dc);
-            ExpressionEngine engine = new ExpressionEngine();
 
             // test HASH
             state.SetValue($"turn.recognized.intents.test", "intent1");
             state.SetValue($"#test2", "intent2");
 
-            Assert.AreEqual("intent1", engine.Parse("turn.recognized.intents.test").TryEvaluate(state).value);
-            Assert.AreEqual("intent1", engine.Parse("#test").TryEvaluate(state).value);
-            Assert.AreEqual("intent2", engine.Parse("turn.recognized.intents.test2").TryEvaluate(state).value);
-            Assert.AreEqual("intent2", engine.Parse("#test2").TryEvaluate(state).value);
+            Assert.AreEqual("intent1", state.GetValue<string>("turn.recognized.intents.test"));
+            Assert.AreEqual("intent1", state.GetValue<string>("#test"));
+            Assert.AreEqual("intent2", state.GetValue<string>("turn.recognized.intents.test2"));
+            Assert.AreEqual("intent2", state.GetValue<string>("#test2"));
         }
 
         [TestMethod]
@@ -252,7 +247,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var dialogs = new DialogSet();
             var dc = new DialogContext(dialogs, new TurnContext(new TestAdapter(), new Schema.Activity()), (DialogState)new DialogState());
             DialogStateManager state = new DialogStateManager(dc);
-            ExpressionEngine engine = new ExpressionEngine();
 
             // test @ and @@
             var testEntities = new string[] { "entity1", "entity2" };
@@ -260,66 +254,70 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             state.SetValue($"turn.recognized.entities.test", testEntities);
             state.SetValue($"@@test2", testEntities2);
 
-            Assert.AreEqual(testEntities.First(), engine.Parse("turn.recognized.entities.test[0]").TryEvaluate(state).value);
-            Assert.AreEqual(testEntities.First(), engine.Parse("@test").TryEvaluate(state).value);
-            Assert.IsTrue(testEntities.SequenceEqual(((JArray)engine.Parse("turn.recognized.entities.test").TryEvaluate(state).value).ToObject<string[]>()));
-            Assert.IsTrue(testEntities.SequenceEqual(((JArray)engine.Parse("@@test").TryEvaluate(state).value).ToObject<string[]>()));
+            Assert.AreEqual(testEntities.First(), state.GetValue<string>("turn.recognized.entities.test[0]"));
+            Assert.AreEqual(testEntities.First(), state.GetValue<string>("@test"));
+            Assert.IsTrue(testEntities.SequenceEqual(state.GetValue<string[]>("turn.recognized.entities.test")));
+            Assert.IsTrue(testEntities.SequenceEqual(state.GetValue<string[]>("@@test")));
 
-            Assert.AreEqual(testEntities2.First(), engine.Parse("turn.recognized.entities.test2[0]").TryEvaluate(state).value);
-            Assert.AreEqual(testEntities2.First(), engine.Parse("@test2").TryEvaluate(state).value);
-            Assert.IsTrue(testEntities2.SequenceEqual(((JArray)engine.Parse("turn.recognized.entities.test2").TryEvaluate(state).value).ToObject<string[]>()));
-            Assert.IsTrue(testEntities2.SequenceEqual(((JArray)engine.Parse("@@test2").TryEvaluate(state).value).ToObject<string[]>()));
+            Assert.AreEqual(testEntities2.First(), state.GetValue<string>("turn.recognized.entities.test2[0]"));
+            Assert.AreEqual(testEntities2.First(), state.GetValue<string>("@test2"));
+            Assert.IsTrue(testEntities2.SequenceEqual(state.GetValue<string[]>("turn.recognized.entities.test2")));
+            Assert.IsTrue(testEntities2.SequenceEqual(state.GetValue<string[]>("@@test2")));
+        }
+
+        public class D2Dialog : Dialog
+        {
+            public D2Dialog()
+                : base("d2")
+            {
+            }
+
+            public async override Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
+            {
+                dc.State.SetValue($"dialog.options", options);
+                dc.State.SetValue($"$bbb", "bbb");
+                await dc.Context.SendActivityAsync(dc.State.GetValue<string>("$bbb"));
+                await dc.Context.SendActivityAsync(dc.State.GetValue<string>("dialog.options.test"));
+                return await dc.EndDialogAsync(dc.State.GetValue<string>("$bbb"));
+            }
+        }
+
+        public class D1Dialog : ComponentDialog, IDialogDependencies
+        {
+            public D1Dialog()
+                : base("d1")
+            {
+                this.AddDialog(new D2Dialog());
+            }
+
+            public async override Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
+            {
+                dc.State.SetValue("dialog.xyz", "dialog");
+                await dc.Context.SendActivityAsync(dc.State.GetValue<string>("dialog.xyz"));
+                await dc.Context.SendActivityAsync(dc.State.GetValue<string>("$xyz"));
+                dc.State.SetValue("$aaa", "dialog2");
+                await dc.Context.SendActivityAsync(dc.State.GetValue<string>("dialog.aaa"));
+                await dc.Context.SendActivityAsync(dc.State.GetValue<string>("$aaa"));
+                return await dc.BeginDialogAsync("d2", options: new { test = "123" });
+            }
+
+            public IEnumerable<Dialog> GetDependencies()
+            {
+                return _dialogs.GetDialogs();
+            }
+
+            public async override Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default)
+            {
+                dc.State.SetValue("$xyz", result);
+                await dc.Context.SendActivityAsync(dc.State.GetValue<string>("$xyz"));
+                return await dc.EndDialogAsync(result);
+            }
         }
 
         [TestMethod]
         public async Task TestDollarScope()
         {
-            var d2 = new AdaptiveDialog("d2")
-            {
-                Triggers = new List<OnCondition>()
-                {
-                    new OnBeginDialog()
-                    {
-                        Actions = new List<Dialog>()
-                        {
-                            new SetProperty() { Property = "$bbb", Value = "'bbb'" },
-                            new SendActivity("{$bbb}"),
-                            new SendActivity("{dialog.options.test}"),
-                            new EndDialog() { Value = "$bbb" }
-                        }
-                    }
-                }
-            };
-
-            var testDialog = new AdaptiveDialog("testDialog")
-            {
-                AutoEndDialog = false,
-                Triggers = new List<OnCondition>()
-                {
-                    new OnBeginDialog()
-                    {
-                        Actions = new List<Dialog>()
-                        {
-                            new SetProperty() { Property = "dialog.xyz", Value = "'dialog'" },
-                            new SendActivity("{dialog.xyz}"),
-                            new SendActivity("{$xyz}"),
-                            new SetProperty() { Property = "$aaa", Value = "'dialog2'" },
-                            new SendActivity("{dialog.aaa}"),
-                            new SendActivity("{$aaa}"),
-                            new BeginDialog(d2.Id)
-                            {
-                                Options = new { test = "123" },
-                                ResultProperty = "$xyz"
-                            },
-                            new SendActivity("{$xyz}"),
-                        }
-                    }
-                }
-            };
-
-            testDialog.Dialogs.Add(d2);
-
-            await CreateFlow(testDialog)
+            await CreateFlow(new D1Dialog())
                     .SendConversationUpdate()
 
                         // d1
@@ -335,157 +333,96 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                     .StartTestAsync();
         }
 
-        [TestMethod]
-        public async Task TestBuiltInTurnProperties()
+        public class DialogCommandScopeDialog : ComponentDialog
         {
-            var testDialog = new AdaptiveDialog("testDialog")
+            public DialogCommandScopeDialog()
+                : base(nameof(DialogCommandScopeDialog))
             {
-                AutoEndDialog = false,
-                Recognizer = new RegexRecognizer()
-                {
-                    Intents = new List<IntentPattern>()
-                    {
-                        new IntentPattern("IntentNumber1", "intent1"),
-                        new IntentPattern("NameIntent", ".*name is (?<name>.*)"),
-                    }
-                },
-                Triggers = new List<OnCondition>()
-                {
-                    new OnBeginDialog()
-                    {
-                        Actions = new List<Dialog>()
-                        {
-                            new SendActivity("{turn.activity.text}"),
-                        }
-                    },
-                    new OnIntent(
-                        intent: "IntentNumber1",
-                        actions: new List<Dialog>()
-                        {
-                            new SendActivity("{turn.activity.text}"),
-                            new SendActivity("{turn.recognized.intent}"),
-                            new SendActivity("{turn.recognized.score}"),
-                            new SendActivity("{turn.recognized.text}"),
-                            new SendActivity("{turn.recognized.intents.intentnumber1.score}"),
-                        }),
-                    new OnIntent(
-                        intent: "NameIntent",
-                        actions: new List<Dialog>()
-                        {
-                            new SendActivity("{turn.recognized.entities.name[0]}"),
-                        }),
-                }
-            };
+            }
 
-            await CreateFlow(testDialog)
-                .Send("hi")
-                    .AssertReply("hi")
-                .Send("intent1")
-                    .AssertReply("intent1")
-                    .AssertReply("IntentNumber1")
-                    .AssertReply("1")
-                    .AssertReply("intent1")
-                    .AssertReply("1")
-                .Send("my name is joe")
-                    .AssertReply("joe")
-                .StartTestAsync();
+            public override Task<DialogTurnResult> BeginDialogAsync(DialogContext outerDc, object options = null, CancellationToken cancellationToken = default)
+            {
+                return base.BeginDialogAsync(outerDc, options, cancellationToken);
+            }
         }
 
-        [TestMethod]
-        public async Task TestDialogCommandScope()
+        public class NestedContainerDialog2 : ComponentDialog
         {
-            var testDialog = new AdaptiveDialog("testDialog")
+            public NestedContainerDialog2()
+                : base("d2")
             {
-                AutoEndDialog = false,
-                Triggers = new List<OnCondition>()
-                {
-                    new OnBeginDialog()
-                    {
-                        Actions = new List<Dialog>()
-                        {
-                            new SetProperty()
-                            {
-                                Property = "$name",
-                                Value = "'testDialog'"
-                            },
-                            new SendActivity("{$name}"),
-                            new IfCondition()
-                            {
-                                Condition = "$name == 'testDialog'",
-                                Actions = new List<Dialog>()
-                                {
-                                    new SendActivity("nested dialogCommand {$name}")
-                                }
-                            }
-                        }
-                    }
-                }
-            };
+            }
 
-            await CreateFlow(testDialog)
-                    .SendConversationUpdate()
-                        .AssertReply("testDialog")
-                        .AssertReply("nested dialogCommand testDialog")
-                    .StartTestAsync();
+            public async override Task<DialogTurnResult> BeginDialogAsync(DialogContext outerDc, object options = null, CancellationToken cancellationToken = default)
+            {
+                outerDc.State.SetValue("$name", "d2");
+                var name = outerDc.State.GetValue<string>("$name");
+                await outerDc.Context.SendActivityAsync($"nested {name}");
+                return await outerDc.EndDialogAsync(this.Id);
+            }
+        }
+
+        public class NestedContainerDialog1 : ComponentDialog
+        {
+            public NestedContainerDialog1()
+                : base("d1")
+            {
+            }
+
+            public async override Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
+            {
+                dc.State.SetValue("$name", "d1");
+                var name = dc.State.GetValue<string>("$name");
+                await dc.Context.SendActivityAsync($"nested {name}");
+                name = dc.State.GetValue<string>("dialog.name");
+                await dc.Context.SendActivityAsync($"nested {name}");
+                return await dc.EndDialogAsync(this.Id);
+            }
+        }
+
+        public class NestedContainerDialog : ComponentDialog, IDialogDependencies
+        {
+            public NestedContainerDialog()
+                : base(nameof(NestedContainerDialog))
+            {
+                AddDialog(new NestedContainerDialog1());
+                AddDialog(new NestedContainerDialog2());
+            }
+
+            public async override Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
+            {
+                dc.State.SetValue("$name", "testDialog");
+                var name = dc.State.GetValue<String>("$name");
+                await dc.Context.SendActivityAsync(name);
+                name = dc.State.GetValue<String>("dialog.name");
+                await dc.Context.SendActivityAsync(name);
+                return await dc.BeginDialogAsync("d1");
+            }
+
+            public IEnumerable<Dialog> GetDependencies()
+            {
+                return _dialogs.GetDialogs();
+            }
+
+            public async override Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default)
+            {
+                if ((string)result == "d2")
+                {
+                    return await dc.EndDialogAsync();
+                }
+
+                var name = dc.State.GetValue<string>("$name");
+                await dc.Context.SendActivityAsync(name);
+                name = dc.State.GetValue<string>("dialog.name");
+                await dc.Context.SendActivityAsync(name);
+                return await dc.BeginDialogAsync("d2");
+            }
         }
 
         [TestMethod]
         public async Task TestNestedContainerDialogs()
         {
-            var d2 = new AdaptiveDialog("d2")
-            {
-                Triggers = new List<OnCondition>()
-                {
-                    new OnBeginDialog()
-                    {
-                        Actions = new List<Dialog>()
-                        {
-                            new SetProperty() { Property = "$name", Value = "'d2'" },
-                            new SendActivity("nested {$name}"),
-                        }
-                    }
-                }
-            };
-
-            var testDialog = new AdaptiveDialog("testDialog")
-            {
-                AutoEndDialog = false,
-
-                Triggers = new List<OnCondition>()
-                {
-                    new OnBeginDialog()
-                    {
-                        Actions = new List<Dialog>()
-                        {
-                            new SetProperty() { Property = "$name", Value = "'testDialog'" },
-                            new SendActivity("{$name}"),
-                            new SendActivity("{dialog.name}"),
-                            new AdaptiveDialog("d1")
-                            {
-                                Triggers = new List<OnCondition>()
-                                {
-                                    new OnBeginDialog()
-                                    {
-                                        Actions = new List<Dialog>()
-                                        {
-                                            new SetProperty() { Property = "$name", Value = "'d1'" },
-                                            new SendActivity("nested {$name}"),
-                                            new SendActivity("nested {dialog.name}"),
-                                        }
-                                    }
-                                }
-                            },
-                            new SendActivity("{$name}"),
-                            new SendActivity("{dialog.name}"),
-                            new BeginDialog(d2.Id)
-                        }
-                    }
-                }
-            };
-
-            testDialog.Dialogs.Add(d2);
-
-            await CreateFlow(testDialog)
+            await CreateFlow(new NestedContainerDialog())
                     .SendConversationUpdate()
                         .AssertReply("testDialog")
                         .AssertReply("testDialog")
@@ -503,21 +440,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var dialogs = new DialogSet();
             var dc = new DialogContext(dialogs, new TurnContext(new TestAdapter(), new Schema.Activity()), (DialogState)new DialogState());
             DialogStateManager state = new DialogStateManager(dc);
-            ExpressionEngine engine = new ExpressionEngine();
 
             state.SetValue($"turn.x.y.z", null);
-            Assert.AreEqual(null, engine.Parse("turn.x.y.z").TryEvaluate(state).value);
+            Assert.AreEqual(null, state.GetValue<object>("turn.x.y.z"));
         }
 
-        private TestFlow CreateFlow(AdaptiveDialog dialog, ConversationState convoState = null, UserState userState = null, bool sendTrace = false)
+        private TestFlow CreateFlow(Dialog dialog, ConversationState convoState = null, UserState userState = null, bool sendTrace = false)
         {
-            TypeFactory.Configuration = new ConfigurationBuilder().Build();
-            var resourceExplorer = new ResourceExplorer();
-
             var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName), sendTrace)
-                .Use(new RegisterClassMiddleware<ResourceExplorer>(resourceExplorer))
-                .UseAdaptiveDialogs()
-                .UseLanguageGeneration(resourceExplorer)
                 .Use(new RegisterClassMiddleware<IStorage>(new MemoryStorage()))
                 .Use(new AutoSaveStateMiddleware(userState ?? new UserState(new MemoryStorage()), convoState ?? new ConversationState(new MemoryStorage())))
                 .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));

@@ -196,10 +196,11 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <param name="expected">The expected activity from the bot.</param>
         /// <param name="description">A message to send if the actual response is not as expected.</param>
         /// <param name="timeout">The amount of time in milliseconds within which a response is expected.</param>
+        /// <param name="equalityComparer">The equality parameter which compares two activities.</param>
         /// <returns>A new <see cref="TestFlow"/> object that appends this assertion to the modeled exchange.</returns>
         /// <remarks>This method does not modify the original <see cref="TestFlow"/> object.</remarks>
         /// <exception cref="Exception">The bot did not respond as expected.</exception>
-        public TestFlow AssertReply(IActivity expected, [CallerMemberName] string description = null, uint timeout = 3000)
+        public TestFlow AssertReply(IActivity expected, [CallerMemberName] string description = null, uint timeout = 3000, IEqualityComparer<IActivity> equalityComparer = null)
         {
             return AssertReply(
                 (reply) =>
@@ -210,15 +211,25 @@ namespace Microsoft.Bot.Builder.Adapters
                         throw new Exception($"{description}: Type should match");
                     }
 
-                    if (expected.AsMessageActivity().Text.Trim() != reply.AsMessageActivity().Text.Trim())
+                    if (equalityComparer != null)
                     {
-                        if (description == null)
+                        if (!equalityComparer.Equals(expected, reply))
                         {
-                            throw new Exception($"Expected:{expected.AsMessageActivity().Text}\nReceived:{reply.AsMessageActivity().Text}");
+                            throw new Exception($"Expected:{expected}\nReceived:{reply}");
                         }
-                        else
+                    }
+                    else
+                    {
+                        if (expected.AsMessageActivity().Text.Trim() != reply.AsMessageActivity().Text.Trim())
                         {
-                            throw new Exception($"{description}:\nExpected:{expected.AsMessageActivity().Text}\nReceived:{reply.AsMessageActivity().Text}");
+                            if (description == null)
+                            {
+                                throw new Exception($"Expected:{expected.AsMessageActivity().Text}\nReceived:{reply.AsMessageActivity().Text}");
+                            }
+                            else
+                            {
+                                throw new Exception($"{description}:\nExpected:{expected.AsMessageActivity().Text}\nReceived:{reply.AsMessageActivity().Text}");
+                            }
                         }
                     }
                 },

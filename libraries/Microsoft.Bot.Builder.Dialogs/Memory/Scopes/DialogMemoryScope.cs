@@ -33,8 +33,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
                 }
             }
 
-            // Otherwise we always bind to parent 
-            return dc.Parent?.ActiveDialog?.State;
+            // Otherwise we always bind to parent, or if there is no parent the active dialog
+            return dc.Parent?.ActiveDialog?.State ?? dc.ActiveDialog?.State;
         }
 
         public override void SetMemory(DialogContext dc, object memory)
@@ -64,8 +64,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
                 dc.Parent.ActiveDialog.State = (IDictionary<string, object>)memory;
                 return;
             }
+            else if (dc.ActiveDialog != null)
+            {
+                dc.ActiveDialog.State = (IDictionary<string, object>)memory;
+            }
 
-            throw new Exception("Cannot set DialogMemoryScope. There is no active dialog container dialog or parent dialog in the context");
+            throw new Exception("Cannot set DialogMemoryScope. There is no active dialog dialog or parent dialog in the context");
         }
     }
 }
