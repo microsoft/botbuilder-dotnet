@@ -1,6 +1,8 @@
 ﻿// Copyright(c) Microsoft Corporation.All rights reserved.
 // Licensed under the MIT License.
 
+using System;
+
 namespace Microsoft.Bot.Builder.Adapters.Twilio
 {
     /// <summary>
@@ -15,7 +17,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// <param name="accountSid">The account id.</param>
         /// <param name="authToken">The authentication token.</param>
         /// <param name="validationUrl">validation URL for incoming requests.</param>
-        public TwilioAdapterOptions(string twilioNumber, string accountSid, string authToken, string validationUrl = null)
+        public TwilioAdapterOptions(string twilioNumber, string accountSid, string authToken, Uri validationUrl = null)
         {
             TwilioNumber = twilioNumber;
             AccountSid = accountSid;
@@ -49,6 +51,6 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// <value>Optional validation URL to override the automatically generated URL signature used
         /// to validate incoming requests. See the Twilio security documentation on
         /// [validating requests](https://www.twilio.com/docs/usage/security#validating-requests).</value>
-        public string ValidationUrl { get; set; }
+        public Uri ValidationUrl { get; set; }
     }
 }

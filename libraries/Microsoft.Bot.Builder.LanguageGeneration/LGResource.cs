@@ -64,6 +64,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 return this;
             }
+
             var templateNameLine = BuildTemplateNameLine(templateName, parameters);
             var newTemplateBody = ConvertTemplateBody(templateBody);
             var content = $"{templateNameLine}\r\n{newTemplateBody}";
@@ -88,6 +89,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 throw new Exception($"template {templateName} already exists.");
             }
+
             var templateNameLine = BuildTemplateNameLine(templateName, parameters);
             var newTemplateBody = ConvertTemplateBody(templateBody);
             var newContent = $"{Content}\r\n{templateNameLine}\r\n{newTemplateBody}";
@@ -210,6 +212,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 return string.Empty;
             }
+
             var replaceList = templateBody.Split('\n');
 
             return string.Join("\n", replaceList.Select(u => WrapTemplateBodyString(u)));

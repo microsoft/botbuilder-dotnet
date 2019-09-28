@@ -7,6 +7,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Bot.Builder.Integration.AspNet.Core.Tests.Mocks;
+using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -220,6 +222,53 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
 
                     // Make sure the configuration action was registered.
                     serviceCollectionMock.Verify(sc => sc.Add(It.Is<ServiceDescriptor>(sd => (sd.ImplementationInstance is ConfigureNamedOptions<BotFrameworkOptions>) && ((ConfigureNamedOptions<BotFrameworkOptions>)sd.ImplementationInstance).Action == configAction)));
+                }
+
+                [Fact]
+                public void WithConfigurationCallbackWithOptionsAndCustomAppCredentials()
+                {
+                    var serviceCollectionMock = new Mock<IServiceCollection>();
+                    var registeredServices = new List<ServiceDescriptor>();
+                    serviceCollectionMock.Setup(sc => sc.Add(It.IsAny<ServiceDescriptor>())).Callback<ServiceDescriptor>(sd => registeredServices.Add(sd));
+                    serviceCollectionMock.Setup(sc => sc.GetEnumerator()).Returns(() => registeredServices.GetEnumerator());
+
+                    Func<ITurnContext, Exception, Task> onTurnError = (turnContext, exception) =>
+                    {
+                        return Task.CompletedTask;
+                    };
+
+                    var middlewareMock = new Mock<IMiddleware>();
+                    middlewareMock.Setup(m => m.OnTurnAsync(It.IsAny<TurnContext>(), It.IsAny<NextDelegate>(), It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
+
+                    var configAction = new Action<BotFrameworkOptions>(options =>
+                    {
+                        options.AppCredentials = new MockAppCredentials();
+                        options.OnTurnError = onTurnError;
+                    });
+
+                    serviceCollectionMock.Object.AddBot<ServiceRegistrationTestBot>(configAction);
+
+                    VerifyStandardBotServicesAreRegistered(serviceCollectionMock);
+
+                    var adapterServiceDescriptor = registeredServices.FirstOrDefault(sd => sd.ServiceType == typeof(IAdapterIntegration));
+
+                    Assert.NotNull(adapterServiceDescriptor);
+
+                    var mockOptions = new BotFrameworkOptions();
+                    configAction(mockOptions);
+
+                    var mockLog = new Mock<ILogger<IAdapterIntegration>>();
+
+                    // The following tests the factory that was added to the ServiceDescriptor.
+                    var serviceProviderMock = new Mock<IServiceProvider>();
+                    serviceProviderMock.Setup(sp => sp.GetService(typeof(IOptions<BotFrameworkOptions>))).Returns(Options.Create(mockOptions));
+                    serviceProviderMock.Setup(sp => sp.GetService(typeof(ILogger<IAdapterIntegration>))).Returns(mockLog.Object);
+
+                    // Invoke the factory to create an adapter
+                    var adapter = adapterServiceDescriptor.ImplementationFactory(serviceProviderMock.Object) as BotFrameworkAdapter;
+
+                    // Make sure we have a BotFrameworkAdapter (the default added by the Add<IBot>).
+                    Assert.NotNull(adapter);
                 }
 
                 [Fact]

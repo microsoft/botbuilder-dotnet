@@ -20,5 +20,14 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// </value>
         [JsonProperty("answers")]
         public QueryResult[] Answers { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether gets or set for the active learning enable flag.
+        /// </summary>
+        /// <value>
+        /// The active learning enable flag.
+        /// </value>
+        [JsonProperty("activeLearningEnabled")]
+        public bool ActiveLearningEnabled { get; set; }
     }
 }
