@@ -2,25 +2,32 @@
 > It is copied to the output because it has the locale in it.
 > They are called by property specific .lg files.
 
+> TODO: The turn parameters are because of a bug in the LG engine where parameterized templates do not have access to the
+> global scopes.  There is a DCR filed and when fized we should revert here and in the calls to this.
+
 >>> Ask prompts <<<
 
 > TODO: We should look at the schema and if a few items list them or do cards or..
-# askEnum(property)
+# askEnum(property, turn)
 - Which value do you want for {toLower(property)}?
 
-# askNumber(property)
+# askNumber(property, turn)
 - IF: {turn.schema[property].minimum && turn.schema[property].maximum}
 - Enter a number for {toLower(property)} between {turn.schema[property].minimum} and {turn.schema[property].maximum}
 - ELSE:
 - Enter a number for {toLower(property)}
 
-# askString(property)
+# askString(property, turn)
 - Enter a value for {toLower(property)}
 
-# clarifyEnum(property)
-- TODO ask clarification
-
 >>> Help messages <<<
-# helpProperty(property)
+# helpProperty(property, turn)
 - Possible values for {toLower(property)} include: \[{join(turn.schema[property].enum, ',')}\]
 
+> TODO: This is not correct--the possible values should be picked up from the event structure
+# clarifyEnum(property, turn)
+- Please choose a value for {toLower(property)} from \[{join(turn.schema[property].enum, ',')}\]
+
+> TODO: This is not correct--the possible values should be picked up from the event structure
+# chooseSlot(entity, turn)
+- Please choose a slot for {toLower(entity)} from \[{join(turn.schema.properties, ',')}\]

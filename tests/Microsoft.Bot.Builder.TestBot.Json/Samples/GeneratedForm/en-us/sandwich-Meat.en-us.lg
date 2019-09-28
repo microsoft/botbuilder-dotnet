@@ -1,10 +1,11 @@
 # AskMeat
-- [askEnum('Meat')]
+- [askEnum('Meat', turn)]
 
 # ClarifyMeat
-- [clarifyEnum('Meat')]
+- [clarifyEnum('Meat', turn)]
 
 # HelpMeat
-- [helpProperty('Meat')]
+- [helpProperty('Meat', turn)]
+
 
 [sandwich-common.en-us.lg](./sandwich-common.en-us.lg)

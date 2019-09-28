@@ -1,10 +1,11 @@
 # AskBread
-- [askEnum('Bread')]
+- [askEnum('Bread', turn)]
 
 # ClarifyBread
-- [clarifyEnum('Bread')]
+- [clarifyEnum('Bread', turn)]
 
 # HelpBread
-- [helpProperty('Bread')]
+- [helpProperty('Bread', turn)]
+
 
 [sandwich-common.en-us.lg](./sandwich-common.en-us.lg)

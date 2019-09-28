@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Form
 {
@@ -86,11 +87,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                             var queues = Queues.Read(sequenceContext);
                             var entities = NormalizeEntities(sequenceContext);
                             var utterance = sequenceContext.Context.Activity?.AsMessageActivity()?.Text;
-                            // TODO: Only add utterance if it is in expectedSlots or handle specially when mapping
-                            // Build in the whole utterance as a string
-                            entities["utterance"] = new List<EntityInfo> { new EntityInfo { Priority = int.MaxValue, Coverage = 1.0, Start = 0, End = utterance.Length, Name = "utterance", Score = 0.0, Type = "string", Entity = utterance, Text = utterance } };
+                            if (!sequenceContext.State.TryGetValue<string[]>("$expectedSlots", out var slots))
+                            {
+                                slots = new string[0];
+                            }
+
+                            if (slots.Contains("utterance"))
+                            {
+                                entities["utterance"] = new List<EntityInfo> { new EntityInfo { Priority = int.MaxValue, Coverage = 1.0, Start = 0, End = utterance.Length, Name = "utterance", Score = 0.0, Type = "string", Entity = utterance, Text = utterance } };
+                            }
+
                             var newQueues = new Queues();
-                            AssignEntities(entities, newQueues);
+                            AssignEntities(entities, slots, newQueues);
                             queues.Merge(newQueues);
                             var turn = sequenceContext.State.GetValue<int>("this.turn");
                             CombineOldSlotMappings(queues, turn);
@@ -234,7 +242,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
         }
 
         // Generate possible entity to slot mappings
-        private IReadOnlyList<SlotEntityInfo> Candidates(Dictionary<string, List<EntityInfo>> entities)
+        private IReadOnlyList<SlotEntityInfo> Candidates(Dictionary<string, List<EntityInfo>> entities, string[] expected)
         {
             var candidates = new List<SlotEntityInfo>();
             foreach (var slot in Schema.Property.Children)
@@ -249,6 +257,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                             {
                                 Entity = possible,
                                 Slot = slot,
+                                Expected = expected.Contains(slot.Name)
                             };
                             candidates.Add(candidate);
                         }
@@ -261,9 +270,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
 
         private void AddMappingToQueue(SlotMapping mapping, Queues queues)
         {
-            if (mapping.Entity.Entity is Array arr && arr.Length > 1)
+            if (mapping.Entity.Entity is JArray arr)
             {
-                queues.Clarify.Add(mapping);
+                if (arr.Count > 1)
+                {
+                    queues.Clarify.Add(mapping);
+                }
+                else
+                {
+                    mapping.Entity.Entity = arr[0];
+                    queues.Set.Add(mapping);
+                }
             }
             else
             {
@@ -280,9 +297,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
             }
         }
 
-        private void AddToQueues(Dictionary<string, List<EntityInfo>> entities, Queues queues)
+        private void AddToQueues(Dictionary<string, List<EntityInfo>> entities, string[] expected, Queues queues)
         {
-            var candidates = Candidates(entities);
+            var candidates = Candidates(entities, expected);
 
             // Group by specific entity order by priority + coverage then by slots across expected/unexpected
             // Captures the intuition that more specific entities or larger entities are preferred
@@ -293,9 +310,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                           {
                               entityGroup.Key,
                               slots = from slot in entityGroup
-                                      group slot by slot.Expected into expected
-                                      orderby expected.Key descending
-                                      select expected
+                                      group slot by slot.Expected into expectedGroups
+                                      orderby expectedGroups.Key descending
+                                      select expectedGroups
                           };
 
             foreach (var entityChoices in choices)
@@ -482,9 +499,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
         }
 
         // Assign entities to queues
-        private void AssignEntities(Dictionary<string, List<EntityInfo>> entities, Queues queues)
+        private void AssignEntities(Dictionary<string, List<EntityInfo>> entities, string[] expected, Queues queues)
         {
-            AddToQueues(entities, queues);
+            AddToQueues(entities, expected, queues);
             CombineNewSlotMappings(queues);
         }
 

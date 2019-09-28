@@ -23,8 +23,7 @@
             "enum": [
                 "multigrain",
                 "rye",
-                "white",
-                "none"
+                "white"
             ]
         },
         "Cheese": {

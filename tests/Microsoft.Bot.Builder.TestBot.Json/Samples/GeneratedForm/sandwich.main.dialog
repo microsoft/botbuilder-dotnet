@@ -4,5 +4,5 @@
     "recognizer": "sandwich.lu",
     "generator": "sandwich.lg",
     "schema": "sandwich.form",
-    "triggers": [ "sandwich-BreadAsk", "sandwich-BreadClarify", "sandwich-BreadHelp", "sandwich-BreadSet", "sandwich-CheeseAsk", "sandwich-CheeseClarify", "sandwich-CheeseHelp", "sandwich-CheeseSet", "sandwich-MeatAsk", "sandwich-MeatClarify", "sandwich-MeatHelp", "sandwich-MeatSet", "sandwich-begindialog", "sandwich-cancel" ]
+    "triggers": [ "sandwich-BreadAsk", "sandwich-BreadChooseSlotValue", "sandwich-BreadClarify", "sandwich-BreadClear", "sandwich-BreadHelp", "sandwich-BreadSet", "sandwich-CheeseAsk", "sandwich-CheeseChooseSlotValue", "sandwich-CheeseClarify", "sandwich-CheeseClear", "sandwich-CheeseHelp", "sandwich-CheeseSet", "sandwich-MeatAsk", "sandwich-MeatChooseSlotValue", "sandwich-MeatClarify", "sandwich-MeatClear", "sandwich-MeatHelp", "sandwich-MeatSet", "sandwich-begindialog", "sandwich-cancel" ]
 }
