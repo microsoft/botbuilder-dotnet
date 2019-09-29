@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
+using Microsoft.Bot.Builder.Expressions;
 using Microsoft.Bot.Builder.Expressions.Parser;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
@@ -15,6 +16,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
         private List<OnCondition> _conditionals;
         private bool _evaluate;
 
+        public IExpressionParser Parser { get; set; } = new ExpressionEngine();
+
         public void Initialize(IEnumerable<OnCondition> conditionals, bool evaluate = true)
         {
             _conditionals = conditionals.ToList();
@@ -26,11 +29,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
             var candidates = _conditionals;
             if (_evaluate)
             {
-                var parser = new ExpressionEngine();
                 candidates = new List<OnCondition>();
                 foreach (var conditional in _conditionals)
                 {
-                    var expression = conditional.GetExpression(parser);
+                    var expression = conditional.GetExpression(Parser);
                     var (value, error) = expression.TryEvaluate(context.State);
                     var result = error == null && (bool)value;
                     if (result == true)

@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.AI.TriggerTrees;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
+using Microsoft.Bot.Builder.Expressions;
 using Microsoft.Bot.Builder.Expressions.Parser;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
@@ -22,12 +23,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
         /// </value>
         public ITriggerSelector Selector { get; set; }
 
+        public IExpressionParser Parser { get; set; } = new ExpressionEngine(TriggerTree.LookupFunction);
+
         public void Initialize(IEnumerable<OnCondition> conditionals, bool evaluate)
         {
-            var parser = new ExpressionEngine(TriggerTree.LookupFunction);
             foreach (var conditional in conditionals)
             {
-                _tree.AddTrigger(conditional.GetExpression(parser), conditional);
+                _tree.AddTrigger(conditional.GetExpression(Parser), conditional);
             }
         }
 

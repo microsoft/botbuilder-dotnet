@@ -3,7 +3,6 @@ using System.Linq;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resolvers;
-using Microsoft.Bot.Builder.Dialogs.Form.Actions;
 using Microsoft.Bot.Builder.Dialogs.Form.Converters;
 using Microsoft.Bot.Builder.Dialogs.Form.Events;
 using Newtonsoft.Json;
@@ -15,7 +14,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
         public override IEnumerable<TypeRegistration> GetTypes()
         {
             yield return new TypeRegistration<FormDialog>("Microsoft.FormDialog");
-            yield return new TypeRegistration<Ask>("Microsoft.Ask");
             yield return new TypeRegistration<OnAsk>("Microsoft.OnAsk");
             yield return new TypeRegistration<OnChooseSlot>("Microsoft.OnChooseSlot");
             yield return new TypeRegistration<OnChooseSlotValue>("Microsoft.OnChooseSlotValue");

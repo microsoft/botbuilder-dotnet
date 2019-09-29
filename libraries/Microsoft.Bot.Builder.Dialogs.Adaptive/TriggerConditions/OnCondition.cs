@@ -6,9 +6,12 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
+using Microsoft.Bot.Builder.Dialogs.Memory;
+using Microsoft.Bot.Builder.Dialogs.Memory.Scopes;
 using Microsoft.Bot.Builder.Expressions;
 using Microsoft.Bot.Builder.Expressions.Parser;
 using Newtonsoft.Json;
@@ -54,10 +57,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         public List<Dialog> Actions { get; set; } = new List<Dialog>();
 
         /// <summary>
-        /// Gets or sets thr rule priority where 0 is the highest.
+        /// Gets or sets the rule priority where 0 is the highest.
         /// </summary>
         [JsonProperty("priority")]
-        public int Priority { get; set; }
+        public int? Priority { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether rule should only run once per unique set of memory paths.
+        /// </summary>
+        [JsonProperty("runOnce")]
+        public bool RunOnce { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the Unique id for this condition.
+        /// </summary>
+        [JsonIgnore]
+        public uint Id { get; set; }
 
         /// <summary>
         /// Get the expression for this rule by calling GatherConstraints().
@@ -90,11 +105,30 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
 
                     if (allExpressions.Any())
                     {
-                        return Expression.AndExpression(allExpressions.ToArray());
+                        this.fullConstraint = Expression.AndExpression(allExpressions.ToArray());
                     }
                     else
                     {
-                        return Expression.ConstantExpression(true);
+                        this.fullConstraint = Expression.ConstantExpression(true);
+                    }
+
+                    if (RunOnce)
+                    {
+                        this.fullConstraint = Expression.AndExpression(
+                            this.fullConstraint,
+                            new Expression(new ExpressionEvaluator(
+                                "runOnce",
+                                (expression, os) =>
+                                {
+                                    var state = os as DialogStateManager;
+                                    var basePath = AdaptiveDialog.CONDITION_TRACKER + "." + Id.ToString() + ".";
+                                    var lastRun = state.GetValue<uint>(basePath + "lastRun");
+                                    var paths = state.GetValue<string[]>(basePath + "paths");
+                                    var changed = MemoryScope.AnyChanged(state, lastRun, paths);
+                                    return (changed, null);
+                                },
+                                ReturnType.Boolean,
+                                BuiltInFunctions.ValidateUnary)));
                     }
                 }
             }
@@ -132,6 +166,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         /// <returns>A <see cref="Task"/> with plan change list.</returns>
         public virtual async Task<List<ActionChangeList>> ExecuteAsync(SequenceContext planningContext)
         {
+            if (RunOnce)
+            {
+                var count = planningContext.State.GetValue<uint>(AdaptiveDialog.EVENTCOUNTER);
+                planningContext.State.SetValue(AdaptiveDialog.CONDITION_TRACKER + "." + Id.ToString() + ".lastRun", count);
+            }
+
             return await Task.FromResult(new List<ActionChangeList>()
             {
                 this.OnCreateChangeList(planningContext)

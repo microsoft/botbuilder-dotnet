@@ -3,17 +3,24 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
+using Microsoft.Bot.Builder.Dialogs.Memory.Scopes;
+using Microsoft.Bot.Builder.Expressions;
 using Microsoft.Bot.Builder.Expressions.Parser;
 using Microsoft.Bot.Builder.LanguageGeneration;
 using Microsoft.Bot.Schema;
+using Microsoft.Extensions.Logging.Internal;
 using Newtonsoft.Json.Linq;
 using static Microsoft.Bot.Builder.Dialogs.Debugging.DebugSupport;
 
@@ -24,7 +31,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
     /// </summary>
     public class AdaptiveDialog : DialogContainer
     {
+        public const string EVENTCOUNTER = "dialog.eventCounter";
 #pragma warning disable SA1310 // Field should not contain underscore.
+        public const string CONDITION_TRACKER = "dialog.tracker.conditions";
         private const string ADAPTIVE_KEY = "adaptiveDialogState";
 #pragma warning restore SA1310 // Field should not contain underscore.
 
@@ -109,7 +118,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 throw new ArgumentException($"{nameof(options)} should not ever be a cancellation token");
             }
 
-            EnsureDependenciesInstalled();
+            EnsureDependenciesInstalled(dc);
 
             var activeDialogState = dc.ActiveDialog.State as Dictionary<string, object>;
             activeDialogState[ADAPTIVE_KEY] = new AdaptiveDialogState();
@@ -134,7 +143,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
         public override async Task<DialogTurnResult> ContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default(CancellationToken))
         {
-            EnsureDependenciesInstalled();
+            EnsureDependenciesInstalled(dc);
 
             // Continue step execution
             return await ContinueActionsAsync(dc, null, cancellationToken).ConfigureAwait(false);
@@ -212,6 +221,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         {
             // Save into turn
             sequenceContext.State.SetValue(TurnPath.DIALOGEVENT, dialogEvent);
+
+            // Count of events processed
+            var count = sequenceContext.State.GetValue<uint>(EVENTCOUNTER);
+            sequenceContext.State.SetValue(EVENTCOUNTER, ++count);
 
             // Look for triggered evt
             var handled = await this.QueueFirstMatchAsync(sequenceContext, dialogEvent, preBubble, cancellationToken).ConfigureAwait(false);
@@ -511,7 +524,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             var selection = await Selector.Select(sequenceContext, cancellationToken).ConfigureAwait(false);
             if (selection.Any())
             {
-                var evt = selection.First();
+                var evt = (from conditional in selection orderby conditional.Priority ascending select conditional).First();
                 await sequenceContext.DebuggerStepAsync(evt, dialogEvent, cancellationToken).ConfigureAwait(false);
                 System.Diagnostics.Trace.TraceInformation($"Executing Dialog: {this.Id} Rule[{selection}]: {evt.GetType().Name}: {evt.GetExpression(new ExpressionEngine())}");
                 var changes = await evt.ExecuteAsync(sequenceContext).ConfigureAwait(false);
@@ -545,7 +558,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             return effectiveOptions;
         }
 
-        private void EnsureDependenciesInstalled()
+        private void EnsureDependenciesInstalled(DialogContext dc)
         {
             lock (this)
             {
@@ -553,15 +566,61 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                 {
                     installedDependencies = true;
 
-                    foreach (var @event in this.Triggers)
+                    var needsTracker = false;
+                    var id = 0u;
+                    var noActivity = 0;
+                    var activity = 1000;
+                    var input = 2000;
+                    foreach (var trigger in this.Triggers)
                     {
-                        if (@event is IDialogDependencies depends)
+                        if (trigger is IDialogDependencies depends)
                         {
                             foreach (var dlg in depends.GetDependencies())
                             {
                                 this.Dialogs.Add(dlg);
                             }
                         }
+
+                        if (trigger.RunOnce)
+                        {
+                            needsTracker = true;
+                        }
+
+                        if (!trigger.Priority.HasValue)
+                        {
+                            // Analyze actions to set default priorities
+                            // 0-999 Non-activity
+                            // 1000-1999 Sends activity
+                            // 2000+ Contains input action
+                            var foundActivity = false;
+                            var foundInput = false;
+                            foreach (var action in trigger.Actions)
+                            {
+                                if (action is InputDialog || action is Ask)
+                                {
+                                    foundInput = true;
+                                }
+                                else if (action is SendActivity)
+                                {
+                                    foundActivity = true;
+                                }
+                            }
+
+                            if (foundInput)
+                            {
+                                trigger.Priority = input++;
+                            }
+                            else if (foundActivity)
+                            {
+                                trigger.Priority = activity++;
+                            }
+                            else
+                            {
+                                trigger.Priority = noActivity++;
+                            }
+                        }
+
+                        trigger.Id = id++;
                     }
 
                     // Wire up selector
@@ -572,6 +631,30 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
                         {
                             Selector = new FirstSelector()
                         };
+                    }
+
+                    if (needsTracker)
+                    {
+                        if (!dc.State.ContainsKey(EVENTCOUNTER))
+                        {
+                            dc.State.SetValue(EVENTCOUNTER, 0u);
+                        }
+
+                        if (!dc.State.ContainsKey(CONDITION_TRACKER))
+                        {
+                            var parser = Selector.Parser;
+                            foreach (var trigger in Triggers)
+                            {
+                                if (trigger.RunOnce)
+                                {
+                                    // TODO: We should probably use the full expression, but wrap things like event processing in ignore
+                                    var paths = MemoryScope.Track(dc, parser.Parse(trigger.Condition).References());
+                                    var triggerPath = CONDITION_TRACKER + "." + trigger.Id + ".";
+                                    dc.State.SetValue(triggerPath + "paths", paths);
+                                    dc.State.SetValue(triggerPath + "lastRun", 0u);
+                                }
+                            }
+                        }
                     }
 
                     this.Selector.Initialize(this.Triggers, true);

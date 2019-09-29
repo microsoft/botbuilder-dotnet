@@ -76,6 +76,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             yield return new TypeRegistration<ChoiceInput>("Microsoft.ChoiceInput");
             yield return new TypeRegistration<DateTimeInput>("Microsoft.DateTimeInput");
             yield return new TypeRegistration<OAuthInput>("Microsoft.OAuthInput");
+            yield return new TypeRegistration<Ask>("Microsoft.Ask");
 
             // Recognizers
             yield return new TypeRegistration<LuisRecognizer>("Microsoft.LuisRecognizer") { CustomDeserializer = new LuisRecognizerLoader(TypeFactory.Configuration) };

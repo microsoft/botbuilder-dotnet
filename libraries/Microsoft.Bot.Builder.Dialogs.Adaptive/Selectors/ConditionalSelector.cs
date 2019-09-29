@@ -25,8 +25,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
         /// </value>
         public string Condition
         {
-            get { return condition?.ToString(); }
-            set { this.condition = (value != null) ? new ExpressionEngine().Parse(value) : null; }
+            get => condition?.ToString(); 
+            set => this.condition = (value != null) ? Parser.Parse(value) : null;
         }
 
         /// <summary>
@@ -44,6 +44,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
         /// Selector if <see cref="Condition"/> is false.
         /// </value>
         public ITriggerSelector IfFalse { get; set; }
+
+        public IExpressionParser Parser { get; set; } = new ExpressionEngine();
 
         public void Initialize(IEnumerable<OnCondition> conditionals, bool evaluate = true)
         {

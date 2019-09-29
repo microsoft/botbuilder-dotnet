@@ -18,7 +18,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
         private bool _evaluate;
         private Random _rand;
         private int _seed = -1;
-        private IExpressionParser _parser = new ExpressionEngine();
 
         /// <summary>
         /// Gets or sets optional seed for random number generator.
@@ -36,6 +35,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
                 _rand = new Random(_seed);
             }
         }
+
+        public IExpressionParser Parser { get; set; } = new ExpressionEngine();
 
         public void Initialize(IEnumerable<OnCondition> conditionals, bool evaluate)
         {
@@ -55,7 +56,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
                 candidates = new List<OnCondition>();
                 foreach (var conditional in _conditionals)
                 {
-                    var expression = conditional.GetExpression(_parser);
+                    var expression = conditional.GetExpression(Parser);
                     var (value, error) = expression.TryEvaluate(context.State);
                     var eval = error == null && (bool)value;
                     if (eval == true)

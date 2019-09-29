@@ -14,6 +14,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
     /// </summary>
     public class MemoryScope
     {
+        public const string EVENTCOUNTER = "dialog.eventCounter";
+
+        public const string TRACKER = "dialog.tracker";
+
         private const string MEMORYSCOPESKEY = "MemoryScopes";
 
         public MemoryScope(string name)
@@ -22,9 +26,69 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
         }
 
         /// <summary>
+        /// Delegate for when a path in memory is written to.
+        /// </summary>
+        /// <param name="dc">Context being modified.</param>
+        /// <param name="path">Path that changed.</param>
+        /// <param name="newValue">New value of path.</param>
+        public delegate void PathChanged(DialogContext dc, string path, object newValue);
+
+        /// <summary>
+        /// Gets listener for trackning changes to memory scope.
+        /// </summary>
+        public PathChanged ChangeListener { get; private set; }
+
+        /// <summary>
         /// Gets or sets name of the scope
         /// </summary>
         public string Name { get; set; }
+
+        protected string ChangePath => ScopePath.TURN + ".listener." + Name;
+
+        public static List<string> Track(DialogContext dc, IEnumerable<string> paths)
+        {
+            var allPaths = new List<string>();
+            var count = dc.State.GetValue<uint>(EVENTCOUNTER);
+            foreach (var path in paths)
+            {
+                var tpath = dc.State.TransformPath(path);
+                var parts = tpath.ToLower().Split('.');
+                // Don't track root memory scope
+                var npath = parts[0];
+                for (var i = 1; i < parts.Length; ++i)
+                {
+                    npath += "_" + parts[i];
+                    dc.State.SetValue(TRACKER + "." + npath, count);
+                    allPaths.Add(npath);
+                }
+            }
+
+            return allPaths;
+        }
+
+        public static void OnPathChanged(DialogContext dc, string path, object value)
+        {
+            var pathName = TRACKER + "." + path.ToLower().Replace('.', '_');
+            if (dc.State.ContainsKey(pathName))
+            {
+                dc.State.SetValue(pathName, dc.State.GetValue<uint>(EVENTCOUNTER));
+            }
+        }
+
+        public static bool AnyChanged(DialogStateManager state, uint count, IEnumerable<string> paths)
+        {
+            var found = false;
+            foreach (var path in paths)
+            {
+                if (state.GetValue<uint>(TRACKER + "." + path) > count)
+                {
+                    found = true;
+                    break;
+                }
+            }
+
+            return found;
+        }
 
         /// <summary>
         /// Get the backing memory for this scope
@@ -67,6 +131,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
 
             var namedScopes = GetScopesMemory(dc.Context);
             namedScopes[this.Name] = memory;
+        }
+
+        public virtual void RaiseChange(DialogContext dc, string path, object value)
+        {
+            var pathName = TRACKER + "." + path.ToLower().Replace('.', '_');
+            if (dc.State.TryGetValue<uint>(pathName, out var lastChanged))
+            {
+                dc.State.SetValue(pathName, dc.State.GetValue<uint>(EVENTCOUNTER));
+            }
         }
 
         /// <summary>

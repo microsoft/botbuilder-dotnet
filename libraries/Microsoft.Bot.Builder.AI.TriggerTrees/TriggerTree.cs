@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using Microsoft.Bot.Builder.Expressions;
 using Microsoft.Bot.Builder.Expressions.Parser;
@@ -100,7 +101,7 @@ namespace Microsoft.Bot.Builder.AI.TriggerTrees
                 eval = new ExpressionEvaluator(type, null, ReturnType.Boolean, BuiltInFunctions.ValidateUnaryBoolean);
                 eval.Negation = eval;
             }
-            else 
+            else
             {
                 eval = BuiltInFunctions.Lookup(type);
             }

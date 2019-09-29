@@ -15,11 +15,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
     {
         private List<OnCondition> _conditionals;
         private bool _evaluate;
-        private readonly IExpressionParser _parser = new ExpressionEngine();
+
+        public IExpressionParser Parser { get; set;  } = new ExpressionEngine();
 
         public void Initialize(IEnumerable<OnCondition> conditionals, bool evaluate)
         {
-            _conditionals = conditionals.ToList();
+            _conditionals = (from conditional in conditionals orderby conditional.Priority ascending select conditional).ToList();
             _evaluate = evaluate;
         }
 
@@ -31,7 +32,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors
                 for (var i = 0; i < _conditionals.Count; i++)
                 {
                     var conditional = _conditionals[i];
-                    var expression = conditional.GetExpression(_parser);
+                    var expression = conditional.GetExpression(Parser);
                     var (value, error) = expression.TryEvaluate(context.State);
                     var eval = error == null && (bool)value;
                     if (eval == true)
