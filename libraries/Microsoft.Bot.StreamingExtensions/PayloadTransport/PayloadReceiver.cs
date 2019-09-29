@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using Microsoft.Bot.StreamingExtensions.Payloads;
 using Microsoft.Bot.StreamingExtensions.Transport;
 using Microsoft.Bot.StreamingExtensions.Utilities;
-using Newtonsoft.Json;
 
 namespace Microsoft.Bot.StreamingExtensions.PayloadTransport
 {

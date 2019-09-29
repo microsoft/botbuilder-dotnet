@@ -5,8 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Microsoft.Bot.StreamingExtensions.Payloads
 {
@@ -16,19 +14,16 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
         private readonly Func<Guid, ReceiveResponse, Task> _onReceiveResponse;
         private readonly IStreamManager _streamManager;
         private readonly Dictionary<Guid, IAssembler> _activeAssemblers;
-        private readonly ILogger _logger;
 
         public PayloadAssemblerManager(
             IStreamManager streamManager,
             Func<Guid, ReceiveRequest, Task> onReceiveRequest,
-            Func<Guid, ReceiveResponse, Task> onReceiveResponse,
-            ILogger logger = null)
+            Func<Guid, ReceiveResponse, Task> onReceiveResponse)
         {
             _onReceiveRequest = onReceiveRequest;
             _onReceiveResponse = onReceiveResponse;
             _activeAssemblers = new Dictionary<Guid, IAssembler>();
             _streamManager = streamManager;
-            _logger = logger ?? NullLogger.Instance;
         }
 
         public Stream GetPayloadStream(Header header)
@@ -54,8 +49,6 @@ namespace Microsoft.Bot.StreamingExtensions.Payloads
 
         public void OnReceive(Header header, Stream contentStream, int contentLength)
         {
-            Console.WriteLine(header);
-            _logger.LogTrace("Receive a new stream request:", header, contentStream);
             if (IsStreamPayload(header))
             {
                 _streamManager.OnReceive(header, contentStream, contentLength);

@@ -49,7 +49,6 @@ namespace Microsoft.Bot.StreamingExtensions.Transport.WebSockets
                 {
                     var memory = new ArraySegment<byte>(buffer, offset, count);
                     var result = await _socket.ReceiveAsync(memory, CancellationToken.None).ConfigureAwait(false);
-                    memory.ToString();
                     if (result.MessageType == WebSocketMessageType.Close)
                     {
                         await _socket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Socket closed", CancellationToken.None);
