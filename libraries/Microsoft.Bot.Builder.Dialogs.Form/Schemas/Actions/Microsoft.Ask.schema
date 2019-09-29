@@ -10,7 +10,7 @@
         },
         {
             "properties": {
-                "expectedSlots": {
+                "expectedProperties": {
                     "type": "array",
                     "items": {
                         "type": "string"

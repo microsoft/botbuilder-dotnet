@@ -692,7 +692,7 @@
                     "description": "Activity to send to the user",
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
-                "expectedSlots": {
+                "expectedProperties": {
                     "type": "array",
                     "title": "Expected Slots",
                     "description": "Slots expected to be filled by entities from the user",

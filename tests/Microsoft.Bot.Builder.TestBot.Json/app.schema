@@ -1,6 +1,6 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
-    "$id": "sdk.schema",
+    "$id": "app.schema",
     "type": "object",
     "title": "Component types",
     "description": "These are all of the types that can be created by the loader.",
@@ -331,11 +331,6 @@
             "$ref": "#/definitions/Microsoft.OnMessageUpdateActivity"
         },
         {
-            "title": "Microsoft.OnNextForm",
-            "description": "This defines the actions to take when a NextForm event is raised",
-            "$ref": "#/definitions/Microsoft.OnNextForm"
-        },
-        {
             "title": "Microsoft.OnRepromptDialog",
             "description": "This defines the actions to take when a RepromptDialog event has been emitted",
             "$ref": "#/definitions/Microsoft.OnRepromptDialog"
@@ -369,6 +364,11 @@
             "title": "Microsoft.PhoneNumberEntityRecognizer",
             "description": "Recognizer which recognizes phone numbers.",
             "$ref": "#/definitions/Microsoft.PhoneNumberEntityRecognizer"
+        },
+        {
+            "title": "Microsoft.QnAMakerAction",
+            "description": "Call QnAMaker knowledge base to get an answer.",
+            "$ref": "#/definitions/Microsoft.QnAMakerAction"
         },
         {
             "title": "Microsoft.QnAMakerDialog",
@@ -449,6 +449,16 @@
             "title": "Microsoft.UrlEntityRecognizer",
             "description": "Recognizer which recognizes urls (example: http://bing.com)",
             "$ref": "#/definitions/Microsoft.UrlEntityRecognizer"
+        },
+        {
+            "title": "Testbot.JavascriptAction",
+            "description": "This gives you the ability to execute javascript to manipulate memory",
+            "$ref": "#/definitions/Testbot.JavascriptAction"
+        },
+        {
+            "title": "Testbot.Multiply",
+            "description": "This will return the result of arg1*arg2",
+            "$ref": "#/definitions/Testbot.Multiply"
         }
     ],
     "definitions": {
@@ -692,7 +702,7 @@
                     "description": "Activity to send to the user",
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 },
-                "expectedSlots": {
+                "expectedProperties": {
                     "type": "array",
                     "title": "Expected Slots",
                     "description": "Slots expected to be filled by entities from the user",
@@ -2488,7 +2498,6 @@
             "$role": "unionType",
             "title": "Entity Recognizers",
             "description": "Union of components which derive from EntityRecognizer abstract class.",
-            "type": "object",
             "oneOf": [
                 {
                     "title": "Microsoft.AgeEntityRecognizer",
@@ -3252,6 +3261,11 @@
                     "$ref": "#/definitions/Microsoft.OAuthInput"
                 },
                 {
+                    "title": "Microsoft.QnAMakerAction",
+                    "description": "Call QnAMaker knowledge base to get an answer.",
+                    "$ref": "#/definitions/Microsoft.QnAMakerAction"
+                },
+                {
                     "title": "Microsoft.QnAMakerDialog",
                     "description": "This represents a dialog which is driven by a call to QnAMaker.ai knowledge base",
                     "$ref": "#/definitions/Microsoft.QnAMakerDialog"
@@ -3294,6 +3308,16 @@
                 {
                     "type": "string",
                     "title": "string"
+                },
+                {
+                    "title": "Testbot.JavascriptAction",
+                    "description": "This gives you the ability to execute javascript to manipulate memory",
+                    "$ref": "#/definitions/Testbot.JavascriptAction"
+                },
+                {
+                    "title": "Testbot.Multiply",
+                    "description": "This will return the result of arg1*arg2",
+                    "$ref": "#/definitions/Testbot.Multiply"
                 }
             ]
         },
@@ -3453,11 +3477,6 @@
                     "title": "Microsoft.OnMessageUpdateActivity",
                     "description": "This defines the actions to take when an MessageUpdate Activity is received",
                     "$ref": "#/definitions/Microsoft.OnMessageUpdateActivity"
-                },
-                {
-                    "title": "Microsoft.OnNextForm",
-                    "description": "This defines the actions to take when a NextForm event is raised",
-                    "$ref": "#/definitions/Microsoft.OnNextForm"
                 },
                 {
                     "title": "Microsoft.OnRepromptDialog",
@@ -4579,6 +4598,14 @@
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
                 },
+                "priority": {
+                    "type": "integer",
+                    "description": "Priority of rule with 0 being the most important"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "description": "True if rule should run once per unique conditions"
+                },
                 "type": {
                     "type": "string",
                     "title": "Activity Type",
@@ -4654,6 +4681,14 @@
                         "$type": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
+                },
+                "priority": {
+                    "type": "integer",
+                    "description": "Priority of rule with 0 being the most important"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "description": "True if rule should run once per unique conditions"
                 }
             },
             "additionalProperties": false,
@@ -4724,6 +4759,14 @@
                         "$type": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
+                },
+                "priority": {
+                    "type": "integer",
+                    "description": "Priority of rule with 0 being the most important"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "description": "True if rule should run once per unique conditions"
                 }
             },
             "additionalProperties": false,
@@ -4794,6 +4837,14 @@
                         "$type": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
+                },
+                "priority": {
+                    "type": "integer",
+                    "description": "Priority of rule with 0 being the most important"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "description": "True if rule should run once per unique conditions"
                 }
             },
             "additionalProperties": false,
@@ -4864,6 +4915,14 @@
                         "$type": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
+                },
+                "priority": {
+                    "type": "integer",
+                    "description": "Priority of rule with 0 being the most important"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "description": "True if rule should run once per unique conditions"
                 }
             },
             "additionalProperties": false,
@@ -4934,6 +4993,14 @@
                         "$type": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
+                },
+                "priority": {
+                    "type": "integer",
+                    "description": "Priority of rule with 0 being the most important"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "description": "True if rule should run once per unique conditions"
                 }
             },
             "additionalProperties": false,
@@ -5004,6 +5071,14 @@
                         "$type": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
+                },
+                "priority": {
+                    "type": "integer",
+                    "description": "Priority of rule with 0 being the most important"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "description": "True if rule should run once per unique conditions"
                 }
             },
             "additionalProperties": false,
@@ -5074,6 +5149,14 @@
                         "$type": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
+                },
+                "priority": {
+                    "type": "integer",
+                    "description": "Priority of rule with 0 being the most important"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "description": "True if rule should run once per unique conditions"
                 }
             },
             "additionalProperties": false,
@@ -5144,6 +5227,14 @@
                         "$type": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
+                },
+                "priority": {
+                    "type": "integer",
+                    "description": "Priority of rule with 0 being the most important"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "description": "True if rule should run once per unique conditions"
                 }
             },
             "additionalProperties": false,
@@ -5214,6 +5305,14 @@
                         "$type": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
+                },
+                "priority": {
+                    "type": "integer",
+                    "description": "Priority of rule with 0 being the most important"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "description": "True if rule should run once per unique conditions"
                 }
             },
             "additionalProperties": false,
@@ -5284,6 +5383,14 @@
                         "$type": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
+                },
+                "priority": {
+                    "type": "integer",
+                    "description": "Priority of rule with 0 being the most important"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "description": "True if rule should run once per unique conditions"
                 },
                 "event": {
                     "type": "string",
@@ -5361,6 +5468,14 @@
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
                 },
+                "priority": {
+                    "type": "integer",
+                    "description": "Priority of rule with 0 being the most important"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "description": "True if rule should run once per unique conditions"
+                },
                 "event": {
                     "type": "string",
                     "title": "Dialog Event Name",
@@ -5436,6 +5551,14 @@
                         "$type": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
+                },
+                "priority": {
+                    "type": "integer",
+                    "description": "Priority of rule with 0 being the most important"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "description": "True if rule should run once per unique conditions"
                 }
             },
             "additionalProperties": false,
@@ -5506,6 +5629,14 @@
                         "$type": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
+                },
+                "priority": {
+                    "type": "integer",
+                    "description": "Priority of rule with 0 being the most important"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "description": "True if rule should run once per unique conditions"
                 }
             },
             "additionalProperties": false,
@@ -5576,6 +5707,14 @@
                         "$type": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
+                },
+                "priority": {
+                    "type": "integer",
+                    "description": "Priority of rule with 0 being the most important"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "description": "True if rule should run once per unique conditions"
                 }
             },
             "additionalProperties": false,
@@ -5646,6 +5785,14 @@
                         "$type": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
+                },
+                "priority": {
+                    "type": "integer",
+                    "description": "Priority of rule with 0 being the most important"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "description": "True if rule should run once per unique conditions"
                 }
             },
             "additionalProperties": false,
@@ -5716,6 +5863,14 @@
                         "$type": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
+                },
+                "priority": {
+                    "type": "integer",
+                    "description": "Priority of rule with 0 being the most important"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "description": "True if rule should run once per unique conditions"
                 },
                 "intent": {
                     "type": "string",
@@ -5800,6 +5955,14 @@
                         "$type": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
+                },
+                "priority": {
+                    "type": "integer",
+                    "description": "Priority of rule with 0 being the most important"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "description": "True if rule should run once per unique conditions"
                 }
             },
             "additionalProperties": false,
@@ -5870,6 +6033,14 @@
                         "$type": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
+                },
+                "priority": {
+                    "type": "integer",
+                    "description": "Priority of rule with 0 being the most important"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "description": "True if rule should run once per unique conditions"
                 }
             },
             "additionalProperties": false,
@@ -5940,6 +6111,14 @@
                         "$type": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
+                },
+                "priority": {
+                    "type": "integer",
+                    "description": "Priority of rule with 0 being the most important"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "description": "True if rule should run once per unique conditions"
                 }
             },
             "additionalProperties": false,
@@ -6010,6 +6189,14 @@
                         "$type": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
+                },
+                "priority": {
+                    "type": "integer",
+                    "description": "Priority of rule with 0 being the most important"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "description": "True if rule should run once per unique conditions"
                 }
             },
             "additionalProperties": false,
@@ -6080,76 +6267,14 @@
                         "$type": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
-                }
-            },
-            "additionalProperties": false,
-            "patternProperties": {
-                "^\\$": {
-                    "type": "string"
-                }
-            },
-            "anyOf": [
-                {
-                    "title": "Reference",
-                    "required": [
-                        "$copy"
-                    ]
                 },
-                {
-                    "title": "Type",
-                    "required": [
-                        "actions",
-                        "$type"
-                    ]
-                }
-            ]
-        },
-        "Microsoft.OnNextForm": {
-            "$role": "unionType(Microsoft.ITriggerCondition)",
-            "title": "Form NextForm Event",
-            "description": "This defines the actions to take when a NextForm event is raised",
-            "type": "object",
-            "properties": {
-                "$type": {
-                    "title": "$type",
-                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
-                    "type": "string",
-                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.OnNextForm"
+                "priority": {
+                    "type": "integer",
+                    "description": "Priority of rule with 0 being the most important"
                 },
-                "$copy": {
-                    "title": "$copy",
-                    "description": "Copy the definition by id from a .dialog file.",
-                    "type": "string",
-                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
-                },
-                "$id": {
-                    "title": "$id",
-                    "description": "Inline id for reuse of an inline definition",
-                    "type": "string",
-                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
-                },
-                "$designer": {
-                    "title": "$designer",
-                    "type": "object",
-                    "description": "Extra information for the Bot Framework Designer."
-                },
-                "condition": {
-                    "$role": "expression",
-                    "title": "Condition",
-                    "description": "Condition which must be met for these actions to be executed",
-                    "examples": [
-                        "user.vip == true"
-                    ],
-                    "type": "string"
-                },
-                "actions": {
-                    "type": "array",
-                    "description": "Sequence of actions or dialogs to execute",
-                    "items": {
-                        "$type": "Microsoft.IDialog",
-                        "$ref": "#/definitions/Microsoft.IDialog"
-                    }
+                "runOnce": {
+                    "type": "boolean",
+                    "description": "True if rule should run once per unique conditions"
                 }
             },
             "additionalProperties": false,
@@ -6220,6 +6345,14 @@
                         "$type": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
+                },
+                "priority": {
+                    "type": "integer",
+                    "description": "Priority of rule with 0 being the most important"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "description": "True if rule should run once per unique conditions"
                 }
             },
             "additionalProperties": false,
@@ -6290,6 +6423,14 @@
                         "$type": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
+                },
+                "priority": {
+                    "type": "integer",
+                    "description": "Priority of rule with 0 being the most important"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "description": "True if rule should run once per unique conditions"
                 }
             },
             "additionalProperties": false,
@@ -6360,6 +6501,14 @@
                         "$type": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
+                },
+                "priority": {
+                    "type": "integer",
+                    "description": "Priority of rule with 0 being the most important"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "description": "True if rule should run once per unique conditions"
                 }
             },
             "additionalProperties": false,
@@ -6430,6 +6579,14 @@
                         "$type": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
                     }
+                },
+                "priority": {
+                    "type": "integer",
+                    "description": "Priority of rule with 0 being the most important"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "description": "True if rule should run once per unique conditions"
                 }
             },
             "additionalProperties": false,
@@ -6605,6 +6762,125 @@
                 {
                     "title": "Type",
                     "required": [
+                        "$type"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.QnAMakerAction": {
+            "$role": "unionType(Microsoft.IDialog)",
+            "title": "QnAMaker Action",
+            "description": "Call QnAMaker knowledge base to get an answer.",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.QnAMakerAction"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "knowledgeBaseId": {
+                    "$role": "expression",
+                    "title": "KnowledgeBase Id",
+                    "description": "KnowledgeBase Id of your QnA Maker KnowledgeBase.",
+                    "default": "settings.qna.knowledgebaseid",
+                    "type": "string"
+                },
+                "endpointKey": {
+                    "$role": "expression",
+                    "title": "Endpoint Key",
+                    "description": "Endpoint key for the QnA Maker KB.",
+                    "default": "settings.qna.endpointkey",
+                    "type": "string"
+                },
+                "hostname": {
+                    "$role": "expression",
+                    "title": "Hostname",
+                    "description": "Hostname for your QnA Maker service.",
+                    "default": "settings.qna.hostname",
+                    "examples": [
+                        "https://yourserver.azurewebsites.net/qnamaker"
+                    ],
+                    "type": "string"
+                },
+                "noAnswer": {
+                    "$type": "Microsoft.IActivityTemplate",
+                    "title": "Fallback answer",
+                    "description": "Default answer to return when none found in KB.",
+                    "default": "Sorry, I did not find an answer.",
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                },
+                "threshold": {
+                    "type": "number",
+                    "title": "Threshold",
+                    "description": "Threshold score to filter results.",
+                    "default": 0.3
+                },
+                "activeLearningCardTitle": {
+                    "type": "string",
+                    "title": "Active learning card title",
+                    "description": "Title for active learning suggestions card.",
+                    "default": "Did you mean:"
+                },
+                "cardNoMatchText": {
+                    "type": "string",
+                    "title": "Card no match text",
+                    "description": "Text for no match option.",
+                    "default": "None of the above."
+                },
+                "cardNoMatchResponse ": {
+                    "$type": "Microsoft.IActivityTemplate",
+                    "title": "Card no match response",
+                    "description": "Custom response when no match option was selected.",
+                    "default": "Thanks for the feedback.",
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                },
+                "strictFilters": {
+                    "type": "array",
+                    "title": "Strict Filter Property",
+                    "description": "Memory property that holds strict filters to use when calling the QnA Maker KB.",
+                    "items": {
+                        "type": "object"
+                    }
+                }
+            },
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "knowledgeBaseId",
+                        "endpointKey",
+                        "hostname",
                         "$type"
                     ]
                 }
@@ -7736,6 +8012,152 @@
                 }
             },
             "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$type"
+                    ]
+                }
+            ]
+        },
+        "Testbot.JavascriptAction": {
+            "$role": "unionType(Microsoft.IDialog)",
+            "title": "Javascript Action",
+            "description": "This gives you the ability to execute javascript to manipulate memory",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Testbot.JavascriptAction"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "inputBindings": {
+                    "type": "object",
+                    "title": "Input Bindings",
+                    "description": "map of named arguments and the property path to bind to them",
+                    "examples": [
+                        {
+                            "name": "user.name",
+                            "problemId": "conversation.problem.id"
+                        }
+                    ],
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "outputBinding": {
+                    "type": "string",
+                    "title": "Output Binding",
+                    "description": "This will be the property which the result will be put into",
+                    "examples": [
+                        "conversation.resolution"
+                    ]
+                },
+                "script": {
+                    "type": "string",
+                    "title": "Script",
+                    "description": "name of the script file"
+                }
+            },
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "$type"
+                    ]
+                }
+            ]
+        },
+        "Testbot.Multiply": {
+            "$role": "unionType(Microsoft.IDialog)",
+            "title": "Multiply",
+            "description": "This will return the result of arg1*arg2",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Testbot.Multiply"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "arg1": {
+                    "type": "number",
+                    "title": "Arg1",
+                    "description": "Value from callers memory to use as arg 1"
+                },
+                "arg2": {
+                    "type": "number",
+                    "title": "Arg2",
+                    "description": "Value from callers memory to use as arg 2"
+                },
+                "result": {
+                    "type": "number",
+                    "title": "Result",
+                    "description": "Value from callers memory to store the result"
+                }
+            },
             "patternProperties": {
                 "^\\$": {
                     "type": "string"
