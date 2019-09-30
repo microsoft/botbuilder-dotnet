@@ -710,6 +710,15 @@
                     ],
                     "type": "string"
                 },
+                "value": {
+                    "$role": "expression",
+                    "title": "Value",
+                    "description": "Expression to use as the potential value. Example: @number as the value to use for a prompt bound to $age.",
+                    "examples": [
+                        "@number"
+                    ],
+                    "type": "string"
+                },
                 "defaultValue": {
                     "$role": "expression",
                     "title": "Default Value",
@@ -1006,6 +1015,15 @@
                     "description": "Property that this input dialog is bound to",
                     "examples": [
                         "$birthday"
+                    ],
+                    "type": "string"
+                },
+                "value": {
+                    "$role": "expression",
+                    "title": "Value",
+                    "description": "Expression to use as the potential value. Example: @number as the value to use for a prompt bound to $age.",
+                    "examples": [
+                        "@number"
                     ],
                     "type": "string"
                 },
@@ -1352,6 +1370,15 @@
                     "description": "Property that this input dialog is bound to",
                     "examples": [
                         "$birthday"
+                    ],
+                    "type": "string"
+                },
+                "value": {
+                    "$role": "expression",
+                    "title": "Value",
+                    "description": "Expression to use as the potential value. Example: @number as the value to use for a prompt bound to $age.",
+                    "examples": [
+                        "@number"
                     ],
                     "type": "string"
                 },
@@ -1735,6 +1762,15 @@
                     "description": "Property that this input dialog is bound to",
                     "examples": [
                         "$birthday"
+                    ],
+                    "type": "string"
+                },
+                "value": {
+                    "$role": "expression",
+                    "title": "Value",
+                    "description": "Expression to use as the potential value. Example: @number as the value to use for a prompt bound to $age.",
+                    "examples": [
+                        "@number"
                     ],
                     "type": "string"
                 },
@@ -3971,6 +4007,15 @@
                     ],
                     "type": "string"
                 },
+                "value": {
+                    "$role": "expression",
+                    "title": "Value",
+                    "description": "Expression to use as the potential value. Example: @number as the value to use for a prompt bound to $age.",
+                    "examples": [
+                        "@number"
+                    ],
+                    "type": "string"
+                },
                 "defaultValue": {
                     "$role": "expression",
                     "title": "Default Value",
@@ -4186,6 +4231,15 @@
                     "description": "Property that this input dialog is bound to",
                     "examples": [
                         "$birthday"
+                    ],
+                    "type": "string"
+                },
+                "value": {
+                    "$role": "expression",
+                    "title": "Value",
+                    "description": "Expression to use as the potential value. Example: @number as the value to use for a prompt bound to $age.",
+                    "examples": [
+                        "@number"
                     ],
                     "type": "string"
                 },
@@ -6730,6 +6784,15 @@
                     "description": "Property that this input dialog is bound to",
                     "examples": [
                         "$birthday"
+                    ],
+                    "type": "string"
+                },
+                "value": {
+                    "$role": "expression",
+                    "title": "Value",
+                    "description": "Expression to use as the potential value. Example: @number as the value to use for a prompt bound to $age.",
+                    "examples": [
+                        "@number"
                     ],
                     "type": "string"
                 },
