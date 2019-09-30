@@ -11,6 +11,9 @@ using Microsoft.Bot.Schema.Teams;
 
 namespace Microsoft.BotBuilderSamples.Bots
 {
+    /*
+     * This one exists in JS.
+     */
     public class LinkUnfurlingBot : TeamsActivityHandler
     {
         protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
