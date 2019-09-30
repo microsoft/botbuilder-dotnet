@@ -69,7 +69,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// is specified, then that local is used to determine language specific behavior; otherwise
         /// the <paramref name="defaultLocale"/> is used. US-English is the used if no language or
         /// default locale is available, or if the language or locale is not otherwise supported.</para></remarks>
-        public ConfirmPrompt(string dialogId, PromptValidator<bool> validator = null, string defaultLocale = null, Dictionary<string, (Choice, Choice, ChoiceFactoryOptions)> choiceDefaults)
+        public ConfirmPrompt(string dialogId, Dictionary<string, (Choice, Choice, ChoiceFactoryOptions)> choiceDefaults, PromptValidator<bool> validator = null, string defaultLocale = null)
             : this(dialogId, validator, defaultLocale)
         {
             _choiceDefaults = choiceDefaults;
