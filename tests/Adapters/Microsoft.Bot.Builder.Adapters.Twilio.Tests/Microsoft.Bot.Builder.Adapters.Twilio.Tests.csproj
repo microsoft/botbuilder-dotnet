@@ -4,13 +4,8 @@
     <TargetFramework>netcoreapp2.1</TargetFramework>
 
     <IsPackable>false</IsPackable>
-  </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU' ">
-    <SignAssembly>true</SignAssembly>
-    <DelaySign>true</DelaySign>
-    <AssemblyOriginatorKeyFile>..\..\..\build\35MSSharedLib1024.snk</AssemblyOriginatorKeyFile>
-    <DefineConstants>SIGNASSEMBLY</DefineConstants>
+    <Configurations>Debug;Release</Configurations>
   </PropertyGroup>
 
   <ItemGroup>

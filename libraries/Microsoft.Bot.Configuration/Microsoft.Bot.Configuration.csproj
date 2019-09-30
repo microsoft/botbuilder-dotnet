@@ -1,10 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Version Condition=" '$(PackageVersion)' == '' ">4.5.0-local</Version>
+    <Version Condition=" '$(PackageVersion)' == '' ">4.6.0-local</Version>
     <Version Condition=" '$(PackageVersion)' != '' ">$(PackageVersion)</Version>
-    <PackageVersion Condition=" '$(PackageVersion)' == '' ">4.5.0-local</PackageVersion>
+    <PackageVersion Condition=" '$(PackageVersion)' == '' ">4.6.0-local</PackageVersion>
     <PackageVersion Condition=" '$(PackageVersion)' != '' ">$(PackageVersion)</PackageVersion>
-    <Configurations>Debug;Release;Debug - NuGet Packages</Configurations>
+    <Configurations>Debug;Release;</Configurations>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -19,6 +19,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackageId>Microsoft.Bot.Configuration</PackageId>
     <Description>Classes for loading and saving bot configuration files</Description>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>

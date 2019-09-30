@@ -5,7 +5,7 @@
   "id": "",
   "packageName": "com.teams.sample.activityupdateanddelete",
   "developer": {
-    "name": "Reply To Channel",
+    "name": "ReplyToChannelBot",
     "websiteUrl": "https://www.microsoft.com",
     "privacyUrl": "https://www.teams.com/privacy",
     "termsOfUseUrl": "https://www.teams.com/termsofuser"
@@ -15,12 +15,12 @@
     "outline": "outline.png"
   },
   "name": {
-    "short": "Reply To Channel",
-    "full": "Reply To Channel"
+    "short": "ReplyToChannelBot",
+    "full": "ReplyToChannelBot"
   },
   "description": {
-    "short": "Reply To Channel",
-    "full": "Reply To Channel"
+    "short": "ReplyToChannelBot",
+    "full": "ReplyToChannelBot"
   },
   "accentColor": "#FFFFFF",
   "bots": [

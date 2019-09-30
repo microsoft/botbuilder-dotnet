@@ -28,11 +28,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// <summary>
         /// Gets or sets a value indicating whether the input should always prompt the user regardless of there being a value or not.
         /// </summary>
+        [JsonProperty("alwaysPrompt")]
         public bool AlwaysPrompt { get; set; } = false;
 
         /// <summary>
         /// Gets or sets intteruption policy.
         /// </summary>
+        [JsonProperty("allowInterruptions")]
         public AllowInterruptions AllowInterruptions { get; set; } = AllowInterruptions.NotRecognized;
 
         /// <summary>
@@ -42,38 +44,55 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         public string Property { get; set; }
 
         /// <summary>
+        /// Gets or sets a value expression which can be used to intialize the input prompt.
+        /// </summary>
+        /// <remarks>
+        /// An example of how to use this would be to use an entity expression such as @age to fill the value for this dialog
+        /// that is configured to go into $age dialog property.
+        /// </remarks>
+        [JsonProperty("value")]
+        public string Value { get; set; }
+
+        /// <summary>
         /// Gets or sets the activity to send to the user.
         /// </summary>
+        [JsonProperty("prompt")]
         public ITemplate<Activity> Prompt { get; set; }
 
         /// <summary>
         /// Gets or sets the activity template for retrying prompt.
         /// </summary>
+        [JsonProperty("unrecognizedPrompt")]
         public ITemplate<Activity> UnrecognizedPrompt { get; set; }
 
         /// <summary>
         /// Gets or sets the activity template to send to the user whenever the value provided is invalid.
         /// </summary>
+        [JsonProperty("invalidPrompt")]
         public ITemplate<Activity> InvalidPrompt { get; set; }
 
         /// <summary>
         /// Gets or sets the activity template to send when MaxTurnCount has been reached and the default value is used.
         /// </summary>
+        [JsonProperty("defaultValueResponse")]
         public ITemplate<Activity> DefaultValueResponse { get; set; }
 
         /// <summary>
         /// Gets or sets the expressions to run to validate the input.
         /// </summary>
+        [JsonProperty("validations")]
         public List<string> Validations { get; set; } = new List<string>();
 
         /// <summary>
         /// Gets or sets maximum number of times to ask the user for this value before the dilog gives up.
         /// </summary>
+        [JsonProperty("maxTurnCount")]
         public int? MaxTurnCount { get; set; }
 
         /// <summary>
         /// Gets or sets the default value for the input dialog when MaxTurnCount is exceeded.
         /// </summary>
+        [JsonProperty("defaultValue")]
         public string DefaultValue { get; set; }
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options, CancellationToken cancellationToken = default(CancellationToken))
@@ -86,6 +105,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             var op = OnInitializeOptions(dc, options);
             dc.State.SetValue(ThisPath.OPTIONS, op);
             dc.State.SetValue(TURN_COUNT_PROPERTY, 0);
+
+            if (!String.IsNullOrEmpty(this.Value))
+            {
+                if (dc.State.TryGetValue(this.Value,  out var value))
+                {
+                    dc.State.SetValue(VALUE_PROPERTY, value);
+                }
+            }
 
             var state = this.AlwaysPrompt ? InputState.Missing : await this.RecognizeInput(dc);
             if (state == InputState.Valid)
