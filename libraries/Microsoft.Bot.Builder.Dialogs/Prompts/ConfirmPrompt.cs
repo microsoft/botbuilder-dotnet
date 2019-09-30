@@ -38,6 +38,28 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// custom validation for this prompt.</param>
         /// <param name="defaultLocale">Optional, the default locale used to determine language-specific behavior of the prompt.
         /// The locale is a 2, 3, or 4 character ISO 639 code that represents a language or language family.</param>
+        /// <remarks>The value of <paramref name="dialogId"/> must be unique within the
+        /// <see cref="DialogSet"/> or <see cref="ComponentDialog"/> to which the prompt is added.
+        /// <para>If the <see cref="Activity.Locale"/>
+        /// of the <see cref="DialogContext"/>.<see cref="DialogContext.Context"/>.<see cref="ITurnContext.Activity"/>
+        /// is specified, then that local is used to determine language specific behavior; otherwise
+        /// the <paramref name="defaultLocale"/> is used. US-English is the used if no language or
+        /// default locale is available, or if the language or locale is not otherwise supported.</para></remarks>
+        public ConfirmPrompt(string dialogId, PromptValidator<bool> validator = null, string defaultLocale = null)
+            : base(dialogId, validator)
+        {
+            Style = ListStyle.Auto;
+            DefaultLocale = defaultLocale;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConfirmPrompt"/> class.
+        /// </summary>
+        /// <param name="dialogId">The ID to assign to this prompt.</param>
+        /// <param name="validator">Optional, a <see cref="PromptValidator{FoundChoice}"/> that contains additional,
+        /// custom validation for this prompt.</param>
+        /// <param name="defaultLocale">Optional, the default locale used to determine language-specific behavior of the prompt.
+        /// The locale is a 2, 3, or 4 character ISO 639 code that represents a language or language family.</param>
         /// <param name="choiceDefaults">Overrides the dictionary of Bot Framework SDK-supported _choiceDefaults (for prompt localization).
         /// Must be passed in to each ConfirmPrompt that needs the custom choice defaults.</param>
         /// <remarks>The value of <paramref name="dialogId"/> must be unique within the
@@ -47,12 +69,10 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// is specified, then that local is used to determine language specific behavior; otherwise
         /// the <paramref name="defaultLocale"/> is used. US-English is the used if no language or
         /// default locale is available, or if the language or locale is not otherwise supported.</para></remarks>
-        public ConfirmPrompt(string dialogId, PromptValidator<bool> validator = null, string defaultLocale = null, Dictionary<string, (Choice, Choice, ChoiceFactoryOptions)> choiceDefaults = null)
-            : base(dialogId, validator)
+        public ConfirmPrompt(string dialogId, PromptValidator<bool> validator = null, string defaultLocale = null, Dictionary<string, (Choice, Choice, ChoiceFactoryOptions)> choiceDefaults)
+            : this(dialogId, validator, defaultLocale)
         {
-            Style = ListStyle.Auto;
-            DefaultLocale = defaultLocale;
-            _choiceDefaults = choiceDefaults ?? _choiceDefaults;
+            _choiceDefaults = choiceDefaults;
         }
 
         /// <summary>
