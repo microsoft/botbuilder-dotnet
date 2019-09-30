@@ -45,15 +45,18 @@ namespace Microsoft.Bot.Builder
     /// <seealso cref="IMiddleware"/>
     public class BotFrameworkAdapter : BotAdapter, IAdapterIntegration, IUserTokenProvider
     {
+#pragma warning disable SA1401 // Fields should be private
+        protected readonly ICredentialProvider _credentialProvider;
+        protected readonly IChannelProvider _channelProvider;
+        protected readonly ILogger _logger;
+#pragma warning restore SA1401 // Fields should be private
+
         private const string InvokeResponseKey = "BotFrameworkAdapter.InvokeResponse";
         private const string BotIdentityKey = "BotIdentity";
 
         private static readonly HttpClient _defaultHttpClient = new HttpClient();
-        private readonly ICredentialProvider _credentialProvider;
-        private readonly IChannelProvider _channelProvider;
         private readonly HttpClient _httpClient;
         private readonly RetryPolicy _connectorClientRetryPolicy;
-        private readonly ILogger _logger;
         private readonly ConcurrentDictionary<string, MicrosoftAppCredentials> _appCredentialMap = new ConcurrentDictionary<string, MicrosoftAppCredentials>();
         private readonly AuthenticationConfiguration _authConfiguration;
 

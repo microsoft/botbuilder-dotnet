@@ -33,9 +33,7 @@ namespace Microsoft.Bot.Builder.Streaming
         private const string ChannelIdHeaderName = "channelid";
         private const string InvokeResponseKey = "DirectLineAdapter.InvokeResponse";
         private const string BotIdentityKey = "BotIdentity";
-        private readonly IChannelProvider _channelProvider;
-        private readonly ICredentialProvider _credentialProvider;
-        private readonly ILogger _logger;
+
         private IBot _bot;
         private ClaimsIdentity _claimsIdentity;
         private IList<StreamingRequestHandler> _requestHandlers;
@@ -49,16 +47,6 @@ namespace Microsoft.Bot.Builder.Streaming
         public DirectLineAdapter(ICredentialProvider credentialProvider = null, IChannelProvider channelProvider = null, ILogger<BotFrameworkHttpAdapter> logger = null)
             : base(credentialProvider ?? new SimpleCredentialProvider(), channelProvider, null, null, null, logger)
         {
-            _credentialProvider = credentialProvider;
-            _channelProvider = channelProvider;
-            if (logger != null)
-            {
-                _logger = logger;
-            }
-            else
-            {
-                _logger = NullLogger.Instance;
-            }
         }
 
         /// <summary>
@@ -84,18 +72,10 @@ namespace Microsoft.Bot.Builder.Streaming
         /// <param name="bot">The <see cref="IBot"/> to be used for all requests to this handler.</param>
         /// <param name="logger">The ILogger implementation this adapter should use.</param>
         public DirectLineAdapter(Func<ITurnContext, Exception, Task> onTurnError, IBot bot, ILogger<BotFrameworkHttpAdapter> logger = null)
-            : base(new SimpleCredentialProvider())
+            : base(new SimpleCredentialProvider(), logger: logger)
         {
             OnTurnError = onTurnError;
             _bot = bot ?? throw new ArgumentNullException(nameof(bot));
-            if (logger != null)
-            {
-                _logger = logger;
-            }
-            else
-            {
-                _logger = NullLogger.Instance;
-            }
         }
 
         /// <summary>
@@ -288,7 +268,12 @@ namespace Microsoft.Bot.Builder.Streaming
             var requestHandler = _requestHandlers.Where(x => x.ServiceUrl == activity.ServiceUrl).Where(y => y.HasConversation(activity.Conversation.Id)).LastOrDefault();
             using (var context = new TurnContext(this, activity))
             {
-                context.TurnState.Add<IIdentity>(BotIdentityKey, _claimsIdentity);
+                // Pipes are unauthenticated. Pending to check that we are in pipes right now. Do not merge to master without that.
+                if (_claimsIdentity != null)
+                {
+                    context.TurnState.Add<IIdentity>(BotIdentityKey, _claimsIdentity);
+                }
+
                 var connectorClient = CreateStreamingConnectorClient(activity, requestHandler);
                 context.TurnState.Add(connectorClient);
 
