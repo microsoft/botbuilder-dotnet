@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Azure.Cosmos;
@@ -90,27 +89,32 @@ namespace Microsoft.Bot.Builder.Azure
             // Ensure Initialization has been run
             await InitializeAsync().ConfigureAwait(false);
 
-            var resultSetIterator = _container.GetItemQueryIterator<DocumentStoreItem>(
-                requestOptions: new QueryRequestOptions()
-                {
-                    PartitionKey = new PartitionKey(keys[0]),
-                });
-
-            var documentStoreItems = new List<DocumentStoreItem>(keys.Length);
-            while (resultSetIterator.HasMoreResults)
-            {
-                documentStoreItems.AddRange(await resultSetIterator.ReadNextAsync(cancellationToken).ConfigureAwait(false));
-            }
-
             var storeItems = new Dictionary<string, object>(keys.Length);
 
-            foreach (var documentStoreItem in documentStoreItems)
+            foreach (var key in keys)
             {
-                var item = documentStoreItem.Document.ToObject(typeof(object), _jsonSerializer);
-                if (documentStoreItem is IStoreItem storeItem)
+                var resultSetIterator = _container.GetItemQueryIterator<DocumentStoreItem>(
+                    requestOptions: new QueryRequestOptions() { PartitionKey = new PartitionKey(key), });
+
+                var documentStoreItems = new List<DocumentStoreItem>();
+                while (resultSetIterator.HasMoreResults)
                 {
-                    storeItem.ETag = documentStoreItem.ETag;
-                    storeItems.Add(documentStoreItem.RealId, item);
+                    documentStoreItems.AddRange(await resultSetIterator.ReadNextAsync(cancellationToken)
+                        .ConfigureAwait(false));
+                }
+
+                foreach (var documentStoreItem in documentStoreItems)
+                {
+                    var item = documentStoreItem.Document.ToObject(typeof(object), _jsonSerializer);
+                    if (item is IStoreItem storeItem)
+                    {
+                        storeItem.ETag = documentStoreItem.ETag;
+                        storeItems.Add(documentStoreItem.RealId, storeItem);
+                    }
+                    else
+                    {
+                        storeItems.Add(documentStoreItem.RealId, item);
+                    }
                 }
             }
 
@@ -195,18 +199,24 @@ namespace Microsoft.Bot.Builder.Azure
             {
                 var cosmosClientOptions = _cosmosDbStorageOptions.CosmosClientOptions ?? new CosmosClientOptions();
 
-                _client = new CosmosClient(
-                    _cosmosDbStorageOptions.CosmosDbEndpoint,
-                    _cosmosDbStorageOptions.AuthKey,
-                    cosmosClientOptions);
+                if (_client == null)
+                {
+                    _client = new CosmosClient(
+                        _cosmosDbStorageOptions.CosmosDbEndpoint,
+                        _cosmosDbStorageOptions.AuthKey,
+                        cosmosClientOptions);
+                }
 
-                _container = await _client
+                if (_container == null)
+                {
+                    _container = await _client
                         .GetDatabase(_cosmosDbStorageOptions.DatabaseId)
                         .CreateContainerIfNotExistsAsync(
                             _cosmosDbStorageOptions.ContainerId,
                             DocumentStoreItem.PartitionKeyPath,
                             _cosmosDbStorageOptions.ContainerThroughput)
                         .ConfigureAwait(false);
+                }
             }
         }
 
