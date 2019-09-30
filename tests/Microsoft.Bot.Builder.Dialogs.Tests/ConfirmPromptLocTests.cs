@@ -147,7 +147,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             };
 
             // Prompt should default to English if locale is a non-supported value
-            dialogs.Add(new ConfirmPrompt("ConfirmPrompt", null, defaultLocale, customDict));
+            dialogs.Add(new ConfirmPrompt("ConfirmPrompt", customDict, null, defaultLocale));
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {

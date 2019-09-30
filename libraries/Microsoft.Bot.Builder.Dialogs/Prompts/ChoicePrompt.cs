@@ -28,7 +28,6 @@ namespace Microsoft.Bot.Builder.Dialogs
                 culture => culture.Locale, culture =>
                 new ChoiceFactoryOptions { InlineSeparator = culture.Separator, InlineOr = culture.InlineOr, InlineOrMore = culture.InlineOrMore, IncludeNumbers = true }));
 
-
         /// <summary>
         /// Initializes a new instance of the <see cref="ChoicePrompt"/> class.
         /// </summary>

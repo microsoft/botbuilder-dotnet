@@ -678,7 +678,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 { culture.Locale, new ChoiceFactoryOptions(culture.Separator, culture.InlineOr, culture.InlineOrMore, true) },
             };
 
-            dialogs.Add(new ChoicePrompt("ChoicePrompt", null, culture.Locale, customDict));
+            dialogs.Add(new ChoicePrompt("ChoicePrompt", customDict, null, culture.Locale));
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
