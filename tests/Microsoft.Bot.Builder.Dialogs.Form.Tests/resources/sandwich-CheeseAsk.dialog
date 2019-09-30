@@ -6,7 +6,7 @@
         {
             "$type": "Microsoft.Ask",
             "activity": "[askCheese]",
-            "expectedSlots": [
+            "expectedProperties": [
                 "Cheese"
             ]
         }

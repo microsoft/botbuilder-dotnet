@@ -14,14 +14,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         [JsonConstructor]
         public Ask(
             string text = null,
-            List<string> expectedSlots = null,
+            List<string> expectedProperties = null,
             [CallerFilePath] string callerPath = "",
             [CallerLineNumber] int callerLine = 0)
         : base(text, callerPath, callerLine)
         {
             this.RegisterSourceLocation(callerPath, callerLine);
             this.Activity = new ActivityTemplate(text ?? string.Empty);
-            this.ExpectedSlots = expectedSlots;
+            this.ExpectedProperties = expectedProperties;
         }
 
         /// <summary>
@@ -30,11 +30,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <value>
         /// Slots expected to be filled by response.
         /// </value>
-        public List<string> ExpectedSlots { get; set; } = new List<string>();
+        public List<string> ExpectedProperties { get; set; } = new List<string>();
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            dc.State.SetValue("dialog.expectedSlots", ExpectedSlots);
+            dc.State.SetValue("dialog.expectedProperties", ExpectedProperties);
             var result = await base.BeginDialogAsync(dc, options, cancellationToken).ConfigureAwait(false);
             result.Status = DialogTurnStatus.CompleteAndWait;
             return result;

@@ -6,7 +6,7 @@
         {
             "$type": "Microsoft.Ask",
             "activity": "[clarifyBread]",
-            "expectedSlots": [
+            "expectedProperties": [
                 "Bread"
             ]
         }

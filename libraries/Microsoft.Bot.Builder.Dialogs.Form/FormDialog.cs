@@ -87,7 +87,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                             var queues = Queues.Read(sequenceContext);
                             var entities = NormalizeEntities(sequenceContext);
                             var utterance = sequenceContext.Context.Activity?.AsMessageActivity()?.Text;
-                            if (!sequenceContext.State.TryGetValue<string[]>("$expectedSlots", out var slots))
+                            if (!sequenceContext.State.TryGetValue<string[]>("$expectedProperties", out var slots))
                             {
                                 slots = new string[0];
                             }

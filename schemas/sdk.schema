@@ -694,8 +694,8 @@
                 },
                 "expectedProperties": {
                     "type": "array",
-                    "title": "Expected Slots",
-                    "description": "Slots expected to be filled by entities from the user",
+                    "title": "Expected Properties",
+                    "description": "Properties expected to be filled by entities from the user",
                     "items": {
                         "type": "string"
                     }

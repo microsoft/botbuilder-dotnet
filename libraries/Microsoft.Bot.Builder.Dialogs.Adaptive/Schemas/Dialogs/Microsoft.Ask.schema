@@ -6,7 +6,7 @@
     "type": "object",
     "allOf": [
         {
-            "$ref": "../../../Microsoft.Bot.Builder.Dialogs.Adaptive/Schemas/Actions/Microsoft.SendActivity.schema#"
+            "$ref": "../Actions/Microsoft.SendActivity.schema#"
         },
         {
             "properties": {
@@ -15,8 +15,8 @@
                     "items": {
                         "type": "string"
                     },
-                    "title": "Expected Slots",
-                    "description": "Slots expected to be filled by entities from the user"
+                    "title": "Expected Properties",
+                    "description": "Properties expected to be filled by entities from the user"
                 }
             }
         }
