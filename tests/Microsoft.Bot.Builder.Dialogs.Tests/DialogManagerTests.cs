@@ -3,16 +3,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Reflection.Metadata;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.Dialogs.Adaptive;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
-using Microsoft.Bot.Builder.LanguageGeneration;
-using Microsoft.Bot.Builder.LanguageGeneration.Templates;
+using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -115,30 +110,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             .StartTestAsync();
         }
 
-        private AdaptiveDialog CreateTestDialog(string property = "user.name")
+        private Dialog CreateTestDialog(string property = "user.name")
         {
-            var adaptiveDialog = new AdaptiveDialog("planningTest");
-
-            adaptiveDialog.Triggers.Add(
-                new OnUnknownIntent(
-                    new List<Dialog>()
-                    {
-                        new TextInput()
-                        {
-                            Prompt = new ActivityTemplate("Hello, what is your name?"),
-                            Property = property
-                        },
-                        new SendActivity($"Hello {{{property}}}, nice to meet you!"),
-                    }));
-
-            return adaptiveDialog;
+            return new AskForNameDialog(property.Replace(".", string.Empty), property);
         }
 
-        private TestFlow CreateFlow(Dialog adaptiveDialog, IStorage storage, string conversationId)
+        private TestFlow CreateFlow(Dialog dialog, IStorage storage, string conversationId)
         {
-            TypeFactory.Configuration = new ConfigurationBuilder().Build();
-
-            var explorer = new ResourceExplorer();
             var convoState = new ConversationState(storage);
             var userState = new UserState(storage);
 
@@ -146,16 +124,56 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             adapter
                 .UseStorage(storage)
                 .UseState(userState, convoState)
-                .Use(new RegisterClassMiddleware<ResourceExplorer>(explorer))
-                .UseAdaptiveDialogs()
-                .UseLanguageGeneration(explorer)
                 .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
 
-            DialogManager dm = new DialogManager(adaptiveDialog);
+            DialogManager dm = new DialogManager(dialog);
             return new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
                 await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
             });
+        }
+
+        public class AskForNameDialog : ComponentDialog, IDialogDependencies
+        {
+            public AskForNameDialog(string id, string property)
+                : base(id)
+            {
+                AddDialog(new TextPrompt("prompt"));
+                this.Property = property;
+            }
+
+            public string Property { get; set; }
+
+            public async override Task<DialogTurnResult> BeginDialogAsync(DialogContext outerDc, object options = null, CancellationToken cancellationToken = default)
+            {
+                if (outerDc.State.TryGetValue<string>(this.Property, out string result))
+                {
+                    await outerDc.Context.SendActivityAsync($"Hello {result.ToString()}, nice to meet you!");
+                    return await outerDc.EndDialogAsync(result);
+                }
+
+                return await outerDc.BeginDialogAsync(
+                    "prompt",
+                    new PromptOptions
+                    {
+                        Prompt = new Activity { Type = ActivityTypes.Message, Text = "Hello, what is your name?" },
+                        RetryPrompt = new Activity { Type = ActivityTypes.Message, Text = "Hello, what is your name?" },
+                    },
+                    cancellationToken: cancellationToken)
+                    .ConfigureAwait(false);
+            }
+
+            public IEnumerable<Dialog> GetDependencies()
+            {
+                return this._dialogs.GetDialogs();
+            }
+
+            public async override Task<DialogTurnResult> ResumeDialogAsync(DialogContext outerDc, DialogReason reason, object result = null, CancellationToken cancellationToken = default)
+            {
+                outerDc.State.SetValue(this.Property, result);
+                await outerDc.Context.SendActivityAsync($"Hello {result.ToString()}, nice to meet you!");
+                return await outerDc.EndDialogAsync(result);
+            }
         }
     }
 }

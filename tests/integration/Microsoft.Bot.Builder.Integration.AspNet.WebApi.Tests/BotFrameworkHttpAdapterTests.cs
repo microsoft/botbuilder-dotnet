@@ -85,6 +85,27 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Tests
             mockHttpMessageHandler.Protected().Verify<Task<HttpResponseMessage>>("SendAsync", Times.Once(), ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>());
         }
 
+        [Fact]
+        public async Task BadRequest()
+        {
+            // Arrange
+            var httpRequest = new HttpRequestMessage();
+            httpRequest.Content = new StringContent("this.is.not.json", Encoding.UTF8, "application/json");
+
+            var httpResponse = new HttpResponseMessage();
+
+            var botMock = new Mock<IBot>();
+            botMock.Setup(b => b.OnTurnAsync(It.IsAny<TurnContext>(), It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
+
+            // Act
+            var adapter = new BotFrameworkHttpAdapter();
+            await adapter.ProcessAsync(httpRequest, httpResponse, botMock.Object);
+
+            // Assert
+            botMock.Verify(m => m.OnTurnAsync(It.Is<TurnContext>(tc => true), It.Is<CancellationToken>(ct => true)), Times.Never());
+            Assert.Equal(HttpStatusCode.BadRequest, httpResponse.StatusCode);
+        }
+
         private static HttpContent CreateMessageActivityContent()
         {
             return CreateContent(new Activity

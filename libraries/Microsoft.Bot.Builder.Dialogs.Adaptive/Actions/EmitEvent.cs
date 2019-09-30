@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         public string EventValue { get; set; }
 
         /// <summary>
-        /// Gets or sets whether the event should bubble or not
+        /// Gets or sets a value indicating whether gets or sets whether the event should bubble or not
         /// </summary>
         public bool BubbleEvent { get; set; }
 

@@ -4,6 +4,7 @@
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <UserSecretsId>f277272c-9113-411f-addd-a4acfa9701a2</UserSecretsId>
     <RootNamespace>Microsoft.BotBuilderSamples</RootNamespace>
+    <Configurations>Debug;Release</Configurations>
   </PropertyGroup>
 
   <ItemGroup>

@@ -29,6 +29,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>$(NoWarn),1573,1591,1712</NoWarn>
+    <SignAssembly>true</SignAssembly>
+    <DelaySign>true</DelaySign>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(SignAssembly)'=='true' ">
+    <DefineConstants>SIGNASSEMBLY</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -56,12 +62,6 @@
   <PropertyGroup Condition="$(Configuration) == 'Debug'">
     <!-- For debug builds, we don't generate documentation. Supress the StyleCop rule that warns about this. -->
     <NoWarn>$(NoWarn);SA0001</NoWarn>
-  </PropertyGroup>
-  <PropertyGroup Condition="$(Configuration) == 'Debug - NuGet Packages'">
-    <!-- For debug Nuget builds, we don't generate documentation. Supress the StyleCop rule that warns about this. -->
-    <NoWarn>$(NoWarn);SA0001</NoWarn>
-
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
   
   <PropertyGroup>

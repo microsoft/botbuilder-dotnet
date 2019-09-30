@@ -1,11 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Version Condition=" '$(PackageVersion)' == '' ">4.5.0-local</Version>
+    <Version Condition=" '$(PackageVersion)' == '' ">4.6.0-local</Version>
     <Version Condition=" '$(PackageVersion)' != '' ">$(PackageVersion)</Version>
-    <PackageVersion Condition=" '$(PackageVersion)' == '' ">4.5.0-local</PackageVersion>
+    <PackageVersion Condition=" '$(PackageVersion)' == '' ">4.6.0-local</PackageVersion>
     <PackageVersion Condition=" '$(PackageVersion)' != '' ">$(PackageVersion)</PackageVersion>
-    <Configurations>Debug;Release;Debug - NuGet Packages</Configurations>
+    <Configurations>Debug;Release</Configurations>
   </PropertyGroup>
   
   <PropertyGroup>
@@ -13,6 +13,7 @@
     <PackageId>Microsoft.Bot.Builder.ApplicationInsights</PackageId>
     <Description>This library integrates the Microsoft Bot Builder SDK with Application Insights.</Description>
     <Summary>This library provides integration between the Microsoft Bot Builder SDK and Application Insights.</Summary>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
     
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -22,10 +23,10 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Builder.ApplicationInsights.xml</DocumentationFile>
   </PropertyGroup>
-
+    
   <ItemGroup>
     <PackageReference Include="Microsoft.ApplicationInsights" Version="2.8.1" />
-    <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(PackageVersion)' == '' " Version="4.0.0-local" />
+    <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(PackageVersion)' == '' " Version="4.6.0-local" />
     <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(PackageVersion)' != '' " Version="$(PackageVersion)" />
     <PackageReference Include="SourceLink.Create.CommandLine" Version="2.8.3" />    
   </ItemGroup>
