@@ -12,6 +12,12 @@ using Microsoft.Bot.Schema.Teams;
 
 namespace Microsoft.BotBuilderSamples.Bots
 {
+
+    /*
+     * This bot must be added to a team. You might need to create your own team so you can modify the channel information. 
+     * From the UI you can click the 3 dots on the team level, or the channel level to add, rename, or delete the channel/team. 
+     * You can go to the "manage team" option at the team level to add/remove people.
+     */
     public class ConversationUpdateBot : TeamsActivityHandler
     {
         protected override async Task OnTeamsChannelRenamedAsync(ChannelInfo channelInfo, TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)

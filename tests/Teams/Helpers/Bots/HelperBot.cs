@@ -13,6 +13,11 @@ namespace Microsoft.BotBuilderSamples.Bots
 {
     public class HelperBot : TeamsActivityHandler
     {
+        /*
+         * This bot should be installed within a team with at least 3 channels. You can @mention the bot "notify", "card", "random", or "general" to
+         * have the message notify the user with a message, notify the user with a card, send a message to a random channel, or send a message to the 
+         * general channel respectively.
+         */
         protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
             turnContext.Activity.RemoveRecipientMention();

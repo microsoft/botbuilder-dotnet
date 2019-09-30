@@ -11,6 +11,11 @@ namespace Microsoft.BotBuilderSamples.Bots
 {
     public class ActivityUpdateAndDeleteBot : ActivityHandler
     {
+        /*
+         * This bot should be installed in a team. If you @mention the bot the bot will respond with a new thread instead of replying to 
+         * the user that sent the message.
+         */
+
         private List<string> _list;
 
         public ActivityUpdateAndDeleteBot(List<string> list)

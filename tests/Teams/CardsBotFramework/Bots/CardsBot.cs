@@ -15,6 +15,9 @@ namespace Cards.Bots
     {
         // NOT SUPPORTED ON TEAMS: AnimationCard, AudioCard, VideoCard, OAuthCard
 
+        /*
+         * From the UI you can @mention the bot, from any scope, any of the strings listed below to get that card back.
+         */
         const string HeroCard = "Hero";
         const string ThumbnailCard = "Thumbnail";
         const string ReceiptCard = "Receipt";

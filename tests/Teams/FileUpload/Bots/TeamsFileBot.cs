@@ -18,6 +18,11 @@ namespace Microsoft.BotBuilderSamples.Bots
 {
     public class TeamsFileBot : TeamsActivityHandler
     {
+        /*
+         * You can install this bot at any scope. You can @mention the bot and it will present you with the file prompt. You can accept and 
+         * the file will be uploaded, or you can decline and it won't.
+         */
+
         private readonly IHttpClientFactory _clientFactory;
 
         public TeamsFileBot(IHttpClientFactory clientFactory)

@@ -14,6 +14,11 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.BotBuilderSamples.Bots
 {
+    /*
+     * After installing this bot you will need to click on the 3 dots to pull up the extension menu to select the bot. Once you do you do 
+     * see the extension pop a task module.
+     */
+
     public class ActionBasedMessagingExtensionFetchTaskBot : TeamsActivityHandler
     {
         protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
