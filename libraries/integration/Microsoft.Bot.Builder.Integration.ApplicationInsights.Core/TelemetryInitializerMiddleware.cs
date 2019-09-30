@@ -15,14 +15,20 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core
     public class TelemetryInitializerMiddleware : IMiddleware
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly TelemetryLoggerMiddleware _telemetryLoggerMiddleware;
+        private readonly bool _logActivityTelemetry;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TelemetryInitializerMiddleware"/> class.
         /// </summary>
         /// <param name="httpContextAccessor">The IHttpContextAccessor to allow access to the HttpContext.</param>
-        public TelemetryInitializerMiddleware(IHttpContextAccessor httpContextAccessor)
+        /// <param name="telemetryLoggerMiddleware">The TelemetryLoggerMiddleware to allow for logging of activity events.</param>
+        /// <param name="logActivityTelemetry">Indicates if the TelemetryLoggerMiddleware should be executed to log activity events.</param>
+        public TelemetryInitializerMiddleware(IHttpContextAccessor httpContextAccessor, TelemetryLoggerMiddleware telemetryLoggerMiddleware, bool logActivityTelemetry = true)
         {
             _httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
+            _telemetryLoggerMiddleware = telemetryLoggerMiddleware;
+            _logActivityTelemetry = logActivityTelemetry;
         }
 
         /// <summary>
@@ -56,7 +62,16 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core
                 items.Add(TelemetryBotIdInitializer.BotActivityKey, activityJson);
             }
 
-            await nextTurn(cancellationToken).ConfigureAwait(false);
+            if (_logActivityTelemetry)
+            {
+                await _telemetryLoggerMiddleware
+                    .OnTurnAsync(context, nextTurn, cancellationToken)
+                    .ConfigureAwait(false);
+            }
+            else
+            {
+                await nextTurn(cancellationToken).ConfigureAwait(false);
+            }
         }
     }
 }

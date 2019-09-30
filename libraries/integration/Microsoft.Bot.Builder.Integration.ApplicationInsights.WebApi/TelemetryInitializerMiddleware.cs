@@ -13,11 +13,18 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi
     /// </summary>
     public class TelemetryInitializerMiddleware : IMiddleware
     {
+        private readonly TelemetryLoggerMiddleware _telemetryLoggerMiddleware;
+        private readonly bool _logActivityTelemetry;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="TelemetryInitializerMiddleware"/> class.
         /// </summary>
-        public TelemetryInitializerMiddleware()
+        /// <param name="telemetryLoggerMiddleware">The TelemetryLoggerMiddleware to allow for logging of activity events.</param>
+        /// <param name="logActivityTelemetry">Indicates if the TelemetryLoggerMiddleware should be executed to log activity events.</param>
+        public TelemetryInitializerMiddleware(TelemetryLoggerMiddleware telemetryLoggerMiddleware, bool logActivityTelemetry = true)
         {
+            _telemetryLoggerMiddleware = telemetryLoggerMiddleware;
+            _logActivityTelemetry = logActivityTelemetry;
         }
 
         /// <summary>
@@ -43,10 +50,19 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi
 
                 var activityJson = JObject.FromObject(activity);
 
-                items.Add(TelemetryBotIdInitializer.BotActivityKey, activityJson);
+                items?.Add(TelemetryBotIdInitializer.BotActivityKey, activityJson);
             }
 
-            await nextTurn(cancellationToken).ConfigureAwait(false);
+            if (_logActivityTelemetry)
+            {
+                await _telemetryLoggerMiddleware
+                    .OnTurnAsync(context, nextTurn, cancellationToken)
+                    .ConfigureAwait(false);
+            }
+            else
+            {
+                await nextTurn(cancellationToken).ConfigureAwait(false);
+            }
         }
     }
 }
