@@ -126,6 +126,40 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.TestBot
                         },
                     };
                     break;
+                case "Images":
+                    // Display a VideoCard
+                    reply.Text = "Images";
+                    reply.Attachments = new List<Attachment>()
+                    {
+                        new Attachment()
+                        {
+                            ContentType = "image/png",
+                            ContentUrl = "https://docs.microsoft.com/en-us/bot-framework/media/how-it-works/architecture-resize.png",
+                        },
+                        new Attachment()
+                        {
+                            ContentType = "image/jpeg",
+                            ContentUrl = "https://docs.microsoft.com/en-us/bot-framework/media/how-it-works/architecture-resize.png",
+                        },
+                    };
+                    break;
+                case "Videos":
+                    // Display a VideoCard
+                    reply.Text = "Videos";
+                    reply.Attachments = new List<Attachment>()
+                    {
+                        new Attachment()
+                        {
+                            ContentType = "video/mp4",
+                            ContentUrl = "http://techslides.com/demos/sample-videos/small.mp4",
+                        },
+                        new Attachment()
+                        {
+                            ContentType = "video/mp4",
+                            ContentUrl = "http://techslides.com/demos/sample-videos/small.mp4",
+                        },
+                    };
+                    break;
                 default:
                     // Give the user instructions about what to do next
                     await stepContext.Context.SendActivityAsync(MessageFactory.Text("Type anything to show the choice list again."), cancellationToken);
@@ -152,10 +186,12 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat.TestBot
                 new Choice() { Value = "Receipt Card", Synonyms = new List<string>() { "receipt" } },
                 new Choice() { Value = "Signin Card", Synonyms = new List<string>() { "signin" } },
                 new Choice() { Value = "Thumbnail Card", Synonyms = new List<string>() { "thumbnail", "thumb" } },
-                new Choice() { Value = "Video Card", Synonyms = new List<string>() { "video" } },
+                new Choice() { Value = "Video Card", Synonyms = new List<string>() { "video card" } },
                 new Choice() { Value = "Adaptive Card", Synonyms = new List<string>() { "adaptive" } },
                 new Choice() { Value = "Carousel", Synonyms = new List<string>() { "carousel" } },
                 new Choice() { Value = "SuggestedActions", Synonyms = new List<string>() { "suggestedactions", "suggest", "suggested" } },
+                new Choice() { Value = "Images", Synonyms = new List<string>() { "images" } },
+                new Choice() { Value = "Videos", Synonyms = new List<string>() { "videos" } },
             };
 
             return cardOptions;

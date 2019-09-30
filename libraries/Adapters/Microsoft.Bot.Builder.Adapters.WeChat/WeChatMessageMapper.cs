@@ -879,7 +879,7 @@ namespace Microsoft.Bot.Builder.Adapters.WeChat
             byte[] bytesData;
             if (AttachmentHelper.IsUrl(content))
             {
-                bytesData = await _wechatClient.SendHttpRequestAsync(HttpMethod.Get, content).ConfigureAwait(false);
+                bytesData = await _wechatClient.SendHttpRequestAsync(HttpMethod.Get, content, timeout: 60000).ConfigureAwait(false);
             }
             else
             {
