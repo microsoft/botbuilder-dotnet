@@ -76,7 +76,7 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
         }
 
         [Fact]
-        public async Task RequestHandlerRespondsWith500OnError()
+        public async Task RequestHandlerRespondsWith500OnErrorWhenAdapterErrors()
         {
             // Arrange
             var handler = new StreamingRequestHandler(null, new DirectLineAdapter(), "fakePipe");
@@ -147,6 +147,43 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
 
             // Assert
             Assert.True(handler.HasConversation(conversationId));
+        }
+
+        [Fact]
+        public async Task RequestHandlerKnowsWhatTimeConversationsWereAdded()
+        {
+            // Arrange
+            var handler = new StreamingRequestHandler(null, new DirectLineAdapter(), "fakePipe");
+            var conversationId = "testconvoid";
+            var membersAdded = new List<ChannelAccount>();
+            var member = new ChannelAccount
+            {
+                Id = "123",
+                Name = "bot",
+            };
+            membersAdded.Add(member);
+            var activity = new Activity()
+            {
+                Type = "conversationUpdate",
+                MembersAdded = membersAdded,
+                Conversation = new ConversationAccount(null, null, conversationId, null, null, null, null),
+            };
+
+            var payload = new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(activity, SerializationSettings.DefaultDeserializationSettings)));
+            var fakeContentStreamId = Guid.NewGuid();
+            var fakeContentStream = new FakeContentStream(fakeContentStreamId, "application/json", payload);
+            var testRequest = new ReceiveRequest
+            {
+                Path = $"/v3/conversations/{activity.Conversation?.Id}/activities/{activity.Id}",
+                Verb = "POST",
+            };
+            testRequest.Streams.Add(fakeContentStream);
+
+            // Act
+            _ = await handler.ProcessRequestAsync(testRequest);
+
+            // Assert
+            Assert.True(handler.ConversationAddedTime(conversationId) > DateTime.Now.AddSeconds(-5));
         }
 
         [Fact]
@@ -256,6 +293,43 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
 
             // Assert
             Assert.NotNull(response);
+        }
+
+        [Fact]
+        public async Task RequestHandlerRespondsWith500OnError()
+        {
+            // Arrange
+            var handler = new StreamingRequestHandler(null, new DirectLineAdapter(), "fakePipe");
+            var conversationId = "testconvoid";
+            var membersAdded = new List<ChannelAccount>();
+            var member = new ChannelAccount
+            {
+                Id = "123",
+                Name = "bot",
+            };
+            membersAdded.Add(member);
+            var activity = new Activity()
+            {
+                Type = "conversationUpdate",
+                MembersAdded = membersAdded,
+                Conversation = new ConversationAccount(null, null, conversationId, null, null, null, null),
+            };
+
+            var payload = new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(activity, SerializationSettings.DefaultDeserializationSettings)));
+            var fakeContentStreamId = Guid.NewGuid();
+            var fakeContentStream = new FakeContentStream(fakeContentStreamId, "application/json", payload);
+            var testRequest = new ReceiveRequest
+            {
+                Path = $"/v3/conversations/{activity.Conversation?.Id}/activities/{activity.Id}",
+                Verb = "POST",
+            };
+            testRequest.Streams.Add(fakeContentStream);
+
+            // Act
+            var response = await handler.ProcessRequestAsync(testRequest);
+
+            // Assert
+            Assert.Equal(500, response.StatusCode);
         }
 
         private class MessageBot : IBot
