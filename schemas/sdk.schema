@@ -327,7 +327,7 @@
         },
         {
             "title": "Microsoft.QnAMakerDialog",
-            "description": "This represents a dialog which is driven by a call to QnAMaker.ai knowledge base",
+            "description": "Dialog which uses QnAMAker knowledge base to answer questions.",
             "$ref": "#/definitions/Microsoft.QnAMakerDialog"
         },
         {
@@ -710,6 +710,15 @@
                     ],
                     "type": "string"
                 },
+                "value": {
+                    "$role": "expression",
+                    "title": "Value",
+                    "description": "Expression to use as the potential value. Example: @number as the value to use for a prompt bound to $age.",
+                    "examples": [
+                        "@number"
+                    ],
+                    "type": "string"
+                },
                 "defaultValue": {
                     "$role": "expression",
                     "title": "Default Value",
@@ -1006,6 +1015,15 @@
                     "description": "Property that this input dialog is bound to",
                     "examples": [
                         "$birthday"
+                    ],
+                    "type": "string"
+                },
+                "value": {
+                    "$role": "expression",
+                    "title": "Value",
+                    "description": "Expression to use as the potential value. Example: @number as the value to use for a prompt bound to $age.",
+                    "examples": [
+                        "@number"
                     ],
                     "type": "string"
                 },
@@ -1352,6 +1370,15 @@
                     "description": "Property that this input dialog is bound to",
                     "examples": [
                         "$birthday"
+                    ],
+                    "type": "string"
+                },
+                "value": {
+                    "$role": "expression",
+                    "title": "Value",
+                    "description": "Expression to use as the potential value. Example: @number as the value to use for a prompt bound to $age.",
+                    "examples": [
+                        "@number"
                     ],
                     "type": "string"
                 },
@@ -1735,6 +1762,15 @@
                     "description": "Property that this input dialog is bound to",
                     "examples": [
                         "$birthday"
+                    ],
+                    "type": "string"
+                },
+                "value": {
+                    "$role": "expression",
+                    "title": "Value",
+                    "description": "Expression to use as the potential value. Example: @number as the value to use for a prompt bound to $age.",
+                    "examples": [
+                        "@number"
                     ],
                     "type": "string"
                 },
@@ -3023,7 +3059,7 @@
                 },
                 {
                     "title": "Microsoft.QnAMakerDialog",
-                    "description": "This represents a dialog which is driven by a call to QnAMaker.ai knowledge base",
+                    "description": "Dialog which uses QnAMAker knowledge base to answer questions.",
                     "$ref": "#/definitions/Microsoft.QnAMakerDialog"
                 },
                 {
@@ -3971,6 +4007,15 @@
                     ],
                     "type": "string"
                 },
+                "value": {
+                    "$role": "expression",
+                    "title": "Value",
+                    "description": "Expression to use as the potential value. Example: @number as the value to use for a prompt bound to $age.",
+                    "examples": [
+                        "@number"
+                    ],
+                    "type": "string"
+                },
                 "defaultValue": {
                     "$role": "expression",
                     "title": "Default Value",
@@ -4186,6 +4231,15 @@
                     "description": "Property that this input dialog is bound to",
                     "examples": [
                         "$birthday"
+                    ],
+                    "type": "string"
+                },
+                "value": {
+                    "$role": "expression",
+                    "title": "Value",
+                    "description": "Expression to use as the potential value. Example: @number as the value to use for a prompt bound to $age.",
+                    "examples": [
+                        "@number"
                     ],
                     "type": "string"
                 },
@@ -5858,7 +5912,7 @@
         "Microsoft.QnAMakerDialog": {
             "$role": "unionType(Microsoft.IDialog)",
             "title": "QnAMaker Dialog",
-            "description": "This represents a dialog which is driven by a call to QnAMaker.ai knowledge base",
+            "description": "Dialog which uses QnAMAker knowledge base to answer questions.",
             "type": "object",
             "additionalProperties": false,
             "properties": {
@@ -5886,45 +5940,68 @@
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
                 },
-                "endpoint": {
-                    "type": "object",
-                    "title": "Endpoint",
-                    "description": "This is the QnAMaker endpoint to use",
-                    "required": [
-                        "knowledgeBaseId",
-                        "endpointKey",
-                        "host"
-                    ],
-                    "properties": {
-                        "knowledgeBaseId": {
-                            "type": "string",
-                            "title": "Knowledgebase Id",
-                            "description": "the knowledge base ID."
-                        },
-                        "endpointKey": {
-                            "type": "string",
-                            "title": "Endpoint Key",
-                            "description": "sets the endpoint key for the knowledge base"
-                        },
-                        "host": {
-                            "type": "string",
-                            "title": "Host",
-                            "description": "sets the host path",
-                            "examples": [
-                                "https://yourserver.azurewebsites.net/qnamaker"
-                            ]
-                        }
-                    }
+                "knowledgeBaseId": {
+                    "$role": "expression",
+                    "title": "KnowledgeBase Id",
+                    "description": "KnowledgeBase Id of your QnA Maker KnowledgeBase.",
+                    "default": "settings.qna.knowledgebaseid",
+                    "type": "string"
                 },
-                "options": {
-                    "type": "object",
-                    "title": "Options",
-                    "properties": {
-                        "scoreThreshold": {
-                            "type": "number",
-                            "title": "Score Threshold",
-                            "description": "\"sets the minimum score threshold, used to filter returned results. Scores are normalized to the range of 0.0 to 1.0"
-                        }
+                "endpointKey": {
+                    "$role": "expression",
+                    "title": "Endpoint Key",
+                    "description": "Endpoint key for the QnA Maker KB.",
+                    "default": "settings.qna.endpointkey",
+                    "type": "string"
+                },
+                "hostname": {
+                    "$role": "expression",
+                    "title": "Hostname",
+                    "description": "Hostname for your QnA Maker service.",
+                    "default": "settings.qna.hostname",
+                    "examples": [
+                        "https://yourserver.azurewebsites.net/qnamaker"
+                    ],
+                    "type": "string"
+                },
+                "noAnswer": {
+                    "$type": "Microsoft.IActivityTemplate",
+                    "title": "Fallback answer",
+                    "description": "Default answer to return when none found in KB.",
+                    "default": "Sorry, I did not find an answer.",
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                },
+                "threshold": {
+                    "type": "number",
+                    "title": "Threshold",
+                    "description": "Threshold score to filter results.",
+                    "default": 0.3
+                },
+                "activeLearningCardTitle": {
+                    "type": "string",
+                    "title": "Active learning card title",
+                    "description": "Title for active learning suggestions card.",
+                    "default": "Did you mean:"
+                },
+                "cardNoMatchText": {
+                    "type": "string",
+                    "title": "Card no match text",
+                    "description": "Text for no match option.",
+                    "default": "None of the above."
+                },
+                "cardNoMatchResponse ": {
+                    "$type": "Microsoft.IActivityTemplate",
+                    "title": "Card no match response",
+                    "description": "Custom response when no match option was selected.",
+                    "default": "Thanks for the feedback.",
+                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
+                },
+                "strictFilters": {
+                    "type": "array",
+                    "title": "Strict Filter Property",
+                    "description": "Memory property that holds strict filters to use when calling the QnA Maker KB.",
+                    "items": {
+                        "type": "object"
                     }
                 }
             },
@@ -5943,7 +6020,9 @@
                 {
                     "title": "Type",
                     "required": [
-                        "endpoint",
+                        "knowledgeBaseId",
+                        "endpointKey",
+                        "hostname",
                         "$type"
                     ]
                 }
@@ -6705,6 +6784,15 @@
                     "description": "Property that this input dialog is bound to",
                     "examples": [
                         "$birthday"
+                    ],
+                    "type": "string"
+                },
+                "value": {
+                    "$role": "expression",
+                    "title": "Value",
+                    "description": "Expression to use as the potential value. Example: @number as the value to use for a prompt bound to $age.",
+                    "examples": [
+                        "@number"
                     ],
                     "type": "string"
                 },
