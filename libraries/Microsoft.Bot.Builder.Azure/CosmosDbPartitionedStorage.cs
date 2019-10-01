@@ -180,6 +180,13 @@ namespace Microsoft.Bot.Builder.Azure
 
         public async Task DeleteAsync(string[] keys, CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (keys == null)
+            {
+                throw new ArgumentNullException(nameof(keys));
+            }
+
+            await InitializeAsync().ConfigureAwait(false);
+
             foreach (var key in keys)
             {
                 await _container.DeleteItemAsync<DocumentStoreItem>(
