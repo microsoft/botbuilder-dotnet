@@ -120,16 +120,11 @@ namespace Microsoft.Bot.Builder
         {
             // Clone activity and re-address
             var clone = JsonConvert.DeserializeObject<Activity>(JsonConvert.SerializeObject(context.Activity));
-
-            // TODO: Not sure how to remap this JS code to C#, need to check with steve.
-            // clone.ApplyConversationReference(new ConversationReference())
-            // Clone activity and re-address
-            // const clone = Object.assign({}, context.activity);
-            // TurnContext.applyConversationReference(clone, clone.relatesTo);
-            // delete clone.relatesTo;
+            clone.ApplyConversationReference(clone.RelatesTo);
+            clone.RelatesTo = null;
 
             // Forward to adapter for delivery
-            await context.Adapter.SendActivitiesAsync(context, new Activity[] { clone }, cancellationToken).ConfigureAwait(false);
+            await context.Adapter.SendActivitiesAsync(context, new[] { clone }, cancellationToken).ConfigureAwait(false);
         }
 
         private async Task OnInvokeCommand(ITurnContext context, CancellationToken cancellationToken)
