@@ -14,6 +14,11 @@ namespace Microsoft.BotBuilderSamples.Bots
 
     public class NotificationOnlyBot : TeamsActivityHandler
     {
+        /*
+         * This bot needs to be installed in a team or group chat that you are an admin of. You can add/remove someone from that team and
+         * the bot will send that person a 1:1 message saying what happened. Also, yes, this scenario isn't the most up to date with the updated
+         * APIs for membersAdded/removed. Also you should NOT be able to @mention this bot.
+         */
         protected override async Task OnTeamsMembersAddedAsync(IList<ChannelAccount> membersAdded, TeamInfo teamInfo, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
         {
             foreach (var member in membersAdded)

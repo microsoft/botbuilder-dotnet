@@ -12,6 +12,10 @@ using Microsoft.Bot.Schema.Teams;
 
 namespace Microsoft.BotBuilderSamples.Bots
 {
+    /*
+     * You need to install this bot in a team. You can @mention the bot "show members", "show channels", or "show details" to get the
+     * members of the team, the channels of the team, or metadata about the team respectively.
+     */
     public class RosterBot : TeamsActivityHandler
     {
         protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
