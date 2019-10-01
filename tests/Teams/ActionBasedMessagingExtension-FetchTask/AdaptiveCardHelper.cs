@@ -11,7 +11,7 @@ namespace Microsoft.BotBuilderSamples
 {
     public static class AdaptiveCardHelper
     {
-        public static SubmitExampleData GetSubmitExampleDataFromAction(MessagingExtensionAction action)
+        public static SubmitExampleData ToSubmitExampleData(this MessagingExtensionAction action)
         {
             var activityPreview = action.BotActivityPreview[0];
             var attachmentContent = activityPreview.Attachments[0].Content;
@@ -29,7 +29,7 @@ namespace Microsoft.BotBuilderSamples
             };
         }
 
-        public static MessagingExtensionActionResponse GetTaskModuleAdaptiveCardResponse(string userText = null, bool isMultiSelect = true, string option1 = null, string option2 = null, string option3 = null)
+        public static MessagingExtensionActionResponse CreateTaskModuleAdaptiveCardResponse(string userText = null, bool isMultiSelect = true, string option1 = null, string option2 = null, string option3 = null)
         {
             return new AdaptiveCard()
             {
@@ -71,7 +71,7 @@ namespace Microsoft.BotBuilderSamples
             }.ToTaskModuleResponse();
         }
 
-        public static AdaptiveCard GetCardFromUserSubmittedData(SubmitExampleData data)
+        public static AdaptiveCard ToAdaptiveCard(this SubmitExampleData data)
         {
             return new AdaptiveCard()
             {

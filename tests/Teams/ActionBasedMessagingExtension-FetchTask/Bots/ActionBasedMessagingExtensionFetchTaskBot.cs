@@ -24,7 +24,7 @@ namespace Microsoft.BotBuilderSamples.Bots
             var reply = MessageFactory.Text("OnTeamsMessagingExtensionFetchTaskAsync MessagingExtensionQuery: " + JsonConvert.SerializeObject(query));
             await turnContext.SendActivityAsync(reply, cancellationToken);
 
-            return AdaptiveCardHelper.GetTaskModuleAdaptiveCardResponse();
+            return AdaptiveCardHelper.CreateTaskModuleAdaptiveCardResponse();
         }
 
         protected override async Task<MessagingExtensionActionResponse> OnTeamsMessagingExtensionSubmitActionAsync(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionAction action, CancellationToken cancellationToken)
@@ -33,7 +33,7 @@ namespace Microsoft.BotBuilderSamples.Bots
             await turnContext.SendActivityAsync(reply, cancellationToken);
 
             var submittedData = JsonConvert.DeserializeObject<SubmitExampleData>(action.Data.ToString());
-            var adaptiveCard = AdaptiveCardHelper.GetCardFromUserSubmittedData(submittedData);
+            var adaptiveCard = submittedData.ToAdaptiveCard();
             return adaptiveCard.ToMessagingExtensionBotMessagePreviewResponse();
         }
 
@@ -42,8 +42,8 @@ namespace Microsoft.BotBuilderSamples.Bots
             var reply = MessageFactory.Text("OnTeamsMessagingExtensionBotMessagePreviewEditAsync MessagingExtensionAction: " + JsonConvert.SerializeObject(action));
             await turnContext.SendActivityAsync(reply, cancellationToken);
 
-            var submitData = AdaptiveCardHelper.GetSubmitExampleDataFromAction(action);
-            return AdaptiveCardHelper.GetTaskModuleAdaptiveCardResponse(
+            var submitData = action.ToSubmitExampleData();
+            return AdaptiveCardHelper.CreateTaskModuleAdaptiveCardResponse(
                                                         submitData.Question,
                                                         bool.Parse(submitData.MultiSelect),
                                                         submitData.Option1,
@@ -56,8 +56,8 @@ namespace Microsoft.BotBuilderSamples.Bots
             var reply = MessageFactory.Text("OnTeamsMessagingExtensionBotMessagePreviewSendAsync MessagingExtensionAction: " + JsonConvert.SerializeObject(action));
             await turnContext.SendActivityAsync(reply, cancellationToken);
 
-            var submitData = AdaptiveCardHelper.GetSubmitExampleDataFromAction(action);
-            var adaptiveCard = AdaptiveCardHelper.GetCardFromUserSubmittedData(submitData);
+            var submitData = action.ToSubmitExampleData();
+            var adaptiveCard = submitData.ToAdaptiveCard();
             return adaptiveCard.ToComposeExtensionResultResponse();
         }
 
