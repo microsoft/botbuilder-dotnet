@@ -4,10 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Net;
-using System.Security.Cryptography;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -47,46 +44,6 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         }
 
         /// <summary>
-        /// Get a Facebook API client with the correct credentials based on the page identified in the incoming activity.
-        /// This is used by many internal functions to get access to the Facebook API, and is exposed as `bot.api` on any BotWorker instances passed into Botkit handler functions.
-        /// </summary>
-        /// <param name="activity">An incoming message activity.</param>
-        /// <returns>A Facebook API client.</returns>
-        public async Task<FacebookClientWrapper> GetAPIAsync(Activity activity)
-        {
-            if (!string.IsNullOrWhiteSpace(_facebookClient.Options.AccessToken))
-            {
-                return new FacebookClientWrapper(new FacebookAdapterOptions(_facebookClient.Options.VerifyToken, _facebookClient.Options.AppSecret, _facebookClient.Options.AccessToken));
-            }
-            else
-            {
-                if (!string.IsNullOrWhiteSpace(activity.Recipient?.Id))
-                {
-                    var pageId = activity.Recipient.Id;
-
-                    if ((activity.ChannelData as dynamic)?.message != null && (activity.ChannelData as dynamic)?.message.is_echo)
-                    {
-                        pageId = activity.From.Id;
-                    }
-
-                    string token = await _facebookClient.Options.GetAccessTokenForPageAsync(pageId).ConfigureAwait(false);
-
-                    if (string.IsNullOrWhiteSpace(token))
-                    {
-                        // error: missing credentials
-                        throw new ArgumentException(nameof(token));
-                    }
-
-                    return new FacebookClientWrapper(new FacebookAdapterOptions(_facebookClient.Options.VerifyToken, _facebookClient.Options.AppSecret, token));
-                }
-                else
-                {
-                    throw new Exception($"Unable to create API based on activity:{activity}");
-                }
-            }
-        }
-
-        /// <summary>
         /// Standard BotBuilder adapter method to send a message from the bot to the messaging API.
         /// </summary>
         /// <param name="context">A TurnContext representing the current incoming message and environment.</param>
@@ -103,7 +60,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
                 {
                     var message = FacebookHelper.ActivityToFacebook(activity);
 
-                    var api = await GetAPIAsync(context.Activity).ConfigureAwait(false);
+                    var api = await _facebookClient.GetAPIAsync(context.Activity).ConfigureAwait(false);
                     var res = await api.CallAPIAsync("/me/messages", message, null, cancellationToken).ConfigureAwait(false);
 
                     if (res != null)
@@ -177,7 +134,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task ProcessAsync(HttpRequest request, HttpResponse response, IBot bot, CancellationToken cancellationToken)
         {
-            if (await VerifySignatureAsync(request, response, cancellationToken).ConfigureAwait(false))
+            if (await _facebookClient.VerifySignatureAsync(request, response, cancellationToken).ConfigureAwait(false))
             {
                 var facebookEvent = request.Body;
                 if ((facebookEvent as dynamic).entry)
@@ -233,39 +190,6 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
                     response.ContentType = "text/plain";
                     await response.WriteAsync(string.Empty, cancellationToken).ConfigureAwait(false);
                 }
-            }
-        }
-
-        /// <summary>
-        /// Verifies the SHA1 signature of the raw request payload before bodyParser parses it will abort parsing if signature is invalid, and pass a generic error to response.
-        /// </summary>
-        /// <param name="request">An Http request object.</param>
-        /// <param name="response">An Http response object.</param>
-        /// <param name="cancellationToken">A cancellation token for the task.</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        private async Task<bool> VerifySignatureAsync(HttpRequest request, HttpResponse response, CancellationToken cancellationToken)
-        {
-            var expected = request.Headers["x-hub-signature"];
-
-            string calculated = null;
-            using (var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(_facebookClient.Options.AppSecret)))
-            {
-                using (var bodyStream = new StreamReader(request.Body))
-                {
-                    calculated = $"sha1={hmac.ComputeHash(Encoding.UTF8.GetBytes(bodyStream.ReadToEnd()))}";
-                }
-            }
-
-            if (expected != calculated)
-            {
-                response.StatusCode = Convert.ToInt32(HttpStatusCode.Unauthorized, System.Globalization.CultureInfo.InvariantCulture);
-                response.ContentType = "text/plain";
-                await response.WriteAsync(string.Empty, cancellationToken).ConfigureAwait(false);
-                return false;
-            }
-            else
-            {
-                return true;
             }
         }
     }
