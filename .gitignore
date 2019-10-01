@@ -285,3 +285,4 @@ Documentation/docs/
 PublishProfiles/
 
 appsettings.local.json
+appsettings.Development.json
