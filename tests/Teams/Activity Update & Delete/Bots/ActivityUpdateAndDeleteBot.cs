@@ -11,6 +11,10 @@ using Microsoft.Bot.Schema;
 
 namespace Microsoft.BotBuilderSamples.Bots
 {
+    /*
+     * From the UI you can just @mention the bot from any channelwith any string EXCEPT for "delete". if you send the bot "delete" it will delete
+     * all of the previous bot responses and empty it's internal storage.
+     */
     public class ActivityUpdateAndDeleteBot : ActivityHandler
     {
         private List<string> _list;

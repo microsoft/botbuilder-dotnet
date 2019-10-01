@@ -103,79 +103,78 @@ namespace Microsoft.Bot.Builder.Teams
 
         protected virtual async Task<InvokeResponse> OnInvokeActivityAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
         {
-            if (turnContext.Activity.Name == null)
+            try
             {
-                // TODO: seems we will come in here in unexpected cases - should we tighten up the conditions?
-                return await OnTeamsCardActionInvokeAsync(turnContext, cancellationToken).ConfigureAwait(false);
-            }
-            else
-            {
-                switch (turnContext.Activity.Name)
+                if (turnContext.Activity.Name == null && turnContext.Activity.ChannelId == Channels.Msteams)
                 {
-                    case "signin/verifyState":
-                        return await OnTeamsSigninVerifyStateAsync(turnContext, cancellationToken).ConfigureAwait(false);
-
-                    case "fileConsent/invoke":
-                        return await OnTeamsFileConsentAsync(turnContext, SafeCast<FileConsentCardResponse>(turnContext.Activity.Value), cancellationToken).ConfigureAwait(false);
-
-                    case "actionableMessage/executeAction":
-                        await OnTeamsO365ConnectorCardActionAsync(turnContext, SafeCast<O365ConnectorCardActionQuery>(turnContext.Activity.Value), cancellationToken).ConfigureAwait(false);
-                        return CreateInvokeResponse();
-
-                    case "composeExtension/queryLink":
-                        return CreateInvokeResponse(await OnTeamsAppBasedLinkQueryAsync(turnContext, SafeCast<AppBasedLinkQuery>(turnContext.Activity.Value), cancellationToken).ConfigureAwait(false));
-
-                    case "composeExtension/query":
-                        return CreateInvokeResponse(await OnTeamsMessagingExtensionQueryAsync(turnContext, SafeCast<MessagingExtensionQuery>(turnContext.Activity.Value), cancellationToken).ConfigureAwait(false));
-
-                    case "composeExtension/selectItem":
-                        return CreateInvokeResponse(await OnTeamsMessagingExtensionSelectItemAsync(turnContext, turnContext.Activity.Value as JObject, cancellationToken).ConfigureAwait(false));
-
-                    case "composeExtension/submitAction":
-                        return CreateInvokeResponse(await OnTeamsMessagingExtensionSubmitActionDispatchAsync(turnContext, SafeCast<MessagingExtensionAction>(turnContext.Activity.Value), cancellationToken).ConfigureAwait(false));
-
-                    case "composeExtension/fetchTask":
-                        return CreateInvokeResponse(await OnTeamsMessagingExtensionFetchTaskAsync(turnContext, SafeCast<MessagingExtensionQuery>(turnContext.Activity.Value),  cancellationToken).ConfigureAwait(false));
-
-                    case "composeExtension/querySettingsUrl":
-                        return CreateInvokeResponse(await OnTeamsMessagingExtensionConfigurationQuerySettingsUrlAsync(turnContext, cancellationToken).ConfigureAwait(false));
-
-                    case "composeExtension/setting":
-                        return CreateInvokeResponse(await OnTeamsMessagingExtensionConfigurationSettingsAsync(turnContext, cancellationToken).ConfigureAwait(false));
-
-                    case "composeExtension/onCardButtonClicked":
-                        await OnTeamsMessagingExtensionCardButtonClickedAsync(turnContext, cancellationToken).ConfigureAwait(false);
-                        return CreateInvokeResponse();
-
-                    case "task/fetch":
-                        var fetchResponse = await OnTeamsTaskModuleFetchAsync(turnContext, SafeCast<TaskModuleRequest>(turnContext.Activity.Value), cancellationToken).ConfigureAwait(false);
-                        return CreateInvokeResponse(new TaskModuleResponse { Task = new TaskModuleContinueResponse(fetchResponse) });
-
-                    case "task/submit":
-                        var submitResponse = await OnTeamsTaskModuleSubmitAsync(turnContext, SafeCast<TaskModuleRequest>(turnContext.Activity.Value), cancellationToken).ConfigureAwait(false);
-                        if (submitResponse == null)
-                        {
-                            return CreateInvokeResponse();
-                        }
-                        else
-                        {
-                            return CreateInvokeResponse(new TaskModuleResponse { Task = submitResponse });
-                        }
-
-                    default:
-                        return null;
+                    return await OnTeamsCardActionInvokeAsync(turnContext, cancellationToken).ConfigureAwait(false);
                 }
+                else
+                {
+                    switch (turnContext.Activity.Name)
+                    {
+                        case "signin/verifyState":
+                            return await OnTeamsSigninVerifyStateAsync(turnContext, cancellationToken).ConfigureAwait(false);
+
+                        case "fileConsent/invoke":
+                            return await OnTeamsFileConsentAsync(turnContext, SafeCast<FileConsentCardResponse>(turnContext.Activity.Value), cancellationToken).ConfigureAwait(false);
+
+                        case "actionableMessage/executeAction":
+                            await OnTeamsO365ConnectorCardActionAsync(turnContext, SafeCast<O365ConnectorCardActionQuery>(turnContext.Activity.Value), cancellationToken).ConfigureAwait(false);
+                            return CreateInvokeResponse();
+
+                        case "composeExtension/queryLink":
+                            return CreateInvokeResponse(await OnTeamsAppBasedLinkQueryAsync(turnContext, SafeCast<AppBasedLinkQuery>(turnContext.Activity.Value), cancellationToken).ConfigureAwait(false));
+
+                        case "composeExtension/query":
+                            return CreateInvokeResponse(await OnTeamsMessagingExtensionQueryAsync(turnContext, SafeCast<MessagingExtensionQuery>(turnContext.Activity.Value), cancellationToken).ConfigureAwait(false));
+
+                        case "composeExtension/selectItem":
+                            return CreateInvokeResponse(await OnTeamsMessagingExtensionSelectItemAsync(turnContext, turnContext.Activity.Value as JObject, cancellationToken).ConfigureAwait(false));
+
+                        case "composeExtension/submitAction":
+                            return CreateInvokeResponse(await OnTeamsMessagingExtensionSubmitActionDispatchAsync(turnContext, SafeCast<MessagingExtensionAction>(turnContext.Activity.Value), cancellationToken).ConfigureAwait(false));
+
+                        case "composeExtension/fetchTask":
+                            return CreateInvokeResponse(await OnTeamsMessagingExtensionFetchTaskAsync(turnContext, SafeCast<MessagingExtensionQuery>(turnContext.Activity.Value), cancellationToken).ConfigureAwait(false));
+
+                        case "composeExtension/querySettingUrl":
+                            return CreateInvokeResponse(await OnTeamsMessagingExtensionConfigurationQuerySettingUrlAsync(turnContext, SafeCast<MessagingExtensionQuery>(turnContext.Activity.Value), cancellationToken).ConfigureAwait(false));
+
+                        case "composeExtension/setting":
+                            await OnTeamsMessagingExtensionConfigurationSettingAsync(turnContext, turnContext.Activity.Value as JObject, cancellationToken).ConfigureAwait(false);
+                            return CreateInvokeResponse();
+
+                        case "composeExtension/onCardButtonClicked":
+                            await OnTeamsMessagingExtensionCardButtonClickedAsync(turnContext, turnContext.Activity.Value as JObject, cancellationToken).ConfigureAwait(false);
+                            return CreateInvokeResponse();
+                        case "task/fetch":
+                            var fetchResponse = await OnTeamsTaskModuleFetchAsync(turnContext, SafeCast<TaskModuleRequest>(turnContext.Activity.Value), cancellationToken).ConfigureAwait(false);
+                            return CreateInvokeResponse(new TaskModuleResponse { Task = new TaskModuleContinueResponse(fetchResponse) });
+
+                        case "task/submit":
+                            var submitResponse = await OnTeamsTaskModuleSubmitAsync(turnContext, SafeCast<TaskModuleRequest>(turnContext.Activity.Value), cancellationToken).ConfigureAwait(false);
+                            return CreateInvokeResponse(submitResponse != null ? new TaskModuleResponse(submitResponse) : null);
+
+                        default:
+                            throw new NotImplementedException();
+                    }
+                }
+            }
+            catch (NotImplementedException)
+            {
+                return new InvokeResponse { Status = (int)HttpStatusCode.NotImplemented };
             }
         }
 
         protected virtual Task<InvokeResponse> OnTeamsCardActionInvokeAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
         {
-            return Task.FromResult<InvokeResponse>(null);
+            throw new NotImplementedException();
         }
 
         protected virtual Task<InvokeResponse> OnTeamsSigninVerifyStateAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
         {
-            return Task.FromResult<InvokeResponse>(null);
+            throw new NotImplementedException();
         }
 
         protected virtual async Task<InvokeResponse> OnTeamsFileConsentAsync(ITurnContext<IInvokeActivity> turnContext, FileConsentCardResponse fileConsentCardResponse, CancellationToken cancellationToken)
@@ -191,43 +190,43 @@ namespace Microsoft.Bot.Builder.Teams
                     return CreateInvokeResponse();
 
                 default:
-                    return null;
+                    throw new NotImplementedException();
             }
         }
 
         protected virtual Task OnTeamsFileConsentAcceptAsync(ITurnContext<IInvokeActivity> turnContext, FileConsentCardResponse fileConsentCardResponse, CancellationToken cancellationToken)
         {
-            return Task.CompletedTask;
+            throw new NotImplementedException();
         }
 
         protected virtual Task OnTeamsFileConsentDeclineAsync(ITurnContext<IInvokeActivity> turnContext, FileConsentCardResponse fileConsentCardResponse, CancellationToken cancellationToken)
         {
-            return Task.CompletedTask;
+            throw new NotImplementedException();
         }
 
         protected virtual Task<MessagingExtensionResponse> OnTeamsMessagingExtensionQueryAsync(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionQuery query, CancellationToken cancellationToken)
         {
-            return Task.FromResult<MessagingExtensionResponse>(null);
+            throw new NotImplementedException();
         }
 
         protected virtual Task OnTeamsO365ConnectorCardActionAsync(ITurnContext<IInvokeActivity> turnContext, O365ConnectorCardActionQuery query, CancellationToken cancellationToken)
         {
-            return Task.CompletedTask;
+            throw new NotImplementedException();
         }
 
         protected virtual Task<MessagingExtensionResponse> OnTeamsAppBasedLinkQueryAsync(ITurnContext<IInvokeActivity> turnContext, AppBasedLinkQuery query, CancellationToken cancellationToken)
         {
-            return Task.FromResult<MessagingExtensionResponse>(null);
+            throw new NotImplementedException();
         }
 
         protected virtual Task<MessagingExtensionResponse> OnTeamsMessagingExtensionSelectItemAsync(ITurnContext<IInvokeActivity> turnContext, JObject query, CancellationToken cancellationToken)
         {
-            return Task.FromResult<MessagingExtensionResponse>(null);
+            throw new NotImplementedException();
         }
 
         protected virtual Task<MessagingExtensionActionResponse> OnTeamsMessagingExtensionFetchTaskAsync(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionQuery query, CancellationToken cancellationToken)
         {
-            return Task.FromResult<MessagingExtensionActionResponse>(null);
+            throw new NotImplementedException();
         }
 
         protected virtual async Task<MessagingExtensionActionResponse> OnTeamsMessagingExtensionSubmitActionDispatchAsync(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionAction action, CancellationToken cancellationToken)
@@ -243,7 +242,7 @@ namespace Microsoft.Bot.Builder.Teams
                         return await OnTeamsMessagingExtensionBotMessagePreviewSendAsync(turnContext, action, cancellationToken).ConfigureAwait(false);
 
                     default:
-                        return null;
+                        throw new NotImplementedException();
                 }
             }
             else
@@ -254,42 +253,42 @@ namespace Microsoft.Bot.Builder.Teams
 
         protected virtual Task<MessagingExtensionActionResponse> OnTeamsMessagingExtensionSubmitActionAsync(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionAction action, CancellationToken cancellationToken)
         {
-            return Task.FromResult<MessagingExtensionActionResponse>(null);
+            throw new NotImplementedException();
         }
 
         protected virtual Task<MessagingExtensionActionResponse> OnTeamsMessagingExtensionBotMessagePreviewEditAsync(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionAction action, CancellationToken cancellationToken)
         {
-            return Task.FromResult<MessagingExtensionActionResponse>(null);
+            throw new NotImplementedException();
         }
 
         protected virtual Task<MessagingExtensionActionResponse> OnTeamsMessagingExtensionBotMessagePreviewSendAsync(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionAction action, CancellationToken cancellationToken)
         {
-            return Task.FromResult<MessagingExtensionActionResponse>(null);
+            throw new NotImplementedException();
         }
 
-        protected virtual Task<MessagingExtensionResponse> OnTeamsMessagingExtensionConfigurationQuerySettingsUrlAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
+        protected virtual Task<MessagingExtensionResponse> OnTeamsMessagingExtensionConfigurationQuerySettingUrlAsync(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionQuery query, CancellationToken cancellationToken)
         {
-            return Task.FromResult<MessagingExtensionResponse>(null);
+            throw new NotImplementedException();
         }
 
-        protected virtual Task<MessagingExtensionResponse> OnTeamsMessagingExtensionConfigurationSettingsAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
+        protected virtual Task OnTeamsMessagingExtensionConfigurationSettingAsync(ITurnContext<IInvokeActivity> turnContext, JObject settings, CancellationToken cancellationToken)
         {
-            return Task.FromResult<MessagingExtensionResponse>(null);
+            throw new NotImplementedException();
         }
 
-        protected virtual Task OnTeamsMessagingExtensionCardButtonClickedAsync(ITurnContext<IInvokeActivity> turnContext, CancellationToken cancellationToken)
+        protected virtual Task OnTeamsMessagingExtensionCardButtonClickedAsync(ITurnContext<IInvokeActivity> turnContext, JObject cardData, CancellationToken cancellationToken)
         {
-            return Task.CompletedTask;
+            throw new NotImplementedException();
         }
 
         protected virtual Task<TaskModuleTaskInfo> OnTeamsTaskModuleFetchAsync(ITurnContext<IInvokeActivity> turnContext, TaskModuleRequest taskModuleRequest, CancellationToken cancellationToken)
         {
-            return Task.FromResult<TaskModuleTaskInfo>(null);
+            throw new NotImplementedException();
         }
 
         protected virtual Task<TaskModuleResponseBase> OnTeamsTaskModuleSubmitAsync(ITurnContext<IInvokeActivity> turnContext, TaskModuleRequest taskModuleRequest, CancellationToken cancellationToken)
         {
-            return Task.FromResult<TaskModuleResponseBase>(null);
+            throw new NotImplementedException();
         }
 
         protected override Task OnConversationUpdateActivityAsync(ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
