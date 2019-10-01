@@ -1,9 +1,7 @@
 ﻿// Copyright(c) Microsoft Corporation.All rights reserved.
 // Licensed under the MIT License.
 
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Microsoft.Bot.Builder.Adapters.Facebook
 {
@@ -31,6 +29,6 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         /// Gets or sets the quick replies.
         /// </summary>
         /// <value>The quick replies array.</value>
-        public List<object> QuickReplies { get; set; }
+        public List<object> QuickReplies { get; set; } = new List<object>();
     }
 }

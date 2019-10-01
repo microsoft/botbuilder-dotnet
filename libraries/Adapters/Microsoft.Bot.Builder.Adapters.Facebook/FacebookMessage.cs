@@ -1,24 +1,20 @@
 ﻿// Copyright(c) Microsoft Corporation.All rights reserved.
 // Licensed under the MIT License.
 
-using System;
-using System.Collections.Generic;
-using System.Text;
-
 namespace Microsoft.Bot.Builder.Adapters.Facebook
 {
     public class FacebookMessage
     {
         public FacebookMessage(string recipientId, Message message, string messagingtype, string tag = null, string notificationType = null, string personalId = null, string senderAction = null, string senderId = null)
         {
-            this.RecipientId = recipientId;
-            this.Message = message;
-            this.MessagingType = messagingtype;
-            this.Tag = tag;
-            this.NotificationType = notificationType;
-            this.PersonaId = personalId;
-            this.SenderAction = senderAction;
-            this.SenderId = senderId;
+            RecipientId = recipientId;
+            Message = message;
+            MessagingType = messagingtype;
+            Tag = tag;
+            NotificationType = notificationType;
+            PersonaId = personalId;
+            SenderAction = senderAction;
+            SenderId = senderId;
         }
 
         /// <summary>
