@@ -38,6 +38,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
             new HashPathResolver(),
             new AtAtPathResolver(),
             new AtPathResolver(),
+            new PercentPathResolver(),
         };
 
         /// <summary>
@@ -51,8 +52,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
              new MemoryScope(ScopePath.USER),
              new MemoryScope(ScopePath.CONVERSATION),
              new MemoryScope(ScopePath.TURN),
-             new MemoryScope(ScopePath.SETTINGS),
+             new MemoryScope(ScopePath.SETTINGS, isReadOnly: true),
              new DialogMemoryScope(),
+             new ClassMemoryScope(),
              new ThisMemoryScope()
         };
 

@@ -16,8 +16,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
     {
         private const string MEMORYSCOPESKEY = "MemoryScopes";
 
-        public MemoryScope(string name)
+        public MemoryScope(string name, bool isReadOnly=false)
         {
+            this.IsReadOnly = isReadOnly;
             this.Name = name;
         }
 
@@ -25,6 +26,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
         /// Gets or sets name of the scope
         /// </summary>
         public string Name { get; set; }
+
+        /// <summary>
+        /// Gets whether this memory scope settable
+        /// </summary>
+        public bool IsReadOnly { get; protected set; }
 
         /// <summary>
         /// Get the backing memory for this scope
