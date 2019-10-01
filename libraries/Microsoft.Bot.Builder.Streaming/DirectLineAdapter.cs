@@ -327,6 +327,7 @@ namespace Microsoft.Bot.Builder.Streaming
             }
 
             _bot = bot ?? throw new ArgumentNullException(nameof(bot));
+            _claimsIdentity = _claimsIdentity ?? new ClaimsIdentity();
             var requestHandler = new StreamingRequestHandler(_logger, this, pipeName);
             _requestHandlers.Add(requestHandler);
 
