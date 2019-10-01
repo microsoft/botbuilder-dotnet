@@ -11,6 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Schema;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Adapters.Facebook
 {
@@ -55,8 +56,8 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
             {
                 request.RequestUri = new Uri($"https://{Options.ApiHost}/{Options.ApiVersion + path}?access_token={Options.AccessToken}&appsecret_proof={proof}");
                 request.Method = method;
-
-                /* content type json? */
+                request.Content = new StringContent(JsonConvert.SerializeObject(payload));
+                request.Content.Headers.Add("Content-Type", "application/json");
 
                 using (var client = new HttpClient())
                 {
