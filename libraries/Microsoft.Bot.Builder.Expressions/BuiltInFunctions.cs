@@ -738,7 +738,7 @@ namespace Microsoft.Bot.Builder.Expressions
         /// <param name="instance">Instance with property.</param>
         /// <param name="property">Property to lookup.</param>
         /// <returns>Value and error information if any.</returns>
-        private static (object value, string error) AccessProperty(object instance, string property)
+        public static (object value, string error) AccessProperty(object instance, string property)
         {
             // NOTE: This returns null rather than an error if property is not present
             if (instance == null)
