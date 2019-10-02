@@ -158,16 +158,27 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public object ConstructScope(string templateName, List<object> args)
         {
             var parameters = TemplateMap[templateName].Parameters;
+            var currentScope = CurrentTarget().Scope;
 
             if (args.Count == 0)
             {
                 // no args to construct, inherit from current scope
-                return CurrentTarget().Scope;
+                return currentScope;
             }
 
             var newScope = parameters.Zip(args, (k, v) => new { k, v })
                                     .ToDictionary(x => x.k, x => x.v);
-            return newScope;
+
+            if (currentScope is CustomizedMemoryScope cms)
+            {
+                // if current scope is already customized, inherit it's global scope
+                return new CustomizedMemoryScope(newScope, cms.GlobalScope);
+            }
+            else
+            {
+                return new CustomizedMemoryScope(newScope, currentScope);
+            }
+            
         }
 
         private bool EvalCondition(LGFileParser.IfConditionContext condition)
