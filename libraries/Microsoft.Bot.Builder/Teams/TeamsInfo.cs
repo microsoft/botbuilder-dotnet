@@ -15,63 +15,65 @@ namespace Microsoft.Bot.Builder.Teams
 {
     public class TeamsInfo
     {
-        private string _conversationId;
         private IConnectorClient _connectorClient;
         private ITeamsConnectorClient _teamsConnectorClient;
-        private TeamsChannelData _teamsChannelData;
 
-        public TeamsInfo(string conversationId, ConnectorClient connectorClient, TeamsChannelData teamsChannelData)
+        public TeamsInfo(ConnectorClient connectorClient)
         {
             if (connectorClient != null)
             {
                 _connectorClient = connectorClient;
                 _teamsConnectorClient = new TeamsConnectorClient(connectorClient.BaseUri, connectorClient.Credentials, connectorClient.HttpClient);
             }
-
-            _conversationId = conversationId;
-            _teamsChannelData = teamsChannelData;
         }
 
-        public async Task<TeamDetails> GetTeamDetailsAsync(CancellationToken cancellationToken = default)
+        public async Task<TeamDetails> GetTeamDetailsAsync(ITurnContext turnContext, CancellationToken cancellationToken = default)
         {
             if (_teamsConnectorClient == null)
             {
                 throw new NotImplementedException("This method is only implemented for the MS Teams channel.");
             }
 
-            if (_teamsChannelData?.Team?.Id == null)
+            var teamId = turnContext.Activity.GetChannelData<TeamsChannelData>()?.Team?.Id;
+
+            if (teamId == null)
             {
                 throw new InvalidOperationException("This method is only valid within the scope of MS Teams Team.");
             }
 
-            return await _teamsConnectorClient.Teams.FetchTeamDetailsAsync(_teamsChannelData.Team.Id, cancellationToken).ConfigureAwait(false);
+            return await _teamsConnectorClient.Teams.FetchTeamDetailsAsync(teamId, cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<IList<ChannelInfo>> GetChannelsAsync(CancellationToken cancellationToken = default)
+        public async Task<IList<ChannelInfo>> GetChannelsAsync(ITurnContext turnContext, CancellationToken cancellationToken = default)
         {
             if (_teamsConnectorClient == null)
             {
                 throw new NotImplementedException("This method is only implemented for the MS Teams channel.");
             }
 
-            if (_teamsChannelData?.Team?.Id == null)
+            var teamId = turnContext.Activity.GetChannelData<TeamsChannelData>()?.Team?.Id;
+
+            if (teamId == null)
             {
                 throw new InvalidOperationException("This method is only valid within the scope of MS Teams Team.");
             }
 
-            var channelList = await _teamsConnectorClient.Teams.FetchChannelListAsync(_teamsChannelData.Team?.Id, cancellationToken).ConfigureAwait(false);
+            var channelList = await _teamsConnectorClient.Teams.FetchChannelListAsync(teamId, cancellationToken).ConfigureAwait(false);
             return channelList.Conversations;
         }
 
-        public Task<IEnumerable<TeamsChannelAccount>> GetMembersAsync(CancellationToken cancellationToken = default)
+        public Task<IEnumerable<TeamsChannelAccount>> GetMembersAsync(ITurnContext turnContext, CancellationToken cancellationToken = default)
         {
-            if (_teamsChannelData?.Team?.Id != null)
+            var teamId = turnContext.Activity.GetChannelData<TeamsChannelData>()?.Team?.Id;
+
+            if (teamId != null)
             {
-                return GetMembersAsync(_teamsChannelData.Team.Id, cancellationToken);
+                return GetMembersAsync(teamId, cancellationToken);
             }
             else
             {
-                return GetMembersAsync(_conversationId, cancellationToken);
+                var conversationId = turnContext.Activity?.Conversation?.Id;
+                return GetMembersAsync(conversationId, cancellationToken);
             }
         }
 

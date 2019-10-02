@@ -166,7 +166,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
 
             private async Task CallGetTeamDetailsAsync(ITurnContext turnContext)
             {
-                var teamDetails = await TeamsInfo.GetTeamDetailsAsync();
+                var teamDetails = await TeamsInfo.GetTeamDetailsAsync(turnContext);
 
                 Assert.AreEqual("team-id", teamDetails.Id);
                 Assert.AreEqual("team-name", teamDetails.Name);
@@ -175,7 +175,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
 
             private async Task CallTeamGetMembersAsync(ITurnContext turnContext)
             {
-                var members = (await TeamsInfo.GetMembersAsync()).ToArray();
+                var members = (await TeamsInfo.GetMembersAsync(turnContext)).ToArray();
 
                 Assert.AreEqual("id-1", members[0].Id);
                 Assert.AreEqual("name-1", members[0].Name);
@@ -192,7 +192,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
 
             private async Task CallGroupChatGetMembersAsync(ITurnContext turnContext)
             {
-                var members = (await TeamsInfo.GetMembersAsync()).ToArray();
+                var members = (await TeamsInfo.GetMembersAsync(turnContext)).ToArray();
 
                 Assert.AreEqual("id-3", members[0].Id);
                 Assert.AreEqual("name-3", members[0].Name);
@@ -209,7 +209,7 @@ namespace Microsoft.Bot.Builder.Teams.Tests
 
             private async Task CallGetChannelsAsync(ITurnContext turnContext)
             {
-                var channels = (await TeamsInfo.GetChannelsAsync()).ToArray();
+                var channels = (await TeamsInfo.GetChannelsAsync(turnContext)).ToArray();
 
                 Assert.AreEqual("channel-id-1", channels[0].Id);
 
