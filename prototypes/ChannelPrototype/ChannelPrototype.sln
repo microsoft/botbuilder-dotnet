@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29324.140
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EchoSkill", "EchoSkill\EchoSkill.csproj", "{5BCFDE78-BE7B-4523-BC4F-8C2BC805C4B2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SkillHost", "SkillHostBot\SkillHost.csproj", "{BE1E64E1-309A-48E0-8CC1-74370B11F97B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5C85FA7E-7C8B-40C0-A949-EB05C2F8ED27}"
+	ProjectSection(SolutionItems) = preProject
+		SkillBot.bot = SkillBot.bot
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5BCFDE78-BE7B-4523-BC4F-8C2BC805C4B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5BCFDE78-BE7B-4523-BC4F-8C2BC805C4B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5BCFDE78-BE7B-4523-BC4F-8C2BC805C4B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5BCFDE78-BE7B-4523-BC4F-8C2BC805C4B2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BE1E64E1-309A-48E0-8CC1-74370B11F97B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE1E64E1-309A-48E0-8CC1-74370B11F97B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE1E64E1-309A-48E0-8CC1-74370B11F97B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BE1E64E1-309A-48E0-8CC1-74370B11F97B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {19ABA51F-07A4-4914-AC5E-ECCCFB194F39}
+	EndGlobalSection
+EndGlobal
