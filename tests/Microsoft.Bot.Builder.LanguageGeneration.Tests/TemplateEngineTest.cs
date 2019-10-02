@@ -734,7 +734,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             });
 
             Assert.AreEqual(evaled, "Which Bread, A or B do you want?");
-
         }
 
         private string GetExampleFilePath(string fileName)

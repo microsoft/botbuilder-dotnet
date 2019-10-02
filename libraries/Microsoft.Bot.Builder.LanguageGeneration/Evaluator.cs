@@ -173,8 +173,8 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 // if current scope is already customized, inherit it's global scope
                 return new CustomizedMemoryScope(newScope, cms.GlobalScope);
-
-            } else
+            }
+            else
             {
                 return new CustomizedMemoryScope(newScope, currentScope);
             }
