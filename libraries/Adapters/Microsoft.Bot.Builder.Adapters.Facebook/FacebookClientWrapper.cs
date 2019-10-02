@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -104,27 +105,29 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         /// Verifies the SHA1 signature of the raw request payload before bodyParser parses it will abort parsing if signature is invalid, and pass a generic error to response.
         /// </summary>
         /// <param name="request">An Http request object.</param>
+        /// <param name="stringifyBody">The request body.</param>
         /// <returns>The result of the comparison between the signature in the request and hashed body.</returns>
-        public virtual bool VerifySignature(HttpRequest request)
+        public virtual bool VerifySignature(HttpRequest request, string stringifyBody)
         {
             if (request == null)
             {
                 throw new ArgumentNullException(nameof(request));
             }
 
-            var expected = request.Headers["x-hub-signature"];
+            var expected = request.Headers["x-hub-signature"].ToString().ToUpperInvariant();
 
-            string calculated;
+            var payload = EncodeNonAsciiCharacters(stringifyBody);
 
-            using (var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(_options.AppSecret)))
+#pragma warning disable CA5350 // Facebook uses SHA1 as cryptographic algorithm.
+            using (var hmac = new HMACSHA1(Encoding.UTF8.GetBytes(_options.AppSecret)))
             {
-                using (var bodyStream = new StreamReader(request.Body))
-                {
-                    calculated = $"sha1={hmac.ComputeHash(Encoding.UTF8.GetBytes(bodyStream.ReadToEnd()))}";
-                }
-            }
+                hmac.Initialize();
+                var hashArray = hmac.ComputeHash(Encoding.UTF8.GetBytes(payload));
+                var hash = $"SHA1={BitConverter.ToString(hashArray).Replace("-", string.Empty)}";
 
-            return expected == calculated;
+                return expected == hash;
+            }
+#pragma warning restore CA5350 // Facebook uses SHA1 as cryptographic algorithm.
         }
 
         /// <summary>
@@ -137,6 +140,65 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
             {
                 return hmac.ComputeHash(Encoding.UTF8.GetBytes(_options.AccessToken)).ToString();
             }
+        }
+
+        /// <summary>
+        /// Verifies the VerifyToken from the message and if it matches the one configured, it sends back the challenge.
+        /// </summary>
+        /// <param name="request">An Http request object.</param>
+        /// <param name="response">An Http response object.</param>
+        /// <param name="cancellationToken">A cancellation token for the task.</param>
+        /// <returns>A task representing the async operation.</returns>
+        public virtual async Task VerifyWebhookAsync(HttpRequest request, HttpResponse response, CancellationToken cancellationToken)
+        {
+            if (request == null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+
+            if (response == null)
+            {
+                throw new ArgumentNullException(nameof(response));
+            }
+
+            var challenge = string.Empty;
+            HttpStatusCode statusCode;
+
+            if (request.Query["hub.verify_token"].Equals(_options.VerifyToken))
+            {
+                challenge = request.Query["hub.challenge"];
+                statusCode = HttpStatusCode.OK;
+            }
+            else
+            {
+                statusCode = HttpStatusCode.Unauthorized;
+            }
+
+            await FacebookHelper.WriteAsync(response, statusCode, challenge, Encoding.UTF8, cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Encodes the non ASCII characters of a string.
+        /// </summary>
+        /// <param name="value">The string to encode.</param>
+        /// <returns>The resulting string.</returns>
+        private string EncodeNonAsciiCharacters(string value)
+        {
+            var sb = new StringBuilder();
+            foreach (var c in value)
+            {
+                if (c > 127)
+                {
+                    var encodedValue = "\\u" + ((int)c).ToString("x4", CultureInfo.InvariantCulture);
+                    sb.Append(encodedValue);
+                }
+                else
+                {
+                    sb.Append(c);
+                }
+            }
+
+            return sb.ToString();
         }
     }
 }

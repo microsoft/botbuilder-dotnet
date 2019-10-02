@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Text;
 using System.Threading;
@@ -16,6 +17,8 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
 {
     public class FacebookAdapter : BotAdapter, IBotFrameworkHttpAdapter
     {
+        private const string HubModeSubscribe = "subscribe";
+
         private readonly FacebookClientWrapper _facebookClient;
 
         /// <summary>
@@ -133,7 +136,22 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task ProcessAsync(HttpRequest request, HttpResponse response, IBot bot, CancellationToken cancellationToken)
         {
-            if (!_facebookClient.VerifySignature(request))
+            if (request.Query["hub.mode"] == HubModeSubscribe)
+            {
+                await _facebookClient.VerifyWebhookAsync(request, response, cancellationToken).ConfigureAwait(false);
+                return;
+            }
+
+            await FacebookHelper.WriteAsync(response, HttpStatusCode.OK, string.Empty, Encoding.UTF8, cancellationToken).ConfigureAwait(false);
+
+            string stringifyBody;
+
+            using (var sr = new StreamReader(request.Body))
+            {
+                stringifyBody = sr.ReadToEnd();
+            }
+
+            if (!_facebookClient.VerifySignature(request, stringifyBody))
             {
                 await FacebookHelper.WriteAsync(response, HttpStatusCode.Unauthorized, string.Empty, Encoding.UTF8, cancellationToken).ConfigureAwait(false);
                 throw new Exception("WARNING: Webhook received message with invalid signature. Potential malicious behavior!");
