@@ -39,7 +39,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
             }
             else if (queues.SetProperty.Any())
             {
-                var evt = new DialogEvent() { Name = FormEvents.SetPropertyToEntity, Value = queues.SetProperty.Dequeue(), Bubble = false };
+                var evt = new DialogEvent() { Name = FormEvents.SetProperty, Value = queues.SetProperty.Dequeue(), Bubble = false };
                 handled = await this.ProcessEventAsync(sequenceContext, dialogEvent: evt, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
             }
             else if (queues.Unknown.Any())

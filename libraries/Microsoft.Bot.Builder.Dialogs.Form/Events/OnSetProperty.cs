@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form.Events
         [JsonConstructor]
         public OnSetProperty(string property = null, string entity = null, List<Dialog> actions = null, string condition = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base(
-                @event: FormEvents.SetPropertyToEntity,
+                @event: FormEvents.SetProperty,
                 actions: actions,
                 condition: condition,
                 callerPath: callerPath,

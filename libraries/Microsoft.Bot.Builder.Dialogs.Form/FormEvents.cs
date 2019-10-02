@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
         public const string ChooseProperty = "chooseProperty";
         public const string ClarifyEntity = "clarifyEntity";
         public const string ClearProperty = "clearProperty";
-        public const string SetPropertyToEntity = "setPropertyToEntity";
+        public const string SetProperty = "setProperty";
         public const string UnknownEntity = "unknownEntity";
     }
 }

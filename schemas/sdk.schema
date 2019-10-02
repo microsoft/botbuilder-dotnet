@@ -261,9 +261,9 @@
             "$ref": "#/definitions/Microsoft.OnClarifyEntity"
         },
         {
-            "title": "Microsoft.OnClearSlot",
+            "title": "Microsoft.OnClearProperty",
             "description": "This defines the actions to take when a ClearSlot event is raised",
-            "$ref": "#/definitions/Microsoft.OnClearSlot"
+            "$ref": "#/definitions/Microsoft.OnClearProperty"
         },
         {
             "title": "Microsoft.OnCondition",
@@ -341,9 +341,9 @@
             "$ref": "#/definitions/Microsoft.OnRepromptDialog"
         },
         {
-            "title": "Microsoft.OnSetSlot",
+            "title": "Microsoft.OnSetProperty",
             "description": "This defines the actions to take when a SetSlot event is raised",
-            "$ref": "#/definitions/Microsoft.OnSetSlot"
+            "$ref": "#/definitions/Microsoft.OnSetProperty"
         },
         {
             "title": "Microsoft.OnTypingActivity",
@@ -3399,9 +3399,9 @@
                     "$ref": "#/definitions/Microsoft.OnClarifyEntity"
                 },
                 {
-                    "title": "Microsoft.OnClearSlot",
+                    "title": "Microsoft.OnClearProperty",
                     "description": "This defines the actions to take when a ClearSlot event is raised",
-                    "$ref": "#/definitions/Microsoft.OnClearSlot"
+                    "$ref": "#/definitions/Microsoft.OnClearProperty"
                 },
                 {
                     "title": "Microsoft.OnCondition",
@@ -3479,9 +3479,9 @@
                     "$ref": "#/definitions/Microsoft.OnRepromptDialog"
                 },
                 {
-                    "title": "Microsoft.OnSetSlot",
+                    "title": "Microsoft.OnSetProperty",
                     "description": "This defines the actions to take when a SetSlot event is raised",
-                    "$ref": "#/definitions/Microsoft.OnSetSlot"
+                    "$ref": "#/definitions/Microsoft.OnSetProperty"
                 },
                 {
                     "title": "Microsoft.OnTypingActivity",
@@ -5233,7 +5233,7 @@
                 }
             ]
         },
-        "Microsoft.OnClearSlot": {
+        "Microsoft.OnClearProperty": {
             "$role": "unionType(Microsoft.ITriggerCondition)",
             "title": "Form ClearSlot Event",
             "description": "This defines the actions to take when a ClearSlot event is raised",
@@ -5244,7 +5244,7 @@
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.OnClearSlot"
+                    "const": "Microsoft.OnClearProperty"
                 },
                 "$copy": {
                     "title": "$copy",
@@ -6512,7 +6512,7 @@
                 }
             ]
         },
-        "Microsoft.OnSetSlot": {
+        "Microsoft.OnSetProperty": {
             "$role": "unionType(Microsoft.ITriggerCondition)",
             "title": "Form SetSlot Event",
             "description": "This defines the actions to take when a SetSlot event is raised",
@@ -6523,7 +6523,7 @@
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.OnSetSlot"
+                    "const": "Microsoft.OnSetProperty"
                 },
                 "$copy": {
                     "title": "$copy",

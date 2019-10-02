@@ -241,24 +241,29 @@
             "$ref": "#/definitions/Microsoft.OnCancelDialog"
         },
         {
-            "title": "Microsoft.OnChooseSlot",
-            "description": "This defines the actions to take when a ChooseSlot event is raised",
-            "$ref": "#/definitions/Microsoft.OnChooseSlot"
+            "title": "Microsoft.OnChooseEntity",
+            "description": "This defines the actions to take when a ChooseEntity event is raised",
+            "$ref": "#/definitions/Microsoft.OnChooseEntity"
         },
         {
-            "title": "Microsoft.OnChooseSlotValue",
-            "description": "This defines the actions to take when a ChooseSlot event is raised",
-            "$ref": "#/definitions/Microsoft.OnChooseSlotValue"
+            "title": "Microsoft.OnChooseMapping",
+            "description": "This defines the actions to take when a ChooseMapping event is raised",
+            "$ref": "#/definitions/Microsoft.OnChooseMapping"
         },
         {
-            "title": "Microsoft.OnClarifySlotValue",
-            "description": "This defines the actions to take when a ClarifySlotValue event is raised",
-            "$ref": "#/definitions/Microsoft.OnClarifySlotValue"
+            "title": "Microsoft.OnChooseProperty",
+            "description": "This defines the actions to take when a ChooseProperty event is raised",
+            "$ref": "#/definitions/Microsoft.OnChooseProperty"
         },
         {
-            "title": "Microsoft.OnClearSlot",
+            "title": "Microsoft.OnClarifyEntity",
+            "description": "This defines the actions to take when a ClarifyEntity event is raised",
+            "$ref": "#/definitions/Microsoft.OnClarifyEntity"
+        },
+        {
+            "title": "Microsoft.OnClearProperty",
             "description": "This defines the actions to take when a ClearSlot event is raised",
-            "$ref": "#/definitions/Microsoft.OnClearSlot"
+            "$ref": "#/definitions/Microsoft.OnClearProperty"
         },
         {
             "title": "Microsoft.OnCondition",
@@ -336,14 +341,19 @@
             "$ref": "#/definitions/Microsoft.OnRepromptDialog"
         },
         {
-            "title": "Microsoft.OnSetSlot",
+            "title": "Microsoft.OnSetProperty",
             "description": "This defines the actions to take when a SetSlot event is raised",
-            "$ref": "#/definitions/Microsoft.OnSetSlot"
+            "$ref": "#/definitions/Microsoft.OnSetProperty"
         },
         {
             "title": "Microsoft.OnTypingActivity",
             "description": "This defines the actions to take when a Typing activity is received",
             "$ref": "#/definitions/Microsoft.OnTypingActivity"
+        },
+        {
+            "title": "Microsoft.OnUnknownEntity",
+            "description": "This defines the actions to take when a UnknownEntity event is raised",
+            "$ref": "#/definitions/Microsoft.OnUnknownEntity"
         },
         {
             "title": "Microsoft.OnUnknownIntent",
@@ -704,8 +714,8 @@
                 },
                 "expectedProperties": {
                     "type": "array",
-                    "title": "Expected Slots",
-                    "description": "Slots expected to be filled by entities from the user",
+                    "title": "Expected Properties",
+                    "description": "Properties expected to be filled by entities from the user",
                     "items": {
                         "type": "string"
                     }
@@ -3389,24 +3399,29 @@
                     "$ref": "#/definitions/Microsoft.OnCancelDialog"
                 },
                 {
-                    "title": "Microsoft.OnChooseSlot",
-                    "description": "This defines the actions to take when a ChooseSlot event is raised",
-                    "$ref": "#/definitions/Microsoft.OnChooseSlot"
+                    "title": "Microsoft.OnChooseEntity",
+                    "description": "This defines the actions to take when a ChooseEntity event is raised",
+                    "$ref": "#/definitions/Microsoft.OnChooseEntity"
                 },
                 {
-                    "title": "Microsoft.OnChooseSlotValue",
-                    "description": "This defines the actions to take when a ChooseSlot event is raised",
-                    "$ref": "#/definitions/Microsoft.OnChooseSlotValue"
+                    "title": "Microsoft.OnChooseMapping",
+                    "description": "This defines the actions to take when a ChooseMapping event is raised",
+                    "$ref": "#/definitions/Microsoft.OnChooseMapping"
                 },
                 {
-                    "title": "Microsoft.OnClarifySlotValue",
-                    "description": "This defines the actions to take when a ClarifySlotValue event is raised",
-                    "$ref": "#/definitions/Microsoft.OnClarifySlotValue"
+                    "title": "Microsoft.OnChooseProperty",
+                    "description": "This defines the actions to take when a ChooseProperty event is raised",
+                    "$ref": "#/definitions/Microsoft.OnChooseProperty"
                 },
                 {
-                    "title": "Microsoft.OnClearSlot",
+                    "title": "Microsoft.OnClarifyEntity",
+                    "description": "This defines the actions to take when a ClarifyEntity event is raised",
+                    "$ref": "#/definitions/Microsoft.OnClarifyEntity"
+                },
+                {
+                    "title": "Microsoft.OnClearProperty",
                     "description": "This defines the actions to take when a ClearSlot event is raised",
-                    "$ref": "#/definitions/Microsoft.OnClearSlot"
+                    "$ref": "#/definitions/Microsoft.OnClearProperty"
                 },
                 {
                     "title": "Microsoft.OnCondition",
@@ -3484,14 +3499,19 @@
                     "$ref": "#/definitions/Microsoft.OnRepromptDialog"
                 },
                 {
-                    "title": "Microsoft.OnSetSlot",
+                    "title": "Microsoft.OnSetProperty",
                     "description": "This defines the actions to take when a SetSlot event is raised",
-                    "$ref": "#/definitions/Microsoft.OnSetSlot"
+                    "$ref": "#/definitions/Microsoft.OnSetProperty"
                 },
                 {
                     "title": "Microsoft.OnTypingActivity",
                     "description": "This defines the actions to take when a Typing activity is received",
                     "$ref": "#/definitions/Microsoft.OnTypingActivity"
+                },
+                {
+                    "title": "Microsoft.OnUnknownEntity",
+                    "description": "This defines the actions to take when a UnknownEntity event is raised",
+                    "$ref": "#/definitions/Microsoft.OnUnknownEntity"
                 },
                 {
                     "title": "Microsoft.OnUnknownIntent",
@@ -4869,10 +4889,10 @@
                 }
             ]
         },
-        "Microsoft.OnChooseSlot": {
+        "Microsoft.OnChooseEntity": {
             "$role": "unionType(Microsoft.ITriggerCondition)",
-            "title": "Form ChooseSlot Event",
-            "description": "This defines the actions to take when a ChooseSlot event is raised",
+            "title": "Form ChooseEntity Event",
+            "description": "This defines the actions to take when a ChooseEntity event is raised",
             "type": "object",
             "properties": {
                 "$type": {
@@ -4880,7 +4900,7 @@
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.OnChooseSlot"
+                    "const": "Microsoft.OnChooseEntity"
                 },
                 "$copy": {
                     "title": "$copy",
@@ -4923,6 +4943,20 @@
                 "runOnce": {
                     "type": "boolean",
                     "description": "True if rule should run once per unique conditions"
+                },
+                "property": {
+                    "type": "string",
+                    "title": "Property to be set",
+                    "description": "Property that will be set after entity is selected."
+                },
+                "entities": {
+                    "type": "array",
+                    "title": "Possible entities",
+                    "description": "Entities to be chosen between",
+                    "items": {
+                        "type": "string",
+                        "title": "Entity name"
+                    }
                 }
             },
             "additionalProperties": false,
@@ -4947,10 +4981,10 @@
                 }
             ]
         },
-        "Microsoft.OnChooseSlotValue": {
+        "Microsoft.OnChooseMapping": {
             "$role": "unionType(Microsoft.ITriggerCondition)",
-            "title": "Form ChooseSlot Event",
-            "description": "This defines the actions to take when a ChooseSlot event is raised",
+            "title": "Form VhooseMapping Event",
+            "description": "This defines the actions to take when a ChooseMapping event is raised",
             "type": "object",
             "properties": {
                 "$type": {
@@ -4958,7 +4992,7 @@
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.OnChooseSlotValue"
+                    "const": "Microsoft.OnChooseMapping"
                 },
                 "$copy": {
                     "title": "$copy",
@@ -5001,6 +5035,20 @@
                 "runOnce": {
                     "type": "boolean",
                     "description": "True if rule should run once per unique conditions"
+                },
+                "properties": {
+                    "type": "string",
+                    "title": "Properties to choose between",
+                    "description": "Properties in mappings"
+                },
+                "entities": {
+                    "type": "array",
+                    "title": "Possible entities",
+                    "description": "Entities to be chosen between",
+                    "items": {
+                        "type": "string",
+                        "title": "Entity name"
+                    }
                 }
             },
             "additionalProperties": false,
@@ -5025,10 +5073,10 @@
                 }
             ]
         },
-        "Microsoft.OnClarifySlotValue": {
+        "Microsoft.OnChooseProperty": {
             "$role": "unionType(Microsoft.ITriggerCondition)",
-            "title": "Form ClarifySlotValue Event",
-            "description": "This defines the actions to take when a ClarifySlotValue event is raised",
+            "title": "Form ChooseProperty Event",
+            "description": "This defines the actions to take when a ChooseProperty event is raised",
             "type": "object",
             "properties": {
                 "$type": {
@@ -5036,7 +5084,7 @@
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.OnClarifySlotValue"
+                    "const": "Microsoft.OnChooseProperty"
                 },
                 "$copy": {
                     "title": "$copy",
@@ -5079,6 +5127,20 @@
                 "runOnce": {
                     "type": "boolean",
                     "description": "True if rule should run once per unique conditions"
+                },
+                "entity": {
+                    "type": "string",
+                    "title": "Entity being assigned",
+                    "description": "Entity being assigned to property choice"
+                },
+                "properties": {
+                    "type": "array",
+                    "title": "Possible properties",
+                    "description": "Properties to be chosen between",
+                    "items": {
+                        "type": "string",
+                        "title": "Property name"
+                    }
                 }
             },
             "additionalProperties": false,
@@ -5103,7 +5165,95 @@
                 }
             ]
         },
-        "Microsoft.OnClearSlot": {
+        "Microsoft.OnClarifyEntity": {
+            "$role": "unionType(Microsoft.ITriggerCondition)",
+            "title": "Form ClarifyEntity Event",
+            "description": "This defines the actions to take when a ClarifyEntity event is raised",
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.OnClarifyEntity"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "condition": {
+                    "$role": "expression",
+                    "title": "Condition",
+                    "description": "Condition which must be met for these actions to be executed",
+                    "examples": [
+                        "user.vip == true"
+                    ],
+                    "type": "string"
+                },
+                "actions": {
+                    "type": "array",
+                    "description": "Sequence of actions or dialogs to execute",
+                    "items": {
+                        "$type": "Microsoft.IDialog",
+                        "$ref": "#/definitions/Microsoft.IDialog"
+                    }
+                },
+                "priority": {
+                    "type": "integer",
+                    "description": "Priority of rule with 0 being the most important"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "description": "True if rule should run once per unique conditions"
+                },
+                "property": {
+                    "type": "string",
+                    "title": "Property to be set",
+                    "description": "Property that will be set after entity is selected."
+                },
+                "entity": {
+                    "type": "string",
+                    "title": "Ambiguous entity",
+                    "description": "Ambiguous entity"
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "actions",
+                        "$type"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.OnClearProperty": {
             "$role": "unionType(Microsoft.ITriggerCondition)",
             "title": "Form ClearSlot Event",
             "description": "This defines the actions to take when a ClearSlot event is raised",
@@ -5114,7 +5264,7 @@
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.OnClearSlot"
+                    "const": "Microsoft.OnClearProperty"
                 },
                 "$copy": {
                     "title": "$copy",
@@ -5157,6 +5307,11 @@
                 "runOnce": {
                     "type": "boolean",
                     "description": "True if rule should run once per unique conditions"
+                },
+                "property": {
+                    "type": "string",
+                    "title": "Property to be cleared",
+                    "description": "Property that will be cleared"
                 }
             },
             "additionalProperties": false,
@@ -6377,7 +6532,7 @@
                 }
             ]
         },
-        "Microsoft.OnSetSlot": {
+        "Microsoft.OnSetProperty": {
             "$role": "unionType(Microsoft.ITriggerCondition)",
             "title": "Form SetSlot Event",
             "description": "This defines the actions to take when a SetSlot event is raised",
@@ -6388,7 +6543,7 @@
                     "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
                     "type": "string",
                     "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
-                    "const": "Microsoft.OnSetSlot"
+                    "const": "Microsoft.OnSetProperty"
                 },
                 "$copy": {
                     "title": "$copy",
@@ -6431,6 +6586,16 @@
                 "runOnce": {
                     "type": "boolean",
                     "description": "True if rule should run once per unique conditions"
+                },
+                "property": {
+                    "type": "string",
+                    "title": "Property to be set",
+                    "description": "Property that will be set after entity is selected."
+                },
+                "entity": {
+                    "type": "string",
+                    "title": "Entity",
+                    "description": "Entity being put into property"
                 }
             },
             "additionalProperties": false,
@@ -6509,6 +6674,89 @@
                 "runOnce": {
                     "type": "boolean",
                     "description": "True if rule should run once per unique conditions"
+                }
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^\\$": {
+                    "type": "string"
+                }
+            },
+            "anyOf": [
+                {
+                    "title": "Reference",
+                    "required": [
+                        "$copy"
+                    ]
+                },
+                {
+                    "title": "Type",
+                    "required": [
+                        "actions",
+                        "$type"
+                    ]
+                }
+            ]
+        },
+        "Microsoft.OnUnknownEntity": {
+            "$role": "unionType(Microsoft.ITriggerCondition)",
+            "title": "Form UnknownEntity Event",
+            "description": "This defines the actions to take when a UnknownEntity event is raised",
+            "type": "object",
+            "properties": {
+                "$type": {
+                    "title": "$type",
+                    "description": "Defines the valid properties for the component you are configuring (from a dialog .schema file)",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z][a-zA-Z0-9.]*$",
+                    "const": "Microsoft.OnUnknownEntity"
+                },
+                "$copy": {
+                    "title": "$copy",
+                    "description": "Copy the definition by id from a .dialog file.",
+                    "type": "string",
+                    "pattern": "^(([a-zA-Z][a-zA-Z0-9.]*)?(#[a-zA-Z][a-zA-Z0-9.]*)?)$"
+                },
+                "$id": {
+                    "title": "$id",
+                    "description": "Inline id for reuse of an inline definition",
+                    "type": "string",
+                    "pattern": "^([a-zA-Z][a-zA-Z0-9.]*)$"
+                },
+                "$designer": {
+                    "title": "$designer",
+                    "type": "object",
+                    "description": "Extra information for the Bot Framework Designer."
+                },
+                "condition": {
+                    "$role": "expression",
+                    "title": "Condition",
+                    "description": "Condition which must be met for these actions to be executed",
+                    "examples": [
+                        "user.vip == true"
+                    ],
+                    "type": "string"
+                },
+                "actions": {
+                    "type": "array",
+                    "description": "Sequence of actions or dialogs to execute",
+                    "items": {
+                        "$type": "Microsoft.IDialog",
+                        "$ref": "#/definitions/Microsoft.IDialog"
+                    }
+                },
+                "priority": {
+                    "type": "integer",
+                    "description": "Priority of rule with 0 being the most important"
+                },
+                "runOnce": {
+                    "type": "boolean",
+                    "description": "True if rule should run once per unique conditions"
+                },
+                "entity": {
+                    "type": "string",
+                    "title": "Entity",
+                    "description": "Unknown entity"
                 }
             },
             "additionalProperties": false,
