@@ -98,7 +98,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
 
         private bool Analyze(string path, JToken token, Func<string, JToken, bool> analyzer)
         {
-            bool stop = false;
+            var stop = false;
             if (token is JObject jobj)
             {
                 if (!(stop = analyzer(path, token)))

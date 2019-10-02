@@ -1,4 +1,6 @@
-﻿namespace Microsoft.Bot.Builder.Dialogs.Form
+﻿// Licensed under the MIT License.
+// Copyright (c) Microsoft Corporation. All rights reserved.
+namespace Microsoft.Bot.Builder.Dialogs.Form
 {
     public static class Operations
     {

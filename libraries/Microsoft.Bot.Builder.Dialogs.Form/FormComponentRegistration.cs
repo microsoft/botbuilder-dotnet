@@ -1,5 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿// Licensed under the MIT License.
+// Copyright (c) Microsoft Corporation. All rights reserved.
+using System.Collections.Generic;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resolvers;
@@ -15,16 +16,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
         {
             yield return new TypeRegistration<FormDialog>("Microsoft.FormDialog");
             yield return new TypeRegistration<OnAsk>("Microsoft.OnAsk");
-            yield return new TypeRegistration<OnChooseSlot>("Microsoft.OnChooseSlot");
-            yield return new TypeRegistration<OnChooseSlotValue>("Microsoft.OnChooseSlotValue");
-            yield return new TypeRegistration<OnClarifySlotValue>("Microsoft.OnClarifySlotValue");
-            yield return new TypeRegistration<OnClearSlot>("Microsoft.OnClearSlot");
-            yield return new TypeRegistration<OnSetSlot>("Microsoft.OnSetSlot");
+            yield return new TypeRegistration<OnChooseProperty>("Microsoft.OnChooseSlot");
+            yield return new TypeRegistration<OnChooseEntity>("Microsoft.OnChooseSlotValue");
+            yield return new TypeRegistration<OnClarifyEntity>("Microsoft.OnClarifySlotValue");
+            yield return new TypeRegistration<OnClearProperty>("Microsoft.OnClearSlot");
+            yield return new TypeRegistration<OnSetProperty>("Microsoft.OnSetSlot");
         }
 
         public override IEnumerable<JsonConverter> GetConverters(ISourceMap sourceMap, IRefResolver refResolver, Stack<string> paths)
         {
-            yield return new DialogSchemaConverter(refResolver, sourceMap);
+            yield return new DialogSchemaConverter(refResolver);
         }
     }
 }

@@ -1,8 +1,8 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
     "$role": "unionType(Microsoft.ITriggerCondition)",
-    "title": "Form SetSlot Event",
-    "description": "This defines the actions to take when a SetSlot event is raised",
+    "title": "Form ChooseEntity Event",
+    "description": "This defines the actions to take when a ChooseEntity event is raised",
     "allOf": [
         {
             "$ref": "../../../Microsoft.Bot.Builder.Dialogs.Adaptive/Schemas/TriggerConditions/Microsoft.OnCondition.schema#"
@@ -15,10 +15,14 @@
                     "title": "Property to be set",
                     "description": "Property that will be set after entity is selected."
                 },
-                "entity": {
-                    "type": "string",
-                    "title": "Entity",
-                    "description": "Entity being put into property"
+                "entities": {
+                    "type": "array",
+                    "title": "Possible entities",
+                    "description": "Entities to be chosen between",
+                    "items": {
+                        "type": "string",
+                        "title": "Entity name"
+                    }
                 }
             }
         }

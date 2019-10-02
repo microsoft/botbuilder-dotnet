@@ -6,6 +6,16 @@
     "allOf": [
         {
             "$ref": "../../../Microsoft.Bot.Builder.Dialogs.Adaptive/Schemas/TriggerConditions/Microsoft.OnCondition.schema#"
+        },
+        {
+            "type": "object",
+            "properties": {
+                "property": {
+                    "type": "string",
+                    "title": "Property to be cleared",
+                    "description": "Property that will be cleared"
+                }
+            }
         }
     ]
 }

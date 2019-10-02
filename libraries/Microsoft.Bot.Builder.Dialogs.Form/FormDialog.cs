@@ -1,12 +1,13 @@
-﻿using System;
+﻿// Licensed under the MIT License.
+// Copyright (c) Microsoft Corporation. All rights reserved.
+using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors;
+using Microsoft.Bot.Builder.Dialogs.Form.Events;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -30,15 +31,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
         protected async Task<bool> ProcessFormAsync(SequenceContext sequenceContext, CancellationToken cancellationToken)
         {
             var handled = false;
-            var queues = Queues.Read(sequenceContext);
-            if (queues.Clear.Any())
+            var queues = EventQueues.Read(sequenceContext);
+            if (queues.ClearProperty.Any())
             {
-                var evt = new DialogEvent() { Name = FormEvents.ClearSlot, Value = queues.Clear.Dequeue(), Bubble = false };
+                var evt = new DialogEvent() { Name = FormEvents.ClearProperty, Value = queues.ClearProperty.Dequeue(), Bubble = false };
                 handled = await this.ProcessEventAsync(sequenceContext, dialogEvent: evt, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
             }
-            else if (queues.Set.Any())
+            else if (queues.SetProperty.Any())
             {
-                var evt = new DialogEvent() { Name = FormEvents.SetSlot, Value = queues.Set.Dequeue(), Bubble = false };
+                var evt = new DialogEvent() { Name = FormEvents.SetPropertyToEntity, Value = queues.SetProperty.Dequeue(), Bubble = false };
                 handled = await this.ProcessEventAsync(sequenceContext, dialogEvent: evt, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
             }
             else if (queues.Unknown.Any())
@@ -46,19 +47,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                 var evt = new DialogEvent() { Name = FormEvents.UnknownEntity, Value = queues.Unknown.Dequeue(), Bubble = false };
                 handled = await this.ProcessEventAsync(sequenceContext, dialogEvent: evt, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
             }
-            else if (queues.SlotChoices.Any())
+            else if (queues.ChooseProperty.Any())
             {
-                var evt = new DialogEvent() { Name = FormEvents.ChooseSlot, Value = queues.SlotChoices.Dequeue(), Bubble = false };
+                var evt = new DialogEvent() { Name = FormEvents.ChooseProperty, Value = queues.ChooseProperty.Dequeue(), Bubble = false };
                 handled = await this.ProcessEventAsync(sequenceContext, dialogEvent: evt, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
             }
-            else if (queues.SingletonChoice.Any())
+            else if (queues.ChooseEntity.Any())
             {
-                var evt = new DialogEvent() { Name = FormEvents.ChooseSlotValue, Value = queues.SingletonChoice.Dequeue(), Bubble = false };
+                var evt = new DialogEvent() { Name = FormEvents.ChooseEntity, Value = queues.ChooseEntity.Dequeue(), Bubble = false };
                 handled = await this.ProcessEventAsync(sequenceContext, dialogEvent: evt, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
             }
-            else if (queues.Clarify.Any())
+            else if (queues.ClarifyEntity.Any())
             {
-                var evt = new DialogEvent() { Name = FormEvents.ClarifySlotValue, Value = queues.Clarify.Dequeue(), Bubble = false };
+                var evt = new DialogEvent() { Name = FormEvents.ClarifyEntity, Value = queues.ClarifyEntity.Dequeue(), Bubble = false };
                 handled = await this.ProcessEventAsync(sequenceContext, dialogEvent: evt, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
             }
 
@@ -84,7 +85,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                 {
                     case AdaptiveEvents.RecognizedIntent:
                         {
-                            var queues = Queues.Read(sequenceContext);
+                            var queues = EventQueues.Read(sequenceContext);
                             var entities = NormalizeEntities(sequenceContext);
                             var utterance = sequenceContext.Context.Activity?.AsMessageActivity()?.Text;
                             if (!sequenceContext.State.TryGetValue<string[]>("$expectedProperties", out var slots))
@@ -97,11 +98,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                                 entities["utterance"] = new List<EntityInfo> { new EntityInfo { Priority = int.MaxValue, Coverage = 1.0, Start = 0, End = utterance.Length, Name = "utterance", Score = 0.0, Type = "string", Entity = utterance, Text = utterance } };
                             }
 
-                            var newQueues = new Queues();
+                            var newQueues = new EventQueues();
                             AssignEntities(entities, slots, newQueues);
                             queues.Merge(newQueues);
                             var turn = sequenceContext.State.GetValue<int>("this.turn");
-                            CombineOldSlotMappings(queues, turn);
+                            CombineOldEntityToPropertys(queues, turn);
                             queues.Write(sequenceContext);
                             handled = await base.ProcessEventAsync(sequenceContext, dialogEvent, preBubble, cancellationToken);
                         }
@@ -242,9 +243,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
         }
 
         // Generate possible entity to slot mappings
-        private IReadOnlyList<SlotEntityInfo> Candidates(Dictionary<string, List<EntityInfo>> entities, string[] expected)
+        private IReadOnlyList<PropertyEntityCandidate> Candidates(Dictionary<string, List<EntityInfo>> entities, string[] expected)
         {
-            var candidates = new List<SlotEntityInfo>();
+            var candidates = new List<PropertyEntityCandidate>();
             foreach (var slot in Schema.Property.Children)
             {
                 foreach (var mapping in slot.Mappings)
@@ -253,10 +254,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                     {
                         foreach (var possible in possiblities)
                         {
-                            var candidate = new SlotEntityInfo
+                            var candidate = new PropertyEntityCandidate
                             {
                                 Entity = possible,
-                                Slot = slot,
+                                Property = slot,
                                 Expected = expected.Contains(slot.Name)
                             };
                             candidates.Add(candidate);
@@ -268,23 +269,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
             return candidates;
         }
 
-        private void AddMappingToQueue(SlotMapping mapping, Queues queues)
+        private void AddMappingToQueue(EntityToProperty mapping, EventQueues queues)
         {
             if (mapping.Entity.Entity is JArray arr)
             {
                 if (arr.Count > 1)
                 {
-                    queues.Clarify.Add(mapping);
+                    queues.ClarifyEntity.Add(mapping);
                 }
                 else
                 {
                     mapping.Entity.Entity = arr[0];
-                    queues.Set.Add(mapping);
+                    queues.SetProperty.Add(mapping);
                 }
             }
             else
             {
-                queues.Set.Add(mapping);
+                queues.SetProperty.Add(mapping);
             }
         }
 
@@ -297,7 +298,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
             }
         }
 
-        private void AddToQueues(Dictionary<string, List<EntityInfo>> entities, string[] expected, Queues queues)
+        private void AddToQueues(Dictionary<string, List<EntityInfo>> entities, string[] expected, EventQueues queues)
         {
             var candidates = Candidates(entities, expected);
 
@@ -324,21 +325,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                     foreach (var entitySlots in entityChoices.slots)
                     {
                         var slotOps = from entitySlot in entitySlots
-                                      select new SlotOp
+                                      select new PropertyOp
                                       {
                                           // TODO: Figure out operation from role?
                                           // If composite do we have role:value, add{role:value}, remove{role:value}, add{type:value}, changeValue, ...
                                           // Would be nice if extensible...
                                           Operation = Operations.Add,
-                                          Slot = entitySlot.Slot.Path
+                                          Property = entitySlot.Property.Path
                                       };
                         if (entitySlots.Count() == 1)
                         {
                             // Only a single slot consumes entity
                             var slotEntity = entitySlots.First();
-                            var slot = slotEntity.Slot;
+                            var slot = slotEntity.Property;
                             // Send to clarify or set
-                            var mapping = new SlotMapping
+                            var mapping = new EntityToProperty
                             {
                                 Entity = entity,
                                 Change = slotOps.First()
@@ -348,10 +349,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                         else
                         {
                             // Multiple slots want the same entity
-                            queues.SlotChoices.Add(new SlotChoices
+                            queues.ChooseProperty.Add(new EntityToProperties
                             {
                                 Entity = entity,
-                                Slots = slotOps.ToList()
+                                Properties = slotOps.ToList()
                             });
                         }
                     }
@@ -368,12 +369,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
             }
         }
 
-        private Queues SlotQueues(string path, Dictionary<PropertySchema, Queues> slotToQueues)
+        private EventQueues SlotQueues(string path, Dictionary<PropertySchema, EventQueues> slotToQueues)
         {
             var prop = Schema.PathToSchema(path);
             if (!slotToQueues.TryGetValue(prop, out var slotQueues))
             {
-                slotQueues = new Queues();
+                slotQueues = new EventQueues();
                 slotToQueues[prop] = slotQueues;
             }
 
@@ -381,64 +382,64 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
         }
 
         // Create queues for each slot
-        private Dictionary<PropertySchema, Queues> PerSlotQueues(Queues queues)
+        private Dictionary<PropertySchema, EventQueues> PerSlotQueues(EventQueues queues)
         {
-            var slotToQueues = new Dictionary<PropertySchema, Queues>();
-            foreach (var entry in queues.Set)
+            var slotToQueues = new Dictionary<PropertySchema, EventQueues>();
+            foreach (var entry in queues.SetProperty)
             {
-                SlotQueues(entry.Change.Slot, slotToQueues).Set.Add(entry);
+                SlotQueues(entry.Change.Property, slotToQueues).SetProperty.Add(entry);
             }
 
-            foreach (var entry in queues.Clarify)
+            foreach (var entry in queues.ClarifyEntity)
             {
-                SlotQueues(entry.Change.Slot, slotToQueues).Clarify.Add(entry);
+                SlotQueues(entry.Change.Property, slotToQueues).ClarifyEntity.Add(entry);
             }
 
-            foreach (var entry in queues.SingletonChoice)
+            foreach (var entry in queues.ChooseEntity)
             {
-                SlotQueues(entry.Slot.Slot, slotToQueues).SingletonChoice.Add(entry);
+                SlotQueues(entry.Property.Property, slotToQueues).ChooseEntity.Add(entry);
             }
 
-            foreach (var entry in queues.Clear)
+            foreach (var entry in queues.ClearProperty)
             {
-                SlotQueues(entry, slotToQueues).Clear.Add(entry);
+                SlotQueues(entry, slotToQueues).ClearProperty.Add(entry);
             }
 
-            foreach (var entry in queues.SlotChoices)
+            foreach (var entry in queues.ChooseProperty)
             {
-                foreach (var slot in entry.Slots)
+                foreach (var slot in entry.Properties)
                 {
-                    SlotQueues(slot.Slot, slotToQueues).SlotChoices.Add(entry);
+                    SlotQueues(slot.Property, slotToQueues).ChooseProperty.Add(entry);
                 }
             }
 
             return slotToQueues;
         }
 
-        private void CombineNewSlotMappings(Queues queues)
+        private void CombineNewEntityToPropertys(EventQueues queues)
         {
             var slotToQueues = PerSlotQueues(queues);
             foreach (var entry in slotToQueues)
             {
                 var slot = entry.Key;
                 var slotQueues = entry.Value;
-                if (!slot.IsArray && slotQueues.Set.Count() + slotQueues.Clarify.Count() > 1)
+                if (!slot.IsArray && slotQueues.SetProperty.Count() + slotQueues.ClarifyEntity.Count() > 1)
                 {
                     // Singleton with multiple operations
-                    var mappings = from mapping in slotQueues.Set.Union(slotQueues.Clarify) where mapping.Change.Operation != Operations.Remove select mapping;
+                    var mappings = from mapping in slotQueues.SetProperty.Union(slotQueues.ClarifyEntity) where mapping.Change.Operation != Operations.Remove select mapping;
                     switch (mappings.Count())
                     {
                         case 0:
-                            queues.Clear.Add(slot.Path);
+                            queues.ClearProperty.Add(slot.Path);
                             break;
                         case 1:
                             AddMappingToQueue(mappings.First(), queues);
                             break;
                         default:
-                            queues.SingletonChoice.Add(new SingletonChoices
+                            queues.ChooseEntity.Add(new EntitiesToProperty
                             {
                                 Entities = (from mapping in mappings select mapping.Entity).ToList(),
-                                Slot = mappings.First().Change
+                                Property = mappings.First().Change
                             });
                             break;
                     }
@@ -448,7 +449,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
             // TODO: There is a lot more we can do here
         }
 
-        private void CombineOldSlotMappings(Queues queues, int turn)
+        private void CombineOldEntityToPropertys(EventQueues queues, int turn)
         {
             var slotToQueues = PerSlotQueues(queues);
             foreach (var entry in slotToQueues)
@@ -456,42 +457,42 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                 var slot = entry.Key;
                 var slotQueues = entry.Value;
                 if (!slot.IsArray &&
-                    (slotQueues.Set.Any(e => e.Entity.Turn == turn)
-                    || slotQueues.Clarify.Any(e => e.Entity.Turn == turn)
-                    || slotQueues.SingletonChoice.Any(c => c.Entities.Any(e => e.Turn == turn))
-                    || slotQueues.SlotChoices.Any(c => c.Entity.Turn == turn)))
+                    (slotQueues.SetProperty.Any(e => e.Entity.Turn == turn)
+                    || slotQueues.ClarifyEntity.Any(e => e.Entity.Turn == turn)
+                    || slotQueues.ChooseEntity.Any(c => c.Entities.Any(e => e.Turn == turn))
+                    || slotQueues.ChooseProperty.Any(c => c.Entity.Turn == turn)))
                 {
                     // Remove all old operations on slot because there is a new one
-                    foreach (var mapping in slotQueues.Set)
+                    foreach (var mapping in slotQueues.SetProperty)
                     {
                         if (mapping.Entity.Turn != turn)
                         {
-                            queues.Set.Remove(mapping);
+                            queues.SetProperty.Remove(mapping);
                         }
                     }
 
-                    foreach (var mapping in slotQueues.Clarify)
+                    foreach (var mapping in slotQueues.ClarifyEntity)
                     {
                         if (mapping.Entity.Turn != turn)
                         {
-                            queues.Clarify.Remove(mapping);
+                            queues.ClarifyEntity.Remove(mapping);
                         }
                     }
 
-                    foreach (var mapping in slotQueues.SingletonChoice)
+                    foreach (var mapping in slotQueues.ChooseEntity)
                     {
                         mapping.Entities.RemoveAll(e => e.Turn != turn);
                         if (mapping.Entities.Count == 0)
                         {
-                            slotQueues.SingletonChoice.Remove(mapping);
+                            slotQueues.ChooseEntity.Remove(mapping);
                         }
                     }
 
-                    foreach (var mapping in slotQueues.SlotChoices)
+                    foreach (var mapping in slotQueues.ChooseProperty)
                     {
                         if (mapping.Entity.Turn != turn)
                         {
-                            queues.SlotChoices.Remove(mapping);
+                            queues.ChooseProperty.Remove(mapping);
                         }
                     }
                 }
@@ -499,49 +500,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
         }
 
         // Assign entities to queues
-        private void AssignEntities(Dictionary<string, List<EntityInfo>> entities, string[] expected, Queues queues)
+        private void AssignEntities(Dictionary<string, List<EntityInfo>> entities, string[] expected, EventQueues queues)
         {
             AddToQueues(entities, expected, queues);
-            CombineNewSlotMappings(queues);
-        }
-
-        public class Queues
-        {
-            public List<EntityInfo> Unknown { get; } = new List<EntityInfo>();
-
-            public List<SlotMapping> Set { get; } = new List<SlotMapping>();
-
-            public List<SlotMapping> Clarify { get; } = new List<SlotMapping>();
-
-            public List<SingletonChoices> SingletonChoice { get; } = new List<SingletonChoices>();
-
-            public List<SlotChoices> SlotChoices { get; } = new List<SlotChoices>();
-
-            // Slots to clear
-            public List<string> Clear { get; } = new List<string>();
-
-            public static Queues Read(SequenceContext context)
-            {
-                if (!context.State.TryGetValue<Queues>("this.mappings", out var queues))
-                {
-                    queues = new Queues();
-                }
-
-                return queues;
-            }
-
-            public void Write(SequenceContext context)
-                => context.State.Add("this.mappings", this);
-
-            public void Merge(Queues queues)
-            {
-                Unknown.AddRange(queues.Unknown);
-                Set.AddRange(queues.Set);
-                Clarify.AddRange(queues.Clarify);
-                SingletonChoice.AddRange(queues.SingletonChoice);
-                SlotChoices.AddRange(queues.SlotChoices);
-                Clear.AddRange(queues.Clear);
-            }
+            CombineNewEntityToPropertys(queues);
         }
 
         // For simple singleton slot:

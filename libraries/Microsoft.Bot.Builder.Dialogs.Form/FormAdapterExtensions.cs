@@ -1,4 +1,6 @@
-﻿using Microsoft.Bot.Builder.Dialogs.Declarative;
+﻿// Licensed under the MIT License.
+// Copyright (c) Microsoft Corporation. All rights reserved.
+using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Form;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive

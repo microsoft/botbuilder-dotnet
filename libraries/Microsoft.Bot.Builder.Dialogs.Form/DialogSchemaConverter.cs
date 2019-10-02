@@ -14,12 +14,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Form.Converters
     public class DialogSchemaConverter : JsonConverter
     {
         private readonly IRefResolver refResolver;
-        private readonly ISourceMap sourceMap;
 
-        public DialogSchemaConverter(IRefResolver refResolver, ISourceMap sourceMap)
+        public DialogSchemaConverter(IRefResolver refResolver)
         {
             this.refResolver = refResolver ?? throw new ArgumentNullException(nameof(refResolver));
-            this.sourceMap = sourceMap ?? throw new ArgumentNullException(nameof(sourceMap));
         }
 
         public override bool CanRead => true;
