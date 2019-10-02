@@ -285,7 +285,7 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             var todos = new[] { "A", "B", "C" };
             evaled = engine.EvaluateTemplate("showTodo", new { todos });
             Assert.AreEqual(evaled.Replace("\r\n", "\n"), "\n    Your most recent 3 tasks are\n    * A\n* B\n* C\n    ");
-            
+
             evaled = engine.EvaluateTemplate("showTodo", null);
             Assert.AreEqual(evaled.Replace("\r\n", "\n"), "\n    You don't have any \"t\\\\odo'\".\n    ");
         }
@@ -715,8 +715,26 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
         public void TestMemoryScope()
         {
             var engine = new TemplateEngine().AddFile(GetExampleFilePath("MemoryScope.lg"));
-            var evaled = engine.EvaluateTemplate("T1", new { turn = new { name = "Dong", count = 3} });
+            var evaled = engine.EvaluateTemplate("T1", new { turn = new { name = "Dong", count = 3 } });
             Assert.AreEqual(evaled, "Hi Dong, welcome to Seattle, Seattle is a beautiful place, how many burgers do you want, 3?");
+
+            evaled = engine.EvaluateTemplate("AskBread", new
+            {
+                schema = new Dictionary<string, object>()
+                {
+                    {
+                        "Bread", new Dictionary<string, object>()
+                        {
+                            {
+                                "enum", new List<string>() { "A", "B" }
+                            }
+                        }
+                    }
+                }
+            });
+
+            Assert.AreEqual(evaled, "Which Bread, A or B do you want?");
+
         }
 
         private string GetExampleFilePath(string fileName)

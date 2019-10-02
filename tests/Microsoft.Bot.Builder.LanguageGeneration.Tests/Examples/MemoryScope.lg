@@ -6,3 +6,9 @@
 
 # T3(location)
 - {location} is a beautiful place, how many burgers do you want, {turn.count}?
+
+# AskBread
+- [AskEnum("Bread")]
+
+# AskEnum(prop)
+- Which {prop}, {join(schema[prop].enum, ' or ')} do you want?
