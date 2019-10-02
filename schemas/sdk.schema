@@ -142,7 +142,7 @@
         },
         {
             "title": "Microsoft.HttpRequest",
-            "description": "Call a HTTP url.",
+            "description": "Make a HTTP request.",
             "$ref": "#/definitions/Microsoft.HttpRequest"
         },
         {
@@ -167,7 +167,7 @@
         },
         {
             "title": "Microsoft.LogAction",
-            "description": "Log a message to the console and send a TraceActivity (optional).",
+            "description": "Log a message to the host application. Send a TraceActivity to Bot Framework Emulator (optional).",
             "$ref": "#/definitions/Microsoft.LogAction"
         },
         {
@@ -372,7 +372,7 @@
         },
         {
             "title": "Microsoft.SwitchCondition",
-            "description": "Execute different actions based on the value of a condition.",
+            "description": "Execute different actions based on the value of a property.",
             "$ref": "#/definitions/Microsoft.SwitchCondition"
         },
         {
@@ -392,7 +392,7 @@
         },
         {
             "title": "Microsoft.TraceActivity",
-            "description": "Send a trace activity",
+            "description": "Send a trace activity to the transcript logger and/ or Bot Framework Emulator.",
             "$ref": "#/definitions/Microsoft.TraceActivity"
         },
         {
@@ -718,15 +718,6 @@
                     ],
                     "type": "string"
                 },
-                "value": {
-                    "$role": "expression",
-                    "title": "Value",
-                    "description": "Expression to use as the potential value. Example: @number as the value to use for a prompt bound to $age.",
-                    "examples": [
-                        "@number"
-                    ],
-                    "type": "string"
-                },
                 "defaultValue": {
                     "$role": "expression",
                     "title": "Default value",
@@ -1040,15 +1031,6 @@
                     ],
                     "type": "string"
                 },
-                "value": {
-                    "$role": "expression",
-                    "title": "Value",
-                    "description": "Expression to use as the potential value. Example: @number as the value to use for a prompt bound to $age.",
-                    "examples": [
-                        "@number"
-                    ],
-                    "type": "string"
-                },
                 "defaultValue": {
                     "$role": "expression",
                     "title": "Default value",
@@ -1302,7 +1284,7 @@
         },
         "Microsoft.ConfirmInput": {
             "$role": "unionType(Microsoft.IDialog)",
-            "title": "ConfirmInput Dialog",
+            "title": "Confirm input dialog",
             "description": "Collect information - Ask for confirmation (yes or no).",
             "type": "object",
             "properties": {
@@ -1403,15 +1385,6 @@
                         "user.name",
                         "conversation.issueTitle",
                         "dialog.favColor"
-                    ],
-                    "type": "string"
-                },
-                "value": {
-                    "$role": "expression",
-                    "title": "Value",
-                    "description": "Expression to use as the potential value. Example: @number as the value to use for a prompt bound to $age.",
-                    "examples": [
-                        "@number"
                     ],
                     "type": "string"
                 },
@@ -1705,7 +1678,7 @@
         },
         "Microsoft.DateTimeInput": {
             "$role": "unionType(Microsoft.IDialog)",
-            "title": "DateTimeInput Dialog",
+            "title": "Date/time input dialog",
             "description": "Collect information - Ask for date and/ or time",
             "type": "object",
             "properties": {
@@ -1806,15 +1779,6 @@
                         "user.name",
                         "conversation.issueTitle",
                         "dialog.favColor"
-                    ],
-                    "type": "string"
-                },
-                "value": {
-                    "$role": "expression",
-                    "title": "Value",
-                    "description": "Expression to use as the potential value. Example: @number as the value to use for a prompt bound to $age.",
-                    "examples": [
-                        "@number"
                     ],
                     "type": "string"
                 },
@@ -2613,7 +2577,7 @@
         },
         "Microsoft.Foreach": {
             "$role": "unionType(Microsoft.IDialog)",
-            "title": "For-each item",
+            "title": "For each item",
             "description": "Execute actions on each item in an a collection.",
             "type": "object",
             "properties": {
@@ -2653,7 +2617,7 @@
                 "actions": {
                     "type": "array",
                     "title": "Actions",
-                    "description": "Actions to execute for each item. Use '$foreach.value' to access the value of each item.",
+                    "description": "Actions to execute for each item. Use '$foreach.item' to access the value of each item.",
                     "items": {
                         "$type": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
@@ -2685,7 +2649,7 @@
         },
         "Microsoft.ForeachPage": {
             "$role": "unionType(Microsoft.IDialog)",
-            "title": "For-each page",
+            "title": "For each page",
             "description": "Execute actions on each page (collection of items) in an array.",
             "type": "object",
             "properties": {
@@ -2725,7 +2689,7 @@
                 "actions": {
                     "type": "array",
                     "title": "Actions",
-                    "description": "Actions to execute for each page.",
+                    "description": "Actions to execute for each page. Use '$foreach.page' to access each page.",
                     "items": {
                         "$type": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
@@ -2869,7 +2833,7 @@
             "$role": "unionType(Microsoft.IDialog)",
             "type": "object",
             "title": "HTTP request",
-            "description": "Call a HTTP url.",
+            "description": "Make a HTTP request.",
             "properties": {
                 "$type": {
                     "title": "$type",
@@ -2934,7 +2898,7 @@
                 "headers": {
                     "type": "object",
                     "additionProperties": true,
-                    "title": "Header",
+                    "title": "Headers",
                     "description": "One or more headers to include in the request (supports data binding)."
                 },
                 "responseType": {
@@ -3081,7 +3045,7 @@
                 },
                 {
                     "title": "Microsoft.HttpRequest",
-                    "description": "Call a HTTP url.",
+                    "description": "Make a HTTP request.",
                     "$ref": "#/definitions/Microsoft.HttpRequest"
                 },
                 {
@@ -3096,7 +3060,7 @@
                 },
                 {
                     "title": "Microsoft.LogAction",
-                    "description": "Log a message to the console and send a TraceActivity (optional).",
+                    "description": "Log a message to the host application. Send a TraceActivity to Bot Framework Emulator (optional).",
                     "$ref": "#/definitions/Microsoft.LogAction"
                 },
                 {
@@ -3136,7 +3100,7 @@
                 },
                 {
                     "title": "Microsoft.SwitchCondition",
-                    "description": "Execute different actions based on the value of a condition.",
+                    "description": "Execute different actions based on the value of a property.",
                     "$ref": "#/definitions/Microsoft.SwitchCondition"
                 },
                 {
@@ -3146,7 +3110,7 @@
                 },
                 {
                     "title": "Microsoft.TraceActivity",
-                    "description": "Send a trace activity",
+                    "description": "Send a trace activity to the transcript logger and/ or Bot Framework Emulator.",
                     "$ref": "#/definitions/Microsoft.TraceActivity"
                 },
                 {
@@ -3606,7 +3570,7 @@
         "Microsoft.LogAction": {
             "$role": "unionType(Microsoft.IDialog)",
             "title": "Log to console",
-            "description": "Log a message to the console and send a TraceActivity (optional).",
+            "description": "Log a message to the host application. Send a TraceActivity to Bot Framework Emulator (optional).",
             "type": "object",
             "properties": {
                 "$type": {
@@ -3962,7 +3926,7 @@
         },
         "Microsoft.NumberInput": {
             "$role": "unionType(Microsoft.IDialog)",
-            "title": "NumberInput Dialog",
+            "title": "Number input dialog",
             "description": "Collect information - Ask for a number.",
             "type": "object",
             "properties": {
@@ -4063,15 +4027,6 @@
                         "user.name",
                         "conversation.issueTitle",
                         "dialog.favColor"
-                    ],
-                    "type": "string"
-                },
-                "value": {
-                    "$role": "expression",
-                    "title": "Value",
-                    "description": "Expression to use as the potential value. Example: @number as the value to use for a prompt bound to $age.",
-                    "examples": [
-                        "@number"
                     ],
                     "type": "string"
                 },
@@ -4301,15 +4256,6 @@
                         "user.name",
                         "conversation.issueTitle",
                         "dialog.favColor"
-                    ],
-                    "type": "string"
-                },
-                "value": {
-                    "$role": "expression",
-                    "title": "Value",
-                    "description": "Expression to use as the potential value. Example: @number as the value to use for a prompt bound to $age.",
-                    "examples": [
-                        "@number"
                     ],
                     "type": "string"
                 },
@@ -6454,8 +6400,8 @@
                 },
                 "activity": {
                     "$type": "Microsoft.IActivityTemplate",
-                    "title": "Response",
-                    "description": "Response activity.",
+                    "title": "Activity",
+                    "description": "Activity to send.",
                     "$ref": "#/definitions/Microsoft.IActivityTemplate"
                 }
             },
@@ -6615,7 +6561,7 @@
         "Microsoft.SwitchCondition": {
             "$role": "unionType(Microsoft.IDialog)",
             "title": "Switch condition",
-            "description": "Execute different actions based on the value of a condition.",
+            "description": "Execute different actions based on the value of a property.",
             "type": "object",
             "properties": {
                 "$type": {
@@ -6645,7 +6591,7 @@
                 "condition": {
                     "$role": "expression",
                     "title": "Condition",
-                    "description": "Expression to evaluate.",
+                    "description": "Property to evaluate.",
                     "examples": [
                         "user.favColor"
                     ],
@@ -6665,7 +6611,7 @@
                             "value": {
                                 "$role": "expression",
                                 "title": "Value",
-                                "description": "Condition value.",
+                                "description": "Value.",
                                 "examples": [
                                     "'red'",
                                     "dialog.colors.red"
@@ -6771,7 +6717,7 @@
         "Microsoft.TextInput": {
             "$role": "unionType(Microsoft.IDialog)",
             "type": "object",
-            "title": "TextInput Dialog",
+            "title": "Text input dialog",
             "description": "Collection information - Ask for a word or sentence.",
             "properties": {
                 "$type": {
@@ -6871,15 +6817,6 @@
                         "user.name",
                         "conversation.issueTitle",
                         "dialog.favColor"
-                    ],
-                    "type": "string"
-                },
-                "value": {
-                    "$role": "expression",
-                    "title": "Value",
-                    "description": "Expression to use as the potential value. Example: @number as the value to use for a prompt bound to $age.",
-                    "examples": [
-                        "@number"
                     ],
                     "type": "string"
                 },
@@ -7011,7 +6948,7 @@
         "Microsoft.TraceActivity": {
             "$role": "unionType(Microsoft.IDialog)",
             "title": "Send a TraceActivity",
-            "description": "Send a trace activity",
+            "description": "Send a trace activity to the transcript logger and/ or Bot Framework Emulator.",
             "type": "object",
             "properties": {
                 "$type": {

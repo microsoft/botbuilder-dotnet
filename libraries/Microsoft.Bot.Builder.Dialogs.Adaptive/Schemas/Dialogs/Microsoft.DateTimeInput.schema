@@ -1,7 +1,7 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
     "$role": "unionType(Microsoft.IDialog)",
-    "title": "DateTimeInput Dialog",
+    "title": "Date/time input dialog",
     "description": "Collect information - Ask for date and/ or time",
     "type": "object",
     "allOf": [

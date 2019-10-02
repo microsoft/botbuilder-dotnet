@@ -2,7 +2,7 @@
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
     "$role": "unionType(Microsoft.IDialog)",
     "title": "Switch condition",
-    "description": "Execute different actions based on the value of a condition.",
+    "description": "Execute different actions based on the value of a property.",
     "type": "object",
     "required": [
         "condition"
@@ -11,7 +11,7 @@
         "condition": {
             "$role": "expression",
             "title": "Condition",
-            "description": "Expression to evaluate.",
+            "description": "Property to evaluate.",
             "examples": [
                 "user.favColor"
             ]
@@ -26,7 +26,7 @@
                     "value": {
                         "$role": "expression",
                         "title": "Value",
-                        "description": "Condition value.",
+                        "description": "Value.",
                         "examples": [
                             "'red'",
                             "dialog.colors.red"

@@ -3,7 +3,7 @@
     "$role": "unionType(Microsoft.IDialog)",
     "type": "object",
     "title": "HTTP request",
-    "description": "Call a HTTP url.",
+    "description": "Make a HTTP request.",
     "required": [
         "url",
         "method"
@@ -47,7 +47,7 @@
         "headers": {
             "type": "object",
             "additionProperties": true,
-            "title": "Header",
+            "title": "Headers",
             "description": "One or more headers to include in the request (supports data binding)."
         },
         "responseType": {

@@ -1,7 +1,7 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
     "$role": "unionType(Microsoft.IDialog)",
-    "title": "For-each page",
+    "title": "For each page",
     "description": "Execute actions on each page (collection of items) in an array.",
     "type": "object",
     "properties": {
@@ -19,7 +19,7 @@
                 "$type": "Microsoft.IDialog"
             },
             "title": "Actions",
-            "description": "Actions to execute for each page."
+            "description": "Actions to execute for each page. Use '$foreach.page' to access each page."
         },
         "pageSize": {
             "type": "integer",
