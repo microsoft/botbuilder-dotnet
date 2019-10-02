@@ -58,7 +58,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         private const string PersistedExpires = "expires";
 
         // Default prompt timeout of 15 minutes (in ms)
-        private const int DefaultPromptTimeout = 900000;
+        private const int DefaultPromptTimeout = TurnStateConstants.OAuthLoginTimeoutMsValue;
 
         // regex to check if code supplied is a 6 digit numerical code (hence, a magic code).
         private readonly Regex _magicCodeRegex = new Regex(@"(\d{6})");
@@ -307,6 +307,14 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
             else if (!prompt.Attachments.Any(a => a.Content is OAuthCard))
             {
+                string signInLink = null;
+
+                // Some channels support rendering OAuthCards, but require the OAuthCard signin link to be pre-filled in
+                if (RequiresLink(turnContext))
+                {
+                    signInLink = await adapter.GetOauthSignInLinkAsync(turnContext, _settings.ConnectionName, cancellationToken).ConfigureAwait(false);
+                }
+
                 prompt.Attachments.Add(new Attachment
                 {
                     ContentType = OAuthCard.ContentType,
@@ -321,11 +329,14 @@ namespace Microsoft.Bot.Builder.Dialogs
                                 Title = _settings.Title,
                                 Text = _settings.Text,
                                 Type = ActionTypes.Signin,
+                                Value = signInLink,
                             },
                         },
                     },
                 });
             }
+
+            turnContext?.TurnState?.Add<object>(TurnStateConstants.OAuthLoginTimeoutKey, _settings.Timeout);
 
             // Set input hint
             if (string.IsNullOrEmpty(prompt.InputHint))
@@ -430,6 +441,11 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             return true;
+        }
+
+        private bool RequiresLink(ITurnContext turnContext)
+        {
+            return !turnContext.Activity.ServiceUrl.Contains("http");
         }
     }
 }
