@@ -4,6 +4,12 @@ $Bread:rye=
 $Bread:white=
 
 # None
-- multigrain
-- rye
-- white
+- multigrain
+- yes
+- no
+- rye
+- yes
+- no
+- white
+- yes
+- no

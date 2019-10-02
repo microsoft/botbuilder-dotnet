@@ -31,3 +31,6 @@
 > TODO: This is not correct--the possible values should be picked up from the event structure
 # chooseSlot(entity, turn)
 - Please choose a slot for {toLower(entity)} from \[{join(turn.schema.properties, ',')}\]
+
+# cancel
+- Do you want to end the conversation? (yes/no)
