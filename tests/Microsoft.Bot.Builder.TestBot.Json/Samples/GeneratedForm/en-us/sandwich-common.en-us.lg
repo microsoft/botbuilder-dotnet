@@ -12,8 +12,8 @@
 - Which value do you want for {toLower(property)}?
 
 # askNumber(property, turn)
-- IF: {turn.schema[property].minimum && turn.schema[property].maximum}
-- Enter a number for {toLower(property)} between {turn.schema[property].minimum} and {turn.schema[property].maximum}
+- IF: {turn.schema.properties[property].minimum && turn.schema.properties[property].maximum}
+- Enter a number for {toLower(property)} between {turn.schema.properties[property].minimum} and {turn.schema.properties[property].maximum}
 - ELSE:
 - Enter a number for {toLower(property)}
 
@@ -22,11 +22,11 @@
 
 >>> Help messages <<<
 # helpProperty(property, turn)
-- Possible values for {toLower(property)} include: \[{join(turn.schema[property].enum, ',')}\]
+- Possible values for {toLower(property)} include: \[{join(turn.schema.properties[property].enum, ',')}\]
 
 > TODO: This is not correct--the possible values should be picked up from the event structure
 # clarifyEnum(property, turn)
-- Please choose a value for {toLower(property)} from \[{join(turn.schema[property].enum, ',')}\]
+- Please choose a value for {toLower(property)} from \[{join(turn.schema.properties[property].enum, ',')}\]
 
 > TODO: This is not correct--the possible values should be picked up from the event structure
 # chooseSlot(entity, turn)
