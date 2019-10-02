@@ -710,6 +710,15 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.AreEqual(lgResource.Templates[0].Body.Replace("\r\n", "\n"), "- Hi\n- Hello\n- Hiya\n- Hi");
         }
 
+
+        [TestMethod]
+        public void TestMemoryScope()
+        {
+            var engine = new TemplateEngine().AddFile(GetExampleFilePath("MemoryScope.lg"));
+            var evaled = engine.EvaluateTemplate("T1", new { turn = new { name = "Dong", count = 3} });
+            Assert.AreEqual(evaled, "Hi Dong, welcome to Seattle, Seattle is a beautiful place, how many burgers do you want, 3?");
+        }
+
         private string GetExampleFilePath(string fileName)
         {
             return Path.Combine(AppContext.BaseDirectory, "Examples", fileName);
