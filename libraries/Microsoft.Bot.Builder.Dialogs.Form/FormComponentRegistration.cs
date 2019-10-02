@@ -16,11 +16,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
         {
             yield return new TypeRegistration<FormDialog>("Microsoft.FormDialog");
             yield return new TypeRegistration<OnAsk>("Microsoft.OnAsk");
-            yield return new TypeRegistration<OnChooseProperty>("Microsoft.OnChooseSlot");
-            yield return new TypeRegistration<OnChooseEntity>("Microsoft.OnChooseSlotValue");
+            yield return new TypeRegistration<OnChooseEntity>("Microsoft.OnChooseSlot");
+            yield return new TypeRegistration<OnChooseMapping>("Microsoft.OnChooseSlotValue");
+            yield return new TypeRegistration<OnChooseProperty>("Microsoft.OnChooseProperty");
             yield return new TypeRegistration<OnClarifyEntity>("Microsoft.OnClarifySlotValue");
-            yield return new TypeRegistration<OnClearProperty>("Microsoft.OnClearSlot");
-            yield return new TypeRegistration<OnSetProperty>("Microsoft.OnSetSlot");
+            yield return new TypeRegistration<OnClearProperty>("Microsoft.OnClearProperty");
+            yield return new TypeRegistration<OnSetProperty>("Microsoft.OnSetProperty");
         }
 
         public override IEnumerable<JsonConverter> GetConverters(ISourceMap sourceMap, IRefResolver refResolver, Stack<string> paths)
