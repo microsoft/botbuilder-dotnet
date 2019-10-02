@@ -20,20 +20,12 @@ namespace Microsoft.Bot.Builder.Teams
 
         public TeamsInfo(ConnectorClient connectorClient)
         {
-            if (connectorClient != null)
-            {
-                _connectorClient = connectorClient;
-                _teamsConnectorClient = new TeamsConnectorClient(connectorClient.BaseUri, connectorClient.Credentials, connectorClient.HttpClient);
-            }
+            _connectorClient = connectorClient ?? throw new ArgumentNullException(nameof(connectorClient));
+            _teamsConnectorClient = new TeamsConnectorClient(connectorClient.BaseUri, connectorClient.Credentials, connectorClient.HttpClient);
         }
 
         public async Task<TeamDetails> GetTeamDetailsAsync(ITurnContext turnContext, CancellationToken cancellationToken = default)
         {
-            if (_teamsConnectorClient == null)
-            {
-                throw new NotImplementedException("This method is only implemented for the MS Teams channel.");
-            }
-
             var teamId = turnContext.Activity.GetChannelData<TeamsChannelData>()?.Team?.Id;
 
             if (teamId == null)
@@ -46,11 +38,6 @@ namespace Microsoft.Bot.Builder.Teams
 
         public async Task<IList<ChannelInfo>> GetChannelsAsync(ITurnContext turnContext, CancellationToken cancellationToken = default)
         {
-            if (_teamsConnectorClient == null)
-            {
-                throw new NotImplementedException("This method is only implemented for the MS Teams channel.");
-            }
-
             var teamId = turnContext.Activity.GetChannelData<TeamsChannelData>()?.Team?.Id;
 
             if (teamId == null)
