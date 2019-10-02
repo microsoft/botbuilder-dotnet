@@ -39,7 +39,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
             }
             else if (queues.SetProperty.Any())
             {
-                var evt = new DialogEvent() { Name = FormEvents.SetProperty, Value = queues.SetProperty.Dequeue(), Bubble = false };
+                var val = queues.SetProperty.Dequeue();
+                var evt = new DialogEvent() { Name = FormEvents.SetProperty, Value = val, Bubble = false };
+                sequenceContext.State.SetValue($"{TurnPath.RECOGNIZED}.entities.{val.Entity.Name}", new object[] { val.Entity.Value });
                 handled = await this.ProcessEventAsync(sequenceContext, dialogEvent: evt, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
             }
             else if (queues.Unknown.Any())

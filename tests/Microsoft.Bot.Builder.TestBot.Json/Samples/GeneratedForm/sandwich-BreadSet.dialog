@@ -6,7 +6,7 @@
         {
             "$type": "Microsoft.SetProperty",
             "property": "$Bread",
-            "value": "turn.dialogEvent.Value.Entity.value"
+            "value": "@Bread"
         }
     ]
 }
