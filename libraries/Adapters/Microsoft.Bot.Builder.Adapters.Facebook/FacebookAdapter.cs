@@ -3,8 +3,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Net;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -53,29 +53,28 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         public override async Task<ResourceResponse[]> SendActivitiesAsync(ITurnContext context, Activity[] activities, CancellationToken cancellationToken)
         {
             var responses = new List<ResourceResponse>();
-            for (var i = 0; i < activities.Length; i++)
+
+            foreach (var activity in activities)
             {
-                var activity = activities[i];
-                if (activity.Type == ActivityTypes.Message)
+                if (activity.Type != ActivityTypes.Message)
                 {
-                    var message = FacebookHelper.ActivityToFacebook(activity);
-
-                    var api = await _facebookClient.GetAPIAsync(context.Activity).ConfigureAwait(false);
-                    var res = await api.CallAPIAsync("/me/messages", message, null, cancellationToken).ConfigureAwait(false);
-
-                    if (res != null)
-                    {
-                        var response = new ResourceResponse()
-                        {
-                            Id = (res as dynamic).message_id,
-                        };
-
-                        responses.Add(response);
-                    }
+                    throw new Exception("Unknown message type");
                 }
-                else
+
+                var message = FacebookHelper.ActivityToFacebook(activity);
+
+                var api = await _facebookClient.GetAPIAsync(context.Activity).ConfigureAwait(false);
+
+                var res = await api.SendMessageAsync("/me/messages", message, null, cancellationToken).ConfigureAwait(false);
+
+                if (res != null)
                 {
-                    // log error: unknown message type
+                    var response = new ResourceResponse()
+                    {
+                        Id = (res as dynamic).message_id,
+                    };
+
+                    responses.Add(response);
                 }
             }
 
@@ -120,7 +119,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
 
             using (var context = new TurnContext(this, request))
             {
-                await RunPipelineAsync(context, logic, default(CancellationToken)).ConfigureAwait(false);
+                await RunPipelineAsync(context, logic, default).ConfigureAwait(false);
             }
         }
 
@@ -134,62 +133,54 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task ProcessAsync(HttpRequest request, HttpResponse response, IBot bot, CancellationToken cancellationToken)
         {
-            if (await _facebookClient.VerifySignatureAsync(request, response, cancellationToken).ConfigureAwait(false))
+            if (!_facebookClient.VerifySignature(request))
             {
-                var facebookEvent = request.Body;
-                if ((facebookEvent as dynamic).entry)
+                await FacebookHelper.WriteAsync(response, HttpStatusCode.Unauthorized, string.Empty, Encoding.UTF8, cancellationToken).ConfigureAwait(false);
+                throw new Exception("WARNING: Webhook received message with invalid signature. Potential malicious behavior!");
+            }
+
+            var facebookEvent = request.Body;
+
+            if ((facebookEvent as dynamic).entry)
+            {
+                for (var i = 0; i < (facebookEvent as dynamic).entry.Lenght; i++)
                 {
-                    for (var i = 0; i < (facebookEvent as dynamic).entry.Lenght; i++)
+                    FacebookMessage[] payload = null;
+                    var entry = (facebookEvent as dynamic).entry;
+
+                    // handle normal incoming stuff
+                    payload = entry.changes != null ? (FacebookMessage[])entry.changes : (FacebookMessage[])entry.messaging;
+
+                    foreach (var message in payload)
                     {
-                        FacebookMessage[] payload = null;
-                        var entry = (facebookEvent as dynamic).entry;
+                        var activity = FacebookHelper.ProcessSingleMessage(message);
 
-                        // handle normal incoming stuff
-                        if (entry.changes != null)
+                        using (var context = new TurnContext(this, activity))
                         {
-                            payload = entry.changes;
+                            await RunPipelineAsync(context, bot.OnTurnAsync, cancellationToken).ConfigureAwait(false);
                         }
-                        else
-                        {
-                            payload = entry.messaging;
-                        }
+                    }
 
-                        for (var j = 0; j < payload.Length; j++)
+                    // handle standby messages (this bot is not the active receiver)
+                    if (entry.standby)
+                    {
+                        payload = entry.standby;
+
+                        foreach (var message in payload)
                         {
-                            var activity = FacebookHelper.ProcessSingleMessage(payload[j]);
+                            // indicate that this message was received in standby mode rather than normal mode.
+                            (message as dynamic).standby = true;
+                            var activity = FacebookHelper.ProcessSingleMessage(message);
 
                             using (var context = new TurnContext(this, activity))
                             {
                                 await RunPipelineAsync(context, bot.OnTurnAsync, cancellationToken).ConfigureAwait(false);
                             }
                         }
-
-                        // handle standby messages (this bot is not the active receiver)
-                        if (entry.standby)
-                        {
-                            payload = entry.standby;
-
-                            for (var j = 0; j < payload.Length; j++)
-                            {
-                                var message = payload[j];
-
-                                // indicate that this message was received in standby mode rather than normal mode.
-                                (message as dynamic).standby = true;
-                                var activity = FacebookHelper.ProcessSingleMessage(message);
-
-                                using (var context = new TurnContext(this, activity))
-                                {
-                                    await RunPipelineAsync(context, bot.OnTurnAsync, cancellationToken).ConfigureAwait(false);
-                                }
-                            }
-                        }
                     }
-
-                    // send code 200
-                    response.StatusCode = Convert.ToInt32(HttpStatusCode.OK, CultureInfo.InvariantCulture);
-                    response.ContentType = "text/plain";
-                    await response.WriteAsync(string.Empty, cancellationToken).ConfigureAwait(false);
                 }
+
+                await FacebookHelper.WriteAsync(response, HttpStatusCode.OK, string.Empty, Encoding.UTF8, cancellationToken).ConfigureAwait(false);
             }
         }
     }

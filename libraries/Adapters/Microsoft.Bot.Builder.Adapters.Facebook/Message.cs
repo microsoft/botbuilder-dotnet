@@ -29,6 +29,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         /// Gets or sets the quick replies.
         /// </summary>
         /// <value>The quick replies array.</value>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "it needs to be set in ActivityToFacebook method")]
         public List<object> QuickReplies { get; set; } = new List<object>();
     }
 }

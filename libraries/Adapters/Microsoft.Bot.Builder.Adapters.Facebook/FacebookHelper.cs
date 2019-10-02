@@ -2,6 +2,11 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Net;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Adapters.Facebook
@@ -111,6 +116,40 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
             }
 
             return activity;
+        }
+
+        /// <summary>
+        /// Writes the HttpResponse.
+        /// </summary>
+        /// <param name="response">The httpResponse.</param>
+        /// <param name="code">The status code to be written.</param>
+        /// <param name="text">The text to be written.</param>
+        /// <param name="encoding">The encoding for the text.</param>
+        /// <param name="cancellationToken">A cancellation token for the task.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        public static async Task WriteAsync(HttpResponse response, HttpStatusCode code, string text, Encoding encoding, CancellationToken cancellationToken)
+        {
+            if (response == null)
+            {
+                throw new ArgumentNullException(nameof(response));
+            }
+
+            if (text == null)
+            {
+                throw new ArgumentNullException(nameof(text));
+            }
+
+            if (encoding == null)
+            {
+                throw new ArgumentNullException(nameof(encoding));
+            }
+
+            response.ContentType = "text/plain";
+            response.StatusCode = (int)code;
+
+            var data = encoding.GetBytes(text);
+
+            await response.Body.WriteAsync(data, 0, data.Length, cancellationToken).ConfigureAwait(false);
         }
     }
 }
