@@ -95,7 +95,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
 
                             if (slots.Contains("utterance"))
                             {
-                                entities["utterance"] = new List<EntityInfo> { new EntityInfo { Priority = int.MaxValue, Coverage = 1.0, Start = 0, End = utterance.Length, Name = "utterance", Score = 0.0, Type = "string", Entity = utterance, Text = utterance } };
+                                entities["utterance"] = new List<EntityInfo> { new EntityInfo { Priority = int.MaxValue, Coverage = 1.0, Start = 0, End = utterance.Length, Name = "utterance", Score = 0.0, Type = "string", Value = utterance, Text = utterance } };
                             }
 
                             var newQueues = new EventQueues();
@@ -222,7 +222,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                             {
                                 Turn = turn,
                                 Name = name,
-                                Entity = val,
+                                Value = val,
                                 Start = (int)instance.startIndex,
                                 End = (int)instance.endIndex,
                                 Text = (string)instance.text,
@@ -271,7 +271,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
 
         private void AddMappingToQueue(EntityToProperty mapping, EventQueues queues)
         {
-            if (mapping.Entity.Entity is JArray arr)
+            if (mapping.Entity.Value is JArray arr)
             {
                 if (arr.Count > 1)
                 {
@@ -279,7 +279,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                 }
                 else
                 {
-                    mapping.Entity.Entity = arr[0];
+                    mapping.Entity.Value = arr[0];
                     queues.SetProperty.Add(mapping);
                 }
             }

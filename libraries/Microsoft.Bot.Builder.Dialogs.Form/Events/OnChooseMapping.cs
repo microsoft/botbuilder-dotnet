@@ -41,7 +41,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form.Events
             {
                 foreach (var property in this.Properties)
                 {
-                    expressions.Add(factory.Parse($"contains(foreach(mapping, {TurnPath.DIALOGEVENT}.mappings, mapping.property), '{property}')"));
+                    expressions.Add(factory.Parse($"contains(foreach(mapping, {TurnPath.DIALOGEVENT}.value.mappings, mapping.property), '{property}')"));
                 }
             }
 
@@ -49,7 +49,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form.Events
             {
                 foreach (var entity in this.Entities)
                 {
-                    expressions.Add(factory.Parse($"contains(foreach(mapping, {TurnPath.DIALOGEVENT}.mappings, mapping.entity.name), '{entity}')"));
+                    expressions.Add(factory.Parse($"contains(foreach(mapping, {TurnPath.DIALOGEVENT}.value.mappings, mapping.entity.name), '{entity}')"));
                 }
             }
 

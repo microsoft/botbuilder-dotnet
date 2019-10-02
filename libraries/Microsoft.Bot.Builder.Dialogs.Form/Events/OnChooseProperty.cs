@@ -42,13 +42,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Form.Events
             {
                 foreach (var property in this.Properties)
                 {
-                    expressions.Add(factory.Parse($"contains(foreach(property, {TurnPath.DIALOGEVENT}.properties, property.name), '{property}')"));
+                    expressions.Add(factory.Parse($"contains(foreach(property, {TurnPath.DIALOGEVENT}.value.properties, property.name), '{property}')"));
                 }
             }
 
             if (this.Entity != null)
             {
-                expressions.Add(factory.Parse($"{TurnPath.DIALOGEVENT}.entity.name == '{this.Entity}'"));
+                expressions.Add(factory.Parse($"{TurnPath.DIALOGEVENT}.value.entity.name == '{this.Entity}'"));
             }
 
             return Expression.AndExpression(expressions.ToArray());

@@ -6,7 +6,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form.Events
     {
         public string Name { get; set; }
 
-        public object Entity { get; set; }
+        public object Value { get; set; }
 
         public int Start { get; set; }
 
@@ -30,6 +30,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Form.Events
             => Start <= entity.End && End >= entity.Start;
 
         public override string ToString()
-            => $"{Name}:{Entity} P{Priority} {Score} {Coverage}";
+            => $"{Name}:{Value} P{Priority} {Score} {Coverage}";
     }
 }

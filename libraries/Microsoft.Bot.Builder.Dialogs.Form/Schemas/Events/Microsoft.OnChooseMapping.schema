@@ -11,9 +11,13 @@
             "type": "object",
             "properties": {
                 "properties": {
-                    "type": "string",
+                    "type": "array",
                     "title": "Properties to choose between",
-                    "description": "Properties in mappings"
+                    "description": "Properties in mappings",
+                    "items": {
+                        "type": "string",
+                        "title": "Property name"
+                    }
                 },
                 "entities": {
                     "type": "array",

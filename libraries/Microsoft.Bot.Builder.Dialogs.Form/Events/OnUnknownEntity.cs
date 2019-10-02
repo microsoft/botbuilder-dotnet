@@ -36,7 +36,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form.Events
             var expressions = new List<Expression> { base.GetExpression(factory) };
             if (this.Entity != null)
             {
-                expressions.Add(factory.Parse($"{TurnPath.DIALOGEVENT}.entity.name == '{this.Entity}'"));
+                expressions.Add(factory.Parse($"{TurnPath.DIALOGEVENT}.value.entity.name == '{this.Entity}'"));
             }
 
             return Expression.AndExpression(expressions.ToArray());

@@ -5037,9 +5037,13 @@
                     "description": "True if rule should run once per unique conditions"
                 },
                 "properties": {
-                    "type": "string",
+                    "type": "array",
                     "title": "Properties to choose between",
-                    "description": "Properties in mappings"
+                    "description": "Properties in mappings",
+                    "items": {
+                        "type": "string",
+                        "title": "Property name"
+                    }
                 },
                 "entities": {
                     "type": "array",

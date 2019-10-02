@@ -40,14 +40,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Form.Events
             var expressions = new List<Expression> { base.GetExpression(factory) };
             if (this.Property != null)
             {
-                expressions.Add(factory.Parse($"{TurnPath.DIALOGEVENT}.change.property == '{this.Property}'"));
+                expressions.Add(factory.Parse($"{TurnPath.DIALOGEVENT}.value.change.property == '{this.Property}'"));
             }
 
             if (this.Entities != null)
             {
                 foreach (var entity in this.Entities)
                 {
-                    expressions.Add(factory.Parse($"contains(foreach(entity, {TurnPath.DIALOGEVENT}.entities, entity.name), '{entity}')"));
+                    expressions.Add(factory.Parse($"contains(foreach(entity, {TurnPath.DIALOGEVENT}.value.entities, entity.name), '{entity}')"));
                 }
             }
 
