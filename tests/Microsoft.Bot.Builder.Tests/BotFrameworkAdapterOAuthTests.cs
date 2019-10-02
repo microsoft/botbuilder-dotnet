@@ -23,7 +23,6 @@ namespace Microsoft.Bot.Builder.Tests
         [TestMethod]
         public async Task BotFrameworkAdapterFindsOAuthCards()
         {
-            IActivity activity = null;
             var mockClaims = new Mock<ClaimsIdentity>();
             var mockCredentialProvider = new Mock<ICredentialProvider>();
             var mockConnector = new MemoryConnectorClient();
