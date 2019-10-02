@@ -20,12 +20,20 @@ namespace Microsoft.Bot.Builder.Teams
 
         public TeamsInfo(ConnectorClient connectorClient)
         {
-            _connectorClient = connectorClient ?? throw new ArgumentNullException(nameof(connectorClient));
-            _teamsConnectorClient = new TeamsConnectorClient(connectorClient.BaseUri, connectorClient.Credentials, connectorClient.HttpClient);
+            if (connectorClient != null)
+            {
+                _connectorClient = connectorClient;
+                _teamsConnectorClient = new TeamsConnectorClient(connectorClient.BaseUri, connectorClient.Credentials, connectorClient.HttpClient);
+            }
         }
 
         public async Task<TeamDetails> GetTeamDetailsAsync(ITurnContext turnContext, CancellationToken cancellationToken = default)
         {
+            if (_teamsConnectorClient == null)
+            {
+                throw new InvalidOperationException("This method requires a connector client.");
+            }
+
             var teamId = turnContext.Activity.GetChannelData<TeamsChannelData>()?.Team?.Id;
 
             if (teamId == null)
@@ -38,6 +46,11 @@ namespace Microsoft.Bot.Builder.Teams
 
         public async Task<IList<ChannelInfo>> GetChannelsAsync(ITurnContext turnContext, CancellationToken cancellationToken = default)
         {
+            if (_teamsConnectorClient == null)
+            {
+                throw new InvalidOperationException("This method requires a connector client.");
+            }
+
             var teamId = turnContext.Activity.GetChannelData<TeamsChannelData>()?.Team?.Id;
 
             if (teamId == null)
@@ -51,6 +64,11 @@ namespace Microsoft.Bot.Builder.Teams
 
         public Task<IEnumerable<TeamsChannelAccount>> GetMembersAsync(ITurnContext turnContext, CancellationToken cancellationToken = default)
         {
+            if (_teamsConnectorClient == null)
+            {
+                throw new InvalidOperationException("This method requires a connector client.");
+            }
+
             var teamId = turnContext.Activity.GetChannelData<TeamsChannelData>()?.Team?.Id;
 
             if (teamId != null)

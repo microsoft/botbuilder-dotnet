@@ -34,7 +34,7 @@ namespace Microsoft.Bot.Builder.Teams
                 throw new ArgumentException($"{nameof(turnContext)}.Activity must have non-null Type.");
             }
 
-            TeamsInfo = new TeamsInfo((ConnectorClient)turnContext.TurnState.Get<IConnectorClient>());
+            TeamsInfo = new TeamsInfo(turnContext.TurnState.Get<IConnectorClient>() as ConnectorClient);
 
             switch (turnContext.Activity.Type)
             {
