@@ -43,37 +43,34 @@ namespace Microsoft.BotBuilderSamples.Bots
 
                 if (text.Equals("LOGOUT") || text.Equals("SIGNOUT"))
                 {
-                    await (turnContext.Adapter as IUserTokenProvider).SignOutUserAsync(turnContext, _connectionName, turnContext.Activity.From.Id, cancellationToken).ConfigureAwait(false);
+                    await (turnContext.Adapter as IUserTokenProvider).SignOutUserAsync(turnContext, _connectionName, turnContext.Activity.From.Id, cancellationToken);
 
-                    await turnContext.SendActivityAsync(MessageFactory.Text($"Signed Out: {turnContext.Activity.From.Name}"), cancellationToken).ConfigureAwait(false);
+                    await turnContext.SendActivityAsync(MessageFactory.Text($"Signed Out: {turnContext.Activity.From.Name}"), cancellationToken);
                 }
                 else
                 {
-                    await turnContext.SendActivityAsync(MessageFactory.Text($"echo: {turnContext.Activity.Text}"), cancellationToken).ConfigureAwait(false);
+                    await turnContext.SendActivityAsync(MessageFactory.Text($"echo: {turnContext.Activity.Text}"), cancellationToken);
                 }
             }
         }
 
         protected override async Task<MessagingExtensionActionResponse> OnTeamsMessagingExtensionFetchTaskAsync(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionQuery query, CancellationToken cancellationToken)
         {
-            var reply = MessageFactory.Text("OnTeamsMessagingExtensionFetchTaskAsync MessagingExtensionQuery: " + JsonConvert.SerializeObject(query));
-            await turnContext.SendActivityAsync(reply, cancellationToken).ConfigureAwait(false);
-
-            var tokenStatus = await (turnContext.Adapter as IUserTokenProvider).GetTokenStatusAsync(turnContext, turnContext.Activity.From.Id, _connectionName, cancellationToken: cancellationToken).ConfigureAwait(false);
+            var tokenStatus = await (turnContext.Adapter as IUserTokenProvider).GetTokenStatusAsync(turnContext, turnContext.Activity.From.Id, _connectionName, cancellationToken: cancellationToken);
             var token = tokenStatus.FirstOrDefault(t => t.HasToken == true);
             if (token == null)
             {
                 // There is no token, so the user has not signed in yet.
 
                 // Retrieve the OAuth Sign in Link to use in the MessagingExtensionResult Suggested Actions
-                var signInLink = await (turnContext.Adapter as IUserTokenProvider).GetOauthSignInLinkAsync(turnContext, _connectionName, cancellationToken).ConfigureAwait(false);
+                var signInLink = await (turnContext.Adapter as IUserTokenProvider).GetOauthSignInLinkAsync(turnContext, _connectionName, cancellationToken);
 
                 return new MessagingExtensionActionResponse
                 {
                     ComposeExtension = new MessagingExtensionResult
                     {
                         Type = "auth",
-                        SuggestedActions = new MessagingExtensionSuggestedAction()
+                        SuggestedActions = new MessagingExtensionSuggestedAction
                         {
                             Actions = new List<CardAction>
                             {
@@ -98,36 +95,30 @@ namespace Microsoft.BotBuilderSamples.Bots
 
         protected override async Task<TaskModuleTaskInfo> OnTeamsTaskModuleFetchAsync(ITurnContext<IInvokeActivity> turnContext, TaskModuleRequest taskModuleRequest, CancellationToken cancellationToken)
         {
-            var reply = MessageFactory.Text("OnTeamsTaskModuleFetchAsync TaskModuleRequest: " + JsonConvert.SerializeObject(taskModuleRequest));
-            await turnContext.SendActivityAsync(reply, cancellationToken).ConfigureAwait(false);
-
             // When a user has successfully signed in, the bot receives the Magic Code from Azure Bot Service in
             // the Activity.Value. Use the magic code to obtain the user token.
             var data = turnContext.Activity.Value as JObject;
             if (data != null && data["state"] != null)
             {
-                var tokenResponse = await (turnContext.Adapter as IUserTokenProvider).GetUserTokenAsync(turnContext, _connectionName, data["state"].ToString(), cancellationToken: cancellationToken).ConfigureAwait(false);
+                var tokenResponse = await (turnContext.Adapter as IUserTokenProvider).GetUserTokenAsync(turnContext, _connectionName, data["state"].ToString(), cancellationToken: cancellationToken);
                 return CreateSignedInTaskModuleTaskInfo(tokenResponse.Token);
             }
             else
             {
                 var reply2 = MessageFactory.Text("OnTeamsTaskModuleFetchAsync called without 'state' in Activity.Value");
-                await turnContext.SendActivityAsync(reply2, cancellationToken).ConfigureAwait(false);
+                await turnContext.SendActivityAsync(reply2, cancellationToken);
                 return null;
             }
         }
 
         protected override async Task<MessagingExtensionActionResponse> OnTeamsMessagingExtensionSubmitActionAsync(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionAction action, CancellationToken cancellationToken)
         {
-            var reply = MessageFactory.Text("OnTeamsMessagingExtensionSubmitActionAsync MessagingExtensionAction: " + JsonConvert.SerializeObject(action));
-            await turnContext.SendActivityAsync(reply, cancellationToken).ConfigureAwait(false);
-
             var asJObject = action.Data as JObject;
             if (asJObject != null && asJObject.ContainsKey("key") && asJObject["key"].ToString() == "signout")
             {
                 // User clicked the Sign Out button from a Task Module
-                await (turnContext.Adapter as IUserTokenProvider).SignOutUserAsync(turnContext, _connectionName, turnContext.Activity.From.Id, cancellationToken).ConfigureAwait(false);
-                await turnContext.SendActivityAsync(MessageFactory.Text($"Signed Out: {turnContext.Activity.From.Name}"), cancellationToken).ConfigureAwait(false);
+                await (turnContext.Adapter as IUserTokenProvider).SignOutUserAsync(turnContext, _connectionName, turnContext.Activity.From.Id, cancellationToken);
+                await turnContext.SendActivityAsync(MessageFactory.Text($"Signed Out: {turnContext.Activity.From.Name}"), cancellationToken);
             }
 
             return null;
