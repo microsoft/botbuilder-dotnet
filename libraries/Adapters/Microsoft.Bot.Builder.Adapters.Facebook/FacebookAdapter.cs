@@ -159,7 +159,14 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
                 throw new Exception("WARNING: Webhook received message with invalid signature. Potential malicious behavior!");
             }
 
-            var facebookEvent = JsonConvert.DeserializeObject<FacebookResponseEvent>(stringifyBody);
+            FacebookResponseEvent facebookEvent = null;
+            try
+            {
+                facebookEvent = JsonConvert.DeserializeObject<FacebookResponseEvent>(stringifyBody);
+            }
+            catch (Exception exp)
+            {
+            }
 
             foreach (var entry in facebookEvent.Entry)
             {

@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using Microsoft.Bot.Builder.Adapters.Facebook.FacebookEvents;
+
 namespace Microsoft.Bot.Builder.Adapters.Facebook
 {
     /// <summary>
@@ -10,27 +12,27 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
     {
         public FacebookMessage(string recipientId, Message message, string messagingtype, string tag = null, string notificationType = null, string personalId = null, string senderAction = null, string senderId = null)
         {
-            RecipientId = recipientId;
+            Recipient.Id = recipientId;
             Message = message;
             MessagingType = messagingtype;
             Tag = tag;
             NotificationType = notificationType;
             PersonaId = personalId;
             SenderAction = senderAction;
-            SenderId = senderId;
+            Sender.Id = senderId;
         }
 
         /// <summary>
         /// Gets or sets the ID of the recipient.
         /// </summary>
         /// <value>The ID of the recipient.</value>
-        public string RecipientId { get; set; }
+        public FacebookBotUser Recipient { get; set; } = new FacebookBotUser();
 
         /// <summary>
         /// Gets or sets the ID of the sender.
         /// </summary>
         /// <value>The ID of the sender.</value>
-        public string SenderId { get; set; }
+        public FacebookBotUser Sender { get; set; } = new FacebookBotUser();
 
         /// <summary>
         /// Gets or sets the message to be sent.

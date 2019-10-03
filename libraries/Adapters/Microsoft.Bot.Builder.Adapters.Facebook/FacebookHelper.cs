@@ -56,9 +56,9 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
                 return null;
             }
 
-            if (message.SenderId == null)
+            if (message.Sender == null)
             {
-                message.SenderId = (message as dynamic).optin?.user_ref;
+                message.Sender = (message as dynamic).optin?.user_ref;
             }
 
             var activity = new Activity()
@@ -67,17 +67,17 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
                 Timestamp = new DateTime(),
                 Conversation = new ConversationAccount()
                 {
-                    Id = message.SenderId,
+                    Id = message.Sender.Id,
                 },
                 From = new ChannelAccount()
                 {
-                    Id = message.SenderId,
-                    Name = message.SenderId,
+                    Id = message.Sender.Id,
+                    Name = message.Sender.Id,
                 },
                 Recipient = new ChannelAccount()
                 {
-                    Id = message.RecipientId,
-                    Name = message.RecipientId,
+                    Id = message.Recipient.Id,
+                    Name = message.Recipient.Id,
                 },
                 ChannelData = message,
                 Type = ActivityTypes.Event,

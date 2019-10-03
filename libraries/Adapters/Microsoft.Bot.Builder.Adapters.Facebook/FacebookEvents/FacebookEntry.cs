@@ -8,7 +8,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.FacebookEvents
     {
         public string Id { get; set; }
 
-        public int Time { get; set; }
+        public long Time { get; set; }
 
         /// <summary>
         /// Gets or sets the messaging list.
