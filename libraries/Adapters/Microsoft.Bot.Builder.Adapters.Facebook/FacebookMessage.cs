@@ -70,7 +70,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         /// <value>The sender action.</value>
         public string SenderAction { get; set; }
 
-        public int TimeStamp { get; set; }
+        public long TimeStamp { get; set; }
 
         public bool Standby { get; set; }
     }
