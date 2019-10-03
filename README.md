@@ -39,7 +39,7 @@ This bot has been created using [Bot Framework](https://dev.botframework.com), i
 - Under the ```Capabilities``` tab on the left hand side click the ```Bots``` tab
 - Click the ```Set up``` button
 - Under the ```New bot``` tab Fill in the following fields
-  - Put EchoBot into the Name field
+  - Put ```EchoBot``` into the Name field
   - Under ```Scope``` check all 3 boxes
   - Click the ```Create``` button
 - Click the ```Generate new password``` button (copy/paste) the password into notepad as you will need it later)
