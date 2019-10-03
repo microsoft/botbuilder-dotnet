@@ -25,7 +25,7 @@
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <NoWarn>;NU5125;SA0001</NoWarn>
-    <DebugType>full</DebugType>
+    <DebugType>portable</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <LangVersion>latest</LangVersion>
     <ErrorReport>prompt</ErrorReport>
@@ -48,7 +48,7 @@
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <NoWarn>;NU5125;SA0001</NoWarn>
-    <DebugType>full</DebugType>
+    <DebugType>portable</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <LangVersion>latest</LangVersion>
     <ErrorReport>prompt</ErrorReport>
