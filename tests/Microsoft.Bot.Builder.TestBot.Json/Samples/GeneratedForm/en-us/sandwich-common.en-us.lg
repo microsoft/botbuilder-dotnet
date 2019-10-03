@@ -24,9 +24,8 @@
 # helpProperty(property, turn)
 - Possible values for {toLower(property)} include: \[{join(turn.schema.properties[property].enum, ',')}\]
 
-> TODO: This is not correct--the possible values should be picked up from the event structure
 # clarifyEnum(property, turn)
-- Please choose a value for {toLower(property)} from \[{join(turn.schema.properties[property].enum, ',')}\]
+- Please choose a value for {toLower(property)} from \[{join(turn.dialogEvent.value.entity.value, ',')}\]
 
 > TODO: This is not correct--the possible values should be picked up from the event structure
 # chooseSlot(entity, turn)

@@ -30,52 +30,84 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
 
         protected async Task<bool> ProcessFormAsync(SequenceContext sequenceContext, CancellationToken cancellationToken)
         {
-            var handled = false;
+            DialogEvent evt;
             var queues = EventQueues.Read(sequenceContext);
+            var changed = queues.DequeueEvent(sequenceContext.State.GetValue<string>("dialog.lastEvent"));
             if (queues.ClearProperty.Any())
             {
-                var evt = new DialogEvent() { Name = FormEvents.ClearProperty, Value = queues.ClearProperty.Dequeue(), Bubble = false };
-                handled = await this.ProcessEventAsync(sequenceContext, dialogEvent: evt, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
+                evt = new DialogEvent() { Name = FormEvents.ClearProperty, Value = queues.ClearProperty[0], Bubble = false };
             }
             else if (queues.SetProperty.Any())
             {
-                var val = queues.SetProperty.Dequeue();
-                var evt = new DialogEvent() { Name = FormEvents.SetProperty, Value = val, Bubble = false };
+                var val = queues.SetProperty[0];
+                evt = new DialogEvent() { Name = FormEvents.SetProperty, Value = val, Bubble = false };
                 sequenceContext.State.SetValue($"{TurnPath.RECOGNIZED}.entities.{val.Entity.Name}", new object[] { val.Entity.Value });
-                handled = await this.ProcessEventAsync(sequenceContext, dialogEvent: evt, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
             }
-            else if (queues.Unknown.Any())
+            else if (queues.UnknownEntity.Any())
             {
-                var evt = new DialogEvent() { Name = FormEvents.UnknownEntity, Value = queues.Unknown.Dequeue(), Bubble = false };
-                handled = await this.ProcessEventAsync(sequenceContext, dialogEvent: evt, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
+                evt = new DialogEvent() { Name = FormEvents.UnknownEntity, Value = queues.UnknownEntity[0], Bubble = false };
             }
             else if (queues.ChooseProperty.Any())
             {
-                var evt = new DialogEvent() { Name = FormEvents.ChooseProperty, Value = queues.ChooseProperty.Dequeue(), Bubble = false };
-                handled = await this.ProcessEventAsync(sequenceContext, dialogEvent: evt, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
+                evt = new DialogEvent() { Name = FormEvents.ChooseProperty, Value = queues.ChooseProperty[0], Bubble = false };
             }
             else if (queues.ChooseEntity.Any())
             {
-                var evt = new DialogEvent() { Name = FormEvents.ChooseEntity, Value = queues.ChooseEntity.Dequeue(), Bubble = false };
-                handled = await this.ProcessEventAsync(sequenceContext, dialogEvent: evt, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
+                evt = new DialogEvent() { Name = FormEvents.ChooseEntity, Value = queues.ChooseEntity[0], Bubble = false };
             }
             else if (queues.ClarifyEntity.Any())
             {
-                var evt = new DialogEvent() { Name = FormEvents.ClarifyEntity, Value = queues.ClarifyEntity.Dequeue(), Bubble = false };
-                handled = await this.ProcessEventAsync(sequenceContext, dialogEvent: evt, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
+                evt = new DialogEvent() { Name = FormEvents.ClarifyEntity, Value = queues.ClarifyEntity[0], Bubble = false };
+            }
+            else
+            {
+                evt = new DialogEvent() { Name = FormEvents.Ask, Bubble = false };
             }
 
+            if (changed)
+            {
+                queues.Write(sequenceContext);
+            }
+
+            sequenceContext.State.SetValue($"dialog.lastEvent", evt.Name);
+            var handled = await this.ProcessEventAsync(sequenceContext, dialogEvent: evt, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
             if (!handled)
             {
-                var evt = new DialogEvent() { Name = FormEvents.Ask, Bubble = false };
-                handled = await this.ProcessEventAsync(sequenceContext, dialogEvent: evt, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
+                // If event wasn't handled, remove it from queues and keep going if things changed
+                if (queues.DequeueEvent(evt.Name))
+                {
+                    queues.Write(sequenceContext);
+                    handled = await this.ProcessFormAsync(sequenceContext, cancellationToken);
+                }
             }
-
-            queues.Write(sequenceContext);
 
             return handled;
         }
 
+        // ChooseEntity: Which entity for a particular property.
+        // TODO: I think we can remove this one--a property can decide which entity interpretation to use.
+        //
+        // ChooseMapping: Which property should consume alternative entities.
+        // By "none" do you mean meat or cheese.
+        // Expected: one of property names in order to resolve
+        // 
+        // ChooseProperty: Which property should consume an entity.
+        // By "seattle" did you mean an origin or destination?
+        // TODO: I think we can remove this.  From a property standpoint it looks just like ChooseMapping.
+        // 
+        // ClarifyEntity: Clarify which entity value is intended.
+        // By "peppers" did you mean green peppers or red peppers?
+        // Expected: entity value for filling a particular slot
+        // 
+        // ClearProperty: Clear a particular property.
+        // TODO: This is probably created by a composite remove.
+        //
+        // SetProperty: Set a property to an entity.
+        // No expectations
+        //
+        // UnknownEntity: Do not know how to map entity.
+        //
+        // Expected is true if property is in expectedProperties or it has the appropriate value from above.
         protected override async Task<bool> ProcessEventAsync(SequenceContext sequenceContext, DialogEvent dialogEvent, bool preBubble, CancellationToken cancellationToken = default)
         {
             var handled = false;
@@ -87,31 +119,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                 {
                     case AdaptiveEvents.RecognizedIntent:
                         {
-                            var queues = EventQueues.Read(sequenceContext);
-                            var entities = NormalizeEntities(sequenceContext);
-                            var utterance = sequenceContext.Context.Activity?.AsMessageActivity()?.Text;
-                            if (!sequenceContext.State.TryGetValue<string[]>("$expectedProperties", out var slots))
-                            {
-                                slots = new string[0];
-                            }
-
-                            if (slots.Contains("utterance"))
-                            {
-                                entities["utterance"] = new List<EntityInfo> { new EntityInfo { Priority = int.MaxValue, Coverage = 1.0, Start = 0, End = utterance.Length, Name = "utterance", Score = 0.0, Type = "string", Value = utterance, Text = utterance } };
-                            }
-
-                            var newQueues = new EventQueues();
-                            AssignEntities(entities, slots, newQueues);
-                            queues.Merge(newQueues);
-                            var turn = sequenceContext.State.GetValue<int>("this.turn");
-                            CombineOldEntityToPropertys(queues, turn);
-                            queues.Write(sequenceContext);
+                            ProcessEntities(sequenceContext);
                             handled = await base.ProcessEventAsync(sequenceContext, dialogEvent, preBubble, cancellationToken);
                         }
 
                         break;
 
                     case AdaptiveEvents.EndOfActions:
+                        // Completed actions so continue processing form queues
                         handled = await ProcessFormAsync(sequenceContext, cancellationToken).ConfigureAwait(false);
                         break;
 
@@ -127,7 +142,88 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
 
             return handled;
         }
-  
+
+        private void ProcessEntities(SequenceContext context)
+        {
+            var queues = EventQueues.Read(context);
+            var entities = NormalizeEntities(context);
+            var utterance = context.Context.Activity?.AsMessageActivity()?.Text;
+            if (!context.State.TryGetValue<string[]>("$expectedProperties", out var properties))
+            {
+                properties = new string[0];
+            }
+
+            if (properties.Contains("utterance"))
+            {
+                entities["utterance"] = new List<EntityInfo> { new EntityInfo { Priority = int.MaxValue, Coverage = 1.0, Start = 0, End = utterance.Length, Name = "utterance", Score = 0.0, Type = "string", Value = utterance, Text = utterance } };
+            }
+
+            UpdateLastEvent(context, queues, entities);
+            var newQueues = new EventQueues();
+            AssignEntities(entities, properties, newQueues);
+            queues.Merge(newQueues);
+            var turn = context.State.GetValue<int>("this.turn");
+            CombineOldEntityToPropertys(queues, turn);
+            queues.Write(context);
+        }
+
+        private void UpdateLastEvent(SequenceContext context, EventQueues queues, Dictionary<string, List<EntityInfo>> entities)
+        {
+            if (context.State.TryGetValue<string>("dialog.lastEvent", out var evt))
+            {
+                switch (evt)
+                {
+                    case FormEvents.ClarifyEntity:
+                        {
+                            context.State.RemoveValue("dialog.lastEvent");
+                            var entityToProperty = queues.ClarifyEntity[0];
+                            var ambiguousEntity = entityToProperty.Entity;
+                            var choices = ambiguousEntity.Value as JArray;
+                            // TODO: There could be no way to resolve the ambiguity, i.e. wheat has synonym wheat and
+                            // honeywheat has synonym wheat.  For now rely on the model to not have that issue.
+                            if (entities.TryGetValue(ambiguousEntity.Name, out var infos) && infos.Count() == 1)
+                            {
+                                var info = infos.First();
+                                var foundValues = info.Value as JArray;
+                                var common = choices.Intersect(foundValues);
+                                if (common.Count() == 1)
+                                {
+                                    // Resolve and move to SetProperty
+                                    infos.Clear();
+                                    ambiguousEntity.Value = common.First();
+                                    queues.ClarifyEntity.Dequeue();
+                                    queues.SetProperty.Add(entityToProperty);
+                                }
+                            }
+
+                            break;
+                        }
+
+                    case FormEvents.ChooseMapping:
+                        {
+                            context.State.RemoveValue("dialog.lastEvent");
+                            // NOTE: This assumes the existance of a property entity which contains the normalized
+                            // names of the properties.
+                            if (entities.TryGetValue("property", out var infos) && infos.Count() == 1)
+                            {
+                                var info = infos[0];
+                                var choices = queues.ChooseMapping[0];
+                                var choice = choices.Find(p => p.Change.Property == info.Value as string);
+                                if (choice != null)
+                                {
+                                    // Resolve and move to SetProperty
+                                    infos.Clear();
+                                    queues.ChooseMapping.Dequeue();
+                                    queues.SetProperty.Add(choice);
+                                }
+                            }
+
+                            break;
+                        }
+                }
+            }
+        }
+
         // A big issue is that we want multiple firings.  We can get this from quantification, but not arrays.
         // If we have a rule for value ambiguity we would want it to fire for each value ambiguity.
         // Possibly:
@@ -312,10 +408,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                           select new
                           {
                               entityGroup.Key,
-                              slots = from slot in entityGroup
-                                      group slot by slot.Expected into expectedGroups
-                                      orderby expectedGroups.Key descending
-                                      select expectedGroups
+                              properties = from property in entityGroup
+                                           group property by property.Expected into expectedGroups
+                                           orderby expectedGroups.Key descending
+                                           select expectedGroups
                           };
 
             foreach (var entityChoices in choices)
@@ -324,27 +420,27 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                 if (entities.TryGetValue(entity.Name, out var entityInfos) && entityInfos.Contains(entity))
                 {
                     RemoveOverlappingEntities(entity, entities);
-                    foreach (var entitySlots in entityChoices.slots)
+                    foreach (var entityProperties in entityChoices.properties)
                     {
-                        var slotOps = from entitySlot in entitySlots
-                                      select new PropertyOp
-                                      {
-                                          // TODO: Figure out operation from role?
-                                          // If composite do we have role:value, add{role:value}, remove{role:value}, add{type:value}, changeValue, ...
-                                          // Would be nice if extensible...
-                                          Operation = Operations.Add,
-                                          Property = entitySlot.Property.Path
-                                      };
-                        if (entitySlots.Count() == 1)
+                        var propertyOps = from entityProperty in entityProperties
+                                          select new PropertyOp
+                                          {
+                                              // TODO: Figure out operation from role?
+                                              // If composite do we have role:value, add{role:value}, remove{role:value}, add{type:value}, changeValue, ...
+                                              // Would be nice if extensible...
+                                              Operation = Operations.Add,
+                                              Property = entityProperty.Property.Path
+                                          };
+                        if (entityProperties.Count() == 1)
                         {
                             // Only a single slot consumes entity
-                            var slotEntity = entitySlots.First();
+                            var slotEntity = entityProperties.First();
                             var slot = slotEntity.Property;
                             // Send to clarify or set
                             var mapping = new EntityToProperty
                             {
                                 Entity = entity,
-                                Change = slotOps.First()
+                                Change = propertyOps.First()
                             };
                             AddMappingToQueue(mapping, queues);
                         }
@@ -354,7 +450,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                             queues.ChooseProperty.Add(new EntityToProperties
                             {
                                 Entity = entity,
-                                Properties = slotOps.ToList()
+                                Properties = propertyOps.ToList()
                             });
                         }
                     }
@@ -366,12 +462,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
             {
                 foreach (var info in infos)
                 {
-                    queues.Unknown.Add(info);
+                    queues.UnknownEntity.Add(info);
                 }
             }
         }
 
-        private EventQueues SlotQueues(string path, Dictionary<PropertySchema, EventQueues> slotToQueues)
+        private EventQueues PropertyQueues(string path, Dictionary<PropertySchema, EventQueues> slotToQueues)
         {
             var prop = Schema.PathToSchema(path);
             if (!slotToQueues.TryGetValue(prop, out var slotQueues))
@@ -384,43 +480,43 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
         }
 
         // Create queues for each slot
-        private Dictionary<PropertySchema, EventQueues> PerSlotQueues(EventQueues queues)
+        private Dictionary<PropertySchema, EventQueues> PerPropertyQueues(EventQueues queues)
         {
-            var slotToQueues = new Dictionary<PropertySchema, EventQueues>();
+            var propertyToQueues = new Dictionary<PropertySchema, EventQueues>();
             foreach (var entry in queues.SetProperty)
             {
-                SlotQueues(entry.Change.Property, slotToQueues).SetProperty.Add(entry);
+                PropertyQueues(entry.Change.Property, propertyToQueues).SetProperty.Add(entry);
             }
 
             foreach (var entry in queues.ClarifyEntity)
             {
-                SlotQueues(entry.Change.Property, slotToQueues).ClarifyEntity.Add(entry);
+                PropertyQueues(entry.Change.Property, propertyToQueues).ClarifyEntity.Add(entry);
             }
 
             foreach (var entry in queues.ChooseEntity)
             {
-                SlotQueues(entry.Property.Property, slotToQueues).ChooseEntity.Add(entry);
+                PropertyQueues(entry.Property.Property, propertyToQueues).ChooseEntity.Add(entry);
             }
 
             foreach (var entry in queues.ClearProperty)
             {
-                SlotQueues(entry, slotToQueues).ClearProperty.Add(entry);
+                PropertyQueues(entry, propertyToQueues).ClearProperty.Add(entry);
             }
 
             foreach (var entry in queues.ChooseProperty)
             {
                 foreach (var slot in entry.Properties)
                 {
-                    SlotQueues(slot.Property, slotToQueues).ChooseProperty.Add(entry);
+                    PropertyQueues(slot.Property, propertyToQueues).ChooseProperty.Add(entry);
                 }
             }
 
-            return slotToQueues;
+            return propertyToQueues;
         }
 
         private void CombineNewEntityToPropertys(EventQueues queues)
         {
-            var slotToQueues = PerSlotQueues(queues);
+            var slotToQueues = PerPropertyQueues(queues);
             foreach (var entry in slotToQueues)
             {
                 var slot = entry.Key;
@@ -453,7 +549,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
 
         private void CombineOldEntityToPropertys(EventQueues queues, int turn)
         {
-            var slotToQueues = PerSlotQueues(queues);
+            var slotToQueues = PerPropertyQueues(queues);
             foreach (var entry in slotToQueues)
             {
                 var slot = entry.Key;

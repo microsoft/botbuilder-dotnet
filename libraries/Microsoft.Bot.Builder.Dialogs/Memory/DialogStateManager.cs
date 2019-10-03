@@ -233,8 +233,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         {
             path = this.TransformPath(path ?? throw new ArgumentNullException(nameof(path)));
             var memoryScope = this.ResolveMemoryScope(path, out var remainingPath);
-            var memory = (MemoryScope)memoryScope.GetMemory(this.dialogContext);
-            memory.RaiseChange(this.dialogContext, path, null);
+            var memory = memoryScope.GetMemory(this.dialogContext);
+            memoryScope.RaiseChange(this.dialogContext, path, null);
             ObjectPath.RemovePathValue(memory, remainingPath);
         }
 
