@@ -25,7 +25,7 @@ ngrok http -host-header=rewrite 3978
 ```
 - Copy/paste the https web address into notepad as you will need it later
 
-### Microsoft Teams setup
+### Microsoft Teams Setup
 - Launch Microsoft Teams. In the search bar at the top of Teams search for and select ```App Studio```.
 - Click the ```Manifest editor``` tab near the top of the screen.
 - Click the ```Create a new app``` button on the left hand side.
@@ -81,7 +81,7 @@ ngrok http -host-header=rewrite 3978
   - Select `EchoBot.csproj` file
   - Press `F5` to run the project
 
-### Back to Teams
+### Finishing Teams Setup
 - Back in Teams click ```Test and distribute``` on the left hand side under ```Finish``` section
 - Click the ```Install``` button
 
