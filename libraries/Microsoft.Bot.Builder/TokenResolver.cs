@@ -1,22 +1,25 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Security.Claims;
 using System.Security.Principal;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder
 {
-    internal class TokenResolver
+    internal static class TokenResolver
     {
-        private const int PollingInterval = 1000;   // Poll for token every 1 second.
+        private static readonly TimeSpan PollingInterval = TimeSpan.FromSeconds(1);   // Poll for token every 1 second.
 
-        public static void CheckForOAuthCards(BotFrameworkAdapter adapter, ITurnContext turnContext, Activity activity, CancellationToken cancellationToken)
+        public static void CheckForOAuthCards(BotFrameworkAdapter adapter, ILogger logger, ITurnContext turnContext, Activity activity, CancellationToken cancellationToken)
         {
             if (activity?.Attachments != null)
             {
@@ -25,35 +28,43 @@ namespace Microsoft.Bot.Builder
                     OAuthCard oauthCard = attachment.Content as OAuthCard;
                     if (oauthCard != null && !string.IsNullOrEmpty(oauthCard.ConnectionName))
                     {
+                        if (activity.From == null || string.IsNullOrWhiteSpace(activity.From.Id))
+                        {
+                            throw new InvalidOperationException("The Activity is missing a From.Id property value.");
+                        }
+
+                        if (string.IsNullOrWhiteSpace(oauthCard.ConnectionName))
+                        {
+                            throw new InvalidOperationException("The OAuthPrompt's ConnectionName property is missing a value.");
+                        }
+
                         // Poll as a background task
-                        Task.Run(() => PollForTokenAsync(adapter, turnContext, activity, oauthCard.ConnectionName, cancellationToken));
+                        Task.Run(() => PollForTokenAsync(adapter, logger, turnContext, activity, oauthCard.ConnectionName, cancellationToken))
+                            .ContinueWith(t =>
+                            {
+                                if (t.Exception != null)
+                                {
+                                    logger.LogError(t.Exception.InnerException ?? t.Exception, "PollForTokenAsync threw an exception", oauthCard.ConnectionName);
+                                }
+                            });
                     }
                 }
             }
         }
 
-        private static async Task PollForTokenAsync(BotFrameworkAdapter adapter, ITurnContext turnContext, Activity activity, string connectionName, CancellationToken cancellationToken)
+        private static async Task PollForTokenAsync(BotFrameworkAdapter adapter, ILogger logger, ITurnContext turnContext, Activity activity, string connectionName, CancellationToken cancellationToken)
         {
             TokenResponse tokenResponse = null;
             bool shouldEndPolling = false;
-            int pollingTimeout = TurnStateConstants.OAuthLoginTimeoutMsValue;
-            int pollingRequestsInterval = PollingInterval;
-            var loginTimeout = turnContext?.TurnState?.Get<object>(TurnStateConstants.OAuthLoginTimeoutKey) as int?;
+            int pollingTimeout = (int)TurnStateConstants.OAuthLoginTimeoutValue.TotalSeconds;
+            int pollingRequestsInterval = (int)PollingInterval.TotalSeconds;
+            var loginTimeout = turnContext.TurnState.Get<object>(TurnStateConstants.OAuthLoginTimeoutKey);
 
             // Override login timeout with value set from the OAuthPrompt or by the developer
-            if (loginTimeout != null)
+            if (turnContext.TurnState.ContainsKey(TurnStateConstants.OAuthLoginTimeoutKey))
             {
-                pollingTimeout = (int)loginTimeout;
-            }
-
-            if (activity.From == null || string.IsNullOrWhiteSpace(activity.From.Id))
-            {
-                throw new ArgumentNullException("TokenResolver.PollForTokenAsync: missing Activity from or from.id");
-            }
-
-            if (string.IsNullOrWhiteSpace(connectionName))
-            {
-                throw new ArgumentNullException(nameof(connectionName));
+                var settingsTimeout = (TimeSpan)turnContext.TurnState.Get<object>(TurnStateConstants.OAuthLoginTimeoutKey);
+                pollingTimeout = (int)settingsTimeout.TotalSeconds;
             }
 
             var stopwatch = Stopwatch.StartNew();
@@ -91,6 +102,8 @@ namespace Microsoft.Bot.Builder
                         var callback = turnContext.TurnState.Get<BotCallbackHandler>();
                         await adapter.ProcessActivityAsync(identity, tokenResponseActivityEvent, callback, cancellationToken).ConfigureAwait(false);
                         shouldEndPolling = true;
+
+                        logger.LogInformation("PollForTokenAsync completed with a token", turnContext.Activity);
                     }
                 }
 
@@ -99,6 +112,8 @@ namespace Microsoft.Bot.Builder
                     await Task.Delay(pollingRequestsInterval).ConfigureAwait(false);
                 }
             }
+
+            logger.LogInformation("PollForTokenAsync completed without receiving a token", turnContext.Activity);
 
             stopwatch.Stop();
         }

@@ -405,12 +405,13 @@ namespace Microsoft.Bot.Builder
                 }
                 else
                 {
-                    if (!activity.ServiceUrl.StartsWith("http"))
+                    if (activity.IsFromStreamingConnection())
                     {
                         // Streaming connection post-processing
-                        TokenResolver.CheckForOAuthCards(this, turnContext, activity, cancellationToken);
+                        TokenResolver.CheckForOAuthCards(this, _logger, turnContext, activity, cancellationToken);
                     }
 
+                    // If there is a replyToId, then reply to the conversation, otherwise send it as a new message.
                     if (!string.IsNullOrWhiteSpace(activity.ReplyToId))
                     {
                         var connectorClient = turnContext.TurnState.Get<IConnectorClient>();

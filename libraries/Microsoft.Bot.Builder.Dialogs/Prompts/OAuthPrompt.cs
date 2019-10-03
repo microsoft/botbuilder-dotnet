@@ -58,7 +58,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         private const string PersistedExpires = "expires";
 
         // Default prompt timeout of 15 minutes (in ms)
-        private const int DefaultPromptTimeout = TurnStateConstants.OAuthLoginTimeoutMsValue;
+        private static readonly int DefaultPromptTimeout = (int)TurnStateConstants.OAuthLoginTimeoutValue.TotalMilliseconds;
 
         // regex to check if code supplied is a 6 digit numerical code (hence, a magic code).
         private readonly Regex _magicCodeRegex = new Regex(@"(\d{6})");
@@ -309,8 +309,9 @@ namespace Microsoft.Bot.Builder.Dialogs
             {
                 string signInLink = null;
 
-                // Some channels support rendering OAuthCards, but require the OAuthCard signin link to be pre-filled in
-                if (RequiresLink(turnContext))
+                // Streaming channels support rendering OAuthCards, but require the OAuthCard signin link to be pre-filled in
+                // Check if the incoming Activity is from a streaming connection, and if it is, fetch the sign-in link.
+                if (turnContext.Activity.IsFromStreamingConnection())
                 {
                     signInLink = await adapter.GetOauthSignInLinkAsync(turnContext, _settings.ConnectionName, cancellationToken).ConfigureAwait(false);
                 }
@@ -336,7 +337,11 @@ namespace Microsoft.Bot.Builder.Dialogs
                 });
             }
 
-            turnContext?.TurnState?.Add<object>(TurnStateConstants.OAuthLoginTimeoutKey, _settings.Timeout);
+            // Add the login timeout specified in OAuthPromptSettings to TurnState so it can be referenced if polling is needed
+            if (!turnContext.TurnState.ContainsKey(TurnStateConstants.OAuthLoginTimeoutKey) && _settings.Timeout.HasValue)
+            {
+                turnContext.TurnState.Add<object>(TurnStateConstants.OAuthLoginTimeoutKey, _settings.Timeout);
+            }
 
             // Set input hint
             if (string.IsNullOrEmpty(prompt.InputHint))
@@ -441,11 +446,6 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             return true;
-        }
-
-        private bool RequiresLink(ITurnContext turnContext)
-        {
-            return !turnContext.Activity.ServiceUrl.Contains("http");
         }
     }
 }
