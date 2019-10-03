@@ -28,13 +28,14 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi
             {
                 CacheBody();
 
-                if (telemetry is RequestTelemetry || telemetry is EventTelemetry || telemetry is TraceTelemetry)
+                if (telemetry is RequestTelemetry || telemetry is EventTelemetry
+                    || telemetry is TraceTelemetry || telemetry is DependencyTelemetry)
                 {
                     if (items[BotActivityKey] is JObject body)
                     {
                         var userId = string.Empty;
                         var from = body["from"];
-                        if (!string.IsNullOrWhiteSpace(from.ToString()))
+                        if (!string.IsNullOrWhiteSpace(from?.ToString()))
                         {
                             userId = (string)from["id"];
                         }
@@ -43,7 +44,7 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi
 
                         var conversationId = string.Empty;
                         var conversation = body["conversation"];
-                        if (!string.IsNullOrWhiteSpace(conversation.ToString()))
+                        if (!string.IsNullOrWhiteSpace(conversation?.ToString()))
                         {
                             conversationId = (string)conversation["id"];
                         }

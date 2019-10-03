@@ -11,6 +11,9 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core
 {
+    // This class has been deprecated in favor of using TelemetryInitializerMiddleware in
+    // Microsoft.Bot.Integration.ApplicationInsights.Core and Microsoft.Bot.Integration.ApplicationInsights.WebApi
+    [Obsolete("This class is deprecated. Please add TelemetryInitializerMiddleware to your adapter's middleware pipeline instead.")]
     public class TelemetrySaveBodyASPMiddleware
     {
         private readonly RequestDelegate _next;
