@@ -27,7 +27,7 @@ This bot has been created using [Bot Framework](https://dev.botframework.com), i
 - Click the ```Create a new app``` button on the left hand side.
 - Under the ```Details``` section fill in the following fields 
   - In the Short name field enter ```EchoBot```
-  - Click the ```Generate``` button under App ID (copy/paste the App ID into notepad as you will need it later)
+  - Click the ```Generate``` button under App ID 
   - Package Name
   - Version 
   - Short description
@@ -40,10 +40,11 @@ This bot has been created using [Bot Framework](https://dev.botframework.com), i
 - Click the ```Set up``` button
 - Under the ```New bot``` tab Fill in the following fields
   - Put ```EchoBot``` into the Name field
-  - Under ```Scope``` check all 3 boxes ```Persona```, ```Team```, ```Group Chat```
-  - Click the ```Create``` button
+  - Under ```Scope``` check all 3 boxes ```Personal```, ```Team```, ```Group Chat```
+  - Click the ```Create bot``` button
+- Copy the Bot ID (string under ```EchoBot```) and paste it into notepad as you will need it later
 - Click the ```Generate new password``` button (copy/paste) the password into notepad as you will need it later)
-- Under Messaging endpoint paste the https ngrok url and add ```/api/messages```
+- Under Messaging endpoint paste the https ngrok url and add ```/api/messages``` to the end
   - EX: ```https://ca7f8a7e.ngrok.io/api/messages```
 - Press Enter to save the address
 
@@ -55,7 +56,7 @@ This bot has been created using [Bot Framework](https://dev.botframework.com), i
     ```
 
 - In Visual Studio navigate to the 52.teams-echo-bot folder and open the ```appsettings.json``` file
-- Put the App ID you saved earlier from Teams in the ```MicrosoftAppId``` field
+- Put the  you saved earlier from Teams in the ```MicrosoftAppId``` field
 - Put the password into the ```MicrosoftAppPassword``` field
 - Save
 
@@ -77,7 +78,7 @@ This bot has been created using [Bot Framework](https://dev.botframework.com), i
   - Press `F5` to run the project
 
 ### Back to Teams
-- Click ```Test and distribute``` on the left hand side under Finish
+- Back in Teams click ```Test and distribute``` on the left hand side under ```Finish``` section
 - Click the ```Install``` button
 - Click the ```Add``` button
 - In the compose message area at the bottom of the screen send the message ```hi``` 
