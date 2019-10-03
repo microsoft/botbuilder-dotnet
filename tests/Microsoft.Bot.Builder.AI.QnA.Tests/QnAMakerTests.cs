@@ -139,6 +139,23 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
         }
 
         [TestMethod]
+        public async Task QnAMakerAction_MultiTurnDialogBase_WithNoAnswer()
+        {
+            var rootDialog = QnAMakerAction_MultiTurnDialogBase();
+
+            var response = JsonConvert.DeserializeObject<QueryResults>(File.ReadAllText(GetFilePath("QnaMaker_ReturnAnswer_withPrompts.json")));
+            var promptsActivity = QnACardBuilder.GetQnAPromptsCard(response.Answers[0], "None of the above.");
+            var qnAMakerCardEqualityComparer = new QnAMakerCardEqualityComparer();
+
+            await CreateFlow(rootDialog)
+            .Send("I have issues related to KB")
+                .AssertReply(promptsActivity, equalityComparer: qnAMakerCardEqualityComparer)
+            .Send("None of the above.")
+                .AssertReply("Thanks for the feedback.")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
         [TestCategory("AI")]
         [TestCategory("QnAMaker")]
         public async Task QnaMaker_TraceActivity()

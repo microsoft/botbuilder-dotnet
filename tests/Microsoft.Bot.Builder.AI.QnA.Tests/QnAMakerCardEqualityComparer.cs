@@ -30,12 +30,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                 return false;
             }
 
-            // Check for text 
-            if (activity1.Text.Trim() != activity2.Text.Trim())
-            {
-                return false;
-            }
-
             // Check for attachments
             if (activity1.Attachments != null && activity2.Attachments != null)
             {

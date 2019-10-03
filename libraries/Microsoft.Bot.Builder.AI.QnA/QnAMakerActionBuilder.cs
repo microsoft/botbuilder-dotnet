@@ -140,27 +140,27 @@ namespace Microsoft.Bot.Builder.AI.QnA
             }
 
             // Calling QnAMaker to get response.
-            var response = await _services.GetAnswersAsync(stepContext.Context, qnaMakerOptions).ConfigureAwait(false);
+            var response = await _services.GetAnswersRawAsync(stepContext.Context, qnaMakerOptions).ConfigureAwait(false);
 
             // Resetting previous query.
             dialogOptions[PreviousQnAId] = -1;
             stepContext.ActiveDialog.State["options"] = dialogOptions;
 
             // Take this value from GetAnswerResponse 
-            var isActiveLearningEnabled = true;
+            var isActiveLearningEnabled = response.ActiveLearningEnabled;
 
-            stepContext.Values[QnAData] = new List<QueryResult>(response);
+            stepContext.Values[QnAData] = new List<QueryResult>(response.Answers);
             
             // Check if active learning is enabled.
-            if (isActiveLearningEnabled)
+            if (isActiveLearningEnabled && response.Answers.FirstOrDefault().Score <= 0.95)
             {
                 // Get filtered list of the response that support low score variation criteria.
-                response = _services.GetLowScoreVariation(response);
+                response.Answers = _services.GetLowScoreVariation(response.Answers);
 
-                if (response.Count() > 1)
+                if (response.Answers.Count() > 1)
                 {
                     var suggestedQuestions = new List<string>();
-                    foreach (var qna in response)
+                    foreach (var qna in response.Answers)
                     {
                         suggestedQuestions.Add(qna.Questions[0]);
                     }
@@ -175,9 +175,9 @@ namespace Microsoft.Bot.Builder.AI.QnA
             }
 
             var result = new List<QueryResult>();
-            if (response.Any())
+            if (response.Answers.Any())
             {
-                result.Add(response.First());
+                result.Add(response.Answers.First());
             }
 
             stepContext.Values[QnAData] = result;
@@ -257,7 +257,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
                 var answer = response.First();
 
-                if (answer.Context != null && answer.Context.Prompts.Count() > 1)
+                if (answer.Context != null && answer.Context.Prompts.Count() > 0)
                 {
                     var dialogOptions = GetDialogOptionsValue(stepContext);
                     var qnaDialogResponseOptions = dialogOptions[QnADialogResponseOptions] as QnADialogResponseOptions;
