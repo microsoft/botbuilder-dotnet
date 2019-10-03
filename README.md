@@ -40,7 +40,7 @@ This bot has been created using [Bot Framework](https://dev.botframework.com), i
 - Click the ```Set up``` button
 - Under the ```New bot``` tab Fill in the following fields
   - Put ```EchoBot``` into the Name field
-  - Under ```Scope``` check all 3 boxes
+  - Under ```Scope``` check all 3 boxes ```Persona```, ```Team```, ```Group Chat```
   - Click the ```Create``` button
 - Click the ```Generate new password``` button (copy/paste) the password into notepad as you will need it later)
 - Under Messaging endpoint paste the https ngrok url and add ```/api/messages```
