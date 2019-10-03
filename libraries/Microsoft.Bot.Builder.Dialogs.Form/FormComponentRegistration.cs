@@ -16,8 +16,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
         {
             yield return new TypeRegistration<FormDialog>("Microsoft.FormDialog");
             yield return new TypeRegistration<OnAsk>("Microsoft.OnAsk");
-            yield return new TypeRegistration<OnChooseEntity>("Microsoft.OnChooseEntity");
-            yield return new TypeRegistration<OnChooseMapping>("Microsoft.OnChooseMapping");
             yield return new TypeRegistration<OnChooseProperty>("Microsoft.OnChooseProperty");
             yield return new TypeRegistration<OnClarifyEntity>("Microsoft.OnClarifyEntity");
             yield return new TypeRegistration<OnClearProperty>("Microsoft.OnClearProperty");

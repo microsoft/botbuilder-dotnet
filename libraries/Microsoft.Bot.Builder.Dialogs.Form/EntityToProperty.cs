@@ -5,11 +5,13 @@ namespace Microsoft.Bot.Builder.Dialogs.Form.Events
     // Simple mapping
     public class EntityToProperty
     {
-        public PropertyOp Change { get; set; }
+        public string Property { get; set; }
+
+        public string Operation { get; set; }
 
         public EntityInfo Entity { get; set; }
 
         public override string ToString()
-            => $"{Change} = {Entity}";
+            => $"{Property} = {Operation}({Entity})";
     }
 }

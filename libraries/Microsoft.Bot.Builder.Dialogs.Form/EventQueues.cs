@@ -23,19 +23,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Form.Events
         public List<EntityToProperty> ClarifyEntity { get; } = new List<EntityToProperty>();
 
         /// <summary>
-        /// Gets singleton property that has multiple possible entities to bind to.
-        /// </summary>
-        public List<EntitiesToProperty> ChooseEntity { get; } = new List<EntitiesToProperty>();
-
-        /// <summary>
         /// Gets entity that can be consumed by more than one slot.
         /// </summary>
-        public List<EntityToProperties> ChooseProperty { get; } = new List<EntityToProperties>();
-
-        /// <summary>
-        /// Gets alternative entity to property mappings.
-        /// </summary>
-        public List<List<EntityToProperty>> ChooseMapping { get; } = new List<List<EntityToProperty>>();
+        public List<List<EntityToProperty>> ChooseProperty { get; } = new List<List<EntityToProperty>>();
 
         // Slots to clear
         public List<string> ClearProperty { get; } = new List<string>();
@@ -58,7 +48,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Form.Events
             UnknownEntity.AddRange(queues.UnknownEntity);
             SetProperty.AddRange(queues.SetProperty);
             ClarifyEntity.AddRange(queues.ClarifyEntity);
-            ChooseEntity.AddRange(queues.ChooseEntity);
             ChooseProperty.AddRange(queues.ChooseProperty);
             ClearProperty.AddRange(queues.ClearProperty);
         }
@@ -68,8 +57,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Form.Events
             var changed = true;
             switch (eventName)
             {
-                case FormEvents.ChooseEntity: ChooseEntity.Dequeue(); break;
-                case FormEvents.ChooseMapping: ChooseMapping.Dequeue(); break;
                 case FormEvents.ChooseProperty: ChooseProperty.Dequeue(); break;
                 case FormEvents.ClarifyEntity: ClarifyEntity.Dequeue(); break;
                 case FormEvents.ClearProperty: ClearProperty.Dequeue(); break;

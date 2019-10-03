@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form.Events
         [JsonConstructor]
         public OnUnknownEntity(string entity = null, List<Dialog> actions = null, string condition = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base(
-                @event: FormEvents.ChooseEntity,
+                @event: FormEvents.UnknownEntity,
                 actions: actions,
                 condition: condition,
                 callerPath: callerPath,

@@ -85,6 +85,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
         /// </value>
         public JObject Schema { get; }
 
+        [Newtonsoft.Json.JsonIgnore]
         public PropertySchema Parent { get; private set; }
 
         public string Type => Schema["type"].Value<string>();

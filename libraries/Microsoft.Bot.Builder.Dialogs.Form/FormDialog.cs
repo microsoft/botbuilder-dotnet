@@ -51,10 +51,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
             {
                 evt = new DialogEvent() { Name = FormEvents.ChooseProperty, Value = queues.ChooseProperty[0], Bubble = false };
             }
-            else if (queues.ChooseEntity.Any())
-            {
-                evt = new DialogEvent() { Name = FormEvents.ChooseEntity, Value = queues.ChooseEntity[0], Bubble = false };
-            }
             else if (queues.ClarifyEntity.Any())
             {
                 evt = new DialogEvent() { Name = FormEvents.ClarifyEntity, Value = queues.ClarifyEntity[0], Bubble = false };
@@ -97,7 +93,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
         // 
         // ClarifyEntity: Clarify which entity value is intended.
         // By "peppers" did you mean green peppers or red peppers?
-        // Expected: entity value for filling a particular slot
+        // Expected: entity value for filling a particular property
         // 
         // ClearProperty: Clear a particular property.
         // TODO: This is probably created by a composite remove.
@@ -110,7 +106,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
         // Expected is true if property is in expectedProperties or it has the appropriate value from above.
         protected override async Task<bool> ProcessEventAsync(SequenceContext sequenceContext, DialogEvent dialogEvent, bool preBubble, CancellationToken cancellationToken = default)
         {
-            var handled = false;
+            bool handled;
             // Save schema into turn
             sequenceContext.State.SetValue(TurnPath.SCHEMA, this.Schema.Schema);
             if (preBubble)
@@ -199,7 +195,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                             break;
                         }
 
-                    case FormEvents.ChooseMapping:
+                    case FormEvents.ChooseProperty:
                         {
                             context.State.RemoveValue("dialog.lastEvent");
                             // NOTE: This assumes the existance of a property entity which contains the normalized
@@ -207,13 +203,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                             if (entities.TryGetValue("property", out var infos) && infos.Count() == 1)
                             {
                                 var info = infos[0];
-                                var choices = queues.ChooseMapping[0];
-                                var choice = choices.Find(p => p.Change.Property == info.Value as string);
+                                var choices = queues.ChooseProperty[0];
+                                var choice = choices.Find(p => p.Property == info.Value as string);
                                 if (choice != null)
                                 {
                                     // Resolve and move to SetProperty
                                     infos.Clear();
-                                    queues.ChooseMapping.Dequeue();
                                     queues.SetProperty.Add(choice);
                                 }
                             }
@@ -231,7 +226,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
         // * Iterate through each ambiguous entity and collect firing rules.
         // * Run rules on remaining
         // Prefer handlers by:
-        // * Set & Expected slots
+        // * Set & Expected propertys
         // * Set & Coverage
         // * Set & Priority
         // * Disambiguation & expected
@@ -240,20 +235,20 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
         // * Prompt
 
         // We have four kinds of ambiguity to deal with:
-        // * Value: Ambiguous interpretation of entity value: (peppers -> [green peppers, red peppers]  Tell this by entity value is array.  Doesn't matter if slot singleton or not. Ask.
+        // * Value: Ambiguous interpretation of entity value: (peppers -> [green peppers, red peppers]  Tell this by entity value is array.  Doesn't matter if property singleton or not. Ask.
         // * Text: Ambiguous interpretion of text: (3 -> age or number) Identify by overlapping entities. Resolve by greater coverage, expected entity, ask.
-        // * Singelton: two different entities which could fill slot singleton.  Could be same type or different types.  Resolve by rule priority.
-        // * Slot: Which slot should an entity go to?  Resolve by expected, then ask.
+        // * Singelton: two different entities which could fill property singleton.  Could be same type or different types.  Resolve by rule priority.
+        // * Slot: Which property should an entity go to?  Resolve by expected, then ask.
         // Should rules by over entities directly or should we process them first into these forms?
         // This is also complicated by singleton vs. array
         // It would be nice if multiple entities were rolled up into a single entity, i.e. a toppings composite with topping inside of it.
         // Rule for value ambiguity: foreach(entity in @entity) entity is array.    
         // Rule for text ambiguity: info overlaps...
         // Rule for singleton ambiguity: multiple rules fire over different entities
-        // Rule for slot ambiguity: multiple rules fire for same entity
-        // Preference is for expected slots
+        // Rule for property ambiguity: multiple rules fire for same entity
+        // Preference is for expected properties
         // Want to write rules that:
-        // * Allow mapping a slot through steps.
+        // * Allow mapping a property through steps.
         // * Allow disambiguation
         // * More specific win from trigger tree
         // * Easy to understand
@@ -262,22 +257,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
         // * Rules are specific to individual entity.  Easier to write, but less powerful and lots of machinery for singleton/array
         //
         // Key assumptions:
-        // * A single entity type maps to a single slot.  Otherwise we have to figure out how to name different entity instances.
+        // * A single entity type maps to a single property.  Otherwise we have to figure out how to name different entity instances.
         //
         // Need to figure out how to handle operations.  They could be done in LUIS as composites which allow putting together multiples ones. 
         // You can imagine doing add/remove, but another scenario would be to do "change seattle to dallas" where you are referring to where 
-        // a specific value is found independent of which slot has the value.
+        // a specific value is found independent of which property has the value.
         //
         // 1) @@entity to entities array
-        // 2) Use schema information + expected to assign each entity to one of: choice(slot), clarify(slot), unknown, slots and remove any overlapping entities.
+        // 2) Use schema information + expected to assign each entity to one of: choice(property), clarify(property), unknown, properties and remove any overlapping entities.
         // 3) Run rules to pick one rule for doing next.  They are in terms of the processing queues and other memory.
         // On the next cycle go ahead and add to process queues
         // Implied in this is that mapping information consists of simple paths to entities.
-        // Choice[slot] = [[entity, ...]]
-        // Clarify[slot] = [entity, ...]
-        // Slots = [{entity, [slots]}]
+        // Choice[property] = [[entity, ...]]
+        // Clarify[property] = [entity, ...]
+        // Slots = [{entity, [properties]}]
         // Unknown = [entity, ...]
-        // Set = [{entity, slot, op}]
+        // Set = [{entity, property, op}]
         // For rules, prefer non-forminput, then forminput.
 
         // Combine all the information we have about entities
@@ -340,31 +335,27 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
             return entityToInfo;
         }
 
-        // Generate possible entity to slot mappings
-        private IReadOnlyList<PropertyEntityCandidate> Candidates(Dictionary<string, List<EntityInfo>> entities, string[] expected)
+        // Generate possible entity to property mappings
+        private IEnumerable<PropertyEntityCandidate> Candidates(Dictionary<string, List<EntityInfo>> entities, string[] expected)
         {
-            var candidates = new List<PropertyEntityCandidate>();
-            foreach (var slot in Schema.Property.Children)
+            foreach (var prop in Schema.Property.Children)
             {
-                foreach (var mapping in slot.Mappings)
+                foreach (var mapping in prop.Mappings)
                 {
                     if (entities.TryGetValue(mapping, out var possiblities))
                     {
                         foreach (var possible in possiblities)
                         {
-                            var candidate = new PropertyEntityCandidate
+                            yield return new PropertyEntityCandidate
                             {
                                 Entity = possible,
-                                Property = slot,
-                                Expected = expected.Contains(slot.Name)
+                                Property = prop,
+                                Expected = expected.Contains(prop.Name)
                             };
-                            candidates.Add(candidate);
                         }
                     }
                 }
             }
-
-            return candidates;
         }
 
         private void AddMappingToQueue(EntityToProperty mapping, EventQueues queues)
@@ -396,11 +387,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
             }
         }
 
+        private IEnumerable<PropertyEntityCandidate> RemoveOverlappingPerProperty(IEnumerable<PropertyEntityCandidate> candidates)
+        {
+            return candidates;
+            /*
+            var perProperty = from candidate in candidates
+                              group candidate by candidate.Property;
+            foreach (var choices in perProperty)
+            {
+
+            }
+            */
+        }
+
         private void AddToQueues(Dictionary<string, List<EntityInfo>> entities, string[] expected, EventQueues queues)
         {
             var candidates = Candidates(entities, expected);
 
-            // Group by specific entity order by priority + coverage then by slots across expected/unexpected
+            // Group by specific entity order by priority + coverage then by properties across expected/unexpected
             // Captures the intuition that more specific entities or larger entities are preferred
             var choices = from candidate in candidates
                           group candidate by candidate.Entity into entityGroup
@@ -423,7 +427,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                     foreach (var entityProperties in entityChoices.properties)
                     {
                         var propertyOps = from entityProperty in entityProperties
-                                          select new PropertyOp
+                                          select new
                                           {
                                               // TODO: Figure out operation from role?
                                               // If composite do we have role:value, add{role:value}, remove{role:value}, add{type:value}, changeValue, ...
@@ -433,25 +437,29 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                                           };
                         if (entityProperties.Count() == 1)
                         {
-                            // Only a single slot consumes entity
+                            // Only a single property consumes entity
                             var slotEntity = entityProperties.First();
-                            var slot = slotEntity.Property;
+                            var property = slotEntity.Property;
                             // Send to clarify or set
                             var mapping = new EntityToProperty
                             {
                                 Entity = entity,
-                                Change = propertyOps.First()
+                                Property = propertyOps.First().Property,
+                                Operation = propertyOps.First().Operation
                             };
                             AddMappingToQueue(mapping, queues);
                         }
                         else
                         {
-                            // Multiple slots want the same entity
-                            queues.ChooseProperty.Add(new EntityToProperties
-                            {
-                                Entity = entity,
-                                Properties = propertyOps.ToList()
-                            });
+                            // Multiple properties want the same entity
+                            var properties = from property in propertyOps
+                                             select new EntityToProperty
+                                             {
+                                                 Entity = entity,
+                                                 Property = property.Property,
+                                                 Operation = property.Operation
+                                             };
+                            queues.ChooseProperty.Add(properties.ToList());
                         }
                     }
                 }
@@ -479,23 +487,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
             return slotQueues;
         }
 
-        // Create queues for each slot
+        // Create queues for each property
         private Dictionary<PropertySchema, EventQueues> PerPropertyQueues(EventQueues queues)
         {
             var propertyToQueues = new Dictionary<PropertySchema, EventQueues>();
             foreach (var entry in queues.SetProperty)
             {
-                PropertyQueues(entry.Change.Property, propertyToQueues).SetProperty.Add(entry);
+                PropertyQueues(entry.Property, propertyToQueues).SetProperty.Add(entry);
             }
 
             foreach (var entry in queues.ClarifyEntity)
             {
-                PropertyQueues(entry.Change.Property, propertyToQueues).ClarifyEntity.Add(entry);
-            }
-
-            foreach (var entry in queues.ChooseEntity)
-            {
-                PropertyQueues(entry.Property.Property, propertyToQueues).ChooseEntity.Add(entry);
+                PropertyQueues(entry.Property, propertyToQueues).ClarifyEntity.Add(entry);
             }
 
             foreach (var entry in queues.ClearProperty)
@@ -505,9 +508,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
 
             foreach (var entry in queues.ChooseProperty)
             {
-                foreach (var slot in entry.Properties)
+                foreach (var choice in entry)
                 {
-                    PropertyQueues(slot.Property, propertyToQueues).ChooseProperty.Add(entry);
+                    PropertyQueues(choice.Property, propertyToQueues).ChooseProperty.Add(entry);
                 }
             }
 
@@ -519,26 +522,27 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
             var slotToQueues = PerPropertyQueues(queues);
             foreach (var entry in slotToQueues)
             {
-                var slot = entry.Key;
+                var property = entry.Key;
                 var slotQueues = entry.Value;
-                if (!slot.IsArray && slotQueues.SetProperty.Count() + slotQueues.ClarifyEntity.Count() > 1)
+                if (!property.IsArray && slotQueues.SetProperty.Count() + slotQueues.ClarifyEntity.Count() > 1)
                 {
                     // Singleton with multiple operations
-                    var mappings = from mapping in slotQueues.SetProperty.Union(slotQueues.ClarifyEntity) where mapping.Change.Operation != Operations.Remove select mapping;
+                    var mappings = from mapping in slotQueues.SetProperty.Union(slotQueues.ClarifyEntity) where mapping.Operation != Operations.Remove select mapping;
                     switch (mappings.Count())
                     {
                         case 0:
-                            queues.ClearProperty.Add(slot.Path);
+                            queues.ClearProperty.Add(property.Path);
                             break;
                         case 1:
                             AddMappingToQueue(mappings.First(), queues);
                             break;
                         default:
-                            queues.ChooseEntity.Add(new EntitiesToProperty
+                            // TODO: Map to multiple entity to property
+                            /* queues.ChooseProperty.Add(new EntitiesToProperty
                             {
                                 Entities = (from mapping in mappings select mapping.Entity).ToList(),
                                 Property = mappings.First().Change
-                            });
+                            }); */
                             break;
                     }
                 }
@@ -552,15 +556,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
             var slotToQueues = PerPropertyQueues(queues);
             foreach (var entry in slotToQueues)
             {
-                var slot = entry.Key;
+                var property = entry.Key;
                 var slotQueues = entry.Value;
-                if (!slot.IsArray &&
+                if (!property.IsArray &&
                     (slotQueues.SetProperty.Any(e => e.Entity.Turn == turn)
                     || slotQueues.ClarifyEntity.Any(e => e.Entity.Turn == turn)
-                    || slotQueues.ChooseEntity.Any(c => c.Entities.Any(e => e.Turn == turn))
-                    || slotQueues.ChooseProperty.Any(c => c.Entity.Turn == turn)))
+                    || slotQueues.ChooseProperty.Any(c => c.First().Entity.Turn == turn)))
                 {
-                    // Remove all old operations on slot because there is a new one
+                    // Remove all old operations on property because there is a new one
                     foreach (var mapping in slotQueues.SetProperty)
                     {
                         if (mapping.Entity.Turn != turn)
@@ -577,18 +580,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                         }
                     }
 
-                    foreach (var mapping in slotQueues.ChooseEntity)
-                    {
-                        mapping.Entities.RemoveAll(e => e.Turn != turn);
-                        if (mapping.Entities.Count == 0)
-                        {
-                            slotQueues.ChooseEntity.Remove(mapping);
-                        }
-                    }
-
                     foreach (var mapping in slotQueues.ChooseProperty)
                     {
-                        if (mapping.Entity.Turn != turn)
+                        if (mapping.First().Entity.Turn != turn)
                         {
                             queues.ChooseProperty.Remove(mapping);
                         }
@@ -604,14 +598,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
             CombineNewEntityToPropertys(queues);
         }
 
-        // For simple singleton slot:
+        // For simple singleton property:
         //  Set values
         //      count(@@foo) == 1 -> foo == @foo
         //      count(@@foo) > 1 -> "Which {@@foo} do you want for {slotName}"
         //  Constraints (which are more specific)
         //      count(@@foo) == 1 && @foo < 0 -> "{@foo} is too small for {slotname}"
         //      count(@@foo) > 1 && count(where(@@foo, foo, foo < 0)) > 0 -> "{where(@@foo, foo, foo < 0)} are too small for {slotname}"
-        // For simple array slot:
+        // For simple array property:
         //  Set values:
         //      @@foo -> foo = @@foo
         //  Constraints: (which are more specific)
@@ -621,23 +615,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
         //      // This is to make this more specific than both the simple constraint and the intent
         //      add: @@foo && count(where(@@foo, foo, foo < 0)) > 0 && @intent == add -> "{where(@@foo, foo, foo < 0)} are too small for {slotname}"
         //      delete: @@foo @intent == delete -> Delete(@@foo, foo)
-        // For structured singleton slot
+        // For structured singleton property
         //  count(@@foo) == 1 -> Apply child constraints, i.e. make a new singleton object to apply child property rule sets to it.
         //  count(@@foo) > 1 -> "Which one did you want?" with replacing @@foo with the singleton selection
         //
-        // Children slots can either:
+        // Children properties can either:
         // * Refer to parent structure which turns into count(first(parent).child) == 1
         // * Refer to independent entity, i.e. count(datetime) > 1
         //
         // Assumptions:
-        // * In order to map structured entities to structured slots, parent structures must be singletons before child can map them.
+        // * In order to map structured entities to structured properties, parent structures must be singletons before child can map them.
         // * We will only generate a single instance of the form.  (Although there can be multiple ones inside.)
         // * You can map directly, but then must deal with that complexity of structures.  For example if you have multiple flight(origin, destination) and you want to map to hotel(location)
         //   you have to figure out how to deal with multiple flight structures and the underlying entity structures.
         // * For now only leaves can be arrays.  If you need more, I think it is a subform, but we could probably automatically generate a foreach step on top.
         //
         // 1) Find all most specific matches
-        // 2) Identify any slots that compete for the same entity.  Select by in expected, then keep as slot ambiguous.
+        // 2) Identify any properties that compete for the same entity.  Select by in expected, then keep as property ambiguous.
         // 3) For each entity either: a) Do its set, b) queue up clarification, c) surface as unhandled
         // 
         // Two cases:
@@ -647,7 +641,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
         //
         // In order to robustly handle we need a progression of transformations, i.e. to map @meat to meatSlot singleton:
         // @meat -> meatSlot_choice (m->1) ->
-        //                          (1->1) -> foreach meatslot_clarify -> set meat slot (clears others)
+        //                          (1->1) -> foreach meatslot_clarify -> set meat property (clears others)
         // If we get a new @meat, then it would reset them all.
         // Should this be a flat set of rules?
 

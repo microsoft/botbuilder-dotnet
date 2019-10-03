@@ -7,8 +7,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
     public class FormEvents : AdaptiveEvents
     {
         public const string Ask = "ask";
-        public const string ChooseEntity = "chooseEntity";
-        public const string ChooseMapping = "chooseMapping";
         public const string ChooseProperty = "chooseProperty";
         public const string ClarifyEntity = "clarifyEntity";
         public const string ClearProperty = "clearProperty";
