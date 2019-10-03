@@ -94,9 +94,9 @@ This bot has been created using [Bot Framework](https://dev.botframework.com), i
 - Click ```Add to Team```
 - Search for and select your team
 - Click the ```Set up a bot``` button
-- Note: You need to type: ```@EchoBot [message]``` to message your bot
+- **Note:** You need to type: ```@EchoBot [message]``` to message your bot
  - Send your bot one of the following strings: ```show members```, ```show channels```, or ```show details``` to get the members of your team, the channels in your team, or metadata about your team respectively. 
-  - EX: ```@EchoBot show members```
+  - **EX:** ```@EchoBot show members```
 
 ### Installing the bot in a group chat
 - Search for App Studio
@@ -105,10 +105,24 @@ This bot has been created using [Bot Framework](https://dev.botframework.com), i
 - Click ```Test and distribute```
 - Click ```Install```
 - Click the down arrow to the right of the ```Add``` button 
-- Click ```Add to Team```
+- Click ```Add to Chat```
+- Search for and select your group chat
+- **Note:** The group chat has to have at least 1 message for the group chat to be searchable
+- Click the ```Set up a bot``` button
+- **Note:** You need to type: ```@EchoBot [message]``` to have the bot receive your message
+ - Send your bot one of the following strings: ```show members``` to get the members in the group chat. 
+  - **EX:** ```@EchoBot show members```
+
+### Installing the bot in a personal chat
+- Search for App Studio
+- Go to the Manifest editor 
+- Click the ```EchoBot``` card
+- Click ```Test and distribute```
+- Click ```Install```
+- Click the down arrow to the right of the ```Add``` button 
+- Click ```Add```
 - Search for and select your team
 - Click the ```Set up a bot``` button
-- Note: You need to type: ```@EchoBot [message]``` to message your bot
+- **Note:** You need to type: ```@EchoBot [message]``` to message your bot
  - Send your bot one of the following strings: ```show members``` to get the members in the group chat. 
-  - EX: ```@EchoBot show members```
-
+  - **EX:** ```@EchoBot show members```
