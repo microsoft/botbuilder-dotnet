@@ -88,48 +88,22 @@ ngrok http -host-header=rewrite 3978
 - In the compose message area at the bottom of the screen send the message ```hi``` 
 - You should receive a response from the bot
 
-### Installing the bot in a Team
+### Installing the bot in Teams
 - Search for App Studio
 - Go to the Manifest editor 
 - Click the ```EchoBot``` card
 - Click ```Test and distribute```
 - Click ```Install```
-- Click the down arrow to the right of the ```Add``` button 
-- Click ```Add to Team```
-- Search for and select your team
-- Click the ```Set up a bot``` button
-- **Note:** You need to type: ```@EchoBot [message]``` to message your bot
- - Send your bot one of the following strings: ```show members```, ```show channels```, or ```show details``` to get the members of your team, the channels in your team, or metadata about your team respectively. 
-  - **EX:** ```@EchoBot show members```
 
-### Installing the bot in a group chat
-- Search for App Studio
-- Go to the Manifest editor 
-- Click the ```EchoBot``` card
-- Click ```Test and distribute```
-- Click ```Install```
-- Click the down arrow to the right of the ```Add``` button 
-- Click ```Add to Chat```
-- Search for and select your group chat
-- **Note:** The group chat has to have at least 1 message for the group chat to be searchable
-- Click the ```Set up a bot``` button
-- **Note:** You need to type: ```@EchoBot [message]``` to have the bot receive your message
- - Send your bot one of the following strings: ```show members``` to get the members in the group chat. 
-  - **EX:** ```@EchoBot show members```
+| To install in a team | To install in a group chat | to install in personal chat|
+|:-------------------- | :------------------------- | :-----------------------|
+| 1. Click the down arrow to the right of the <br> 2. Click ```Add to Team``` <br> 3. Search for and select your team <br> 4. Click the ```Set up a bot``` button | 1. Click the down arrow to the right of the ```Add``` button <br> 2. Click ```Add to Chat``` <br> 3. Search for and select your group chat <br> 4. Click the ```Set up bot``` button | 1. Click ```Add``` button |
 
-### Installing the bot in a personal chat
-- Search for App Studio
-- Go to the Manifest editor 
-- Click the ```EchoBot``` card
-- Click ```Test and distribute```
-- Click ```Install```
-- Click the down arrow to the right of the ```Add``` button 
-- Click ```Add```
-- Search for and select your team
-- Click the ```Set up a bot``` button
-- **Note:** You need to type: ```@EchoBot [message]``` to message your bot
- - Send your bot one of the following strings: ```show members``` to get the members in the group chat. 
-  - **EX:** ```@EchoBot show members```
+|Supported strings in team chat | Supported strings in group chat | supported strings in personal chat|
+|:----------------------------- | :-------------------------------|:----------------------------------|
+| ```show members``` <br> ```show channels``` <br> ```show details``` | ```show members``` | X |
+
+**Note:** If you send an unsupported string in a group chat or personal chat the bot will respond with an error message. This is because it's missing data that's associated with messages that orignates from a team.
 
 ### Place holder for debugging
 - Trying to do teams calls within a group chat or 1:1 chat
