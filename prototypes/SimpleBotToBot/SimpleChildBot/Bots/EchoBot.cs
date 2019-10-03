@@ -41,7 +41,6 @@ namespace SimpleChildBot.Bots
         {
             foreach (var member in membersAdded)
             {
-                // TODO: Recipient ID comes in as null.
                 if (member.Id != turnContext.Activity.Recipient.Id)
                 {
                     await turnContext.SendActivityAsync(MessageFactory.Text("Hello and welcome to SimpleSkillBot!"), cancellationToken);

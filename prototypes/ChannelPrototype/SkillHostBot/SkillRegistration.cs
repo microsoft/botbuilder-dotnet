@@ -3,17 +3,17 @@
     public class SkillRegistration
     {
         /// <summary>
-        /// Id of the skill.
+        /// Gets or sets id of the skill.
         /// </summary>
         public string Id { get; set; }
 
         /// <summary>
-        /// AppId of the skill.
+        /// Gets or sets appId of the skill.
         /// </summary>
         public string AppId { get; set; }
 
         /// <summary>
-        /// /api/messages endpoint for the skill.
+        /// Gets or sets /api/messages endpoint for the skill.
         /// </summary>
         public string ServiceUrl { get; set; }
     }

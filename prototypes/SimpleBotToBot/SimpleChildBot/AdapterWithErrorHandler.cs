@@ -8,10 +8,10 @@ using Microsoft.Extensions.Logging;
 
 namespace SimpleChildBot
 {
-    public class AdapterWithErrorHandler : WebSocketEnabledHttpAdapter
+    public class AdapterWithErrorHandler : BotFrameworkHttpAdapter
     {
         public AdapterWithErrorHandler(IConfiguration configuration, ILogger<BotFrameworkHttpAdapter> logger)
-            : base(configuration, null, null, null)
+            : base(null, null, null)
         {
             OnTurnError = async (turnContext, exception) =>
             {
