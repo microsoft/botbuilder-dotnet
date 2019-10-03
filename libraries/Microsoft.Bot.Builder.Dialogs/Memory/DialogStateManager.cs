@@ -90,32 +90,36 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         /// <returns>memoryscope</returns>
         public virtual MemoryScope ResolveMemoryScope(ref string path)
         {
-            string scope = path;
-            var index = path.IndexOf(".");
-            if (index > 0)
+            path = path.Trim();
+            if (path.StartsWith("{") && path.EndsWith("}"))
             {
-                scope = path.Substring(0, index);
+                // TODO: Eventually this should use the expression machinery
+                path = GetValue<string>(path.Substring(1, path.Length - 2));
+            }
+
+            var scope = path;
+            var dot = path.IndexOf(".");
+            var bracket = path.IndexOf("[");
+            if (dot > 0 && (bracket < 0 || dot < bracket))
+            {
+                scope = path.Substring(0, dot);
                 var memoryScope = DialogStateManager.GetMemoryScope(scope);
                 if (memoryScope != null)
                 {
-                    path = path.Substring(index + 1);
+                    path = path.Substring(dot + 1);
                     return memoryScope;
                 }
             }
 
-            // could be User[foo] path 
-            index = path.IndexOf("[");
-            if (index > 0)
+            if (bracket > 0 && (dot < 0 || bracket < dot))
             {
-                scope = path.Substring(0, index);
-                path = path.Substring(index);
+                scope = path.Substring(0, bracket);
+                path = path.Substring(bracket);
                 return DialogStateManager.GetMemoryScope(scope) ?? throw new ArgumentOutOfRangeException(GetBadScopeMessage(path));
             }
-            else
-            {
-                path = string.Empty;
-                return DialogStateManager.GetMemoryScope(scope) ?? throw new ArgumentOutOfRangeException(GetBadScopeMessage(path));
-            }
+
+            path = string.Empty;
+            return DialogStateManager.GetMemoryScope(scope) ?? throw new ArgumentOutOfRangeException(GetBadScopeMessage(path));
         }
 
         /// <summary>
