@@ -25,7 +25,7 @@ ngrok http -host-header=rewrite 3978
 ```
 - Copy/paste the https web address into notepad as you will need it later
 
-### Microsoft Teams
+### Microsoft Teams setup
 - Launch Microsoft Teams. In the search bar at the top of Teams search for and select ```App Studio```.
 - Click the ```Manifest editor``` tab near the top of the screen.
 - Click the ```Create a new app``` button on the left hand side.
