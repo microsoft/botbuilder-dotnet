@@ -13,85 +13,71 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Teams
 {
-    public class TeamsInfo
+    public static class TeamsInfo
     {
-        private IConnectorClient _connectorClient;
-        private ITeamsConnectorClient _teamsConnectorClient;
-
-        public TeamsInfo(ConnectorClient connectorClient)
+        public static async Task<TeamDetails> GetTeamDetailsAsync(ITurnContext turnContext, CancellationToken cancellationToken = default)
         {
-            if (connectorClient != null)
-            {
-                _connectorClient = connectorClient;
-                _teamsConnectorClient = new TeamsConnectorClient(connectorClient.BaseUri, connectorClient.Credentials, connectorClient.HttpClient);
-            }
+            var teamId = GetTeamId(turnContext) ?? throw new InvalidOperationException("This method is only valid within the scope of MS Teams Team.");
+            return await GetTeamsConnectorClient(turnContext).Teams.FetchTeamDetailsAsync(teamId, cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task<TeamDetails> GetTeamDetailsAsync(ITurnContext turnContext, CancellationToken cancellationToken = default)
+        public static async Task<IList<ChannelInfo>> GetChannelsAsync(ITurnContext turnContext, CancellationToken cancellationToken = default)
         {
-            if (_teamsConnectorClient == null)
-            {
-                throw new InvalidOperationException("This method requires a connector client.");
-            }
-
-            var teamId = turnContext.Activity.GetChannelData<TeamsChannelData>()?.Team?.Id;
-
-            if (teamId == null)
-            {
-                throw new InvalidOperationException("This method is only valid within the scope of MS Teams Team.");
-            }
-
-            return await _teamsConnectorClient.Teams.FetchTeamDetailsAsync(teamId, cancellationToken).ConfigureAwait(false);
-        }
-
-        public async Task<IList<ChannelInfo>> GetChannelsAsync(ITurnContext turnContext, CancellationToken cancellationToken = default)
-        {
-            if (_teamsConnectorClient == null)
-            {
-                throw new InvalidOperationException("This method requires a connector client.");
-            }
-
-            var teamId = turnContext.Activity.GetChannelData<TeamsChannelData>()?.Team?.Id;
-
-            if (teamId == null)
-            {
-                throw new InvalidOperationException("This method is only valid within the scope of MS Teams Team.");
-            }
-
-            var channelList = await _teamsConnectorClient.Teams.FetchChannelListAsync(teamId, cancellationToken).ConfigureAwait(false);
+            var teamId = GetTeamId(turnContext) ?? throw new InvalidOperationException("This method is only valid within the scope of MS Teams Team.");
+            var channelList = await GetTeamsConnectorClient(turnContext).Teams.FetchChannelListAsync(teamId, cancellationToken).ConfigureAwait(false);
             return channelList.Conversations;
         }
 
-        public Task<IEnumerable<TeamsChannelAccount>> GetMembersAsync(ITurnContext turnContext, CancellationToken cancellationToken = default)
+        public static Task<IEnumerable<TeamsChannelAccount>> GetMembersAsync(ITurnContext turnContext, CancellationToken cancellationToken = default)
         {
-            if (_teamsConnectorClient == null)
-            {
-                throw new InvalidOperationException("This method requires a connector client.");
-            }
-
-            var teamId = turnContext.Activity.GetChannelData<TeamsChannelData>()?.Team?.Id;
+            var connectorClient = GetConnectorClient(turnContext);
+            var teamId = GetTeamId(turnContext);
 
             if (teamId != null)
             {
-                return GetMembersAsync(teamId, cancellationToken);
+                return GetMembersAsync(connectorClient, teamId, cancellationToken);
             }
             else
             {
                 var conversationId = turnContext.Activity?.Conversation?.Id;
-                return GetMembersAsync(conversationId, cancellationToken);
+                return GetMembersAsync(connectorClient, conversationId, cancellationToken);
             }
         }
 
-        private async Task<IEnumerable<TeamsChannelAccount>> GetMembersAsync(string conversationId, CancellationToken cancellationToken)
+        private static async Task<IEnumerable<TeamsChannelAccount>> GetMembersAsync(IConnectorClient connectorClient, string conversationId, CancellationToken cancellationToken)
         {
             if (conversationId == null)
             {
                 throw new InvalidOperationException("The GetMembers operation needs a valid conversation Id.");
             }
 
-            var teamMembers = await _connectorClient.Conversations.GetConversationMembersAsync(conversationId, cancellationToken).ConfigureAwait(false);
+            var teamMembers = await connectorClient.Conversations.GetConversationMembersAsync(conversationId, cancellationToken).ConfigureAwait(false);
             var teamsChannelAccounts = teamMembers.Select(channelAccount => JObject.FromObject(channelAccount).ToObject<TeamsChannelAccount>());
             return teamsChannelAccounts;
+        }
+
+        private static string GetTeamId(ITurnContext turnContext)
+        {
+            return turnContext.Activity.GetChannelData<TeamsChannelData>()?.Team?.Id;
+        }
+
+        private static IConnectorClient GetConnectorClient(ITurnContext turnContext)
+        {
+            return turnContext.TurnState.Get<IConnectorClient>() ?? throw new InvalidOperationException("This method requires a connector client.");
+        }
+
+        private static ITeamsConnectorClient GetTeamsConnectorClient(ITurnContext turnContext)
+        {
+            var connectorClient = GetConnectorClient(turnContext);
+            if (connectorClient is ConnectorClient)
+            {
+                var connectorClientImpl = (ConnectorClient)connectorClient;
+                return new TeamsConnectorClient(connectorClientImpl.BaseUri, connectorClientImpl.Credentials, connectorClientImpl.HttpClient);
+            }
+            else
+            {
+                return new TeamsConnectorClient(connectorClient.BaseUri, connectorClient.Credentials);
+            }
         }
     }
 }

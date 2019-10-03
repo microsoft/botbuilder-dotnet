@@ -15,8 +15,6 @@ namespace Microsoft.Bot.Builder.Teams
 {
     public class TeamsActivityHandler : ActivityHandler
     {
-        public TeamsInfo TeamsInfo { get; private set; }
-
         public override async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (turnContext == null)
@@ -33,8 +31,6 @@ namespace Microsoft.Bot.Builder.Teams
             {
                 throw new ArgumentException($"{nameof(turnContext)}.Activity must have non-null Type.");
             }
-
-            TeamsInfo = new TeamsInfo(turnContext.TurnState.Get<IConnectorClient>() as ConnectorClient);
 
             switch (turnContext.Activity.Type)
             {
