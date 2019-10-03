@@ -138,7 +138,8 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         {
             using (var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(_options.AppSecret)))
             {
-                return hmac.ComputeHash(Encoding.UTF8.GetBytes(_options.AccessToken)).ToString();
+                var hash = hmac.ComputeHash(Encoding.UTF8.GetBytes(_options.AccessToken));
+                return BitConverter.ToString(hash).Replace("-", string.Empty);
             }
         }
 
