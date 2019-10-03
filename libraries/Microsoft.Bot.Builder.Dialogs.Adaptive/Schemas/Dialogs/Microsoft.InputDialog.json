@@ -1,96 +1,104 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
     "type": "object",
-    "properties": {
-        "id": {
-            "type": "string",
-            "title": "Id",
-            "description": "Optional id for the dialog"
-        },
-        "prompt": {
-            "$type": "Microsoft.IActivityTemplate",
-            "title": "Initial Prompt",
-            "description": "The message to send to as prompt for this input.",
-            "examples": [
-                "What is your birth date?"
-            ]
-        },
-        "unrecognizedPrompt": {
-            "$type": "Microsoft.IActivityTemplate",
-            "title": "Unrecognized Prompt",
-            "description": "The message to send if the last input is not recognized.",
-            "examples": [
-                "Let's try again. What is your birth date?"
-            ]
-        },
-        "invalidPrompt": {
-            "$type": "Microsoft.IActivityTemplate",
-            "title": "Invalid Prompt",
-            "description": "The message to send to when then input was not valid for the input type.",
-            "examples": [
-                "No date was recognized"
-            ]
-        },
-        "defaultValueResponse": {
-            "$type": "Microsoft.IActivityTemplate",
-            "title": "Default Value Response",
-            "description": "The message to send to when max turn count has been exceeded and the default value is selected as the value.",
-            "examples": [
-                "I didn't understand your responses, so I will just use the default value of 10.  Let me know if you want to change it."
-            ]
-        },
-        "maxTurnCount": {
-            "type": "integer",
-            "title": "Max Turn Count",
-            "description": "The max retry count for this prompt.",
-            "default": 2147483647,
-            "examples": [
-                3
-            ]
-        },
-        "validations": {
-            "type": "array",
-            "items": {
-                "$role": "expression"
-            },
-            "title": "Validation Expressions",
-            "description": "Expressions to validate an input."
-        },
-        "property": {
-            "$role": "expression",
-            "title": "Property",
-            "description": "Property that this input dialog is bound to",
-            "examples": [
-                "$birthday"
-            ]
-        },
-        "defaultValue": {
-            "$role": "expression",
-            "title": "Default Value",
-            "description": "Value to return if the value expression can't be evaluated."
-        },
-        "alwaysPrompt": {
-            "type": "boolean",
-            "title": "Always Prompt",
-            "description": "If set to true this will always prompt the user regardless if you already have the value or not.",
-            "default": false,
-            "examples": [
-                false
-            ]
-        },
-        "allowInterruptions": {
-            "type": "string",
-            "enum": [
-                "always",
-                "never",
-                "notRecognized"
-            ],
-            "title": "Allow Interruptions",
-            "description": "Always will always consult parent dialogs first, never will not consult parent dialogs, notRecognized will consult parent only when it's not recognized",
-            "default": "notRecognized",
-            "examples": [
-                "notRecognized"
-            ]
-        }
+  "properties": {
+    "id": {
+      "type": "string",
+      "title": "Id",
+      "description": "Optional id for the dialog"
+    },
+    "prompt": {
+      "$type": "Microsoft.IActivityTemplate",
+      "title": "Initial Prompt",
+      "description": "The message to send to as prompt for this input.",
+      "examples": [
+        "What is your birth date?"
+      ]
+    },
+    "unrecognizedPrompt": {
+      "$type": "Microsoft.IActivityTemplate",
+      "title": "Unrecognized Prompt",
+      "description": "The message to send if the last input is not recognized.",
+      "examples": [
+        "Let's try again. What is your birth date?"
+      ]
+    },
+    "invalidPrompt": {
+      "$type": "Microsoft.IActivityTemplate",
+      "title": "Invalid Prompt",
+      "description": "The message to send to when then input was not valid for the input type.",
+      "examples": [
+        "No date was recognized"
+      ]
+    },
+    "defaultValueResponse": {
+      "$type": "Microsoft.IActivityTemplate",
+      "title": "Default Value Response",
+      "description": "The message to send to when max turn count has been exceeded and the default value is selected as the value.",
+      "examples": [
+        "I didn't understand your responses, so I will just use the default value of 10.  Let me know if you want to change it."
+      ]
+    },
+    "maxTurnCount": {
+      "type": "integer",
+      "title": "Max Turn Count",
+      "description": "The max retry count for this prompt.",
+      "default": 2147483647,
+      "examples": [
+        3
+      ]
+    },
+    "validations": {
+      "type": "array",
+      "items": {
+        "$role": "expression"
+      },
+      "title": "Validation Expressions",
+      "description": "Expressions to validate an input."
+    },
+    "property": {
+      "$role": "expression",
+      "title": "Property",
+      "description": "Property that this input dialog is bound to",
+      "examples": [
+        "$birthday"
+      ]
+    },
+    "value": {
+      "$role": "expression",
+      "title": "Value",
+      "description": "Expression to use as the potential value. Example: @number as the value to use for a prompt bound to $age.",
+      "examples": [
+        "@number"
+      ]
+    },
+    "defaultValue": {
+      "$role": "expression",
+      "title": "Default Value",
+      "description": "Value to return if the value expression can't be evaluated."
+    },
+    "alwaysPrompt": {
+      "type": "boolean",
+      "title": "Always Prompt",
+      "description": "If set to true this will always prompt the user regardless if you already have the value or not.",
+      "default": false,
+      "examples": [
+        false
+      ]
+    },
+    "allowInterruptions": {
+      "type": "string",
+      "enum": [
+        "always",
+        "never",
+        "notRecognized"
+      ],
+      "title": "Allow Interruptions",
+      "description": "Always will always consult parent dialogs first, never will not consult parent dialogs, notRecognized will consult parent only when it's not recognized",
+      "default": "notRecognized",
+      "examples": [
+        "notRecognized"
+      ]
     }
+  }
 }

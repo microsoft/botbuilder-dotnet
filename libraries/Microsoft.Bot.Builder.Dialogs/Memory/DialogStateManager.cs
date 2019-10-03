@@ -39,6 +39,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
             new HashPathResolver(),
             new AtAtPathResolver(),
             new AtPathResolver(),
+            new PercentPathResolver(),
         };
 
         /// <summary>
@@ -52,8 +53,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
              new MemoryScope(ScopePath.USER),
              new MemoryScope(ScopePath.CONVERSATION),
              new MemoryScope(ScopePath.TURN),
-             new MemoryScope(ScopePath.SETTINGS),
+             new MemoryScope(ScopePath.SETTINGS, isReadOnly: true),
              new DialogMemoryScope(),
+             new ClassMemoryScope(),
              new ThisMemoryScope()
         };
 
@@ -83,39 +85,35 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         }
 
         /// <summary>
-        /// ResolveMemoryScope will find the MemoryScope for root part of path and adjust path to be subpath
+        /// ResolveMemoryScope will find the MemoryScope for and return the remaining path.
         /// </summary>
         /// <param name="path">Path to resolve to memory scope.</param>
         /// <param name="remainingPath">Path remaining after resolving to memory scope.</param>
         /// <returns>memoryscope</returns>
         public virtual MemoryScope ResolveMemoryScope(string path, out string remainingPath)
         {
-            var scope = path;
-            var index = path.IndexOf(".");
-            if (index > 0)
+            path = path.Trim();
+            if (path.StartsWith("{") && path.EndsWith("}"))
             {
-                scope = path.Substring(0, index);
+                // TODO: Eventually this should use the expression machinery
+                path = GetValue<string>(path.Substring(1, path.Length - 2));
+            }
+
+            var scope = path;
+            var dot = path.IndexOf(".");
+            if (dot > 0)
+            {
+                scope = path.Substring(0, dot);
                 var memoryScope = DialogStateManager.GetMemoryScope(scope);
                 if (memoryScope != null)
                 {
-                    remainingPath = path.Substring(index + 1);
+                    remainingPath = path.Substring(dot + 1);
                     return memoryScope;
                 }
             }
 
-            // could be User[foo] path 
-            index = path.IndexOf("[");
-            if (index > 0)
-            {
-                scope = path.Substring(0, index);
-                remainingPath = path.Substring(index);
-                return DialogStateManager.GetMemoryScope(scope) ?? throw new ArgumentOutOfRangeException(GetBadScopeMessage(remainingPath));
-            }
-            else
-            {
-                remainingPath = string.Empty;
-                return DialogStateManager.GetMemoryScope(scope) ?? throw new ArgumentOutOfRangeException(GetBadScopeMessage(remainingPath));
-            }
+            remainingPath = string.Empty;
+            return DialogStateManager.GetMemoryScope(scope) ?? throw new ArgumentOutOfRangeException(GetBadScopeMessage(path));
         }
 
         /// <summary>

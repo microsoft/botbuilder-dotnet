@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var dc = new DialogContext(new DialogSet(), new TurnContext(new TestAdapter(), new Schema.Activity()), (DialogState)new DialogState());
             var dsm = new DialogStateManager(dc);
 
-            foreach (var memoryScope in DialogStateManager.MemoryScopes.Where(ms => !(ms is ThisMemoryScope || ms is DialogMemoryScope)))
+            foreach (var memoryScope in DialogStateManager.MemoryScopes.Where(ms => !(ms is ThisMemoryScope || ms is DialogMemoryScope || ms is ClassMemoryScope)))
             {
                 var memory = memoryScope.GetMemory(dc);
                 Assert.IsNotNull(memory, "should get memory without any set");
@@ -34,6 +34,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 ObjectPath.SetPathValue(memory, "test", 25);
                 memory = memoryScope.GetMemory(dc);
                 Assert.AreEqual(25, ObjectPath.GetPathValue<int>(memory, "test"), "Should roundtrip memory2");
+                memory = memoryScope.GetMemory(dc);
+                ObjectPath.SetPathValue(memory, "source", "destination");
+                ObjectPath.SetPathValue(memory, "{source}", 24);
+                Assert.AreEqual(24, ObjectPath.GetPathValue<int>(memory, "{source}"), "Roundtrip computed path");
+                ObjectPath.RemovePathValue(memory, "{source}");
+                Assert.AreEqual(false, ObjectPath.TryGetPathValue<int>(memory, "{source}", out var _), "Removed computed path");
+                ObjectPath.RemovePathValue(memory, "source");
+                Assert.AreEqual(false, ObjectPath.TryGetPathValue<int>(memory, "{source}", out var _), "No computed path");
             }
         }
 
@@ -82,7 +90,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
     {
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            foreach (var scope in DialogStateManager.MemoryScopes.Where(ms => !(ms is DialogMemoryScope)).Select(ms => ms.Name))
+            foreach (var scope in DialogStateManager.MemoryScopes.Where(ms => !(ms is DialogMemoryScope) && ms.IsReadOnly == false).Select(ms => ms.Name))
             {
                 var path = $"{scope}.test";
                 Assert.IsNull(dc.State.GetValue<string>(path), $"{path} should be null");
