@@ -3,6 +3,9 @@
 
 namespace Microsoft.Bot.Builder.Adapters.Facebook
 {
+    /// <summary>
+    /// Represents the messaging structure.
+    /// </summary>
     public class FacebookMessage
     {
         public FacebookMessage(string recipientId, Message message, string messagingtype, string tag = null, string notificationType = null, string personalId = null, string senderAction = null, string senderId = null)
@@ -64,5 +67,9 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         /// </summary>
         /// <value>The sender action.</value>
         public string SenderAction { get; set; }
+
+        public int TimeStamp { get; set; }
+
+        public bool Standby { get; set; }
     }
 }

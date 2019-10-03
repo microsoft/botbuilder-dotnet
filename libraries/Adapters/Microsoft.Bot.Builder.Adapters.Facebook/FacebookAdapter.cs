@@ -9,9 +9,11 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Bot.Builder.Adapters.Facebook.FacebookEvents;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Adapters.Facebook
 {
@@ -157,20 +159,34 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
                 throw new Exception("WARNING: Webhook received message with invalid signature. Potential malicious behavior!");
             }
 
-            var facebookEvent = request.Body;
+            var facebookEvent = JsonConvert.DeserializeObject<FacebookResponseEvent>(stringifyBody);
 
-            if ((facebookEvent as dynamic).entry)
+            foreach (var entry in facebookEvent.Entry)
             {
-                for (var i = 0; i < (facebookEvent as dynamic).entry.Lenght; i++)
-                {
-                    FacebookMessage[] payload = null;
-                    var entry = (facebookEvent as dynamic).entry;
+                List<FacebookMessage> payload = new List<FacebookMessage>();
 
-                    // handle normal incoming stuff
-                    payload = entry.changes != null ? (FacebookMessage[])entry.changes : (FacebookMessage[])entry.messaging;
+                // handle normal incoming stuff
+                payload = entry.Changes != null ? entry.Changes : entry.Messaging;
+
+                foreach (var message in payload)
+                {
+                    var activity = FacebookHelper.ProcessSingleMessage(message);
+
+                    using (var context = new TurnContext(this, activity))
+                    {
+                        await RunPipelineAsync(context, bot.OnTurnAsync, cancellationToken).ConfigureAwait(false);
+                    }
+                }
+
+                // handle standby messages (this bot is not the active receiver)
+                if (entry.Standby != null)
+                {
+                    payload = entry.Standby;
 
                     foreach (var message in payload)
                     {
+                        // indicate that this message was received in standby mode rather than normal mode.
+                        message.Standby = true;
                         var activity = FacebookHelper.ProcessSingleMessage(message);
 
                         using (var context = new TurnContext(this, activity))
@@ -178,28 +194,10 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
                             await RunPipelineAsync(context, bot.OnTurnAsync, cancellationToken).ConfigureAwait(false);
                         }
                     }
-
-                    // handle standby messages (this bot is not the active receiver)
-                    if (entry.standby)
-                    {
-                        payload = entry.standby;
-
-                        foreach (var message in payload)
-                        {
-                            // indicate that this message was received in standby mode rather than normal mode.
-                            (message as dynamic).standby = true;
-                            var activity = FacebookHelper.ProcessSingleMessage(message);
-
-                            using (var context = new TurnContext(this, activity))
-                            {
-                                await RunPipelineAsync(context, bot.OnTurnAsync, cancellationToken).ConfigureAwait(false);
-                            }
-                        }
-                    }
                 }
-
-                await FacebookHelper.WriteAsync(response, HttpStatusCode.OK, string.Empty, Encoding.UTF8, cancellationToken).ConfigureAwait(false);
             }
+
+            await FacebookHelper.WriteAsync(response, HttpStatusCode.OK, string.Empty, Encoding.UTF8, cancellationToken).ConfigureAwait(false);
         }
     }
 }

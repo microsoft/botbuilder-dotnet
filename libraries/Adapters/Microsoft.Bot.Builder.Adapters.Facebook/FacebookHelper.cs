@@ -32,24 +32,12 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
             // map these fields to their appropriate place
             if (activity.ChannelData != null)
             {
-                facebookMessage.MessagingType = (activity.ChannelData as dynamic).messaging_type ?? null;
-
-                facebookMessage.Tag = (activity.ChannelData as dynamic).tag ?? null;
-
-                facebookMessage.Message.StickerId = (activity.ChannelData as dynamic).sticker_id ?? null;
-
-                facebookMessage.Message.Attachment = (activity.ChannelData as dynamic).attachment ?? null;
-
-                facebookMessage.PersonaId = (activity.ChannelData as dynamic).persona_id ?? null;
-
-                facebookMessage.NotificationType = (activity.ChannelData as dynamic).notification_type ?? null;
-
-                facebookMessage.SenderAction = (activity.ChannelData as dynamic).sender_action ?? null;
+                facebookMessage = activity.GetChannelData<FacebookMessage>();
 
                 // make sure the quick reply has a type
-                if ((activity.ChannelData as dynamic).quick_replies != null)
+                if (activity.GetChannelData<FacebookMessage>().Message.QuickReplies != null)
                 {
-                    facebookMessage.Message.QuickReplies = (activity.ChannelData as dynamic).quick_replies; // TODO: Add the content_type depending of what shape quick_replies has
+                    facebookMessage.Message.QuickReplies = activity.GetChannelData<FacebookMessage>().Message.QuickReplies; // TODO: Add the content_type depending of what shape quick_replies has
                 }
             }
 

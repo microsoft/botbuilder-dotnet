@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
+using Microsoft.Bot.Builder.Adapters.Facebook.FacebookEvents;
 
 namespace Microsoft.Bot.Builder.Adapters.Facebook
 {
@@ -22,8 +23,14 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         /// <summary>
         /// Gets or sets the attachment.
         /// </summary>
-        /// <value>The attachment.</value>
-        public object Attachment { get; set; }
+        /// <value>Attachment.</value>
+        public FacebookAttachment Attachment { get; set; }
+
+        /// <summary>
+        /// Gets or sets the metadata.
+        /// </summary>
+        /// <value>Custom string that is delivered as a message echo. 1000 character limit.</value>
+        public string Metadata { get; set; }
 
         /// <summary>
         /// Gets or sets the quick replies.
