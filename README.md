@@ -84,16 +84,6 @@ ngrok http -host-header=rewrite 3978
 ### Back to Teams
 - Back in Teams click ```Test and distribute``` on the left hand side under ```Finish``` section
 - Click the ```Install``` button
-- Click the ```Add``` button
-- In the compose message area at the bottom of the screen send the message ```hi``` 
-- You should receive a response from the bot
-
-### Installing the bot in Teams
-- Search for App Studio
-- Go to the Manifest editor 
-- Click the ```EchoBot``` card
-- Click ```Test and distribute```
-- Click ```Install```
 
 | Install in a team | Install in a group chat | Install in personal chat|
 |:-------------------- | :------------------------- | :-----------------------|
