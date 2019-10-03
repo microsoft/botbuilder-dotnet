@@ -7,6 +7,24 @@
             "$type": "Microsoft.SetProperty",
             "property": "$Cheese",
             "value": "@Cheese"
+        },
+        {
+            "$type": "Microsoft.SetProperty",
+            "property": "$PropertyOnhold",
+            "value": "'$Cheese'"
+        },
+        {
+            "$type": "Microsoft.IfCondition",
+            "condition": "dialog.expectedProperties.First != 'Cheese'",
+            "actions": [
+                {
+                    "$type": "Microsoft.Ask",
+                    "activity": "[unexpectedPropertySet('Cheese', @Cheese, turn)]",
+                    "expectedProperties": [
+                        "SetPropertyConfirmation"
+                    ]
+                }
+            ]
         }
     ]
 }

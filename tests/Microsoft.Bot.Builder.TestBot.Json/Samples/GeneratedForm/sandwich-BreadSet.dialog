@@ -7,6 +7,24 @@
             "$type": "Microsoft.SetProperty",
             "property": "$Bread",
             "value": "@Bread"
+        },
+        {
+            "$type": "Microsoft.SetProperty",
+            "property": "$PropertyOnhold",
+            "value": "'$Bread'"
+        },
+        {
+            "$type": "Microsoft.IfCondition",
+            "condition": "dialog.expectedProperties.First != 'Bread'",
+            "actions": [
+                {
+                    "$type": "Microsoft.Ask",
+                    "activity": "[unexpectedPropertySet('Bread', @Bread, turn)]",
+                    "expectedProperties": [
+                        "SetPropertyConfirmation"
+                    ]
+                }
+            ]
         }
     ]
 }

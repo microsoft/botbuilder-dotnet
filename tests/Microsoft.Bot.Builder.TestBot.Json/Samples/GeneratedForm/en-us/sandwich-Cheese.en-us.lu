@@ -9,27 +9,11 @@ $Cheese:swiss=
 $Cheese:none=
 
 # None
-- american
-- yes
-- no
-- cheddar
-- yes
-- no
-- feta
-- yes
-- no
-- gouda
-- yes
-- no
-- pepper jack
-- yes
-- no
-- provolone
-- yes
-- no
-- swiss
-- yes
-- no
-- none
-- yes
-- no
+- american
+- cheddar
+- feta
+- gouda
+- pepper jack
+- provolone
+- swiss
+- none

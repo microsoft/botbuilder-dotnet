@@ -39,3 +39,6 @@
 
 # cancel
 - Do you want to end the conversation? (yes/no)
+
+# unexpectedPropertySet(property, entity, turn)
+- Do you want to set {toLower(property)} as {toLower(entity)}? (yes/no)

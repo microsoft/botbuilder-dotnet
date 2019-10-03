@@ -3,12 +3,6 @@ $Bread:multigrain=
 $Bread:rye=
 $Bread:white=$Bread:wheatgrain=- wheat$Bread:honeyWheat=- wheat
 # None
-- multigrain
-- yes
-- no
-- rye
-- yes
-- no
-- white
-- yes
-- no
+- multigrain
+- rye
+- white
