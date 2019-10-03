@@ -10,7 +10,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form.Events
         /// <summary>
         /// Gets unknown entities.
         /// </summary>
-        public List<EntityInfo> Unknown { get; } = new List<EntityInfo>();
+        public List<EntityInfo> UnknownEntity { get; } = new List<EntityInfo>();
 
         /// <summary>
         /// Gets mappings where a property is ready to be set to a specific entity.
@@ -55,12 +55,33 @@ namespace Microsoft.Bot.Builder.Dialogs.Form.Events
 
         public void Merge(EventQueues queues)
         {
-            Unknown.AddRange(queues.Unknown);
+            UnknownEntity.AddRange(queues.UnknownEntity);
             SetProperty.AddRange(queues.SetProperty);
             ClarifyEntity.AddRange(queues.ClarifyEntity);
             ChooseEntity.AddRange(queues.ChooseEntity);
             ChooseProperty.AddRange(queues.ChooseProperty);
             ClearProperty.AddRange(queues.ClearProperty);
+        }
+
+        public bool DequeueEvent(string eventName)
+        {
+            var changed = true;
+            switch (eventName)
+            {
+                case FormEvents.ChooseEntity: ChooseEntity.Dequeue(); break;
+                case FormEvents.ChooseMapping: ChooseMapping.Dequeue(); break;
+                case FormEvents.ChooseProperty: ChooseProperty.Dequeue(); break;
+                case FormEvents.ClarifyEntity: ClarifyEntity.Dequeue(); break;
+                case FormEvents.ClearProperty: ClearProperty.Dequeue(); break;
+                case FormEvents.SetProperty: SetProperty.Dequeue(); break;
+                case FormEvents.UnknownEntity: UnknownEntity.Dequeue(); break;
+                case FormEvents.Ask:
+                default:
+                    changed = false;
+                    break;
+            }
+
+            return changed;
         }
     }
 }
