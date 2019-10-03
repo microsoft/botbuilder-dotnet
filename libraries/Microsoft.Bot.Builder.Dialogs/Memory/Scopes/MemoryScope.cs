@@ -16,7 +16,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
     {
         private const string MEMORYSCOPESKEY = "MemoryScopes";
 
-        public MemoryScope(string name, bool isReadOnly=false)
+        public MemoryScope(string name, bool isReadOnly = false)
         {
             this.IsReadOnly = isReadOnly;
             this.Name = name;

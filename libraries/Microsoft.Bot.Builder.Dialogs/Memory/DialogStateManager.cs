@@ -84,11 +84,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         }
 
         /// <summary>
-        /// ResolveMemoryScope will find the MemoryScope for root part of path and adjust path to be subpath
+        /// ResolveMemoryScope will find the MemoryScope for and return the remaining path.
         /// </summary>
-        /// <param name="path">incoming path will be resolved to scope and adjusted to subpath</param>
+        /// <param name="path">Incoming path to resolve to scope and remaining path.</param>
+        /// <param name="remainingPath">Remaining subpath in scope.</param>
         /// <returns>memoryscope</returns>
-        public virtual MemoryScope ResolveMemoryScope(ref string path)
+        public virtual MemoryScope ResolveMemoryScope(string path, out string remainingPath)
         {
             path = path.Trim();
             if (path.StartsWith("{") && path.EndsWith("}"))
@@ -99,26 +100,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
 
             var scope = path;
             var dot = path.IndexOf(".");
-            var bracket = path.IndexOf("[");
-            if (dot > 0 && (bracket < 0 || dot < bracket))
+            if (dot > 0)
             {
                 scope = path.Substring(0, dot);
                 var memoryScope = DialogStateManager.GetMemoryScope(scope);
                 if (memoryScope != null)
                 {
-                    path = path.Substring(dot + 1);
+                    remainingPath = path.Substring(dot + 1);
                     return memoryScope;
                 }
             }
 
-            if (bracket > 0 && (dot < 0 || bracket < dot))
-            {
-                scope = path.Substring(0, bracket);
-                path = path.Substring(bracket);
-                return DialogStateManager.GetMemoryScope(scope) ?? throw new ArgumentOutOfRangeException(GetBadScopeMessage(path));
-            }
-
-            path = string.Empty;
+            remainingPath = string.Empty;
             return DialogStateManager.GetMemoryScope(scope) ?? throw new ArgumentOutOfRangeException(GetBadScopeMessage(path));
         }
 
@@ -148,9 +141,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         public bool TryGetValue<T>(string path, out T value)
         {
             path = this.TransformPath(path ?? throw new ArgumentNullException(nameof(path)));
-            var memoryScope = this.ResolveMemoryScope(ref path);
+            var memoryScope = this.ResolveMemoryScope(path, out var remainingPath);
             var memory = memoryScope.GetMemory(this.dialogContext);
-            return ObjectPath.TryGetPathValue<T>(memory, path, out value);
+            return ObjectPath.TryGetPathValue<T>(memory, remainingPath, out value);
         }
 
         /// <summary>
@@ -216,7 +209,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
             }
 
             path = this.TransformPath(path ?? throw new ArgumentNullException(nameof(path)));
-            var memoryScope = this.ResolveMemoryScope(ref path);
+            var memoryScope = this.ResolveMemoryScope(path, out var remainingPath);
             if (path == string.Empty)
             {
                 memoryScope.SetMemory(this.dialogContext, value);
@@ -224,7 +217,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
             else
             {
                 var memory = memoryScope.GetMemory(this.dialogContext);
-                ObjectPath.SetPathValue(memory, path, value);
+                ObjectPath.SetPathValue(memory, remainingPath, value);
             }
         }
 
@@ -235,9 +228,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         public void RemoveValue(string path)
         {
             path = this.TransformPath(path ?? throw new ArgumentNullException(nameof(path)));
-            var memoryScope = this.ResolveMemoryScope(ref path);
+            var memoryScope = this.ResolveMemoryScope(path, out var remainingPath);
             var memory = memoryScope.GetMemory(this.dialogContext);
-            ObjectPath.RemovePathValue(memory, path);
+            ObjectPath.RemovePathValue(memory, remainingPath);
         }
 
         /// <summary>
