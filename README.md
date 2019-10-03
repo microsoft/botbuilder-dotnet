@@ -55,7 +55,7 @@ This bot has been created using [Bot Framework](https://dev.botframework.com), i
     git clone https://github.com/Microsoft/botbuilder-samples.git
     ```
 
-- In Visual Studio navigate to the 52.teams-echo-bot folder and open the ```appsettings.json``` file
+- In Visual Studio navigate to the ```52.teams-echo-bot``` folder and open the ```appsettings.json``` file
 - Put the  you saved earlier from Teams in the ```MicrosoftAppId``` field
 - Put the password into the ```MicrosoftAppPassword``` field
 - Save
