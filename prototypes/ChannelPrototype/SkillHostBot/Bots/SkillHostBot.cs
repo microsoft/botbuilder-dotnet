@@ -81,13 +81,14 @@ namespace ChannelPrototype.Bots
                 switch (skillArgs.Method)
                 {
                     /// <summary>
-                    /// Send activity(activity)
+                    /// Send activity(conversationId, activity)
                     /// </summary>
                     /// <summary>
-                    /// UpdateActivity(activity)
+                    /// UpdateActivity(conversationId, activity)
                     /// </summary>
                     case SkillMethod.SendActivity:
-                        var activity = (Activity)skillArgs.Args[0];
+                        var activity = (Activity)skillArgs.Args[1];
+
                         switch (activity.Type)
                         {
                             case ActivityTypes.Trace:
@@ -95,7 +96,7 @@ namespace ChannelPrototype.Bots
                             case ActivityTypes.Typing:
                             case ActivityTypes.Message:
                             case ActivityTypes.MessageReaction:
-                                skillArgs.Result = await turnContext.SendActivityAsync((Activity)skillArgs.Args[0], cancellationToken);
+                                skillArgs.Result = await turnContext.SendActivityAsync(activity, cancellationToken);
                                 break;
 
                             case ActivityTypes.EndOfConversation:
@@ -110,7 +111,9 @@ namespace ChannelPrototype.Bots
                                     });
 
                                     // map internal activity to incoming context so that UserState is correct for processing the EndOfConversation
-                                    activity.ApplyConversationReference(turnContext.Activity.GetConversationReference(), isIncoming: true);
+                                    var from = activity.From;
+                                    activity.From = activity.Recipient;
+                                    activity.Recipient = from;
 
                                     await this.botAdapter.ProcessActivityAsync(claimsIdentity, activity, this.OnTurnAsync, cancellationToken);
                                     skillArgs.Result = new ResourceResponse(id: Guid.NewGuid().ToString("N"));
@@ -126,7 +129,7 @@ namespace ChannelPrototype.Bots
                         break;
 
                     case SkillMethod.UpdateActivity:
-                        skillArgs.Result = await turnContext.SendActivityAsync((Activity)skillArgs.Args[0], cancellationToken);
+                        skillArgs.Result = await turnContext.SendActivityAsync((Activity)skillArgs.Args[1], cancellationToken);
                         break;
 
                     /// <summary>
