@@ -18,7 +18,11 @@ This bot has been created using [Bot Framework](https://dev.botframework.com), i
 
 ### Ngrok
 - Download and install [ngrok](https://ngrok.com/download)
-- In terminal navigate to where ngrok is installed and run: `ngrok http -host-header=rewrite 3978`
+- In terminal navigate to where ngrok is installed and run: 
+
+```bash
+ngrok http -host-header=rewrite 3978
+```
 - Copy/paste the https web address into notepad as you will need it later
 
 ### Microsoft Teams
