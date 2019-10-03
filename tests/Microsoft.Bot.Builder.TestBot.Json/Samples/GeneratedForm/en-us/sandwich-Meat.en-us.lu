@@ -9,27 +9,11 @@ $Meat:turkey=
 $Meat:none=
 
 # None
-- bacon
-- yes
-- no
-- chicken
-- yes
-- no
-- ham
-- yes
-- no
-- pulled pork
-- yes
-- no
-- roast beef
-- yes
-- no
-- salami
-- yes
-- no
-- turkey
-- yes
-- no
-- none
-- yes
-- no
+- bacon
+- chicken
+- ham
+- pulled pork
+- roast beef
+- salami
+- turkey
+- none

@@ -26,7 +26,13 @@
 
 > TODO: This is not correct--the possible values should be picked up from the event structure
 # clarifyEnum(property, turn)
-- Please choose a value for {toLower(property)} from \[{join(turn.schema.properties[property].enum, ',')}\]
+- Please choose a value for {toLower(property)} from \[{join(foreach(turn.dialogEvent.value.entity.value, val, bread(val)), ',')}\]
+
+# bread(val)
+- IF: {val == 'honeyWheat'}
+- honey wheat
+- ELSE:
+- wheat grain
 
 > TODO: This is not correct--the possible values should be picked up from the event structure
 # chooseSlot(entity, turn)
@@ -34,3 +40,6 @@
 
 # cancel
 - Do you want to end the conversation? (yes/no)
+
+# unexpectedPropertySet(property, entity, turn)
+- Do you want to set {toLower(property)} as {toLower(entity)}? (yes/no)

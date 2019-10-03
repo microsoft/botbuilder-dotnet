@@ -1,19 +1,20 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/chrimc/map/schemas/sdk.schema",
     "$type": "Microsoft.OnSetProperty",
-    "property": "CancelConfirmation",
+    "property": "SetPropertyConfirmation",
     "actions": [
         {
             "$type": "Microsoft.SetProperty",
-            "property": "$CancelConfirmation",
+            "property": "$SetPropertyConfirmation",
             "value": "@Confirmation"
         },
         {
             "$type": "Microsoft.IfCondition",
-            "condition":"$CancelConfirmation == 'yes'",
+            "condition":"$SetPropertyConfirmation == 'no'",
             "actions": [
                 {
-                    "$type": "Microsoft.EndDialog"
+                    "$type": "Microsoft.DeleteProperty",
+                    "property": "$Meat"
                 }
             ]
         }
