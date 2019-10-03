@@ -27,7 +27,7 @@ This bot has been created using [Bot Framework](https://dev.botframework.com), i
 - Click the ```Create a new app``` button on the left hand side.
 - Under the ```Details``` section fill in the following fields 
   - In the Short name field enter ```EchoBot```
-  - Click ```Generate an App ID``` (copy/paste the App ID into notepad as you will need it later)
+  - Click the ```Generate``` button under App ID (copy/paste the App ID into notepad as you will need it later)
   - Package Name
   - Version 
   - Short description
