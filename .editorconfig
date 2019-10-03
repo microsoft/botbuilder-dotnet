@@ -159,3 +159,9 @@ dotnet_diagnostic.SA1101.severity = none
 
 # IDE0055: Fix formatting
 dotnet_diagnostic.IDE0055.severity = none
+
+# SA1028: Code should not contain trailing whitespace
+dotnet_diagnostic.SA1028.severity = none
+
+# UseAsyncSuffix: Use Async suffix
+dotnet_diagnostic.UseAsyncSuffix.severity = none
