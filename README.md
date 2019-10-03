@@ -93,7 +93,7 @@ ngrok http -host-header=rewrite 3978
 
 |Supported strings in personal chat | Supported strings in group chat | supported strings in team chat|
 |:----------------------------- | :-------------------------------|:----------------------------------|
-| None | ```show members``` |  ```show members``` <br> ```show channels``` <br> ```show details``` |
+| N/A | ```show members``` |  ```show members``` <br> ```show channels``` <br> ```show details``` |
 
 ### Place holder for debugging
 - Trying to do teams calls within a group chat or 1:1 chat
