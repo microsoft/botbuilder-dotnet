@@ -5,6 +5,7 @@
     <Version>4.6.0-local</Version>
     <Description>LUIS V3 endpoint Middleware and Recognizers for the Microsoft Bot Builder SDK</Description>
     <Configurations>Debug;Release</Configurations>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>

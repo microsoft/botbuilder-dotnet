@@ -19,6 +19,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackageId>Microsoft.Bot.Configuration</PackageId>
     <Description>Classes for loading and saving bot configuration files</Description>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
