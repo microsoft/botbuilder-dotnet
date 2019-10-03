@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 //
 // Generated with Bot Builder V4 SDK Template for Visual Studio EchoBot v4.5.0
@@ -27,11 +27,11 @@ namespace MySkill.Bots
                 // ChannelFailed = "channelFailed";
                 var endOfConversation = Activity.CreateEndOfConversationActivity();
                 endOfConversation.Code = EndOfConversationCodes.CompletedSuccessfully;
-                await turnContext.SendActivityAsync(endOfConversation, cancellationToken);
+                var response =await turnContext.SendActivityAsync(endOfConversation, cancellationToken);
             }
             else
             {
-                await turnContext.SendActivityAsync(MessageFactory.Text($"Echo : {turnContext.Activity.Text}"), cancellationToken);
+                var response = await turnContext.SendActivityAsync(MessageFactory.Text($"Echo : {turnContext.Activity.Text}"), cancellationToken);
             }
         }
     }

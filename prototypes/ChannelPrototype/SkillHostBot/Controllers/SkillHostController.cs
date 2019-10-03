@@ -1,69 +1,43 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 //
 // Generated with Bot Builder V4 SDK Template for Visual Studio EchoBot v4.5.0
 
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Reflection.Metadata.Ecma335;
-using System.Security.Claims;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.Integration.AspNet.Core;
-using Microsoft.Bot.Connector;
-using Microsoft.Bot.Schema;
-using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
-
 namespace ChannelPrototype.Controllers
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Net;
+    using System.Security.Claims;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Bot.Builder;
+    using Microsoft.Bot.Builder.Integration.AspNet.Core;
+    using Microsoft.Bot.Connector.Authentication;
+    using Microsoft.Bot.Schema;
+    using Microsoft.Extensions.Configuration;
+    using Newtonsoft.Json;
+
     [ApiController]
     [Route("/v3/conversations")]
     public class SkillHostController : ControllerBase
     {
         private BotFrameworkAdapter adapter;
-        private IStorage storage;
         private IConfiguration configuration;
         private IBot bot;
 
-        public SkillHostController(BotFrameworkHttpAdapter adapter, IStorage storage, IConfiguration configuration, IBot bot)
+        public SkillHostController(BotFrameworkHttpAdapter adapter, IConfiguration configuration, IBot bot)
         {
             // adapter to use for calling back to channel
             this.adapter = adapter;
-            this.storage = storage;
             this.bot = bot;
             this.configuration = configuration;
-            this.AppId = configuration.GetValue<string>("MicrosoftAppId");
+            this.BotAppId = configuration.GetValue<string>("MicrosoftAppId");
         }
 
-        public string AppId { get; set; }
-
-        /// <summary>
-        /// Supported skills, SkillId => info necessary to start conversation with skill
-        /// </summary>
-        public static ConcurrentDictionary<string, SkillRegistration> Skills => new ConcurrentDictionary<string, SkillRegistration>();
-
-        /// <summary>
-        /// GET original conversationReference 
-        /// </summary>
-        /// <param name="skillConversationId"></param>
-        /// <returns></returns>
-        public async Task<ConversationReference> GetOriginalConversationReference(string skillConversationId)
-        {
-            string key = $"skill/{skillConversationId}";
-            var result = await this.storage.ReadAsync(new string[] { key });
-            if (result != null && result.ContainsKey(key))
-            {
-                return JsonConvert.DeserializeObject<ConversationReference>(JsonConvert.SerializeObject(result[key]));
-            }
-            return null;
-        }
+        public string BotAppId { get; set; }
 
         /// <summary>
         /// CreateConversation
@@ -85,40 +59,7 @@ namespace ChannelPrototype.Controllers
         [Route("/v3/conversations/{conversationId}/activities")]
         public virtual async Task<ResourceResponse> SendToConversation(string conversationId, [FromBody]Activity activity)
         {
-            ResourceResponse resourceResponse = null;
-
-            var originalConversationReference = await GetOriginalConversationReference(conversationId);
-            if (originalConversationReference == null)
-            {
-                Response.StatusCode = (int)HttpStatusCode.NotFound;
-                return null;
-            }
-
-            if (activity.Type == ActivityTypes.EndOfConversation)
-            {
-                return await SendToAdapterBot(activity);
-            }
-
-            await adapter.ContinueConversationAsync(this.AppId, originalConversationReference, async (context, cancellationToken) =>
-            {
-                var activityToSend = JsonConvert.DeserializeObject<Activity>(JsonConvert.SerializeObject(activity));
-                activityToSend.ApplyConversationReference(originalConversationReference);
-                resourceResponse = await context.SendActivityAsync(activityToSend, cancellationToken);
-            }, CancellationToken.None);
-
-            return resourceResponse;
-        }
-
-        private async Task<ResourceResponse> SendToAdapterBot(Activity activity)
-        {
-            // end of conversation goes up to the bot
-
-            // TEMPORARY claim
-            var claimsIdentity = new ClaimsIdentity(new List<Claim>(), "anonymous");
-
-            // send up to the bot
-            await adapter.ProcessActivityAsync(claimsIdentity, activity, bot.OnTurnAsync, CancellationToken.None);
-            return new ResourceResponse(id: Guid.NewGuid().ToString("N"));
+            return await ProcessActivityInBot(activity);
         }
 
         /// <summary>
@@ -130,7 +71,8 @@ namespace ChannelPrototype.Controllers
         [Route("/v3/conversations/{conversationId}/activities/history")]
         public virtual async Task<ResourceResponse> SendConversationHistory(string conversationId, [FromBody]Transcript history)
         {
-            throw new NotImplementedException();
+            Response.StatusCode = (int)HttpStatusCode.NotImplemented;
+            return null;
         }
 
         /// <summary>
@@ -143,29 +85,7 @@ namespace ChannelPrototype.Controllers
         [Route("/v3/conversations/{conversationId}/activities/{activityId}")]
         public virtual async Task<ResourceResponse> ReplyToActivity(string conversationId, string activityId, [FromBody]Activity activity)
         {
-            ResourceResponse resourceResponse = null;
-
-            var originalConversationReference = await GetOriginalConversationReference(conversationId);
-            if (originalConversationReference == null)
-            {
-                Response.StatusCode = (int)HttpStatusCode.NotFound;
-                return null;
-            }
-
-            if (activity.Type == ActivityTypes.EndOfConversation)
-            {
-                return await SendToAdapterBot(activity);
-            }
-
-            await adapter.ContinueConversationAsync(this.AppId, originalConversationReference, async (context, cancellationToken) =>
-            {
-                var activityToSend = JsonConvert.DeserializeObject<Activity>(JsonConvert.SerializeObject(activity));
-                activityToSend.ApplyConversationReference(originalConversationReference, isIncoming: false);
-                activityToSend.ReplyToId = activityId;
-                resourceResponse = await context.SendActivityAsync(activityToSend, cancellationToken);
-            }, CancellationToken.None);
-
-            return resourceResponse;
+            return await ProcessActivityInBot(activity);
         }
 
         /// <summary>
@@ -178,24 +98,10 @@ namespace ChannelPrototype.Controllers
         [Route("/v3/conversations/{conversationId}/activities/{activityId}")]
         public virtual async Task<ResourceResponse> UpdateActivity(string conversationId, string activityId, [FromBody]Activity activity)
         {
-            ResourceResponse resourceResponse = null;
-
-            var originalConversationReference = await GetOriginalConversationReference(conversationId);
-            if (originalConversationReference == null)
-            {
-                Response.StatusCode = (int)HttpStatusCode.NotFound;
-                return null;
-            }
-
-            await adapter.ContinueConversationAsync(this.AppId, originalConversationReference, async (context, cancellationToken) =>
-            {
-                var activityToSend = JsonConvert.DeserializeObject<Activity>(JsonConvert.SerializeObject(activity));
-                activityToSend.ApplyConversationReference(originalConversationReference, isIncoming: false);
-                activityToSend.Id = activityId;
-
-                resourceResponse = await context.UpdateActivityAsync(activityToSend, cancellationToken);
-            }, CancellationToken.None);
-            return resourceResponse;
+            var updateActivity = new Activity(type: ActivityTypes.MessageDelete, id: activityId, conversation: new ConversationAccount(id: conversationId));
+            updateActivity.Value = activity;
+            updateActivity.ApplyConversationReference(activity.GetConversationReference());
+            return await ProcessActivityInBot(activity);
         }
 
         /// <summary>
@@ -207,17 +113,8 @@ namespace ChannelPrototype.Controllers
         [Route("/v3/conversations/{conversationId}/activities/{activityId}")]
         public virtual async Task DeleteActivity(string conversationId, string activityId)
         {
-            var originalConversationReference = await GetOriginalConversationReference(conversationId);
-            if (originalConversationReference == null)
-            {
-                Response.StatusCode = (int)HttpStatusCode.NotFound;
-                return;
-            }
-
-            await adapter.ContinueConversationAsync(this.AppId, originalConversationReference, async (context, cancellationToken) =>
-            {
-                await context.DeleteActivityAsync(activityId);
-            }, CancellationToken.None);
+            var activity = new Activity(type: ActivityTypes.MessageDelete, id: activityId, conversation: new ConversationAccount(id: conversationId));
+            await ProcessActivityInBot(activity);
         }
 
         /// <summary>
@@ -228,9 +125,9 @@ namespace ChannelPrototype.Controllers
         [Route("/v3/conversations")]
         public virtual async Task<ConversationsResult> GetConversations(string continuationToken = null)
         {
-            throw new NotImplementedException();
+            Response.StatusCode = (int)HttpStatusCode.NotImplemented;
+            return null;
         }
-
 
         /// <summary>
         /// GetConversationMembers
@@ -240,21 +137,8 @@ namespace ChannelPrototype.Controllers
         [Route("/v3/conversations/{conversationId}/members")]
         public virtual async Task<ChannelAccount[]> GetConversationMembers(string conversationId)
         {
-            var originalConversationReference = await GetOriginalConversationReference(conversationId);
-            if (originalConversationReference == null)
-            {
-                Response.StatusCode = (int)HttpStatusCode.NotFound;
-                return null;
-            }
-
-            ChannelAccount[] accounts = null;
-            await adapter.ContinueConversationAsync(this.AppId, originalConversationReference, async (context, cancellationToken) =>
-            {
-                var result = await adapter.GetConversationMembersAsync(context, cancellationToken);
-                accounts = result.ToArray();
-            }, CancellationToken.None);
-
-            return accounts;
+            Response.StatusCode = (int)HttpStatusCode.NotImplemented;
+            return null;
         }
 
         /// <summary>
@@ -267,7 +151,8 @@ namespace ChannelPrototype.Controllers
         [Route("/v3/conversations/{conversationId}/pagedmembers")]
         public virtual async Task<PagedMembersResult> GetConversationPagedMembers(string conversationId, int pageSize = -1, string continuationToken = null)
         {
-            throw new NotImplementedException();
+            Response.StatusCode = (int)HttpStatusCode.NotImplemented;
+            return null;
         }
 
         /// <summary>
@@ -279,17 +164,7 @@ namespace ChannelPrototype.Controllers
         [Route("/v3/conversations/{conversationId}/members/{memberId}")]
         public virtual async Task DeleteConversationMember(string conversationId, string memberId)
         {
-            var originalConversationReference = await GetOriginalConversationReference(conversationId);
-            if (originalConversationReference == null)
-            {
-                Response.StatusCode = (int)HttpStatusCode.NotFound;
-                return;
-            }
-
-            await adapter.ContinueConversationAsync(this.AppId, originalConversationReference, async (context, cancellationToken) =>
-            {
-                await adapter.DeleteConversationMemberAsync(context, memberId, cancellationToken);
-            }, CancellationToken.None);
+            Response.StatusCode = (int)HttpStatusCode.NotImplemented;
         }
 
         /// <summary>
@@ -304,20 +179,8 @@ namespace ChannelPrototype.Controllers
         [Route("/v3/conversations/{conversationId}/activities/{activityId}/members")]
         public virtual async Task<ChannelAccount[]> GetActivityMembers(string conversationId, string activityId)
         {
-            var originalConversationReference = await GetOriginalConversationReference(conversationId);
-            if (originalConversationReference == null)
-            {
-                Response.StatusCode = (int)HttpStatusCode.NotFound;
-                return null;
-            }
-
-            ChannelAccount[] accounts = null;
-            await adapter.ContinueConversationAsync(this.AppId, originalConversationReference, async (context, cancellationToken) =>
-            {
-                var results = await adapter.GetActivityMembersAsync(context, activityId, cancellationToken);
-                accounts = results.ToArray();
-            }, CancellationToken.None);
-            return accounts;
+            Response.StatusCode = (int)HttpStatusCode.NotImplemented;
+            return null;
         }
 
         /// <summary>
@@ -329,7 +192,8 @@ namespace ChannelPrototype.Controllers
         [Route("/v3/conversations/{conversationId}/attachments")]
         public virtual async Task<ResourceResponse> UploadAttachment(string conversationId, [FromBody]AttachmentData attachmentUpload)
         {
-            throw new NotImplementedException();
+            Response.StatusCode = (int)HttpStatusCode.NotImplemented;
+            return null;
         }
 
         ///// <summary>
@@ -366,5 +230,36 @@ namespace ChannelPrototype.Controllers
         //        return result.ToString();
         //    });
         //}
+
+        private async Task<ResourceResponse> ProcessActivityInBot(Activity activity)
+        {
+            // end of conversation goes up to the bot
+            if (!activity.Conversation.Properties.ContainsKey("serviceUrl"))
+            {
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return null;
+            }
+
+            // restore original serviceUrl so we can forward on to user
+            // clean up from/recipient so that userState is loaded correctly, TurnContext is basedon From=User
+            var user = activity.Recipient;
+            var skill = activity.From;
+            activity.From = user;
+            activity.Recipient = skill;
+            activity.ServiceUrl = (string)activity.Conversation.Properties["serviceUrl"];
+
+            // We call our adapter using the BotAppId claim, so turnContext has the bot claims
+            var claimsIdentity = new ClaimsIdentity(new List<Claim>
+            {
+                // Adding claims for both Emulator and Channel.
+                new Claim(AuthenticationConstants.AudienceClaim, BotAppId),
+                new Claim(AuthenticationConstants.AppIdClaim, BotAppId),
+            });
+
+            // send up to the bot
+            await adapter.ProcessActivityAsync(claimsIdentity, activity, bot.OnTurnAsync, CancellationToken.None);
+
+            return new ResourceResponse(id: activity.Id);
+        }
     }
 }

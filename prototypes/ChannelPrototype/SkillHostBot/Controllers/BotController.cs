@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 //
 // Generated with Bot Builder V4 SDK Template for Visual Studio EchoBot v4.5.0
@@ -17,10 +17,10 @@ namespace ChannelPrototype.Controllers
     [ApiController]
     public class BotController : ControllerBase
     {
-        private readonly IBotFrameworkHttpAdapter Adapter;
+        private readonly BotFrameworkHttpAdapter Adapter;
         private readonly IBot Bot;
 
-        public BotController(IBotFrameworkHttpAdapter adapter, IBot bot)
+        public BotController(BotFrameworkHttpAdapter adapter, IBot bot)
         {
             Adapter = adapter;
             Bot = bot;
