@@ -166,6 +166,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
             }
             catch (Exception exp)
             {
+                throw new Exception(exp.Message);
             }
 
             foreach (var entry in facebookEvent.Entry)

@@ -73,5 +73,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         public long TimeStamp { get; set; }
 
         public bool Standby { get; set; }
+
+        public FacebookPostBack PostBack { get; set; }
     }
 }

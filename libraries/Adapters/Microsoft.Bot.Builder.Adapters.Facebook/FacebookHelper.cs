@@ -89,7 +89,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
                 activity.Type = ActivityTypes.Message;
                 activity.Text = message.Message.Text;
 
-                if ((activity.ChannelData as dynamic).message.is_echo)
+                if (activity.GetChannelData<FacebookMessage>().Message.IsEcho)
                 {
                     activity.Type = ActivityTypes.Event;
                 }
@@ -97,10 +97,10 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
                 // copy fields like attachments, sticker, quick_reply, nlp, etc. // TODO Check
                 activity.ChannelData = message.Message;
             }
-            else if ((message as dynamic).postback != null)
+            else if (message.PostBack != null)
             {
                 activity.Type = ActivityTypes.Message;
-                activity.Text = (message as dynamic).postback.payload;
+                activity.Text = message.PostBack.Payload;
             }
 
             return activity;
