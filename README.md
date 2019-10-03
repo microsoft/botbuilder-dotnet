@@ -95,6 +95,5 @@ ngrok http -host-header=rewrite 3978
 |:----------------------------- | :-------------------------------|:----------------------------------|
 | N/A | ```show members``` |  ```show members``` <br> ```show channels``` <br> ```show details``` |
 
-### Place holder for debugging
-- Trying to do teams calls within a group chat or 1:1 chat
+### Place holder for potential errors
 - If your tenant admin has things disabled
