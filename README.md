@@ -91,9 +91,9 @@ ngrok http -host-header=rewrite 3978
 
 This Echo Bot is configured to show basic functionality for responding to messages, and returning basic data from Teams. Below is how you can see that data, and where that functionality is supported. If you send an unsupported string in a group chat or personal chat the bot will respond with an error message. This is because it's missing data that's associated with messages that orignates from a team.
 
-|Supported strings in team chat | Supported strings in group chat | supported strings in personal chat|
+|Supported strings in personal chat | Supported strings in group chat | supported strings in team chat|
 |:----------------------------- | :-------------------------------|:----------------------------------|
-| ```show members``` <br> ```show channels``` <br> ```show details``` | ```show members``` | None |
+| None | ```show members``` |  ```show members``` <br> ```show channels``` <br> ```show details``` |
 
 ### Place holder for debugging
 - Trying to do teams calls within a group chat or 1:1 chat
