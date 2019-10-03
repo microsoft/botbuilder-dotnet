@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Net;
-using System.Security.AccessControl;
 using System.Security.Claims;
 using System.Text;
 using System.Threading;
@@ -17,22 +16,20 @@ using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
-namespace ChannelPrototype.Controllers
+namespace SkillHost.Controllers
 {
     [ApiController]
     [Route("/v3/conversations")]
     public class SkillHostController : ControllerBase
     {
-        private readonly BotFrameworkAdapter adapter;
-        private readonly IBot bot;
-        private IConfiguration configuration;
+        private readonly BotFrameworkAdapter _adapter;
+        private readonly IBot _bot;
 
         public SkillHostController(BotFrameworkHttpAdapter adapter, IConfiguration configuration, IBot bot)
         {
             // adapter to use for calling back to channel
-            this.adapter = adapter;
-            this.bot = bot;
-            this.configuration = configuration;
+            this._adapter = adapter;
+            this._bot = bot;
             this.BotAppId = configuration.GetValue<string>("MicrosoftAppId");
         }
 
@@ -40,15 +37,19 @@ namespace ChannelPrototype.Controllers
 
         public static string GetSkillConversationId(IActivity activity)
         {
-            return Convert.ToBase64String(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new string[] { activity.ServiceUrl, activity.Conversation.Id })));
+            return Convert.ToBase64String(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new string[]
+            {
+                activity.ServiceUrl,
+                activity.Conversation.Id,
+            })));
         }
 
         public static ConversationInfo GetConversationInfo(string skillConversatioId)
         {
             var parts = JsonConvert.DeserializeObject<string[]>(Encoding.UTF8.GetString(Convert.FromBase64String(skillConversatioId)));
-            return new ConversationInfo() 
-            { 
-                ServiceUrl = parts[0], 
+            return new ConversationInfo()
+            {
+                ServiceUrl = parts[0],
                 ConversationId = parts[1],
             };
         }
@@ -237,7 +238,7 @@ namespace ChannelPrototype.Controllers
                 Args = allArgs.ToArray(),
             };
 
-            IEventActivity skillEvent = Activity.CreateEventActivity();
+            var skillEvent = Activity.CreateEventActivity();
             skillEvent.Name = "Skill";
             skillEvent.ChannelId = "Skill";
             skillEvent.ServiceUrl = conversationInfo.ServiceUrl;
@@ -255,7 +256,7 @@ namespace ChannelPrototype.Controllers
             });
 
             // send up to the bot
-            await adapter.ProcessActivityAsync(claimsIdentity, (Activity)skillEvent, bot.OnTurnAsync, CancellationToken.None);
+            await _adapter.ProcessActivityAsync(claimsIdentity, (Activity)skillEvent, _bot.OnTurnAsync, CancellationToken.None);
 
             return (TResponse)skillArgs.Result;
         }
