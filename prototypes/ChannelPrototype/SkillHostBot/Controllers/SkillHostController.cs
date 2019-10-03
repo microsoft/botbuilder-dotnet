@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Security.AccessControl;
 using System.Security.Claims;
 using System.Text;
 using System.Threading;
@@ -16,21 +17,23 @@ using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
-namespace SkillHost.Controllers
+namespace ChannelPrototype.Controllers
 {
     [ApiController]
     [Route("/v3/conversations")]
     public class SkillHostController : ControllerBase
     {
-        private readonly BotFrameworkAdapter _adapter;
-        private readonly IBot _bot;
+        private readonly BotFrameworkAdapter adapter;
+        private readonly IBot bot;
+        private IConfiguration configuration;
 
         public SkillHostController(BotFrameworkHttpAdapter adapter, IConfiguration configuration, IBot bot)
         {
             // adapter to use for calling back to channel
-            _adapter = adapter;
-            _bot = bot;
-            BotAppId = configuration.GetValue<string>("MicrosoftAppId");
+            this.adapter = adapter;
+            this.bot = bot;
+            this.configuration = configuration;
+            this.BotAppId = configuration.GetValue<string>("MicrosoftAppId");
         }
 
         public string BotAppId { get; set; }
@@ -72,7 +75,7 @@ namespace SkillHost.Controllers
         [Route("/v3/conversations/{conversationId}/activities")]
         public virtual Task<ResourceResponse> SendToConversation(string conversationId, [FromBody] Activity activity)
         {
-            return ProcessActivity(SkillMethod.SendActivity, activity);
+            return CallSkillApi<ResourceResponse>(SkillMethod.SendActivity, activity.Conversation.Id, activity);
         }
 
         /// <summary>
@@ -99,7 +102,7 @@ namespace SkillHost.Controllers
         [Route("/v3/conversations/{conversationId}/activities/{activityId}")]
         public virtual Task<ResourceResponse> ReplyToActivity(string conversationId, string activityId, [FromBody] Activity activity)
         {
-            return ProcessActivity(SkillMethod.SendActivity, activity);
+            return CallSkillApi<ResourceResponse>(SkillMethod.SendActivity, activity.Conversation.Id, activity);
         }
 
         /// <summary>
@@ -113,7 +116,7 @@ namespace SkillHost.Controllers
         [Route("/v3/conversations/{conversationId}/activities/{activityId}")]
         public virtual Task<ResourceResponse> UpdateActivity(string conversationId, string activityId, [FromBody] Activity activity)
         {
-            return ProcessActivity(SkillMethod.UpdateActivity, activity);
+            return CallSkillApi<ResourceResponse>(SkillMethod.UpdateActivity, activity.Conversation.Id, activity);
         }
 
         /// <summary>
@@ -210,47 +213,16 @@ namespace SkillHost.Controllers
             return CallSkillApi<ResourceResponse>(SkillMethod.UploadAttachment, conversationId, attachmentUpload);
         }
 
-        private async Task<ResourceResponse> ProcessActivity(SkillMethod method, Activity activity)
-        {
-            var conversationInfo = GetConversationInfo(activity.Conversation.Id);
-
-            // fix up activity 
-            activity.Conversation.Id = conversationInfo.ConversationId;
-            activity.ServiceUrl = conversationInfo.ServiceUrl;
-
-            var skillArgs = new SkillArgs()
-            {
-                Method = method,
-                Args = new object[] { activity },
-            };
-
-            var skillEvent = Activity.CreateEventActivity();
-            skillEvent.Name = "Skill";
-            skillEvent.ChannelId = activity.ChannelId;
-            skillEvent.ServiceUrl = activity.ServiceUrl;
-            skillEvent.Conversation = new ConversationAccount(id: conversationInfo.ConversationId);
-            skillEvent.From = activity.Recipient; // to end up in correct context we want from = User
-            skillEvent.Recipient = activity.From; // to end up in correct context we want Recipient = Bot
-            skillEvent.Value = skillArgs;
-
-            // We call our adapter using the BotAppId claim, so turnContext has the bot claims
-            var claimsIdentity = new ClaimsIdentity(new List<Claim>
-            {
-                // Adding claims for both Emulator and Channel.
-                new Claim(AuthenticationConstants.AudienceClaim, BotAppId),
-                new Claim(AuthenticationConstants.AppIdClaim, BotAppId),
-            });
-
-            // send up to the bot
-            await _adapter.ProcessActivityAsync(claimsIdentity, (Activity)skillEvent, _bot.OnTurnAsync, CancellationToken.None);
-
-            // return result
-            return (ResourceResponse)skillArgs.Result;
-        }
-
         private async Task<TResponse> CallSkillApi<TResponse>(SkillMethod method, string conversationId, params object[] args)
         {
             var conversationInfo = GetConversationInfo(conversationId);
+
+            if (args.Length > 0 && args[0] is Activity activity)
+            {
+                // fix up activity
+                activity.Conversation.Id = conversationInfo.ConversationId;
+                activity.ServiceUrl = conversationInfo.ServiceUrl;
+            }
 
             var allArgs = new List<object>();
             allArgs.Add(conversationInfo.ConversationId);
@@ -265,7 +237,7 @@ namespace SkillHost.Controllers
                 Args = allArgs.ToArray(),
             };
 
-            var skillEvent = Activity.CreateEventActivity();
+            IEventActivity skillEvent = Activity.CreateEventActivity();
             skillEvent.Name = "Skill";
             skillEvent.ChannelId = "Skill";
             skillEvent.ServiceUrl = conversationInfo.ServiceUrl;
@@ -283,7 +255,7 @@ namespace SkillHost.Controllers
             });
 
             // send up to the bot
-            await _adapter.ProcessActivityAsync(claimsIdentity, (Activity)skillEvent, _bot.OnTurnAsync, CancellationToken.None);
+            await adapter.ProcessActivityAsync(claimsIdentity, (Activity)skillEvent, bot.OnTurnAsync, CancellationToken.None);
 
             return (TResponse)skillArgs.Result;
         }
@@ -291,6 +263,7 @@ namespace SkillHost.Controllers
         private async Task CallSkillApi(SkillMethod method, string conversationId, params object[] args)
         {
             await CallSkillApi<object>(method, conversationId, args);
+            return;
         }
 
         public class ConversationInfo

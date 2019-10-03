@@ -1,37 +1,43 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
+//
+// Generated with Bot Builder V4 SDK Template for Visual Studio EchoBot v4.5.0
 
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Security.Claims;
+using System.Security.Principal;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using ChannelPrototype.Controllers;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
+using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using Microsoft.Extensions.Configuration;
-using SkillHost.Controllers;
+using Newtonsoft.Json;
 
-namespace SkillHost.Bots
+namespace ChannelPrototype.Bots
 {
     public class SkillHostBot : ActivityHandler
     {
-        private readonly IStatePropertyAccessor<string> _activeSkillProperty;
-        private readonly BotFrameworkHttpAdapter _botAdapter;
-        private readonly IConfiguration _configuration;
-        private readonly ConversationState _conversationState;
-        private readonly SkillRegistry _skillRegistry;
+        private SkillRegistry skillRegistry;
+        private ConversationState conversationState;
+        private IConfiguration configuration;
+        private BotFrameworkHttpAdapter botAdapter;
+        private IStatePropertyAccessor<string> activeSkillProperty;
 
         public SkillHostBot(SkillRegistry skillRegistry, ConversationState conversationState, IConfiguration configuration, BotFrameworkHttpAdapter botAdapter)
         {
-            _skillRegistry = skillRegistry;
-            _conversationState = conversationState;
-            _configuration = configuration;
-            _botAdapter = botAdapter;
-            _activeSkillProperty = conversationState.CreateProperty<string>("activeSkillProperty");
+            this.skillRegistry = skillRegistry;
+            this.conversationState = conversationState;
+            this.configuration = configuration;
+            this.botAdapter = botAdapter;
+            this.activeSkillProperty = conversationState.CreateProperty<string>("activeSkillProperty");
         }
 
         protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
@@ -39,7 +45,7 @@ namespace SkillHost.Bots
             var activity = turnContext.Activity;
 
             // if there is an active skill
-            var activeSkillId = await _activeSkillProperty.GetAsync(turnContext, () => null, cancellationToken);
+            var activeSkillId = await activeSkillProperty.GetAsync(turnContext, () => null);
             if (activeSkillId != null)
             {
                 // route activity to the skill
@@ -50,8 +56,8 @@ namespace SkillHost.Bots
                 if (turnContext.Activity.Text.Contains("skill"))
                 {
                     // save conversationRefrence for skill
-                    await _activeSkillProperty.SetAsync(turnContext, "EchoSkill", cancellationToken);
-                    await _conversationState.SaveChangesAsync(turnContext, force: true, cancellationToken: cancellationToken);
+                    await activeSkillProperty.SetAsync(turnContext, "EchoSkill");
+                    await conversationState.SaveChangesAsync(turnContext, force: true);
 
                     // route the activity to the skill
                     await this.ForwardActivityToSkill("EchoSkill", turnContext.Activity, cancellationToken);
@@ -66,22 +72,23 @@ namespace SkillHost.Bots
 
         protected override async Task OnEventActivityAsync(ITurnContext<IEventActivity> turnContext, CancellationToken cancellationToken)
         {
-            var eventActivity = turnContext.Activity.AsEventActivity();
+            IEventActivity eventActivity = turnContext.Activity.AsEventActivity();
 
             if (eventActivity.Name == "Skill")
             {
-                var client = turnContext.TurnState.Get<IConnectorClient>();
-                var skillArgs = eventActivity.Value as SkillArgs;
+                IConnectorClient client = turnContext.TurnState.Get<IConnectorClient>();
+                SkillArgs skillArgs = eventActivity.Value as SkillArgs;
                 switch (skillArgs.Method)
                 {
                     /// <summary>
-                    /// Send activity(activity)
+                    /// Send activity(conversationId, activity)
                     /// </summary>
                     /// <summary>
-                    /// UpdateActivity(activity)
+                    /// UpdateActivity(conversationId, activity)
                     /// </summary>
                     case SkillMethod.SendActivity:
-                        var activity = (Activity)skillArgs.Args[0];
+                        var activity = (Activity)skillArgs.Args[1];
+
                         switch (activity.Type)
                         {
                             case ActivityTypes.Trace:
@@ -89,24 +96,28 @@ namespace SkillHost.Bots
                             case ActivityTypes.Typing:
                             case ActivityTypes.Message:
                             case ActivityTypes.MessageReaction:
-                                skillArgs.Result = await turnContext.SendActivityAsync((Activity)skillArgs.Args[0], cancellationToken);
+                                skillArgs.Result = await turnContext.SendActivityAsync(activity, cancellationToken);
                                 break;
 
                             case ActivityTypes.EndOfConversation:
                                 // process the end of conversation as an end of conversation for the bot to handle
-                                var botAppId = _configuration.GetValue<string>("MicrosoftAppId");
-                                var claimsIdentity = new ClaimsIdentity(new List<Claim>
                                 {
-                                    // Adding claims for both Emulator and Channel
-                                    new Claim(AuthenticationConstants.AudienceClaim, botAppId),
-                                    new Claim(AuthenticationConstants.AppIdClaim, botAppId),
-                                });
+                                    var botAppId = this.configuration.GetValue<string>("MicrosoftAppId");
+                                    var claimsIdentity = new ClaimsIdentity(new List<Claim>
+                                    {
+                                        // Adding claims for both Emulator and Channel
+                                        new Claim(AuthenticationConstants.AudienceClaim, botAppId),
+                                        new Claim(AuthenticationConstants.AppIdClaim, botAppId),
+                                    });
 
-                                // map internal activity to incoming context so that UserState is correct for processing the EndOfConversation
-                                activity.ApplyConversationReference(turnContext.Activity.GetConversationReference(), isIncoming: true);
+                                    // map internal activity to incoming context so that UserState is correct for processing the EndOfConversation
+                                    var from = activity.From;
+                                    activity.From = activity.Recipient;
+                                    activity.Recipient = from;
 
-                                await _botAdapter.ProcessActivityAsync(claimsIdentity, activity, this.OnTurnAsync, cancellationToken);
-                                skillArgs.Result = new ResourceResponse(id: Guid.NewGuid().ToString("N"));
+                                    await this.botAdapter.ProcessActivityAsync(claimsIdentity, activity, this.OnTurnAsync, cancellationToken);
+                                    skillArgs.Result = new ResourceResponse(id: Guid.NewGuid().ToString("N"));
+                                }
 
                                 break;
 
@@ -118,7 +129,7 @@ namespace SkillHost.Bots
                         break;
 
                     case SkillMethod.UpdateActivity:
-                        skillArgs.Result = await turnContext.SendActivityAsync((Activity)skillArgs.Args[0], cancellationToken);
+                        skillArgs.Result = await turnContext.SendActivityAsync((Activity)skillArgs.Args[1], cancellationToken);
                         break;
 
                     /// <summary>
@@ -187,14 +198,14 @@ namespace SkillHost.Bots
                 {
                     var skillId = (string)activity.Recipient.Properties["skillId"];
 
-                    if (_skillRegistry.ContainsKey(skillId))
+                    if (skillRegistry.ContainsKey(skillId))
                     {
                         // end active skill invocation
-                        var activeSkillId = await _activeSkillProperty.GetAsync(turnContext, () => null);
+                        var activeSkillId = await activeSkillProperty.GetAsync(turnContext, () => null);
                         if (activeSkillId == skillId)
                         {
-                            await _activeSkillProperty.DeleteAsync(turnContext);
-                            await _conversationState.SaveChangesAsync(turnContext, force: true);
+                            await activeSkillProperty.DeleteAsync(turnContext);
+                            await conversationState.SaveChangesAsync(turnContext, force: true);
                         }
 
                         return;
@@ -208,7 +219,7 @@ namespace SkillHost.Bots
         private async Task ForwardActivityToSkill(string skillId, IActivity activity, CancellationToken cancellationToken)
         {
             // route the activity to the skill
-            if (_skillRegistry.TryGetValue(skillId, out var skillRegistration))
+            if (this.skillRegistry.TryGetValue(skillId, out SkillRegistration skillRegistration))
             {
                 // TODO probably don't need skillId anymore
                 activity.Recipient.Properties["skillId"] = skillId;
