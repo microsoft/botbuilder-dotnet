@@ -85,9 +85,9 @@ ngrok http -host-header=rewrite 3978
 - Back in Teams click ```Test and distribute``` on the left hand side under ```Finish``` section
 - Click the ```Install``` button
 
-| Install in a team | Install in a group chat | Install in personal chat|
+| Install in a personal | Install in a group chat | Install in team chat|
 |:-------------------- | :------------------------- | :-----------------------|
-| 1. Click the down arrow to the right of the ```Add``` button <br> 2. Click ```Add to Team``` <br> 3. Search for and select your team <br> 4. Click the ```Set up a bot``` button | 1. Click the down arrow to the right of the ```Add``` button <br> 2. Click ```Add to Chat``` <br> 3. Search for and select your group chat <br> 4. Click the ```Set up bot``` button <br> **Note:** There must be at least 1 message in a group chat for it to be searchable | 1. Click ```Add``` button |
+| 1. Click ```Add``` button| 1. Click the down arrow to the right of the ```Add``` button <br> 2. Click ```Add to Chat``` <br> 3. Search for and select your group chat <br> 4. Click the ```Set up bot``` button <br> **Note:** There must be at least 1 message in a group chat for it to be searchable |  1. Click the down arrow to the right of the ```Add``` button <br> 2. Click ```Add to Team``` <br> 3. Search for and select your team <br> 4. Click the ```Set up a bot``` button  |
 
 This Echo Bot is configured to show basic functionality for responding to messages, and returning basic data from Teams. Below is how you can see that data, and where that functionality is supported. If you send an unsupported string in a group chat or personal chat the bot will respond with an error message. This is because it's missing data that's associated with messages that orignates from a team.
 
