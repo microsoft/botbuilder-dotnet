@@ -21,28 +21,30 @@ namespace Microsoft.Bot.Builder
 
         public static void CheckForOAuthCards(BotFrameworkAdapter adapter, ILogger logger, ITurnContext turnContext, Activity activity, CancellationToken cancellationToken)
         {
-            if (activity?.Attachments != null)
+            if (activity == null || activity.Attachments == null)
             {
-                foreach (var attachment in activity?.Attachments?.Where(a => a.ContentType == OAuthCard.ContentType))
-                {
-                    OAuthCard oauthCard = attachment.Content as OAuthCard;
-                    if (oauthCard != null)
-                    {
-                        if (string.IsNullOrWhiteSpace(oauthCard.ConnectionName))
-                        {
-                            throw new InvalidOperationException("The OAuthPrompt's ConnectionName property is missing a value.");
-                        }
+                return;
+            }
 
-                        // Poll as a background task
-                        Task.Run(() => PollForTokenAsync(adapter, logger, turnContext, activity, oauthCard.ConnectionName, cancellationToken))
-                            .ContinueWith(t =>
-                            {
-                                if (t.Exception != null)
-                                {
-                                    logger.LogError(t.Exception.InnerException ?? t.Exception, "PollForTokenAsync threw an exception", oauthCard.ConnectionName);
-                                }
-                            });
+            foreach (var attachment in activity.Attachments.Where(a => a.ContentType == OAuthCard.ContentType))
+            {
+                OAuthCard oauthCard = attachment.Content as OAuthCard;
+                if (oauthCard != null)
+                {
+                    if (string.IsNullOrWhiteSpace(oauthCard.ConnectionName))
+                    {
+                        throw new InvalidOperationException("The OAuthPrompt's ConnectionName property is missing a value.");
                     }
+
+                    // Poll as a background task
+                    Task.Run(() => PollForTokenAsync(adapter, logger, turnContext, activity, oauthCard.ConnectionName, cancellationToken))
+                        .ContinueWith(t =>
+                        {
+                            if (t.Exception != null)
+                            {
+                                logger.LogError(t.Exception.InnerException ?? t.Exception, "PollForTokenAsync threw an exception", oauthCard.ConnectionName);
+                            }
+                        });
                 }
             }
         }
