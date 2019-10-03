@@ -26,13 +26,8 @@ namespace Microsoft.Bot.Builder
                 foreach (var attachment in activity?.Attachments?.Where(a => a.ContentType == OAuthCard.ContentType))
                 {
                     OAuthCard oauthCard = attachment.Content as OAuthCard;
-                    if (oauthCard != null && !string.IsNullOrEmpty(oauthCard.ConnectionName))
+                    if (oauthCard != null)
                     {
-                        if (activity.From == null || string.IsNullOrWhiteSpace(activity.From.Id))
-                        {
-                            throw new InvalidOperationException("The Activity is missing a From.Id property value.");
-                        }
-
                         if (string.IsNullOrWhiteSpace(oauthCard.ConnectionName))
                         {
                             throw new InvalidOperationException("The OAuthPrompt's ConnectionName property is missing a value.");
@@ -56,20 +51,20 @@ namespace Microsoft.Bot.Builder
         {
             TokenResponse tokenResponse = null;
             bool shouldEndPolling = false;
-            int pollingTimeout = (int)TurnStateConstants.OAuthLoginTimeoutValue.TotalSeconds;
-            int pollingRequestsInterval = (int)PollingInterval.TotalSeconds;
+            var pollingTimeout = TurnStateConstants.OAuthLoginTimeoutValue;
+            var pollingRequestsInterval = PollingInterval;
             var loginTimeout = turnContext.TurnState.Get<object>(TurnStateConstants.OAuthLoginTimeoutKey);
+            bool sentToken = false;
 
             // Override login timeout with value set from the OAuthPrompt or by the developer
             if (turnContext.TurnState.ContainsKey(TurnStateConstants.OAuthLoginTimeoutKey))
             {
-                var settingsTimeout = (TimeSpan)turnContext.TurnState.Get<object>(TurnStateConstants.OAuthLoginTimeoutKey);
-                pollingTimeout = (int)settingsTimeout.TotalSeconds;
+                pollingTimeout = (TimeSpan)turnContext.TurnState.Get<object>(TurnStateConstants.OAuthLoginTimeoutKey);
             }
 
             var stopwatch = Stopwatch.StartNew();
 
-            while (stopwatch.Elapsed < TimeSpan.FromMilliseconds(pollingTimeout) && !shouldEndPolling)
+            while (stopwatch.Elapsed < pollingTimeout && !shouldEndPolling)
             {
                 tokenResponse = await adapter.GetUserTokenAsync(turnContext, connectionName, null, cancellationToken).ConfigureAwait(false);
 
@@ -88,8 +83,9 @@ namespace Microsoft.Bot.Builder
 
                             if (tokenPollingSettings != null)
                             {
+                                logger.LogInformation($"PollForTokenAsync received new polling settings: timeout={tokenPollingSettings.Timeout}, interval={tokenPollingSettings.Interval}", tokenPollingSettings);
                                 shouldEndPolling = tokenPollingSettings.Timeout <= 0 ? true : shouldEndPolling; // Timeout now and stop polling
-                                pollingRequestsInterval = tokenPollingSettings.Interval > 0 ? tokenPollingSettings.Interval : pollingRequestsInterval; // Only overrides if it is set.
+                                pollingRequestsInterval = tokenPollingSettings.Interval > 0 ? TimeSpan.FromMilliseconds(tokenPollingSettings.Interval) : pollingRequestsInterval; // Only overrides if it is set.
                             }
                         }
                     }
@@ -102,6 +98,7 @@ namespace Microsoft.Bot.Builder
                         var callback = turnContext.TurnState.Get<BotCallbackHandler>();
                         await adapter.ProcessActivityAsync(identity, tokenResponseActivityEvent, callback, cancellationToken).ConfigureAwait(false);
                         shouldEndPolling = true;
+                        sentToken = true;
 
                         logger.LogInformation("PollForTokenAsync completed with a token", turnContext.Activity);
                     }
@@ -113,7 +110,10 @@ namespace Microsoft.Bot.Builder
                 }
             }
 
-            logger.LogInformation("PollForTokenAsync completed without receiving a token", turnContext.Activity);
+            if (!sentToken)
+            {
+                logger.LogInformation("PollForTokenAsync completed without receiving a token", turnContext.Activity);
+            }
 
             stopwatch.Stop();
         }

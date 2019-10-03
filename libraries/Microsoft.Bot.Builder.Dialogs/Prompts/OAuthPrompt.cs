@@ -57,9 +57,6 @@ namespace Microsoft.Bot.Builder.Dialogs
         private const string PersistedState = "state";
         private const string PersistedExpires = "expires";
 
-        // Default prompt timeout of 15 minutes (in ms)
-        private static readonly int DefaultPromptTimeout = (int)TurnStateConstants.OAuthLoginTimeoutValue.TotalMilliseconds;
-
         // regex to check if code supplied is a 6 digit numerical code (hence, a magic code).
         private readonly Regex _magicCodeRegex = new Regex(@"(\d{6})");
 
@@ -123,7 +120,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             // Initialize state
-            var timeout = _settings.Timeout ?? DefaultPromptTimeout;
+            var timeout = _settings.Timeout ?? (int)TurnStateConstants.OAuthLoginTimeoutValue.TotalMilliseconds;
             var state = dc.ActiveDialog.State;
             state[PersistedOptions] = opt;
             state[PersistedState] = new Dictionary<string, object>
@@ -340,7 +337,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             // Add the login timeout specified in OAuthPromptSettings to TurnState so it can be referenced if polling is needed
             if (!turnContext.TurnState.ContainsKey(TurnStateConstants.OAuthLoginTimeoutKey) && _settings.Timeout.HasValue)
             {
-                turnContext.TurnState.Add<object>(TurnStateConstants.OAuthLoginTimeoutKey, _settings.Timeout);
+                turnContext.TurnState.Add<object>(TurnStateConstants.OAuthLoginTimeoutKey, TimeSpan.FromMilliseconds(_settings.Timeout.Value));
             }
 
             // Set input hint
