@@ -1,8 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace ChannelPrototype.Controllers
+﻿namespace SkillHost
 {
     public class SkillRegistration
     {

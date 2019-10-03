@@ -6,7 +6,7 @@
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 
-namespace ChannelPrototype
+namespace SkillHost
 {
     public class Program
     {

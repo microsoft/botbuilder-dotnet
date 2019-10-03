@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-namespace ChannelPrototype.Controllers
+namespace SkillHost.Controllers
 {
     public enum SkillMethod
     {

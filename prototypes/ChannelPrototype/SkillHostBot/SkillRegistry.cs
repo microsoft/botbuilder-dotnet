@@ -3,7 +3,7 @@
 
 using System.Collections.Generic;
 
-namespace ChannelPrototype.Controllers
+namespace SkillHost
 {
     public class SkillRegistry : Dictionary<string, SkillRegistration>
     {
