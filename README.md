@@ -94,8 +94,8 @@ This bot has been created using [Bot Framework](https://dev.botframework.com), i
 - Click ```Add to Team```
 - Search for and select your team
 - Click the ```Set up a bot``` button
-- Note: You need to type: @EchoBot <message> to message your bot
- - Send your bot one of the following strings: "show members", "show channels", or "show details" to get the members of your team, the channels in your team, or metadata about your team respectively. 
+- Note: You need to type: ```@EchoBot [message]``` to message your bot
+ - Send your bot one of the following strings: ```show members```, ```show channels```, or ```show details``` to get the members of your team, the channels in your team, or metadata about your team respectively. 
   - EX: ```@EchoBot show members```
 
 ### Installing the bot in a group chat
@@ -108,7 +108,7 @@ This bot has been created using [Bot Framework](https://dev.botframework.com), i
 - Click ```Add to Team```
 - Search for and select your team
 - Click the ```Set up a bot``` button
-- Note: You need to type: @EchoBot <message> to message your bot
- - Send your bot one of the following strings: "show members", "show channels", or "show details" to get the members of your team, the channels in your team, or metadata about your team respectively. 
+- Note: You need to type: ```@EchoBot [message]``` to message your bot
+ - Send your bot one of the following strings: ```show members``` to get the members in the group chat. 
   - EX: ```@EchoBot show members```
 
