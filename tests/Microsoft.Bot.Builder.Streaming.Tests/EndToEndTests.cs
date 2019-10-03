@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Pipes;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -27,11 +28,12 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
         {
             // Arrange
             object syncLock = new object();
+            string pipeName = "testPipe1";
             MockBot mockBot = null;
-            var client = new NamedPipeClient("testPipes");
+            var client = new NamedPipeClient(pipeName);
             var conversation = new Conversation(conversationId: "conversation1");
             var processActivity = ProcessActivityWithAttachments(mockBot, conversation);
-            mockBot = new MockBot(processActivity);
+            mockBot = new MockBot(processActivity, pipeName);
             var requestWithOutActivity = GetStreamingRequestWithoutAttachments(conversation.ConversationId);
 
             // Act
@@ -40,6 +42,103 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
 
             // Assert
             Assert.Equal(200, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task ConnectToNamedPipe()
+        {
+            // Arrange
+            Exception result = null;
+            object syncLock = new object();
+            string pipeName = "testPipes2";
+            MockBot mockBot = null;
+            var client = new NamedPipeClient(pipeName);
+            var conversation = new Conversation(conversationId: "conversation1");
+            var processActivity = ProcessActivityWithAttachments(mockBot, conversation);
+            DirectLineAdapter adapter;
+            mockBot = new MockBot(processActivity, pipeName);
+            adapter = new DirectLineAdapter(null, mockBot, null);
+
+            // Act
+            await client.ConnectAsync();
+            try
+            {
+                adapter.AddNamedPipeConnection(pipeName, mockBot);
+            }
+            catch (Exception ex)
+            {
+                result = ex;
+            }
+
+            // Assert
+            Assert.Null(result);
+        }
+
+        [Fact]
+        public async Task ConnectToMultiplePipes()
+        {
+            // Arrange
+            Exception result = null;
+            object syncLock = new object();
+            string pipeNameA = "testPipes3";
+            string pipeNameB = "testPipes4";
+            MockBot mockBot = null;
+            var client = new NamedPipeClient(pipeNameA);
+            var conversation = new Conversation(conversationId: "conversation1");
+            var processActivity = ProcessActivityWithAttachments(mockBot, conversation);
+            DirectLineAdapter adapter;
+            mockBot = new MockBot(processActivity, pipeNameA);
+            adapter = new DirectLineAdapter(null, mockBot, null);
+
+            // Act
+            await client.ConnectAsync();
+            try
+            {
+                adapter.AddNamedPipeConnection(pipeNameA, mockBot);
+                adapter.AddNamedPipeConnection(pipeNameB, mockBot);
+            }
+            catch (Exception ex)
+            {
+                result = ex;
+            }
+
+            // Assert
+            Assert.Null(result);
+        }
+
+        [Fact]
+        public async Task RespondsOnCorrectConnection()
+        {
+            // Arrange
+            ReceiveResponse result = null;
+            object syncLock = new object();
+            string pipeNameA = "RightPipe";
+            string pipeNameB = "WrongPipe";
+            MockBot mockBot = null;
+            var client = new NamedPipeClient(pipeNameA);
+            var conversation = new Conversation(conversationId: "conversation1");
+            var processActivity = ProcessActivityWithAttachments(mockBot, conversation);
+            DirectLineAdapter adapter;
+            mockBot = new MockBot(processActivity, pipeNameA);
+            adapter = new DirectLineAdapter(null, mockBot, null);
+
+            // Act
+            await client.ConnectAsync();
+            try
+            {
+                adapter.AddNamedPipeConnection(pipeNameA, mockBot);
+                adapter.AddNamedPipeConnection(pipeNameB, mockBot);
+
+                client.ConnectAsync();
+                result = await client.SendAsync(GetStreamingRequestWithoutAttachments("123"));
+            }
+            catch (Exception ex)
+            {
+                Assert.Null(ex);
+            }
+
+            // Assert
+            Assert.Equal(200, result.StatusCode);
         }
 
         [Fact]
@@ -179,11 +278,11 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
             private readonly DirectLineAdapter _adapter;
             private readonly Func<Schema.Activity, Task<InvokeResponse>> _processActivityAsync;
 
-            public MockBot(Func<Schema.Activity, Task<InvokeResponse>> processActivityAsync)
+            public MockBot(Func<Schema.Activity, Task<InvokeResponse>> processActivityAsync, string pipeName = "testPipes", DirectLineAdapter adapter = null)
             {
                 _processActivityAsync = processActivityAsync;
-                _adapter = new DirectLineAdapter(null, this, null);
-                _adapter.AddNamedPipeConnection("testPipes", this);
+                _adapter = adapter ?? new DirectLineAdapter(null, this, null);
+                _adapter.AddNamedPipeConnection(pipeName, this);
             }
 
             public List<Schema.Activity> ReceivedActivities { get; private set; } = new List<Schema.Activity>();
