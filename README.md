@@ -95,7 +95,7 @@ ngrok http -host-header=rewrite 3978
 - Click ```Test and distribute```
 - Click ```Install```
 
-| To install in a team | To install in a group chat | to install in personal chat|
+| Install in a team | Install in a group chat | Install in personal chat|
 |:-------------------- | :------------------------- | :-----------------------|
 | 1. Click the down arrow to the right of the ```Add``` button <br> 2. Click ```Add to Team``` <br> 3. Search for and select your team <br> 4. Click the ```Set up a bot``` button | 1. Click the down arrow to the right of the ```Add``` button <br> 2. Click ```Add to Chat``` <br> 3. Search for and select your group chat <br> 4. Click the ```Set up bot``` button <br> **Note:** There must be at least 1 message in a group chat for it to be searchable | 1. Click ```Add``` button |
 
