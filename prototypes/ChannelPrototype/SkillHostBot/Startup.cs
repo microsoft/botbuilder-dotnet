@@ -1,8 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
-//
-// Generated with Bot Builder V4 SDK Template for Visual Studio EchoBot v4.5.0
 
+using ChannelPrototype.Bots;
+using ChannelPrototype.Controllers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -10,10 +10,6 @@ using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-
-using ChannelPrototype.Bots;
-using System.Collections.Generic;
-using ChannelPrototype.Controllers;
 
 namespace ChannelPrototype
 {
@@ -44,7 +40,9 @@ namespace ChannelPrototype
 
             services.AddSingleton<SkillRegistry>(new SkillRegistry()
             {
-                { "EchoSkill", new SkillRegistration() { Id = "EchoSkill", AppId = "apppidforskill", ServiceUrl="http://localhost:4000/api/messages" } }
+                {
+                    "EchoSkill", new SkillRegistration() { Id = "EchoSkill", AppId = "apppidforskill", ServiceUrl = "http://localhost:4000/api/messages" }
+                },
             });
         }
 
@@ -63,7 +61,7 @@ namespace ChannelPrototype
             app.UseDefaultFiles();
             app.UseStaticFiles();
 
-            //app.UseHttpsRedirection();
+            // app.UseHttpsRedirection();
             app.UseMvc();
         }
     }

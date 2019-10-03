@@ -27,7 +27,7 @@ namespace MySkill.Bots
                 // ChannelFailed = "channelFailed";
                 var endOfConversation = Activity.CreateEndOfConversationActivity();
                 endOfConversation.Code = EndOfConversationCodes.CompletedSuccessfully;
-                var response =await turnContext.SendActivityAsync(endOfConversation, cancellationToken);
+                var response = await turnContext.SendActivityAsync(endOfConversation, cancellationToken);
             }
             else
             {

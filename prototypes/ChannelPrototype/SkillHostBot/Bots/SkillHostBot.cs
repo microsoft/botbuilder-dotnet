@@ -116,13 +116,14 @@ namespace ChannelPrototype.Bots
                             return;
 
                         case ActivityTypes.EndOfConversation:
-                            // end active skill invocation 
+                            // end active skill invocation
                             var activeSkillId = await activeSkillProperty.GetAsync(turnContext, () => null);
                             if (activeSkillId == skillId)
                             {
                                 await activeSkillProperty.DeleteAsync(turnContext);
                                 await conversationState.SaveChangesAsync(turnContext, force: true);
                             }
+
                             return;
                     }
                 }
@@ -144,7 +145,8 @@ namespace ChannelPrototype.Bots
                 }
 
                 // send it
-                HttpClient client = new HttpClient();
+                var client = new HttpClient();
+
                 // TODO add client authorization header
                 var response = await client.PostAsJsonAsync($"{skillRegistration.ServiceUrl}", activity, cancellationToken);
             }

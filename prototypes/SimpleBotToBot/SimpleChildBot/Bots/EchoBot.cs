@@ -13,7 +13,8 @@ namespace SimpleChildBot.Bots
     {
         protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
-            await turnContext.SendActivityAsync(MessageFactory.Text($"Echo1: {turnContext.Activity.Text}"), cancellationToken);
+            var ret = await turnContext.SendActivityAsync(MessageFactory.Text($"Echo1: {turnContext.Activity.Text}"), cancellationToken);
+
             Thread.Sleep(2000);
             await turnContext.SendActivityAsync(MessageFactory.Text($"Echo2: {turnContext.Activity.Text}"), cancellationToken);
             Thread.Sleep(2000);
