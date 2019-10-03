@@ -130,3 +130,7 @@ ngrok http -host-header=rewrite 3978
 - **Note:** You need to type: ```@EchoBot [message]``` to message your bot
  - Send your bot one of the following strings: ```show members``` to get the members in the group chat. 
   - **EX:** ```@EchoBot show members```
+
+### Place holder for debugging
+- Trying to do teams calls within a group chat or 1:1 chat
+- If your tenant admin has things disabled
