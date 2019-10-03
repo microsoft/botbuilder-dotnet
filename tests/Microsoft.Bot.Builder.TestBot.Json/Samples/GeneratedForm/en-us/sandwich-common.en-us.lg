@@ -25,7 +25,13 @@
 - Possible values for {toLower(property)} include: \[{join(turn.schema.properties[property].enum, ',')}\]
 
 # clarifyEnum(property, turn)
-- Please choose a value for {toLower(property)} from \[{join(turn.dialogEvent.value.entity.value, ',')}\]
+- Please choose a value for {toLower(property)} from \[{join(foreach(turn.dialogEvent.value.entity.value, val, bread(val)), ',')}\]
+
+# bread(val)
+- IF: {val == 'honeyWheat'}
+- honey wheat
+- ELSE:
+- wheat grain
 
 > TODO: This is not correct--the possible values should be picked up from the event structure
 # chooseSlot(entity, turn)
