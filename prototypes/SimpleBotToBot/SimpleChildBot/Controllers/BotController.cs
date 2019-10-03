@@ -24,7 +24,6 @@ namespace SimpleChildBot.Controllers
             _bot = bot;
         }
 
-        [HttpGet]
         [HttpPost]
         public async Task PostAsync()
         {

@@ -23,7 +23,20 @@ namespace SimpleRootBot
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             // Create the Bot Framework Adapter with error handling enabled.
-            services.AddSingleton<IBotFrameworkHttpAdapter, AdapterWithErrorHandler>();
+            services.AddSingleton<BotFrameworkHttpAdapter, AdapterWithErrorHandler>();
+
+            // Create the storage we'll be using for User and Conversation state. (Memory is great for testing purposes.)
+            services.AddSingleton<IStorage, MemoryStorage>();
+
+            // Create the Conversation state. (Used by the Dialog system itself.)
+            services.AddSingleton<ConversationState>();
+
+            services.AddSingleton<SkillRegistry>(new SkillRegistry()
+            {
+                {
+                    "EchoSkill", new SkillRegistration() { Id = "EchoSkill", AppId = "apppidforskill", ServiceUrl = "http://localhost:39783/api/messages" }
+                },
+            });
 
             // Register the skill connector (TODO: this will be simplified)
             services.AddSingleton<SkillConnector>(provider =>
