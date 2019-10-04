@@ -47,7 +47,7 @@ namespace Microsoft.BotBuilderSamples.Bots
 
         private async Task ShowDetailsAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
-            var teamDetails = await GetTeamDetailsAsync(turnContext, cancellationToken);
+            var teamDetails = await TeamsInfo.GetTeamDetailsAsync(turnContext, cancellationToken);
 
             var replyActivity = MessageFactory.Text($"The team name is {teamDetails.Name}. The team ID is {teamDetails.Id}. The ADDGroupID is {teamDetails.AadGroupId}.");
 
@@ -56,12 +56,12 @@ namespace Microsoft.BotBuilderSamples.Bots
 
         private async Task ShowMembersAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
-            await ShowMembersAsync(turnContext, await GetMembersAsync(turnContext, cancellationToken), cancellationToken);
+            await ShowMembersAsync(turnContext, await TeamsInfo.GetMembersAsync(turnContext, cancellationToken), cancellationToken);
         }
 
         private async Task ShowChannelsAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
-            var channels = await GetChannelsAsync(turnContext, cancellationToken);
+            var channels = await TeamsInfo.GetChannelsAsync(turnContext, cancellationToken);
 
             var replyActivity = MessageFactory.Text($"Total of {channels.Count} channels are currently in team");
 
