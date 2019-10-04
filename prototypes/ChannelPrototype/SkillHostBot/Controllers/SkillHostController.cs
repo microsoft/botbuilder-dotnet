@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Security.Claims;
 using System.Text;
 using System.Threading;
@@ -12,7 +11,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
-using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
@@ -29,16 +27,16 @@ namespace SkillHost.Controllers
         public SkillHostController(BotAdapter adapter, IConfiguration configuration, IBot bot)
         {
             // adapter to use for calling back to channel
-            this._adapter = adapter;
-            this._bot = bot;
-            this.BotAppId = configuration.GetValue<string>("MicrosoftAppId");
+            _adapter = adapter;
+            _bot = bot;
+            BotAppId = configuration.GetValue<string>("MicrosoftAppId");
         }
 
         public string BotAppId { get; set; }
 
-        public static ConversationInfo GetConversationInfo(string skillConversatioId)
+        public static ConversationInfo GetConversationInfo(string skillConversationId)
         {
-            var parts = JsonConvert.DeserializeObject<string[]>(Encoding.UTF8.GetString(Convert.FromBase64String(skillConversatioId)));
+            var parts = JsonConvert.DeserializeObject<string[]>(Encoding.UTF8.GetString(Convert.FromBase64String(skillConversationId)));
             return new ConversationInfo()
             {
                 ServiceUrl = parts[0],
@@ -55,7 +53,7 @@ namespace SkillHost.Controllers
         /// <returns>Resource.</returns>
         [HttpPost]
         [Route("/v3/conversations/{conversationId}/activities/{activityId}")]
-        public virtual async Task<ResourceResponse> ReplyToActivity(string conversationId, string activityId, [FromBody]Activity activity)
+        public virtual async Task<ResourceResponse> ReplyToActivity(string conversationId, string activityId, [FromBody] Activity activity)
         {
             ResourceResponse resourceResponse = null;
             var conversationInfo = GetConversationInfo(conversationId);
@@ -80,7 +78,7 @@ namespace SkillHost.Controllers
             }
 
             await _adapter.ContinueConversationAsync(
-                this.BotAppId,
+                BotAppId,
                 originalConversationReference,
                 async (context, cancellationToken) =>
                 {
@@ -88,7 +86,7 @@ namespace SkillHost.Controllers
                     activity.ReplyToId = activityId;
                     resourceResponse = await context.SendActivityAsync(activity, cancellationToken);
                 },
-                cancellationToken: CancellationToken.None);
+                CancellationToken.None);
 
             return resourceResponse;
         }
@@ -99,10 +97,10 @@ namespace SkillHost.Controllers
         /// <param name="conversationId">Conversation ID.</param>
         /// <param name="activityId">activityId to update.</param>
         /// <param name="activity">replacement Activity.</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation with resourceReponse.</returns>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation with resourceResponse.</returns>
         [HttpPut]
         [Route("/v3/conversations/{conversationId}/activities/{activityId}")]
-        public virtual async Task<ResourceResponse> UpdateActivity(string conversationId, string activityId, [FromBody]Activity activity)
+        public virtual async Task<ResourceResponse> UpdateActivity(string conversationId, string activityId, [FromBody] Activity activity)
         {
             ResourceResponse resourceResponse = null;
             var conversationInfo = GetConversationInfo(conversationId);
@@ -114,7 +112,7 @@ namespace SkillHost.Controllers
             originalConversationReference.User = activity.Recipient;
 
             await _adapter.ContinueConversationAsync(
-                this.BotAppId,
+                BotAppId,
                 originalConversationReference,
                 async (context, cancellationToken) =>
                 {
@@ -138,11 +136,11 @@ namespace SkillHost.Controllers
             var originalConversationReference = GetConversationReferenceFromInfo(conversationInfo);
 
             await _adapter.ContinueConversationAsync(
-                this.BotAppId,
+                BotAppId,
                 originalConversationReference,
                 async (context, cancellationToken) =>
                 {
-                    await context.DeleteActivityAsync(activityId);
+                    await context.DeleteActivityAsync(activityId, cancellationToken);
                 },
                 CancellationToken.None);
         }
@@ -173,7 +171,7 @@ namespace SkillHost.Controllers
 
             ChannelAccount[] accounts = null;
             await _adapter.ContinueConversationAsync(
-                this.BotAppId,
+                BotAppId,
                 originalConversationReference,
                 async (context, cancellationToken) =>
                 {
@@ -201,7 +199,7 @@ namespace SkillHost.Controllers
             PagedMembersResult result = null;
 
             await _adapter.ContinueConversationAsync(
-                this.BotAppId,
+                BotAppId,
                 originalConversationReference,
                 async (context, cancellationToken) =>
                 {
@@ -249,7 +247,7 @@ namespace SkillHost.Controllers
 
             ChannelAccount[] accounts = null;
             await _adapter.ContinueConversationAsync(
-                this.BotAppId,
+                BotAppId,
                 originalConversationReference,
                 async (context, cancellationToken) =>
                 {
@@ -268,14 +266,14 @@ namespace SkillHost.Controllers
         /// <returns>A <see cref="Task"/> representing the asynchronous operation returning a ResourceResponse.</returns>
         [HttpPost]
         [Route("/v3/conversations/{conversationId}/attachments")]
-        public virtual async Task<ResourceResponse> UploadAttachment(string conversationId, [FromBody]AttachmentData attachmentUpload)
+        public virtual async Task<ResourceResponse> UploadAttachment(string conversationId, [FromBody] AttachmentData attachmentUpload)
         {
             var conversationInfo = GetConversationInfo(conversationId);
             var originalConversationReference = GetConversationReferenceFromInfo(conversationInfo);
 
             ResourceResponse response = null;
             await _adapter.ContinueConversationAsync(
-                this.BotAppId,
+                BotAppId,
                 originalConversationReference,
                 async (context, cancellationToken) =>
                 {
