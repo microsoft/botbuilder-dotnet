@@ -12,6 +12,8 @@ namespace SkillHost
         public AdapterWithErrorHandler(IConfiguration configuration, ILogger<BotFrameworkHttpAdapter> logger)
             : base(configuration, logger)
         {
+            this.Skills.Add(new BotFrameworkHttpAdapter.Skill() { Id = "EchoSkill", AppId = "apppidforskill", ServiceUrl = "http://localhost:4000/api/messages" });
+
             OnTurnError = async (turnContext, exception) =>
             {
                 // Log any leaked exception from the application.

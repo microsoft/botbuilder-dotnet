@@ -165,3 +165,6 @@ dotnet_diagnostic.SA1028.severity = none
 
 # UseAsyncSuffix: Use Async suffix
 dotnet_diagnostic.UseAsyncSuffix.severity = none
+
+# SA1609: Property documentation should have value
+dotnet_diagnostic.SA1609.severity = none

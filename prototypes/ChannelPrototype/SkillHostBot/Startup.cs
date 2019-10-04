@@ -32,17 +32,10 @@ namespace SkillHost
             services.AddSingleton(new ConversationState(storage));
 
             // Create the Bot Framework Adapter with error handling enabled.
-            services.AddSingleton<BotFrameworkHttpAdapter, AdapterWithErrorHandler>();
+            services.AddSingleton<BotAdapter, AdapterWithErrorHandler>();
 
             // Create the bot as a transient. In this case the ASP Controller is expecting an IBot.
             services.AddTransient<IBot, SkillHostBot>();
-
-            services.AddSingleton<SkillRegistry>(new SkillRegistry()
-            {
-                {
-                    "EchoSkill", new SkillRegistration() { Id = "EchoSkill", AppId = "apppidforskill", ServiceUrl = "http://localhost:4000/api/messages" }
-                },
-            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

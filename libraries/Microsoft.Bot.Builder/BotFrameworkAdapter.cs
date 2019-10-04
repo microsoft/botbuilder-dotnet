@@ -43,7 +43,7 @@ namespace Microsoft.Bot.Builder
     /// <seealso cref="IActivity"/>
     /// <seealso cref="IBot"/>
     /// <seealso cref="IMiddleware"/>
-    public class BotFrameworkAdapter : BotAdapter, IAdapterIntegration, IUserTokenProvider
+    public partial class BotFrameworkAdapter : BotAdapter, IAdapterIntegration, IUserTokenProvider
     {
         private const string InvokeResponseKey = "BotFrameworkAdapter.InvokeResponse";
         private const string BotIdentityKey = "BotIdentity";
@@ -183,6 +183,14 @@ namespace Microsoft.Bot.Builder
             // DefaultRequestHeaders are not thread safe so set them up here because this adapter should be a singleton.
             ConnectorClient.AddDefaultRequestHeaders(_httpClient);
         }
+
+        /// <summary>
+        /// Gets botFrameworkHttpSkill collection so it can be modified.
+        /// </summary>
+        /// <value>
+        /// BotFrameworkHttpSkill collection so it can be modified.
+        /// </value>
+        public List<Skill> Skills { get; private set; } = new List<Skill>();
 
         /// <summary>
         /// Sends a proactive message from the bot to a conversation.
@@ -434,6 +442,38 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
+        /// Forward an activity to another channel.
+        /// </summary>
+        /// <param name="turnContext">turnContext.</param>
+        /// <param name="channelId">channelId to forward activity to.</param>
+        /// <param name="activity">acivity to forward.</param>
+        /// <param name="cancellationToken">cancellation Token.</param>
+        /// <returns>Async task.</returns>
+        public override async Task ForwardActivityAsync(ITurnContext turnContext, string channelId, Activity activity, CancellationToken cancellationToken)
+        {
+            // route the activity to the skill
+            var skill = this.Skills.FirstOrDefault(s => s.Id == channelId);
+            if (skill != null)
+            {
+                // TODO probably don't need skillId anymore after we get claims properly in place
+                activity.Recipient.Properties["skillId"] = skill.Id;
+                activity.Conversation.Id = Convert.ToBase64String(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new string[] { activity.ServiceUrl, activity.Conversation.Id, })));
+                activity.ServiceUrl = "http://localhost:3978/";
+
+                // POST to skill 
+                var client = new HttpClient();
+
+                // TODO add client authorization header
+                var jsonContent = new StringContent(JsonConvert.SerializeObject(activity, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore }), Encoding.UTF8, "application/json");
+                await client.PostAsync($"{skill.ServiceUrl}", jsonContent, cancellationToken).ConfigureAwait(false);
+            }
+            else
+            {
+                throw new ArgumentException($"Skill:{skill.Id} isn't a registered skill");
+            }
+        }
+
+        /// <summary>
         /// Replaces an existing activity in the conversation.
         /// </summary>
         /// <param name="turnContext">The context object for the turn.</param>
@@ -476,7 +516,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute.</returns>
-        public async Task DeleteConversationMemberAsync(ITurnContext turnContext, string memberId, CancellationToken cancellationToken)
+        public override async Task DeleteConversationMemberAsync(ITurnContext turnContext, string memberId, CancellationToken cancellationToken)
         {
             if (turnContext.Activity.Conversation == null)
             {
@@ -502,7 +542,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="activityId">(Optional) Activity ID to enumerate. If not specified the current activities ID will be used.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>List of Members of the activity.</returns>
-        public async Task<IList<ChannelAccount>> GetActivityMembersAsync(ITurnContext turnContext, string activityId, CancellationToken cancellationToken)
+        public override async Task<IList<ChannelAccount>> GetActivityMembersAsync(ITurnContext turnContext, string activityId, CancellationToken cancellationToken)
         {
             // If no activity was passed in, use the current activity.
             if (activityId == null)
@@ -534,7 +574,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="turnContext">The context object for the turn.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>List of Members of the current conversation.</returns>
-        public async Task<IList<ChannelAccount>> GetConversationMembersAsync(ITurnContext turnContext, CancellationToken cancellationToken)
+        public override async Task<IList<ChannelAccount>> GetConversationMembersAsync(ITurnContext turnContext, CancellationToken cancellationToken)
         {
             if (turnContext.Activity.Conversation == null)
             {
@@ -554,6 +594,32 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
+        /// GetConversationPagedMembers.
+        /// </summary>
+        /// <param name="turnContext">turnContext.</param>
+        /// <param name="pageSize">Suggested page size.</param>
+        /// <param name="continuationToken">Continuation Token.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>channelAcounts for conversation members.</returns>
+        public override async Task<PagedMembersResult> GetConversationPagedMembersAsync(ITurnContext turnContext, int pageSize = -1, string continuationToken = null, CancellationToken cancellationToken = default)
+        {
+            if (turnContext.Activity.Conversation == null)
+            {
+                throw new ArgumentNullException("BotFrameworkAdapter.GetConversationPagedMembers(): missing conversation");
+            }
+
+            if (string.IsNullOrWhiteSpace(turnContext.Activity.Conversation.Id))
+            {
+                throw new ArgumentNullException("BotFrameworkAdapter.GetConversationPagedMembers(): missing conversation.id");
+            }
+
+            var connectorClient = turnContext.TurnState.Get<IConnectorClient>();
+            var conversationId = turnContext.Activity.Conversation.Id;
+
+            return await connectorClient.Conversations.GetConversationPagedMembersAsync(conversationId, pageSize, continuationToken, cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
         /// Lists the Conversations in which this bot has participated for a given channel server. The
         /// channel server returns results in pages and each page will include a `continuationToken`
         /// that can be used to fetch the next page of results from the server.
@@ -569,7 +635,7 @@ namespace Microsoft.Bot.Builder
         /// This overload may be called from outside the context of a conversation, as only the
         /// bot's service URL and credentials are required.
         /// </remarks>
-        public async Task<ConversationsResult> GetConversationsAsync(string serviceUrl, MicrosoftAppCredentials credentials, string continuationToken, CancellationToken cancellationToken)
+        public virtual async Task<ConversationsResult> GetConversationsAsync(string serviceUrl, MicrosoftAppCredentials credentials, string continuationToken, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(serviceUrl))
             {
@@ -601,7 +667,7 @@ namespace Microsoft.Bot.Builder
         /// service URL and credentials that are part of the current activity processing pipeline
         /// will be used.
         /// </remarks>
-        public async Task<ConversationsResult> GetConversationsAsync(ITurnContext turnContext, string continuationToken, CancellationToken cancellationToken)
+        public virtual async Task<ConversationsResult> GetConversationsAsync(ITurnContext turnContext, string continuationToken, CancellationToken cancellationToken)
         {
             var connectorClient = turnContext.TurnState.Get<IConnectorClient>();
             var results = await connectorClient.Conversations.GetConversationsAsync(continuationToken, cancellationToken).ConfigureAwait(false);
