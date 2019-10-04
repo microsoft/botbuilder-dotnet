@@ -87,5 +87,8 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
 
         [JsonProperty(PropertyName = "post_back")]
         public FacebookPostBack PostBack { get; set; }
+
+        [JsonProperty(PropertyName = "optin")]
+        public FacebookRecipient Optin { get; set; }
     }
 }

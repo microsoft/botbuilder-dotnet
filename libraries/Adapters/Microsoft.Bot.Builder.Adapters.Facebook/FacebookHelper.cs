@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Bot.Builder.Adapters.Facebook.FacebookEvents;
 using Microsoft.Bot.Schema;
 
 namespace Microsoft.Bot.Builder.Adapters.Facebook
@@ -58,7 +59,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
 
             if (message.Sender == null)
             {
-                message.Sender = (message as dynamic).optin?.user_ref;
+                message.Sender = new FacebookBotUser { Id = message.Optin?.UserRef };
             }
 
             var activity = new Activity()

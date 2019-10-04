@@ -26,7 +26,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         }
 
         /// <summary>
-        /// Gets or sets the alternate root url used to contruct calls to Facebook's API.  Defaults to 'graph.facebook.com' but can be changed (for mocking, proxy, etc).
+        /// Gets or sets the alternate root url used to construct calls to Facebook's API.  Defaults to 'graph.facebook.com' but can be changed (for mocking, proxy, etc).
         /// </summary>
         /// <value>The API host.</value>
         public string ApiHost { get; set; }

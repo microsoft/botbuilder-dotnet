@@ -3,7 +3,6 @@
 
 using System;
 using System.Globalization;
-using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Security.Cryptography;
@@ -13,7 +12,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Builder.Adapters.Facebook.FacebookEvents;
 using Microsoft.Bot.Schema;
-using Microsoft.Net.Http.Headers;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Adapters.Facebook
@@ -51,18 +49,17 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
             // send the request
             using (var request = new HttpRequestMessage())
             {
-                request.RequestUri = new Uri($"https://{_options.ApiHost}/{_options.ApiVersion + path}?access_token={_options.AccessToken}&appsecret_proof={proof}");
+                request.RequestUri = new Uri($"https://{_options.ApiHost}/{_options.ApiVersion + path}?access_token={_options.AccessToken}&appsecret_proof={proof.ToLowerInvariant()}");
                 request.Method = method;
                 var json = JsonConvert.SerializeObject(
                     payload,
-                    Newtonsoft.Json.Formatting.None,
+                    Formatting.None,
                     new JsonSerializerSettings
                     {
                         NullValueHandling = NullValueHandling.Ignore,
                     });
                 request.Content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                // request.Content.Headers.ContentType = "application/json";
                 using (var client = new HttpClient())
                 {
                     var res = await client.SendAsync(request, cancellationToken).ConfigureAwait(false);
@@ -85,7 +82,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         /// </summary>
         /// <param name="activity">An incoming message activity.</param>
         /// <returns>A Facebook API client.</returns>
-        public virtual async Task<FacebookClientWrapper> GetAPIAsync(Activity activity)
+        public virtual async Task<FacebookClientWrapper> GetApiAsync(Activity activity)
         {
             if (activity == null)
             {
@@ -104,7 +101,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
 
             var pageId = activity.Recipient.Id;
 
-            if ((activity.ChannelData as dynamic)?.message != null && (activity.ChannelData as dynamic)?.message.is_echo)
+            if (activity.GetChannelData<FacebookMessage>().Message != null && activity.GetChannelData<FacebookMessage>().Message.IsEcho)
             {
                 pageId = activity.From.Id;
             }
@@ -157,7 +154,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
             using (var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(_options.AppSecret)))
             {
                 var hash = hmac.ComputeHash(Encoding.UTF8.GetBytes(_options.AccessToken));
-                return BitConverter.ToString(hash).Replace("-", string.Empty).ToLowerInvariant();
+                return BitConverter.ToString(hash).Replace("-", string.Empty);
             }
         }
 

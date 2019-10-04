@@ -68,7 +68,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
 
                 var message = FacebookHelper.ActivityToFacebook(activity);
 
-                var api = await _facebookClient.GetAPIAsync(context.Activity).ConfigureAwait(false);
+                var api = await _facebookClient.GetApiAsync(context.Activity).ConfigureAwait(false);
 
                 var res = await api.SendMessageAsync("/me/messages", message, null, cancellationToken).ConfigureAwait(false);
 
@@ -167,7 +167,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
 
             foreach (var entry in facebookEvent.Entry)
             {
-                List<FacebookMessage> payload = new List<FacebookMessage>();
+                var payload = new List<FacebookMessage>();
 
                 // handle normal incoming stuff
                 payload = entry.Changes != null ? entry.Changes : entry.Messaging;
