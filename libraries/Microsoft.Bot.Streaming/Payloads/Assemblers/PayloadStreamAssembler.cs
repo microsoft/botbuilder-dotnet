@@ -33,8 +33,6 @@ namespace Microsoft.Bot.Streaming.Payloads
 
         public bool End { get; private set; }
 
-        protected static JsonSerializer Serializer { get; set; } = JsonSerializer.Create(SerializationSettings.DefaultSerializationSettings);
-
         private Stream Stream { get; set; }
 
         public Stream CreateStreamFromPayload() => new PayloadStream(this);
