@@ -51,7 +51,13 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
             {
                 request.RequestUri = new Uri($"https://{_options.ApiHost}/{_options.ApiVersion + path}?access_token={_options.AccessToken}&appsecret_proof={proof}");
                 request.Method = method;
-                request.Content = new StringContent(JsonConvert.SerializeObject(payload));
+                request.Content = new StringContent(JsonConvert.SerializeObject(
+                    payload,
+                    Formatting.None,
+                    new JsonSerializerSettings
+                    {
+                        NullValueHandling = NullValueHandling.Ignore,
+                    }));
                 request.Content.Headers.Add("Content-Type", "application/json");
 
                 using (var client = new HttpClient())

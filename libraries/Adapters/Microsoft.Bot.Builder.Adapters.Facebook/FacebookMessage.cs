@@ -79,8 +79,10 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         [JsonProperty(PropertyName = "sender_action")]
         public string SenderAction { get; set; }
 
+        [JsonProperty(PropertyName = "timestamp")]
         public long TimeStamp { get; set; }
 
+        [JsonProperty(PropertyName = "standby")]
         public bool Standby { get; set; }
 
         [JsonProperty(PropertyName = "post_back")]

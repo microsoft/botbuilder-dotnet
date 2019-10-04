@@ -47,5 +47,15 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
 
         [JsonProperty(PropertyName = "is_echo")]
         public bool IsEcho { get; set; }
+
+        public bool ShouldSerializeQuickReplies()
+        {
+            return QuickReplies.Count > 0;
+        }
+
+        public bool ShouldSerializeIsEcho()
+        {
+            return IsEcho;
+        }
     }
 }
