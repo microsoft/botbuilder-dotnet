@@ -184,6 +184,40 @@ namespace Microsoft.Bot.Schema.Tests
             Assert.IsNull(trace.From.Id);
         }
 
+        [TestMethod]
+        public void IsFromStreamingConnectionTests()
+        {
+            var nonStreaming = new List<string>()
+            {
+                "http://yayay.com",
+                "https://yayay.com",
+                "HTTP://yayay.com",
+                "HTTPS://yayay.com",
+            };
+
+            var streaming = new List<string>()
+            {
+                "urn:botframework:WebSocket:wss://beep.com",
+                "urn:botframework:WebSocket:http://beep.com",
+                "URN:botframework:WebSocket:wss://beep.com",
+                "URN:botframework:WebSocket:http://beep.com",
+            };
+
+            var activity = CreateActivity();
+
+            nonStreaming.ForEach(s =>
+            {
+                activity.ServiceUrl = s;
+                Assert.IsFalse(activity.IsFromStreamingConnection());
+            });
+
+            streaming.ForEach(s =>
+            {
+                activity.ServiceUrl = s;
+                Assert.IsTrue(activity.IsFromStreamingConnection());
+            });
+        }
+
         private Activity CreateActivity()
         {
             var account1 = new ChannelAccount
