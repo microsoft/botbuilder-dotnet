@@ -11,7 +11,9 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Bot.Builder.Adapters.Facebook.FacebookEvents;
 using Microsoft.Bot.Schema;
+using Microsoft.Net.Http.Headers;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Adapters.Facebook
@@ -37,7 +39,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         /// <param name="method">HTTP method, for example POST, GET, DELETE or PUT.</param>
         /// <param name="cancellationToken">A cancellation token for the task.</param>
         /// <returns>A task representing the async operation.</returns>
-        public virtual async Task<HttpResponseMessage> SendMessageAsync(string path, FacebookMessage payload, HttpMethod method = null, CancellationToken cancellationToken = default)
+        public virtual async Task<string> SendMessageAsync(string path, FacebookMessage payload, HttpMethod method = null, CancellationToken cancellationToken = default)
         {
             var proof = GetAppSecretProof();
 
@@ -51,18 +53,28 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
             {
                 request.RequestUri = new Uri($"https://{_options.ApiHost}/{_options.ApiVersion + path}?access_token={_options.AccessToken}&appsecret_proof={proof}");
                 request.Method = method;
-                request.Content = new StringContent(JsonConvert.SerializeObject(
+                var json = JsonConvert.SerializeObject(
                     payload,
-                    Formatting.None,
+                    Newtonsoft.Json.Formatting.None,
                     new JsonSerializerSettings
                     {
                         NullValueHandling = NullValueHandling.Ignore,
-                    }));
-                request.Content.Headers.Add("Content-Type", "application/json");
+                    });
+                request.Content = new StringContent(json, Encoding.UTF8, "application/json");
 
+                // request.Content.Headers.ContentType = "application/json";
                 using (var client = new HttpClient())
                 {
-                    return await client.SendAsync(request, cancellationToken).ConfigureAwait(false);
+                    var res = await client.SendAsync(request, cancellationToken).ConfigureAwait(false);
+
+                    if (res.IsSuccessStatusCode)
+                    {
+                        var responseBody = await res.Content.ReadAsStringAsync().ConfigureAwait(false);
+                        var stringResponse = JsonConvert.DeserializeObject<FacebookResponseOk>(responseBody);
+                        return stringResponse.MessageId;
+                    }
+
+                    return string.Empty;
                 }
             }
         }
@@ -145,7 +157,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
             using (var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(_options.AppSecret)))
             {
                 var hash = hmac.ComputeHash(Encoding.UTF8.GetBytes(_options.AccessToken));
-                return BitConverter.ToString(hash).Replace("-", string.Empty);
+                return BitConverter.ToString(hash).Replace("-", string.Empty).ToLowerInvariant();
             }
         }
 

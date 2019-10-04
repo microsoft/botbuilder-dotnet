@@ -72,15 +72,12 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
 
                 var res = await api.SendMessageAsync("/me/messages", message, null, cancellationToken).ConfigureAwait(false);
 
-                if (res != null)
+                var response = new ResourceResponse()
                 {
-                    var response = new ResourceResponse()
-                    {
-                        Id = (res as dynamic).message_id,
-                    };
+                    Id = res,
+                };
 
-                    responses.Add(response);
-                }
+                responses.Add(response);
             }
 
             return responses.ToArray();
@@ -144,8 +141,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
                 return;
             }
 
-            await FacebookHelper.WriteAsync(response, HttpStatusCode.OK, string.Empty, Encoding.UTF8, cancellationToken).ConfigureAwait(false);
-
+            // await FacebookHelper.WriteAsync(response, HttpStatusCode.OK, string.Empty, Encoding.UTF8, cancellationToken).ConfigureAwait(false);
             string stringifyBody;
 
             using (var sr = new StreamReader(request.Body))
@@ -205,7 +201,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
                 }
             }
 
-            await FacebookHelper.WriteAsync(response, HttpStatusCode.OK, string.Empty, Encoding.UTF8, cancellationToken).ConfigureAwait(false);
+            // await FacebookHelper.WriteAsync(response, HttpStatusCode.OK, string.Empty, Encoding.UTF8, cancellationToken).ConfigureAwait(false);
         }
     }
 }
