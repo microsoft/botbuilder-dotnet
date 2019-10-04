@@ -17,8 +17,13 @@ namespace Microsoft.Bot.Streaming.Tests.Utilities
         private readonly DirectLineAdapter _adapter;
         private readonly Func<Schema.Activity, Task<InvokeResponse>> _processActivityAsync;
 
-        public MockBot(Func<Schema.Activity, Task<InvokeResponse>> processActivityAsync, string pipeName = "testPipes", DirectLineAdapter adapter = null)
+        public MockBot(Func<Schema.Activity, Task<InvokeResponse>> processActivityAsync, string pipeName = null, DirectLineAdapter adapter = null)
         {
+            if (pipeName == null)
+            {
+                pipeName = Guid.NewGuid().ToString();
+            }
+
             _processActivityAsync = processActivityAsync;
             _adapter = adapter ?? new DirectLineAdapter(null, this, null);
             _adapter.AddNamedPipeConnection(pipeName, this);

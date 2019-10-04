@@ -4,8 +4,10 @@
 using System;
 using System.Collections.Generic;
 using System.IO.Pipes;
+using System.Net.Mail;
 using System.Net.Sockets;
 using System.Net.WebSockets;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Streaming;
@@ -121,9 +123,44 @@ namespace Microsoft.Bot.Streaming.UnitTests
             Assert.Equal(WebSocketState.Closed, sock.RealState);
         }
 
+        [Fact]
+        public async Task WebSocketTransport_CanSend()
+        {
+            // Arrange
+            var sock = new FauxSock();
+            sock.RealState = WebSocketState.Open;
+            var transport = new WebSocketTransport(sock);
+            var messageText = "This is a message.";
+            byte[] message = Encoding.ASCII.GetBytes(messageText);
+
+            // Act
+            await transport.SendAsync(message, 0, message.Length);
+
+            // Assert
+            Assert.Equal(messageText, Encoding.UTF8.GetString(sock.SentArray));
+        }
+
+        [Fact]
+        public async Task WebSocketTransport_CanReceive()
+        {
+            // Arrange
+            var sock = new FauxSock();
+            sock.RealState = WebSocketState.Open;
+            var transport = new WebSocketTransport(sock);
+            byte[] message = Encoding.ASCII.GetBytes("This is a message.");
+
+            // Act
+            var received = await transport.ReceiveAsync(message, 0, message.Length);
+
+            // Assert
+            Assert.Equal(message.Length, received);
+        }
+
         private class FauxSock : WebSocket
         {
             public ArraySegment<byte> SentArray { get; set; }
+
+            public ArraySegment<byte> ReceivedArray { get; set; }
 
             public WebSocketState RealState { get; set; }
 
@@ -154,17 +191,23 @@ namespace Microsoft.Bot.Streaming.UnitTests
 
             public override void Dispose()
             {
-                throw new NotImplementedException();
+                RealState = WebSocketState.Closed;
+
+                return;
             }
 
-            public override Task<WebSocketReceiveResult> ReceiveAsync(ArraySegment<byte> buffer, CancellationToken cancellationToken)
+            public override async Task<WebSocketReceiveResult> ReceiveAsync(ArraySegment<byte> buffer, CancellationToken cancellationToken)
             {
-                throw new NotImplementedException();
+                ReceivedArray = buffer;
+
+                return new WebSocketReceiveResult(buffer.Count, WebSocketMessageType.Close, true);
             }
 
             public override Task SendAsync(ArraySegment<byte> buffer, WebSocketMessageType messageType, bool endOfMessage, CancellationToken cancellationToken)
             {
-                throw new NotImplementedException();
+                SentArray = buffer;
+
+                return Task.CompletedTask;
             }
         }
     }

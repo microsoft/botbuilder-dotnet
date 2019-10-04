@@ -20,7 +20,7 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
         public void CanBeConstructedWithANamedPipe()
         {
             // Act
-            var handler = new StreamingRequestHandler(null, new DirectLineAdapter(), "fakePipe");
+            var handler = new StreamingRequestHandler(null, new DirectLineAdapter(), Guid.NewGuid().ToString());
 
             // Assert
             Assert.NotNull(handler);
@@ -77,11 +77,11 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
         }
 
         [Fact]
-        public async Task RequestHandlerRespondsWith500OnError()
+        public async void RequestHandlerRespondsWith500OnError()
         {
             // Arrange
-            var handler = new StreamingRequestHandler(null, new DirectLineAdapter(), "fakePipe");
-            var conversationId = "testconvoid";
+            var handler = new StreamingRequestHandler(null, new DirectLineAdapter(), Guid.NewGuid().ToString());
+            var conversationId = Guid.NewGuid().ToString();
             var membersAdded = new List<ChannelAccount>();
             var member = new ChannelAccount
             {
@@ -114,11 +114,12 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
         }
 
         [Fact]
-        public async Task RequestHandlerRemembersConversations()
+        public async void RequestHandlerRemembersConversations()
         {
             // Arrange
-            var handler = new StreamingRequestHandler(null, new DirectLineAdapter(), "fakePipe");
-            var conversationId = "testconvoid";
+            var adapter = new DirectLineAdapter();
+            var handler = new StreamingRequestHandler(null, adapter, Guid.NewGuid().ToString());
+            var conversationId = Guid.NewGuid().ToString();
             var membersAdded = new List<ChannelAccount>();
             var member = new ChannelAccount
             {
@@ -151,11 +152,11 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
         }
 
         [Fact]
-        public async Task RequestHandlerForgetsConversations()
+        public async void RequestHandlerForgetsConversations()
         {
             // Arrange
-            var handler = new StreamingRequestHandler(null, new DirectLineAdapter(), "fakePipe");
-            var conversationId = "testconvoid";
+            var handler = new StreamingRequestHandler(null, new DirectLineAdapter(), Guid.NewGuid().ToString());
+            var conversationId = Guid.NewGuid().ToString();
             var membersAdded = new List<ChannelAccount>();
             var member = new ChannelAccount
             {
@@ -189,11 +190,11 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
         }
 
         [Fact]
-        public async Task RequestHandlerAssignsAServiceUrl()
+        public async void RequestHandlerAssignsAServiceUrl()
         {
             // Arrange
-            var handler = new StreamingRequestHandler(null, new DirectLineAdapter(), "fakePipe");
-            var conversationId = "testconvoid";
+            var handler = new StreamingRequestHandler(null, new DirectLineAdapter(), Guid.NewGuid().ToString());
+            var conversationId = Guid.NewGuid().ToString();
             var serviceUrl = "urn:FakeName:fakeProtocol://fakePath";
             var membersAdded = new List<ChannelAccount>();
             var member = new ChannelAccount
@@ -228,12 +229,12 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
         }
 
         [Fact]
-        public async Task ItGetsUserAgentInfo()
+        public async void ItGetsUserAgentInfo()
         {
             // Arrange
 
             // Act
-            var handler = new StreamingRequestHandler(null, new DirectLineAdapter(), "fakePipe");
+            var handler = new StreamingRequestHandler(null, new DirectLineAdapter(), Guid.NewGuid().ToString());
             var activity = new Schema.Activity()
             {
                 Type = "message",
@@ -243,7 +244,7 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
                     Id = "bot",
                     Name = "bot",
                 },
-                Conversation = new Schema.ConversationAccount(null, null, "testconvoid", null, null, null, null),
+                Conversation = new Schema.ConversationAccount(null, null, Guid.NewGuid().ToString(), null, null, null, null),
             };
 
             var payload = new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(activity, SerializationSettings.DefaultDeserializationSettings)));
