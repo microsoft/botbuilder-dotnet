@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using Microsoft.Bot.Builder.Adapters.Facebook.FacebookEvents;
+using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Adapters.Facebook
 {
@@ -26,54 +27,63 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         /// Gets or sets the ID of the recipient.
         /// </summary>
         /// <value>The ID of the recipient.</value>
+        [JsonProperty(PropertyName = "recipient")]
         public FacebookBotUser Recipient { get; set; } = new FacebookBotUser();
 
         /// <summary>
         /// Gets or sets the ID of the sender.
         /// </summary>
         /// <value>The ID of the sender.</value>
+        [JsonProperty(PropertyName = "sender")]
         public FacebookBotUser Sender { get; set; } = new FacebookBotUser();
 
         /// <summary>
         /// Gets or sets the message to be sent.
         /// </summary>
         /// <value>The message.</value>
+        [JsonProperty(PropertyName = "message")]
         public Message Message { get; set; }
 
         /// <summary>
         /// Gets or sets the messaging type.
         /// </summary>
         /// <value>The messaging type.</value>
+        [JsonProperty(PropertyName = "messaging_type")]
         public string MessagingType { get; set; }
 
         /// <summary>
         /// Gets or sets a tag to the message.
         /// </summary>
         /// <value>The tag.</value>
+        [JsonProperty(PropertyName = "tag")]
         public string Tag { get; set; }
 
         /// <summary>
         /// Gets or sets the notification type.
         /// </summary>
         /// <value>The notification type.</value>
+        [JsonProperty(PropertyName = "notification_type")]
         public string NotificationType { get; set; }
 
         /// <summary>
         /// Gets or sets the persona ID.
         /// </summary>
         /// <value>The persona ID.</value>
+        [JsonProperty(PropertyName = "persona_id")]
         public string PersonaId { get; set; }
 
         /// <summary>
         /// Gets or sets the sender action.
         /// </summary>
         /// <value>The sender action.</value>
+        [JsonProperty(PropertyName = "sender_action")]
         public string SenderAction { get; set; }
 
         public long TimeStamp { get; set; }
 
         public bool Standby { get; set; }
 
+        [JsonProperty(PropertyName = "post_back")]
         public FacebookPostBack PostBack { get; set; }
     }
 }
