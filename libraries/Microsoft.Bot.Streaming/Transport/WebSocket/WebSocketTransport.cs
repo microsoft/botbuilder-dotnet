@@ -33,6 +33,10 @@ namespace Microsoft.Bot.Streaming.Transport.WebSockets
                 }
                 catch (Exception)
                 {
+                    // Any exception thrown here will be caused by the socket already being closed,
+                    // which is the state we want to put it in by calling this method, which
+                    // means we don't care if it was already closed and threw an exception
+                    // when we tried to close it again.
                 }
             }
         }
@@ -61,15 +65,15 @@ namespace Microsoft.Bot.Streaming.Transport.WebSockets
                     return result.Count;
                 }
             }
-            catch (ObjectDisposedException)
+            catch (Exception ex)
             {
-                // _stream was disposed by a disconnect
-            }
-            catch (OperationCanceledException)
-            {
-            }
-            catch (WebSocketException)
-            {
+                // Exceptions of the three types below will also have set the socket's state to closed, which fires an
+                // event consumers of this class are subscribed to and have handling around. Any other exception needs to
+                // be thrown to cause a non-transport-connectivity failure.
+                if (!(ex is ObjectDisposedException) && !(ex is OperationCanceledException) && !(ex is WebSocketException))
+                {
+                    throw;
+                }
             }
 
             return 0;
@@ -86,19 +90,15 @@ namespace Microsoft.Bot.Streaming.Transport.WebSockets
                     return count;
                 }
             }
-            catch (ObjectDisposedException)
+            catch (Exception ex)
             {
-                // _stream was disposed by a Disconnect call
-            }
-            catch (IOException)
-            {
-                // _stream was disposed by a disconnect
-            }
-            catch (OperationCanceledException)
-            {
-            }
-            catch (WebSocketException)
-            {
+                // Exceptions of the three types below will also have set the socket's state to closed, which fires an
+                // event consumers of this class are subscribed to and have handling around. Any other exception needs to
+                // be thrown to cause a non-transport-connectivity failure.
+                if (!(ex is ObjectDisposedException) && !(ex is OperationCanceledException) && !(ex is WebSocketException) && !(ex is IOException))
+                {
+                    throw;
+                }
             }
 
             return 0;
