@@ -152,7 +152,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
             stepContext.Values[QnAData] = new List<QueryResult>(response.Answers);
             
             // Check if active learning is enabled.
-            if (isActiveLearningEnabled && response.Answers.FirstOrDefault().Score <= 0.95)
+            if (isActiveLearningEnabled && response.Answers.Any() && response.Answers.First().Score <= 0.95)
             {
                 // Get filtered list of the response that support low score variation criteria.
                 response.Answers = _services.GetLowScoreVariation(response.Answers);

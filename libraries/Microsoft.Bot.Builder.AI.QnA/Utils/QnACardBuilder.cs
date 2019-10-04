@@ -64,7 +64,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
             var plCard = new HeroCard()
             {
-                Title = cardTitle,
+                Text = cardTitle,
                 Subtitle = string.Empty,
                 Buttons = buttonList
             };
@@ -121,7 +121,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
             var plCard = new HeroCard()
             {
-                Title = result.Answer,
+                Text = result.Answer,
                 Subtitle = string.Empty,
                 Buttons = buttonList
             };
