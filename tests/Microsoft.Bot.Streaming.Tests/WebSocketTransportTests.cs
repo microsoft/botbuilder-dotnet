@@ -95,15 +95,43 @@ namespace Microsoft.Bot.Streaming.UnitTests
             Assert.IsType<UriFormatException>(result);
         }
 
+        [Fact]
+        public async Task WebSocketTransport_Connects()
+        {
+            var sock = new FauxSock();
+            sock.RealState = WebSocketState.Open;
+            var transport = new WebSocketTransport(sock);
+
+            Assert.True(transport.IsConnected);
+
+            transport.Close();
+            transport.Dispose();
+        }
+
+        [Fact]
+        public async Task WebSocketTransport_SetsState()
+        {
+            var sock = new FauxSock();
+            sock.RealState = WebSocketState.Open;
+            var transport = new WebSocketTransport(sock);
+
+            transport.Close();
+            transport.Dispose();
+
+            Assert.Equal(WebSocketState.Closed, sock.RealState);
+        }
+
         private class FauxSock : WebSocket
         {
             public ArraySegment<byte> SentArray { get; set; }
+
+            public WebSocketState RealState { get; set; }
 
             public override WebSocketCloseStatus? CloseStatus => throw new NotImplementedException();
 
             public override string CloseStatusDescription => throw new NotImplementedException();
 
-            public override WebSocketState State => throw new NotImplementedException();
+            public override WebSocketState State { get => RealState; }
 
             public override string SubProtocol => throw new NotImplementedException();
 
@@ -114,7 +142,9 @@ namespace Microsoft.Bot.Streaming.UnitTests
 
             public override Task CloseAsync(WebSocketCloseStatus closeStatus, string statusDescription, CancellationToken cancellationToken)
             {
-                throw new NotImplementedException();
+                RealState = WebSocketState.Closed;
+
+                return Task.CompletedTask;
             }
 
             public override Task CloseOutputAsync(WebSocketCloseStatus closeStatus, string statusDescription, CancellationToken cancellationToken)
