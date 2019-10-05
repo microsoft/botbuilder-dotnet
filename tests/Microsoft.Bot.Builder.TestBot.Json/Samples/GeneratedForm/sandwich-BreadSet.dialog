@@ -15,7 +15,7 @@
         },
         {
             "$type": "Microsoft.IfCondition",
-            "condition": "dialog.expectedProperties.First != 'Bread'",
+            "condition": "!dialog.dialogevent.value.expected",
             "actions": [
                 {
                     "$type": "Microsoft.Ask",

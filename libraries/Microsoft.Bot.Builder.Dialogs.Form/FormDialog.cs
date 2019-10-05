@@ -41,7 +41,16 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
             {
                 var val = queues.SetProperty[0];
                 evt = new DialogEvent() { Name = FormEvents.SetProperty, Value = val, Bubble = false };
-                sequenceContext.State.SetValue($"{TurnPath.RECOGNIZED}.entities.{val.Entity.Name}", new object[] { val.Entity.Value });
+                // TODO: For now, I'm going to dereference to a one-level array value.  There is a bug in the current code in the distinction between
+                // @ which is supposed to unwrap down to non-array and @@ which returns the whole thing. @ in the curent code works by doing [0] which
+                // is not enough.
+                var entity = val.Entity.Value;
+                if (!(entity is JArray))
+                {
+                    entity = new object[] { entity };
+                }
+
+                sequenceContext.State.SetValue($"{TurnPath.RECOGNIZED}.entities.{val.Entity.Name}", entity);
             }
             else if (queues.UnknownEntity.Any())
             {
@@ -186,7 +195,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                                 {
                                     // Resolve and move to SetProperty
                                     infos.Clear();
-                                    ambiguousEntity.Value = common.First();
+                                    entityToProperty.Entity = info;
+                                    entityToProperty.Expected = true;
                                     queues.ClarifyEntity.Dequeue();
                                     queues.SetProperty.Add(entityToProperty);
                                 }
@@ -279,8 +289,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
         private Dictionary<string, List<EntityInfo>> NormalizeEntities(SequenceContext context)
         {
             var entityToInfo = new Dictionary<string, List<EntityInfo>>();
-
-            // TODO: In a multiple event world, we only want to do this at the end of the RecognizedIntent round
             var text = context.State.GetValue<string>(TurnPath.RECOGNIZED + ".text");
             if (context.State.TryGetValue<dynamic>(TurnPath.RECOGNIZED + ".entities", out var entities))
             {
@@ -332,25 +340,74 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                 }
             }
 
+            // TODO: This should not be necessary--LUIS should be picking the maximal match
+            foreach (var infos in entityToInfo.Values)
+            {
+                infos.Sort((e1, e2) =>
+                {
+                    var val = 0;
+                    if (e1.Start == e2.Start)
+                    {
+                        if (e1.End > e2.End)
+                        {
+                            val = -1;
+                        }
+                        else if (e1.End < e2.End)
+                        {
+                            val = +1;
+                        }
+                    }
+                    else if (e1.Start < e2.Start)
+                    {
+                        val = -1;
+                    }
+                    else
+                    {
+                        val = +1;
+                    }
+
+                    return val;
+                });
+                for (var i = 0; i < infos.Count(); ++i)
+                {
+                    var current = infos[i];
+                    for (var j = i + 1; j < infos.Count();)
+                    {
+                        var alt = infos[j];
+                        if (current.Covers(alt))
+                        {
+                            _ = infos.Remove(alt);
+                        }
+                        else
+                        {
+                            ++j;
+                        }
+                    }
+                }
+            }
+
             return entityToInfo;
         }
 
         // Generate possible entity to property mappings
-        private IEnumerable<PropertyEntityCandidate> Candidates(Dictionary<string, List<EntityInfo>> entities, string[] expected)
+        private IEnumerable<EntityToProperty> Candidates(Dictionary<string, List<EntityInfo>> entities, string[] expected)
         {
-            foreach (var prop in Schema.Property.Children)
+            foreach (var schema in Schema.Property.Children)
             {
-                foreach (var mapping in prop.Mappings)
+                foreach (var entityName in schema.Mappings)
                 {
-                    if (entities.TryGetValue(mapping, out var possiblities))
+                    if (entities.TryGetValue(entityName, out var matches))
                     {
-                        foreach (var possible in possiblities)
+                        foreach (var entity in matches)
                         {
-                            yield return new PropertyEntityCandidate
+                            yield return new EntityToProperty
                             {
-                                Entity = possible,
-                                Property = prop,
-                                Expected = expected.Contains(prop.Name)
+                                Entity = entity,
+                                Schema = schema,
+                                Property = schema.Path,
+                                // TODO: Eventually we should be able to pick up an add/remove composite here as an alternative
+                                Operation = Operations.Add,
+                                Expected = expected.Contains(schema.Name)
                             };
                         }
                     }
@@ -387,90 +444,76 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
             }
         }
 
-        private IEnumerable<PropertyEntityCandidate> RemoveOverlappingPerProperty(IEnumerable<PropertyEntityCandidate> candidates)
+        // Have each property pick which overlapping entity is the best one
+        private IEnumerable<EntityToProperty> RemoveOverlappingPerProperty(IEnumerable<EntityToProperty> candidates)
         {
-            return candidates;
-            /*
             var perProperty = from candidate in candidates
-                              group candidate by candidate.Property;
-            foreach (var choices in perProperty)
+                              group candidate by candidate.Schema;
+            foreach (var propChoices in perProperty)
             {
+                var schema = propChoices.Key;
+                var choices = propChoices.ToList();
+                // Assume preference by order listed in mappings
+                // Alternatives would be to look at coverage or other metrices
+                foreach (var entity in schema.Mappings)
+                {
+                    EntityToProperty candidate;
+                    do
+                    {
+                        candidate = null;
+                        foreach (var mapping in choices)
+                        {
+                            if (mapping.Entity.Name == entity)
+                            {
+                                candidate = mapping;
+                                break;
+                            }
+                        }
 
+                        if (candidate != null)
+                        {
+                            // Remove any overlapping entities
+                            choices.RemoveAll(choice => choice.Entity.Overlaps(candidate.Entity));
+                            yield return candidate;
+                        }
+                    } while (candidate != null);
+                }
             }
-            */
         }
 
         private void AddToQueues(Dictionary<string, List<EntityInfo>> entities, string[] expected, EventQueues queues)
         {
-            var candidates = Candidates(entities, expected);
-
-            // Group by specific entity order by priority + coverage then by properties across expected/unexpected
-            // Captures the intuition that more specific entities or larger entities are preferred
-            var choices = from candidate in candidates
-                          group candidate by candidate.Entity into entityGroup
-                          orderby entityGroup.Key.Priority ascending, entityGroup.Key.Coverage descending
-                          select new
-                          {
-                              entityGroup.Key,
-                              properties = from property in entityGroup
-                                           group property by property.Expected into expectedGroups
-                                           orderby expectedGroups.Key descending
-                                           select expectedGroups
-                          };
-
-            foreach (var entityChoices in choices)
+            var candidates = (from candidate in RemoveOverlappingPerProperty(Candidates(entities, expected))
+                              orderby candidate.Expected descending
+                              select candidate).ToList();
+            var usedEntities = new HashSet<EntityInfo>(from candidate in candidates select candidate.Entity);
+            while (candidates.Any())
             {
-                var entity = entityChoices.Key;
-                if (entities.TryGetValue(entity.Name, out var entityInfos) && entityInfos.Contains(entity))
+                var candidate = candidates.First();
+                var alternatives = (from alt in candidates where candidate.Entity.Overlaps(alt.Entity) select alt).ToList();
+                candidates = candidates.Except(alternatives).ToList();
+                if (candidate.Expected)
                 {
-                    RemoveOverlappingEntities(entity, entities);
-                    foreach (var entityProperties in entityChoices.properties)
-                    {
-                        var propertyOps = from entityProperty in entityProperties
-                                          select new
-                                          {
-                                              // TODO: Figure out operation from role?
-                                              // If composite do we have role:value, add{role:value}, remove{role:value}, add{type:value}, changeValue, ...
-                                              // Would be nice if extensible...
-                                              Operation = Operations.Add,
-                                              Property = entityProperty.Property.Path
-                                          };
-                        if (entityProperties.Count() == 1)
-                        {
-                            // Only a single property consumes entity
-                            var slotEntity = entityProperties.First();
-                            var property = slotEntity.Property;
-                            // Send to clarify or set
-                            var mapping = new EntityToProperty
-                            {
-                                Entity = entity,
-                                Property = propertyOps.First().Property,
-                                Operation = propertyOps.First().Operation
-                            };
-                            AddMappingToQueue(mapping, queues);
-                        }
-                        else
-                        {
-                            // Multiple properties want the same entity
-                            var properties = from property in propertyOps
-                                             select new EntityToProperty
-                                             {
-                                                 Entity = entity,
-                                                 Property = property.Property,
-                                                 Operation = property.Operation
-                                             };
-                            queues.ChooseProperty.Add(properties.ToList());
-                        }
-                    }
+                    // If expected binds entity, drop alternatives
+                    alternatives.RemoveAll(a => !a.Expected);
+                }
+
+                if (alternatives.Count() == 1)
+                {
+                    AddMappingToQueue(candidate, queues);
+                }
+                else
+                {
+                    queues.ChooseProperty.Add(alternatives);
                 }
             }
 
             // Collect unknown entities
-            foreach (var infos in entities.Values)
+            foreach (var entity in entities.Values.SelectMany(e => e))
             {
-                foreach (var info in infos)
+                if (!usedEntities.Contains(entity))
                 {
-                    queues.UnknownEntity.Add(info);
+                    queues.UnknownEntity.Add(entity);
                 }
             }
         }

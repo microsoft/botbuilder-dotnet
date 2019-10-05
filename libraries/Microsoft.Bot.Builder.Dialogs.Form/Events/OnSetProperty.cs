@@ -40,7 +40,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form.Events
             var expressions = new List<Expression> { base.GetExpression(factory) };
             if (this.Property != null)
             {
-                expressions.Add(factory.Parse($"{TurnPath.DIALOGEVENT}.value.change.property == '{this.Property}'"));
+                expressions.Add(factory.Parse($"{TurnPath.DIALOGEVENT}.value.property == '{this.Property}'"));
             }
 
             if (this.Entity != null)

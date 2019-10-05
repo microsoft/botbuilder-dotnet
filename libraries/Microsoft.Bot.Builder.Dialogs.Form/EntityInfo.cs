@@ -26,8 +26,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Form.Events
 
         public int Turn { get; set; }
 
+        // The entities share some of the same text
         public bool Overlaps(EntityInfo entity)
             => Start <= entity.End && End >= entity.Start;
+
+        // The entities include exactly the same text
+        public bool Alternative(EntityInfo entity)
+            => Start == entity.Start && End == entity.End;
+
+        // This includes all of entity text plus more.
+        public bool Covers(EntityInfo entity)
+            => Start <= entity.Start && End >= entity.End && End - Start > entity.End - entity.Start;
 
         public override string ToString()
             => $"{Name}:{Value} P{Priority} {Score} {Coverage}";
