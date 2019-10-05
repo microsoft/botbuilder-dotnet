@@ -153,18 +153,3 @@ csharp_space_after_dot = false
 # Wrapping preferences
 csharp_preserve_single_line_statements = true
 csharp_preserve_single_line_blocks = true
-
-# SA1101: Prefix local calls with this
-dotnet_diagnostic.SA1101.severity = none
-
-# IDE0055: Fix formatting
-dotnet_diagnostic.IDE0055.severity = none
-
-# SA1028: Code should not contain trailing whitespace
-dotnet_diagnostic.SA1028.severity = none
-
-# UseAsyncSuffix: Use Async suffix
-dotnet_diagnostic.UseAsyncSuffix.severity = none
-
-# SA1609: Property documentation should have value
-dotnet_diagnostic.SA1609.severity = none
