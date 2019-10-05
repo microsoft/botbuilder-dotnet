@@ -8,24 +8,24 @@
 >>> Ask prompts <<<
 
 > TODO: We should look at the schema and if a few items list them or do cards or..
-# askEnum(property, turn)
-- Which value do you want for {toLower(property)}?
+# askEnum(property, name)
+- Which value do you want for {name}?
 
-# askNumber(property, turn)
+# askNumber(property, name)
 - IF: {turn.schema.properties[property].minimum && turn.schema.properties[property].maximum}
-- Enter a number for {toLower(property)} between {turn.schema.properties[property].minimum} and {turn.schema.properties[property].maximum}
+- Enter a number for {name} between {turn.schema.properties[property].minimum} and {turn.schema.properties[property].maximum}
 - ELSE:
-- Enter a number for {toLower(property)}
+- Enter a number for {name}
 
-# askString(property, turn)
-- Enter a value for {toLower(property)}
+# askString(property, name)
+- Enter a value for {name}
 
 >>> Help messages <<<
-# helpProperty(property, turn)
-- Possible values for {toLower(property)} include: \[{join(turn.schema.properties[property].enum, ',')}\]
+# helpProperty(property, name)
+- Possible values for {name} include: \[{join(turn.schema.properties[property].enum, ',')}\]
 
-# clarifyEnum(property, turn)
-- Please choose a value for {toLower(property)} from \[{join(foreach(turn.dialogEvent.value.entity.value, val, bread(val)), ',')}\]
+# clarifyEnum(property, name)
+- Please choose a value for {name} from \[{join(foreach(turn.dialogEvent.value.entity.value, val, bread(val)), ',')}\]
 
 > TODO: Need to generate this
 # bread(val)
@@ -34,15 +34,11 @@
 - ELSE:
 - wheat grain
 
-> TODO: This is not correct--the possible values should be picked up from the event structure
-# chooseSlot(entity, turn)
-- Please choose a slot for {toLower(entity)} from \[{join(turn.schema.properties, ',')}\]
-
 # cancel
 - Do you want to end the conversation? (yes/no)
 
-# unexpectedPropertySet(property, entity, turn)
-- Do you want to set {toLower(property)} as {toLower(entity)}? (yes/no)
+# unexpectedPropertySet(property, entity, name)
+- Do you want to set {name} as {toLower(entity)}? (yes/no)
 
 # chooseProperties
 - Did you mean {join(foreach(turn.dialogevent.value, choice, chooseProperty(choice)), " or ")}
