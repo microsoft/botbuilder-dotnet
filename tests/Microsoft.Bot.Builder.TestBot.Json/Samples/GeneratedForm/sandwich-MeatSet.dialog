@@ -11,11 +11,11 @@
         {
             "$type": "Microsoft.SetProperty",
             "property": "$PropertyOnhold",
-            "value": "'$Meat'"
+            "value": "$Meat"
         },
         {
             "$type": "Microsoft.IfCondition",
-            "condition": "dialog.expectedProperties.First != 'Meat'",
+            "condition": "!turn.dialogevent.value.expected",
             "actions": [
                 {
                     "$type": "Microsoft.Ask",

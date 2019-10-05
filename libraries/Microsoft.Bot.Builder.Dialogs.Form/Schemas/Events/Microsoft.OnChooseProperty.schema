@@ -23,6 +23,15 @@
                         "type": "string",
                         "title": "Property name"
                     }
+                },
+                "enttities": {
+                    "type": "array",
+                    "title": "Possible properties",
+                    "description": "Entities being assigned",
+                    "items": {
+                        "type": "string",
+                        "title": "Entity name"
+                    }
                 }
             }
         }

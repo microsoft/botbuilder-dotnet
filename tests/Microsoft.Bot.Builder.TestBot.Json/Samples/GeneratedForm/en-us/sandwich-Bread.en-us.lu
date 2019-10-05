@@ -1,7 +1,8 @@
 
 $Bread:multigrain=
 $Bread:rye=
-$Bread:white=$Bread:wheatgrain=- wheat- wheat grain$Bread:honeyWheat=- wheat- honey wheat
+$Bread:white=
+
 # None
 - multigrain
 - rye

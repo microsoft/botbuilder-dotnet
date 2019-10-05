@@ -14,7 +14,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form.Events
     public class OnChooseProperty : OnDialogEvent
     {
         [JsonConstructor]
-        public OnChooseProperty(List<string> properties = null, string entity = null, List<Dialog> actions = null, string condition = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public OnChooseProperty(List<string> properties = null, List<string> entities = null, List<Dialog> actions = null, string condition = null, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base(
                 @event: FormEvents.ChooseProperty,
                 actions: actions,
@@ -22,33 +22,30 @@ namespace Microsoft.Bot.Builder.Dialogs.Form.Events
                 callerPath: callerPath,
                 callerLine: callerLine)
         {
-            this.Properties = properties;
-            this.Entity = entity;
+            this.Properties = properties ?? new List<string>();
+            this.Entities = entities ?? new List<string>();
         }
 
         [JsonProperty("properties")]
         public List<string> Properties { get; set; }
 
-        [JsonProperty("entity")]
-        public string Entity { get; set; }
+        [JsonProperty("entities")]
+        public List<string> Entities { get; set; }
 
         public override string GetIdentity()
-            => $"{this.GetType().Name}([{string.Join(",", this.Properties)}], {this.Entity})";
+            => $"{this.GetType().Name}([{string.Join(",", this.Properties)}], {this.Entities})";
 
         public override Expression GetExpression(IExpressionParser factory)
         {
             var expressions = new List<Expression> { base.GetExpression(factory) };
-            if (this.Properties != null)
+            foreach (var property in this.Properties)
             {
-                foreach (var property in this.Properties)
-                {
-                    expressions.Add(factory.Parse($"contains(foreach(property, {TurnPath.DIALOGEVENT}.value.properties, property.name), '{property}')"));
-                }
+                expressions.Add(factory.Parse($"contains(foreach({TurnPath.DIALOGEVENT}.value, mapping, mapping.property), '{property}')"));
             }
 
-            if (this.Entity != null)
+            foreach (var entity in this.Entities)
             {
-                expressions.Add(factory.Parse($"{TurnPath.DIALOGEVENT}.value.entity.name == '{this.Entity}'"));
+                expressions.Add(factory.Parse($"contains(foreach({TurnPath.DIALOGEVENT}.value, mapping, mapping.entity.name), '{entity}')"));
             }
 
             return Expression.AndExpression(expressions.ToArray());

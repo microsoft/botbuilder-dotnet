@@ -4,5 +4,5 @@
     "recognizer": "sandwich.lu",
     "generator": "sandwich.lg",
     "schema": "sandwich.form",
-    "triggers": [ "sandwich-BreadAsk", "sandwich-BreadClarify", "sandwich-BreadClear", "sandwich-BreadHelp", "sandwich-BreadSet", "sandwich-CheeseAsk", "sandwich-CheeseClarify", "sandwich-CheeseClear", "sandwich-CheeseHelp", "sandwich-CheeseSet", "sandwich-MeatAsk", "sandwich-MeatClarify", "sandwich-MeatClear", "sandwich-MeatHelp", "sandwich-MeatSet", "sandwich-begindialog", "sandwich-cancelconfirmation", "sandwich-cancelconfirmationset", "sandwich-unexpectedpropertyset" ]
+    "triggers": [ "sandwich-BreadAsk", "sandwich-BreadClarify", "sandwich-BreadClear", "sandwich-BreadHelp", "sandwich-BreadSet", "sandwich-CheeseAsk", "sandwich-CheeseClarify", "sandwich-CheeseClear", "sandwich-CheeseHelp", "sandwich-CheeseSet", "sandwich-MeatAsk", "sandwich-MeatClarify", "sandwich-MeatClear", "sandwich-MeatHelp", "sandwich-MeatSet", "sandwich-begindialog", "sandwich-cancelconfirmation", "sandwich-chooseproperty", "sandwich-cancelconfirmationset", "sandwich-unexpectedpropertyset" ]
 }

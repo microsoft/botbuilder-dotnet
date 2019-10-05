@@ -14,7 +14,7 @@
             "actions": [
                 {
                     "$type": "Microsoft.DeleteProperty",
-                    "property": "$Meat"
+                    "property": "{$PropertyOnHold}"
                 }
             ]
         }
