@@ -60,10 +60,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative.Converters
 
             T result = TypeFactory.Build<T>(typeName, jsonObject, serializer);
 
-            // combine the "path for the most recent JToken from IdRefResolver" or the "top root path"
-            // with the line information for this particular json fragment and add it to the sourceMap
-            range = new SourceRange() { Path = paths.Peek(), StartPoint = startPoint, EndPoint = endPoint };
-            this.sourceMap.Add(result, range);
+            // DeclarativeTypeLoader.LoadAsync only adds FileResource to the paths stack
+            if (paths.Count > 0)
+            {
+                // combine the "path for the most recent JToken from IdRefResolver" or the "top root path"
+                // with the line information for this particular json fragment and add it to the sourceMap
+                range = new SourceRange() { Path = paths.Peek(), StartPoint = startPoint, EndPoint = endPoint };
+                this.sourceMap.Add(result, range);
+            }
 
             if (found)
             {
