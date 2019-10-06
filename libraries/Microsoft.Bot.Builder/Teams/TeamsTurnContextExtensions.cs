@@ -57,7 +57,7 @@ namespace Microsoft.Bot.Builder.Teams
             var connectorClient = turnContext.TurnState.Get<IConnectorClient>();
 
             // This call does NOT send the outbound Activity is not being sent through the middleware stack.
-            var conversationResourceResponse = await connectorClient.Conversations.CreateConversationAsync(conversationParameters, cancellationToken);
+            var conversationResourceResponse = await connectorClient.Conversations.CreateConversationAsync(conversationParameters, cancellationToken).ConfigureAwait(false);
 
             var conversationReference = turnContext.Activity.GetConversationReference();
 
