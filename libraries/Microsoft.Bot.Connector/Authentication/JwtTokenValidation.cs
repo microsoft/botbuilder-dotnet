@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -16,10 +15,10 @@ namespace Microsoft.Bot.Connector.Authentication
     /// </summary>
     public static class JwtTokenValidation
     {
-        private static HttpClient _httpClient = new HttpClient();
+        private static readonly HttpClient _httpClient = new HttpClient();
 
         /// <summary>
-        /// Authenticates the request and add's the activity's <see cref="Activity.ServiceUrl"/>
+        /// Authenticates the request and adds the activity's <see cref="Activity.ServiceUrl"/>
         /// to the set of trusted URLs.
         /// </summary>
         /// <param name="activity">The activity.</param>
@@ -36,7 +35,7 @@ namespace Microsoft.Bot.Connector.Authentication
         }
 
         /// <summary>
-        /// Authenticates the request and add's the activity's <see cref="Activity.ServiceUrl"/>
+        /// Authenticates the request and adds the activity's <see cref="Activity.ServiceUrl"/>
         /// to the set of trusted URLs.
         /// </summary>
         /// <param name="activity">The activity.</param>
@@ -57,7 +56,7 @@ namespace Microsoft.Bot.Connector.Authentication
 
             if (string.IsNullOrWhiteSpace(authHeader))
             {
-                bool isAuthDisabled = await credentials.IsAuthenticationDisabledAsync().ConfigureAwait(false);
+                var isAuthDisabled = await credentials.IsAuthenticationDisabledAsync().ConfigureAwait(false);
                 if (isAuthDisabled)
                 {
                     // In the scenario where Auth is disabled, we still want to have the
@@ -72,7 +71,7 @@ namespace Microsoft.Bot.Connector.Authentication
 
             var claimsIdentity = await ValidateAuthHeader(authHeader, credentials, provider, activity.ChannelId, authConfig, activity.ServiceUrl, httpClient ?? _httpClient);
 
-            MicrosoftAppCredentials.TrustServiceUrl(activity.ServiceUrl);
+            AppCredentials.TrustServiceUrl(activity.ServiceUrl);
 
             return claimsIdentity;
         }
@@ -121,32 +120,33 @@ namespace Microsoft.Bot.Connector.Authentication
 
             httpClient = httpClient ?? _httpClient;
 
-            bool usingEmulator = EmulatorValidation.IsTokenFromEmulator(authHeader);
+            if (SkillValidation.IsSkillToken(authHeader))
+            {
+                return await SkillValidation.AuthenticateSkillToken(authHeader, credentials, channelProvider, httpClient, channelId, authConfig, serviceUrl);
+            }
 
-            if (usingEmulator)
+            if (EmulatorValidation.IsTokenFromEmulator(authHeader))
             {
                 return await EmulatorValidation.AuthenticateEmulatorToken(authHeader, credentials, channelProvider, httpClient, channelId, authConfig);
             }
-            else if (channelProvider == null || channelProvider.IsPublicAzure())
+
+            if (channelProvider == null || channelProvider.IsPublicAzure())
             {
                 // No empty or null check. Empty can point to issues. Null checks only.
                 if (serviceUrl != null)
                 {
                     return await ChannelValidation.AuthenticateChannelToken(authHeader, credentials, serviceUrl, httpClient, channelId, authConfig);
                 }
-                else
-                {
-                    return await ChannelValidation.AuthenticateChannelToken(authHeader, credentials, httpClient, channelId, authConfig);
-                }
+
+                return await ChannelValidation.AuthenticateChannelToken(authHeader, credentials, httpClient, channelId, authConfig);
             }
-            else if (channelProvider.IsGovernment())
+
+            if (channelProvider.IsGovernment())
             {
                 return await GovernmentChannelValidation.AuthenticateChannelToken(authHeader, credentials, serviceUrl, httpClient, channelId, authConfig).ConfigureAwait(false);
             }
-            else
-            {
-                return await EnterpriseChannelValidation.AuthenticateChannelToken(authHeader, credentials, channelProvider, serviceUrl, httpClient, channelId, authConfig).ConfigureAwait(false);
-            }
+
+            return await EnterpriseChannelValidation.AuthenticateChannelToken(authHeader, credentials, channelProvider, serviceUrl, httpClient, channelId, authConfig).ConfigureAwait(false);
         }
     }
 }

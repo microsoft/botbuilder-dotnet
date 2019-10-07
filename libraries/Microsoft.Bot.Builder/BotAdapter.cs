@@ -113,11 +113,11 @@ namespace Microsoft.Bot.Builder
         /// Forward an activity to another channel.
         /// </summary>
         /// <param name="turnContext">turnContext.</param>
-        /// <param name="channelId">channelId to forward activity to.</param>
+        /// <param name="skillId">skillId to forward activity to.</param>
         /// <param name="activity">acivity to forward.</param>
         /// <param name="cancellationToken">cancellation Token.</param>
         /// <returns>Async task.</returns>
-        public virtual Task ForwardActivityAsync(ITurnContext turnContext, string channelId, Activity activity, CancellationToken cancellationToken)
+        public virtual Task ForwardActivityAsync(ITurnContext turnContext, string skillId, Activity activity, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }

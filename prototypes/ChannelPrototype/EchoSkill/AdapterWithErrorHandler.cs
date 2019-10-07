@@ -18,7 +18,7 @@ namespace EchoSkill
                 logger.LogError($"Exception caught : {exception.Message}");
 
                 // Send a catch-all apology to the user.
-                await turnContext.SendActivityAsync("Sorry, it looks like something went wrong.");
+                await turnContext.SendActivityAsync($"Skill Error, it looks like something went wrong.\r\n{exception}");
             };
         }
     }

@@ -14,7 +14,8 @@ namespace EchoSkill.Bots
         {
             if (turnContext.Activity.Text.Contains("end") || turnContext.Activity.Text.Contains("stop"))
             {
-                await turnContext.SendActivityAsync(MessageFactory.Text($"drop mike"), cancellationToken);
+                // Send End of conversation at the end.
+                await turnContext.SendActivityAsync(MessageFactory.Text($"ending conversation from the skill..."), cancellationToken);
 
                 // Unknown = "unknown";
                 // CompletedSuccessfully = "completedSuccessfully";

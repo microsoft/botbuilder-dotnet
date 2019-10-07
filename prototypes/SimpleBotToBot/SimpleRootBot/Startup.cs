@@ -2,14 +2,14 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Bot.Builder;
+using Microsoft.Bot.Builder.BotFramework;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
-using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Connector.Authentication;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SimpleRootBot.Bots;
 
@@ -22,34 +22,18 @@ namespace SimpleRootBot
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
+            // Configure credentials
+            services.AddSingleton<ICredentialProvider, ConfigurationCredentialProvider>();
+
             // Create the Bot Framework Adapter with error handling enabled.
             services.AddSingleton<BotFrameworkHttpAdapter, AdapterWithErrorHandler>();
+            services.AddSingleton<BotFrameworkChannelHttpServer, BotFrameworkChannelHttpServer>();
 
             // Create the storage we'll be using for User and Conversation state. (Memory is great for testing purposes.)
             services.AddSingleton<IStorage, MemoryStorage>();
 
             // Create the Conversation state. (Used by the Dialog system itself.)
             services.AddSingleton<ConversationState>();
-
-            services.AddSingleton<SkillRegistry>(new SkillRegistry()
-            {
-                {
-                    "EchoSkill", new SkillRegistration() { Id = "EchoSkill", AppId = "apppidforskill", ServiceUrl = "http://localhost:39783/api/messages" }
-                },
-            });
-
-            // Register the skill connector (TODO: this will be simplified)
-            services.AddSingleton<SkillConnector>(provider =>
-            {
-                var configuration = provider.GetService<IConfiguration>();
-                var skillOptions = new SkillOptions()
-                {
-                    Id = configuration["SkillId"],
-                    Endpoint = new Uri(configuration["SkillAppEndpoint"]),
-                };
-                var serviceClientCredentials = new MicrosoftAppCredentials(configuration["SkillAppId"], configuration["SkillAppPassword"]);
-                return SkillConnectorFactory.Create(skillOptions, serviceClientCredentials, new NullBotTelemetryClient());
-            });
 
             // Create the bot as a transient. In this case the ASP Controller is expecting an IBot.
             services.AddTransient<IBot, RootBot>();
