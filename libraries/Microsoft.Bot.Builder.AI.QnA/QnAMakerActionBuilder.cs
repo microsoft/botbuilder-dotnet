@@ -154,6 +154,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
             stepContext.Values[QnAData] = new List<QueryResult>(response.Answers);
             
             // Check if active learning is enabled.
+            // maximumScoreForLowScoreVariation is the score above which no need to check for feedback.
             if (isActiveLearningEnabled && response.Answers.Any() && response.Answers.First().Score <= maximumScoreForLowScoreVariation)
             {
                 // Get filtered list of the response that support low score variation criteria.
