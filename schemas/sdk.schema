@@ -4962,7 +4962,7 @@
                         "title": "Property name"
                     }
                 },
-                "enttities": {
+                "entities": {
                     "type": "array",
                     "title": "Possible properties",
                     "description": "Entities being assigned",

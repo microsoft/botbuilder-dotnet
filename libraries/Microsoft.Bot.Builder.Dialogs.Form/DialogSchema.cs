@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -22,6 +23,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
 
         public static DialogSchema ReadSchema(string path)
             => new DialogSchema(JsonConvert.DeserializeObject<JObject>(File.ReadAllText(path)));
+
+        public IEnumerable<PropertySchema> Properties()
+            => Property.Children;
+
+        public JArray Required()
+            => Schema["required"] as JArray ?? new JArray(Property.Children.Select(c => c.Name));
 
         public PropertySchema PathToSchema(string path)
         {
