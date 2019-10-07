@@ -40,6 +40,8 @@ namespace Microsoft.Bot.Builder.AI.QnA
         private const string QnAContextData = "qnaContextData";
         private const string PreviousQnAId = "prevQnAId";
 
+        private float maximumScoreForLowScoreVariation = 0.95F;
+
         private readonly QnAMaker _services;
 
         /// <summary>
@@ -152,7 +154,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
             stepContext.Values[QnAData] = new List<QueryResult>(response.Answers);
             
             // Check if active learning is enabled.
-            if (isActiveLearningEnabled && response.Answers.Any() && response.Answers.First().Score <= 0.95)
+            if (isActiveLearningEnabled && response.Answers.Any() && response.Answers.First().Score <= maximumScoreForLowScoreVariation)
             {
                 // Get filtered list of the response that support low score variation criteria.
                 response.Answers = _services.GetLowScoreVariation(response.Answers);
