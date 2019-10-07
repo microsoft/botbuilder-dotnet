@@ -63,8 +63,8 @@ namespace Microsoft.BotBuilderSamples.Bots
             try
             {
                 // Send to channel where messaging extension invoked.
-                var channelData = turnContext.Activity.GetChannelData<TeamsChannelData>();
-                await turnContext.TeamsCreateConversationAsync(channelData.Channel.Id, responseActivity);
+                var channelId = turnContext.Activity.TeamsGetChannelId();
+                await turnContext.TeamsCreateConversationAsync(channelId, responseActivity);
 
                 // Send card to "General" channel.
                 var teamDetails = await TeamsInfo.GetTeamDetailsAsync(turnContext);
