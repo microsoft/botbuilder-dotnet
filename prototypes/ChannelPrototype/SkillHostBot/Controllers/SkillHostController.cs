@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
+using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
@@ -21,10 +22,10 @@ namespace SkillHost.Controllers
     [Route("/v3/conversations")]
     public class SkillHostController : ControllerBase
     {
-        private readonly BotAdapter _adapter;
+        private readonly BotFrameworkHttpAdapter _adapter;
         private readonly IBot _bot;
 
-        public SkillHostController(BotAdapter adapter, IConfiguration configuration, IBot bot)
+        public SkillHostController(BotFrameworkHttpAdapter adapter, IConfiguration configuration, IBot bot)
         {
             // adapter to use for calling back to channel
             _adapter = adapter;
@@ -69,11 +70,13 @@ namespace SkillHost.Controllers
                 activity.ApplyConversationReference(originalConversationReference, isIncoming: true);
 
                 // TEMPORARY claim
-                var claimsIdentity = new ClaimsIdentity(new List<Claim>(), "anonymous");
+                ClaimsIdentity claimsIdentity = new ClaimsIdentity();
+                claimsIdentity.AddClaim(new Claim(AuthenticationConstants.AudienceClaim, this.BotAppId));
+                claimsIdentity.AddClaim(new Claim(AuthenticationConstants.AppIdClaim, this.BotAppId));
+                claimsIdentity.AddClaim(new Claim(AuthenticationConstants.ServiceUrlClaim, "http://localhost:3978/api/messages"));
 
                 // send up to the bot 
-                // TODO: WE NEED PROCESSACTIVITY TO BE ON BOTADAPTER.CS
-                await ((BotFrameworkHttpAdapter)_adapter).ProcessActivityAsync(claimsIdentity, activity, _bot.OnTurnAsync, CancellationToken.None);
+                await _adapter.ProcessActivityAsync(claimsIdentity, activity, _bot.OnTurnAsync, CancellationToken.None);
                 return new ResourceResponse(id: Guid.NewGuid().ToString("N"));
             }
 

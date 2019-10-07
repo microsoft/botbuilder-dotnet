@@ -442,17 +442,18 @@ namespace Microsoft.Bot.Builder
         }
 
         /// <summary>
-        /// Forward an activity to another channel.
+        /// Forward an activity to a skill(bot).
         /// </summary>
+        /// <remarks>NOTE: Forwading an activity to a skill will flush UserState and ConversationState changes so that skill has accurate state.</remarks>
         /// <param name="turnContext">turnContext.</param>
-        /// <param name="channelId">channelId to forward activity to.</param>
+        /// <param name="skillId">skillId of the skill to forward the activity to.</param>
         /// <param name="activity">acivity to forward.</param>
         /// <param name="cancellationToken">cancellation Token.</param>
-        /// <returns>Async task.</returns>
-        public override async Task ForwardActivityAsync(ITurnContext turnContext, string channelId, Activity activity, CancellationToken cancellationToken)
+        /// <returns>Async task with optional invokeResponse.</returns>
+        public override async Task<InvokeResponse> ForwardActivityAsync(ITurnContext turnContext, string skillId, Activity activity, CancellationToken cancellationToken)
         {
             // route the activity to the skill
-            var skill = this.Skills.FirstOrDefault(s => s.Id == channelId);
+            var skill = this.Skills.FirstOrDefault(s => s.Id == skillId);
             if (skill != null)
             {
                 // TODO probably don't need skillId anymore after we get claims properly in place
@@ -465,7 +466,14 @@ namespace Microsoft.Bot.Builder
 
                 // TODO add client authorization header
                 var jsonContent = new StringContent(JsonConvert.SerializeObject(activity, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore }), Encoding.UTF8, "application/json");
-                await client.PostAsync($"{skill.ServiceUrl}", jsonContent, cancellationToken).ConfigureAwait(false);
+                var response = await client.PostAsync($"{skill.ServiceUrl}", jsonContent, cancellationToken).ConfigureAwait(false);
+                var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                if (content.Length > 0)
+                {
+                    return JsonConvert.DeserializeObject<InvokeResponse>(content);
+                }
+
+                return null;
             }
             else
             {

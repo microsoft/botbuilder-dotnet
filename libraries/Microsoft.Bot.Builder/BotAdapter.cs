@@ -110,14 +110,14 @@ namespace Microsoft.Bot.Builder
         public abstract Task DeleteActivityAsync(ITurnContext turnContext, ConversationReference reference, CancellationToken cancellationToken);
 
         /// <summary>
-        /// Forward an activity to another channel.
+        /// Forward an activity to another bot (aka skill).
         /// </summary>
         /// <param name="turnContext">turnContext.</param>
-        /// <param name="channelId">channelId to forward activity to.</param>
+        /// <param name="skillId">skillId of the sklil to forward the activity to.</param>
         /// <param name="activity">acivity to forward.</param>
         /// <param name="cancellationToken">cancellation Token.</param>
-        /// <returns>Async task.</returns>
-        public virtual Task ForwardActivityAsync(ITurnContext turnContext, string channelId, Activity activity, CancellationToken cancellationToken)
+        /// <returns>Async task with optional InvokeResponse.</returns>
+        public virtual Task<InvokeResponse> ForwardActivityAsync(ITurnContext turnContext, string skillId, Activity activity, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }

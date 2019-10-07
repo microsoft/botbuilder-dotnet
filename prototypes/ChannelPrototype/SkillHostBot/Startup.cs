@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Bot.Builder;
+using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SkillHost.Bots;
@@ -31,7 +32,7 @@ namespace SkillHost
             services.AddSingleton(new ConversationState(storage));
 
             // Create the Bot Framework Adapter with error handling enabled.
-            services.AddSingleton<BotAdapter, AdapterWithErrorHandler>();
+            services.AddSingleton<BotFrameworkHttpAdapter, AdapterWithErrorHandler>();
 
             // Create the bot as a transient. In this case the ASP Controller is expecting an IBot.
             services.AddTransient<IBot, SkillHostBot>();
