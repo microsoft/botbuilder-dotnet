@@ -27,13 +27,14 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <AssemblyOriginatorKeyFile>$(SolutionDir)\build\35MSSharedLib1024.snk</AssemblyOriginatorKeyFile>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>$(NoWarn),1573,1591,1712</NoWarn>
     <SignAssembly>true</SignAssembly>
     <DelaySign>true</DelaySign>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(SignAssembly)'=='true' ">
+  <PropertyGroup Condition="'$(SignAssembly)'=='True' ">
     <DefineConstants>SIGNASSEMBLY</DefineConstants>
   </PropertyGroup>
 
