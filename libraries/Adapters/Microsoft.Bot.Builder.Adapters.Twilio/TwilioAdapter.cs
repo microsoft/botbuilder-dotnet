@@ -122,7 +122,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
                 throw new ArgumentNullException(nameof(bot));
             }
 
-            var activity = TwilioHelper.RequestToActivity(httpRequest, _options.ValidationUrl, _options.AuthToken);
+            var activity = await TwilioHelper.RequestToActivity(httpRequest, _options.ValidationUrl, _options.AuthToken).ConfigureAwait(false);
 
             // create a conversation reference
             using (var context = new TurnContext(this, activity))
