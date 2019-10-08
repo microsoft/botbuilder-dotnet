@@ -210,16 +210,21 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
                             context.State.RemoveValue("dialog.lastEvent");
                             // NOTE: This assumes the existance of a property entity which contains the normalized
                             // names of the properties.
-                            if (entities.TryGetValue("property", out var infos) && infos.Count() == 1)
+                            if (entities.TryGetValue("PROPERTYNAME", out var infos) && infos.Count() == 1)
                             {
                                 var info = infos[0];
                                 var choices = queues.ChooseProperty[0];
-                                var choice = choices.Find(p => p.Property == info.Value as string);
+                                var choice = choices.Find(p => p.Property == (info.Value as JArray)[0].ToObject<string>());
                                 if (choice != null)
                                 {
                                     // Resolve and move to SetProperty
                                     infos.Clear();
+                                    queues.ChooseProperty.Dequeue();
+                                    choice.Expected = true;
                                     queues.SetProperty.Add(choice);
+                                    // TODO: This seems a little draconian, but we don't want property names to trigger help
+                                    context.State.SetValue("turn.recognized.intent", "None");
+                                    context.State.SetValue("turn.recognized.score", 1.0);
                                 }
                             }
 

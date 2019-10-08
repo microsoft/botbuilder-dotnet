@@ -7,9 +7,8 @@
 # HelpBread
 - [helpProperty('Bread', BreadName())]
 
-# BreadName  
-- bread 
-
+# BreadName
+- bread 
 
 [sandwich-common.en-us.lg](./sandwich-common.en-us.lg)
  

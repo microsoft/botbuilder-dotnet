@@ -4,27 +4,31 @@
     "property": "Bread",
     "actions": [
         {
-            "$type": "Microsoft.SetProperty",
-            "property": "$Bread",
-            "value": "@Bread"
-        },
-        {
-            "$type": "Microsoft.SetProperty",
-            "property": "$PropertyOnhold",
-            "value": "$Bread"
-        },
-        {
             "$type": "Microsoft.IfCondition",
             "condition": "!turn.dialogevent.value.expected",
             "actions": [
                 {
-                    "$type": "Microsoft.Ask",
-                    "activity": "[unexpectedPropertySet('Bread', @Bread, turn)]",
-                    "expectedProperties": [
-                        "SetPropertyConfirmation"
+                    "$type": "Microsoft.IfCondition",
+                    "condition": "!$Bread",
+                    "actions": [
+                        {
+                            "$type": "Microsoft.SendActivity",
+                            "activity": "[unexpectedPropertySet('Bread', @Bread, 'Bread')]"
+                        }
+                    ],
+                    "elseActions": [
+                        {
+                            "$type": "Microsoft.SendActivity",
+                            "activity": "[unexpectedPropertyChange('Bread', @Bread, 'Bread', $Bread)]"
+                        }
                     ]
                 }
             ]
+        },
+        {
+            "$type": "Microsoft.SetProperty",
+            "property": "$Bread",
+            "value": "@Bread"
         }
     ]
 }

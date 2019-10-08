@@ -38,7 +38,10 @@
 - Do you want to end the conversation? (yes/no)
 
 # unexpectedPropertySet(property, entity, name)
-- Do you want to set {name} as {toLower(entity)}? (yes/no)
+- {name} is set as {toLower(entity)}.
+
+# unexpectedPropertyChange(property, entity, name, oldentity)
+- {name} is changed from {toLower(oldentity)} to {toLower(entity)}.
 
 # chooseProperties
 - Did you mean {join(foreach(turn.dialogevent.value, choice, chooseProperty(choice)), " or ")}

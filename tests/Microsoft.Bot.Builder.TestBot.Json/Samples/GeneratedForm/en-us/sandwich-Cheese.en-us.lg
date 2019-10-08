@@ -7,9 +7,8 @@
 # HelpCheese
 - [helpProperty('Cheese', CheeseName())]
 
-# CheeseName  
-- cheese 
-
+# CheeseName
+- cheese 
 
 [sandwich-common.en-us.lg](./sandwich-common.en-us.lg)
  

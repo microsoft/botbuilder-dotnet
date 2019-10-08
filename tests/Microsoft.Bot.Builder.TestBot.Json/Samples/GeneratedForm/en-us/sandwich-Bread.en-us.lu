@@ -1,9 +1,37 @@
 
-$Bread:multigrain=
-$Bread:rye=
-$Bread:white=
+$Bread:multiGrainWheat=
+ -multi
+ -grain
+ -wheat
+ -multi grain
+ -grain wheat
+ -multi grain wheat
+
+$Bread:rye=
+ -rye
+
+$Bread:white=
+ -white
+
+$Bread:wholeWheat=
+ -whole
+ -wheat
+ -whole wheat
+
 
 # None
-- multigrain
-- rye
-- white
+- multi
+- grain
+- wheat
+- multi grain
+- grain wheat
+- multi grain wheat
+
+- rye
+
+- white
+
+- whole
+- wheat
+- whole wheat
+

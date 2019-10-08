@@ -1,4 +1,4 @@
 # AskName
-- [askString('Name', turn)]
+- [askString('Name', NameName)]
 [sandwich-common.en-us.lg](./sandwich-common.en-us.lg)
  

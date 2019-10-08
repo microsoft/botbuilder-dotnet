@@ -7,9 +7,8 @@
 # HelpMeat
 - [helpProperty('Meat', MeatName())]
 
-# MeatName  
-- meat 
-
+# MeatName
+- meat 
 
 [sandwich-common.en-us.lg](./sandwich-common.en-us.lg)
  

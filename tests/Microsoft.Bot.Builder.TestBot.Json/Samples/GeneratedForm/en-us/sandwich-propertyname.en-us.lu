@@ -1,0 +1,42 @@
+
+$PROPERTYNAME:Quantity=
+- quantity
+
+
+$PROPERTYNAME:Directions=
+- directions
+
+
+$PROPERTYNAME:Length=
+- length
+
+
+$PROPERTYNAME:Bread=
+- bread
+
+
+$PROPERTYNAME:Cheese=
+- cheese
+
+
+$PROPERTYNAME:Meat=
+- meat
+
+
+$PROPERTYNAME:Name=
+- name
+
+
+$PROPERTYNAME:Toppings=
+- toppings
+
+
+$PROPERTYNAME:Confirmation=
+- confirmation
+
+
+$PROPERTYNAME:CancelConfirmation=
+- cancel
+- confirmation
+- cancel confirmation
+

@@ -21,9 +21,10 @@
         "Bread": {
             "type": "string",
             "enum": [
-                "multigrain",
+                "multiGrainWheat",
                 "rye",
-                "white"
+                "white",
+                "wholeWheat"
             ]
         },
         "Cheese": {
@@ -96,16 +97,6 @@
                 "Confirmation"
             ],
             "$templates": []
-        },
-        "SetPropertyConfirmation": {
-            "type": "string",
-            "$mappings": [
-                "Confirmation"
-            ],
-            "$templates": []
-        },
-        "PropertyOnhold": {
-            "type": "string"
         }
     }
 }

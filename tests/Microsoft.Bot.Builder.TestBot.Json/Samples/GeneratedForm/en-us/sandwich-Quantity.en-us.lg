@@ -1,4 +1,4 @@
 # AskQuantity
-- [askNumber('Quantity', turn)]
+- [askNumber('Quantity', QuantityName)]
 [sandwich-common.en-us.lg](./sandwich-common.en-us.lg)
  

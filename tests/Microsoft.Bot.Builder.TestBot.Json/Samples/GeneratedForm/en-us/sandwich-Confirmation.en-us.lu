@@ -1,7 +1,13 @@
 
-$Confirmation:yes=
-$Confirmation:no=
+$Confirmation:yes=
+ -yes
+
+$Confirmation:no=
+ -no
+
 
 # None
-- yes
-- no
+- yes
+
+- no
+

@@ -4,27 +4,31 @@
     "property": "Meat",
     "actions": [
         {
-            "$type": "Microsoft.SetProperty",
-            "property": "$Meat",
-            "value": "@Meat"
-        },
-        {
-            "$type": "Microsoft.SetProperty",
-            "property": "$PropertyOnhold",
-            "value": "$Meat"
-        },
-        {
             "$type": "Microsoft.IfCondition",
             "condition": "!turn.dialogevent.value.expected",
             "actions": [
                 {
-                    "$type": "Microsoft.Ask",
-                    "activity": "[unexpectedPropertySet('Meat', @Meat, turn)]",
-                    "expectedProperties": [
-                        "SetPropertyConfirmation"
+                    "$type": "Microsoft.IfCondition",
+                    "condition": "!$Meat",
+                    "actions": [
+                        {
+                            "$type": "Microsoft.SendActivity",
+                            "activity": "[unexpectedPropertySet('Meat', @Meat, 'Meat')]"
+                        }
+                    ],
+                    "elseActions": [
+                        {
+                            "$type": "Microsoft.SendActivity",
+                            "activity": "[unexpectedPropertyChange('Meat', @Meat, 'Meat', $Meat)]"
+                        }
                     ]
                 }
             ]
+        },
+        {
+            "$type": "Microsoft.SetProperty",
+            "property": "$Meat",
+            "value": "@Meat"
         }
     ]
 }
