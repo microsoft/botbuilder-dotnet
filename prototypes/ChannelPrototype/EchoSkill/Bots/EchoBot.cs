@@ -30,6 +30,7 @@ namespace EchoSkill.Bots
             else
             {
                 await turnContext.SendActivityAsync(MessageFactory.Text($"Echo : {turnContext.Activity.Text}"), cancellationToken);
+                await turnContext.SendActivityAsync(MessageFactory.Text($"Say \"end\" or \"stop\" and I'll end the conversation and back to the parent.'"), cancellationToken);
             }
         }
     }

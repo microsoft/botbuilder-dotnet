@@ -1,14 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
 
-namespace SkillHost.Controllers
+namespace Microsoft.Bot.Builder.Skills
 {
-    public enum ChannelAPIMethod
+    public enum ChannelApiMethod
     {
         /// <summary>
-        /// ReplyToActivity(converationId, activity)
+        /// ReplyToActivity(conversationId, activity)
         /// </summary>
         ReplyToActivity,
 

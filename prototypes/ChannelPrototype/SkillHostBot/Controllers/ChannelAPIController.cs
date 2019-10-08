@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
+using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
@@ -58,7 +59,7 @@ namespace SkillHost.Controllers
         [Route("/v3/conversations/{conversationId}/activities")]
         public virtual Task<ResourceResponse> SendToConversation(string conversationId, [FromBody] Activity activity)
         {
-            return InvokeChannelAPI<ResourceResponse>(ChannelAPIMethod.SendToConversation, activity.Conversation.Id, activity);
+            return InvokeChannelAPI<ResourceResponse>(ChannelApiMethod.SendToConversation, activity.Conversation.Id, activity);
         }
 
         /// <summary>
@@ -71,7 +72,7 @@ namespace SkillHost.Controllers
         [Route("/v3/conversations/{conversationId}/activities/history")]
         public virtual Task<ResourceResponse> SendConversationHistory(string conversationId, [FromBody] Transcript history)
         {
-            return InvokeChannelAPI<ResourceResponse>(ChannelAPIMethod.SendConversationHistory, conversationId, history);
+            return InvokeChannelAPI<ResourceResponse>(ChannelApiMethod.SendConversationHistory, conversationId, history);
         }
 
         /// <summary>
@@ -85,7 +86,7 @@ namespace SkillHost.Controllers
         [Route("/v3/conversations/{conversationId}/activities/{activityId}")]
         public virtual Task<ResourceResponse> ReplyToActivity(string conversationId, string activityId, [FromBody] Activity activity)
         {
-            return InvokeChannelAPI<ResourceResponse>(ChannelAPIMethod.ReplyToActivity, activity.Conversation.Id, activityId, activity);
+            return InvokeChannelAPI<ResourceResponse>(ChannelApiMethod.ReplyToActivity, activity.Conversation.Id, activityId, activity);
         }
 
         /// <summary>
@@ -99,7 +100,7 @@ namespace SkillHost.Controllers
         [Route("/v3/conversations/{conversationId}/activities/{activityId}")]
         public virtual Task<ResourceResponse> UpdateActivity(string conversationId, string activityId, [FromBody] Activity activity)
         {
-            return InvokeChannelAPI<ResourceResponse>(ChannelAPIMethod.UpdateActivity, activity.Conversation.Id, activity);
+            return InvokeChannelAPI<ResourceResponse>(ChannelApiMethod.UpdateActivity, activity.Conversation.Id, activity);
         }
 
         /// <summary>
@@ -112,7 +113,7 @@ namespace SkillHost.Controllers
         [Route("/v3/conversations/{conversationId}/activities/{activityId}")]
         public virtual Task DeleteActivity(string conversationId, string activityId)
         {
-            return InvokeChannelAPI(ChannelAPIMethod.DeleteActivity, conversationId, activityId);
+            return InvokeChannelAPI(ChannelApiMethod.DeleteActivity, conversationId, activityId);
         }
 
         /// <summary>
@@ -137,7 +138,7 @@ namespace SkillHost.Controllers
         [Route("/v3/conversations/{conversationId}/members")]
         public virtual Task<ChannelAccount[]> GetConversationMembers(string conversationId)
         {
-            return InvokeChannelAPI<ChannelAccount[]>(ChannelAPIMethod.GetConversationMembers, conversationId);
+            return InvokeChannelAPI<ChannelAccount[]>(ChannelApiMethod.GetConversationMembers, conversationId);
         }
 
         /// <summary>
@@ -151,7 +152,7 @@ namespace SkillHost.Controllers
         [Route("/v3/conversations/{conversationId}/pagedmembers")]
         public virtual Task<PagedMembersResult> GetConversationPagedMembers(string conversationId, int pageSize = -1, string continuationToken = null)
         {
-            return InvokeChannelAPI<PagedMembersResult>(ChannelAPIMethod.GetConversationPagedMembers, conversationId, pageSize, continuationToken);
+            return InvokeChannelAPI<PagedMembersResult>(ChannelApiMethod.GetConversationPagedMembers, conversationId, pageSize, continuationToken);
         }
 
         /// <summary>
@@ -164,7 +165,7 @@ namespace SkillHost.Controllers
         [Route("/v3/conversations/{conversationId}/members/{memberId}")]
         public virtual Task DeleteConversationMember(string conversationId, string memberId)
         {
-            return InvokeChannelAPI(ChannelAPIMethod.DeleteConversationMember, conversationId, memberId);
+            return InvokeChannelAPI(ChannelApiMethod.DeleteConversationMember, conversationId, memberId);
         }
 
         /// <summary>
@@ -180,7 +181,7 @@ namespace SkillHost.Controllers
         [Route("/v3/conversations/{conversationId}/activities/{activityId}/members")]
         public virtual Task<ChannelAccount[]> GetActivityMembers(string conversationId, string activityId)
         {
-            return InvokeChannelAPI<ChannelAccount[]>(ChannelAPIMethod.GetActivityMembers, conversationId, activityId);
+            return InvokeChannelAPI<ChannelAccount[]>(ChannelApiMethod.GetActivityMembers, conversationId, activityId);
         }
 
         /// <summary>
@@ -193,10 +194,10 @@ namespace SkillHost.Controllers
         [Route("/v3/conversations/{conversationId}/attachments")]
         public virtual Task<ResourceResponse> UploadAttachment(string conversationId, [FromBody] AttachmentData attachmentUpload)
         {
-            return InvokeChannelAPI<ResourceResponse>(ChannelAPIMethod.UploadAttachment, conversationId, attachmentUpload);
+            return InvokeChannelAPI<ResourceResponse>(ChannelApiMethod.UploadAttachment, conversationId, attachmentUpload);
         }
 
-        private async Task<TResponse> InvokeChannelAPI<TResponse>(ChannelAPIMethod method, string conversationId, params object[] args)
+        private async Task<TResponse> InvokeChannelAPI<TResponse>(ChannelApiMethod method, string conversationId, params object[] args)
         {
             var skillConversation = new SkillConversation(conversationId);
 
@@ -227,7 +228,7 @@ namespace SkillHost.Controllers
                 activityPayload.Recipient = channelApiInvokeActivity.Recipient;
             }
 
-            var channelAPIArgs = new ChannelAPIArgs() { Method = method, Args = args, };
+            var channelAPIArgs = new ChannelApiArgs() { Method = method, Args = args, };
             channelApiInvokeActivity.Value = channelAPIArgs;
 
             // We call our adapter using the BotAppId claim, so turnContext has the bot claims
@@ -245,7 +246,7 @@ namespace SkillHost.Controllers
             return (TResponse)channelAPIArgs.Result;
         }
 
-        private async Task InvokeChannelAPI(ChannelAPIMethod method, string conversationId, params object[] args)
+        private async Task InvokeChannelAPI(ChannelApiMethod method, string conversationId, params object[] args)
         {
             await InvokeChannelAPI<object>(method, conversationId, args);
             return;

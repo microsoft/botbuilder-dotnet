@@ -36,6 +36,8 @@ namespace SkillHost.Bots
             {
                 if (turnContext.Activity.Text.Contains("skill"))
                 {
+                    await turnContext.SendActivityAsync(MessageFactory.Text("Got it, connecting you to the skill..."), cancellationToken);
+
                     // save conversationReference for skill
                     await _activeSkillProperty.SetAsync(turnContext, "EchoSkill", cancellationToken);
 

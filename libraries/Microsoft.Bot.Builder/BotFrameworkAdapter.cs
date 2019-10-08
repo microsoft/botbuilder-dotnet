@@ -406,7 +406,6 @@ namespace Microsoft.Bot.Builder
                 }
                 else if (!string.IsNullOrWhiteSpace(activity.ReplyToId))
                 {
-                    // Gabo: here we pull the client and we send the reply
                     var connectorClient = turnContext.TurnState.Get<IConnectorClient>();
                     response = await connectorClient.Conversations.ReplyToActivityAsync(activity, cancellationToken).ConfigureAwait(false);
                 }
@@ -439,10 +438,10 @@ namespace Microsoft.Bot.Builder
         /// <summary>
         /// Forward an activity to a skill(bot).
         /// </summary>
-        /// <remarks>NOTE: Forwading an activity to a skill will flush UserState and ConversationState changes so that skill has accurate state.</remarks>
+        /// <remarks>NOTE: Forwarding an activity to a skill will flush UserState and ConversationState changes so that skill has accurate state.</remarks>
         /// <param name="turnContext">turnContext.</param>
         /// <param name="skillId">skillId of the skill to forward the activity to.</param>
-        /// <param name="activity">acivity to forward.</param>
+        /// <param name="activity">activity to forward.</param>
         /// <param name="cancellationToken">cancellation Token.</param>
         /// <returns>Async task with optional invokeResponse.</returns>
         public override async Task<InvokeResponse> ForwardActivityAsync(ITurnContext turnContext, string skillId, Activity activity, CancellationToken cancellationToken)
@@ -1035,21 +1034,21 @@ namespace Microsoft.Bot.Builder
             // For requests from channel App Id is in Audience claim of JWT token. For emulator it is in AppId claim. For
             // unauthenticated requests we have anonymous identity provided auth is disabled.
             // For Activities coming from Emulator AppId claim contains the Bot's AAD AppId.
-            var botAppIdClaim = claimsIdentity.Claims?.SingleOrDefault(claim => claim.Type == AuthenticationConstants.AudienceClaim)
-                    ??
-                claimsIdentity.Claims?.SingleOrDefault(claim => claim.Type == AuthenticationConstants.AppIdClaim);
+            var botAppIdClaim = claimsIdentity.Claims?.SingleOrDefault(claim => claim.Type == AuthenticationConstants.AudienceClaim);
+            if (botAppIdClaim == null)
+            {
+                botAppIdClaim = claimsIdentity.Claims?.SingleOrDefault(claim => claim.Type == AuthenticationConstants.AppIdClaim);
+            }
 
             // For anonymous requests (requests with no header) appId is not set in claims.
             if (botAppIdClaim != null)
             {
-                string botId = botAppIdClaim.Value;
+                var botId = botAppIdClaim.Value;
                 var appCredentials = await GetAppCredentialsAsync(botId, cancellationToken).ConfigureAwait(false);
                 return CreateConnectorClient(serviceUrl, appCredentials);
             }
-            else
-            {
-                return CreateConnectorClient(serviceUrl);
-            }
+
+            return CreateConnectorClient(serviceUrl);
         }
 
         /// <summary>

@@ -1,8 +1,9 @@
-﻿using System.Linq;
-using Microsoft.Bot.Builder;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
 using Microsoft.Bot.Builder.Integration;
 
-namespace SkillHost.Controllers
+namespace Microsoft.Bot.Builder.Skills
 {
     public static class BotAdapterExtensions
     {
@@ -14,7 +15,7 @@ namespace SkillHost.Controllers
         /// <returns>botAdapter for fluent.</returns>
         public static BotAdapter UseSkills(this BotAdapter botAdapter, params SkillOptions[] skills)
         {
-            botAdapter.Use(new ChannelAPIMiddleware());
+            botAdapter.Use(new ChannelApiMiddleware());
             if (skills != null && skills.Length > 0 && botAdapter is BotFrameworkAdapter botFrameworkAdapter)
             {
                 // TODO, this is probably on BotAdapter, not BotFrameworkAdapter
