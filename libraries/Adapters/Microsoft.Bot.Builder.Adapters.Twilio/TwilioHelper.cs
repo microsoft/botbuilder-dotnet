@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
@@ -69,7 +70,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// <returns>The activity object.</returns>
         /// <seealso cref="TwilioAdapter.ProcessAsync(HttpRequest, HttpResponse, IBot, System.Threading.CancellationToken)"/>
         /// <seealso cref="TwilioAdapterOptions.ValidationUrl"/>
-        public static Activity RequestToActivity(HttpRequest httpRequest, Uri validationUrl, string authToken)
+        public static async Task<Activity> RequestToActivity(HttpRequest httpRequest, Uri validationUrl, string authToken)
         {
             if (httpRequest == null)
             {
@@ -79,7 +80,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
             Dictionary<string, string> body;
             using (var bodyStream = new StreamReader(httpRequest.Body))
             {
-                body = QueryStringToDictionary(bodyStream.ReadToEnd());
+                body = QueryStringToDictionary(await bodyStream.ReadToEndAsync().ConfigureAwait(false));
             }
 
             ValidateRequest(httpRequest, body, validationUrl, authToken);
