@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         public object GlobalScope { get; set; }
 
-        public ICollection<string> Keys => throw new NotImplementedException();
+        public ICollection<string> Keys => new List<string>();
 
         public ICollection<object> Values => throw new NotImplementedException();
 
@@ -81,14 +81,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public bool TryGetValue(string key, out object value)
         {
             var (result, error) = BuiltInFunctions.AccessProperty(this.LocalScope, key);
-            if (error == null)
+            if (result != null && error == null)
             {
                 value = result;
                 return true;
             }
 
             (result, error) = BuiltInFunctions.AccessProperty(this.GlobalScope, key);
-            if (error == null)
+            if (result != null && error == null)
             {
                 value = result;
                 return true;
