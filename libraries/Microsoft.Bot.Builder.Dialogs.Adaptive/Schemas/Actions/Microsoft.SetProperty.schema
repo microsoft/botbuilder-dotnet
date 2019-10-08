@@ -1,8 +1,8 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
     "$role": "unionType(Microsoft.IDialog)",
-    "title": "Set Property Action",
-    "description": "This action allows you to set memory to the value of an expression",
+    "title": "Set property",
+    "description": "Set property to a value.",
     "type": "object",
     "required": [
         "property",
@@ -12,7 +12,7 @@
         "property": {
             "$role": "expression",
             "title": "Property",
-            "description": "The property path to set the value",
+            "description": "Property (named location to store information).",
             "examples": [
                 "user.age"
             ]
@@ -20,9 +20,11 @@
         "value": {
             "$role": "expression",
             "title": "Value",
-            "description": "Expression against memory to use to get the value.",
+            "description": "New value or expression.",
             "examples": [
-                "dialog.result"
+                "'milk'",
+                "dialog.favColor",
+                "dialog.favColor == 'red'"
             ]
         }
     }

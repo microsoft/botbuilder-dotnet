@@ -1,8 +1,8 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
     "$role": "unionType(Microsoft.IDialog)",
-    "title": "Switch Action",
-    "description": "Action which conditionally decides which action to execute next.",
+    "title": "Switch condition",
+    "description": "Execute different actions based on the value of a property.",
     "type": "object",
     "required": [
         "condition"
@@ -11,22 +11,26 @@
         "condition": {
             "$role": "expression",
             "title": "Condition",
-            "description": "Expression to evaluate to switch on.",
+            "description": "Property to evaluate.",
             "examples": [
-                "user.age > 3"
+                "user.favColor"
             ]
         },
         "cases": {
             "type": "array",
             "title": "Cases",
-            "desc": "Cases to evaluate against condition",
+            "desc": "Actions for each possible condition.",
             "items": {
                 "type": "object",
                 "properties": {
                     "value": {
                         "$role": "expression",
                         "title": "Value",
-                        "description": "Value which must match the condition property"
+                        "description": "Value.",
+                        "examples": [
+                            "'red'",
+                            "dialog.colors.red"
+                        ]
                     },
                     "actions": {
                         "type": "array",
@@ -34,7 +38,7 @@
                             "$type": "Microsoft.IDialog"
                         },
                         "title": "Actions",
-                        "description": "Actions to execute if case is equal to condition"
+                        "description": "Actions to execute."
                     }
                 },
                 "required": [
@@ -49,7 +53,7 @@
                 "$type": "Microsoft.IDialog"
             },
             "title": "Default",
-            "description": "Action to execute if no case is equal to condition"
+            "description": "Actions to execute if none of the cases meet the condition."
         }
     }
 }

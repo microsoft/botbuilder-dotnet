@@ -1,8 +1,8 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
     "$role": "unionType(Microsoft.IDialog)",
-    "title": "ConfirmInput Dialog",
-    "description": "This represents a dialog which gathers a yes/no style responses",
+    "title": "Confirm input dialog",
+    "description": "Collect information - Ask for confirmation (yes or no).",
     "type": "object",
     "allOf": [
         {
@@ -12,8 +12,8 @@
             "properties": {
                 "defaultLocale": {
                     "type": "string",
-                    "title": "Default Locale",
-                    "description": "The prompts default locale that should be recognized.",
+                    "title": "Default locale",
+                    "description": "Default locale.",
                     "default": "en-us"
                 },
                 "style": {
@@ -26,8 +26,8 @@
                         "SuggestedAction",
                         "HeroCard"
                     ],
-                    "title": "List Style",
-                    "description": "The kind of choice list style to generate",
+                    "title": "List style",
+                    "description": "Style to render choices.",
                     "default": "Auto"
                 },
                 "choiceOptions": {
@@ -35,25 +35,25 @@
                     "properties": {
                         "inlineSeparator": {
                             "type": "string",
-                            "title": "Inline Seperator",
+                            "title": "Inline separator",
                             "description": "Character used to separate individual choices when there are more than 2 choices",
                             "default": ", "
                         },
                         "inlineOr": {
                             "type": "string",
-                            "title": "Inline Or",
+                            "title": "Inline or",
                             "description": "Separator inserted between the choices when their are only 2 choices",
                             "default": " or "
                         },
                         "inlineOrMore": {
                             "type": "string",
-                            "title": "Inline OrMore",
+                            "title": "Inline or more",
                             "description": "Separator inserted between the last 2 choices when their are more than 2 choices.",
                             "default": ", or "
                         },
                         "includeNumbers": {
                             "type": "boolean",
-                            "title": "Include Numbers",
+                            "title": "Include numbers",
                             "description": "If true, inline and list style choices will be prefixed with the index of the choice.",
                             "default": true
                         }
@@ -68,7 +68,7 @@
                                 "value": {
                                     "type": "string",
                                     "title": "Value",
-                                    "description": "the value to return when selected."
+                                    "description": "Value to return when this choice is selected."
                                 },
                                 "action": {
                                     "type": "object",
@@ -78,7 +78,7 @@
                                 "synonyms": {
                                     "type": "array",
                                     "title": "Synonyms",
-                                    "description": "The list of synonyms to recognize in addition to the value. This is optional.",
+                                    "description": "List of synonyms to recognize in addition to the value (optional)",
                                     "items": {
                                         "type": "string"
                                     }
