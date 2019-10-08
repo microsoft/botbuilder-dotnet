@@ -20,7 +20,8 @@
 
     <!-- Rules found at: https://aka.ms/Microsoft-NuGet-Compliance -->
 
-    <!-- Per rules,this must be *EXACTLY* "Microsoft. Otherwise Nuget.org will reject the packages." -->
+    <!-- Per rules,this must be *EXACTLY* "Microsoft. Otherwise Nuget.org will reject the packages."  -->
+    
     <Authors>Microsoft</Authors>
     <Product>Microsoft Bot Builder SDK</Product>
     <Copyright>© Microsoft Corporation. All rights reserved.</Copyright>
