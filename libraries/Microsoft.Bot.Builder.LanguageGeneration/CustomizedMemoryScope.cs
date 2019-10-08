@@ -81,14 +81,14 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public bool TryGetValue(string key, out object value)
         {
             var (result, error) = BuiltInFunctions.AccessProperty(this.LocalScope, key);
-            if (result != null && error == null)
+            if (error == null)
             {
                 value = result;
                 return true;
             }
 
             (result, error) = BuiltInFunctions.AccessProperty(this.GlobalScope, key);
-            if (result != null && error == null)
+            if (error == null)
             {
                 value = result;
                 return true;
