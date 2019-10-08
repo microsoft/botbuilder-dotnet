@@ -31,7 +31,7 @@
 > The challenge with doing so is the if/elseif/else structure
 # bread(val)
 - IF: {val == "multiGrainWheat"}
-- multi grain
+- multi grain wheat
 - ELSEIF: {val == "rye"}
 - rye
 - ELSEIF: {val == "white"}

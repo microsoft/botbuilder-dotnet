@@ -13,13 +13,13 @@
                     "actions": [
                         {
                             "$type": "Microsoft.SendActivity",
-                            "activity": "[unexpectedPropertySet('Bread', @Bread, 'Bread')]"
+                            "activity": "[unexpectedPropertySet('Bread', @Bread, BreadName())]"
                         }
                     ],
                     "elseActions": [
                         {
                             "$type": "Microsoft.SendActivity",
-                            "activity": "[unexpectedPropertyChange('Bread', @Bread, 'Bread', $Bread)]"
+                            "activity": "[unexpectedPropertyChange('Bread', @Bread, BreadName(), $Bread)]"
                         }
                     ]
                 }
