@@ -8,6 +8,7 @@ using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using SkillHost.Controllers;
 
 namespace SkillHost
 {
@@ -18,10 +19,10 @@ namespace SkillHost
         {
             // TODO: Gabo, this is kind of nasty here, move somewhere else.
             var section = configuration.GetSection($"Skills");
-            var skillsList = section?.Get<SkillOptions[]>();
-            if (skillsList != null)
+            var skills = section?.Get<SkillOptions[]>();
+            if (skills != null)
             {
-                Skills.AddRange(skillsList);
+                this.UseSkills(skills);
             }
 
             OnTurnError = async (turnContext, exception) =>
