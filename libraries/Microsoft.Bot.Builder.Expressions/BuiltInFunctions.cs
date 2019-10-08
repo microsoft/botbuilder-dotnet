@@ -2432,7 +2432,7 @@ namespace Microsoft.Bot.Builder.Expressions
                     },
                     ReturnType.Boolean,
                     ValidateBinary),
-                Comparison(ExpressionType.Empty, args => IsEmpty(args[0]), ValidateUnary, VerifyNumberOrString),
+                Comparison(ExpressionType.Empty, args => IsEmpty(args[0]), ValidateUnary, VerifyContainer),
                 new ExpressionEvaluator(ExpressionType.And, (expression, state) => And(expression, state), ReturnType.Boolean, ValidateAtLeastOne),
                 new ExpressionEvaluator(ExpressionType.Or, (expression, state) => Or(expression, state), ReturnType.Boolean, ValidateAtLeastOne),
                 new ExpressionEvaluator(ExpressionType.Not, (expression, state) => Not(expression, state), ReturnType.Boolean, ValidateUnary),

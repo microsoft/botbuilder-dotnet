@@ -24,7 +24,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form.Events
 
         public double Coverage { get; set; }
 
-        public int Turn { get; set; }
+        public uint Turn { get; set; }
 
         // The entities share some of the same text
         public bool Overlaps(EntityInfo entity)

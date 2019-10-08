@@ -41,6 +41,5 @@ namespace Microsoft.Bot.Builder.Dialogs.Form.Events
 
             return Expression.AndExpression(expressions.ToArray());
         }
-
     }
 }

@@ -98,5 +98,6 @@
             ],
             "$templates": []
         }
-    }
+    },
+    "required":  ["Meat", "Bread", "Cheese"]
 }

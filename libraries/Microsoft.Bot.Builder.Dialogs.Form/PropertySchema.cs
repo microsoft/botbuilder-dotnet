@@ -67,7 +67,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Form
         /// <value>
         /// Name for this property.
         /// </value>
-        public string Name => Path.Split('.', '[').Last();
+        public string Name => Path.Split('.').Last().Replace("[]", string.Empty);
 
         /// <summary>
         /// Gets path to schema with [] for arrays and otherwise . for path accessors.
