@@ -3,7 +3,7 @@
   "manifestVersion": "1.5",
   "version": "1.0",
   "id": "",
-  "packageName": "com.teams.sample.compose.extension",
+  "packageName": "com.teams.sample.messaging.extension",
   "developer": {
     "name": "Microsoft",
     "websiteUrl": "https://www.microsoft.com",
