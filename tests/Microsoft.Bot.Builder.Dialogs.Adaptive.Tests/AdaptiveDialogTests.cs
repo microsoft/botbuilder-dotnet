@@ -1978,6 +1978,64 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
+        public async Task TestBindingTwoWayAcrossAdaptiveDialogsDefaultResultProperty()
+        {
+            var rootDialog = new AdaptiveDialog(nameof(AdaptiveDialog))
+            {
+                Triggers = new List<OnCondition>()
+                {
+                    new OnUnknownIntent()
+                    {
+                        Actions = new List<Dialog>()
+                        {
+                            new TextInput()
+                            {
+                                Property = "$userName",
+                                Prompt = new ActivityTemplate("Hello, what is your name?")
+                            },
+                            new BeginDialog("ageDialog")
+                            {
+                                Options = new { name = "$userName" },
+                                ResultProperty = "$userAge"
+                            },
+                            new SendActivity("Hello {$userName}, you are {$userAge} years old!")
+                        }
+                    }
+                }
+            };
+
+            var ageDialog = new AdaptiveDialog("ageDialog")
+            {
+                DefaultResultProperty = "$age",
+                Triggers = new List<OnCondition>()
+                {
+                    new OnUnknownIntent()
+                    {
+                        Actions = new List<Dialog>()
+                        {
+                            new NumberInput()
+                            {
+                                Prompt = new ActivityTemplate("Hello {$options.name}, how old are you?"),
+                                Property = "$age"
+                            }
+                        }
+                    }
+                }
+            };
+
+            rootDialog.Dialogs.Add(ageDialog);
+
+            await CreateFlow(rootDialog)
+            .Send("Hi")
+                .AssertReply("Hello, what is your name?")
+            .Send("zoidberg")
+                .AssertReply("Hello zoidberg, how old are you?")
+            .Send("I'm 77")
+                .AssertReply("Hello zoidberg, you are 77 years old!")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
         public async Task AdaptiveDialog_AdaptiveCardSubmit()
         {
             var ruleDialog = new AdaptiveDialog("planningTest")
