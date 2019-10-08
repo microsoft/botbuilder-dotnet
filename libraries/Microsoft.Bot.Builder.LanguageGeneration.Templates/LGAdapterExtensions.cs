@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Loaders;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
@@ -74,7 +75,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         public static BotAdapter UseMessageActivityGeneration(this BotAdapter botAdapter, IActivityGenerator messageGenerator = null)
         {
             DeclarativeTypeLoader.AddComponent(new LanguageGenerationComponentRegistration());
-            botAdapter.Use(new RegisterClassMiddleware<IActivityGenerator>(messageGenerator ?? new TextActivityGenerator()));
+            botAdapter.Use(new RegisterClassMiddleware<IActivityGenerator>(messageGenerator ?? new ActivityGenerator()));
             return botAdapter;
         }
     }

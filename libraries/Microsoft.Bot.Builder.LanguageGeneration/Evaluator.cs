@@ -2,17 +2,21 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net.Mime;
 using System.Text;
 using System.Text.RegularExpressions;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
 using Microsoft.Bot.Builder.Expressions;
 using Microsoft.Bot.Builder.Expressions.Parser;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
-    public class Evaluator : LGFileParserBaseVisitor<string>
+    public class Evaluator : LGFileParserBaseVisitor<object>
     {
+        private readonly Regex expressionRecognizeRegex = new Regex(@"@?(?<!\\)\{.+?(?<!\\)\}", RegexOptions.Compiled);
+        private readonly Regex escapeSeperatorRegex = new Regex(@"(?<!\\)\|", RegexOptions.Compiled);
         private readonly Stack<EvaluationTarget> evaluationTargetStack = new Stack<EvaluationTarget>();
 
         public Evaluator(List<LGTemplate> templates, ExpressionEngine expressionEngine)
@@ -30,7 +34,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         public Dictionary<string, LGTemplate> TemplateMap { get; }
 
-        public string EvaluateTemplate(string templateName, object scope)
+        public object EvaluateTemplate(string templateName, object scope)
         {
             if (!TemplateMap.ContainsKey(templateName))
             {
@@ -50,7 +54,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return result;
         }
 
-        public override string VisitTemplateDefinition([NotNull] LGFileParser.TemplateDefinitionContext context)
+        public override object VisitTemplateDefinition([NotNull] LGFileParser.TemplateDefinitionContext context)
         {
             var templateNameContext = context.templateNameLine();
             if (templateNameContext.templateName().GetText().Equals(CurrentTarget().TemplateName))
@@ -61,16 +65,76 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return null;
         }
 
-        public override string VisitNormalBody([NotNull] LGFileParser.NormalBodyContext context) => Visit(context.normalTemplateBody());
+        public override object VisitStructuredTemplateBody([NotNull] LGFileParser.StructuredTemplateBodyContext context)
+        {
+            var result = new JObject();
+            var typeName = context.structuredBodyNameLine().STRUCTURED_CONTENT().GetText();
+            result["$type"] = typeName;
 
-        public override string VisitNormalTemplateBody([NotNull] LGFileParser.NormalTemplateBodyContext context)
+            var bodys = context.structuredBodyContentLine().STRUCTURED_CONTENT();
+            foreach (var body in bodys)
+            {
+                var line = body.GetText().Trim();
+                var start = line.IndexOf('=');
+                if (start > 0)
+                {
+                    // make it insensitive
+                    var property = line.Substring(0, start).Trim().ToLower();
+                    var originValue = line.Substring(start + 1).Trim();
+
+                    var valueArray = escapeSeperatorRegex.Split(originValue);
+                    if (valueArray.Length == 1)
+                    {
+                        result[property] = EvalText(originValue);
+                    }
+                    else
+                    {
+                        var valueList = new JArray();
+                        foreach (var item in valueArray)
+                        {
+                            valueList.Add(EvalText(item.Trim()));
+                        }
+
+                        result[property] = valueList;
+                    }
+                }
+                else if (IsPureExpression(line))
+                {
+                    // [MyStruct
+                    // Text = foo
+                    // {ST2()}
+                    // ]
+
+                    // When the same property exists in both the calling template as well as callee, the content in caller will trump any content in the callee.
+                    var propertyObject = JObject.FromObject(EvalExpression(line));
+
+                    // Full reference to another structured template is limited to the structured template with same type 
+                    if (propertyObject["$type"] != null && propertyObject["$type"].ToString() == typeName)
+                    {
+                        foreach (var item in propertyObject)
+                        {
+                            if (result.Property(item.Key) == null)
+                            {
+                                result[item.Key] = item.Value;
+                            }
+                        }
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        public override object VisitNormalBody([NotNull] LGFileParser.NormalBodyContext context) => Visit(context.normalTemplateBody());
+
+        public override object VisitNormalTemplateBody([NotNull] LGFileParser.NormalTemplateBodyContext context)
         {
             var normalTemplateStrs = context.templateString();
             var rd = new Random();
             return Visit(normalTemplateStrs[rd.Next(normalTemplateStrs.Length)].normalTemplateString());
         }
 
-        public override string VisitIfElseBody([NotNull] LGFileParser.IfElseBodyContext context)
+        public override object VisitIfElseBody([NotNull] LGFileParser.IfElseBodyContext context)
         {
             var ifRules = context.ifElseTemplateBody().ifConditionRule();
             foreach (var ifRule in ifRules)
@@ -84,12 +148,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return null;
         }
 
-        public override string VisitSwitchCaseBody([NotNull] LGFileParser.SwitchCaseBodyContext context)
+        public override object VisitSwitchCaseBody([NotNull] LGFileParser.SwitchCaseBodyContext context)
         {
             var switchCaseNodes = context.switchCaseTemplateBody().switchCaseRule();
             var length = switchCaseNodes.Length;
             var switchExprs = switchCaseNodes[0].switchCaseStat().EXPRESSION();
-            var switchExprResult = EvalExpression(switchExprs[0].GetText());
+            var switchExprResult = EvalExpression(switchExprs[0].GetText()).ToString();
             var idx = 0;
             foreach (var switchCaseNode in switchCaseNodes)
             {
@@ -113,7 +177,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 }
 
                 var caseExprs = switchCaseNode.switchCaseStat().EXPRESSION();
-                var caseExprResult = EvalExpression(caseExprs[0].GetText());
+                var caseExprResult = EvalExpression(caseExprs[0].GetText()).ToString();
                 if (switchExprResult == caseExprResult)
                 {
                     return Visit(switchCaseNode.normalTemplateBody());
@@ -125,9 +189,9 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             return null;
         }
 
-        public override string VisitNormalTemplateString([NotNull] LGFileParser.NormalTemplateStringContext context)
+        public override object VisitNormalTemplateString([NotNull] LGFileParser.NormalTemplateStringContext context)
         {
-            var builder = new StringBuilder();
+            var result = new List<object>();
             foreach (ITerminalNode node in context.children)
             {
                 switch (node.Symbol.Type)
@@ -135,24 +199,29 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     case LGFileParser.DASH:
                         break;
                     case LGFileParser.ESCAPE_CHARACTER:
-                        builder.Append(Regex.Unescape(node.GetText()));
+                        result.Add(Regex.Unescape(node.GetText()));
                         break;
                     case LGFileParser.EXPRESSION:
-                        builder.Append(EvalExpression(node.GetText()));
+                        result.Add(EvalExpression(node.GetText()));
                         break;
                     case LGFileParser.TEMPLATE_REF:
-                        builder.Append(EvalTemplateRef(node.GetText()));
+                        result.Add(EvalTemplateRef(node.GetText()));
                         break;
                     case LGFileLexer.MULTI_LINE_TEXT:
-                        builder.Append(EvalMultiLineText(node.GetText()));
+                        result.Add(EvalMultiLineText(node.GetText()));
                         break;
                     default:
-                        builder.Append(node.GetText());
+                        result.Add(node.GetText());
                         break;
                 }
             }
 
-            return builder.ToString();
+            if (result.Count == 1 && !(result[0] is string))
+            {
+                return result[0];
+            }
+
+            return string.Join(string.Empty, result);
         }
 
         public object ConstructScope(string templateName, List<object> args)
@@ -218,7 +287,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             }
         }
 
-        private string EvalExpression(string exp)
+        private object EvalExpression(string exp)
         {
             exp = exp.TrimStart('@').TrimStart('{').TrimEnd('}');
             var (result, error) = EvalByExpressionEngine(exp, CurrentTarget().Scope);
@@ -232,10 +301,10 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 throw new Exception($"Error occurs when evaluating expression '{exp}': {exp} is evaluated to null");
             }
 
-            return result.ToString();
+            return result;
         }
 
-        private string EvalTemplateRef(string exp)
+        private object EvalTemplateRef(string exp)
         {
             exp = exp.TrimStart('[').TrimEnd(']').Trim();
             if (exp.IndexOf('(') < 0)
@@ -262,10 +331,43 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
         {
             // remove ``` ```
             exp = exp.Substring(3, exp.Length - 6);
-            var reg = @"@\{[^{}]+\}";
-            var evalutor = new MatchEvaluator(m => EvalExpression(m.Value));
+            return EvalTextContainsExpression(exp);
+        }
 
-            return Regex.Replace(exp, reg, evalutor);
+        private string EvalTextContainsExpression(string exp)
+        {
+            var evalutor = new MatchEvaluator(m => EvalExpression(m.Value).ToString());
+            return expressionRecognizeRegex.Replace(exp, evalutor);
+        }
+
+        private JToken EvalText(string exp)
+        {
+            if (string.IsNullOrEmpty(exp))
+            {
+                return exp;
+            }
+
+            if (IsPureExpression(exp))
+            {
+                // @{} or {} text, get object result
+                return JToken.FromObject(EvalExpression(exp));
+            }
+            else
+            {
+                return Regex.Unescape(EvalTextContainsExpression(exp));
+            }
+        }
+
+        private bool IsPureExpression(string exp)
+        {
+            if (string.IsNullOrWhiteSpace(exp))
+            {
+                return false;
+            }
+
+            exp = exp.Trim();
+            var expressions = expressionRecognizeRegex.Matches(exp);
+            return expressions.Count == 1 && expressions[0].Value == exp;
         }
 
         private (object value, string error) EvalByExpressionEngine(string exp, object scope)
@@ -287,7 +389,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             if (this.TemplateMap.ContainsKey(name))
             {
-                return new ExpressionEvaluator(name, BuiltInFunctions.Apply(this.TemplateEvaluator(name)), ReturnType.String, this.ValidTemplateReference);
+                return new ExpressionEvaluator(name, BuiltInFunctions.Apply(this.TemplateEvaluator(name)), ReturnType.Object, this.ValidTemplateReference);
             }
 
             return baseLookup(name);
