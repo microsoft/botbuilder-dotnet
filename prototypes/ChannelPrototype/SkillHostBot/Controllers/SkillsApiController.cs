@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Security.Claims;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -16,18 +15,17 @@ using Microsoft.Bot.Builder.Skills;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
 
 namespace SkillHost.Controllers
 {
     [ApiController]
     [Route("/v3/conversations")]
-    public class ChannelAPIController : ControllerBase
+    public class SkillsApiController : ControllerBase
     {
         private readonly BotFrameworkHttpAdapter _adapter;
         private readonly IBot _bot;
 
-        public ChannelAPIController(BotFrameworkHttpAdapter adapter, IConfiguration configuration, IBot bot)
+        public SkillsApiController(BotFrameworkHttpAdapter adapter, IConfiguration configuration, IBot bot)
         {
             // adapter to use for calling back to channel
             _adapter = adapter;
@@ -113,7 +111,7 @@ namespace SkillHost.Controllers
         [Route("/v3/conversations/{conversationId}/activities/{activityId}")]
         public virtual Task DeleteActivity(string conversationId, string activityId)
         {
-            return InvokeChannelAPI(ChannelApiMethod.DeleteActivity, conversationId, activityId);
+            return InvokeChannelApi(ChannelApiMethod.DeleteActivity, conversationId, activityId);
         }
 
         /// <summary>
@@ -165,7 +163,7 @@ namespace SkillHost.Controllers
         [Route("/v3/conversations/{conversationId}/members/{memberId}")]
         public virtual Task DeleteConversationMember(string conversationId, string memberId)
         {
-            return InvokeChannelAPI(ChannelApiMethod.DeleteConversationMember, conversationId, memberId);
+            return InvokeChannelApi(ChannelApiMethod.DeleteConversationMember, conversationId, memberId);
         }
 
         /// <summary>
@@ -228,8 +226,12 @@ namespace SkillHost.Controllers
                 activityPayload.Recipient = channelApiInvokeActivity.Recipient;
             }
 
-            var channelAPIArgs = new ChannelApiArgs() { Method = method, Args = args, };
-            channelApiInvokeActivity.Value = channelAPIArgs;
+            var channelApiArgs = new ChannelApiArgs()
+            {
+                Method = method,
+                Args = args,
+            };
+            channelApiInvokeActivity.Value = channelApiArgs;
 
             // We call our adapter using the BotAppId claim, so turnContext has the bot claims
             var claimsIdentity = new ClaimsIdentity(new List<Claim>
@@ -243,13 +245,12 @@ namespace SkillHost.Controllers
             // send up to the bot to process it...
             await _adapter.ProcessActivityAsync(claimsIdentity, (Activity)channelApiInvokeActivity, _bot.OnTurnAsync, CancellationToken.None);
 
-            return (TResponse)channelAPIArgs.Result;
+            return (TResponse)channelApiArgs.Result;
         }
 
-        private async Task InvokeChannelAPI(ChannelApiMethod method, string conversationId, params object[] args)
+        private async Task InvokeChannelApi(ChannelApiMethod method, string conversationId, params object[] args)
         {
             await InvokeChannelAPI<object>(method, conversationId, args);
-            return;
         }
     }
 }

@@ -1,10 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Integration;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
-using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
@@ -15,7 +13,7 @@ namespace SimpleRootBot
         public AdapterWithErrorHandler(IConfiguration configuration, ILogger<BotFrameworkHttpAdapter> logger)
             : base(configuration, logger)
         {
-            // TODO: Gabo, this is kind of nasty here, move somewhere else.
+            // TODO: Gabo, think if this should be moved somewhere else.
             var section = configuration.GetSection($"Skills");
             var skillsList = section?.Get<SkillOptions[]>();
             if (skillsList != null)
