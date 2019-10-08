@@ -1,62 +1,99 @@
+# EchoBot
 
-# ![Bot Framework for dotnet](./doc/media/BotFrameworkDotnet_header.png)
+Bot Framework v4 echo bot sample for Teams.
 
-### [Click here to find out what's new with Bot Framework](https://github.com/Microsoft/botframework/blob/master/whats-new.md#whats-new)
+This bot has been created using [Bot Framework](https://dev.botframework.com), it shows how to create a simple bot that accepts input from the user and echoes it back.
 
-# Bot Framework SDK v4 for .NET
-This repository contains code for the .NET version of the [Microsoft Bot Framework SDK](https://github.com/Microsoft/botbuilder). The Bot Framework SDK v4 enable developers to model conversation and build sophisticated bot applications using .NET.
+## Prerequisites
 
-This repo is part the [Microsoft Bot Framework](https://github.com/Microsoft/botframework) - a comprehensive framework for building enterprise-grade conversational AI experiences.
+- [.NET Core SDK](https://dotnet.microsoft.com/download) version 2.1
 
- | Branch | Description        | Build Status | Coverage Status | Windows Bot Test Status | Linux Bot Test Status |
- |----|---------------|--------------|-----------------|--|--|
- |Master | 4.6.* Preview Builds |[![Build Status](https://fuselabs.visualstudio.com/SDK_v4/_apis/build/status/DotNet/BotBuilder-DotNet-Signed-daily?branchName=master)](https://fuselabs.visualstudio.com/SDK_v4/_build/latest?definitionId=277&branchName=master) |[![Coverage Status](https://coveralls.io/repos/github/Microsoft/botbuilder-dotnet/badge.svg?branch=master&service=github)](https://coveralls.io/github/Microsoft/botbuilder-dotnet?branch=master) | [![Tests status](https://fuselabs.vsrm.visualstudio.com/_apis/public/Release/badge/86659c66-c9df-418a-a371-7de7aed35064/48/48)](https://fuselabs.visualstudio.com/SDK_v4/_release?definitionId=48&_a=releases) |  [![Tests status](https://fuselabs.vsrm.visualstudio.com/_apis/public/Release/badge/86659c66-c9df-418a-a371-7de7aed35064/47/47)](https://fuselabs.visualstudio.com/SDK_v4/_release?definitionId=47&_a=releases)
+  ```bash
+  # determine dotnet version
+  dotnet --version
+  ```
+- Microsoft Teams is installed and you have an account
 
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/Microsoft/botbuilder-dotnet/blob/master/LICENSE)
-[![Gitter](https://img.shields.io/gitter/room/Microsoft/BotBuilder.svg)](https://gitter.im/Microsoft/BotBuilder)
+## To try this sample
 
-[![StackExchange](https://img.shields.io/stackexchange/stackoverflow/t/botframework.svg)](https://stackoverflow.com/questions/tagged/botframework)
+### Ngrok
+- Download and install [ngrok](https://ngrok.com/download)
+- In terminal navigate to where ngrok is installed and run: 
 
+```bash
+ngrok http -host-header=rewrite 3978
+```
+- Copy/paste the ```https``` web address into notepad as you will need it later
 
+### Microsoft Teams Setup
+- Launch Microsoft Teams. In the search bar at the top of Teams search for and select ```App Studio```.
+- Click the ```Manifest editor``` tab near the top of the screen.
+- Click the ```Create a new app``` button on the left hand side.
+- Under the ```Details``` section fill in the following fields 
+  - In the Short name field enter ```EchoBot```
+  - Click the ```Generate``` button under App ID 
+  - Package Name
+  - Version 
+  - Short description
+  - Long description
+  - Developer name
+  - Website 
+  - Privacy statement web address
+  - Terms of use web address
+- Under the ```Capabilities``` tab on the left hand side click the ```Bots``` tab
+- Click the ```Set up``` button
+- Under the ```New bot``` tab Fill in the following fields
+  - Put ```EchoBot``` into the Name field
+  - Under ```Scope``` check all 3 boxes ```Personal```, ```Team```, ```Group Chat```
+  - Click the ```Create bot``` button
+- Copy the Bot ID (string under ```EchoBot```) and paste it into notepad as you will need it later
+- Click the ```Generate new password``` button (copy/paste) the password into notepad as you will need it later)
+- Under Messaging endpoint paste the https ngrok url and add ```/api/messages``` to the end
+  - EX: ```https://ca7f8a7e.ngrok.io/api/messages```
+- Press Enter to save the address
 
-In addition to the .NET SDK, Bot Builder supports creating bots in other popular programming languages like [JavaScript](https://github.com/Microsoft/botbuilder-js), [Python (Preview)](https://github.com/Microsoft/botbuilder-python), and [Java (Preview)](https://github.com/Microsoft/botbuilder-java).
+### Bot Setup
+- Clone the repository
 
-To get started see the [Azure Bot Service Documentation](https://docs.microsoft.com/en-us/azure/bot-service/?view=azure-bot-service-4.0) for the v4 SDK.
+    ```bash
+    git clone https://github.com/Microsoft/botbuilder-samples.git
+    ```
 
-The [Bot Framework Samples](https://github.com/microsoft/botbuilder-samples) includes a rich set of samples repository.
+- In Visual Studio navigate to the ```52.teams-echo-bot``` folder and open the ```appsettings.json``` file
+- Put the  you saved earlier from Teams in the ```MicrosoftAppId``` field
+- Put the password into the ```MicrosoftAppPassword``` field
+- Save
 
+- Run the bot from a terminal or from Visual Studio, choose option A or B.
 
-## Packages
-| Name                                  | Released Package | Daily Build                                                                                                                                                                  |
-|---------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------|--|
-| Microsoft.Bot.Builder                 | [![BotBuilder Badge](https://buildstats.info/nuget/Microsoft.Bot.Builder?dWidth=70)](https://www.nuget.org/packages/Microsoft.Bot.Builder/)                                 | [![BotBuilder Badge](https://buildstats.info/myget/botbuilder/botbuilder-v4-dotnet-daily/Microsoft.Bot.Builder?includePreReleases=true&dWidth=50)](https://botbuilder.myget.org/feed/botbuilder-v4-dotnet-daily/package/nuget/Microsoft.Bot.Builder) |
-| Microsoft.Bot.Builder.AI.LUIS         | [![BotBuilder Badge](https://buildstats.info/nuget/Microsoft.Bot.Builder.AI.LUIS?dWidth=70)](https://www.nuget.org/packages/Microsoft.Bot.Builder.AI.LUIS/)                 | [![BotBuilder Badge](https://buildstats.info/myget/botbuilder/botbuilder-v4-dotnet-daily/Microsoft.Bot.Builder.AI.LUIS?includePreReleases=true&dWidth=50)](https://botbuilder.myget.org/feed/botbuilder-v4-dotnet-daily/package/nuget/Microsoft.Bot.Builder.AI.LUIS) |
-| Microsoft.Bot.Builder.AI.QnA          | [![BotBuilder Badge](https://buildstats.info/nuget/Microsoft.Bot.Builder.AI.QnA?dWidth=70)](https://www.nuget.org/packages/Microsoft.Bot.Builder.AI.Qna/)                   | [![BotBuilder Badge](https://buildstats.info/myget/botbuilder/botbuilder-v4-dotnet-daily/Microsoft.Bot.Builder.AI.QnA?includePreReleases=true&dWidth=50)](https://botbuilder.myget.org/feed/botbuilder-v4-dotnet-daily/package/nuget/Microsoft.Bot.Builder.AI.QnA) |
-| Microsoft.Bot.Builder.Azure           | [![BotBuilder Badge](https://buildstats.info/nuget/Microsoft.Bot.Builder.Azure?dWidth=70)](https://www.nuget.org/packages/Microsoft.Bot.Builder.Azure/)                     | [![BotBuilder Badge](https://buildstats.info/myget/botbuilder/botbuilder-v4-dotnet-daily/Microsoft.Bot.Builder.Azure?includePreReleases=true&dWidth=50)](https://botbuilder.myget.org/feed/botbuilder-v4-dotnet-daily/package/nuget/Microsoft.Bot.Builder.Azure) |
-| Microsoft.Bot.Builder.Dialogs         | [![BotBuilder Badge](https://buildstats.info/nuget/Microsoft.Bot.Builder.Dialogs?dWidth=70)](https://www.nuget.org/packages/Microsoft.Bot.Builder.Dialogs/)                 | [![BotBuilder Badge](https://buildstats.info/myget/botbuilder/botbuilder-v4-dotnet-daily/Microsoft.Bot.Builder.Dialogs?includePreReleases=true&dWidth=50)](https://botbuilder.myget.org/feed/botbuilder-v4-dotnet-daily/package/nuget/Microsoft.Bot.Builder.Dialogs) |
-| Microsoft.Bot.Builder.TemplateManager | [![BotBuilder Badge](https://buildstats.info/nuget/Microsoft.Bot.Builder.TemplateManager?dWidth=70)](https://www.nuget.org/packages/Microsoft.Bot.Builder.TemplateManager/) | [![BotBuilder Badge](https://buildstats.info/myget/botbuilder/botbuilder-v4-dotnet-daily/Microsoft.Bot.Builder.TemplateManager?includePreReleases=true&dWidth=50)](https://botbuilder.myget.org/feed/botbuilder-v4-dotnet-daily/package/nuget/Microsoft.Bot.Builder.TemplateManager) |
-| Microsoft.Bot.Builder.Integration.ApplicationInsights.Core | [![BotBuilder Badge](https://buildstats.info/nuget/Microsoft.Bot.Builder.Integration.ApplicationInsights.Core?dWidth=70)](https://www.nuget.org/packages/Microsoft.Bot.Builder.Integration.ApplicationInsights.Core/) | [![BotBuilder Badge](https://buildstats.info/myget/botbuilder/botbuilder-v4-dotnet-daily/Microsoft.Bot.Builder.Integration.ApplicationInsights.Core?includePreReleases=true&dWidth=50)](https://botbuilder.myget.org/feed/botbuilder-v4-dotnet-daily/package/nuget/Microsoft.Bot.Builder.Integration.ApplicationInsights.Core) |
-| Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi | [![BotBuilder Badge](https://buildstats.info/nuget/Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi?dWidth=70)](https://www.nuget.org/packages/Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi/) | [![BotBuilder Badge](https://buildstats.info/myget/botbuilder/botbuilder-v4-dotnet-daily/Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi?includePreReleases=true&dWidth=50)](https://botbuilder.myget.org/feed/botbuilder-v4-dotnet-daily/package/nuget/Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi) |
-| Microsoft.Bot.Configuration           | [![BotBuilder Badge](https://buildstats.info/nuget/Microsoft.Bot.Configuration?dWidth=70)](https://www.nuget.org/packages/Microsoft.Bot.Configuration/)                     | [![BotBuilder Badge](https://buildstats.info/myget/botbuilder/botbuilder-v4-dotnet-daily/Microsoft.Bot.Configuration?includePreReleases=true&dWidth=50)](https://botbuilder.myget.org/feed/botbuilder-v4-dotnet-daily/package/nuget/Microsoft.Bot.Configuration) |
-| Microsoft.Bot.Connector               | [![BotBuilder Badge](https://buildstats.info/nuget/Microsoft.Bot.Connector?dWidth=70)](https://www.nuget.org/packages/Microsoft.Bot.Connector/)                             | [![BotBuilder Badge](https://buildstats.info/myget/botbuilder/botbuilder-v4-dotnet-daily/Microsoft.Bot.Connector?includePreReleases=true&dWidth=50)](https://botbuilder.myget.org/feed/botbuilder-v4-dotnet-daily/package/nuget/Microsoft.Bot.Connector) |
-| Microsoft.Bot.Schema                  | [![BotBuilder Badge](https://buildstats.info/nuget/Microsoft.Bot.Schema?dWidth=70)](https://www.nuget.org/packages/Microsoft.Bot.Schema/)                                   | [![BotBuilder Badge](https://buildstats.info/myget/botbuilder/botbuilder-v4-dotnet-daily/Microsoft.Bot.Schema?includePreReleases=true&dWidth=50)](https://botbuilder.myget.org/feed/botbuilder-v4-dotnet-daily/package/nuget/Microsoft.Bot.Schema) |
+  A) From a terminal
 
-To use the daily builds, which are published to MyGet, please follow the instructions [here](UsingMyGet.md).
+  ```bash
+  # run the bot
+  dotnet run
+  ```
 
+  B) Or from Visual Studio
 
-## Contributing
-This project welcomes contributions and suggestions. Most contributions require you to agree to a
-Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
-the rights to use your contribution. For details, visit https://cla.microsoft.com.
-When you submit a pull request, a CLA-bot will automatically determine whether you need to provide
-a CLA and decorate the PR appropriately (e.g., label, comment). Simply follow the instructions
-provided by the bot. You will only need to do this once across all repos using our CLA.
-This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
-For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
-contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
+  - Launch Visual Studio
+  - File -> Open -> Project/Solution
+  - Navigate to `samples/csharp_dotnetcore/52.teams-echo-bot` folder
+  - Select `EchoBot.csproj` file
+  - Press `F5` to run the project
 
-## Reporting Security Issues
-Security issues and bugs should be reported privately, via email, to the Microsoft Security Response Center (MSRC) at [secure@microsoft.com](mailto:secure@microsoft.com). You should receive a response within 24 hours. If for some reason you do not, please follow up via email to ensure we received your original message. Further information, including the [MSRC PGP](https://technet.microsoft.com/en-us/security/dn606155) key, can be found in the [Security TechCenter](https://technet.microsoft.com/en-us/security/default).
+### Finishing Teams Setup
+- Back in Teams click ```Test and distribute``` on the left hand side under ```Finish``` section
+- Click the ```Install``` button
 
-Copyright (c) Microsoft Corporation. All rights reserved.
+| To install bot in a personal chat... | To install in a group chat... | To install in team chat... |
+|:-------------------- | :------------------------- | :-----------------------|
+| 1. Click ```Add``` button| 1. Click the down arrow to the right of the ```Add``` button <br> 2. Click ```Add to Chat``` <br> 3. Search for and select your group chat <br> 4. Click the ```Set up bot``` button <br> **Note:** There must be at least 1 message in a group chat for it to be searchable |  1. Click the down arrow to the right of the ```Add``` button <br> 2. Click ```Add to Team``` <br> 3. Search for and select your team <br> 4. Click the ```Set up a bot``` button  |
 
+**Note:** If you send an unsupported string in a group chat or personal chat the bot will respond with an error message. This is because it's missing data that comes with messages that orignates from a team or group chat.
+
+|Supported strings in personal chat | Supported strings in group chat | supported strings in team chat|
+|:----------------------------- | :-------------------------------|:----------------------------------|
+| N/A | ```show members``` |  ```show members``` <br> ```show channels``` <br> ```show details``` |
+
+### Place holder for potential errors
+- If your tenant admin has things disabled
