@@ -18,6 +18,12 @@
     </PackageReference>
   </ItemGroup>
 
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <SignAssembly>true</SignAssembly>
+    <DelaySign>true</DelaySign>
+    <AssemblyOriginatorKeyFile>..\..\..\build\35MSSharedLib1024.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\..\..\libraries\Adapters\Microsoft.Bot.Builder.Adapters.Twilio\Microsoft.Bot.Builder.Adapters.Twilio.csproj" />
   </ItemGroup>
