@@ -77,46 +77,6 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         }
 
         /// <summary>
-        /// Get a Facebook API client with the correct credentials based on the page identified in the incoming activity.
-        /// This is used by many internal functions to get access to the Facebook API, and is exposed as `bot.api` on any BotWorker instances passed into Botkit handler functions.
-        /// </summary>
-        /// <param name="activity">An incoming message activity.</param>
-        /// <returns>A Facebook API client.</returns>
-        public virtual async Task<FacebookClientWrapper> GetApiAsync(Activity activity)
-        {
-            if (activity == null)
-            {
-                throw new ArgumentNullException(nameof(activity));
-            }
-
-            if (!string.IsNullOrWhiteSpace(_options.AccessToken))
-            {
-                return new FacebookClientWrapper(new FacebookAdapterOptions(_options.VerifyToken, _options.AppSecret, _options.AccessToken));
-            }
-
-            if (string.IsNullOrWhiteSpace(activity.Recipient?.Id))
-            {
-                throw new Exception($"Unable to create API based on activity:{activity}");
-            }
-
-            var pageId = activity.Recipient.Id;
-
-            if (activity.GetChannelData<FacebookMessage>().Message != null && activity.GetChannelData<FacebookMessage>().Message.IsEcho)
-            {
-                pageId = activity.From.Id;
-            }
-
-            var token = await _options.GetAccessTokenForPageAsync(pageId).ConfigureAwait(false);
-
-            if (string.IsNullOrWhiteSpace(token))
-            {
-                throw new ArgumentException(nameof(token));
-            }
-
-            return new FacebookClientWrapper(new FacebookAdapterOptions(_options.VerifyToken, _options.AppSecret, token));
-        }
-
-        /// <summary>
         /// Verifies the SHA1 signature of the raw request payload before bodyParser parses it will abort parsing if signature is invalid, and pass a generic error to response.
         /// </summary>
         /// <param name="request">An Http request object.</param>

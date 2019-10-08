@@ -68,15 +68,13 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
 
                 var message = FacebookHelper.ActivityToFacebook(activity);
 
-                var api = await _facebookClient.GetApiAsync(context.Activity).ConfigureAwait(false);
-
                 if (message.Message.Attachment != null)
                 {
                     message.Message.Attachments = null;
                     message.Message.Text = null;
                 }
 
-                var res = await api.SendMessageAsync("/me/messages", message, null, cancellationToken).ConfigureAwait(false);
+                var res = await _facebookClient.SendMessageAsync("/me/messages", message, null, cancellationToken).ConfigureAwait(false);
 
                 var response = new ResourceResponse()
                 {
@@ -123,6 +121,16 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task ContinueConversationAsync(ConversationReference reference, BotCallbackHandler logic)
         {
+            if (reference == null)
+            {
+                throw new ArgumentNullException(nameof(reference));
+            }
+
+            if (logic == null)
+            {
+                throw new ArgumentNullException(nameof(logic));
+            }
+
             var request = reference.GetContinuationActivity().ApplyConversationReference(reference, true);
 
             using (var context = new TurnContext(this, request))
