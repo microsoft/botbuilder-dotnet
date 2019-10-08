@@ -88,8 +88,8 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 
         private readonly BotFrameworkHttpAdapter _adapter;
         private readonly string _botAppId;
-        private ConfigurationCredentialProvider _credentialsProvider;
-        private ConfigurationChannelProvider _channelProvider;
+        private readonly ConfigurationCredentialProvider _credentialsProvider;
+        private readonly ConfigurationChannelProvider _channelProvider;
 
         public BotFrameworkChannelHttpServer(BotFrameworkHttpAdapter adapter, IConfiguration configuration)
         {
