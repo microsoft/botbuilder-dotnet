@@ -2617,7 +2617,7 @@
                 "actions": {
                     "type": "array",
                     "title": "Actions",
-                    "description": "Actions to execute for each item. Use '$foreach.item' to access the value of each item.",
+                    "description": "Actions to execute for each item. Use '$foreach.value' to access the value of each item. Use '$foreach.index' to access the index of each item.",
                     "items": {
                         "$type": "Microsoft.IDialog",
                         "$ref": "#/definitions/Microsoft.IDialog"
