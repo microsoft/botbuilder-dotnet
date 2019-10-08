@@ -325,7 +325,6 @@ namespace Microsoft.Bot.Builder
             {
                 context.TurnState.Add<IIdentity>(BotIdentityKey, identity);
 
-                // Gabo: here we create the client for the reply and we cache it in turn state.
                 var connectorClient = await CreateConnectorClientAsync(activity.ServiceUrl, identity, cancellationToken).ConfigureAwait(false);
                 context.TurnState.Add(connectorClient);
 
@@ -455,7 +454,7 @@ namespace Microsoft.Bot.Builder
         public override async Task<InvokeResponse> ForwardActivityAsync(ITurnContext turnContext, string skillId, Activity activity, CancellationToken cancellationToken)
         {
             // route the activity to the skill
-            var skill = this.Skills.FirstOrDefault(s => s.Id == skillId);
+            var skill = Skills.FirstOrDefault(s => s.Id == skillId);
             if (skill != null)
             {
                 activity.Recipient.Properties["skillId"] = skill.Id;
@@ -482,7 +481,7 @@ namespace Microsoft.Bot.Builder
                     var token = await appCredentials.GetTokenAsync(skill.AppId).ConfigureAwait(false);
                     client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                     var jsonContent = new StringContent(JsonConvert.SerializeObject(activity, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore }), Encoding.UTF8, "application/json");
-                    var response = await client.PostAsync($"{skill.CallbackAddress}", jsonContent, cancellationToken).ConfigureAwait(false);
+                    var response = await client.PostAsync($"{skill.SkillAddress}", jsonContent, cancellationToken).ConfigureAwait(false);
                     var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                     if (content.Length > 0)
                     {
