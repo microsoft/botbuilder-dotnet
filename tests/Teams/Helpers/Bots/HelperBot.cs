@@ -41,7 +41,7 @@ namespace Microsoft.BotBuilderSamples.Bots
             }
             else if (turnContext.Activity.Text == "random")
             {
-                var channels = await GetChannelsAsync(turnContext, cancellationToken);
+                var channels = await TeamsInfo.GetChannelsAsync(turnContext, cancellationToken);
                 Random random = new Random();
                 var channel = random.Next(0, channels.Count);
                 var channelName = channels[channel].Name == null ? "General" : channels[channel].Name;
