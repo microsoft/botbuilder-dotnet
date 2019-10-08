@@ -4,10 +4,14 @@
     "condition": "empty(where(dialog.requiredProperties, property, !dialog[property]))",
     "actions": [
         {
+            "$type": "Microsoft.SendActivity",
+            "activity": "[readForm]"
+        },
+        {
             "$type": "Microsoft.Ask",
-            "activity": "Are you all done?",
+            "activity": "[changeSlot]",
             "expectedProperties": [
-                "DoneConfirmation"
+                "CompleteConfirmation"
             ]
         }
     ]

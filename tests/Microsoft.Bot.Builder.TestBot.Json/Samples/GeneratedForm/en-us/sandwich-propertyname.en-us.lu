@@ -40,3 +40,18 @@ $PROPERTYNAME:CancelConfirmation=
 - confirmation
 - cancel confirmation
 
+
+$PROPERTYNAME:CompleteConfirmation=
+- complete
+- confirmation
+- complete confirmation
+
+
+$PROPERTYNAME:PropertyToChange=
+- property
+- to
+- change
+- property to
+- to change
+- property to change
+

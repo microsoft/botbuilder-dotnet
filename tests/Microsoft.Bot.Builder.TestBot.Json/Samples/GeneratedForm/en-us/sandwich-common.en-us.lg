@@ -28,11 +28,18 @@
 - Please choose a value for {name} from \[{join(foreach(turn.dialogEvent.value.entity.value, val, bread(val)), ',')}\]
 
 > TODO: Need to generate this
+> The challenge with doing so is the if/elseif/else structure
 # bread(val)
-- IF: {val == 'honeyWheat'}
-- honey wheat
+- IF: {val == "multiGrainWheat"}
+- multi grain
+- ELSEIF: {val == "rye"}
+- rye
+- ELSEIF: {val == "white"}
+- white
+- ELSEIF: {val == "wholeWheat"}
+- whole wheat
 - ELSE:
-- wheat grain
+- unknown value
 
 # cancel
 - Do you want to end the conversation? (yes/no)
@@ -48,3 +55,12 @@
 
 # chooseProperty(property)
 - "{property.entity.text}" as {property.property}
+
+# readForm
+- {join(foreach(dialog.requiredProperties, property, readingProperty(property)), ', ')}
+
+# readingProperty(property)
+- {toLower(property)}={dialog[property]}
+
+# changeSlot
+- Is there any slot you want to change? (yes/no)

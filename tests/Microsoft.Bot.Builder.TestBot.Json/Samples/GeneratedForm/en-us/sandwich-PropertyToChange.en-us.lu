@@ -1,0 +1,23 @@
+
+$PropertyToChange:Meat=
+ -meat
+
+$PropertyToChange:Bread=
+ -bread
+
+$PropertyToChange:Cheese=
+ -cheese
+
+$PropertyToChange:Toppings=
+ -toppings
+
+
+# None
+- meat
+
+- bread
+
+- cheese
+
+- toppings
+
