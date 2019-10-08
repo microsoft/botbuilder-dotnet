@@ -12,6 +12,8 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Bot.Builder.BotFramework;
+using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
@@ -86,11 +88,15 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 
         private readonly BotFrameworkHttpAdapter _adapter;
         private readonly string _botAppId;
+        private ConfigurationCredentialProvider _credentialsProvider;
+        private ConfigurationChannelProvider _channelProvider;
 
         public BotFrameworkChannelHttpServer(BotFrameworkHttpAdapter adapter, IConfiguration configuration)
         {
             _adapter = adapter;
             _botAppId = configuration.GetValue<string>("MicrosoftAppId");
+            _credentialsProvider = new ConfigurationCredentialProvider(configuration);
+            _channelProvider = new ConfigurationChannelProvider(configuration);
         }
 
         public async Task ProcessAsync(HttpRequest httpRequest, HttpResponse httpResponse, IBot bot, CancellationToken cancellationToken = default)
@@ -124,7 +130,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                 var authHeader = httpRequest.Headers["Authorization"];
                 
                 // TODO: authenticate header here
-                //var claimsIdentity = await JwtTokenValidation.AuthenticateRequest(activity, authHeader, _credentialProvider, _channelProvider, _authConfiguration, _httpClient).ConfigureAwait(false);
+                //var claimsIdentity = await JwtTokenValidation.ValidateAuthHeader(authHeader, _credentialProvider, _channelProvider, _authConfiguration, _httpClient).ConfigureAwait(false);
                 switch (route.Method)
                 {
                     case BotFrameworkChannelServerMethods.CreateConversation:
@@ -302,10 +308,9 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             if (activity.Type == ActivityTypes.EndOfConversation || activity.Type == ActivityTypes.Event)
             {
                 activity.ApplyConversationReference(originalConversationReference, isIncoming: true);
-
-                // TEMPORARY claim
-                var claimsIdentity = new ClaimsIdentity(new List<Claim>(), "anonymous");
-
+                var authHeader = httpRequest.Headers["Authorization"];
+                var claimsIdentity = await JwtTokenValidation.AuthenticateRequest(activity, authHeader, _credentialsProvider, _channelProvider).ConfigureAwait(false);
+                
                 // send up to the bot 
                 // TODO: WE NEED PROCESSACTIVITY TO BE ON BOTADAPTER.CS
                 await _adapter.ProcessActivityAsync(claimsIdentity, activity, bot.OnTurnAsync, CancellationToken.None).ConfigureAwait(false);
@@ -318,7 +323,6 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                     originalConversationReference,
                     async (context, ct) =>
                     {
-                        activity.ApplyConversationReference(originalConversationReference);
                         activity.ReplyToId = activityId;
                         resourceResponse = await context.SendActivityAsync(activity, ct).ConfigureAwait(false);
                     },

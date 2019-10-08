@@ -182,6 +182,12 @@ namespace Microsoft.Bot.Connector.Authentication
             await base.ProcessHttpRequestAsync(request, cancellationToken).ConfigureAwait(false);
         }
 
+        public async Task<string> GetTokenAsync(string resource, bool forceRefresh = false)
+        {
+            var token = await authenticator.Value.GetTokenAsync(resource, forceRefresh).ConfigureAwait(false);
+            return token.AccessToken;
+        }
+
         /// <summary>
         /// Gets an OAuth access token.
         /// </summary>

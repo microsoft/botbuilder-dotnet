@@ -448,7 +448,7 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         /// <param name="turnContext">turnContext.</param>
         /// <param name="skillId">ID of the skill to forward activity to.</param>
-        /// <param name="activity">Acivity to forward.</param>
+        /// <param name="activity">Activity to forward.</param>
         /// <param name="cancellationToken">cancellation Token.</param>
         /// <returns>Async task.</returns>
         public override async Task ForwardActivityAsync(ITurnContext turnContext, string skillId, Activity activity, CancellationToken cancellationToken)
@@ -462,6 +462,8 @@ namespace Microsoft.Bot.Builder
                 // Encode original bot service URL and ConversationId in the new conversation ID so we can unpack it later.
                 activity.Conversation.Id = Convert.ToBase64String(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new string[] { activity.ServiceUrl, activity.Conversation.Id, })));
                 
+                // TODO: add relates 
+
                 // TODO: Gabo, figure out a better way
                 activity.ServiceUrl = skill.CallbackAddress.ToString();
 
@@ -476,7 +478,7 @@ namespace Microsoft.Bot.Builder
                         throw new NullReferenceException("Unable to get appcredentials to connect to the skill");
                     }
 
-                    var token = await appCredentials.GetTokenAsync().ConfigureAwait(false);
+                    var token = await appCredentials.GetTokenAsync(skill.AppId).ConfigureAwait(false);
                     client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                     var jsonContent = new StringContent(JsonConvert.SerializeObject(activity, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore }), Encoding.UTF8, "application/json");
                     

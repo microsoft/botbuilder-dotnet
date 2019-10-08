@@ -118,12 +118,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleChildBot", "prototype
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleRootBot", "prototypes\SimpleBotToBot\SimpleRootBot\SimpleRootBot.csproj", "{6587D9CB-5E95-4790-9711-2401C22EA91E}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "02. BotToDialog", "02. BotToDialog", "{A1BA38DB-B3EA-42E9-AA6E-25ABF097E7B4}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChildWithDialogBot", "prototypes\BotToDialog\ChildWithDialogBot\ChildWithDialogBot.csproj", "{57946289-D80A-4966-84E5-953F67533F2E}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RootNoDialogBot", "prototypes\BotToDialog\RootNoDialogBot\RootNoDialogBot.csproj", "{15A6E142-BA7A-447B-9D0F-C0515DC0E139}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug - NuGet Packages|Any CPU = Debug - NuGet Packages|Any CPU
@@ -508,22 +502,6 @@ Global
 		{6587D9CB-5E95-4790-9711-2401C22EA91E}.Documentation|Any CPU.Build.0 = Debug|Any CPU
 		{6587D9CB-5E95-4790-9711-2401C22EA91E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6587D9CB-5E95-4790-9711-2401C22EA91E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{57946289-D80A-4966-84E5-953F67533F2E}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{57946289-D80A-4966-84E5-953F67533F2E}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
-		{57946289-D80A-4966-84E5-953F67533F2E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{57946289-D80A-4966-84E5-953F67533F2E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{57946289-D80A-4966-84E5-953F67533F2E}.Documentation|Any CPU.ActiveCfg = Debug|Any CPU
-		{57946289-D80A-4966-84E5-953F67533F2E}.Documentation|Any CPU.Build.0 = Debug|Any CPU
-		{57946289-D80A-4966-84E5-953F67533F2E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{57946289-D80A-4966-84E5-953F67533F2E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{15A6E142-BA7A-447B-9D0F-C0515DC0E139}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{15A6E142-BA7A-447B-9D0F-C0515DC0E139}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
-		{15A6E142-BA7A-447B-9D0F-C0515DC0E139}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{15A6E142-BA7A-447B-9D0F-C0515DC0E139}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{15A6E142-BA7A-447B-9D0F-C0515DC0E139}.Documentation|Any CPU.ActiveCfg = Debug|Any CPU
-		{15A6E142-BA7A-447B-9D0F-C0515DC0E139}.Documentation|Any CPU.Build.0 = Debug|Any CPU
-		{15A6E142-BA7A-447B-9D0F-C0515DC0E139}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{15A6E142-BA7A-447B-9D0F-C0515DC0E139}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -583,9 +561,6 @@ Global
 		{F73E89CD-1103-4355-A259-44E80645CAC6} = {89695831-8FAC-4A91-A382-95748FC78147}
 		{0F31DCDD-E980-4646-B149-2F89BFE05D7B} = {F73E89CD-1103-4355-A259-44E80645CAC6}
 		{6587D9CB-5E95-4790-9711-2401C22EA91E} = {F73E89CD-1103-4355-A259-44E80645CAC6}
-		{A1BA38DB-B3EA-42E9-AA6E-25ABF097E7B4} = {89695831-8FAC-4A91-A382-95748FC78147}
-		{57946289-D80A-4966-84E5-953F67533F2E} = {A1BA38DB-B3EA-42E9-AA6E-25ABF097E7B4}
-		{15A6E142-BA7A-447B-9D0F-C0515DC0E139} = {A1BA38DB-B3EA-42E9-AA6E-25ABF097E7B4}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7173C9F3-A7F9-496E-9078-9156E35D6E16}

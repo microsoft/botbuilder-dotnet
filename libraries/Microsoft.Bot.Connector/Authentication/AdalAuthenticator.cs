@@ -62,12 +62,12 @@ namespace Microsoft.Bot.Connector.Authentication
             Initialize(configurationOAuth, customHttpClient);
         }
 
-        public async Task<AuthenticationResult> GetTokenAsync(bool forceRefresh = false)
+        public async Task<AuthenticationResult> GetTokenAsync(string resource, bool forceRefresh = false)
         {
             var watch = Stopwatch.StartNew();
 
             var result = await Retry.Run(
-                task: () => AcquireTokenAsync(forceRefresh),
+                task: () => AcquireTokenAsync(resource, forceRefresh),
                 retryExceptionHandler: (ex, ct) => HandleAdalException(ex, ct)).ConfigureAwait(false);
 
             watch.Stop();
@@ -76,7 +76,12 @@ namespace Microsoft.Bot.Connector.Authentication
             return result;
         }
 
-        private async Task<AuthenticationResult> AcquireTokenAsync(bool forceRefresh = false)
+        public async Task<AuthenticationResult> GetTokenAsync(bool forceRefresh = false)
+        {
+            return await GetTokenAsync(authConfig.Scope, forceRefresh).ConfigureAwait(false);
+        }
+
+        private async Task<AuthenticationResult> AcquireTokenAsync(string resource, bool forceRefresh = false)
         {
             bool acquired = false;
 
@@ -107,13 +112,13 @@ namespace Microsoft.Bot.Connector.Authentication
                     // Password based auth
                     if (clientCredential != null)
                     {
-                        authResult = await authContext.AcquireTokenAsync(authConfig.Scope, this.clientCredential).ConfigureAwait(false);
+                        authResult = await authContext.AcquireTokenAsync(resource, this.clientCredential).ConfigureAwait(false);
                     }
 
                     // Certificate based auth
                     else if (clientCertificate != null)
                     {
-                        authResult = await authContext.AcquireTokenAsync(authConfig.Scope, clientCertificate).ConfigureAwait(false);
+                        authResult = await authContext.AcquireTokenAsync(resource, clientCertificate).ConfigureAwait(false);
                     }
 
                     // This means we acquired a valid token successfully. We can make our retry policy null.
