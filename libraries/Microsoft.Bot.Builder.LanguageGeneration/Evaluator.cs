@@ -226,6 +226,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         public object ConstructScope(string templateName, List<object> args)
         {
+            if (!TemplateMap.ContainsKey(templateName))
+            {
+                throw new Exception($"No such template {templateName}");
+            }
+
             var parameters = TemplateMap[templateName].Parameters;
             var currentScope = CurrentTarget().Scope;
 
