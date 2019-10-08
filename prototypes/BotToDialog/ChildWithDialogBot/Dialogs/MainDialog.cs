@@ -1,7 +1,5 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
-//
-// Generated with Bot Builder V4 SDK Template for Visual Studio CoreBot v4.5.0
 
 using System;
 using System.Collections.Generic;
@@ -19,8 +17,8 @@ namespace ChildWithDialogBot.Dialogs
 {
     public class MainDialog : ComponentDialog
     {
-        private readonly FlightBookingRecognizer _luisRecognizer;
         private readonly ILogger _logger;
+        private readonly FlightBookingRecognizer _luisRecognizer;
 
         // Dependency injection uses this constructor to instantiate MainDialog
         public MainDialog(FlightBookingRecognizer luisRecognizer, BookingDialog bookingDialog, ILogger<MainDialog> logger)

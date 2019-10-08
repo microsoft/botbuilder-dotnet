@@ -50,6 +50,26 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             }
         }
 
+        public static AttachmentData ReadAttachmentData(HttpRequest request)
+        {
+            try
+            {
+                if (request == null)
+                {
+                    throw new ArgumentNullException(nameof(request));
+                }
+
+                using (var bodyReader = new JsonTextReader(new StreamReader(request.Body, Encoding.UTF8)))
+                {
+                    return BotMessageSerializer.Deserialize<AttachmentData>(bodyReader);
+                }
+            }
+            catch (JsonException)
+            {
+                return null;
+            }
+        }
+
         public static void WriteResponse(HttpResponse response, InvokeResponse invokeResponse)
         {
             if (response == null)
@@ -75,6 +95,32 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                         {
                             BotMessageSerializer.Serialize(jsonWriter, invokeResponse.Body);
                         }
+                    }
+                }
+            }
+        }
+
+        public static void WriteResponse(HttpResponse response, int statusCode, object body = null)
+        {
+            if (response == null)
+            {
+                throw new ArgumentNullException(nameof(response));
+            }
+
+            if (body == null)
+            {
+                response.StatusCode = (int)HttpStatusCode.OK;
+            }
+            else
+            {
+                response.StatusCode = statusCode;
+                response.ContentType = "application/json";
+
+                using (var writer = new StreamWriter(response.Body))
+                {
+                    using (var jsonWriter = new JsonTextWriter(writer))
+                    {
+                        BotMessageSerializer.Serialize(jsonWriter, body);
                     }
                 }
             }

@@ -100,8 +100,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Adapt
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Adapters.Webex.TestBot", "tests\Adapters\Microsoft.Bot.Builder.Adapters.Webex.TestBot\Microsoft.Bot.Builder.Adapters.Webex.TestBot.csproj", "{0723C8DC-78A5-4FF1-A922-490A083C7C22}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Skills", "libraries\Microsoft.Bot.Builder.Skills\Microsoft.Bot.Builder.Skills.csproj", "{927323B6-91EF-4E7C-AB10-1448B0F9EB8D}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.StreamingExtensions", "libraries\Microsoft.Bot.Builder.StreamingExtensions\Microsoft.Bot.Builder.StreamingExtensions.csproj", "{DD0BBE57-4E19-4026-AAF4-E0D61840482D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.StreamingExtensions", "libraries\Microsoft.Bot.StreamingExtensions\Microsoft.Bot.StreamingExtensions.csproj", "{832B1930-902F-4B6B-9F6F-BC6930765168}"
@@ -462,14 +460,6 @@ Global
 		{0723C8DC-78A5-4FF1-A922-490A083C7C22}.Documentation|Any CPU.Build.0 = Debug|Any CPU
 		{0723C8DC-78A5-4FF1-A922-490A083C7C22}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0723C8DC-78A5-4FF1-A922-490A083C7C22}.Release|Any CPU.Build.0 = Release|Any CPU
-		{927323B6-91EF-4E7C-AB10-1448B0F9EB8D}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug - NuGet Packages|Any CPU
-		{927323B6-91EF-4E7C-AB10-1448B0F9EB8D}.Debug - NuGet Packages|Any CPU.Build.0 = Debug - NuGet Packages|Any CPU
-		{927323B6-91EF-4E7C-AB10-1448B0F9EB8D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{927323B6-91EF-4E7C-AB10-1448B0F9EB8D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{927323B6-91EF-4E7C-AB10-1448B0F9EB8D}.Documentation|Any CPU.ActiveCfg = Debug|Any CPU
-		{927323B6-91EF-4E7C-AB10-1448B0F9EB8D}.Documentation|Any CPU.Build.0 = Debug|Any CPU
-		{927323B6-91EF-4E7C-AB10-1448B0F9EB8D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{927323B6-91EF-4E7C-AB10-1448B0F9EB8D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{DD0BBE57-4E19-4026-AAF4-E0D61840482D}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
 		{DD0BBE57-4E19-4026-AAF4-E0D61840482D}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{DD0BBE57-4E19-4026-AAF4-E0D61840482D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -585,7 +575,6 @@ Global
 		{FAE650B7-B048-4307-A01C-FF75D357906C} = {6230B915-B238-4E57-AAC4-06B4498F540F}
 		{963E9276-9DB0-47B3-B825-4310BD3E5F01} = {E8CD434A-306F-41D9-B67D-BFFF3287354D}
 		{0723C8DC-78A5-4FF1-A922-490A083C7C22} = {E8CD434A-306F-41D9-B67D-BFFF3287354D}
-		{927323B6-91EF-4E7C-AB10-1448B0F9EB8D} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
 		{DD0BBE57-4E19-4026-AAF4-E0D61840482D} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
 		{832B1930-902F-4B6B-9F6F-BC6930765168} = {4269F3C3-6B42-419B-B64A-3E6DC0F1574A}
 		{8A236AC0-6D20-4F40-AF10-36C1AA585C4A} = {89695831-8FAC-4A91-A382-95748FC78147}

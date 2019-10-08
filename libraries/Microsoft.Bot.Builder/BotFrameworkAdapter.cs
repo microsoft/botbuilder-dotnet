@@ -4,9 +4,11 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Security.Principal;
 using System.Text;
@@ -43,7 +45,7 @@ namespace Microsoft.Bot.Builder
     /// <seealso cref="IActivity"/>
     /// <seealso cref="IBot"/>
     /// <seealso cref="IMiddleware"/>
-    public partial class BotFrameworkAdapter : BotAdapter, IAdapterIntegration, IUserTokenProvider
+    public class BotFrameworkAdapter : BotAdapter, IAdapterIntegration, IUserTokenProvider
     {
         private const string InvokeResponseKey = "BotFrameworkAdapter.InvokeResponse";
         private const string BotIdentityKey = "BotIdentity";
@@ -190,7 +192,7 @@ namespace Microsoft.Bot.Builder
         /// <value>
         /// BotFrameworkHttpSkill collection so it can be modified.
         /// </value>
-        public List<Skill> Skills { get; private set; } = new List<Skill>();
+        public List<SkillOptions> Skills { get; private set; } = new List<SkillOptions>();
 
         /// <summary>
         /// Sends a proactive message from the bot to a conversation.
@@ -323,6 +325,7 @@ namespace Microsoft.Bot.Builder
             {
                 context.TurnState.Add<IIdentity>(BotIdentityKey, identity);
 
+                // Gabo: here we create the client for the reply and we cache it in turn state.
                 var connectorClient = await CreateConnectorClientAsync(activity.ServiceUrl, identity, cancellationToken).ConfigureAwait(false);
                 context.TurnState.Add(connectorClient);
 
@@ -337,10 +340,8 @@ namespace Microsoft.Bot.Builder
                     {
                         return new InvokeResponse { Status = (int)HttpStatusCode.NotImplemented };
                     }
-                    else
-                    {
-                        return (InvokeResponse)activityInvokeResponse.Value;
-                    }
+
+                    return (InvokeResponse)activityInvokeResponse.Value;
                 }
 
                 // For all non-invoke scenarios, the HTTP layers above don't have to mess
@@ -412,6 +413,7 @@ namespace Microsoft.Bot.Builder
                 }
                 else if (!string.IsNullOrWhiteSpace(activity.ReplyToId))
                 {
+                    // Gabo: here we pull the client and we send the reply
                     var connectorClient = turnContext.TurnState.Get<IConnectorClient>();
                     response = await connectorClient.Conversations.ReplyToActivityAsync(activity, cancellationToken).ConfigureAwait(false);
                 }
@@ -456,28 +458,41 @@ namespace Microsoft.Bot.Builder
             var skill = this.Skills.FirstOrDefault(s => s.Id == skillId);
             if (skill != null)
             {
-                // TODO probably don't need skillId anymore after we get claims properly in place
                 activity.Recipient.Properties["skillId"] = skill.Id;
+
+                // Encode original bot service URL and ConversationId in the new conversation ID so we can unpack it later.
                 activity.Conversation.Id = Convert.ToBase64String(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new string[] { activity.ServiceUrl, activity.Conversation.Id, })));
-                activity.ServiceUrl = "http://localhost:3978/";
+                
+                // TODO: Gabo, figure out a better way
+                activity.ServiceUrl = skill.CallbackAddress.ToString();
 
                 // POST to skill 
-                var client = new HttpClient();
-
-                // TODO add client authorization header
-                var jsonContent = new StringContent(JsonConvert.SerializeObject(activity, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore }), Encoding.UTF8, "application/json");
-                var response = await client.PostAsync($"{skill.ServiceUrl}", jsonContent, cancellationToken).ConfigureAwait(false);
-                var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                if (content.Length > 0)
+                using (var client = new HttpClient())
                 {
-                    return JsonConvert.DeserializeObject<InvokeResponse>(content);
+                    // Get token for the call
+                    // TODO: Gabo NASTY HACK, need to get this from somewhere!!!
+                    var appCredentials = _appCredentialMap.Values.FirstOrDefault();
+                    if (appCredentials == null)
+                    {
+                        throw new NullReferenceException("Unable to get appcredentials to connect to the skill");
+                    }
+
+                    var token = await appCredentials.GetTokenAsync().ConfigureAwait(false);
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    var jsonContent = new StringContent(JsonConvert.SerializeObject(activity, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore }), Encoding.UTF8, "application/json");
+                    var response = await client.PostAsync($"{skill.CallbackAddress}", jsonContent, cancellationToken).ConfigureAwait(false);
+                    var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    if (content.Length > 0)
+                    {
+                        return JsonConvert.DeserializeObject<InvokeResponse>(content);
+                    }
                 }
 
                 return null;
             }
             else
             {
-                throw new ArgumentException($"Skill:{skill.Id} isn't a registered skill");
+                throw new ArgumentException($"Skill:{skillId} isn't a registered skill");
             }
         }
 
