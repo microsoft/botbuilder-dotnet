@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Microsoft.Bot.Schema
+namespace Microsoft.Bot.Builder.Integration
 {
     /// <summary>
     /// Registration for a BotFrameworkHttpProtocol based Skill endpoint.

@@ -59,8 +59,8 @@ namespace Microsoft.Bot.Connector.Authentication
             // Parse the Big Long String into an actual token.
             var token = new JwtSecurityToken(bearerToken);
 
-            // Is the audience targeted to api.botframework.com?
-            if (token.Audiences.Any(aud => aud == "https://api.botframework.com"))
+            // check if we have an app id (this will be the appId for the parent bot).
+            if (token.Claims.Any(app => app.Type == "appid"))
             {
                 return true;
             }
@@ -112,31 +112,8 @@ namespace Microsoft.Bot.Connector.Authentication
             }
 
             var appId = GetAppId(versionClaim, identity);
-            Console.WriteLine(appId);
 
             // TODO: check the appId against the registered skill client IDs.
-            //if (!await credentials.IsValidAppIdAsync(appId))
-            //{
-            //    throw new UnauthorizedAccessException($"Invalid AppId passed on token: {appId}");
-            //}
-            foreach (var identityClaim in identity.Claims)
-            {
-                foreach (var property in identityClaim.Properties)
-                {
-                    Console.WriteLine(property.ToString());
-                }
-            }
-
-            if (credentials is SimpleCredentialProvider cp)
-            {
-                // Gabo: Hack, need to figure out and elegant way of accessing the AppId.
-                var claimsIdentity = new ClaimsIdentity();
-                claimsIdentity.AddClaim(new Claim(AuthenticationConstants.AudienceClaim, cp.AppId));
-                claimsIdentity.AddClaim(new Claim(AuthenticationConstants.AppIdClaim, cp.AppId));
-                claimsIdentity.AddClaim(new Claim(AuthenticationConstants.ServiceUrlClaim, serviceUrl));
-
-                return claimsIdentity;
-            }
 
             return identity;
         }
