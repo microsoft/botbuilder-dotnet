@@ -40,7 +40,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Declarative
         /// </summary>
         public string Expression
         {
-            get { return expression.ToString(); }
+            get { return expression?.ToString(); }
             set { expression = new ExpressionEngine().Parse(value); }
         }
 
