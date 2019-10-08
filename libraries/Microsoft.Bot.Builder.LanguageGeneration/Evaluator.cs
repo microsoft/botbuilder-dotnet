@@ -247,7 +247,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 return new CustomizedMemoryScope(newScope, currentScope);
             }
-
         }
 
         private bool EvalCondition(LGFileParser.IfConditionContext condition)
