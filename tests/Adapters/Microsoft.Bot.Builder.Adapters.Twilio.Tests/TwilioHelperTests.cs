@@ -289,22 +289,22 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio.Tests
         }
 
         [Fact]
-        public void RequestToActivity_Should_Return_Null_With_Null_HttpRequest()
+        public async void RequestToActivity_Should_Return_Null_With_Null_HttpRequest()
         {
-            Assert.Null(TwilioHelper.RequestToActivity(null, _validationUrlString, AuthTokenString));
+            Assert.Null(await TwilioHelper.RequestToActivity(null, _validationUrlString, AuthTokenString));
         }
 
         [Fact]
-        public void ValidateRequest_Should_Fail_With_NonMatching_Signature()
+        public async void ValidateRequest_Should_Fail_With_NonMatching_Signature()
         {
             var httpRequest = new Mock<HttpRequest>();
             httpRequest.SetupAllProperties();
             httpRequest.SetupGet(req => req.Headers[It.IsAny<string>()]).Returns("wrong_signature");
             httpRequest.Object.Body = Stream.Null;
 
-            Assert.Throws<AuthenticationException>(() =>
+            await Assert.ThrowsAsync<AuthenticationException>(async () =>
             {
-                TwilioHelper.RequestToActivity(httpRequest.Object, null, string.Empty);
+                await TwilioHelper.RequestToActivity(httpRequest.Object, null, string.Empty);
             });
         }
     }
