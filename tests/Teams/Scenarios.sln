@@ -51,9 +51,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NotificationOnly", "Notific
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Helpers", "Helpers\Helpers.csproj", "{EA395207-51E9-4D06-B230-6E54DDADA6DE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ComposeMessagingExtensions", "ComposeMessagingExtensions\ComposeMessagingExtensions.csproj", "{7824D509-81E9-4C08-9E9A-666915A2935D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MessagingExtensionAuth", "MessagingExtensionAuth\MessagingExtensionAuth.csproj", "{36141D95-C176-4D92-878C-66AF6CBEBFDF}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ComposeMessagingExtensionAuth", "ComposeMessagingExtensionAuth\ComposeMessagingExtensionAuth.csproj", "{C3680A9E-AD12-4331-A9F5-BCEF2FB91A55}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MessagingExtensionConfig", "MessagingExtensionConfig\MessagingExtensionConfig.csproj", "{B1DBE6CD-89E8-411E-B234-D3D1FE96FB1B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -200,18 +200,18 @@ Global
 		{EA395207-51E9-4D06-B230-6E54DDADA6DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EA395207-51E9-4D06-B230-6E54DDADA6DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EA395207-51E9-4D06-B230-6E54DDADA6DE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7824D509-81E9-4C08-9E9A-666915A2935D}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{7824D509-81E9-4C08-9E9A-666915A2935D}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
-		{7824D509-81E9-4C08-9E9A-666915A2935D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7824D509-81E9-4C08-9E9A-666915A2935D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7824D509-81E9-4C08-9E9A-666915A2935D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7824D509-81E9-4C08-9E9A-666915A2935D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C3680A9E-AD12-4331-A9F5-BCEF2FB91A55}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{C3680A9E-AD12-4331-A9F5-BCEF2FB91A55}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
-		{C3680A9E-AD12-4331-A9F5-BCEF2FB91A55}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C3680A9E-AD12-4331-A9F5-BCEF2FB91A55}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C3680A9E-AD12-4331-A9F5-BCEF2FB91A55}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C3680A9E-AD12-4331-A9F5-BCEF2FB91A55}.Release|Any CPU.Build.0 = Release|Any CPU
+		{36141D95-C176-4D92-878C-66AF6CBEBFDF}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{36141D95-C176-4D92-878C-66AF6CBEBFDF}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
+		{36141D95-C176-4D92-878C-66AF6CBEBFDF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{36141D95-C176-4D92-878C-66AF6CBEBFDF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{36141D95-C176-4D92-878C-66AF6CBEBFDF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{36141D95-C176-4D92-878C-66AF6CBEBFDF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B1DBE6CD-89E8-411E-B234-D3D1FE96FB1B}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{B1DBE6CD-89E8-411E-B234-D3D1FE96FB1B}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
+		{B1DBE6CD-89E8-411E-B234-D3D1FE96FB1B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B1DBE6CD-89E8-411E-B234-D3D1FE96FB1B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B1DBE6CD-89E8-411E-B234-D3D1FE96FB1B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B1DBE6CD-89E8-411E-B234-D3D1FE96FB1B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

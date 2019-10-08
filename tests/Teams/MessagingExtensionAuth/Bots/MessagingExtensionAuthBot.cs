@@ -22,11 +22,11 @@ namespace Microsoft.BotBuilderSamples.Bots
      *
     * Clicking this bot's Task Menu will retrieve the login dialog, if the user is not already signed in.
     */
-    public class ComposeMessagingExtensionAuthBot : TeamsActivityHandler
+    public class MessagingExtensionAuthBot : TeamsActivityHandler
     {
         readonly string _connectionName;
 
-        public ComposeMessagingExtensionAuthBot(IConfiguration configuration)
+        public MessagingExtensionAuthBot(IConfiguration configuration)
         {
             _connectionName = configuration["ConnectionName"];
         }
@@ -56,9 +56,8 @@ namespace Microsoft.BotBuilderSamples.Bots
 
         protected override async Task<MessagingExtensionActionResponse> OnTeamsMessagingExtensionFetchTaskAsync(ITurnContext<IInvokeActivity> turnContext, MessagingExtensionQuery query, CancellationToken cancellationToken)
         {
-            var tokenStatus = await (turnContext.Adapter as IUserTokenProvider).GetTokenStatusAsync(turnContext, turnContext.Activity.From.Id, _connectionName, cancellationToken: cancellationToken);
-            var token = tokenStatus.FirstOrDefault(t => t.HasToken == true);
-            if (token == null)
+            var tokenResponse = await (turnContext.Adapter as IUserTokenProvider).GetUserTokenAsync(turnContext, _connectionName, string.Empty, cancellationToken: cancellationToken);
+            if (tokenResponse == null || string.IsNullOrEmpty(tokenResponse.Token))
             {
                 // There is no token, so the user has not signed in yet.
 
@@ -148,7 +147,7 @@ namespace Microsoft.BotBuilderSamples.Bots
                 },
                 Height = 160,
                 Width = 350,
-                Title = "Compose Extension Auth Example",
+                Title = "Messaging Extension Auth Example",
             };
 
             if (!string.IsNullOrEmpty(token))
