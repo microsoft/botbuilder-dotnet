@@ -1,54 +1,29 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
+using System.Collections.Generic;
+using System.Net;
+using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Tests;
+using Microsoft.Bot.Connector;
+using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Schema.Teams;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Teams.Tests
 {
     [TestClass]
-
     public class TeamsTurnContextExtensionsTests
     {
-        [TestMethod]
-        public async Task TestTeamsSendToChannelAsync()
-        {
-            // Arrange
-            var destinationConversationAccountId = string.Empty;
-            void CaptureSend(Activity[] arg)
-            {
-                destinationConversationAccountId = arg[0].Conversation.Id;
-            }
-
-            var inboundActivity = new Activity
-            {
-                Type = ActivityTypes.Message,
-                Conversation = new ConversationAccount { Id = "originalId" },
-            };
-
-            var turnContext = new TurnContext(new SimpleAdapter(CaptureSend), inboundActivity);
-
-            // Act
-            await turnContext.TeamsSendToChannelAsync("teamsChannel123", MessageFactory.Text("hi"));
-
-            // Assert
-            Assert.AreEqual("originalId", inboundActivity.Conversation.Id);
-            Assert.AreEqual("teamsChannel123", destinationConversationAccountId);
-        }
-
         [TestMethod]
         public async Task TeamsSendToGeneralChannelAsync()
         {
             // Arrange
-            var destinationConversationAccountId = string.Empty;
-            void CaptureSend(Activity[] arg)
-            {
-                destinationConversationAccountId = arg[0].Conversation.Id;
-            }
-
             var inboundActivity = new Activity
             {
                 Type = ActivityTypes.Message,
@@ -56,14 +31,36 @@ namespace Microsoft.Bot.Builder.Teams.Tests
                 ChannelData = new TeamsChannelData { Team = new TeamInfo { Id = "team123" } },
             };
 
-            var turnContext = new TurnContext(new SimpleAdapter(CaptureSend), inboundActivity);
+            var turnContext = new TurnContext(new SimpleAdapter((Activity[] arg) => { }), inboundActivity);
+
+            var baseUri = new Uri("http://no-where");
+            var credentials = new MicrosoftAppCredentials(string.Empty, string.Empty);
+            var messageHandler = new RecordingHttpMessageHandler();
+
+            turnContext.TurnState.Add<IConnectorClient>(new ConnectorClient(baseUri, credentials, new HttpClient(messageHandler)));
 
             // Act
-            await turnContext.TeamsSendToGeneralChannelAsync(MessageFactory.Text("hi"));
+            var (conversationReference, activityId) = await turnContext.TeamsSendToGeneralChannelAsync(MessageFactory.Text("hi"));
 
             // Assert
-            Assert.AreEqual("originalId", inboundActivity.Conversation.Id);
-            Assert.AreEqual("team123", destinationConversationAccountId);
+            Assert.AreEqual("ConversationId", conversationReference.Conversation.Id);
+            Assert.AreEqual("ActivityId", activityId);
+        }
+
+        private class RecordingHttpMessageHandler : HttpMessageHandler
+        {
+            public List<string> Requests { get; } = new List<string>();
+
+            protected async override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+            {
+                var requestContent = request.Content != null ? await request.Content.ReadAsStringAsync() : "(null)";
+
+                Requests.Add(requestContent);
+
+                var response = new HttpResponseMessage(HttpStatusCode.Created);
+                response.Content = new StringContent(new JObject { { "id", "ConversationId" }, { "activityId", "ActivityId" } }.ToString());
+                return response;
+            }
         }
     }
 }
