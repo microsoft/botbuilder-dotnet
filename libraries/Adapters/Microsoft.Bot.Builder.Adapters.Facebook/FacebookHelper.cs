@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Text;
 using System.Threading;
@@ -40,6 +41,23 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
                 {
                     facebookMessage.Message.QuickReplies = activity.GetChannelData<FacebookMessage>().Message.QuickReplies; // TODO: Add the content_type depending of what shape quick_replies has
                 }
+            }
+
+            if (activity.Attachments != null && activity.Attachments.Count > 0)
+            {
+                if (activity.Attachments.Count > 1)
+                {
+                    throw new Exception("Facebook message can only contain one attachment");
+                }
+
+                var url = new Uri(activity.Attachments[0].ContentUrl);
+                var attach = new FacebookAttachment
+                {
+                    Type = activity.Attachments[0].ContentType,
+                    Payload = new MessagePayload { Url = url },
+                };
+
+                facebookMessage.Message.Attachment = attach;
             }
 
             return facebookMessage;
@@ -95,8 +113,12 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
                     activity.Type = ActivityTypes.Event;
                 }
 
-                // copy fields like attachments, sticker, quick_reply, nlp, etc. // TODO Check
+                // copy fields like attachments, sticker, quick_reply, nlp, etc.
                 activity.ChannelData = message.Message;
+                if (message.Message.Attachments != null && message.Message.Attachments.Count > 0)
+                {
+                    activity.Attachments = HandleMessageAttachments(message.Message);
+                }
             }
             else if (message.PostBack != null)
             {
@@ -105,6 +127,24 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
             }
 
             return activity;
+        }
+
+        public static List<Attachment> HandleMessageAttachments(Message message)
+        {
+            var attachmentsList = new List<Attachment>();
+
+            foreach (var facebookAttachment in message.Attachments)
+            {
+                var attachment = new Attachment
+                {
+                    ContentUrl = facebookAttachment.Payload.Url.ToString(),
+                    ContentType = facebookAttachment.Type,
+                };
+
+                attachmentsList.Add(attachment);
+            }
+
+            return attachmentsList;
         }
 
         /// <summary>
