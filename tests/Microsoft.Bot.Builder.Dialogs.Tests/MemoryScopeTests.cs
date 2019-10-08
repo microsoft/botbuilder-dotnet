@@ -34,6 +34,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 ObjectPath.SetPathValue(memory, "test", 25);
                 memory = memoryScope.GetMemory(dc);
                 Assert.AreEqual(25, ObjectPath.GetPathValue<int>(memory, "test"), "Should roundtrip memory2");
+                memory = memoryScope.GetMemory(dc);
+                ObjectPath.SetPathValue(memory, "source", "destination");
+                ObjectPath.SetPathValue(memory, "{source}", 24);
+                Assert.AreEqual(24, ObjectPath.GetPathValue<int>(memory, "{source}"), "Roundtrip computed path");
+                ObjectPath.RemovePathValue(memory, "{source}");
+                Assert.AreEqual(false, ObjectPath.TryGetPathValue<int>(memory, "{source}", out var _), "Removed computed path");
+                ObjectPath.RemovePathValue(memory, "source");
+                Assert.AreEqual(false, ObjectPath.TryGetPathValue<int>(memory, "{source}", out var _), "No computed path");
             }
         }
 

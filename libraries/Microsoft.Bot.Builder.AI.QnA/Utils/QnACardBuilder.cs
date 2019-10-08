@@ -64,7 +64,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
             var plCard = new HeroCard()
             {
-                Title = cardTitle,
+                Text = cardTitle,
                 Subtitle = string.Empty,
                 Buttons = buttonList
             };
@@ -73,7 +73,6 @@ namespace Microsoft.Bot.Builder.AI.QnA
             var attachment = plCard.ToAttachment();
 
             chatActivity.Attachments.Add(attachment);
-            chatActivity.Text = cardTitle;
 
             return chatActivity;
         }
@@ -122,7 +121,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
             var plCard = new HeroCard()
             {
-                Title = result.Answer,
+                Text = result.Answer,
                 Subtitle = string.Empty,
                 Buttons = buttonList
             };
@@ -131,7 +130,6 @@ namespace Microsoft.Bot.Builder.AI.QnA
             var attachment = plCard.ToAttachment();
 
             chatActivity.Attachments.Add(attachment);
-            chatActivity.Text = result.Answer;
 
             return chatActivity;
         }
