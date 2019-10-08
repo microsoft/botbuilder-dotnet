@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
-VisualStudioVersion = 16.0.29123.88
+VisualStudioVersion = 16.0.29215.179
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConversationUpdate", "ConversationUpdate\ConversationUpdate.csproj", "{D62F48FD-D7F4-41D9-958F-421D51536B54}"
 EndProject
@@ -49,9 +49,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProactiveMessages", "Proact
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NotificationOnly", "NotificationOnly\NotificationOnly.csproj", "{ED2CF41C-3B02-4602-AD2E-654B83374DC5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Helpers", "Helpers\Helpers.csproj", "{EA395207-51E9-4D06-B230-6E54DDADA6DE}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ComposeMessagingExtensions", "ComposeMessagingExtensions\ComposeMessagingExtensions.csproj", "{7824D509-81E9-4C08-9E9A-666915A2935D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ComposeMessagingExtensionAuth", "ComposeMessagingExtensionAuth\ComposeMessagingExtensionAuth.csproj", "{C3680A9E-AD12-4331-A9F5-BCEF2FB91A55}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -192,18 +192,18 @@ Global
 		{ED2CF41C-3B02-4602-AD2E-654B83374DC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ED2CF41C-3B02-4602-AD2E-654B83374DC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ED2CF41C-3B02-4602-AD2E-654B83374DC5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EA395207-51E9-4D06-B230-6E54DDADA6DE}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{EA395207-51E9-4D06-B230-6E54DDADA6DE}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
-		{EA395207-51E9-4D06-B230-6E54DDADA6DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EA395207-51E9-4D06-B230-6E54DDADA6DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EA395207-51E9-4D06-B230-6E54DDADA6DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EA395207-51E9-4D06-B230-6E54DDADA6DE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7824D509-81E9-4C08-9E9A-666915A2935D}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
 		{7824D509-81E9-4C08-9E9A-666915A2935D}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
 		{7824D509-81E9-4C08-9E9A-666915A2935D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7824D509-81E9-4C08-9E9A-666915A2935D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7824D509-81E9-4C08-9E9A-666915A2935D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7824D509-81E9-4C08-9E9A-666915A2935D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C3680A9E-AD12-4331-A9F5-BCEF2FB91A55}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{C3680A9E-AD12-4331-A9F5-BCEF2FB91A55}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
+		{C3680A9E-AD12-4331-A9F5-BCEF2FB91A55}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C3680A9E-AD12-4331-A9F5-BCEF2FB91A55}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C3680A9E-AD12-4331-A9F5-BCEF2FB91A55}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C3680A9E-AD12-4331-A9F5-BCEF2FB91A55}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
