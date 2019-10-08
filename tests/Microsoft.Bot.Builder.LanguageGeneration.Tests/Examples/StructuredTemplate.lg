@@ -1,0 +1,65 @@
+﻿# AskForAge.prompt
+[Activity
+    Text = @{GetAge()}
+> this is a comment about this specific property
+    Speak = @{GetAge()}
+]
+
+# GetAge
+- how old are you?
+
+# AskForAge.prompt2
+[Activity
+    Text = {GetAge()}
+> With '|' you are making attachments a list. 
+    SuggestedActions = 10 | 20 | 30
+]
+
+# AskForAge.prompt3
+[Activity
+        Text = {GetAge()}
+> You can use '\' as an escape character
+        Suggestions = 10 \| cards | 20 \| cards
+]
+
+# T1
+[Activity
+    Text = {T2()}
+    Speak = foo bar {T3().speak}
+]
+
+# T2
+- This is awesome
+
+# T3
+[Activity
+    Speak = I can also speak!
+]
+
+# ST1
+[MyStruct
+    Text = foo
+    {ST2()}
+]
+
+# ST2
+[MyStruct
+    Speak = bar
+    Text = zoo
+]
+
+# AskForColor
+[Activity
+    SuggestedActions = {ST2()} | {T3()}
+]
+
+# MultiExpression
+- @{T3()} @{T4()}
+
+# StructuredTemplateRef
+- [T4]
+
+# T4
+[MyStruct
+    Text = hi
+]

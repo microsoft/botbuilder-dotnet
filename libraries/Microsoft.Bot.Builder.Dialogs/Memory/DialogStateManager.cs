@@ -84,38 +84,36 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         }
 
         /// <summary>
-        /// ResolveMemoryScope will find the MemoryScope for root part of path and adjust path to be subpath
+        /// ResolveMemoryScope will find the MemoryScope for and return the remaining path.
         /// </summary>
-        /// <param name="path">incoming path will be resolved to scope and adjusted to subpath</param>
+        /// <param name="path">Incoming path to resolve to scope and remaining path.</param>
+        /// <param name="remainingPath">Remaining subpath in scope.</param>
         /// <returns>memoryscope</returns>
-        public virtual MemoryScope ResolveMemoryScope(ref string path)
+        public virtual MemoryScope ResolveMemoryScope(string path, out string remainingPath)
         {
-            string scope = path;
-            var index = path.IndexOf(".");
-            if (index > 0)
+            path = path.Trim();
+            if (path.StartsWith("{") && path.EndsWith("}"))
             {
-                scope = path.Substring(0, index);
+                // TODO: Eventually this should use the expression machinery
+                // This allows doing something like {$foo} where dialog.foo contains $blah to compute a path.
+                path = GetValue<string>(path.Substring(1, path.Length - 2));
+            }
+
+            var scope = path;
+            var dot = path.IndexOf(".");
+            if (dot > 0)
+            {
+                scope = path.Substring(0, dot);
                 var memoryScope = DialogStateManager.GetMemoryScope(scope);
                 if (memoryScope != null)
                 {
-                    path = path.Substring(index + 1);
+                    remainingPath = path.Substring(dot + 1);
                     return memoryScope;
                 }
             }
 
-            // could be User[foo] path 
-            index = path.IndexOf("[");
-            if (index > 0)
-            {
-                scope = path.Substring(0, index);
-                path = path.Substring(index);
-                return DialogStateManager.GetMemoryScope(scope) ?? throw new ArgumentOutOfRangeException(GetBadScopeMessage(path));
-            }
-            else
-            {
-                path = string.Empty;
-                return DialogStateManager.GetMemoryScope(scope) ?? throw new ArgumentOutOfRangeException(GetBadScopeMessage(path));
-            }
+            remainingPath = string.Empty;
+            return DialogStateManager.GetMemoryScope(scope) ?? throw new ArgumentOutOfRangeException(GetBadScopeMessage(path));
         }
 
         /// <summary>
@@ -144,9 +142,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         public bool TryGetValue<T>(string path, out T value)
         {
             path = this.TransformPath(path ?? throw new ArgumentNullException(nameof(path)));
-            var memoryScope = this.ResolveMemoryScope(ref path);
+            var memoryScope = this.ResolveMemoryScope(path, out var remainingPath);
             var memory = memoryScope.GetMemory(this.dialogContext);
-            return ObjectPath.TryGetPathValue<T>(memory, path, out value);
+            return ObjectPath.TryGetPathValue<T>(memory, remainingPath, out value);
         }
 
         /// <summary>
@@ -212,15 +210,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
             }
 
             path = this.TransformPath(path ?? throw new ArgumentNullException(nameof(path)));
-            var memoryScope = this.ResolveMemoryScope(ref path);
-            if (path == string.Empty)
+            var memoryScope = this.ResolveMemoryScope(path, out var remainingPath);
+            if (remainingPath == string.Empty)
             {
                 memoryScope.SetMemory(this.dialogContext, value);
             }
             else
             {
                 var memory = memoryScope.GetMemory(this.dialogContext);
-                ObjectPath.SetPathValue(memory, path, value);
+                ObjectPath.SetPathValue(memory, remainingPath, value);
             }
         }
 
@@ -231,9 +229,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         public void RemoveValue(string path)
         {
             path = this.TransformPath(path ?? throw new ArgumentNullException(nameof(path)));
-            var memoryScope = this.ResolveMemoryScope(ref path);
+            var memoryScope = this.ResolveMemoryScope(path, out var remainingPath);
             var memory = memoryScope.GetMemory(this.dialogContext);
-            ObjectPath.RemovePathValue(memory, path);
+            ObjectPath.RemovePathValue(memory, remainingPath);
         }
 
         /// <summary>

@@ -1,28 +1,25 @@
 ﻿# HeroCardTemplate
--   ```
-    [Herocard 
+[HeroCard 
         title=Cheese gromit!
         subtitle=@{type}
         text=This is some text describing the card, it's cool because it's cool
         image=https://memegenerator.net/img/instances/500x/73055378/cheese-gromit.jpg
         images=https://memegenerator.net/img/instances/500x/73055378/cheese-gromit.jpg
-        buttons=Option 1| Option 2| Option 3]
-    ```
+        buttons=Option 1| Option 2| Option 3
+]
 
 # ThumbnailCardTemplate
--   ```
-    [ThumbnailCard 
+[ThumbnailCard 
         title=Cheese gromit!
         subtitle=@{type}
         text=This is some text describing the card, it's cool because it's cool
         image=https://memegenerator.net/img/instances/500x/73055378/cheese-gromit.jpg
         images=https://memegenerator.net/img/instances/500x/73055378/cheese-gromit.jpg
-        buttons=Option 1| Option 2| Option 3]
-    ```
+        buttons=Option 1| Option 2| Option 3
+]
 
 # AnimationCardTemplate
--   ```
-    [Animationcard
+[AnimationCard
         Title=Animation Card
         Subtitle=look at it animate 
         autostart=true
@@ -30,33 +27,26 @@
         Image=https://docs.microsoft.com/en-us/bot-framework/media/how-it-works/architecture-resize.png
         Image=https://docs.microsoft.com/en-us/bot-framework/media/how-it-works/architecture-resize.png
         Image=https://docs.microsoft.com/en-us/bot-framework/media/how-it-works/architecture-resize.png
-        Media=http://oi42.tinypic.com/1rchlx.jpg]
-    ```
+        Media=http://oi42.tinypic.com/1rchlx.jpg
+]
 
-# ImageAttachment
--   ```
-    [attachment=https://docs.microsoft.com/en-us/bot-framework/media/how-it-works/architecture-resize.png]
-    ```
+# HerocardWithCardAction(title, text)
+[HeroCard
+    Title = @{title}
+    Text = @{text}
+    Buttons = {cardActionTemplate(null, title, text)}
+]
 
-# ImageAttachment2
--   ```
-    [attachmentLayout=list]
-    [attachment=https://docs.microsoft.com/en-us/bot-framework/media/how-it-works/architecture-resize.png image/png] 
-    ```
+# cardActionTemplate(type, title, value)
+[CardAction
+    Type = {if(type == null, 'imBack', type)}
+    Title = {title}
+    Value = {value}
+]
 
-
-# AttachmentsTest
--   ```
-    Enjoy these pictures!||Enjoy <emphasize>these</emphasize> pictures!
-    [AttachmentLayout=carousel]
-    [Attachment=http://4.bp.blogspot.com/--cFa6t-x4qY/UAqEgUvPd2I/AAAAAAAANIg/pMLE080Zjh4/s1600/turtle.jpg]
-    [Attachment=http://viagemempauta.com.br/wp-content/uploads/2015/09/2_All-Angle-By-Andreza-dos-Santos_FTS_2914-344-620x415.jpg]
-    [Attachment=http://images.fineartamerica.com/images-medium-large/good-morning-turtles-freund-gloria.jpg]
-    [Attachment=http://4.bp.blogspot.com/--cFa6t-x4qY/UAqEgUvPd2I/AAAAAAAANIg/pMLE080Zjh4/s1600/turtle.jpg]
-    ```
-
-# ImageAttachmentLocal
--   ```
-    [attachment=lg/turtle.jpg image/jpg]
-    ```
-
+# eventActivity
+[Activity
+    Name = {text}
+    Value = {text}
+    Type = event
+]

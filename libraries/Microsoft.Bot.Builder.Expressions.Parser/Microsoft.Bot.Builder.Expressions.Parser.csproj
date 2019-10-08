@@ -46,7 +46,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DebugType>full</DebugType>
+    <DebugType>portable</DebugType>
     <DebugSymbols>true</DebugSymbols>
     <CodeAnalysisRuleSet>Microsoft.Bot.Builder.Expressions.Parser.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
