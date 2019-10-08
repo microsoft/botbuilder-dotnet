@@ -22,14 +22,6 @@
 # ShowAlarm(alarm)
 - {alarm.time} at {alarm.date}
 
-# ShowAlarms
-- IF: {count(alarms) == 1}
-   - You have one alarm [ShowAlarm(alarms[0])]
-- ELSEIF: {count(alarms) == 2}
-  - You have {count(alarms)} alarms, {join(alarms, ', ', ' and ')}
-- ELSE:
-  - You don't have any alarms
-
 # ShowAlarmsWithForeach
 - IF: {count(alarms) == 1}
    - You have one alarm [ShowAlarm(alarms[0])]
