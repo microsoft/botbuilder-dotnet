@@ -218,7 +218,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
         };
 
         public static IEnumerable<object[]> Data => new[]
-        {
+        {Test("orderBy(items)", new List<object> { "one", "two", "zero" }),
             #region SetPathToProperty test
             Test("setPathToValue(path.simple, 3) + path.simple", 6),
             Test("setPathToValue(path.simple, 5) + path.simple", 10),
@@ -723,13 +723,44 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
                 Assert.AreEqual(expectedList.Count, actualList.Count);
                 for (var i = 0; i < expectedList.Count; i++)
                 {
-                    Assert.AreEqual(expectedList[i], actualList[i]);
+                    Assert.AreEqual(ResolveValue(expectedList[i]), ResolveValue(actualList[i]));
                 }
             }
             else
             {
                 Assert.AreEqual(expected, actual);
             }
+        }
+
+        private object ResolveValue(object obj)
+        {
+            object value;
+            if (!(obj is JValue jval))
+            {
+                value = obj;
+            }
+            else
+            {
+                value = jval.Value;
+                if (jval.Type == JTokenType.Integer)
+                {
+                    value = jval.ToObject<int>();
+                }
+                else if (jval.Type == JTokenType.String)
+                {
+                    value = jval.ToObject<string>();
+                }
+                else if (jval.Type == JTokenType.Boolean)
+                {
+                    value = jval.ToObject<bool>();
+                }
+                else if (jval.Type == JTokenType.Float)
+                {
+                    value = jval.ToObject<float>();
+                }
+            }
+
+            return value;
         }
     }
 }
