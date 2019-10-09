@@ -218,7 +218,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
         };
 
         public static IEnumerable<object[]> Data => new[]
-        {Test("orderBy(items)", new List<object> { "one", "two", "zero" }),
+        {
             #region SetPathToProperty test
             Test("setPathToValue(path.simple, 3) + path.simple", 6),
             Test("setPathToValue(path.simple, 5) + path.simple", 10),
