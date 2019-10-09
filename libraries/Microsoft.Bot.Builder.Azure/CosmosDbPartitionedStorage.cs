@@ -231,13 +231,14 @@ namespace Microsoft.Bot.Builder.Azure
 
                 if (_container == null)
                 {
-                    _container = await _client
+                    var containerResponse = await _client
                         .GetDatabase(_cosmosDbStorageOptions.DatabaseId)
-                        .CreateContainerIfNotExistsAsync(
-                            _cosmosDbStorageOptions.ContainerId,
-                            DocumentStoreItem.PartitionKeyPath,
-                            _cosmosDbStorageOptions.ContainerThroughput)
+                        .DefineContainer(_cosmosDbStorageOptions.ContainerId, DocumentStoreItem.PartitionKeyPath)
+                        .WithIndexingPolicy().WithAutomaticIndexing(false).WithIndexingMode(IndexingMode.None).Attach()
+                        .CreateIfNotExistsAsync()
                         .ConfigureAwait(false);
+
+                    _container = containerResponse.Container;
                 }
             }
         }
