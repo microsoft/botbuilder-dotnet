@@ -19,6 +19,7 @@ using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Rest;
 using Microsoft.Rest.TransientFaultHandling;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;

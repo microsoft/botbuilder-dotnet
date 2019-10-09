@@ -1,25 +1,23 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<Version Condition=" '$(PackageVersion)' == '' ">4.0.0-local</Version>
+		<Version Condition=" '$(PackageVersion)' == '' ">4.6.0-local</Version>
 		<Version Condition=" '$(PackageVersion)' != '' ">$(PackageVersion)</Version>
-		<PackageVersion Condition=" '$(PackageVersion)' == '' ">4.0.0-local</PackageVersion>
+		<PackageVersion Condition=" '$(PackageVersion)' == '' ">4.6.0-local</PackageVersion>
 		<PackageVersion Condition=" '$(PackageVersion)' != '' ">$(PackageVersion)</PackageVersion>
-		<Configurations>Debug;Release;Debug - NuGet Packages</Configurations>
+		<Configurations>Debug;Release</Configurations>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 	</PropertyGroup>
 
-	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-		<SignAssembly>true</SignAssembly>
-		<DelaySign>true</DelaySign>
-		<AssemblyOriginatorKeyFile>..\..\build\35MSSharedLib1024.snk</AssemblyOriginatorKeyFile>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Connector.xml</DocumentationFile>
   </PropertyGroup>
 
-	<PropertyGroup>
-		<TargetFramework>netstandard2.0</TargetFramework>		
-		<Description>This library implements C# classes for using the Bot Framework Connector REST API.</Description>
-		<Summary>Client REST API library for Microsoft Bot Framework Connector</Summary>
-	</PropertyGroup>
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <PackageId>Microsoft.Bot.Connector</PackageId>
+    <Description>This library implements C# classes for using the Bot Framework Connector REST API.</Description>
+    <Summary>Client REST API library for Microsoft Bot Framework Connector</Summary>
+  </PropertyGroup>
 
 	<ItemGroup>
 		<Compile Remove="node_modules\**" />
@@ -27,9 +25,9 @@
 		<None Remove="node_modules\**" />
 	</ItemGroup>
 
-	<ItemGroup>
-		<None Remove="generateClient.cmd" />
-	</ItemGroup>
+  <ItemGroup>
+    <None Remove="generateClient.cmd" />
+  </ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Extensions.Logging" Version="2.1.0" />
@@ -37,14 +35,14 @@
 		<PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="5.2.1" />
 		<PackageReference Include="Microsoft.Rest.ClientRuntime" Version="2.3.20" />
 		<PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
-		<PackageReference Include="Microsoft.Bot.Schema" Condition=" '$(PackageVersion)' == '' " Version="4.0.0-local" />
+		<PackageReference Include="Microsoft.Bot.Schema" Condition=" '$(PackageVersion)' == '' " Version="4.6.0-local" />
 		<PackageReference Include="Microsoft.Bot.Schema" Condition=" '$(PackageVersion)' != '' " Version="$(PackageVersion)" />
 		<PackageReference Include="SourceLink.Create.CommandLine" Version="2.8.3" />
 	</ItemGroup>
 
-	<ItemGroup>
-		<ProjectReference Include="..\Microsoft.Bot.Schema\Microsoft.Bot.Schema.csproj" />
-	</ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Microsoft.Bot.Schema\Microsoft.Bot.Schema.csproj" />
+  </ItemGroup>
 
 </Project>
 

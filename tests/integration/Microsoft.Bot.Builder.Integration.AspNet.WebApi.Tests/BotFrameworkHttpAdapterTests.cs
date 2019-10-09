@@ -1,10 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System.IO;
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -28,6 +26,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.WebApi.Tests
 
             var httpResponse = new HttpResponseMessage();
 
+            // mock
             var botMock = new Mock<IBot>();
             botMock.Setup(b => b.OnTurnAsync(It.IsAny<TurnContext>(), It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
 

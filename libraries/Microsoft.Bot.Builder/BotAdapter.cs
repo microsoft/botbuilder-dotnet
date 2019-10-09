@@ -47,7 +47,7 @@ namespace Microsoft.Bot.Builder
         /// Gets the collection of middleware in the adapter's pipeline.
         /// </summary>
         /// <value>The middleware collection for the pipeline.</value>
-        protected MiddlewareSet MiddlewareSet { get; } = new MiddlewareSet();
+        public MiddlewareSet MiddlewareSet { get; } = new MiddlewareSet();
 
         /// <summary>
         /// Adds middleware to the adapter's pipeline.

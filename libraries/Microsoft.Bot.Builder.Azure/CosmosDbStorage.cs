@@ -79,6 +79,7 @@ namespace Microsoft.Bot.Builder.Azure
 
             // Invoke CollectionPolicy delegate to further customize settings
             cosmosDbStorageOptions.ConnectionPolicyConfigurator?.Invoke(connectionPolicy);
+
             _client = new DocumentClient(cosmosDbStorageOptions.CosmosDBEndpoint, cosmosDbStorageOptions.AuthKey, connectionPolicy);
         }
 

@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Bot.StreamingExtensions.Payloads
 {
-    internal class StreamDescription
+    public class StreamDescription
     {
         [JsonProperty("id")]
         public string Id { get; set; }
