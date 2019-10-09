@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Microsoft.Bot.Builder.Expressions
+namespace Microsoft.Bot.Expressions
 {
     public sealed class LRUCache<TKey, TValue>
     {

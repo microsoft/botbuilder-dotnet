@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-namespace Microsoft.Bot.Builder.Expressions
+namespace Microsoft.Bot.Expressions
 {
     /// <summary>
     /// Interface to parse a string into an <see cref="Expression"/>.

@@ -4,7 +4,7 @@ using System;
 using System.Linq;
 using System.Text;
 
-namespace Microsoft.Bot.Builder.Expressions
+namespace Microsoft.Bot.Expressions
 {
     /// <summary>
     /// Type expected from evalating an expression.

@@ -1,4 +1,4 @@
-﻿using Microsoft.Bot.Builder.Expressions;
+﻿using Microsoft.Bot.Expressions;
 
 namespace Microsoft.Bot.Builder.AI.TriggerTrees
 {

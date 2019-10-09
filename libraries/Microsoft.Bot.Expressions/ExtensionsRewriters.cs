@@ -4,7 +4,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Microsoft.Bot.Builder.Expressions
+namespace Microsoft.Bot.Expressions
 {
     /// <summary>
     /// Extension methods for manipulation of <see cref="Expression"/> values.

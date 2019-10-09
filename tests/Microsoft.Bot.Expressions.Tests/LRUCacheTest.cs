@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.Bot.Builder.Expressions.Tests
+namespace Microsoft.Bot.Expressions.Tests
 {
     [TestClass]
     public class LRUCacheTest
@@ -109,7 +109,7 @@ namespace Microsoft.Bot.Builder.Expressions.Tests
                 tasks.Add(Task.Run(() => StoreElement(cache, numOfOps, i)));
             }
 
-            await Task.WhenAll(tasks);
+            await Task.WhenAll(tasks).ConfigureAwait(false);
 
             for (var i = numOfOps - numOfThreads; i < numOfOps; i++)
             {

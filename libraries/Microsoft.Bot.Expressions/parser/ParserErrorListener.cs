@@ -7,11 +7,11 @@ using System.Data;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
 
-namespace Microsoft.Bot.Builder.Expressions
+namespace Microsoft.Bot.Expressions
 {
-    public class ErrorListener : BaseErrorListener
+    public class ParserErrorListener : BaseErrorListener
     {
-        public static readonly ErrorListener Instance = new ErrorListener();
+        public static readonly ParserErrorListener Instance = new ParserErrorListener();
 
         public override void SyntaxError([NotNull] IRecognizer recognizer, [Nullable] IToken offendingSymbol, int line, int charPositionInLine, [NotNull] string msg, [Nullable] RecognitionException e)
         {

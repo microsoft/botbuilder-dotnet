@@ -3,10 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
-using Microsoft.Bot.Builder.Expressions.Parser;
+using Microsoft.Bot.Expressions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.Bot.Builder.Expressions.Tests
+namespace Microsoft.Bot.Expressions.Tests
 {
     [TestClass]
     public class BadExpressionTests

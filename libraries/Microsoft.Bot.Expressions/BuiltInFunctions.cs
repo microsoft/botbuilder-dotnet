@@ -17,7 +17,7 @@ using Microsoft.Recognizers.Text.DataTypes.TimexExpression;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Microsoft.Bot.Builder.Expressions
+namespace Microsoft.Bot.Expressions
 {
     /// <summary>
     /// Definition of default built-in functions for expressions.

@@ -4,7 +4,7 @@ using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
 
-namespace Microsoft.Bot.Builder.Expressions
+namespace Microsoft.Bot.Expressions
 {
     public class CommonRegex
     {
@@ -52,7 +52,7 @@ namespace Microsoft.Bot.Builder.Expressions
             var tokenStream = new CommonTokenStream(lexer);
             var parser = new CommonRegexParser(tokenStream);
             parser.RemoveErrorListeners();
-            parser.AddErrorListener(new ErrorListener());
+            parser.AddErrorListener(new RegexErrorListener());
             parser.BuildParseTree = true;
 
             return parser.parse();

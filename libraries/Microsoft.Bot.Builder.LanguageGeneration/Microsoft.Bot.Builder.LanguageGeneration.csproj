@@ -66,15 +66,12 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Bot.Builder.Expressions" Condition=" '$(PreviewPackageVersion)' == '' " Version="4.6.0-local" />
-    <PackageReference Include="Microsoft.Bot.Builder.Expressions" Condition=" '$(PreviewPackageVersion)' != '' " Version="$(PreviewPackageVersion)" />
-    <PackageReference Include="Microsoft.Bot.Builder.Expressions.Parser" Condition=" '$(PreviewPackageVersion)' == '' " Version="4.6.0-local" />
-    <PackageReference Include="Microsoft.Bot.Builder.Expressions.Parser" Condition=" '$(PreviewPackageVersion)' != '' " Version="$(PreviewPackageVersion)" />
+    <PackageReference Include="Microsoft.Bot.Expressions" Condition=" '$(PreviewPackageVersion)' == '' " Version="4.6.0-local" />
+    <PackageReference Include="Microsoft.Bot.Expressions" Condition=" '$(PreviewPackageVersion)' != '' " Version="$(PreviewPackageVersion)" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Microsoft.Bot.Builder.Expressions.Parser\Microsoft.Bot.Builder.Expressions.Parser.csproj" />
-    <ProjectReference Include="..\Microsoft.Bot.Builder.Expressions\Microsoft.Bot.Builder.Expressions.csproj" />
+    <ProjectReference Include="..\Microsoft.Bot.Expressions\Microsoft.Bot.Expressions.csproj" />
   </ItemGroup>
 
   <ItemGroup>

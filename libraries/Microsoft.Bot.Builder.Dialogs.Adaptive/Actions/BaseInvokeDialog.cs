@@ -3,7 +3,7 @@
 
 using System;
 using System.Collections.Generic;
-using Microsoft.Bot.Builder.Expressions.Parser;
+using Microsoft.Bot.Expressions;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions

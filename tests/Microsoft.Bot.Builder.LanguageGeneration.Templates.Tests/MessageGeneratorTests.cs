@@ -72,7 +72,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 Assert.AreEqual($"Option {i + 1}", card.Buttons[i].Title, "card buttons should be set");
             }
 
-            // TODO add all of the other property types	
+            // TODO add all of the other property types 
         }
 
         [TestMethod]

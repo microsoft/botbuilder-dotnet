@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 
-namespace Microsoft.Bot.Builder.Expressions
+namespace Microsoft.Bot.Expressions
 {
     public static class TimeZoneConverter
     {
@@ -37,7 +37,7 @@ namespace Microsoft.Bot.Builder.Expressions
             var assembly = Assembly.GetExecutingAssembly();
             string[] names = assembly.GetManifestResourceNames();
 
-            using (var sr = new StreamReader(assembly.GetManifestResourceStream("Microsoft.Bot.Builder.Expressions.WindowsIanaMapping")))
+            using (var sr = new StreamReader(assembly.GetManifestResourceStream("Microsoft.Bot.Expressions.WindowsIanaMapping")))
             {
                 string line;
                 while ((line = sr.ReadLine()) != null)

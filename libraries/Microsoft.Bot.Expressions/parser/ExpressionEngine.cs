@@ -9,7 +9,7 @@ using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
 
-namespace Microsoft.Bot.Builder.Expressions.Parser
+namespace Microsoft.Bot.Expressions
 {
     /// <summary>
     /// Parser to turn strings into an <see cref="Expression"/>.
@@ -42,7 +42,7 @@ namespace Microsoft.Bot.Builder.Expressions.Parser
             var tokenStream = new CommonTokenStream(lexer);
             var parser = new ExpressionParser(tokenStream);
             parser.RemoveErrorListeners();
-            parser.AddErrorListener(ErrorListener.Instance);
+            parser.AddErrorListener(ParserErrorListener.Instance);
             parser.BuildParseTree = true;
             return parser.file()?.expression();
         }

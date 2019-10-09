@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Bot.Builder.Expressions;
+using Microsoft.Bot.Expressions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests

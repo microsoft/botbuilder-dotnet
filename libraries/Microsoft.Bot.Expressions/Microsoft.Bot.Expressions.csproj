@@ -10,13 +10,13 @@
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Builder.Expressions.xml</DocumentationFile>
-    <CodeAnalysisRuleSet>Microsoft.Bot.Builder.Expressions.ruleset</CodeAnalysisRuleSet>
+    <DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Expressions.xml</DocumentationFile>
+    <CodeAnalysisRuleSet>Microsoft.Bot.Expressions.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <PackageId>Microsoft.Bot.Builder.Expressions</PackageId>
+    <PackageId>Microsoft.Bot.Expressions</PackageId>
     <Description>This library implements Microsoft Bot Builder Expression evaluator for .NET</Description>
     <Summary>This library implements Microsoft Bot Builder Expression evaluator for .NET</Summary>
   </PropertyGroup>
@@ -38,14 +38,14 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Documentation|AnyCPU'">
-    <DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Builder.Expressions.xml</DocumentationFile>
-    <CodeAnalysisRuleSet>Microsoft.Bot.Builder.Expressions.ruleset</CodeAnalysisRuleSet>
+    <DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Expressions.xml</DocumentationFile>
+    <CodeAnalysisRuleSet>Microsoft.Bot.Expressions.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DebugType>portable</DebugType>
     <DebugSymbols>true</DebugSymbols>
-    <CodeAnalysisRuleSet>Microsoft.Bot.Builder.Expressions.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>Microsoft.Bot.Expressions.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
 
   <ItemGroup>
@@ -77,6 +77,13 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Antlr4 Update="parser\Expression.g4">
+      <DefaultCustomToolNamespace>$([MSBuild]::ValueOrDefault('$(RootNamespace).%(DefaultCustomToolNamespace)', '').TrimEnd('.'))</DefaultCustomToolNamespace>
+      <CustomToolNamespace>$([MSBuild]::ValueOrDefault(%(CustomToolNamespace), %(DefaultCustomToolNamespace)))</CustomToolNamespace>
+    </Antlr4>
   </ItemGroup>
 
 </Project>

@@ -8,10 +8,9 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Builder.Expressions;
-using Microsoft.Bot.Builder.Expressions.Parser;
 using Microsoft.Bot.Builder.LanguageGeneration;
 using Microsoft.Bot.Builder.LanguageGeneration.Templates;
+using Microsoft.Bot.Expressions;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 

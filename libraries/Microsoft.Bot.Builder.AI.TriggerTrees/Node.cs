@@ -11,7 +11,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
-using Microsoft.Bot.Builder.Expressions;
+using Microsoft.Bot.Expressions;
 
 namespace Microsoft.Bot.Builder.AI.TriggerTrees
 {
