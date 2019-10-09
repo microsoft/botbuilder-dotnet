@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace Microsoft.Bot.Builder.AI.TriggerTrees
+namespace Microsoft.Bot.Expressions.TriggerTrees
 {
     /// <summary>
     /// Type of quantifier for expanding trigger expressions.

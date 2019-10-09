@@ -1,6 +1,6 @@
 ﻿#pragma warning disable SA1401 // Fields should be private
 
-namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
+namespace Microsoft.Bot.Expressions.TriggerTrees.Tests
 {
     public partial class Generator
     {

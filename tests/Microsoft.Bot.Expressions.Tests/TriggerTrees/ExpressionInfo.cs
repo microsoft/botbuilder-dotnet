@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Bot.Expressions;
 
-namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
+namespace Microsoft.Bot.Expressions.TriggerTrees.Tests
 {
     public class ExpressionInfo
     {

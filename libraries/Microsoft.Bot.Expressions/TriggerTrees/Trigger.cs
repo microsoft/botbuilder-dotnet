@@ -3,7 +3,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Bot.Expressions;
 
-namespace Microsoft.Bot.Builder.AI.TriggerTrees
+namespace Microsoft.Bot.Expressions.TriggerTrees
 {
     /// <summary>
     /// A trigger is a combination of a trigger expression and the corresponding action.

@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Bot.Expressions;
 
-namespace Microsoft.Bot.Builder.AI.TriggerTrees
+namespace Microsoft.Bot.Expressions.TriggerTrees
 {
     // Each trigger is normalized to disjunctive normal form and then expanded with quantifiers.
     // Each of those clauses is then put into a DAG where the most restrictive clauses are at the bottom.

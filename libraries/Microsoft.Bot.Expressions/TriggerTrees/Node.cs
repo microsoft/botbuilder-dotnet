@@ -13,7 +13,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Bot.Expressions;
 
-namespace Microsoft.Bot.Builder.AI.TriggerTrees
+namespace Microsoft.Bot.Expressions.TriggerTrees
 {
     /// <summary>
     /// Node in a trigger tree.

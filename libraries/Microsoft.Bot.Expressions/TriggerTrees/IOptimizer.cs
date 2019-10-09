@@ -1,6 +1,6 @@
 ﻿using Microsoft.Bot.Expressions;
 
-namespace Microsoft.Bot.Builder.AI.TriggerTrees
+namespace Microsoft.Bot.Expressions.TriggerTrees
 {
     /// <summary>
     /// Optimize a clause by rewriting it.

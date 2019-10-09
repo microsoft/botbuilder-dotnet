@@ -1,4 +1,4 @@
-﻿namespace Microsoft.Bot.Builder.AI.TriggerTrees
+﻿namespace Microsoft.Bot.Expressions.TriggerTrees
 {
     using System.Collections.Generic;
     using System.Linq;

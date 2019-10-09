@@ -3,7 +3,7 @@ using System.Linq;
 using Microsoft.Bot.Expressions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Microsoft.Bot.Builder.AI.TriggerTrees.Tests
+namespace Microsoft.Bot.Expressions.TriggerTrees.Tests
 {
     [TestClass]
     public class Tests
