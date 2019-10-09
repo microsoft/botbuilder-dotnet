@@ -12,7 +12,7 @@ namespace Microsoft.Bot.Builder
     /// <remarks>
     /// TODO: add more details on what kind of values can/should be stored here, by whom and what the lifetime semantics are, etc.
     /// </remarks>
-    public class TurnContextStateCollection : Dictionary<string, object>
+    public class TurnContextStateCollection : Dictionary<string, object>, IDisposable
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="TurnContextStateCollection"/> class.
@@ -103,6 +103,11 @@ namespace Microsoft.Bot.Builder
             where T : class
         {
             this[typeof(T).FullName] = value;
+        }
+
+        public void Dispose()
+        {
+            
         }
     }
 }

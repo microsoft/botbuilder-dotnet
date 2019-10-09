@@ -8,6 +8,10 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Builder.AI.Luis.xml</DocumentationFile>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
     <PackageReference Include="Microsoft.Bot.Builder" Condition=" '$(PackageVersion)' == '' " Version="4.6.0-local" />
