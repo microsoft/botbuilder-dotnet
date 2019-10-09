@@ -7,7 +7,6 @@ using System.IO;
 using System.Net;
 using System.Text;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Bot.Schema;
 using Microsoft.Rest.Serialization;
 using Newtonsoft.Json;
 
@@ -26,31 +25,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             Converters = new List<JsonConverter> { new Iso8601TimeSpanConverter() },
         });
 
-        public static Activity ReadRequest(HttpRequest request)
-        {
-            try
-            {
-                if (request == null)
-                {
-                    throw new ArgumentNullException(nameof(request));
-                }
-
-                var activity = default(Activity);
-
-                using (var bodyReader = new JsonTextReader(new StreamReader(request.Body, Encoding.UTF8)))
-                {
-                    activity = BotMessageSerializer.Deserialize<Activity>(bodyReader);
-                }
-
-                return activity;
-            }
-            catch (JsonException)
-            {
-                return null;
-            }
-        }
-
-        public static AttachmentData ReadAttachmentData(HttpRequest request)
+        public static T ReadRequest<T>(HttpRequest request)
         {
             try
             {
@@ -61,12 +36,12 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 
                 using (var bodyReader = new JsonTextReader(new StreamReader(request.Body, Encoding.UTF8)))
                 {
-                    return BotMessageSerializer.Deserialize<AttachmentData>(bodyReader);
+                    return BotMessageSerializer.Deserialize<T>(bodyReader);
                 }
             }
             catch (JsonException)
             {
-                return null;
+                return default;
             }
         }
 

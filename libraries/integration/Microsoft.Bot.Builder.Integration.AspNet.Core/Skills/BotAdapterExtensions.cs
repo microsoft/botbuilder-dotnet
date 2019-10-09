@@ -1,9 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Microsoft.Bot.Builder.Integration;
-
-namespace Microsoft.Bot.Builder.Skills
+namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
 {
     public static class BotAdapterExtensions
     {

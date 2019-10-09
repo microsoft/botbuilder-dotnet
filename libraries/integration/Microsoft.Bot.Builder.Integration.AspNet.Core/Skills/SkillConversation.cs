@@ -5,12 +5,12 @@ using System;
 using System.Text;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.Skills
+namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
 {
     /// <summary>
     /// Manages encoding ConversationId and ServiceUrl into packaged string for skill's conversation Id.
     /// </summary>
-    public class SkillConversation
+    internal class SkillConversation
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="SkillConversation"/> class.

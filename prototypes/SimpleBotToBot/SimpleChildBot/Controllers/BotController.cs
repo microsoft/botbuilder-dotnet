@@ -29,7 +29,7 @@ namespace SimpleChildBot.Controllers
         [HttpPost]
         public async Task PostAsync()
         {
-            DebugTokenClaims();
+            // DebugTokenClaims();
 
             // Delegate the processing of the HTTP POST to the adapter.
             // The adapter will invoke the bot.

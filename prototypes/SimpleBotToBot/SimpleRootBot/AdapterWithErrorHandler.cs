@@ -3,6 +3,7 @@
 
 using Microsoft.Bot.Builder.Integration;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
+using Microsoft.Bot.Builder.Integration.AspNet.Core.Skills;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
@@ -16,10 +17,7 @@ namespace SimpleRootBot
             // TODO: Gabo, think if this should be moved somewhere else.
             var section = configuration.GetSection($"Skills");
             var skillsList = section?.Get<SkillOptions[]>();
-            if (skillsList != null)
-            {
-                Skills.AddRange(skillsList);
-            }
+            this.UseSkills(skillsList);
 
             OnTurnError = async (turnContext, exception) =>
             {

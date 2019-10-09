@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 
-namespace SimpleRootBot.Controllers
+namespace SkillHost.Controllers
 {
     [ApiController]
     [Route("/v3/conversations/{*path}")]
@@ -30,24 +30,9 @@ namespace SimpleRootBot.Controllers
         [HttpDelete]
         public async Task ProcessAsync()
         {
-            //DebugTokenClaims();
-
             // Delegate the processing of the HTTP POST to the adapter.
             // The adapter will invoke the bot.
             await _skillServer.ProcessAsync(Request, Response, _bot);
-        }
-
-        /// <summary>
-        /// Helper to debug claims returned by skill.
-        /// </summary>
-        private void DebugTokenClaims()
-        {
-            var authToken = Request.Headers["Authorization"];
-            var jwtToken = new JwtSecurityToken(authToken.ToString().Split(' ')[1]);
-            foreach (var claim in jwtToken.Claims)
-            {
-                Console.WriteLine($"Claim: {claim.Type} Value: {claim.Value}");
-            }
         }
     }
 }

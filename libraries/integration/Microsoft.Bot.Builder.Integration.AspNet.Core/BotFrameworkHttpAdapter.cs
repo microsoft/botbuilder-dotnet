@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Builder.BotFramework;
 using Microsoft.Bot.Connector.Authentication;
+using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
@@ -60,7 +61,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             }
 
             // deserialize the incoming Activity
-            var activity = HttpHelper.ReadRequest(httpRequest);
+            var activity = HttpHelper.ReadRequest<Activity>(httpRequest);
 
             if (string.IsNullOrEmpty(activity?.Type))
             {

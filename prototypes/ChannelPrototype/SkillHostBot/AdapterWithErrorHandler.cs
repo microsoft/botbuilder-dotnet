@@ -3,7 +3,7 @@
 
 using Microsoft.Bot.Builder.Integration;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
-using Microsoft.Bot.Builder.Skills;
+using Microsoft.Bot.Builder.Integration.AspNet.Core.Skills;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 

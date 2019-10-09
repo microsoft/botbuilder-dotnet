@@ -1,9 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-namespace Microsoft.Bot.Builder.Skills
+namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
 {
-    public enum ChannelApiMethod
+    // TODO: change these to const strings (so we can change it without breaking compat)
+    internal enum ChannelApiMethods
     {
         /// <summary>
         /// ReplyToActivity(conversationId, activity)
@@ -54,5 +55,17 @@ namespace Microsoft.Bot.Builder.Skills
         /// UploadAttachment(conversationId, attachmentData)
         /// </summary>
         UploadAttachment,
+
+        /// <summary>
+        /// CreateConversation([FromBody] ConversationParameters parameters)
+        /// Not supported for skills
+        /// </summary>
+        CreateConversation,
+
+        /// <summary>
+        /// GetConversations(string continuationToken = null)
+        /// Not supported for skills
+        /// </summary>
+        GetConversations,
     }
 }
