@@ -23,9 +23,9 @@ namespace Microsoft.BotBuilderSamples
             AddDialog(new ConfirmPrompt(nameof(ConfirmPrompt)));
             var steps = new WaterfallStep[]
             {
-                GetBookingDetailsStepAsync,
-                ConfirmStepAsync,
-                FinalStepAsync,
+                GetBookingDetailsActionAsync,
+                ConfirmActionAsync,
+                FinalActionAsync,
             };
 
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), steps));
@@ -34,14 +34,14 @@ namespace Microsoft.BotBuilderSamples
             InitialDialogId = nameof(WaterfallDialog);
         }
 
-        private async Task<DialogTurnResult> GetBookingDetailsStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        private async Task<DialogTurnResult> GetBookingDetailsActionAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var bookingDetails = (BookingDetails)stepContext.Options ?? new BookingDetails();
 
             return await stepContext.BeginDialogAsync(nameof(GetBookingDetailsDialog), bookingDetails, cancellationToken);
         }
 
-        private async Task<DialogTurnResult> ConfirmStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        private async Task<DialogTurnResult> ConfirmActionAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var bookingDetails = (BookingDetails)stepContext.Result;
 
@@ -52,7 +52,7 @@ namespace Microsoft.BotBuilderSamples
             return await stepContext.PromptAsync(nameof(ConfirmPrompt), new PromptOptions { Prompt = MessageFactory.Text(msg) }, cancellationToken);
         }
 
-        private async Task<DialogTurnResult> FinalStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        private async Task<DialogTurnResult> FinalActionAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             string msg;
             if ((bool)stepContext.Result)

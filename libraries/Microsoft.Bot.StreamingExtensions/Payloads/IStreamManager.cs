@@ -6,7 +6,7 @@ using System.IO;
 
 namespace Microsoft.Bot.StreamingExtensions.Payloads
 {
-    internal interface IStreamManager
+    public interface IStreamManager
     {
         PayloadStreamAssembler GetPayloadAssembler(Guid id);
 

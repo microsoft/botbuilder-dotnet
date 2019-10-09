@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using Microsoft.Bot.Connector;
 
 namespace Microsoft.Bot.Builder
 {
@@ -100,23 +99,15 @@ namespace Microsoft.Bot.Builder
             Add(typeof(T).FullName, value);
         }
 
-        /// <inheritdoc/>
+        public void Set<T>(T value)
+            where T : class
+        {
+            this[typeof(T).FullName] = value;
+        }
+
         public void Dispose()
         {
-            foreach (var entry in Values)
-            {
-                if (entry is IDisposable disposableService)
-                {
-                    // Don't dispose the ConnectorClient, since this is cached in the adapter (singleton).
-                    // Disposing will release the HttpClient causing Response Sends to fail.
-                    if (entry is IConnectorClient)
-                    {
-                        continue;
-                    }
-
-                    disposableService.Dispose();
-                }
-            }
+            
         }
     }
 }

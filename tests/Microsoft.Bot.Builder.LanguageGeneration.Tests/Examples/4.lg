@@ -1,0 +1,17 @@
+> Welcome Phrase template
+> LG runtime will pick a text value from the one-of collection list at random.
+# wPhrase
+- Hi
+- Hello
+- 
+ 
+> Using a template in another template
+> Sometimes the bot will say 'Hi' and other times it will say 'Hi :)'
+# welcome
+- [wPhrase]
+- [wPhrase] :)
+ 
+> Using entity references. Unless explicitly specified, entities default to string. Valid types are String, Int, Long, Float, Double, Bool, DateTime
+# welcome-user
+- [wPhrase] @{userName}
+- [wPhrase] @{userName} :)

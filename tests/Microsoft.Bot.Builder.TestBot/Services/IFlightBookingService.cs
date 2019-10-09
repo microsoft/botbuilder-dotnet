@@ -8,6 +8,6 @@ namespace Microsoft.BotBuilderSamples.Services
 {
     public interface IFlightBookingService
     {
-        Task<bool> BookFlight(BookingDetails booking, CancellationToken cancellationToken = default);
+        Task<bool> BookFlight(BookingDetails booking, CancellationToken cancellationToken = default(CancellationToken));
     }
 }

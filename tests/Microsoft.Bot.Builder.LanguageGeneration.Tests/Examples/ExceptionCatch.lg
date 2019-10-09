@@ -1,0 +1,3 @@
+﻿> Should throw exception when Name is undefinied
+# NoVariableMatch
+- {Name}

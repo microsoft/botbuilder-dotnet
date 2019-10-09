@@ -15,7 +15,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
 {
     public class WebexHelperTests
     {
-        private readonly Person _identity = JsonConvert.DeserializeObject<Person>(File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\Person.json"));
+        private readonly Person _identity = JsonConvert.DeserializeObject<Person>(File.ReadAllText(PathUtils.NormalizePath(Directory.GetCurrentDirectory() + @"\Files\Person.json")));
 
         [Fact]
         public void PayloadToActivityShouldReturnNullWithNullPayload()
@@ -26,7 +26,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         [Fact]
         public void PayloadToActivityShouldReturnActivity()
         {
-            var payload = JsonConvert.DeserializeObject<WebhookEventData>(File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\Payload.json"));
+            var payload = JsonConvert.DeserializeObject<WebhookEventData>(File.ReadAllText(PathUtils.NormalizePath(Directory.GetCurrentDirectory() + @"\Files\Payload.json")));
 
             var activity = WebexHelper.PayloadToActivity(payload, _identity);
 
@@ -44,9 +44,9 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         public async void GetDecryptedMessageAsyncShouldSucceed()
         {
             var testOptions = new WebexAdapterOptions("Test", new Uri("http://contoso.com"), "Test");
-            var payload = JsonConvert.DeserializeObject<WebhookEventData>(File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\Payload.json"));
+            var payload = JsonConvert.DeserializeObject<WebhookEventData>(File.ReadAllText(PathUtils.NormalizePath(Directory.GetCurrentDirectory() + @"\Files\Payload.json")));
 
-            var message = JsonConvert.DeserializeObject<Message>(File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\Message.json"));
+            var message = JsonConvert.DeserializeObject<Message>(File.ReadAllText(PathUtils.NormalizePath(Directory.GetCurrentDirectory() + @"\Files\Message.json")));
 
             var webexApi = new Mock<WebexClientWrapper>(testOptions);
             webexApi.SetupAllProperties();
@@ -71,7 +71,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
 
             var message =
                 JsonConvert.DeserializeObject<Message>(
-                    File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\Message.json"));
+                    File.ReadAllText(PathUtils.NormalizePath(Directory.GetCurrentDirectory() + @"\Files\Message.json")));
 
             var activity = WebexHelper.DecryptedMessageToActivity(message, identity);
 
@@ -88,7 +88,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
 
             var message =
                 JsonConvert.DeserializeObject<Message>(
-                    File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\MessageHtmlEncodedMention.json"));
+                    File.ReadAllText(PathUtils.NormalizePath(Directory.GetCurrentDirectory() + @"\Files\MessageHtmlEncodedMention.json")));
 
             var activity = WebexHelper.DecryptedMessageToActivity(message, identity);
 
@@ -105,7 +105,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
 
             var message =
                 JsonConvert.DeserializeObject<Message>(
-                    File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\MessageHtmlDecodedMention.json"));
+                    File.ReadAllText(PathUtils.NormalizePath(Directory.GetCurrentDirectory() + @"\Files\MessageHtmlDecodedMention.json")));
 
             var activity = WebexHelper.DecryptedMessageToActivity(message, identity);
 
@@ -116,7 +116,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         [Fact]
         public void HandleMessageAttachmentsShouldFailWithMoreThanOneAttachment()
         {
-            var message = JsonConvert.DeserializeObject<Message>(File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\MessageAttachments.json"));
+            var message = JsonConvert.DeserializeObject<Message>(File.ReadAllText(PathUtils.NormalizePath(Directory.GetCurrentDirectory() + @"\Files\MessageAttachments.json")));
 
             Assert.Throws<Exception>(() =>
             {
@@ -127,7 +127,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         [Fact]
         public void HandleMessageAttachmentsShouldSucceed()
         {
-            var message = JsonConvert.DeserializeObject<Message>(File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\Message.json"));
+            var message = JsonConvert.DeserializeObject<Message>(File.ReadAllText(PathUtils.NormalizePath(Directory.GetCurrentDirectory() + @"\Files\Message.json")));
 
             var attachmentList = WebexHelper.HandleMessageAttachments(message);
 
@@ -145,7 +145,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         {
             var message =
                 JsonConvert.DeserializeObject<Message>(
-                    File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\MessageWithInputs.json"));
+                    File.ReadAllText(PathUtils.NormalizePath(Directory.GetCurrentDirectory() + @"\Files\MessageWithInputs.json")));
 
             var data = JsonConvert.SerializeObject(message);
             var messageExtraData = JsonConvert.DeserializeObject<AttachmentActionData>(data);
@@ -162,7 +162,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex.Tests
         {
             var message =
                 JsonConvert.DeserializeObject<Message>(
-                    File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\MessageWithText.json"));
+                    File.ReadAllText(PathUtils.NormalizePath(Directory.GetCurrentDirectory() + @"\Files\MessageWithText.json")));
 
             var data = JsonConvert.SerializeObject(message);
             var messageExtraData = JsonConvert.DeserializeObject<AttachmentActionData>(data);
