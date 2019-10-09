@@ -4,39 +4,32 @@
     "title": "OAuthInput Dialog",
     "description": "Collect login information.",
     "type": "object",
-    "allOf": [
-        {
-            "$ref": "./Microsoft.InputDialog.json#"
+    "properties": {
+        "connectionName": {
+            "type": "string",
+            "title": "Connection name",
+            "description": "The connection name configured in Azure Web App Bot OAuth settings."
         },
-        {
-            "properties": {
-                "connectionName": {
-                    "type": "string",
-                    "title": "Connection name",
-                    "description": "The connection name configured in Azure Web App Bot OAuth settings."
-                },
-                "text": {
-                    "type": "string",
-                    "title": "Text",
-                    "description": "Text shown in the OAuth signin card."
-                },
-                "title": {
-                    "type": "string",
-                    "title": "Title",
-                    "description": "Title shown in the OAuth signin card."
-                },
-                "timeout": {
-                    "type": "integer",
-                    "title": "Timeout",
-                    "description": "Time out setting for the OAuth signin card.",
-                    "default": "900000"
-                },
-                "tokenProperty": {
-                    "$role": "expression",
-                    "title": "Token property",
-                    "description": "Property to store the OAuth token result."
-                }
-            }
+        "text": {
+            "type": "string",
+            "title": "Text",
+            "description": "Text shown in the OAuth signin card."
+        },
+        "title": {
+            "type": "string",
+            "title": "Title",
+            "description": "Title shown in the OAuth signin card."
+        },
+        "timeout": {
+            "type": "integer",
+            "title": "Timeout",
+            "description": "Time out setting for the OAuth signin card.",
+            "default": "900000"
+        },
+        "tokenProperty": {
+            "$role": "expression",
+            "title": "Token property",
+            "description": "Property to store the OAuth token result."
         }
-    ]
+    }
 }
