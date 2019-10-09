@@ -37,8 +37,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// <summary>
         /// Gets or sets intteruption policy. 
         /// </summary>
+        /// <example>
+        /// "true".
+        /// </example>
         [JsonProperty("allowInterruptions")]
-        public AllowInterruptions AllowInterruptions { get; set; } = AllowInterruptions.NotRecognized;
+        public string AllowInterruptions
+        {
+            get { return allowInterruptions?.ToString(); }
+            set { allowInterruptions = value != null ? new ExpressionEngine().Parse(value) : null; }
+        }
 
         /// <summary>
         /// Gets or sets the value expression which the input will be bound to
