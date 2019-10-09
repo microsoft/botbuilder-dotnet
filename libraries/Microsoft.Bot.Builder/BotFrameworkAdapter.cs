@@ -186,7 +186,21 @@ namespace Microsoft.Bot.Builder
             ConnectorClient.AddDefaultRequestHeaders(_httpClient);
         }
 
-        public List<SkillOptions> Skills { get; private set; } = new List<SkillOptions>();
+        /// <summary>
+        /// Gets a list of the skills that the bot can use.
+        /// </summary>
+        /// <value>
+        /// A list of the skills that the bot can use.
+        /// </value>
+        public List<SkillOptions> Skills { get; } = new List<SkillOptions>();
+
+        /// <summary>
+        /// Gets or sets the /v3/conversations endpoint that will handle responses from the skill..
+        /// </summary>
+        /// <value>
+        /// The callback URL that will be used by the skills to communicate back to the bot.
+        /// </value>
+        public Uri SkillsCallbackUri { get; set; }
 
         /// <summary>
         /// Sends a proactive message from the bot to a conversation.
@@ -447,10 +461,10 @@ namespace Microsoft.Bot.Builder
         public override async Task<InvokeResponse> ForwardActivityAsync(ITurnContext turnContext, string skillId, Activity activity, CancellationToken cancellationToken)
         {
             // route the activity to the skill
-            var skill = Skills.FirstOrDefault(s => s.Id == skillId);
+            var skill = Skills.FirstOrDefault(s => s.Name == skillId);
             if (skill != null)
             {
-                activity.Recipient.Properties["skillId"] = skill.Id;
+                activity.Recipient.Properties["skillId"] = skill.Name;
 
                 // Encode original bot service URL and ConversationId in the new conversation ID so we can unpack it later.
                 
@@ -460,7 +474,7 @@ namespace Microsoft.Bot.Builder
                 activity.Conversation.Id = Convert.ToBase64String(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new string[] { activity.Conversation.Id, activity.ServiceUrl })));
                 
                 // TODO: Gabo, figure out a better way
-                activity.ServiceUrl = skill.CallbackAddress.ToString();
+                activity.ServiceUrl = SkillsCallbackUri.ToString();
 
                 // POST to skill 
                 using (var client = new HttpClient())
@@ -484,7 +498,7 @@ namespace Microsoft.Bot.Builder
                     //});
 
                     var jsonContent = new StringContent(JsonConvert.SerializeObject(activity, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore }), Encoding.UTF8, "application/json");
-                    var response = await client.PostAsync($"{skill.SkillAddress}", jsonContent, cancellationToken).ConfigureAwait(false);
+                    var response = await client.PostAsync($"{skill.SkillEndpoint}", jsonContent, cancellationToken).ConfigureAwait(false);
                     var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                     if (content.Length > 0)
                     {

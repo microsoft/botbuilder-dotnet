@@ -11,12 +11,12 @@ namespace Microsoft.Bot.Builder.Integration
     public class SkillOptions
     {
         /// <summary>
-        /// Gets or sets id of the skill.
+        /// Gets or sets name of the skill.
         /// </summary>
         /// <value>
-        /// Id of the skill.
+        /// Name of the skill.
         /// </value>
-        public string Id { get; set; }
+        public string Name { get; set; }
 
         /// <summary>
         /// Gets or sets appId of the skill.
@@ -32,14 +32,6 @@ namespace Microsoft.Bot.Builder.Integration
         /// <value>
         /// /api/messages endpoint for the skill.
         /// </value>
-        public Uri SkillAddress { get; set; }
-
-        /// <summary>
-        /// Gets or sets /v3/conversations endpoint that will handle responses from the skill.
-        /// </summary>
-        /// <value>
-        /// /v3/conversations endpoint for the skill.
-        /// </value>
-        public Uri CallbackAddress { get; set; }
+        public Uri SkillEndpoint { get; set; }
     }
 }

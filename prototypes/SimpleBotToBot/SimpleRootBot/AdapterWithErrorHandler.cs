@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using Microsoft.Bot.Builder.Integration;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Builder.Integration.AspNet.Core.Skills;
@@ -19,7 +20,7 @@ namespace SimpleRootBot
             var skills = section?.Get<SkillOptions[]>();
             if (skills != null)
             {
-                this.UseSkills(skills);
+                this.UseSkills(new Uri(configuration["SkillsCallbackEndpoint"]), skills);
             }
 
             OnTurnError = async (turnContext, exception) =>
