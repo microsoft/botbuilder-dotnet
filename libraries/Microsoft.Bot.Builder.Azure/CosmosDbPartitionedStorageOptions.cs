@@ -52,5 +52,13 @@ namespace Microsoft.Bot.Builder.Azure
         /// The options for use with the CosmosClient.
         /// </value>
         public CosmosClientOptions CosmosClientOptions { get; set; }
+
+        /// <summary>
+        /// Gets or sets the throughput set when creating the Container. Defaults to 400.
+        /// </summary>
+        /// <value>
+        /// Container throughput. Defaults to 400.
+        /// </value>
+        public int ContainerThroughput { get; set; } = 400;
     }
 }

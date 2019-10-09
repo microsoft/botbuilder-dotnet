@@ -235,7 +235,7 @@ namespace Microsoft.Bot.Builder.Azure
                         .GetDatabase(_cosmosDbStorageOptions.DatabaseId)
                         .DefineContainer(_cosmosDbStorageOptions.ContainerId, DocumentStoreItem.PartitionKeyPath)
                         .WithIndexingPolicy().WithAutomaticIndexing(false).WithIndexingMode(IndexingMode.None).Attach()
-                        .CreateIfNotExistsAsync()
+                        .CreateIfNotExistsAsync(_cosmosDbStorageOptions.ContainerThroughput)
                         .ConfigureAwait(false);
 
                     _container = containerResponse.Container;
