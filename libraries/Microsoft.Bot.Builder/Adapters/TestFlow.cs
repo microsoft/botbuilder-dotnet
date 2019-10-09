@@ -196,11 +196,25 @@ namespace Microsoft.Bot.Builder.Adapters
         /// <param name="expected">The expected activity from the bot.</param>
         /// <param name="description">A message to send if the actual response is not as expected.</param>
         /// <param name="timeout">The amount of time in milliseconds within which a response is expected.</param>
-        /// <param name="equalityComparer">The equality parameter which compares two activities.</param>
         /// <returns>A new <see cref="TestFlow"/> object that appends this assertion to the modeled exchange.</returns>
         /// <remarks>This method does not modify the original <see cref="TestFlow"/> object.</remarks>
         /// <exception cref="Exception">The bot did not respond as expected.</exception>
-        public TestFlow AssertReply(IActivity expected, [CallerMemberName] string description = null, uint timeout = 3000, IEqualityComparer<IActivity> equalityComparer = null)
+        public TestFlow AssertReply(IActivity expected, [CallerMemberName] string description = null, uint timeout = 3000)
+        {
+            return this.AssertReply(expected, equalityComparer: null, description, timeout);
+        }
+
+        /// <summary>
+        /// Adds an assertion that the turn processing logic responds as expected.
+        /// </summary>
+        /// <param name="expected">The expected activity from the bot.</param>
+        /// <param name="equalityComparer">The equality parameter which compares two activities.</param>
+        /// <param name="description">A message to send if the actual response is not as expected.</param>
+        /// <param name="timeout">The amount of time in milliseconds within which a response is expected.</param>
+        /// <returns>A new <see cref="TestFlow"/> object that appends this assertion to the modeled exchange.</returns>
+        /// <remarks>This method does not modify the original <see cref="TestFlow"/> object.</remarks>
+        /// <exception cref="Exception">The bot did not respond as expected.</exception>
+        public TestFlow AssertReply(IActivity expected, IEqualityComparer<IActivity> equalityComparer, [CallerMemberName] string description = null, uint timeout = 3000)
         {
             return AssertReply(
                 (reply) =>

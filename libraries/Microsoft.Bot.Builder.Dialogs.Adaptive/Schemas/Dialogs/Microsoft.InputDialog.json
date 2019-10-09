@@ -9,41 +9,41 @@
         },
         "prompt": {
             "$type": "Microsoft.IActivityTemplate",
-            "title": "Initial Prompt",
-            "description": "The message to send to as prompt for this input.",
+            "title": "Initial prompt",
+            "description": "Message to send to collect information.",
             "examples": [
                 "What is your birth date?"
             ]
         },
         "unrecognizedPrompt": {
             "$type": "Microsoft.IActivityTemplate",
-            "title": "Unrecognized Prompt",
-            "description": "The message to send if the last input is not recognized.",
+            "title": "Unrecognized prompt",
+            "description": "Message to send if user response is not recognized.",
             "examples": [
-                "Let's try again. What is your birth date?"
+                "Sorry, I do not understand '{turn.activity.text'}. Let's try again. What is your birth date?"
             ]
         },
         "invalidPrompt": {
             "$type": "Microsoft.IActivityTemplate",
-            "title": "Invalid Prompt",
-            "description": "The message to send to when then input was not valid for the input type.",
+            "title": "Invalid prompt",
+            "description": "Message to send if user response is invalid. Relies on specified validation expressions.",
             "examples": [
-                "No date was recognized"
+                "Sorry, '{this.value}' does not work. I need a number between 1-150. What is your age?"
             ]
         },
         "defaultValueResponse": {
             "$type": "Microsoft.IActivityTemplate",
-            "title": "Default Value Response",
-            "description": "The message to send to when max turn count has been exceeded and the default value is selected as the value.",
+            "title": "Default value response",
+            "description": "Message to send when max turn count (if specified) has been exceeded and the default value is selected as the value.",
             "examples": [
-                "I didn't understand your responses, so I will just use the default value of 10.  Let me know if you want to change it."
+                "Sorry, I'm having trouble understanding you. I will just use {this.options.defaultValue} for now. You can say 'I'm 36 years old' to change it."
             ]
         },
         "maxTurnCount": {
             "type": "integer",
-            "title": "Max Turn Count",
-            "description": "The max retry count for this prompt.",
-            "default": 2147483647,
+            "title": "Max turn count",
+            "description": "Maximum number of re-prompt attempts to collect information.",
+            "default": 3,
             "examples": [
                 3
             ]
@@ -53,26 +53,37 @@
             "items": {
                 "$role": "expression"
             },
-            "title": "Validation Expressions",
-            "description": "Expressions to validate an input."
+            "title": "Validation expressions",
+            "description": "Expression to validate user input.",
+            "examples": [
+                "int(this.value) > 1 && int(this.value) <= 150",
+                "count(this.value) < 300"
+            ]
         },
         "property": {
             "$role": "expression",
             "title": "Property",
-            "description": "Property that this input dialog is bound to",
+            "description": "Property to store collected information. Input will be skipped if property has value (unless 'Always prompt' is true).",
             "examples": [
-                "$birthday"
+                "$birthday",
+                "user.name",
+                "conversation.issueTitle",
+                "dialog.favColor"
             ]
         },
         "defaultValue": {
             "$role": "expression",
-            "title": "Default Value",
-            "description": "Value to return if the value expression can't be evaluated."
+            "title": "Default value",
+            "description": "Expression to examine on each turn of the conversation as possible value to the property.",
+            "examples": [
+                "@userName",
+                "coalesce(@number, @partySize)"
+            ]
         },
         "alwaysPrompt": {
             "type": "boolean",
-            "title": "Always Prompt",
-            "description": "If set to true this will always prompt the user regardless if you already have the value or not.",
+            "title": "Always prompt",
+            "description": "Collect information even if the specified  'property' is not empty.",
             "default": false,
             "examples": [
                 false

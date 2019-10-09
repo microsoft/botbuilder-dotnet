@@ -13,6 +13,11 @@ namespace Microsoft.BotBuilderSamples.Bots
 {
     public class HelperBot : TeamsActivityHandler
     {
+        /*
+         * This bot should be installed within a team with at least 3 channels. You can @mention the bot "notify", "card", "random", or "general" to
+         * have the message notify the user with a message, notify the user with a card, send a message to a random channel, or send a message to the 
+         * general channel respectively.
+         */
         protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
             turnContext.Activity.RemoveRecipientMention();
@@ -36,7 +41,7 @@ namespace Microsoft.BotBuilderSamples.Bots
             }
             else if (turnContext.Activity.Text == "random")
             {
-                var channels = await GetChannelsAsync(turnContext, cancellationToken);
+                var channels = await TeamsInfo.GetChannelsAsync(turnContext, cancellationToken);
                 Random random = new Random();
                 var channel = random.Next(0, channels.Count);
                 var channelName = channels[channel].Name == null ? "General" : channels[channel].Name;

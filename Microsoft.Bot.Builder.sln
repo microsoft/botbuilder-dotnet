@@ -142,8 +142,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Adapters", "Adapters", "{E8
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Adapters.Twilio.Tests", "tests\Adapters\Microsoft.Bot.Builder.Adapters.Twilio.Tests\Microsoft.Bot.Builder.Adapters.Twilio.Tests.csproj", "{6B51F54F-86E8-4FBC-8FDD-3C386E97D0E1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Connector.Teams.Tests", "tests\Microsoft.Bot.Connector.Teams.Tests\Microsoft.Bot.Connector.Teams.Tests.csproj", "{D9C6FA68-340F-4338-8158-3BCBF10F320D}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi", "libraries\integration\Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi\Microsoft.Bot.Builder.Integration.ApplicationInsights.WebApi.csproj", "{E0223463-97C6-4108-B5A9-AFBA16B9D5CC}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Integration.AspNet.WebApi", "libraries\integration\Microsoft.Bot.Builder.Integration.AspNet.WebApi\Microsoft.Bot.Builder.Integration.AspNet.WebApi.csproj", "{EE76BD65-FB01-498F-B053-4E1B2693D85F}"
@@ -153,6 +151,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Builder.Integration.AspNet.WebApi.Tests", "tests\integration\Microsoft.Bot.Builder.Integration.AspNet.WebApi.Tests\Microsoft.Bot.Builder.Integration.AspNet.WebApi.Tests.csproj", "{2614D290-1345-4A41-BE90-F85F817CEADE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Adapters.Webex", "libraries\Adapters\Microsoft.Bot.Builder.Adapters.Webex\Microsoft.Bot.Builder.Adapters.Webex.csproj", "{F3669415-319E-4C4C-A398-89321589B3A9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Adapters.Webex.Tests", "tests\Adapters\Microsoft.Bot.Builder.Adapters.Webex.Tests\Microsoft.Bot.Builder.Adapters.Webex.Tests.csproj", "{9878B523-BD1E-4285-A875-3CAB4127F7E6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Adapters.Webex.TestBot", "tests\Adapters\Microsoft.Bot.Builder.Adapters.Webex.TestBot\Microsoft.Bot.Builder.Adapters.Webex.TestBot.csproj", "{6E39C647-902F-4CFF-A4E4-194B295E3AF4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -594,14 +596,6 @@ Global
 		{6B51F54F-86E8-4FBC-8FDD-3C386E97D0E1}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6B51F54F-86E8-4FBC-8FDD-3C386E97D0E1}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{6B51F54F-86E8-4FBC-8FDD-3C386E97D0E1}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
-		{D9C6FA68-340F-4338-8158-3BCBF10F320D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D9C6FA68-340F-4338-8158-3BCBF10F320D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D9C6FA68-340F-4338-8158-3BCBF10F320D}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
-		{D9C6FA68-340F-4338-8158-3BCBF10F320D}.Debug-Windows|Any CPU.Build.0 = Debug|Any CPU
-		{D9C6FA68-340F-4338-8158-3BCBF10F320D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D9C6FA68-340F-4338-8158-3BCBF10F320D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D9C6FA68-340F-4338-8158-3BCBF10F320D}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
-		{D9C6FA68-340F-4338-8158-3BCBF10F320D}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
 		{E0223463-97C6-4108-B5A9-AFBA16B9D5CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E0223463-97C6-4108-B5A9-AFBA16B9D5CC}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
 		{E0223463-97C6-4108-B5A9-AFBA16B9D5CC}.Debug-Windows|Any CPU.Build.0 = Debug|Any CPU
@@ -634,6 +628,22 @@ Global
 		{F3669415-319E-4C4C-A398-89321589B3A9}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F3669415-319E-4C4C-A398-89321589B3A9}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
 		{F3669415-319E-4C4C-A398-89321589B3A9}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
+		{9878B523-BD1E-4285-A875-3CAB4127F7E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9878B523-BD1E-4285-A875-3CAB4127F7E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9878B523-BD1E-4285-A875-3CAB4127F7E6}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
+		{9878B523-BD1E-4285-A875-3CAB4127F7E6}.Debug-Windows|Any CPU.Build.0 = Debug|Any CPU
+		{9878B523-BD1E-4285-A875-3CAB4127F7E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9878B523-BD1E-4285-A875-3CAB4127F7E6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9878B523-BD1E-4285-A875-3CAB4127F7E6}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
+		{9878B523-BD1E-4285-A875-3CAB4127F7E6}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
+		{6E39C647-902F-4CFF-A4E4-194B295E3AF4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6E39C647-902F-4CFF-A4E4-194B295E3AF4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6E39C647-902F-4CFF-A4E4-194B295E3AF4}.Debug-Windows|Any CPU.ActiveCfg = Debug|Any CPU
+		{6E39C647-902F-4CFF-A4E4-194B295E3AF4}.Debug-Windows|Any CPU.Build.0 = Debug|Any CPU
+		{6E39C647-902F-4CFF-A4E4-194B295E3AF4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6E39C647-902F-4CFF-A4E4-194B295E3AF4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6E39C647-902F-4CFF-A4E4-194B295E3AF4}.Release-Windows|Any CPU.ActiveCfg = Release|Any CPU
+		{6E39C647-902F-4CFF-A4E4-194B295E3AF4}.Release-Windows|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -698,12 +708,13 @@ Global
 		{1D1AD39B-EBCF-4960-930E-84246DEF6AAE} = {6230B915-B238-4E57-AAC4-06B4498F540F}
 		{E8CD434A-306F-41D9-B67D-BFFF3287354D} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{6B51F54F-86E8-4FBC-8FDD-3C386E97D0E1} = {E8CD434A-306F-41D9-B67D-BFFF3287354D}
-		{D9C6FA68-340F-4338-8158-3BCBF10F320D} = {AD743B78-D61F-4FBF-B620-FA83CE599A50}
 		{E0223463-97C6-4108-B5A9-AFBA16B9D5CC} = {276EBE79-A13A-46BD-A566-B01DC0477A9B}
 		{EE76BD65-FB01-498F-B053-4E1B2693D85F} = {276EBE79-A13A-46BD-A566-B01DC0477A9B}
 		{873BCC1F-ED12-424E-93FA-D76F4BA022C2} = {0A0E26B0-7A46-4F1A-8BFE-9A763FDF6CF8}
 		{2614D290-1345-4A41-BE90-F85F817CEADE} = {0A0E26B0-7A46-4F1A-8BFE-9A763FDF6CF8}
 		{F3669415-319E-4C4C-A398-89321589B3A9} = {6230B915-B238-4E57-AAC4-06B4498F540F}
+		{9878B523-BD1E-4285-A875-3CAB4127F7E6} = {E8CD434A-306F-41D9-B67D-BFFF3287354D}
+		{6E39C647-902F-4CFF-A4E4-194B295E3AF4} = {E8CD434A-306F-41D9-B67D-BFFF3287354D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7173C9F3-A7F9-496E-9078-9156E35D6E16}

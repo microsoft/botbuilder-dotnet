@@ -53,22 +53,25 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 {
                 }
 
-                try
+                if (!memoryScope.IsReadOnly)
                 {
-                    memoryScope.SetMemory(null, new object());
-                    Assert.Fail($"Should have thrown exception with null dc for SetMemory {memoryScope.Name}");
-                }
-                catch (ArgumentNullException)
-                {
-                }
+                    try
+                    {
+                        memoryScope.SetMemory(null, new object());
+                        Assert.Fail($"Should have thrown exception with null dc for SetMemory {memoryScope.Name}");
+                    }
+                    catch (ArgumentNullException)
+                    {
+                    }
 
-                try
-                {
-                    memoryScope.SetMemory(dc, null);
-                    Assert.Fail($"Should have thrown exception with null memory for SetMemory {memoryScope.Name}");
-                }
-                catch (ArgumentNullException)
-                {
+                    try
+                    {
+                        memoryScope.SetMemory(dc, null);
+                        Assert.Fail($"Should have thrown exception with null memory for SetMemory {memoryScope.Name}");
+                    }
+                    catch (ArgumentNullException)
+                    {
+                    }
                 }
             }
         }
@@ -110,6 +113,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             // @@ teest
             Assert.AreEqual("turn.recognized.entities.foo", new AtAtPathResolver().TransformPath("@@foo"));
             Assert.AreEqual("turn.recognized.entities", new AtAtPathResolver().TransformPath("@@"));
+
+            // % config tests
+            Assert.AreEqual("class", new PercentPathResolver().TransformPath("%"));
+            Assert.AreEqual("class.foo", new PercentPathResolver().TransformPath("%foo"));
+            Assert.AreEqual("class.foo.bar", new PercentPathResolver().TransformPath("%foo.bar"));
+            Assert.AreEqual("class.foo.bar[0]", new PercentPathResolver().TransformPath("%foo.bar[0]"));
         }
 
         [TestMethod]
@@ -272,12 +281,15 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             {
             }
 
+            public int MaxValue { get; set; } = 20;
+
             public async override Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
             {
                 dc.State.SetValue($"dialog.options", options);
                 dc.State.SetValue($"$bbb", "bbb");
                 await dc.Context.SendActivityAsync(dc.State.GetValue<string>("$bbb"));
                 await dc.Context.SendActivityAsync(dc.State.GetValue<string>("dialog.options.test"));
+                await dc.Context.SendActivityAsync(dc.State.GetValue<string>("%MaxValue"));
                 return await dc.EndDialogAsync(dc.State.GetValue<string>("$bbb"));
             }
         }
@@ -290,6 +302,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 this.AddDialog(new D2Dialog());
             }
 
+            public int MaxValue { get; set; } = 10;
+
             public async override Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
             {
                 dc.State.SetValue("dialog.xyz", "dialog");
@@ -298,6 +312,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                 dc.State.SetValue("$aaa", "dialog2");
                 await dc.Context.SendActivityAsync(dc.State.GetValue<string>("dialog.aaa"));
                 await dc.Context.SendActivityAsync(dc.State.GetValue<string>("$aaa"));
+                await dc.Context.SendActivityAsync(dc.State.GetValue<string>("%MaxValue"));
                 return await dc.BeginDialogAsync("d2", options: new { test = "123" });
             }
 
@@ -325,10 +340,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
                         .AssertReply("dialog")
                         .AssertReply("dialog2")
                         .AssertReply("dialog2")
+                        .AssertReply("10")
 
                         // d2
                         .AssertReply("bbb")
                         .AssertReply("123")
+                        .AssertReply("20")
                         .AssertReply("bbb")
                     .StartTestAsync();
         }

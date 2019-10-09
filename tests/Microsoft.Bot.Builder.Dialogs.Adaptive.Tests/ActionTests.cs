@@ -397,6 +397,46 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
+        public async Task Action_NumberInputWithVAlueExpression()
+        {
+            var testDialog = new AdaptiveDialog("planningTest")
+            {
+                Recognizer = new RegexRecognizer()
+                {
+                    Entities = new List<EntityRecognizer>()
+                    {
+                        new AgeEntityRecognizer(),
+                        new NumberEntityRecognizer(),
+                        new DateTimeEntityRecognizer()
+                    }
+                }
+            };
+
+            testDialog.Triggers.AddRange(new List<OnCondition>()
+            {
+                new OnUnknownIntent()
+                {
+                    Actions = new List<Dialog>()
+                    {
+                        new NumberInput()
+                        {
+                            MaxTurnCount = 1,
+                            Prompt = new ActivityTemplate("What is your age?"),
+                            Property = "turn.age",
+                            Value = "@number"
+                        },
+                        new SendActivity("You said {turn.age}")
+                    }
+                }
+            });
+
+            await CreateFlow(testDialog)
+            .Send("hi, I'm 10")
+                .AssertReply("You said 10")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
         public async Task Action_ConfirmInput()
         {
             var testDialog = new AdaptiveDialog("planningTest")

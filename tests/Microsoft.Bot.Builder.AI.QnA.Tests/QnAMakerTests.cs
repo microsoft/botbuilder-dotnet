@@ -42,25 +42,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
 
         public TestContext TestContext { get; set; }
 
-        [TestMethod]
-        public async Task QnAMakerDialog_Answers()
-        {
-            var mockHttp = new MockHttpMessageHandler();
-            mockHttp.When(HttpMethod.Post, GetRequestUrl())
-                .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswer.json"));
-
-            var rootDialog = CreateDialog(mockHttp);
-
-            await CreateFlow(rootDialog)
-            .Send("moo")
-                .AssertReply("Yippee ki-yay!")
-            .Send("how do I clean the stove?")
-                .AssertReply("BaseCamp: You can use a damp rag to clean around the Power Pack")
-            .Send("moo")
-                .AssertReply("Yippee ki-yay!")
-            .StartTestAsync();
-        }
-
         public AdaptiveDialog QnAMakerAction_ActiveLearningDialogBase()
         {
             TypeFactory.Configuration = new ConfigurationBuilder().Build();
@@ -158,21 +139,19 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
         }
 
         [TestMethod]
-        public async Task QnAMakerDialog_NoAnswers()
+        public async Task QnAMakerAction_MultiTurnDialogBase_WithNoAnswer()
         {
-            var mockHttp = new MockHttpMessageHandler();
-            mockHttp.When(HttpMethod.Post, GetRequestUrl())
-                .Respond("application/json", GetResponse("QnaMaker_TestThreshold.json"));
+            var rootDialog = QnAMakerAction_MultiTurnDialogBase();
 
-            var rootDialog = CreateDialog(mockHttp);
+            var response = JsonConvert.DeserializeObject<QueryResults>(File.ReadAllText(GetFilePath("QnaMaker_ReturnAnswer_withPrompts.json")));
+            var promptsActivity = QnACardBuilder.GetQnAPromptsCard(response.Answers[0], "None of the above.");
+            var qnAMakerCardEqualityComparer = new QnAMakerCardEqualityComparer();
 
             await CreateFlow(rootDialog)
-            .Send("moo")
-                .AssertReply("Yippee ki-yay!")
-            .Send("how do I clean the stove?")
-                .AssertReply("I didn't understand that.")
-            .Send("moo")
-                .AssertReply("Yippee ki-yay!")
+            .Send("I have issues related to KB")
+                .AssertReply(promptsActivity, equalityComparer: qnAMakerCardEqualityComparer)
+            .Send("None of the above.")
+                .AssertReply("Thanks for the feedback.")
             .StartTestAsync();
         }
 
@@ -1563,10 +1542,10 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
 
         public class QnaMakerTestDialog : ComponentDialog, IDialogDependencies
         {
-            public QnaMakerTestDialog(QnAMaker qnaMaker)
+            public QnaMakerTestDialog(string knowledgeBaseId, string endpointKey, string hostName, HttpClient httpClient)
                 : base(nameof(QnaMakerTestDialog))
             {
-                AddDialog(new QnAMakerDialog("qnaDialog", qnamaker: qnaMaker));
+                AddDialog(new QnAMakerDialog(knowledgeBaseId, endpointKey, hostName, httpClient: httpClient));
             }
 
             public override Task<DialogTurnResult> BeginDialogAsync(DialogContext outerDc, object options = null, CancellationToken cancellationToken = default)
@@ -1603,24 +1582,6 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
             }
         }
 
-        private Dialog CreateDialog(MockHttpMessageHandler mockHttp)
-        {
-            var qna = GetQnAMaker(
-                mockHttp,
-                new QnAMakerEndpoint
-                {
-                    KnowledgeBaseId = _knowlegeBaseId,
-                    EndpointKey = _endpointKey,
-                    Host = _hostname
-                },
-                new QnAMakerOptions
-                {
-                    Top = 1
-                });
-
-            return new QnaMakerTestDialog(qna);
-        }
-
         private AdaptiveDialog CreateQnAMakerActionDialog(MockHttpMessageHandler mockHttp)
         {
             var client = new HttpClient(mockHttp);
@@ -1639,7 +1600,7 @@ namespace Microsoft.Bot.Builder.AI.QnA.Tests
                     {
                         Actions = new List<Dialog>()
                         {
-                            new QnAMakerAction(knowledgeBaseId: knowlegeBaseId, hostName: host, endpointKey: endpointKey, httpClient: client)
+                            new QnAMakerDialog(knowledgeBaseId: knowlegeBaseId, hostName: host, endpointKey: endpointKey, httpClient: client)
                             {
                                 NoAnswer = noAnswerActivity
                             }

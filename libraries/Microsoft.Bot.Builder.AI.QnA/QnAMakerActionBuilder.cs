@@ -15,30 +15,32 @@ namespace Microsoft.Bot.Builder.AI.QnA
     /// <summary>
     /// QnAMaker action builder class
     /// </summary>
-    public class QnAMakerActionBuilder
+    internal class QnAMakerActionBuilder
     {
         /// <summary>
         /// QnA Maker action builder
         /// </summary>
-        public const string QnAMakerDialogName = "qnamaker-dialog";
+        internal const string QnAMakerDialogName = "qnamaker-dialog";
 
         // Dialog Options parameters
-        public const float DefaultThreshold = 0.3F;
-        public const int DefaultTopN = 3;
-        public const string DefaultNoAnswer = "No QnAMaker answers found.";
+        internal const float DefaultThreshold = 0.3F;
+        internal const int DefaultTopN = 3;
+        internal const string DefaultNoAnswer = "No QnAMaker answers found.";
 
         // Card parameters
-        public const string DefaultCardTitle = "Did you mean:";
-        public const string DefaultCardNoMatchText = "None of the above.";
-        public const string DefaultCardNoMatchResponse = "Thanks for the feedback.";
+        internal const string DefaultCardTitle = "Did you mean:";
+        internal const string DefaultCardNoMatchText = "None of the above.";
+        internal const string DefaultCardNoMatchResponse = "Thanks for the feedback.";
 
         // Define value names for values tracked inside the dialogs.
-        public const string QnAOptions = "qnaOptions";
-        public const string QnADialogResponseOptions = "qnaDialogResponseOptions";
+        internal const string QnAOptions = "qnaOptions";
+        internal const string QnADialogResponseOptions = "qnaDialogResponseOptions";
         private const string CurrentQuery = "currentQuery";
         private const string QnAData = "qnaData";
         private const string QnAContextData = "qnaContextData";
         private const string PreviousQnAId = "prevQnAId";
+
+        private float maximumScoreForLowScoreVariation = 0.95F;
 
         private readonly QnAMaker _services;
 
@@ -52,7 +54,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// Dialog helper to generate dialogs.
         /// </summary>
         /// <param name="services">Bot Services.</param>
-        public QnAMakerActionBuilder(QnAMaker services)
+        internal QnAMakerActionBuilder(QnAMaker services)
         {
             _qnaMakerDialog = new WaterfallDialog(QnAMakerDialogName)
                 .AddStep(CallGenerateAnswerAsync)
@@ -67,7 +69,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
         /// </summary>
         /// <param name="dc">DialogContext</param>
         /// <returns>Updated dialog context.</returns>
-        public DialogContext BuildDialog(DialogContext dc)
+        internal DialogContext BuildDialog(DialogContext dc)
         {
             if (dc == null)
             {
@@ -140,27 +142,28 @@ namespace Microsoft.Bot.Builder.AI.QnA
             }
 
             // Calling QnAMaker to get response.
-            var response = await _services.GetAnswersAsync(stepContext.Context, qnaMakerOptions).ConfigureAwait(false);
+            var response = await _services.GetAnswersRawAsync(stepContext.Context, qnaMakerOptions).ConfigureAwait(false);
 
             // Resetting previous query.
             dialogOptions[PreviousQnAId] = -1;
             stepContext.ActiveDialog.State["options"] = dialogOptions;
 
             // Take this value from GetAnswerResponse 
-            var isActiveLearningEnabled = true;
+            var isActiveLearningEnabled = response.ActiveLearningEnabled;
 
-            stepContext.Values[QnAData] = new List<QueryResult>(response);
+            stepContext.Values[QnAData] = new List<QueryResult>(response.Answers);
             
             // Check if active learning is enabled.
-            if (isActiveLearningEnabled)
+            // maximumScoreForLowScoreVariation is the score above which no need to check for feedback.
+            if (isActiveLearningEnabled && response.Answers.Any() && response.Answers.First().Score <= maximumScoreForLowScoreVariation)
             {
                 // Get filtered list of the response that support low score variation criteria.
-                response = _services.GetLowScoreVariation(response);
+                response.Answers = _services.GetLowScoreVariation(response.Answers);
 
-                if (response.Count() > 1)
+                if (response.Answers.Count() > 1)
                 {
                     var suggestedQuestions = new List<string>();
-                    foreach (var qna in response)
+                    foreach (var qna in response.Answers)
                     {
                         suggestedQuestions.Add(qna.Questions[0]);
                     }
@@ -175,9 +178,9 @@ namespace Microsoft.Bot.Builder.AI.QnA
             }
 
             var result = new List<QueryResult>();
-            if (response.Any())
+            if (response.Answers.Any())
             {
-                result.Add(response.First());
+                result.Add(response.Answers.First());
             }
 
             stepContext.Values[QnAData] = result;
@@ -257,7 +260,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
                 var answer = response.First();
 
-                if (answer.Context != null && answer.Context.Prompts.Count() > 1)
+                if (answer.Context != null && answer.Context.Prompts.Count() > 0)
                 {
                     var dialogOptions = GetDialogOptionsValue(stepContext);
                     var qnaDialogResponseOptions = dialogOptions[QnADialogResponseOptions] as QnADialogResponseOptions;

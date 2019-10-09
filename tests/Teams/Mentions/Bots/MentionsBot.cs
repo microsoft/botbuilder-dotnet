@@ -11,7 +11,9 @@ namespace Microsoft.BotBuilderSamples.Bots
 {
     public class MentionsBot : ActivityHandler
     {
-
+        /*
+         * You can @mention the bot from any scope and it will reply with the mention.
+         */
         protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
             var mention = new Mention

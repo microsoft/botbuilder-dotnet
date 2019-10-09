@@ -37,21 +37,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
         /// <summary>
         /// Gets or sets intteruption policy. 
         /// </summary>
-        /// <example>
-        /// "true".
-        /// </example>
         [JsonProperty("allowInterruptions")]
-        public string AllowInterruptions
-        {
-            get { return allowInterruptions?.ToString(); }
-            set { allowInterruptions = value != null ? new ExpressionEngine().Parse(value) : null; }
-        }
+        public AllowInterruptions AllowInterruptions { get; set; } = AllowInterruptions.NotRecognized;
 
         /// <summary>
         /// Gets or sets the value expression which the input will be bound to
         /// </summary>
         [JsonProperty("property")]
         public string Property { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value expression which can be used to intialize the input prompt.
+        /// </summary>
+        /// <remarks>
+        /// An example of how to use this would be to use an entity expression such as @age to fill the value for this dialog
+        /// that is configured to go into $age dialog property.
+        /// </remarks>
+        [JsonProperty("value")]
+        public string Value { get; set; }
 
         /// <summary>
         /// Gets or sets the activity to send to the user.
@@ -105,6 +108,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
             var op = OnInitializeOptions(dc, options);
             dc.State.SetValue(ThisPath.OPTIONS, op);
             dc.State.SetValue(TURN_COUNT_PROPERTY, 0);
+
+            if (!String.IsNullOrEmpty(this.Value))
+            {
+                if (dc.State.TryGetValue(this.Value,  out var value))
+                {
+                    dc.State.SetValue(VALUE_PROPERTY, value);
+                }
+            }
 
             var state = this.AlwaysPrompt ? InputState.Missing : await this.RecognizeInput(dc);
             if (state == InputState.Valid)

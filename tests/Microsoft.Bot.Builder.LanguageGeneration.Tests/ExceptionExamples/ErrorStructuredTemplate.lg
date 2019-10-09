@@ -1,0 +1,10 @@
+﻿﻿> error structured template body
+# template1
+[HeroCard
+    abc
+]
+
+> no structured template body
+# template2
+[HeroCard
+]

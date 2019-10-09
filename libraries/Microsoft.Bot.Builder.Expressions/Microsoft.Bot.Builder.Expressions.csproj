@@ -6,13 +6,10 @@
     <PackageVersion Condition=" '$(PreviewPackageVersion)' == '' ">4.6.0-local</PackageVersion>
     <PackageVersion Condition=" '$(PreviewPackageVersion)' != '' ">$(PreviewPackageVersion)</PackageVersion>
     <Configurations>Debug;Release</Configurations>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <SignAssembly>true</SignAssembly>
-    <DelaySign>true</DelaySign>
-    <AssemblyOriginatorKeyFile>..\..\build\35MSSharedLib1024.snk</AssemblyOriginatorKeyFile>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Builder.Expressions.xml</DocumentationFile>
     <CodeAnalysisRuleSet>Microsoft.Bot.Builder.Expressions.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
@@ -46,7 +43,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DebugType>full</DebugType>
+    <DebugType>portable</DebugType>
     <DebugSymbols>true</DebugSymbols>
     <CodeAnalysisRuleSet>Microsoft.Bot.Builder.Expressions.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
