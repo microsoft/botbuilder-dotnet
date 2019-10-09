@@ -75,7 +75,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
                 return null;
             }
 
-            if (message.Sender == null)
+            if (message.Sender == null && message.Optin?.UserRef != null)
             {
                 message.Sender = new FacebookBotUser { Id = message.Optin?.UserRef };
             }

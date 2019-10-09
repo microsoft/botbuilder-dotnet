@@ -24,6 +24,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Files\Activities.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Files\FacebookMessages.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Files\Payload.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

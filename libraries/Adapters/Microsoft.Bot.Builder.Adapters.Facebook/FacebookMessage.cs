@@ -85,7 +85,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         [JsonProperty(PropertyName = "standby")]
         public bool Standby { get; set; }
 
-        [JsonProperty(PropertyName = "post_back")]
+        [JsonProperty(PropertyName = "postback")]
         public FacebookPostBack PostBack { get; set; }
 
         [JsonProperty(PropertyName = "optin")]
