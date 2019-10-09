@@ -8,17 +8,26 @@
         "connectionName": {
             "type": "string",
             "title": "Connection name",
-            "description": "The connection name configured in Azure Web App Bot OAuth settings."
+            "description": "The connection name configured in Azure Web App Bot OAuth settings.",
+            "examples": [
+                "msgraphOAuthConnection"
+            ]
         },
         "text": {
             "type": "string",
             "title": "Text",
-            "description": "Text shown in the OAuth signin card."
+            "description": "Text shown in the OAuth signin card.",
+            "examples": [
+                "Please sign in. "
+            ]
         },
         "title": {
             "type": "string",
             "title": "Title",
-            "description": "Title shown in the OAuth signin card."
+            "description": "Title shown in the OAuth signin card.",
+            "examples": [
+                "Login"
+            ]
         },
         "timeout": {
             "type": "integer",
@@ -29,7 +38,13 @@
         "tokenProperty": {
             "$role": "expression",
             "title": "Token property",
-            "description": "Property to store the OAuth token result."
+            "description": "Property to store the OAuth token result.",
+            "examples": [
+                "dialog.token"
+            ]
         }
-    }
+    },
+    "required": [
+        "connectionName"
+    ]
 }
