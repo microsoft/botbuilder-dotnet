@@ -69,6 +69,8 @@ namespace Microsoft.Bot.Builder.Expressions
         public const string Skip = "skip";
         public const string Take = "take";
         public const string SubArray = "subArray";
+        public const string OrderBy = "orderBy";
+        public const string OrderByDescending = "orderByDescending";
 
         // DateTime
         public const string AddDays = "addDays";
