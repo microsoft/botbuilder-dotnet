@@ -22,7 +22,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
     /// </summary>
     public class QnAMakerDialog : Dialog
     {
-        private QnAMaker qnamaker;
+        private IQnAMakerClient qnaMakerClient;
         private readonly HttpClient httpClient;
         private Expression knowledgebaseId;
         private Expression endpointkey;
@@ -39,6 +39,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
             Activity cardNoMatchResponse = null,
             Metadata[] strictFilters = null,
             HttpClient httpClient = null,
+            IQnAMakerClient qnaMakerClient = null,
             [CallerFilePath] string sourceFilePath = "",
             [CallerLineNumber] int sourceLineNumber = 0)
             : base()
@@ -54,6 +55,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
             this.httpClient = httpClient;
             this.NoAnswer = new StaticActivityTemplate(noAnswer);
             this.CardNoMatchResponse = new StaticActivityTemplate(cardNoMatchResponse);
+            this.qnaMakerClient = qnaMakerClient;
         }
 
         [JsonConstructor]
@@ -122,9 +124,9 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 StrictFilters = this.StrictFilters
             };
 
-            if (qnamaker == null)
+            if (qnaMakerClient == null)
             {
-                qnamaker = new QnAMaker(endpoint, qnamakerOptions, httpClient);
+                qnaMakerClient = new QnAMaker(endpoint, qnamakerOptions, httpClient);
             }
 
             if (dc.Context?.Activity?.Type != ActivityTypes.Message)
@@ -132,10 +134,10 @@ namespace Microsoft.Bot.Builder.AI.QnA
                 return EndOfTurn;
             }
 
-            return await ExecuteAdaptiveQnAMakerDialog(dc, qnamaker, qnamakerOptions, cancellationToken).ConfigureAwait(false);
+            return await ExecuteAdaptiveQnAMakerDialog(dc, qnaMakerClient, qnamakerOptions, cancellationToken).ConfigureAwait(false);
         }
 
-        private async Task<DialogTurnResult> ExecuteAdaptiveQnAMakerDialog(DialogContext dc, QnAMaker qnaMaker, QnAMakerOptions qnamakerOptions, CancellationToken cancellationToken = default(CancellationToken))
+        private async Task<DialogTurnResult> ExecuteAdaptiveQnAMakerDialog(DialogContext dc, IQnAMakerClient qnaMaker, QnAMakerOptions qnamakerOptions, CancellationToken cancellationToken = default(CancellationToken))
         {
             var dialog = new QnAMakerActionBuilder(qnaMaker).BuildDialog(dc);
 
