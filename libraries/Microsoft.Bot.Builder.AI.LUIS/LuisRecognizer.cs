@@ -46,7 +46,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <param name="includeApiResults">(Optional) TRUE to include raw LUIS API response.</param>
         /// <param name="clientHandler">(Optional) Custom handler for LUIS API calls to allow mocking.</param>
         public LuisRecognizer(LuisApplication application, LuisPredictionOptions predictionOptions = null, bool includeApiResults = false, HttpClientHandler clientHandler = null)
-            : this(application ,predictionOptions, includeApiResults, clientHandler, null, false)
+            : this(application, telemetryClient: null, logPersonalInformation: false, predictionOptions: predictionOptions, includeApiResults: includeApiResults, clientHandler: clientHandler)
         {
         }
 
@@ -59,7 +59,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <param name="clientHandler">(Optional) Custom handler for LUIS API calls to allow mocking.</param>
         /// <param name="telemetryClient">The IBotTelemetryClient used to log the LuisResult event.</param>
         /// <param name="logPersonalInformation">TRUE to include personally indentifiable information.</param>
-        public LuisRecognizer(LuisApplication application, LuisPredictionOptions predictionOptions = null, bool includeApiResults = false, HttpClientHandler clientHandler = null, IBotTelemetryClient telemetryClient = null, bool logPersonalInformation = false)
+        public LuisRecognizer(LuisApplication application, IBotTelemetryClient telemetryClient, bool logPersonalInformation, LuisPredictionOptions predictionOptions = null,  bool includeApiResults = false, HttpClientHandler clientHandler = null)
         {
             _application = application ?? throw new ArgumentNullException(nameof(application));
             _options = predictionOptions ?? new LuisPredictionOptions();
