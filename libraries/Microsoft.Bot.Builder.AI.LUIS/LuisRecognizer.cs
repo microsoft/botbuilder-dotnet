@@ -45,6 +45,18 @@ namespace Microsoft.Bot.Builder.AI.Luis
         /// <param name="predictionOptions">(Optional) The LUIS prediction options to use.</param>
         /// <param name="includeApiResults">(Optional) TRUE to include raw LUIS API response.</param>
         /// <param name="clientHandler">(Optional) Custom handler for LUIS API calls to allow mocking.</param>
+        public LuisRecognizer(LuisApplication application, LuisPredictionOptions predictionOptions = null, bool includeApiResults = false, HttpClientHandler clientHandler = null)
+            : this(application ,predictionOptions, includeApiResults, clientHandler, null, false)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LuisRecognizer"/> class.
+        /// </summary>
+        /// <param name="application">The LUIS application to use to recognize text.</param>
+        /// <param name="predictionOptions">(Optional) The LUIS prediction options to use.</param>
+        /// <param name="includeApiResults">(Optional) TRUE to include raw LUIS API response.</param>
+        /// <param name="clientHandler">(Optional) Custom handler for LUIS API calls to allow mocking.</param>
         /// <param name="telemetryClient">The IBotTelemetryClient used to log the LuisResult event.</param>
         /// <param name="logPersonalInformation">TRUE to include personally indentifiable information.</param>
         public LuisRecognizer(LuisApplication application, LuisPredictionOptions predictionOptions = null, bool includeApiResults = false, HttpClientHandler clientHandler = null, IBotTelemetryClient telemetryClient = null, bool logPersonalInformation = false)
