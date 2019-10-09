@@ -396,11 +396,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 return new ExpressionEvaluator(name, BuiltInFunctions.Apply(this.TemplateEvaluator(name)), ReturnType.Object, this.ValidTemplateReference);
             }
 
-            const string lgTempalte = "lgTemplate";
+            const string lgTemplate = "lgTemplate";
 
-            if (name.Equals(lgTempalte))
+            if (name.Equals(lgTemplate))
             {
-                return new ExpressionEvaluator(lgTempalte, BuiltInFunctions.Apply(this.LgTemplate()), ReturnType.Object, this.ValidateLgTemplate);
+                return new ExpressionEvaluator(lgTemplate, BuiltInFunctions.Apply(this.LgTemplate()), ReturnType.Object, this.ValidateLgTemplate);
             }
 
             return baseLookup(name);
@@ -437,7 +437,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 var templateName = (children0 as Constant).Value.ToString();
                 if (!this.TemplateMap.ContainsKey(templateName))
                 {
-                    throw new Exception($"no such template '{templateName}' to call in {expression}");
+                    throw new Exception($"No such template '{templateName}' to call in {expression}");
                 }
 
                 var expectedArgsCount = this.TemplateMap[templateName].Parameters.Count();
@@ -445,7 +445,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
                 if (expectedArgsCount != actualArgsCount)
                 {
-                    throw new Exception($"arguments mismatch for template {templateName}, expect {expectedArgsCount} actual {actualArgsCount}");
+                    throw new Exception($"Arguments mismatch for template {templateName}, expect {expectedArgsCount} actual {actualArgsCount}");
                 }
             }
         }
