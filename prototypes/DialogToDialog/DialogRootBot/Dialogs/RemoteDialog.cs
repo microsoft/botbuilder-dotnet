@@ -75,24 +75,8 @@ namespace DialogRootBot.Dialogs
         private async Task<DialogTurnResult> SendToSkill(DialogContext dc, Activity activity, CancellationToken cancellationToken)
         {
             await _conversationState.SaveChangesAsync(dc.Context, true, cancellationToken);
-            
-            //await dc.Context.SendActivityAsync("RemoteDialog: SendToSkill...", cancellationToken: cancellationToken);
             await dc.Context.Adapter.ForwardActivityAsync(dc.Context, "SkillBot", activity, cancellationToken);
             return EndOfTurn;
-            ////var ret = await _skillConnector.ProcessActivityAsync(dc.Context, activity, cancellationToken);
-
-            //var turnResult = new DialogTurnResult(DialogTurnStatus.Waiting);
-
-            //// Check if the remote skill ended.
-            ////if (ret.Status == SkillTurnStatus.Complete)
-            ////{
-            ////    // Pull booking details from the response if they are there and return the as part of the end dialog.
-            ////    // TODO: figure out an elegant way of casting the return value.
-            ////    var bookingDetails = JsonConvert.DeserializeObject<BookingDetails>(JsonConvert.SerializeObject(ret.Result));
-            ////    return await EndComponentAsync(dc, bookingDetails, cancellationToken);
-            ////}
-
-            //return turnResult;
         }
     }
 }
