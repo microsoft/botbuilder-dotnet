@@ -3,8 +3,9 @@
 
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using LuisV2 = Microsoft.Bot.Builder.AI.Luis;
 
-namespace Microsoft.Bot.Builder.AI.Luis
+namespace Microsoft.Bot.Builder.AI.LuisV3
 {
     /// <summary>
     /// Defines a sub-list to append to an existing list entity.

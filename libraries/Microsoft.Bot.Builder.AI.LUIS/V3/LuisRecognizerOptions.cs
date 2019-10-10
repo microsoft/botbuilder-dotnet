@@ -4,8 +4,9 @@
 using System;
 using System.Net.Http;
 using Newtonsoft.Json;
+using LuisV2 = Microsoft.Bot.Builder.AI.Luis;
 
-namespace Microsoft.Bot.Builder.AI.Luis
+namespace Microsoft.Bot.Builder.AI.LuisV3
 {
     /// <summary>
     /// Optional parameters for a LUIS recognizer.

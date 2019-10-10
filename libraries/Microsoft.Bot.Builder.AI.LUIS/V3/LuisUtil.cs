@@ -4,8 +4,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json.Linq;
+using LuisV2 = Microsoft.Bot.Builder.AI.Luis;
 
-namespace Microsoft.Bot.Builder.AI.Luis
+namespace Microsoft.Bot.Builder.AI.LuisV3
 {
     // Utility functions used to extract and transform data from Luis SDK
     internal static class LuisUtil
