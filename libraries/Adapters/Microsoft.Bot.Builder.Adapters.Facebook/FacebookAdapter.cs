@@ -155,7 +155,6 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
                 return;
             }
 
-            // await FacebookHelper.WriteAsync(response, HttpStatusCode.OK, string.Empty, Encoding.UTF8, cancellationToken).ConfigureAwait(false);
             string stringifyBody;
 
             using (var sr = new StreamReader(request.Body))
@@ -214,8 +213,6 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
                     }
                 }
             }
-
-            // await FacebookHelper.WriteAsync(response, HttpStatusCode.OK, string.Empty, Encoding.UTF8, cancellationToken).ConfigureAwait(false);
         }
     }
 }

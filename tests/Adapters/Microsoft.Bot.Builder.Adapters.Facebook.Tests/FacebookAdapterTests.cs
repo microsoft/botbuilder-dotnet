@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Text;
@@ -80,9 +81,8 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
         }
 
         [Fact]
-        public async void ProcessAsyncShouldSucceed()
+        public async void ProcessAsyncShouldSucceedWithCorrectData()
         {
-            var callback = false;
             var payload = File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\Payload.json");
             var facebookClientWrapper = new Mock<FacebookClientWrapper>(_testOptions);
             var facebookAdapter = new FacebookAdapter(facebookClientWrapper.Object);
@@ -96,14 +96,46 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
             httpRequest.SetupGet(req => req.Query[It.IsAny<string>()]).Returns("test");
             httpRequest.SetupGet(req => req.Body).Returns(stream);
 
-            bot.Setup(x => x.OnTurnAsync(It.IsAny<TurnContext>(), It.IsAny<CancellationToken>())).Callback(() =>
-            {
-                callback = true;
-            });
-
             await facebookAdapter.ProcessAsync(httpRequest.Object, httpResponse.Object, bot.Object, default(CancellationToken));
 
-            Assert.True(callback);
+            bot.Verify(b => b.OnTurnAsync(It.IsAny<TurnContext>(), It.IsAny<CancellationToken>()), Times.Once);
+        }
+
+        [Fact]
+        public async void ProcessAsyncShouldSucceedWithStandbyMessages()
+        {
+            var payload = File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\PayloadWithStandby.json");
+            var facebookClientWrapper = new Mock<FacebookClientWrapper>(_testOptions);
+            var facebookAdapter = new FacebookAdapter(facebookClientWrapper.Object);
+            var stream = new MemoryStream(Encoding.UTF8.GetBytes(payload));
+            var httpRequest = new Mock<HttpRequest>();
+            var httpResponse = new Mock<HttpResponse>();
+            var bot = new Mock<IBot>();
+
+            facebookClientWrapper.Setup(api => api.VerifySignature(It.IsAny<HttpRequest>(), It.IsAny<string>())).Returns(true);
+
+            httpRequest.SetupGet(req => req.Query[It.IsAny<string>()]).Returns("test");
+            httpRequest.SetupGet(req => req.Body).Returns(stream);
+
+            await facebookAdapter.ProcessAsync(httpRequest.Object, httpResponse.Object, bot.Object, default(CancellationToken));
+            bot.Verify(b => b.OnTurnAsync(It.IsAny<TurnContext>(), It.IsAny<CancellationToken>()), Times.AtLeastOnce);
+        }
+
+        [Fact]
+        public async void ProcessAsyncShouldVerifyWebhookOnHubModeSubscribe()
+        {
+            var facebookClientWrapper = new Mock<FacebookClientWrapper>(_testOptions);
+            var facebookAdapter = new FacebookAdapter(facebookClientWrapper.Object);
+            var httpRequest = new Mock<HttpRequest>();
+            var httpResponse = new Mock<HttpResponse>();
+            var bot = new Mock<IBot>();
+
+            facebookClientWrapper.Setup(api => api.VerifyWebhookAsync(It.IsAny<HttpRequest>(), It.IsAny<HttpResponse>(), It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
+
+            httpRequest.SetupGet(req => req.Query[It.IsAny<string>()]).Returns("subscribe");
+
+            await facebookAdapter.ProcessAsync(httpRequest.Object, httpResponse.Object, bot.Object, default(CancellationToken));
+            bot.Verify(b => b.OnTurnAsync(It.IsAny<TurnContext>(), It.IsAny<CancellationToken>()), Times.Never);
         }
 
         [Fact]
@@ -128,6 +160,32 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
         }
 
         [Fact]
+        public async Task ProcessAsyncShouldThrowExceptionWithUnverifiedSignature()
+        {
+            var facebookClientWrapper = new Mock<FacebookClientWrapper>(_testOptions);
+            var facebookAdapter = new FacebookAdapter(facebookClientWrapper.Object);
+            var payload = File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\Payload.json");
+            var stream = new MemoryStream(Encoding.UTF8.GetBytes(payload));
+            var httpRequest = new Mock<HttpRequest>();
+            var httpResponse = new Mock<HttpResponse>();
+            var bot = new Mock<IBot>();
+
+            httpRequest.SetupGet(req => req.Query[It.IsAny<string>()]).Returns("test");
+            httpRequest.SetupGet(req => req.Body).Returns(stream);
+
+            httpResponse.Setup(_ => _.Body.WriteAsync(It.IsAny<byte[]>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
+                .Callback((byte[] data, int offset, int length, CancellationToken token) =>
+                {
+                    if (length > 0)
+                    {
+                        var actual = Encoding.UTF8.GetString(data);
+                    }
+                });
+
+            await Assert.ThrowsAsync<Exception>(() => facebookAdapter.ProcessAsync(httpRequest.Object, httpResponse.Object, bot.Object, default(CancellationToken)));
+        }
+
+        [Fact]
         public async void SendActivitiesAsyncShouldSucceedWithActivityTypeMessage()
         {
             const string testResponse = "Test Response";
@@ -146,6 +204,38 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
             Activity[] activities = { activity };
             ResourceResponse[] responses = null;
 
+            facebookClientWrapper.Setup(api => api.SendMessageAsync(It.IsAny<string>(), It.IsAny<FacebookMessage>(), It.IsAny<HttpMethod>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(testResponse));
+
+            using (var turnContext = new TurnContext(facebookAdapter, activity))
+            {
+                responses = await facebookAdapter.SendActivitiesAsync(turnContext, activities, default);
+            }
+
+            Assert.Equal(testResponse, responses[0].Id);
+        }
+
+        [Fact]
+        public async void SendActivitiesAsyncShouldSucceedWithActivityTypeMessageAndAttachments()
+        {
+            const string testResponse = "Test Response";
+            var facebookClientWrapper = new Mock<FacebookClientWrapper>(_testOptions);
+            var facebookAdapter = new FacebookAdapter(facebookClientWrapper.Object);
+            var attachments = new List<Attachment>();
+            var activity = new Activity
+            {
+                Type = ActivityTypes.Message,
+                Text = "Test text",
+                Conversation = new ConversationAccount()
+                {
+                    Id = "Test id",
+                },
+                ChannelData = new FacebookMessage("recipientId", new Message(), "messagingtype"),
+                Attachments = attachments,
+            };
+            Activity[] activities = { activity };
+            ResourceResponse[] responses = null;
+
+            attachments.Add(new Attachment("text/html", "http://contoso.com"));
             facebookClientWrapper.Setup(api => api.SendMessageAsync(It.IsAny<string>(), It.IsAny<FacebookMessage>(), It.IsAny<HttpMethod>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(testResponse));
 
             using (var turnContext = new TurnContext(facebookAdapter, activity))
