@@ -105,6 +105,10 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.StreamingExtensions", "libraries\Microsoft.Bot.StreamingExtensions\Microsoft.Bot.StreamingExtensions.csproj", "{832B1930-902F-4B6B-9F6F-BC6930765168}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Prototypes", "Prototypes", "{89695831-8FAC-4A91-A382-95748FC78147}"
+	ProjectSection(SolutionItems) = preProject
+		prototypes\SkillManifest.json = prototypes\SkillManifest.json
+		prototypes\SkillManifestVA.json = prototypes\SkillManifestVA.json
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00. ChannelPrototype", "00. ChannelPrototype", "{8A236AC0-6D20-4F40-AF10-36C1AA585C4A}"
 EndProject

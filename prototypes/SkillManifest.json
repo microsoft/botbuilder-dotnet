@@ -1,0 +1,50 @@
+{
+  "@context": "https://botframework.com/schemas",
+  "@type": "skill",
+  "id": "TodoSkill",
+  "msaAppId": "e7401b5c-c097-4f0c-9d8d-0e94ad9acdab",
+  "connectors": [
+    {
+      "type": "WebSocketSkillConnector",
+      "endpoint": "https://example.com/api/messages"
+    }
+  ],
+  "authenticationConnections": [
+    {
+      "id": "todoServiceConnection",
+      "serviceProviderId": "todoSkill",
+      "clientId": "2d4d7f49-efb8-405f-9733-359936922b3b",
+      "clientSecret": "d725482a-ad23-44b4-bb5f-073b5e2d3d7d",
+      "scopes": "todo-read,todo-write",
+      "properties": {
+        "signin": "interactive"
+      }
+    }
+  ],
+  "iconUrl": "./icons.png",
+  "intents": {
+    "createTodo": {
+      "entities": {
+        "type": "object",
+        "properties": {
+          "title": { "type": "string" }
+        }
+      },
+      "returnEntity": { "$ref": "#/definitions/todo" }
+    }
+  },
+  "definitions": {
+    "todo": {
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "created": { "type": "string" }
+      },
+      "required": [ "title", "created" ]
+    }
+  },
+  "files": [
+    "./todoSkill.en.lu",
+    "./todoSkill.es.lu"
+  ]
+}
