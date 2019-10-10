@@ -3,69 +3,68 @@
 
 namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
 {
-    // TODO: change these to const strings (so we can change it without breaking compat)
-    internal enum ChannelApiMethods
+    internal static class ChannelApiMethods
     {
         /// <summary>
-        /// ReplyToActivity(conversationId, activity)
+        /// ReplyToActivity(conversationId, activity).
         /// </summary>
-        ReplyToActivity,
+        public const string ReplyToActivity = "ReplyToActivity";
 
         /// <summary>
-        /// SendToConversation(activity)
+        /// SendToConversation(activity).
         /// </summary>
-        SendToConversation,
+        public const string SendToConversation = "SendToConversation";
 
         /// <summary>
-        /// UpdateActivity(activity)
+        /// UpdateActivity(activity).
         /// </summary>
-        UpdateActivity,
+        public const string UpdateActivity = "UpdateActivity";
 
         /// <summary>
-        /// DeleteActivity(conversationId, activityId)
+        /// DeleteActivity(conversationId, activityId).
         /// </summary>
-        DeleteActivity,
+        public const string DeleteActivity = "DeleteActivity";
 
         /// <summary>
-        /// SendConversationHistory(conversationId, history)
+        /// SendConversationHistory(conversationId, history).
         /// </summary>
-        SendConversationHistory,
+        public const string SendConversationHistory = "SendConversationHistory";
 
         /// <summary>
-        /// GetConversationMembers(conversationId)
+        /// GetConversationMembers(conversationId).
         /// </summary>
-        GetConversationMembers,
+        public const string GetConversationMembers = "GetConversationMembers";
 
         /// <summary>
-        /// GetConversationPageMembers(conversationId, (int)pageSize, continuationToken)
+        /// GetConversationPageMembers(conversationId, (int)pageSize, continuationToken).
         /// </summary>
-        GetConversationPagedMembers,
+        public const string GetConversationPagedMembers = "GetConversationPagedMembers";
 
         /// <summary>
-        /// DeleteConversationMember(conversationId, memberId)
+        /// DeleteConversationMember(conversationId, memberId).
         /// </summary>
-        DeleteConversationMember,
+        public const string DeleteConversationMember = "DeleteConversationMember";
 
         /// <summary>
-        /// GetActivityMembers(conversationId, activityId)
+        /// GetActivityMembers(conversationId, activityId).
         /// </summary>
-        GetActivityMembers,
+        public const string GetActivityMembers = "GetActivityMembers";
 
         /// <summary>
-        /// UploadAttachment(conversationId, attachmentData)
+        /// UploadAttachment(conversationId, attachmentData).
         /// </summary>
-        UploadAttachment,
+        public const string UploadAttachment = "UploadAttachment";
 
         /// <summary>
         /// CreateConversation([FromBody] ConversationParameters parameters)
-        /// Not supported for skills
+        /// Not supported for skills.
         /// </summary>
-        CreateConversation,
+        public const string CreateConversation = "CreateConversation";
 
         /// <summary>
         /// GetConversations(string continuationToken = null)
-        /// Not supported for skills
+        /// Not supported for skills.
         /// </summary>
-        GetConversations,
+        public const string GetConversations = "GetConversations";
     }
 }

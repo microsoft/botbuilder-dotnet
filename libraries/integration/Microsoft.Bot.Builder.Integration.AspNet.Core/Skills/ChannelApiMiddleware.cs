@@ -32,7 +32,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
 
         private async Task CallChannelApiAsync(ITurnContext turnContext, NextDelegate next, ChannelApiArgs invokeArgs, CancellationToken cancellationToken)
         {
-            switch (invokeArgs.Methods)
+            switch (invokeArgs.Method)
             {
                 // Send activity(activity)
                 case ChannelApiMethods.SendToConversation:

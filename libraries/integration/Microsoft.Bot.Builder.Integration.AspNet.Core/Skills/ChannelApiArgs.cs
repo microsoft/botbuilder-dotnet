@@ -5,7 +5,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
 {
     internal class ChannelApiArgs
     {
-        public ChannelApiMethods Methods { get; set; }
+        public string Method { get; set; }
 
         public object[] Args { get; set; }
 

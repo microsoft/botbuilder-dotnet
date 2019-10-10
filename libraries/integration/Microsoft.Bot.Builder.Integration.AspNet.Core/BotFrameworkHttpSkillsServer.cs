@@ -216,7 +216,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             HttpHelper.WriteResponse(httpResponse, statusCode, result);
         }
 
-        private async Task<T> InvokeChannelApiAsync<T>(ChannelApiMethods methods, string conversationId, IBot bot, params object[] args)
+        private async Task<T> InvokeChannelApiAsync<T>(string method, string conversationId, IBot bot, params object[] args)
         {
             var skillConversation = new SkillConversation(conversationId);
 
@@ -249,7 +249,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 
             var channelApiArgs = new ChannelApiArgs()
             {
-                Methods = methods,
+                Method = method,
                 Args = args,
             };
             channelApiInvokeActivity.Value = channelApiArgs;
@@ -295,12 +295,12 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         {
             public Regex Pattern { get; set; }
 
-            public ChannelApiMethods Method { get; set; }
+            public string Method { get; set; }
         }
 
         internal class RouteResult
         {
-            public ChannelApiMethods Method { get; set; }
+            public string Method { get; set; }
 
             public GroupCollection Parameters { get; set; }
         }

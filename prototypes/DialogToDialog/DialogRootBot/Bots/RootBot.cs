@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
@@ -34,10 +35,10 @@ namespace DialogRootBot.Bots
 
         public override async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
         {
-            // Run the Dialog with the new message Activity.
+            // Run the Dialog the activity Activity.
             if (turnContext.Activity.Type != ActivityTypes.ConversationUpdate)
             {
-                await _mainDialog.RunAsync(turnContext, _conversationState.CreateProperty<DialogState>("DialogState"), cancellationToken);
+                await _mainDialog.InvokeAsync(turnContext, _conversationState.CreateProperty<DialogState>("DialogState"), cancellationToken);
             }
             else
             {
@@ -59,7 +60,7 @@ namespace DialogRootBot.Bots
                     var welcomeCard = CreateAdaptiveCardAttachment();
                     var response = MessageFactory.Attachment(welcomeCard);
                     await turnContext.SendActivityAsync(response, cancellationToken);
-                    await _mainDialog.RunAsync(turnContext, _conversationState.CreateProperty<DialogState>("DialogState"), cancellationToken);
+                    await _mainDialog.InvokeAsync(turnContext, _conversationState.CreateProperty<DialogState>("DialogState"), cancellationToken);
                 }
             }
         }
