@@ -34,7 +34,15 @@ namespace DialogRootBot.Bots
 
         public override async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
         {
-            await base.OnTurnAsync(turnContext, cancellationToken);
+            // Run the Dialog with the new message Activity.
+            if (turnContext.Activity.Type != ActivityTypes.ConversationUpdate)
+            {
+                await _mainDialog.RunAsync(turnContext, _conversationState.CreateProperty<DialogState>("DialogState"), cancellationToken);
+            }
+            else
+            {
+                await base.OnTurnAsync(turnContext, cancellationToken);
+            }
 
             // Save any state changes that might have occured during the turn.
             await _conversationState.SaveChangesAsync(turnContext, false, cancellationToken);
@@ -56,37 +64,6 @@ namespace DialogRootBot.Bots
             }
         }
 
-        protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
-        {
-            _logger.LogInformation("Running mainDialog with Message Activity.");
-
-            if (turnContext.Activity.Text == "cacao")
-            {
-                var dialogSet = new DialogSet(_conversationState.CreateProperty<DialogState>("DialogState"));
-                dialogSet.TelemetryClient = _mainDialog.TelemetryClient;
-                dialogSet.Add(_mainDialog);
-
-                var dialogContext = await dialogSet.CreateContextAsync(turnContext, cancellationToken).ConfigureAwait(false);
-                await dialogContext.EndDialogAsync(turnContext.Activity.Value, cancellationToken);
-            }
-            else
-            {
-                // Run the Dialog with the new message Activity.
-                await _mainDialog.RunAsync(turnContext, _conversationState.CreateProperty<DialogState>("DialogState"), cancellationToken);
-            }
-        }
-
-        protected override async Task OnUnrecognizedActivityTypeAsync(ITurnContext turnContext, CancellationToken cancellationToken)
-        {
-            if (turnContext.Activity.Type == ActivityTypes.EndOfConversation)
-            {
-                // Run the Dialog with the new message Activity.
-                await _mainDialog.RunAsync(turnContext, _conversationState.CreateProperty<DialogState>("DialogState"), cancellationToken);
-            }
-
-            await base.OnUnrecognizedActivityTypeAsync(turnContext, cancellationToken);
-        }
-
         // Load attachment from embedded resource.
         private Attachment CreateAdaptiveCardAttachment()
         {
@@ -97,11 +74,7 @@ namespace DialogRootBot.Bots
                 using (var reader = new StreamReader(stream))
                 {
                     var adaptiveCard = reader.ReadToEnd();
-                    return new Attachment()
-                    {
-                        ContentType = "application/vnd.microsoft.card.adaptive",
-                        Content = JsonConvert.DeserializeObject(adaptiveCard),
-                    };
+                    return new Attachment() { ContentType = "application/vnd.microsoft.card.adaptive", Content = JsonConvert.DeserializeObject(adaptiveCard), };
                 }
             }
         }

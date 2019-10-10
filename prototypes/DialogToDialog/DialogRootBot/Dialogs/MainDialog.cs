@@ -68,18 +68,28 @@ namespace DialogRootBot.Dialogs
                     var bookingDetails = new BookingDetails()
                     {
                         // Get destination and origin from the composite entities arrays.
-                        Destination = luisResult.ToEntities.Airport, Origin = luisResult.FromEntities.Airport, TravelDate = luisResult.TravelDate,
+                        Destination = luisResult.ToEntities.Airport, 
+                        Origin = luisResult.FromEntities.Airport, 
+                        TravelDate = luisResult.TravelDate,
                     };
 
+                    var bookFlightArgs = new RemoteDialogArgs
+                    {
+                        TargetAction = "BookFlight",
+                    };
+                    bookFlightArgs.Entities.Add("bookingInfo", bookingDetails);
+
                     // Run the RemoteDialog giving it whatever details we have from the LUIS call, it will fill out the remainder.
-                    return await stepContext.BeginDialogAsync(nameof(RemoteDialog), bookingDetails, cancellationToken);
+                    return await stepContext.BeginDialogAsync(nameof(RemoteDialog), bookFlightArgs, cancellationToken);
 
                 case FlightBooking.Intent.GetWeather:
-                    // We haven't implemented the GetWeatherDialog so we just display a TODO message.
-                    var getWeatherMessageText = "TODO: get weather flow here";
-                    var getWeatherMessage = MessageFactory.Text(getWeatherMessageText, getWeatherMessageText, InputHints.IgnoringInput);
-                    await stepContext.Context.SendActivityAsync(getWeatherMessage, cancellationToken);
-                    break;
+                    var getWeatherArgs = new RemoteDialogArgs
+                    {
+                        TargetAction = "GetWeather",
+                    };
+
+                    // Run the RemoteDialog
+                    return await stepContext.BeginDialogAsync(nameof(RemoteDialog), getWeatherArgs, cancellationToken);
 
                 default:
                     // Catch all for unhandled intents
@@ -126,7 +136,7 @@ namespace DialogRootBot.Dialogs
             var bookingDetails = TryGetBookingDetailsFromResult(stepContext.Result);
             if (bookingDetails != null)
             {
-                // Now we have all the booking details call the booking service.
+                await stepContext.Context.SendActivityAsync(MessageFactory.Text($"Got result from remote: {JsonConvert.SerializeObject(bookingDetails)}"), cancellationToken);
 
                 // If the call to the booking service was successful tell the user.
                 var timeProperty = new TimexProperty(bookingDetails.TravelDate);

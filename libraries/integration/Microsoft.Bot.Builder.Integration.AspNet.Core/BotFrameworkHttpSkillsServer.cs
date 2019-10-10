@@ -266,6 +266,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             // send up to the bot to process it...
             await _adapter.ProcessActivityAsync(claimsIdentity, (Activity)channelApiInvokeActivity, bot.OnTurnAsync, CancellationToken.None).ConfigureAwait(false);
 
+            // Return the result that was captured in the middleware handler. 
             return (T)channelApiArgs.Result;
         }
 

@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 
 namespace DialogChildBot.Bots
 {
+    // TODO: cleanup this dialog
     public class ActionRouterDialog : ComponentDialog
     {
         public ActionRouterDialog()
@@ -57,12 +58,15 @@ namespace DialogChildBot.Bots
                         await turnContext.SendActivityAsync(MessageFactory.Text($"Got Semantic Action: {activity.SemanticAction.Id}"), cancellationToken);
                         await turnContext.SendActivityAsync(MessageFactory.Text("TODO: This will handle GetWeather flow"), cancellationToken);
                         return new DialogTurnResult(DialogTurnStatus.Complete);
+
+                    default:
+                        await turnContext.SendActivityAsync(MessageFactory.Text($"Unknown Semantic Action: {activity.SemanticAction.Id}"), cancellationToken);
+                        return new DialogTurnResult(DialogTurnStatus.Complete);
                 }
             }
 
             // TODO: here we would need to resolve against LUIS
-            await turnContext.SendActivityAsync(MessageFactory.Text($"Dunno what to do with what you said... (SkillBot)"), cancellationToken);
-
+            await turnContext.SendActivityAsync(MessageFactory.Text($"TODO: an action wasn't passed into the call so we probably need to run this through our own LUIS model to see if we can figure out what to do with the user's utterance..."), cancellationToken);
             return new DialogTurnResult(DialogTurnStatus.Complete);
         }
     }
