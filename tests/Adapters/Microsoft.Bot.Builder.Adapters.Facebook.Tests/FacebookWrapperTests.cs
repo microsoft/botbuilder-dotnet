@@ -4,6 +4,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
+using System.Text;
 using System.Threading;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Schema;
@@ -39,7 +41,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
         [Fact]
         public void VerifySignatureShouldReturnTrueWithValidRequestHash()
         {
-            const string requestHash = "SHA1=32ECC29689D860D68A713FF5BA8D7B787C5E8C80";
+            const string requestHash = "SHA1=70C0E1B415F16D986EB839144FC85A941A5899C7";
             var facebookWrapper = new FacebookClientWrapper(_testOptions);
             var request = new Mock<HttpRequest>();
             var stringifyBody = File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\RequestResponse.json");
@@ -94,6 +96,70 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
             {
                 await facebookWrapper.SendMessageAsync("wrongPath", null, null, default(CancellationToken));
             });
+        }
+
+        [Fact]
+        public async void VerifyWebhookAsyncShouldSendOKWhenVerified()
+        {
+            var facebookClientWrapper = new FacebookClientWrapper(_testOptions);
+            var httpRequest = new Mock<HttpRequest>();
+            var httpResponse = new Mock<HttpResponse>();
+
+            httpRequest.SetupGet(req => req.Query[It.IsAny<string>()]).Returns("TestVerifyToken");
+            httpResponse.SetupAllProperties();
+            httpResponse.Setup(_ => _.Body.WriteAsync(It.IsAny<byte[]>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
+                .Callback((byte[] data, int offset, int length, CancellationToken token) =>
+                {
+                    if (length > 0)
+                    {
+                        var actual = Encoding.UTF8.GetString(data);
+                    }
+                });
+
+            await facebookClientWrapper.VerifyWebhookAsync(httpRequest.Object, httpResponse.Object, default);
+
+            Assert.True(httpResponse.Object.StatusCode == (int)HttpStatusCode.OK);
+        }
+
+        [Fact]
+        public async void VerifyWebhookAsyncShouldSendUnauthorizedWhenNotVerified()
+        {
+            var facebookClientWrapper = new FacebookClientWrapper(_testOptions);
+            var httpRequest = new Mock<HttpRequest>();
+            var httpResponse = new Mock<HttpResponse>();
+
+            httpRequest.SetupGet(req => req.Query[It.IsAny<string>()]).Returns("WrongVerifyToken");
+            httpResponse.SetupAllProperties();
+            httpResponse.Setup(_ => _.Body.WriteAsync(It.IsAny<byte[]>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
+                .Callback((byte[] data, int offset, int length, CancellationToken token) =>
+                {
+                    if (length > 0)
+                    {
+                        var actual = Encoding.UTF8.GetString(data);
+                    }
+                });
+
+            await facebookClientWrapper.VerifyWebhookAsync(httpRequest.Object, httpResponse.Object, default);
+
+            Assert.True(httpResponse.Object.StatusCode == (int)HttpStatusCode.Unauthorized);
+        }
+
+        [Fact]
+        public async void VerifyWebhookAsyncShouldThrowExceptionWithNullRequest()
+        {
+            var facebookClientWrapper = new FacebookClientWrapper(_testOptions);
+            var httpResponse = new Mock<HttpResponse>();
+
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => { await facebookClientWrapper.VerifyWebhookAsync(null, httpResponse.Object, default); });
+        }
+
+        [Fact]
+        public async void VerifyWebhookAsyncShouldThrowExceptionWithNullResponse()
+        {
+            var facebookClientWrapper = new FacebookClientWrapper(_testOptions);
+            var httpRequest = new Mock<HttpRequest>();
+
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => { await facebookClientWrapper.VerifyWebhookAsync(httpRequest.Object, null, default); });
         }
     }
 }
