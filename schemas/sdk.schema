@@ -2845,7 +2845,10 @@
                     "description": "HTTP method to use.",
                     "enum": [
                         "GET",
-                        "POST"
+                        "POST",
+                        "PATCH",
+                        "PUT",
+                        "DELETE"
                     ],
                     "examples": [
                         "GET",
