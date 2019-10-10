@@ -215,6 +215,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             // Save into turn
             sequenceContext.State.SetValue(TurnPath.DIALOGEVENT, dialogEvent);
 
+            this.EnsureDependenciesInstalled();
+
             // Look for triggered evt
             var handled = await this.QueueFirstMatchAsync(sequenceContext, dialogEvent, preBubble, cancellationToken).ConfigureAwait(false);
 
