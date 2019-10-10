@@ -13,6 +13,10 @@ using Newtonsoft.Json;
 
 namespace Microsoft.BotBuilderSamples.Bots
 {
+    /*
+     * This bot can be installed at any scope. If you @mention the bot you will get the task module. You can interact with the task module to
+     * hit the other functions.
+     */
     public class TaskModuleBot : TeamsActivityHandler
     {
         protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)

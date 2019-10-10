@@ -1,0 +1,40 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
+    "$role": "unionType(Microsoft.IRecognizer)",
+    "title": "Regex recognizer",
+    "description": "Use regular expressions to recognize intents and entities from user input.",
+    "type": "object",
+    "properties": {
+        "intents": {
+            "type": "array",
+            "title": "RegEx patterns to intents",
+            "description": "Collection of patterns to match for an intent.",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "intent": {
+                        "type": "string",
+                        "title": "Intent",
+                        "description": "The intent name."
+                    },
+                    "pattern": {
+                        "type": "string",
+                        "title": "Pattern",
+                        "description": "The regular expression pattern."
+                    }
+                }
+            }
+        },
+        "entities": {
+            "type": "array",
+            "items": {
+                "$type": "Microsoft.EntityRecognizers"
+            },
+            "title": "Entity recognizers",
+            "description": "Collection of entity recognizers to use."
+        }
+    },
+    "required": [
+        "intents"
+    ]
+}

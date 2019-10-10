@@ -51,7 +51,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             ConversationState convoState = new ConversationState(new MemoryStorage());
             var testProperty = convoState.CreateProperty<Dictionary<string, object>>("test");
 
-            TestAdapter adapter = new TestAdapter()
+            TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .Use(convoState);
 
             await new TestFlow(adapter, async (turnContext, cancellationToken) =>

@@ -1,0 +1,23 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
+    "$role": "unionType(Microsoft.ITriggerSelector)",
+    "title": "Condtional Trigger Selector",
+    "description": "Use a rule selector based on a condition",
+    "type": "object",
+    "properties": {
+        "condition": {
+            "$role": "expression"
+        },
+        "ifTrue": {
+            "$type": "Microsoft.ITriggerSelector"
+        },
+        "ifFalse": {
+            "$type": "Microsoft.ITriggerSelector"
+        }
+    },
+    "required": [
+        "condition",
+        "ifTrue",
+        "ifFalse"
+    ]
+}

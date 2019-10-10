@@ -11,7 +11,6 @@ using Microsoft.Bot.Builder.Integration.AspNet.Core.Tests.Mocks;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Moq;
 using Xunit;
@@ -316,6 +315,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
                     action.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("botFactory");
                 }
 
+#if disabled
                 [Fact]
                 public void WithoutConfigurationCallback()
                 {
@@ -356,6 +356,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
 
                     VerifyExpectedBotServicesAreRegistered(serviceCollectionMock);
                 }
+#endif 
 
                 [Fact]
                 public void DoesntReplaceExistingAdapterIntegration()

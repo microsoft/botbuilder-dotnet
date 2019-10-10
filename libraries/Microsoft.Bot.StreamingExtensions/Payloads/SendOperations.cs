@@ -9,7 +9,7 @@ using Microsoft.Bot.StreamingExtensions.PayloadTransport;
 
 namespace Microsoft.Bot.StreamingExtensions.Payloads
 {
-    internal class SendOperations
+    public class SendOperations
     {
         private readonly IPayloadSender _payloadSender;
 

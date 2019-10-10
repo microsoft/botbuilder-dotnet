@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
 using System.IO;
 using System.Text;
 using System.Threading;
@@ -16,23 +15,26 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Handlers
     {
         protected override async Task<InvokeResponse> ProcessMessageRequestAsync(HttpRequest request, IAdapterIntegration adapter, BotCallbackHandler botCallbackHandler, CancellationToken cancellationToken)
         {
-            var requestBody = request.Body;
-
-            // In the case of request buffering being enabled, we could possibly receive a Stream that needs its position reset,
-            // but we can't _blindly_ reset in case buffering hasn't been enabled since we'll be working with a non-seekable Stream
-            // in that case which will throw a NotSupportedException
-            if (requestBody.CanSeek)
-            {
-                requestBody.Position = 0;
-            }
-
             var activity = default(Activity);
 
-            // Get the request body and deserialize to the Activity object.
-            // NOTE: We explicitly leave the stream open here so others can still access it (in case buffering was enabled); ASP.NET runtime will always dispose of it anyway
-            using (var bodyReader = new JsonTextReader(new StreamReader(requestBody, Encoding.UTF8, detectEncodingFromByteOrderMarks: false, bufferSize: 1024, leaveOpen: true)))
+            using (var memoryStream = new MemoryStream())
             {
-                activity = BotMessageHandlerBase.BotMessageSerializer.Deserialize<Activity>(bodyReader);
+                await request.Body.CopyToAsync(memoryStream).ConfigureAwait(false);
+
+                // In the case of request buffering being enabled, we could possibly receive a Stream that needs its position reset,
+                // but we can't _blindly_ reset in case buffering hasn't been enabled since we'll be working with a non-seekable Stream
+                // in that case which will throw a NotSupportedException
+                if (request.Body.CanSeek)
+                {
+                    request.Body.Position = 0;
+                }
+
+                // Get the request body and deserialize to the Activity object.
+                // NOTE: We explicitly leave the stream open here so others can still access it (in case buffering was enabled); ASP.NET runtime will always dispose of it anyway
+                using (var bodyReader = new JsonTextReader(new StreamReader(memoryStream, Encoding.UTF8, detectEncodingFromByteOrderMarks: false, bufferSize: 1024, leaveOpen: true)))
+                {
+                    activity = BotMessageHandlerBase.BotMessageSerializer.Deserialize<Activity>(bodyReader);
+                }
             }
 
 #pragma warning disable UseConfigureAwait // Use ConfigureAwait

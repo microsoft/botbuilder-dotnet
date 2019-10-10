@@ -12,11 +12,13 @@ namespace Microsoft.Bot.Builder.Tests
     [TestClass]
     public class ShowTyping_MiddlewareTests
     {
+        public TestContext TestContext { get; set; }
+
         [TestMethod]
         [TestCategory("Middleware")]
         public async Task ShowTyping_TestMiddleware_1_Second_Interval()
         {
-            TestAdapter adapter = new TestAdapter()
+            TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .Use(new ShowTypingMiddleware(100, 1000));
 
             await new TestFlow(adapter, async (context, cancellationToken) =>
@@ -41,7 +43,7 @@ namespace Microsoft.Bot.Builder.Tests
         [TestCategory("Middleware")]
         public async Task ShowTyping_TestMiddleware_Context_Completes_Before_Typing_Interval()
         {
-            TestAdapter adapter = new TestAdapter()
+            TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .Use(new ShowTypingMiddleware(100, 5000));
 
             await new TestFlow(adapter, async (context, cancellationToken) =>
@@ -60,7 +62,7 @@ namespace Microsoft.Bot.Builder.Tests
         [TestCategory("Middleware")]
         public async Task ShowTyping_TestMiddleware_ImmediateResponse_5SecondInterval()
         {
-            TestAdapter adapter = new TestAdapter()
+            TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .Use(new ShowTypingMiddleware(2000, 5000));
 
             await new TestFlow(adapter, async (context, cancellationToken) =>
@@ -79,7 +81,7 @@ namespace Microsoft.Bot.Builder.Tests
         {
             try
             {
-                TestAdapter adapter = new TestAdapter()
+                TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                     .Use(new ShowTypingMiddleware(-100, 1000));
             }
             catch (Exception ex)
@@ -94,7 +96,7 @@ namespace Microsoft.Bot.Builder.Tests
         {
             try
             {
-                TestAdapter adapter = new TestAdapter()
+                TestAdapter adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                     .Use(new ShowTypingMiddleware(-100, 0));
             }
             catch (Exception ex)

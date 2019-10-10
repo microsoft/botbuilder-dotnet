@@ -1,0 +1,52 @@
+﻿# HeroCardTemplate
+[HeroCard 
+        title=Cheese gromit!
+        subtitle=@{type}
+        text=This is some text describing the card, it's cool because it's cool
+        image=https://memegenerator.net/img/instances/500x/73055378/cheese-gromit.jpg
+        images=https://memegenerator.net/img/instances/500x/73055378/cheese-gromit.jpg
+        buttons=Option 1| Option 2| Option 3
+]
+
+# ThumbnailCardTemplate
+[ThumbnailCard 
+        title=Cheese gromit!
+        subtitle=@{type}
+        text=This is some text describing the card, it's cool because it's cool
+        image=https://memegenerator.net/img/instances/500x/73055378/cheese-gromit.jpg
+        images=https://memegenerator.net/img/instances/500x/73055378/cheese-gromit.jpg
+        buttons=Option 1| Option 2| Option 3
+]
+
+# AnimationCardTemplate
+[AnimationCard
+        Title=Animation Card
+        Subtitle=look at it animate 
+        autostart=true
+        autoloop=true
+        Image=https://docs.microsoft.com/en-us/bot-framework/media/how-it-works/architecture-resize.png
+        Image=https://docs.microsoft.com/en-us/bot-framework/media/how-it-works/architecture-resize.png
+        Image=https://docs.microsoft.com/en-us/bot-framework/media/how-it-works/architecture-resize.png
+        Media=http://oi42.tinypic.com/1rchlx.jpg
+]
+
+# HerocardWithCardAction(title, text)
+[HeroCard
+    Title = @{title}
+    Text = @{text}
+    Buttons = {cardActionTemplate(null, title, text)}
+]
+
+# cardActionTemplate(type, title, value)
+[CardAction
+    Type = {if(type == null, 'imBack', type)}
+    Title = {title}
+    Value = {value}
+]
+
+# eventActivity
+[Activity
+    Name = {text}
+    Value = {text}
+    Type = event
+]

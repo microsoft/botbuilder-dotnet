@@ -15,6 +15,11 @@ namespace Microsoft.BotBuilderSamples.Bots
 {
     public class AdaptiveCardsBot : TeamsActivityHandler
     {
+        /*
+         * You can @mention the bot the text "1", "2", or "3". "1" will send back adaptive cards. "2" will send back a 
+         * task module that contains an adpative card. "3" will return an adpative card that contains BF card actions.
+         * 
+         */
         protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
 

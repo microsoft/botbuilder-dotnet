@@ -41,15 +41,16 @@
             "canUpdateConfiguration": false,
             "commands": [
                 {
-                    "id": "testCommand",
+                    "id": "createWithPreview",
                     "type": "action",
-                    "title": "Test Command Title",
-                    "description": "",
+                    "title": "Create Survey Card",
+                    "description": "Example of creating a Survey Card",
                     "initialRun": false,
                     "fetchTask": true,
                     "context": [
                         "commandBox",
-                        "compose"
+                        "compose",
+                        "message"
                     ],
                     "parameters": [
                         {

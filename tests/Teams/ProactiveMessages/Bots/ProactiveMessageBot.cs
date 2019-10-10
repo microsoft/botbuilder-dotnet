@@ -17,7 +17,12 @@ namespace Microsoft.BotBuilderSamples.Bots
     public class ProactiveMessageBot : TeamsActivityHandler
     {
         private string _appId;
-
+        
+        /*
+         * This bot should be added to a team, but could work in group chat (with updated onMembersAdded implementations). If you 
+         * @mention the bot and send it a message it will "proactivly" message you. See the comment below on the continueConversation call 
+         * since proactive messaging can work 2 ways.
+         */
         public ProactiveMessageBot(IConfiguration configuration)
         {
             _appId = configuration["MicrosoftAppId"];

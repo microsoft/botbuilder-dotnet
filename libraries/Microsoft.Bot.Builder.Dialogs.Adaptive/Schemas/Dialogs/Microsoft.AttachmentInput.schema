@@ -1,0 +1,25 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
+    "$role": "unionType(Microsoft.IDialog)",
+    "title": "Attachment input dialog",
+    "description": "Collect information - Ask for a file or image.",
+    "allOf": [
+        {
+            "$ref": "./Microsoft.InputDialog.json#"
+        },
+        {
+            "properties": {
+                "outputFormat": {
+                    "type": "string",
+                    "enum": [
+                        "all",
+                        "first"
+                    ],
+                    "title": "Output format",
+                    "description": "Attachment output format.",
+                    "default": "first"
+                }
+            }
+        }
+    ]
+}

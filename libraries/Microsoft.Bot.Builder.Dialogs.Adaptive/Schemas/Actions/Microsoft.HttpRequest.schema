@@ -1,0 +1,69 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
+    "$role": "unionType(Microsoft.IDialog)",
+    "type": "object",
+    "title": "HTTP request",
+    "description": "Make a HTTP request.",
+    "required": [
+        "url",
+        "method"
+    ],
+    "properties": {
+        "method": {
+            "type": "string",
+            "title": "HTTP method",
+            "description": "HTTP method to use.",
+            "enum": [
+                "GET",
+                "POST",
+                "PATCH",
+                "PUT",
+                "DELETE"
+            ],
+            "examples": [
+                "GET",
+                "POST"
+            ]
+        },
+        "url": {
+            "type": "string",
+            "title": "Url",
+            "description": "URL to call (supports data binding).",
+            "examples": [
+                "https://contoso.com"
+            ]
+        },
+        "body": {
+            "type": "object",
+            "title": "Body",
+            "description": "Body to include in the HTTP call (supports data binding).",
+            "additionalProperties": true
+        },
+        "resultProperty": {
+            "$role": "expression",
+            "title": "Result property",
+            "description": "Property to store the result of this action. The result includes 4 properties from the http response: statusCode, reasonPhrase, content and headers. If the content is json it will be a deserialized object.",
+            "examples": [
+                "dialog.contosodata"
+            ]
+        },
+        "headers": {
+            "type": "object",
+            "additionProperties": true,
+            "title": "Headers",
+            "description": "One or more headers to include in the request (supports data binding)."
+        },
+        "responseType": {
+            "type": "string",
+            "title": "Response type",
+            "description": "Defines the type of HTTP response. Automatically calls the 'Send a response' action if set to 'Activity' or 'Activities'.",
+            "enum": [
+                "None",
+                "Json",
+                "Activity",
+                "Activities"
+            ],
+            "default": "Json"
+        }
+    }
+}

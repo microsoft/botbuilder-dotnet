@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-
-namespace Microsoft.Bot.Schema
+﻿namespace Microsoft.Bot.Schema
 {
     /// <summary>
     /// Represents a point in a bot's logic, to help with bot debugging.
