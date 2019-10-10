@@ -24,7 +24,7 @@
                             "property": "user.name",
                             "prompt": "Hello, I'm Zoidberg. What is your name?",
                             "outputFormat": "trim",
-                            "allowInterruptions": "always"
+                            "allowInterruptions": "true"
                         }
                     ]
                 },
@@ -41,7 +41,7 @@
                             "property": "user.name2",
                             "prompt": "Hello, I'm Zoidberg. What is your name?",
                             "outputFormat": "trim",
-                            "allowInterruptions": "notRecognized"
+                            "allowInterruptions": "!#Cancel"
                         }
                     ]
                 },

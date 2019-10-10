@@ -1,6 +1,6 @@
 {
-  "$schema": "https://github.com/OfficeDev/microsoft-teams-app-schema/blob/preview/DevPreview/MicrosoftTeams.schema.json",
-  "manifestVersion": "devPreview",
+  "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.5/MicrosoftTeams.schema.json",
+  "manifestVersion": "1.5",
   "version": "1.0",
   "id": "<<YOUR_GENERATED_APP_GUID>>",
   "packageName": "com.microsoft.teams.samples.v4bot",

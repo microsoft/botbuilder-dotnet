@@ -2,36 +2,37 @@
   "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.5/MicrosoftTeams.schema.json",
   "manifestVersion": "1.5",
   "version": "1.0",
-  "id": "",
-  "packageName": "com.teams.sample.linkunfurling",
+  "id": "<<YOUR_GENERATED_APP_GUID>>",
+  "packageName": "com.microsoft.teams.samples.searchExtension",
   "developer": {
-    "name": "Link Unfurling",
-    "websiteUrl": "https://www.microsoft.com",
-    "privacyUrl": "https://www.teams.com/privacy",
-    "termsOfUseUrl": "https://www.teams.com/termsofuser"
-  },
-  "icons": {
-    "color": "color.png",
-    "outline": "outline.png"
+    "name": "Microsoft Corp",
+    "websiteUrl": "https://example.azurewebsites.net",
+    "privacyUrl": "https://example.azurewebsites.net/privacy",
+    "termsOfUseUrl": "https://example.azurewebsites.net/termsofuse"
   },
   "name": {
-    "short": "Link Unfurling",
-    "full": "Link Unfurling"
+    "short": "search-extension-settings",
+    "full": "Microsoft Teams V4 Search Messaging Extension Bot and settings"
   },
   "description": {
-    "short": "Link Unfurling",
-    "full": "Link Unfurling"
+    "short": "Microsoft Teams V4 Search Messaging Extension Bot and settings",
+    "full": "Sample Search Messaging Extension Bot using V4 Bot Builder SDK and V4 Microsoft Teams Extension SDK"
   },
-  "accentColor": "#FFFFFF",
+  "icons": {
+    "outline": "icon-outline.png",
+    "color": "icon-color.png"
+  },
+  "accentColor": "#abcdef",
   "bots": [
     {
-      "botId": "",
+      "botId": "<<YOUR_GENERATED_APP_GUID>>",
       "scopes": [ "personal", "team" ]
     }
   ],
   "composeExtensions": [
     {
-      "botId": "",
+      "botId": "<<YOUR_GENERATED_APP_GUID>>",
+      "canUpdateConfiguration": true,
       "commands": [
         {
           "id": "searchQuery",
@@ -54,14 +55,14 @@
           "type": "link",
           "value": {
             "domains": [
-              "microsoft.com",
-              "github.com",
-              "linkedin.com",
-              "bing.com"
+              "*.ngrok.io"
             ]
           }
         }
       ]
     }
+  ],
+  "validDomains": [
+    "*.ngrok.io"
   ]
 }
