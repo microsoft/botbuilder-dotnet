@@ -371,7 +371,6 @@ namespace Microsoft.Bot.Builder
         /// </summary>
         public void Dispose()
         {
-            TurnState.Dispose();
         }
 
         private async Task<ResourceResponse> UpdateActivityInternalAsync(

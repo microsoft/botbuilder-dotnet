@@ -15,23 +15,33 @@ namespace Microsoft.Bot.Builder.Dialogs
     /// for the current turn.</remarks>
     public class WaterfallStepContext : DialogContext
     {
-        private readonly WaterfallDialog _parent;
+        private readonly WaterfallDialog _parentWaterfall;
         private bool _nextCalled;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WaterfallStepContext"/> class.
         /// </summary>
-        /// <param name= "parent">The parent of the waterfall dialog.</param>
+        /// <param name= "parentWaterfall">The parent of the waterfall dialog.</param>
         /// <param name= "dc">The dialog's context.</param>
         /// <param name= "options">Any options to call the waterfall dialog with.</param>
         /// <param name= "values">A dictionary of values which will be persisted across all waterfall steps.</param>
         /// <param name= "index">The index of the current waterfall to execute.</param>
         /// <param name= "reason">The reason the waterfall step is being executed.</param>
         /// <param name= "result">Results returned by a dialog called in the previous waterfall step.</param>
-        internal WaterfallStepContext(WaterfallDialog parent, DialogContext dc, object options,  IDictionary<string, object> values, int index, DialogReason reason, object result = null)
-            : base(dc.Dialogs, dc.Context, new DialogState(dc.Stack))
+        internal WaterfallStepContext(
+            WaterfallDialog parentWaterfall,
+            DialogContext dc,
+            object options,
+            IDictionary<string, object> values,
+            int index,
+            DialogReason reason,
+            object result = null)
+            : base(
+                  dc.Dialogs,
+                  turnContext: dc.Context,
+                  state: new DialogState(dc.Stack))
         {
-            _parent = parent;
+            _parentWaterfall = parentWaterfall;
             _nextCalled = false;
             Parent = dc.Parent;
             Index = index;
@@ -76,7 +86,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         public object Result { get; }
 
         /// <summary>
-        /// Gets a dictionary of values which will be persisted across all waterfall steps.
+        /// Gets a dictionary of values which will be persisted across all waterfall actions.
         /// </summary>
         /// <value>
         /// A dictionary of values which will be persisted across all waterfall steps.
@@ -94,15 +104,20 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// waterfall step context will contain the value of the <paramref name="result"/>.</remarks>
         public async Task<DialogTurnResult> NextAsync(object result = null, CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (result is CancellationToken)
+            {
+                throw new ArgumentException($"{nameof(result)} cannot be a cancellation token");
+            }
+
             // Ensure next hasn't been called
             if (_nextCalled)
             {
-                throw new Exception($"WaterfallStepContext.NextAsync(): method already called for dialog and step '{_parent.Id}[{Index}]'.");
+                throw new Exception($"WaterfallStepContext.NextAsync(): method already called for dialog and step '{_parentWaterfall.Id}[{Index}]'.");
             }
 
             // Trigger next step
             _nextCalled = true;
-            return await _parent.ResumeDialogAsync(this, DialogReason.NextCalled, result).ConfigureAwait(false);
+            return await _parentWaterfall.ResumeDialogAsync(this, DialogReason.NextCalled, result).ConfigureAwait(false);
         }
     }
 }

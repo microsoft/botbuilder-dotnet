@@ -3,7 +3,6 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Bot.Configuration;
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,7 +15,7 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
 
@@ -36,7 +35,9 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+#pragma warning disable CS0618 // Type or member is obsolete
             app.UseBotApplicationInsights();
+#pragma warning restore CS0618 // Type or member is obsolete
         }
     }
 }

@@ -1,0 +1,6 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
+    "$role": "unionType",
+    "title": "Selectors",
+    "description": "Union of components which are trigger selectors"
+}

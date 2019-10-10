@@ -14,6 +14,8 @@ namespace Microsoft.Bot.Builder.Tests
     [TestCategory("BotAdapter")]
     public class BotAdapterTests
     {
+        public TestContext TestContext { get; set; }
+
         [TestMethod]
         public void AdapterSingleUse()
         {
@@ -51,7 +53,7 @@ namespace Microsoft.Bot.Builder.Tests
         public async Task ContinueConversation_DirectMsgAsync()
         {
             bool callbackInvoked = false;
-            var adapter = new TestAdapter();
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName));
             ConversationReference cr = new ConversationReference
             {
                 ActivityId = "activityId",

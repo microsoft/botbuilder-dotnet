@@ -13,6 +13,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
     [TestClass]
     public class AttachmentPromptTests
     {
+        public TestContext TestContext { get; set; }
+
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
         public void AttachmentPromptWithEmptyIdShouldFail()
@@ -36,8 +38,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            var adapter = new TestAdapter()
-                .Use(new AutoSaveStateMiddleware(convoState));
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+                .Use(new AutoSaveStateMiddleware(convoState))
+                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
 
             // Create new DialogSet.
             var dialogs = new DialogSet(dialogState);
@@ -82,8 +85,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            var adapter = new TestAdapter()
-                .Use(new AutoSaveStateMiddleware(convoState));
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
+                .Use(new AutoSaveStateMiddleware(convoState))
+                .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
 
             // Create new DialogSet.
             var dialogs = new DialogSet(dialogState);

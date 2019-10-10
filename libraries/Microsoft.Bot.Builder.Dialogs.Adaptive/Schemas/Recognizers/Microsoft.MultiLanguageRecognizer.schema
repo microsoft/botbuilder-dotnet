@@ -1,0 +1,26 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
+    "$role": "unionType(Microsoft.IRecognizer)",
+    "title": "Multi-language recognizer",
+    "description": "Configure one recognizer per language and the specify the language fallback policy.",
+    "type": "object",
+    "properties": {
+        "languagePolicy": {
+            "$type": "Microsoft.LanguagePolicy",
+            "type": "object",
+            "title": "Language policy",
+            "description": "Defines fall back languages to try per user input language."
+        },
+        "recognizers": {
+            "type": "object",
+            "title": "Recognizers",
+            "description": "Map of language -> IRecognizer",
+            "additionalProperties": {
+                "$type": "Microsoft.IRecognizer"
+            }
+        }
+    },
+    "required": [
+        "recognizers"
+    ]
+}

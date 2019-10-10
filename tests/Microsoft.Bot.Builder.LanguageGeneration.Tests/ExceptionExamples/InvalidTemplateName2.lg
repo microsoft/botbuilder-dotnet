@@ -1,0 +1,3 @@
+﻿> Template names must not have () in them, Exception is thrown by Antlr tool
+# t1(a)test(param1) 
+- hi

@@ -12,6 +12,10 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.BotBuilderSamples.Bots
 {
+    /*
+     * After installing this bot you can click on the 3 dots to pull up the extension menu. You should be able to click on the search extension
+     * and the bot will start. Interact with the cards to execrcise the flows. 
+     */
     public class ActionBasedMessagingExtensionBot : TeamsActivityHandler
     {
         protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
