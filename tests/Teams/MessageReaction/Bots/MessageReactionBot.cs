@@ -9,6 +9,9 @@ using Microsoft.Bot.Schema;
 
 namespace Microsoft.BotBuilderSamples.Bots
 {
+    /*
+     * From the UI you need to @mention the bot, then add a message reaction to the message the bot sent. 
+     */
     public class MessageReactionBot : ActivityHandler
     {
         private ActivityLog _log;

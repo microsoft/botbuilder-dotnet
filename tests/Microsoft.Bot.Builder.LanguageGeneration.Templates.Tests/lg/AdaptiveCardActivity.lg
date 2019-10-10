@@ -1,9 +1,10 @@
-﻿# externalAdaptiveCardTemplate
-- ```[Attachment=lg/..\lg/adaptiveCard.json adaptivecard]```
+﻿﻿# prompt
+[Activity
+    Attachments = {json(adaptivecardjson())}
+]
 
-# adaptiveCardTemplate
+# adaptivecardjson
 - ```
-[AdaptiveCard
 {
   "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
   "type": "AdaptiveCard",
@@ -121,5 +122,4 @@
     }
   ]
 }
-]
 ```

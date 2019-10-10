@@ -47,6 +47,23 @@ templateBody
     : normalTemplateBody                        #normalBody
     | ifElseTemplateBody                        #ifElseBody
     | switchCaseTemplateBody                    #switchCaseBody
+    | structuredTemplateBody                    #structuredBody
+    ;
+
+structuredTemplateBody
+    : structuredBodyNameLine structuredBodyContentLine? structuredBodyEndLine
+    ;
+
+structuredBodyNameLine
+    : LEFT_SQUARE_BRACKET STRUCTURED_CONTENT STRUCTURED_NEWLINE?
+    ;
+
+structuredBodyContentLine
+    : (STRUCTURED_CONTENT STRUCTURED_NEWLINE?)+
+    ;
+
+structuredBodyEndLine
+    : STRUCTURED_TEMPLATE_BODY_END
     ;
 
 normalTemplateBody

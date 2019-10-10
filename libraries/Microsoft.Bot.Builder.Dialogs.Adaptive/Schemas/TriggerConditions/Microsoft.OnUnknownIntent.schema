@@ -1,7 +1,7 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
-    "title": "OnUnknownIntent",
-    "description": "This defines the actions to take when an utterence is not recognized (aka, the None Intent). NOTE: UnknownIntent will defer to any specific intent that fires in a parent dialog",
+    "title": "On unknown intent",
+    "description": "Action to perform when user input is unrecognized and if none of the 'on intent recognition' triggers match recognized intent.",
     "type": "object",
     "allOf": [
         {

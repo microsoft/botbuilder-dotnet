@@ -13,6 +13,9 @@ using Newtonsoft.Json;
 
 namespace Cards.Bots
 {
+    /*
+     * You can install this bot in any scope. From the UI just @mention the bot.
+     */
     public class CardsBot : TeamsActivityHandler
     {
         protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)

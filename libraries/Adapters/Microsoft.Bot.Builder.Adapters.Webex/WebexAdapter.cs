@@ -199,7 +199,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
             string json;
             using (var bodyStream = new StreamReader(request.Body))
             {
-                json = bodyStream.ReadToEnd();
+                json = await bodyStream.ReadToEndAsync().ConfigureAwait(false);
                 payload = JsonConvert.DeserializeObject<WebhookEventData>(json);
             }
 

@@ -1,21 +1,21 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
     "$role": "unionType(Microsoft.ITriggerCondition)",
-    "title": "OnCondition",
-    "description": "Defines actions which are executed when a condition is true",
+    "title": "On condition",
+    "description": "Actions to perform when specified condition is true.",
     "type": "object",
     "properties": {
         "condition": {
             "$role": "expression",
             "title": "Condition",
-            "description": "Condition which must be met for these actions to be executed",
+            "description": "Condition (expression).",
             "examples": [
                 "user.vip == true"
             ]
         },
         "actions": {
             "type": "array",
-            "description": "Sequence of actions or dialogs to execute",
+            "description": "Sequence of actions to execute.",
             "items": {
                 "$type": "Microsoft.IDialog"
             }

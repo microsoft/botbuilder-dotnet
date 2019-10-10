@@ -19,6 +19,12 @@ namespace Microsoft.BotBuilderSamples.Bots
 {
     public class ComposeMessagingExtensionsBot : TeamsActivityHandler
     {
+        /*
+         * After uploading the manifest you can click the dots in the extension menu at the bottom, or search for the
+         * exntesion in the command bar. From the extension window or the command bar you can click on the 3 dots on the specific extension to trigger
+         * the OnMessageActivityAsync function. If you click on the "Settings" tab you will fire the OnTeamsMessagingExtensionConfigurationSettingAsync 
+         * function.
+         */
         protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
             await turnContext.SendActivityAsync(MessageFactory.Text($"echo: {turnContext.Activity.Text}"), cancellationToken);

@@ -36,6 +36,7 @@
     <None Remove="Examples\TemplateRef.lg" />
     <None Remove="Examples\Regex.lg" />
     <None Remove="Examples\EvalExpression.lg" />
+    <None Remove="Examples\StructuredTemplate.lg" />
     <None Remove="ExceptionExamples\ConditionFormatError.lg" />
     <None Remove="ExceptionExamples\DuplicatedTemplates.lg" />
     <None Remove="ExceptionExamples\DuplicatedTemplatesInImportFiles.lg" />
@@ -60,6 +61,7 @@
     <None Remove="ExceptionExamples\SwitchCaseWarning.lg" />
     <None Remove="ExceptionExamples\TemplateParamsNotMatchArgsNum.lg" />
     <None Remove="ExceptionExamples\TemplateAsFunction.lg" />
+    <None Remove="ExceptionExamples\ErrorStructuredTemplate.lg" />
   </ItemGroup>
 
   <ItemGroup>
@@ -141,6 +143,9 @@
     <Content Include="Examples\EvalExpression.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Examples\StructuredTemplate.lg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="ExceptionExamples\ConditionFormatError.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -211,6 +216,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Examples\import\import3.lg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ExceptionExamples\ErrorStructuredTemplate.lg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

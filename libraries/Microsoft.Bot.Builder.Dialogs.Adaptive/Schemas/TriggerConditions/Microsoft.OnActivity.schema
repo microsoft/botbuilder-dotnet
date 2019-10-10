@@ -1,8 +1,8 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
     "$role": "unionType(Microsoft.ITriggerCondition)",
-    "title": "OnActivity",
-    "description": "Defines the actions to take when an arbitrary activity is received",
+    "title": "On activity",
+    "description": "Actions to perform on receipt of a generic activity.",
     "type": "object",
     "allOf": [
         {
@@ -12,7 +12,7 @@
             "properties": {
                 "type": {
                     "type": "string",
-                    "title": "Activity Type",
+                    "title": "Activity type",
                     "description": "The Activity.Type to match"
                 }
             }

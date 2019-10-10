@@ -23,7 +23,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         public object GlobalScope { get; set; }
 
-        public ICollection<string> Keys => throw new NotImplementedException();
+        public ICollection<string> Keys => new List<string>();
 
         public ICollection<object> Values => throw new NotImplementedException();
 

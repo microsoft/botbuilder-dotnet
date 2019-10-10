@@ -2,8 +2,8 @@
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
     "$role": "unionType(Microsoft.IDialog)",
     "type": "object",
-    "title": "TextInput Dialog",
-    "description": "This represents a dialog which gathers a text from the user",
+    "title": "Text input dialog",
+    "description": "Collection information - Ask for a word or sentence.",
     "allOf": [
         {
             "$ref": "./Microsoft.InputDialog.json#"
@@ -18,8 +18,8 @@
                         "lowercase",
                         "uppercase"
                     ],
-                    "title": "Output Format",
-                    "description": "The TextInput output format.",
+                    "title": "Output format",
+                    "description": "Format of output.",
                     "default": "none"
                 },
                 "allowInterruptions": {

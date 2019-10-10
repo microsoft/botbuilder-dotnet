@@ -1,8 +1,8 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
     "$role": "unionType(Microsoft.ITriggerCondition)",
-    "title": "Intent Event",
-    "description": "This defines the actions to take when an Intent is recognized (and optionally entities)",
+    "title": "On intent recognition",
+    "description": "Actions to perform when specified intent is recognized.",
     "type": "object",
     "allOf": [
         {
@@ -13,12 +13,12 @@
                 "intent": {
                     "type": "string",
                     "title": "Intent",
-                    "description": "Intent name to trigger on"
+                    "description": "Name of intent."
                 },
                 "entities": {
                     "type": "array",
                     "title": "Entities",
-                    "description": "The entities required to trigger this rule",
+                    "description": "Required entities.",
                     "items": {
                         "type": "string"
                     }

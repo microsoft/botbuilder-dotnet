@@ -96,6 +96,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
             if (path.StartsWith("{") && path.EndsWith("}"))
             {
                 // TODO: Eventually this should use the expression machinery
+                // This allows doing something like {$foo} where dialog.foo contains $blah to compute a path.
                 path = GetValue<string>(path.Substring(1, path.Length - 2));
             }
 

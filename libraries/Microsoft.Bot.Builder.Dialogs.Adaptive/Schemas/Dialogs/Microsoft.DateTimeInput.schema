@@ -1,8 +1,8 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
     "$role": "unionType(Microsoft.IDialog)",
-    "title": "DateTimeInput Dialog",
-    "description": "This represents a dialog which gathers Date or Time or DateTime from the user",
+    "title": "Date/time input dialog",
+    "description": "Collect information - Ask for date and/ or time",
     "type": "object",
     "allOf": [
         {
@@ -12,8 +12,8 @@
             "properties": {
                 "defaultLocale": {
                     "type": "string",
-                    "title": "Default Locale",
-                    "description": "The prompts default locale that should be recognized.",
+                    "title": "Default locale",
+                    "description": "Default locale.",
                     "default": "en-us"
                 }
             }

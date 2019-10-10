@@ -35,7 +35,8 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core
 
             if (items != null)
             {
-                if ((telemetry is RequestTelemetry || telemetry is EventTelemetry || telemetry is TraceTelemetry)
+                if ((telemetry is RequestTelemetry || telemetry is EventTelemetry
+                    || telemetry is TraceTelemetry || telemetry is DependencyTelemetry)
                     && items.ContainsKey(BotActivityKey))
                 {
                     if (items[BotActivityKey] is JObject body)
@@ -51,7 +52,7 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core
 
                         var conversationId = string.Empty;
                         var conversation = body["conversation"];
-                        if (!string.IsNullOrWhiteSpace(conversation.ToString()))
+                        if (!string.IsNullOrWhiteSpace(conversation?.ToString()))
                         {
                             conversationId = (string)conversation["id"];
                         }
