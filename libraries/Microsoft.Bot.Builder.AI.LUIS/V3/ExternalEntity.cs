@@ -2,8 +2,9 @@
 // Licensed under the MIT license.
 
 using Newtonsoft.Json;
+using LuisV2 = Microsoft.Bot.Builder.AI.Luis;
 
-namespace Microsoft.Bot.Builder.AI.Luis
+namespace Microsoft.Bot.Builder.AI.LuisV3
 {
     /// <summary>
     /// Defines a user predicted entity that extends an already existing one.

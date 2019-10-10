@@ -4,8 +4,9 @@
 using System;
 using System.Linq;
 using System.Web;
+using LuisV2 = Microsoft.Bot.Builder.AI.Luis;
 
-namespace Microsoft.Bot.Builder.AI.Luis
+namespace Microsoft.Bot.Builder.AI.LuisV3
 {
     /// <summary>
     /// Data describing a LUIS application.
