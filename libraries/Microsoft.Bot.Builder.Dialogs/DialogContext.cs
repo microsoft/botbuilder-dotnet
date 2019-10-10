@@ -275,7 +275,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         {
             if (result is CancellationToken token)
             {
-                new ArgumentException($"{this.ActiveDialog.Id}.EndDialogAsync() You can't pass a cancellation token as the result of a dialog when calling EndDialog.");
+                throw new ArgumentException($"{this.ActiveDialog.Id}.EndDialogAsync() You can't pass a cancellation token as the result of a dialog when calling EndDialog.");
             }
 
             // End the active dialog
