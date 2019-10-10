@@ -28,7 +28,7 @@
             "description": "Language Understanding recognizer that interprets user input into intent and entities."
         },
         "generator": {
-            "$type": "Microsoft.LanguageGenerator",
+            "$type": "Microsoft.ILanguageGenerator",
             "title": "Language Generator",
             "description": "Language generator that generates bot responses."
         },

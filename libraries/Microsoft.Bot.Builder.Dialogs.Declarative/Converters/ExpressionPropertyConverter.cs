@@ -2,8 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
-using Microsoft.Bot.Builder.Expressions;
-using Microsoft.Bot.Builder.Expressions.Parser;
+using Microsoft.Bot.Expressions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
