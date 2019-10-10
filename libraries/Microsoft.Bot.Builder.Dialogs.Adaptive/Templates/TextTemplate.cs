@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Threading.Tasks;
 
-namespace Microsoft.Bot.Builder.LanguageGeneration.Templates
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Templates
 {
     /// <summary>
     /// Defines an text Template where the template expression is local aka "inline"

@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace Microsoft.Bot.Builder.LanguageGeneration
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 {
     /// <summary>
     /// Defines interface for a Language Generator system to bind to text.

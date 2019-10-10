@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 
-namespace Microsoft.Bot.Builder.LanguageGeneration.Templates
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Templates
 {
     /// <summary>
     /// Defines an activity Template where the template expression is local aka "inline" 

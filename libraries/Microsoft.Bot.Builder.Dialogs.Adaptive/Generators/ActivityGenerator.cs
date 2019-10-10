@@ -10,7 +10,7 @@ using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json.Linq;
 
-namespace Microsoft.Bot.Builder.Dialogs
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 {
     /// <summary>
     /// The ActivityGenerator implements IActivityGenerator by using ILanguageGenerator

@@ -4,7 +4,7 @@
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 
-namespace Microsoft.Bot.Builder.LanguageGeneration
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 {
     /// <summary>
     /// Defines how to generate an IActivity based on all of the parameters which drive resolution.

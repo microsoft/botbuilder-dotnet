@@ -3,14 +3,13 @@
 
 using System;
 using System.Collections.Generic;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Generators;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Converters;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resolvers;
-using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
-using Microsoft.Bot.Builder.LanguageGeneration.Generators;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.LanguageGeneration
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 {
     public class LanguageGeneratorConverter : InterfaceConverter<ILanguageGenerator>
     {

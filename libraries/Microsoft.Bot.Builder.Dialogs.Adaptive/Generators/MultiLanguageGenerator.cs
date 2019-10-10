@@ -2,7 +2,7 @@
 using System.Collections.Concurrent;
 using Microsoft.Bot.Builder.Dialogs;
 
-namespace Microsoft.Bot.Builder.LanguageGeneration.Generators
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 {
     /// <summary>
     /// ILanguageGenerator which uses implements a map of locale->ILanguageGenerator for the locale and has a policy which controls fallback (try en-us -> en -> default).

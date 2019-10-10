@@ -1,7 +1,7 @@
 ﻿using Microsoft.Bot.Builder.Dialogs;
 using Newtonsoft.Json;
 
-namespace Microsoft.Bot.Builder.LanguageGeneration.Generators
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 {
     /// <summary>
     /// Uses resourceExplorer to mount root lg and all language variants as a multi language generator.

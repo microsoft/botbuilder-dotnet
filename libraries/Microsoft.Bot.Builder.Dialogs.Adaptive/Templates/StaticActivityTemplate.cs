@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 
-namespace Microsoft.Bot.Builder.LanguageGeneration.Templates
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Templates
 {
     /// <summary>
     /// Defins a static activity as a template.

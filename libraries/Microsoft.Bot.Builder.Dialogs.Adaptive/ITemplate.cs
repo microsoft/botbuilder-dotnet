@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace Microsoft.Bot.Builder.LanguageGeneration
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 {
     /// <summary>
     /// Defines Template interface for binding data to T.

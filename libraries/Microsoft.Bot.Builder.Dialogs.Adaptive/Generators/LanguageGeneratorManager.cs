@@ -2,10 +2,10 @@
 using System.Collections.Concurrent;
 using System.IO;
 using System.Linq;
-using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
+using Microsoft.Bot.Builder.LanguageGeneration;
 
-namespace Microsoft.Bot.Builder.LanguageGeneration.Generators
+namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 {
     /// <summary>
     /// Class which manages cache of all LG resources from a ResourceExplorer. 
