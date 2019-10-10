@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Recognizers
         }
 
         /// <summary>
-        /// The intent.
+        /// Gets or sets the intent.
         /// </summary>
         public string Intent { get; set; }
 

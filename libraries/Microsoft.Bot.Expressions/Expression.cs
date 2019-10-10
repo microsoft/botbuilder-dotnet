@@ -194,6 +194,7 @@ namespace Microsoft.Bot.Expressions
             {
                 return Expression.MakeExpression(ExpressionType.And, children);
             }
+
             return children.Single();
         }
 
@@ -208,6 +209,7 @@ namespace Microsoft.Bot.Expressions
             {
                 return Expression.MakeExpression(ExpressionType.Or, children);
             }
+
             return children.Single();
         }
 

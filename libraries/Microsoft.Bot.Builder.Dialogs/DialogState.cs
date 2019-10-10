@@ -35,7 +35,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         }
 
         /// <summary>
-        /// Gets the state information for a dialog stack.
+        /// Gets or sets the state information for a dialog stack.
         /// </summary>
         /// <value>State information for a dialog stack.</value>
         [JsonProperty("dialogStack")]

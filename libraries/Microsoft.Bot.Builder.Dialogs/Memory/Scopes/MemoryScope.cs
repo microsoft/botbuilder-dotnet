@@ -28,7 +28,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
         public string Name { get; set; }
 
         /// <summary>
-        /// Gets whether this memory scope settable
+        /// Gets or sets a value indicating whether this memory scope mutable.
         /// </summary>
         public bool IsReadOnly { get; protected set; }
 

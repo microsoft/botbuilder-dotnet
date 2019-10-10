@@ -76,7 +76,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 throw new ArgumentNullException(nameof(outerDc));
             }
 
-            await EnsureInitialized(outerDc).ConfigureAwait(false);
+            await EnsureInitializedAsync(outerDc).ConfigureAwait(false);
 
             var innerDc = this.CreateChildContext(outerDc);
             var turnResult = await OnBeginDialogAsync(innerDc, options, cancellationToken).ConfigureAwait(false);
@@ -169,7 +169,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                 throw new ArgumentException($"{nameof(result)} cannot be a cancellation token");
             }
 
-            await EnsureInitialized(outerDc).ConfigureAwait(false);
+            await EnsureInitializedAsync(outerDc).ConfigureAwait(false);
 
             // Containers are typically leaf nodes on the stack but the dev is free to push other dialogs
             // on top of the stack which will result in the container receiving an unexpected call to
@@ -252,16 +252,16 @@ namespace Microsoft.Bot.Builder.Dialogs
             return childDc;
         }
 
-        protected async Task EnsureInitialized(DialogContext outerDc)
+        protected async Task EnsureInitializedAsync(DialogContext outerDc)
         {
             if (!this.initialized)
             {
                 this.initialized = true;
-                await OnInitialize(outerDc).ConfigureAwait(false);
+                await OnInitializeAsync(outerDc).ConfigureAwait(false);
             }
         }
 
-        protected virtual Task OnInitialize(DialogContext dc)
+        protected virtual Task OnInitializeAsync(DialogContext dc)
         {
             if (this.InitialDialogId == null)
             {

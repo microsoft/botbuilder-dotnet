@@ -47,6 +47,7 @@ namespace Microsoft.Bot.Expressions
                     children.Add(clause);
                 }
             }
+
             if (children.Count == 0)
             {
                 result = Expression.ConstantExpression(false);
@@ -59,6 +60,7 @@ namespace Microsoft.Bot.Expressions
             {
                 result = Expression.MakeExpression(ExpressionType.Or, children.ToArray());
             }
+
             return result;
         }
 
@@ -81,12 +83,14 @@ namespace Microsoft.Bot.Expressions
                                 sofar.Clear();
                                 break;
                             }
+
                             if (first)
                             {
                                 foreach (var clause in clauses)
                                 {
                                     sofar.Add(clause);
                                 }
+
                                 first = false;
                             }
                             else
@@ -109,14 +113,17 @@ namespace Microsoft.Bot.Expressions
                                         }
                                     }
                                 }
+
                                 sofar = newClauses;
                             }
                         }
+
                         foreach (var clause in sofar)
                         {
                             yield return clause;
                         }
                     }
+
                     break;
                 case ExpressionType.Or:
                     {
@@ -128,6 +135,7 @@ namespace Microsoft.Bot.Expressions
                             }
                         }
                     }
+
                     break;
                 default:
                     // True becomes empty expression and false drops clause
@@ -142,6 +150,7 @@ namespace Microsoft.Bot.Expressions
                     {
                         yield return Expression.MakeExpression(ExpressionType.And, expression);
                     }
+
                     break;
             }
         }
@@ -169,6 +178,7 @@ namespace Microsoft.Bot.Expressions
                                 children);
                         }
                     }
+
                     break;
                 case ExpressionType.Not:
                     newExpr = PushDownNot(expression.Children[0], !inNot);
@@ -195,8 +205,10 @@ namespace Microsoft.Bot.Expressions
                             newExpr = Expression.MakeExpression(ExpressionType.Not, expression);
                         }
                     }
+
                     break;
             }
+
             return newExpr;
         }
     }

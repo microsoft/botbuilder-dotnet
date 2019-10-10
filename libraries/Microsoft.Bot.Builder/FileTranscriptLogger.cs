@@ -100,16 +100,16 @@ namespace Microsoft.Bot.Builder
                         switch (activity.Type)
                         {
                             case ActivityTypes.MessageDelete:
-                                await MessageDelete(activity, transcriptFile).ConfigureAwait(false);
+                                await MessageDeleteAsync(activity, transcriptFile).ConfigureAwait(false);
                                 return;
 
                             case ActivityTypes.MessageUpdate:
-                                await MessageUpdate(activity, transcriptFile).ConfigureAwait(false);
+                                await MessageUpdateAsync(activity, transcriptFile).ConfigureAwait(false);
                                 return;
 
                             default:
                                 // append
-                                await LogActivity(activity, transcriptFile).ConfigureAwait(false);
+                                await LogActivityAsync(activity, transcriptFile).ConfigureAwait(false);
                                 return;
                         }
                     }
@@ -125,7 +125,7 @@ namespace Microsoft.Bot.Builder
         {
             var transcriptFile = GetTranscriptFile(channelId, conversationId);
 
-            var transcript = await LoadTranscript(transcriptFile).ConfigureAwait(false);
+            var transcript = await LoadTranscriptAsync(transcriptFile).ConfigureAwait(false);
             var result = new PagedResult<IActivity>();
             result.ContinuationToken = null;
             result.Items = transcript.Where(activity => activity.Timestamp >= startDate).Cast<IActivity>().ToArray();
@@ -161,7 +161,7 @@ namespace Microsoft.Bot.Builder
             return Task.CompletedTask;
         }
 
-        private static async Task<Activity[]> LoadTranscript(string transcriptFile)
+        private static async Task<Activity[]> LoadTranscriptAsync(string transcriptFile)
         {
             if (File.Exists(transcriptFile))
             {
@@ -211,7 +211,7 @@ namespace Microsoft.Bot.Builder
             return channelFolder;
         }
 
-        private async Task LogActivity(IActivity activity, string transcriptFile)
+        private async Task LogActivityAsync(IActivity activity, string transcriptFile)
         {
             var json = $",\n{JsonConvert.SerializeObject(activity, jsonSettings)}]";
 
@@ -229,10 +229,10 @@ namespace Microsoft.Bot.Builder
             }
         }
 
-        private async Task MessageUpdate(IActivity activity, string transcriptFile)
+        private async Task MessageUpdateAsync(IActivity activity, string transcriptFile)
         {
             // load all activities
-            var transcript = await LoadTranscript(transcriptFile).ConfigureAwait(false);
+            var transcript = await LoadTranscriptAsync(transcriptFile).ConfigureAwait(false);
 
             for (int i = 0; i < transcript.Length; i++)
             {
@@ -257,10 +257,10 @@ namespace Microsoft.Bot.Builder
             }
         }
 
-        private async Task MessageDelete(IActivity activity, string transcriptFile)
+        private async Task MessageDeleteAsync(IActivity activity, string transcriptFile)
         {
             // load all activities
-            var transcript = await LoadTranscript(transcriptFile).ConfigureAwait(false);
+            var transcript = await LoadTranscriptAsync(transcriptFile).ConfigureAwait(false);
 
             // if message delete comes in, delete the message from the transcript
             for (int index = 0; index < transcript.Length; index++)

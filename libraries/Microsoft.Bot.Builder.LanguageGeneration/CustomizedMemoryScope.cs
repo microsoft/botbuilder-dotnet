@@ -9,7 +9,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
     /// <summary>
     /// This customzied memory scope is designed for allow sub template evaluation can refer
     /// to the orignial evaluation scope passed in by wrap the orignal one in globalScope field
-    /// and inherit that for each sub evaluation 
+    /// and inherit that for each sub evaluation.
     /// </summary>
     internal class CustomizedMemoryScope : IDictionary<string, object>
     {

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿#pragma warning disable SA1305 // Field names should not use Hungarian notation
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Bot.Expressions;

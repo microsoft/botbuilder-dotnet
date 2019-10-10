@@ -50,6 +50,7 @@
       - half seas over
     </Description>
     <Summary>This library implements .NET Simple Dialog classes </Summary>
+    
   </PropertyGroup>
 
   <ItemGroup>
