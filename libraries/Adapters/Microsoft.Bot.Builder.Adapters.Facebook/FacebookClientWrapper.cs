@@ -39,6 +39,16 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         /// <returns>A task representing the async operation.</returns>
         public virtual async Task<string> SendMessageAsync(string path, FacebookMessage payload, HttpMethod method = null, CancellationToken cancellationToken = default)
         {
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+
+            if (payload == null)
+            {
+                throw new ArgumentNullException(nameof(payload));
+            }
+
             var proof = GetAppSecretProof();
 
             if (method == null)
@@ -80,9 +90,9 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
         /// Verifies the SHA1 signature of the raw request payload before bodyParser parses it will abort parsing if signature is invalid, and pass a generic error to response.
         /// </summary>
         /// <param name="request">An Http request object.</param>
-        /// <param name="stringifyBody">The request body.</param>
+        /// <param name="payload">The request body.</param>
         /// <returns>The result of the comparison between the signature in the request and hashed body.</returns>
-        public virtual bool VerifySignature(HttpRequest request, string stringifyBody)
+        public virtual bool VerifySignature(HttpRequest request, string payload)
         {
             if (request == null)
             {
@@ -90,8 +100,6 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
             }
 
             var expected = request.Headers["x-hub-signature"].ToString().ToUpperInvariant();
-
-            var payload = EncodeNonAsciiCharacters(stringifyBody);
 
 #pragma warning disable CA5350 // Facebook uses SHA1 as cryptographic algorithm.
             using (var hmac = new HMACSHA1(Encoding.UTF8.GetBytes(_options.AppSecret)))
@@ -151,30 +159,6 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
             }
 
             await FacebookHelper.WriteAsync(response, statusCode, challenge, Encoding.UTF8, cancellationToken).ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// Encodes the non ASCII characters of a string.
-        /// </summary>
-        /// <param name="value">The string to encode.</param>
-        /// <returns>The resulting string.</returns>
-        private string EncodeNonAsciiCharacters(string value)
-        {
-            var sb = new StringBuilder();
-            foreach (var c in value)
-            {
-                if (c > 127)
-                {
-                    var encodedValue = "\\u" + ((int)c).ToString("x4", CultureInfo.InvariantCulture);
-                    sb.Append(encodedValue);
-                }
-                else
-                {
-                    sb.Append(c);
-                }
-            }
-
-            return sb.ToString();
         }
     }
 }

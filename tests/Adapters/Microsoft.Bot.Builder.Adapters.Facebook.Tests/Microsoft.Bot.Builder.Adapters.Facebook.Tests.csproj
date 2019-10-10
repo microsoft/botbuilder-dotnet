@@ -33,6 +33,9 @@
     <None Update="Files\Payload.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Files\RequestResponse.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Files\PayloadWithStandby.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

@@ -123,5 +123,29 @@
       "title": "Say Hello",
       "payload": "Hello button"
     }
+  },
+  {
+    "recipient": {
+      "id": "123123123"
+    },
+    "sender": {
+      "id": null
+    },
+    "message": {
+      "text": "Echo: Hi!",
+      "sticker_id": null,
+      "attachments": null,
+      "attachment": null,
+      "metadata": null
+    },
+    "messaging_type": "RESPONSE",
+    "tag": null,
+    "notification_type": null,
+    "persona_id": null,
+    "sender_action": null,
+    "timestamp": 0,
+    "standby": false,
+    "postback": null,
+    "optin": null
   }
 ]
