@@ -12,14 +12,15 @@ using Microsoft.Bot.Schema;
 using Microsoft.Rest;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using LuisV2 = Microsoft.Bot.Builder.AI.Luis;
 
-namespace Microsoft.Bot.Builder.AI.Luis
+namespace Microsoft.Bot.Builder.AI.LuisV3
 {
     /// <inheritdoc />
     /// <summary>
     /// A LUIS based implementation of <see cref="ITelemetryRecognizer"/> for the V3 endpoint.
     /// </summary>
-    public class LuisRecognizer : ITelemetryRecognizer
+    public class LuisRecognizer : LuisV2.ITelemetryRecognizer
     {
         /// <summary>
         /// The value type for a LUIS trace activity.
@@ -49,7 +50,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
             TelemetryClient = recognizerOptions.TelemetryClient;
             LogPersonalInformation = recognizerOptions.LogPersonalInformation;
 
-            var delegatingHandler = new LuisDelegatingHandler();
+            var delegatingHandler = new LuisV2.LuisDelegatingHandler();
             var httpClientHandler = recognizerOptions.HttpClient ?? CreateRootHandler();
             var currentHandler = CreateHttpHandlerPipeline(httpClientHandler, delegatingHandler);
 
@@ -222,7 +223,7 @@ namespace Microsoft.Bot.Builder.AI.Luis
             var properties = FillLuisEventProperties(recognizerResult, turnContext, telemetryProperties);
 
             // Track the event
-            TelemetryClient.TrackEvent(LuisTelemetryConstants.LuisResult, properties, telemetryMetrics);
+            TelemetryClient.TrackEvent(LuisV2.LuisTelemetryConstants.LuisResult, properties, telemetryMetrics);
         }
 
         /// <summary>
@@ -240,34 +241,34 @@ namespace Microsoft.Bot.Builder.AI.Luis
             // Add the intent score and conversation id properties
             var properties = new Dictionary<string, string>()
             {
-                { LuisTelemetryConstants.ApplicationIdProperty, _application.ApplicationId },
-                { LuisTelemetryConstants.IntentProperty, topTwoIntents?[0].Key ?? string.Empty },
-                { LuisTelemetryConstants.IntentScoreProperty, topTwoIntents?[0].Value.Score?.ToString("N2") ?? "0.00" },
-                { LuisTelemetryConstants.Intent2Property, (topTwoIntents?.Count() > 1) ? topTwoIntents?[1].Key ?? string.Empty : string.Empty },
-                { LuisTelemetryConstants.IntentScore2Property, (topTwoIntents?.Count() > 1) ? topTwoIntents?[1].Value.Score?.ToString("N2") ?? "0.00" : "0.00" },
-                { LuisTelemetryConstants.FromIdProperty, turnContext.Activity.From.Id },
+                { LuisV2.LuisTelemetryConstants.ApplicationIdProperty, _application.ApplicationId },
+                { LuisV2.LuisTelemetryConstants.IntentProperty, topTwoIntents?[0].Key ?? string.Empty },
+                { LuisV2.LuisTelemetryConstants.IntentScoreProperty, topTwoIntents?[0].Value.Score?.ToString("N2") ?? "0.00" },
+                { LuisV2.LuisTelemetryConstants.Intent2Property, (topTwoIntents?.Count() > 1) ? topTwoIntents?[1].Key ?? string.Empty : string.Empty },
+                { LuisV2.LuisTelemetryConstants.IntentScore2Property, (topTwoIntents?.Count() > 1) ? topTwoIntents?[1].Value.Score?.ToString("N2") ?? "0.00" : "0.00" },
+                { LuisV2.LuisTelemetryConstants.FromIdProperty, turnContext.Activity.From.Id },
             };
 
             if (recognizerResult.Properties.TryGetValue("sentiment", out var sentiment) && sentiment is JObject)
             {
                 if (((JObject)sentiment).TryGetValue("label", out var label))
                 {
-                    properties.Add(LuisTelemetryConstants.SentimentLabelProperty, label.Value<string>());
+                    properties.Add(LuisV2.LuisTelemetryConstants.SentimentLabelProperty, label.Value<string>());
                 }
 
                 if (((JObject)sentiment).TryGetValue("score", out var score))
                 {
-                    properties.Add(LuisTelemetryConstants.SentimentScoreProperty, score.Value<string>());
+                    properties.Add(LuisV2.LuisTelemetryConstants.SentimentScoreProperty, score.Value<string>());
                 }
             }
 
             var entities = recognizerResult.Entities?.ToString();
-            properties.Add(LuisTelemetryConstants.EntitiesProperty, entities);
+            properties.Add(LuisV2.LuisTelemetryConstants.EntitiesProperty, entities);
 
             // Use the LogPersonalInformation flag to toggle logging PII data, text is a common example
             if (LogPersonalInformation && !string.IsNullOrEmpty(turnContext.Activity.Text))
             {
-                properties.Add(LuisTelemetryConstants.QuestionProperty, turnContext.Activity.Text);
+                properties.Add(LuisV2.LuisTelemetryConstants.QuestionProperty, turnContext.Activity.Text);
             }
 
             // Additional Properties can override "stock" properties.
