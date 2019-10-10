@@ -4161,124 +4161,29 @@
                     "type": "object",
                     "description": "Extra information for the Bot Framework Designer."
                 },
-                "id": {
-                    "type": "string",
-                    "title": "Id",
-                    "description": "Optional id for the dialog"
-                },
-                "prompt": {
-                    "$type": "Microsoft.IActivityTemplate",
-                    "title": "Initial prompt",
-                    "description": "Message to send to collect information.",
-                    "examples": [
-                        "What is your birth date?"
-                    ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
-                },
-                "unrecognizedPrompt": {
-                    "$type": "Microsoft.IActivityTemplate",
-                    "title": "Unrecognized prompt",
-                    "description": "Message to send if user response is not recognized.",
-                    "examples": [
-                        "Sorry, I do not understand '{turn.activity.text'}. Let's try again. What is your birth date?"
-                    ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
-                },
-                "invalidPrompt": {
-                    "$type": "Microsoft.IActivityTemplate",
-                    "title": "Invalid prompt",
-                    "description": "Message to send if user response is invalid. Relies on specified validation expressions.",
-                    "examples": [
-                        "Sorry, '{this.value}' does not work. I need a number between 1-150. What is your age?"
-                    ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
-                },
-                "defaultValueResponse": {
-                    "$type": "Microsoft.IActivityTemplate",
-                    "title": "Default value response",
-                    "description": "Message to send when max turn count (if specified) has been exceeded and the default value is selected as the value.",
-                    "examples": [
-                        "Sorry, I'm having trouble understanding you. I will just use {this.options.defaultValue} for now. You can say 'I'm 36 years old' to change it."
-                    ],
-                    "$ref": "#/definitions/Microsoft.IActivityTemplate"
-                },
-                "maxTurnCount": {
-                    "type": "integer",
-                    "title": "Max turn count",
-                    "description": "Maximum number of re-prompt attempts to collect information.",
-                    "default": 3,
-                    "examples": [
-                        3
-                    ]
-                },
-                "validations": {
-                    "type": "array",
-                    "title": "Validation expressions",
-                    "description": "Expression to validate user input.",
-                    "examples": [
-                        "int(this.value) > 1 && int(this.value) <= 150",
-                        "count(this.value) < 300"
-                    ],
-                    "items": {
-                        "$role": "expression",
-                        "type": "string",
-                        "description": "String must contain an expression."
-                    }
-                },
-                "property": {
-                    "$role": "expression",
-                    "title": "Property",
-                    "description": "Property to store collected information. Input will be skipped if property has value (unless 'Always prompt' is true).",
-                    "examples": [
-                        "$birthday",
-                        "user.name",
-                        "conversation.issueTitle",
-                        "dialog.favColor"
-                    ],
-                    "type": "string"
-                },
-                "defaultValue": {
-                    "$role": "expression",
-                    "title": "Default value",
-                    "description": "Expression to examine on each turn of the conversation as possible value to the property.",
-                    "examples": [
-                        "@userName",
-                        "coalesce(@number, @partySize)"
-                    ],
-                    "type": "string"
-                },
-                "alwaysPrompt": {
-                    "type": "boolean",
-                    "title": "Always prompt",
-                    "description": "Collect information even if the specified  'property' is not empty.",
-                    "default": false,
-                    "examples": [
-                        false
-                    ]
-                },
-                "allowInterruptions": {
-                    "type": "string",
-                    "title": "Allow Interruptions",
-                    "description": "A boolean expression that determines whether the parent should be allowed to interrupt the input.",
-                    "default": "true",
-                    "examples": [
-                        "true"
-                    ]
-                },
                 "connectionName": {
                     "type": "string",
                     "title": "Connection name",
-                    "description": "The connection name configured in Azure Web App Bot OAuth settings."
+                    "description": "The connection name configured in Azure Web App Bot OAuth settings.",
+                    "examples": [
+                        "msgraphOAuthConnection"
+                    ]
                 },
                 "text": {
                     "type": "string",
                     "title": "Text",
-                    "description": "Text shown in the OAuth signin card."
+                    "description": "Text shown in the OAuth signin card.",
+                    "examples": [
+                        "Please sign in. "
+                    ]
                 },
                 "title": {
                     "type": "string",
                     "title": "Title",
-                    "description": "Title shown in the OAuth signin card."
+                    "description": "Title shown in the OAuth signin card.",
+                    "examples": [
+                        "Login"
+                    ]
                 },
                 "timeout": {
                     "type": "integer",
@@ -4290,6 +4195,9 @@
                     "$role": "expression",
                     "title": "Token property",
                     "description": "Property to store the OAuth token result.",
+                    "examples": [
+                        "dialog.token"
+                    ],
                     "type": "string"
                 }
             },
@@ -4309,6 +4217,7 @@
                 {
                     "title": "Type",
                     "required": [
+                        "connectionName",
                         "$type"
                     ]
                 }
