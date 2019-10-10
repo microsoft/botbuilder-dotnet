@@ -10,7 +10,6 @@ using Microsoft.Bot.Schema;
 
 namespace DialogRootBot.Dialogs
 {
-    // TODO: work with Steve and see if we can make this a Dialog instead of a component dialog.
     public class RemoteDialog : Dialog
     {
         private readonly ConversationState _conversationState;
