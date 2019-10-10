@@ -118,6 +118,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Skills
             turnContext.Activity.Entities = endOfConversation.Entities;
             turnContext.Activity.LocalTimestamp = endOfConversation.LocalTimestamp;
             turnContext.Activity.Timestamp = endOfConversation.Timestamp;
+            turnContext.Activity.Value = activityPayload.Value;
             turnContext.Activity.ChannelData = endOfConversation.ChannelData;
             turnContext.Activity.Properties = ((Activity)endOfConversation).Properties;
             await next(cancellationToken).ConfigureAwait(false);

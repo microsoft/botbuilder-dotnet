@@ -118,6 +118,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleChildBot", "prototype
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleRootBot", "prototypes\SimpleBotToBot\SimpleRootBot\SimpleRootBot.csproj", "{6587D9CB-5E95-4790-9711-2401C22EA91E}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "03. DialogToDialog", "03. DialogToDialog", "{45A21863-2BCA-4AC6-A6C2-0058A47C904E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DialogChildBot", "prototypes\DialogToDialog\DialogChildBot\DialogChildBot.csproj", "{F5B20849-6FE4-4D2E-8595-C8935C6EDD87}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DialogRootBot", "prototypes\DialogToDialog\DialogRootBot\DialogRootBot.csproj", "{BB97527D-2C7D-4E1B-B6C1-FA5DDDEB7AE1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug - NuGet Packages|Any CPU = Debug - NuGet Packages|Any CPU
@@ -502,6 +508,22 @@ Global
 		{6587D9CB-5E95-4790-9711-2401C22EA91E}.Documentation|Any CPU.Build.0 = Debug|Any CPU
 		{6587D9CB-5E95-4790-9711-2401C22EA91E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6587D9CB-5E95-4790-9711-2401C22EA91E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F5B20849-6FE4-4D2E-8595-C8935C6EDD87}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{F5B20849-6FE4-4D2E-8595-C8935C6EDD87}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
+		{F5B20849-6FE4-4D2E-8595-C8935C6EDD87}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F5B20849-6FE4-4D2E-8595-C8935C6EDD87}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F5B20849-6FE4-4D2E-8595-C8935C6EDD87}.Documentation|Any CPU.ActiveCfg = Debug|Any CPU
+		{F5B20849-6FE4-4D2E-8595-C8935C6EDD87}.Documentation|Any CPU.Build.0 = Debug|Any CPU
+		{F5B20849-6FE4-4D2E-8595-C8935C6EDD87}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F5B20849-6FE4-4D2E-8595-C8935C6EDD87}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BB97527D-2C7D-4E1B-B6C1-FA5DDDEB7AE1}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{BB97527D-2C7D-4E1B-B6C1-FA5DDDEB7AE1}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
+		{BB97527D-2C7D-4E1B-B6C1-FA5DDDEB7AE1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BB97527D-2C7D-4E1B-B6C1-FA5DDDEB7AE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BB97527D-2C7D-4E1B-B6C1-FA5DDDEB7AE1}.Documentation|Any CPU.ActiveCfg = Debug|Any CPU
+		{BB97527D-2C7D-4E1B-B6C1-FA5DDDEB7AE1}.Documentation|Any CPU.Build.0 = Debug|Any CPU
+		{BB97527D-2C7D-4E1B-B6C1-FA5DDDEB7AE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BB97527D-2C7D-4E1B-B6C1-FA5DDDEB7AE1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -561,6 +583,9 @@ Global
 		{F73E89CD-1103-4355-A259-44E80645CAC6} = {89695831-8FAC-4A91-A382-95748FC78147}
 		{0F31DCDD-E980-4646-B149-2F89BFE05D7B} = {F73E89CD-1103-4355-A259-44E80645CAC6}
 		{6587D9CB-5E95-4790-9711-2401C22EA91E} = {F73E89CD-1103-4355-A259-44E80645CAC6}
+		{45A21863-2BCA-4AC6-A6C2-0058A47C904E} = {89695831-8FAC-4A91-A382-95748FC78147}
+		{F5B20849-6FE4-4D2E-8595-C8935C6EDD87} = {45A21863-2BCA-4AC6-A6C2-0058A47C904E}
+		{BB97527D-2C7D-4E1B-B6C1-FA5DDDEB7AE1} = {45A21863-2BCA-4AC6-A6C2-0058A47C904E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7173C9F3-A7F9-496E-9078-9156E35D6E16}
