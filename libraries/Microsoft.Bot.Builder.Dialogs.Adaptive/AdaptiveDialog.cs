@@ -81,7 +81,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
         /// <summary>
         /// Gets or sets the property to return as the result when the dialog ends when there are no more Actions and AutoEndDialog = true.
-        /// </value>
+        /// </summary>
         public string DefaultResultProperty { get; set; } = "dialog.result";
 
         /// <summary>
@@ -194,7 +194,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             return null;
         }
 
-        protected override async Task<bool> OnPreBubbleEvent(DialogContext dc, DialogEvent dialogEvent, CancellationToken cancellationToken = default(CancellationToken))
+        protected override async Task<bool> OnPreBubbleEventAsync(DialogContext dc, DialogEvent dialogEvent, CancellationToken cancellationToken = default(CancellationToken))
         {
             var sequenceContext = this.ToSequenceContext(dc);
 
@@ -202,7 +202,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             return await this.ProcessEventAsync(sequenceContext, dialogEvent, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
-        protected override async Task<bool> OnPostBubbleEvent(DialogContext dc, DialogEvent dialogEvent, CancellationToken cancellationToken = default(CancellationToken))
+        protected override async Task<bool> OnPostBubbleEventAsync(DialogContext dc, DialogEvent dialogEvent, CancellationToken cancellationToken = default(CancellationToken))
         {
             var sequenceContext = this.ToSequenceContext(dc);
 

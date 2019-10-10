@@ -133,7 +133,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         /// <summary>
         /// Method called to execute the rule's actions.
         /// </summary>
-        /// <param name="planningContext">Context.</param>
         /// <returns>A <see cref="Task"/> with plan change list.</returns>
         public virtual string GetIdentity()
         {

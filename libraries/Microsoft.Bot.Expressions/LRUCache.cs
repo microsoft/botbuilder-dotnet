@@ -34,6 +34,7 @@ namespace Microsoft.Bot.Expressions
                     return true;
                 }
             }
+
             value = default(TValue);
             return false;
         }
@@ -56,6 +57,7 @@ namespace Microsoft.Bot.Expressions
                     {
                         node = new LinkedListNode<TKey>(key);
                     }
+
                     this.cacheList.AddFirst(node);
                     this.cacheMap.Add(key, new Entry(node, value));
                 }

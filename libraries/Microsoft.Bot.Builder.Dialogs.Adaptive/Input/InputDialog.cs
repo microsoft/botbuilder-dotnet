@@ -204,7 +204,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Input
 
         protected abstract Task<InputState> OnRecognizeInput(DialogContext dc);
 
-        protected override async Task<bool> OnPreBubbleEvent(DialogContext dc, DialogEvent e, CancellationToken cancellationToken)
+        protected override async Task<bool> OnPreBubbleEventAsync(DialogContext dc, DialogEvent e, CancellationToken cancellationToken)
         {
             if (e.Name == DialogEvents.ActivityReceived && dc.Context.Activity.Type == ActivityTypes.Message)
             {

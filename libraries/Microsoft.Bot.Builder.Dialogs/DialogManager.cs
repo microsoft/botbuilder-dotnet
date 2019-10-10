@@ -76,14 +76,18 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </value>
         public IStorage Storage { get; set; }
 
+#pragma warning disable UseAsyncSuffix // Use Async suffix
         public static async Task<PersistedState> LoadState(IStorage storage, PersistedStateKeys keys)
+#pragma warning restore UseAsyncSuffix // Use Async suffix
         {
             var data = await storage.ReadAsync(keys.ToArray()).ConfigureAwait(false);
 
             return new PersistedState(keys, data);
         }
 
+#pragma warning disable UseAsyncSuffix // Use Async suffix
         public static async Task SaveState(IStorage storage, PersistedStateKeys keys, PersistedState newState, PersistedState oldState = null, string eTag = null)
+#pragma warning restore UseAsyncSuffix // Use Async suffix
         {
             // Check for state changes
             var save = false;

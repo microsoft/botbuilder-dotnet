@@ -6,6 +6,8 @@
     <IsPackable>false</IsPackable>
 
     <Configurations>Debug;Release</Configurations>
+    <!-- The Twilio package isn't signed, so supress the warning. There seems to not be a way to supress this for ONLY Twilio. -->
+    <NoWarn>$(NoWarn),CS8002</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

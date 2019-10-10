@@ -9,7 +9,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
     /// <summary>
     /// Defines how to generate an IActivity based on all of the parameters which drive resolution.
     /// </summary>
-    /// <typeparam name="T">type of IActivity to return. </typeparam>
     public interface IActivityGenerator
     {
         /// <summary>

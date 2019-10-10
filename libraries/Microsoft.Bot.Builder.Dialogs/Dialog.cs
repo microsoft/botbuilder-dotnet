@@ -181,7 +181,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         public virtual async Task<bool> OnDialogEventAsync(DialogContext dc, DialogEvent e, CancellationToken cancellationToken)
         {
             // Before bubble
-            var handled = await this.OnPreBubbleEvent(dc, e, cancellationToken).ConfigureAwait(false);
+            var handled = await this.OnPreBubbleEventAsync(dc, e, cancellationToken).ConfigureAwait(false);
 
             // Bubble as needed
             if (!handled && e.Bubble && dc.Parent != null)
@@ -192,7 +192,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             // Post bubble
             if (!handled)
             {
-                handled = await this.OnPostBubbleEvent(dc, e, cancellationToken).ConfigureAwait(false);
+                handled = await this.OnPostBubbleEventAsync(dc, e, cancellationToken).ConfigureAwait(false);
             }
 
             return handled;
@@ -210,7 +210,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="e">The event being raised.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns> Whether the event is handled by the current dialog and further processing should stop.</returns>
-        protected virtual Task<bool> OnPreBubbleEvent(DialogContext dc, DialogEvent e, CancellationToken cancellationToken)
+        protected virtual Task<bool> OnPreBubbleEventAsync(DialogContext dc, DialogEvent e, CancellationToken cancellationToken)
         {
             return Task.FromResult(false);
         }
@@ -226,7 +226,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <param name="e">The event being raised.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns> Whether the event is handled by the current dialog and further processing should stop.</returns>
-        protected virtual Task<bool> OnPostBubbleEvent(DialogContext dc, DialogEvent e, CancellationToken cancellationToken)
+        protected virtual Task<bool> OnPostBubbleEventAsync(DialogContext dc, DialogEvent e, CancellationToken cancellationToken)
         {
             return Task.FromResult(false);
         }
