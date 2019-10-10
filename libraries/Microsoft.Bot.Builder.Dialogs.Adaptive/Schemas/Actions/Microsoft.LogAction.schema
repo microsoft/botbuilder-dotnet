@@ -1,0 +1,23 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
+    "$role": "unionType(Microsoft.IDialog)",
+    "title": "Log to console",
+    "description": "Log a message to the host application. Send a TraceActivity to Bot Framework Emulator (optional).",
+    "type": "object",
+    "required": [
+        "text"
+    ],
+    "properties": {
+        "text": {
+            "type": "string",
+            "title": "Text",
+            "description": "Information to log."
+        },
+        "traceActivity": {
+            "type": "boolean",
+            "title": "Send Trace Activity",
+            "description": "If true, automatically sends a TraceActivity (view in Bot Framework Emulator).",
+            "default": false
+        }
+    }
+}

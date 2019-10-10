@@ -1,0 +1,70 @@
+﻿{
+    "$schema": "../../app.schema",
+    "$type": "Microsoft.AdaptiveDialog",
+    "autoEndDialog": false,
+    "recognizer": {
+        "$type": "Microsoft.RegexRecognizer",
+        "intents": [
+            {
+
+                "$type": "Microsoft.IntentPattern",
+                "intent": "JokeIntent",
+                "pattern": "(?i)joke" 
+            },
+            {
+
+                "$type": "Microsoft.IntentPattern",
+                "intent": "CancelIntent",
+                "pattern": "(?i)cancel|never mind"
+            }
+        ]
+    },
+    "triggers": [
+        {
+            "$type": "Microsoft.OnBeginDialog",
+            "actions": [
+                {
+                    "$type": "Microsoft.IfCondition",
+                    "condition": "user.name == null",
+                    "actions": [
+                        {
+                            "$type": "Microsoft.TextInput",
+                            "property": "user.name",
+                            "prompt": "Hello, I'm Zoidberg. What is your name?"
+                        }
+                    ]
+                },
+                {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "Hello {user.name}, nice to talk to you!"
+                },
+                {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "I'm a joke bot. To get started say \"joke\"."
+                }
+            ]
+        },
+        {
+            "$type": "Microsoft.OnDialogEvent",
+            "triggers": [
+                "cancelDialog"
+            ],
+            "actions": [
+                {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "ok."
+                },
+                {
+                    "$type": "Microsoft.EndDialog"
+                }
+            ]
+        },
+        {
+            "$type": "Microsoft.OnIntent",
+            "intent": "JokeIntent",
+            "actions": [
+                "EndDialog.TellJoke"
+            ]
+        }
+    ]
+}

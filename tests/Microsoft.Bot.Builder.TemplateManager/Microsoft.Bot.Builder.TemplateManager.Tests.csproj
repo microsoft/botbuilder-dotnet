@@ -3,6 +3,7 @@
 		<TargetFramework>netcoreapp2.1</TargetFramework>
     <IsPackable>false</IsPackable>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <Configurations>Debug;Release</Configurations>
   </PropertyGroup>
 
 	<ItemGroup>
@@ -10,6 +11,12 @@
 		<PackageReference Include="MSTest.TestAdapter" Version="1.4.0" />
 		<PackageReference Include="MSTest.TestFramework" Version="1.4.0" />
 		<PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Content Include="en-us.lg">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
 	</ItemGroup>
 
 	<ItemGroup>

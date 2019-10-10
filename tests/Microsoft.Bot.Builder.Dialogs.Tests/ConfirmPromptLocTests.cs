@@ -16,6 +16,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
     [TestClass]
     public class ConfirmPromptLocTests
     {
+        public TestContext TestContext { get; set; }
+
         [TestMethod]
         [DataRow(null, Culture.Dutch, "(1) Ja of (2) Nee", "Ja", "1")]
         [DataRow(null, Culture.Dutch, "(1) Ja of (2) Nee", "Nee", "0")]
@@ -183,7 +185,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var convoState = new ConversationState(new MemoryStorage());
             var dialogState = convoState.CreateProperty<DialogState>("dialogState");
 
-            var adapter = new TestAdapter()
+            var adapter = new TestAdapter(TestAdapter.CreateConversation(TestContext.TestName))
                 .Use(new AutoSaveStateMiddleware(convoState));
 
             // Create new DialogSet.

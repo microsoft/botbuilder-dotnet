@@ -75,6 +75,11 @@ namespace Microsoft.Bot.Builder.Dialogs
         public OAuthPrompt(string dialogId, OAuthPromptSettings settings, PromptValidator<TokenResponse> validator = null)
             : base(dialogId)
         {
+            if (string.IsNullOrWhiteSpace(dialogId))
+            {
+                throw new ArgumentNullException(nameof(dialogId));
+            }
+
             _settings = settings ?? throw new ArgumentNullException(nameof(settings));
             _validator = validator;
         }
@@ -94,6 +99,11 @@ namespace Microsoft.Bot.Builder.Dialogs
             if (dc == null)
             {
                 throw new ArgumentNullException(nameof(dc));
+            }
+
+            if (options is CancellationToken)
+            {
+                throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
             PromptOptions opt = null;

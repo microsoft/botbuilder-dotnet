@@ -2,12 +2,16 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
+using System.Diagnostics;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace Microsoft.Bot.Builder.Dialogs
 {
     /// <summary>
     /// Contains state information associated with a <see cref="Dialog"/> on a dialog stack.
     /// </summary>
+    [DebuggerDisplay("{Id}")]
     public class DialogInstance
     {
         /// <summary>
@@ -16,6 +20,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <value>
         /// The ID of the dialog.
         /// </value>
+        [JsonProperty("id")]
         public string Id { get; set; }
 
         /// <summary>
@@ -24,6 +29,17 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// <value>
         /// The instance's persisted state.
         /// </value>
+        [JsonProperty("state")]
         public IDictionary<string, object> State { get; set; }
+
+        /// <summary>
+        /// Gets or sets a stack index. Positive values are indexes within the current DC and negative values are 
+        /// indexes in the parent DC.
+        /// </summary>
+        /// <value>
+        /// Positive values are indexes within the current DC and negative values are indexes in
+        /// the parent DC.
+        /// </value>
+        public int? StackIndex { get; set; }
     }
 }

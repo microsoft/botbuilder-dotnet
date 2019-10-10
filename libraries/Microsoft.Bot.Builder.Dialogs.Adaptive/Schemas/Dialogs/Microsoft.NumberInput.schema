@@ -1,0 +1,32 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
+    "$role": "unionType(Microsoft.IDialog)",
+    "title": "Number input dialog",
+    "description": "Collect information - Ask for a number.",
+    "type": "object",
+    "allOf": [
+        {
+            "$ref": "./Microsoft.InputDialog.json#"
+        },
+        {
+            "properties": {
+                "outputFormat": {
+                    "type": "string",
+                    "enum": [
+                        "float",
+                        "integer"
+                    ],
+                    "title": "Output format",
+                    "description": "Number output format.",
+                    "default": "float"
+                },
+                "defaultLocale": {
+                    "type": "string",
+                    "title": "Default locale",
+                    "description": "Default locale.",
+                    "default": "en-us"
+                }
+            }
+        }
+    ]
+}

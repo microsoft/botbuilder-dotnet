@@ -1,0 +1,30 @@
+﻿{
+    "$type": "Microsoft.AdaptiveDialog",
+    "generator": "root.lg",
+    "triggers": [
+        {
+            "$type": "Microsoft.OnBeginDialog",
+            "actions": [
+                {
+                    "$type": "Microsoft.SendActivity",
+                    "activity": "[test]"
+                },
+                {
+                    "$type": "Microsoft.AdaptiveDialog",
+                    "generator": "subDialog.lg",
+                    "triggers": [
+                        {
+                            "$type": "Microsoft.OnBeginDialog",
+                            "actions": [
+                                {
+                                    "$type": "Microsoft.SendActivity",
+                                    "activity": "[test]"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

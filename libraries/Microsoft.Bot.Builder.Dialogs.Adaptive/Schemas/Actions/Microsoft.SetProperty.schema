@@ -1,0 +1,31 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
+    "$role": "unionType(Microsoft.IDialog)",
+    "title": "Set property",
+    "description": "Set property to a value.",
+    "type": "object",
+    "required": [
+        "property",
+        "value"
+    ],
+    "properties": {
+        "property": {
+            "$role": "expression",
+            "title": "Property",
+            "description": "Property (named location to store information).",
+            "examples": [
+                "user.age"
+            ]
+        },
+        "value": {
+            "$role": "expression",
+            "title": "Value",
+            "description": "New value or expression.",
+            "examples": [
+                "'milk'",
+                "dialog.favColor",
+                "dialog.favColor == 'red'"
+            ]
+        }
+    }
+}

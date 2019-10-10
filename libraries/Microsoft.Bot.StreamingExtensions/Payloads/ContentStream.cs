@@ -6,11 +6,11 @@ using System.IO;
 
 namespace Microsoft.Bot.StreamingExtensions.Payloads
 {
-    internal class ContentStream : IContentStream
+    public class ContentStream : IContentStream
     {
         private readonly PayloadStreamAssembler _assembler;
 
-        internal ContentStream(Guid id, PayloadStreamAssembler assembler)
+        public ContentStream(Guid id, PayloadStreamAssembler assembler)
         {
             Id = id;
             _assembler = assembler ?? throw new ArgumentNullException();

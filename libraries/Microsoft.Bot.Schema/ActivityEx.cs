@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using Newtonsoft.Json;
@@ -17,6 +18,7 @@ namespace Microsoft.Bot.Schema
     /// The Activity class contains all properties that individual, more specific activities
     /// could contain. It is a superset type.
     /// </remarks>
+    [DebuggerDisplay("[{Type}] {Text ?? System.String.Empty}")]
     public partial class Activity :
         IActivity,
         IConversationUpdateActivity,
