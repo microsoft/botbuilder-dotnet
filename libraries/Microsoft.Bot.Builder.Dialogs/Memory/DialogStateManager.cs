@@ -242,7 +242,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         {
             var result = new JObject();
 
-            foreach (var scope in DialogStateManager.MemoryScopes)
+            foreach (var scope in DialogStateManager.MemoryScopes.Where(ms => ms.IsReadOnly == false))
             {
                 var memory = scope.GetMemory(this.dialogContext);
                 if (memory != null)
