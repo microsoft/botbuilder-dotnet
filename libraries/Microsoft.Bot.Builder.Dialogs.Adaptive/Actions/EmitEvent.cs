@@ -21,7 +21,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         {
             this.RegisterSourceLocation(callerPath, callerLine);
             this.EventName = eventName;
-            this.EventValue = EventValue;
+            this.EventValue = eventValue;
             this.BubbleEvent = bubble;
         }
 
@@ -33,7 +33,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// <summary>
         /// Gets or sets the object to send with the event
         /// </summary>
-        public string EventValue { get; set; }
+        public object EventValue { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether gets or sets whether the event should bubble or not
@@ -47,7 +47,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            var eventValue = (this.EventValue != null) ? dc.State.GetValue<object>(this.EventValue) : null;
+            var eventValue = (this.EventValue != null) ? dc.State.GetValue<object>(EventValuePropertyValue) : null;
             var handled = await dc.EmitEventAsync(EventName, eventValue, BubbleEvent, false, cancellationToken).ConfigureAwait(false);
             return await dc.EndDialogAsync(handled, cancellationToken).ConfigureAwait(false);
         }
