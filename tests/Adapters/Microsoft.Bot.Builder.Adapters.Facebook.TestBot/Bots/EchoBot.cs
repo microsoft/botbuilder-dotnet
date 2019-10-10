@@ -16,7 +16,8 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.TestBot.Bots
     {
         protected override async Task OnMembersAddedAsync(IList<ChannelAccount> membersAdded, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
         {
-            await SendWelcomeMessageAsync(turnContext, cancellationToken);
+            var activity = MessageFactory.Text("Hello and Welcome!");
+            await turnContext.SendActivityAsync(activity, cancellationToken);
         }
 
         protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
@@ -29,7 +30,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.TestBot.Bots
 
                     var image = new Attachment(
                        attachment.ContentType,
-                       attachment.ContentUrl);
+                       content: attachment.Content);
 
                     activity.Attachments.Add(image);
                     await turnContext.SendActivityAsync(activity, cancellationToken);
@@ -37,46 +38,58 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.TestBot.Bots
             }
             else
             {
-                var activity = MessageFactory.Text($"Echo: {turnContext.Activity.Text}");
+                IActivity activity;
+
+                switch (turnContext.Activity.Text)
+                {
+                    case "button template":
+                        activity = MessageFactory.Attachment(CreateTemplateAttachment(Directory.GetCurrentDirectory() + @"\Resources\ButtonTemplatePayload.json"));
+                        break;
+                    case "media template":
+                        activity = MessageFactory.Attachment(CreateTemplateAttachment(Directory.GetCurrentDirectory() + @"\Resources\MediaTemplatePayload.json"));
+                        break;
+                    case "generic template":
+                        activity = MessageFactory.Attachment(CreateTemplateAttachment(Directory.GetCurrentDirectory() + @"\Resources\GenericTemplatePayload.json"));
+                        break;
+                    case "Hello button":
+                        activity = MessageFactory.Text("Hello Human!");
+                        break;
+                    case "Goodbye button":
+                        activity = MessageFactory.Text("Goodbye Human!");
+                        break;
+                    case "Chatting":
+                        activity = MessageFactory.Text("Hello! How can I help you?");
+                        break;
+                    default:
+                        activity = MessageFactory.Text($"Echo: {turnContext.Activity.Text}");
+                        break;
+                }
+
                 await turnContext.SendActivityAsync(activity, cancellationToken);
             }
         }
 
         protected override async Task OnEventActivityAsync(ITurnContext<IEventActivity> turnContext, CancellationToken cancellationToken)
         {
-            Activity activity = null;
             if (turnContext.Activity.Value != null)
             {
                 var inputs = (Dictionary<string, string>)turnContext.Activity.Value;
                 var name = inputs["Name"];
 
-                activity = MessageFactory.Text($"How are you doing {name}?");
+                var activity = MessageFactory.Text($"How are you doing {name}?");
                 await turnContext.SendActivityAsync(activity, cancellationToken);
             }
         }
 
-        private static async Task SendWelcomeMessageAsync(ITurnContext turnContext, CancellationToken cancellationToken)
+        private static Attachment CreateTemplateAttachment(string filePath)
         {
-            foreach (var member in turnContext.Activity.MembersAdded)
+            var templateAttachmentJson = File.ReadAllText(filePath);
+            var templateAttachment = new Attachment()
             {
-                if (member.Id != turnContext.Activity.Recipient.Id)
-                {
-                    var activity = MessageFactory.Attachment(CreateAdaptiveCardAttachment(Directory.GetCurrentDirectory() + @"\Resources\adaptive_card.json"));
-
-                    await turnContext.SendActivityAsync(activity, cancellationToken);
-                }
-            }
-        }
-
-        private static Attachment CreateAdaptiveCardAttachment(string filePath)
-        {
-            var adaptiveCardJson = File.ReadAllText(filePath);
-            var adaptiveCardAttachment = new Attachment()
-            {
-                ContentType = "application/vnd.microsoft.card.adaptive",
-                Content = JsonConvert.DeserializeObject(adaptiveCardJson),
+                ContentType = "template",
+                Content = JsonConvert.DeserializeObject(templateAttachmentJson),
             };
-            return adaptiveCardAttachment;
+            return templateAttachment;
         }
     }
 }

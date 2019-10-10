@@ -2,6 +2,8 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
+using Microsoft.Bot.Builder.Adapters.Facebook.FacebookEvents.Templates;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Adapters.Facebook.FacebookEvents
@@ -16,13 +18,6 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.FacebookEvents
         public Uri Url { get; set; }
 
         /// <summary>
-        /// Gets or sets the id of the sticker attached.
-        /// </summary>
-        /// <value>The Id of the sticker.</value>
-        [JsonProperty(PropertyName = "sticker_id")]
-        public long? StickerId { get; set; }
-
-        /// <summary>
         /// Gets or sets a value indicating whether the attachment is reusable or not. Default false.
         /// </summary>
         /// <value>Indicates the reusable condition.</value>
@@ -35,5 +30,48 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.FacebookEvents
         /// <value>The id of the saved attachment.</value>
         [JsonProperty(PropertyName = "attachment_id")]
         public string AttachmentId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the type of the template attached.
+        /// </summary>
+        /// <value>The type of template attached.</value>
+        [JsonProperty(PropertyName = "template_type")]
+        public string TemplateType { get; set; }
+
+        /// <summary>
+        /// Gets or sets the text of the template.
+        /// </summary>
+        /// <value>The text of the template.</value>
+        [JsonProperty(PropertyName = "text")]
+        public string Text { get; set; }
+
+        /// <summary>
+        /// Gets a list of buttons of the template.
+        /// </summary>
+        /// <value>The list of buttons of the template.</value>
+        [JsonProperty(PropertyName = "buttons")]
+        public List<Button> Buttons { get; } = new List<Button>();
+
+        /// <summary>
+        /// Gets a list of media elements of the template.
+        /// </summary>
+        /// <value>The list of media elements of the template.</value>
+        [JsonProperty(PropertyName = "elements")]
+        public List<Element> Elements { get; } = new List<Element>();
+
+        public bool ShouldSerializeIsReusable()
+        {
+            return IsReusable;
+        }
+
+        public bool ShouldSerializeButtons()
+        {
+            return Buttons.Count > 0;
+        }
+
+        public bool ShouldSerializeElements()
+        {
+            return Elements.Count > 0;
+        }
     }
 }
