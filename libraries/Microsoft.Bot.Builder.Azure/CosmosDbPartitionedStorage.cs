@@ -204,11 +204,26 @@ namespace Microsoft.Bot.Builder.Azure
             {
                 var escapedKey = CosmosDbKeyEscape.EscapeKey(key);
 
-                await _container.DeleteItemAsync<DocumentStoreItem>(
-                    partitionKey: new PartitionKey(escapedKey),
-                    id: escapedKey,
-                    cancellationToken: cancellationToken)
-                    .ConfigureAwait(false);
+                try
+                {
+                    await _container.DeleteItemAsync<DocumentStoreItem>(
+                            partitionKey: new PartitionKey(escapedKey),
+                            id: escapedKey,
+                            cancellationToken: cancellationToken)
+                        .ConfigureAwait(false);
+                }
+                catch (CosmosException exception)
+                {
+                    // If we get a 404 status then the item we tried to delete was not found
+                    // To maintain consistency with other storage providers, we ignore this and return.
+                    // Any other exceptions are thrown.
+                    if (exception.StatusCode == HttpStatusCode.NotFound)
+                    {
+                        return;
+                    }
+
+                    throw;
+                }
             }
         }
 

@@ -190,6 +190,16 @@ namespace Microsoft.Bot.Builder.Azure.Tests
 
         // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
         [TestMethod]
+        public async Task DeleteUnknownObjectTest()
+        {
+            if (CheckEmulator())
+            {
+                await _storage.DeleteAsync(new[] { "unknown_delete" });
+            }
+        }
+
+        // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
+        [TestMethod]
         public async Task HandleCrazyKeys()
         {
             if (CheckEmulator())
