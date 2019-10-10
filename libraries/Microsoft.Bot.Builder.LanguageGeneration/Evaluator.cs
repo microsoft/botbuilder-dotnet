@@ -226,6 +226,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
         public object ConstructScope(string templateName, List<object> args)
         {
+            if (!TemplateMap.ContainsKey(templateName))
+            {
+                throw new Exception($"No such template {templateName}");
+            }
+
             var parameters = TemplateMap[templateName].Parameters;
             var currentScope = CurrentTarget().Scope;
 
@@ -247,7 +252,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 return new CustomizedMemoryScope(newScope, currentScope);
             }
-            
         }
 
         private bool EvalCondition(LGFileParser.IfConditionContext condition)
@@ -392,8 +396,60 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 return new ExpressionEvaluator(name, BuiltInFunctions.Apply(this.TemplateEvaluator(name)), ReturnType.Object, this.ValidTemplateReference);
             }
 
+            const string lgTemplate = "lgTemplate";
+
+            if (name.Equals(lgTemplate))
+            {
+                return new ExpressionEvaluator(lgTemplate, BuiltInFunctions.Apply(this.LgTemplate()), ReturnType.Object, this.ValidateLgTemplate);
+            }
+
             return baseLookup(name);
         };
+
+        // Evaluator for lgTemplate(templateName, ...args) 
+        // normal case we can just use templateName(...args), but lgTemplate is particularly useful when the template name is not pre-known
+        private Func<IReadOnlyList<object>, object> LgTemplate()
+        => (IReadOnlyList<object> args) =>
+        {
+            var templateName = args[0].ToString();
+            var newScope = this.ConstructScope(templateName, args.Skip(1).ToList());
+            return this.EvaluateTemplate(templateName, newScope);
+        };
+
+        private void ValidateLgTemplate(Expression expression)
+        {
+            if (expression.Children.Length == 0)
+            {
+                throw new Exception("No template name is provided when calling lgTemplate, expected: lgTemplate(templateName, ...args) ");
+            }
+
+            var children0 = expression.Children[0];
+
+            // Validate return type
+            if (children0.ReturnType != ReturnType.Object && children0.ReturnType != ReturnType.String)
+            {
+                throw new Exception($"{children0} can't be used as a template name, must be a string value");
+            }
+
+            // Validate more if the name is string constant
+            if (children0.Type == ExpressionType.Constant)
+            {
+                var templateName = (children0 as Constant).Value.ToString();
+                if (!this.TemplateMap.ContainsKey(templateName))
+                {
+                    throw new Exception($"No such template '{templateName}' to call in {expression}");
+                }
+
+                var expectedArgsCount = this.TemplateMap[templateName].Parameters.Count();
+                var actualArgsCount = expression.Children.Length - 1;
+
+                if (expectedArgsCount != actualArgsCount)
+                {
+                    throw new Exception($"Arguments mismatch for template {templateName}, expect {expectedArgsCount} actual {actualArgsCount}");
+                }
+            }
+        }
+
 
         private Func<IReadOnlyList<object>, object> TemplateEvaluator(string templateName)
         => (IReadOnlyList<object> args) =>
