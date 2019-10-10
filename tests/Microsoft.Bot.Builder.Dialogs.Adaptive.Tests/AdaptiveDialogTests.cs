@@ -225,7 +225,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                                     {
                                         Prompt = new ActivityTemplate("Hello, what is your name?"),
                                         Property = "user.name",
-                                        AllowInterruptions = AllowInterruptions.Never
+                                        AllowInterruptions = "false"
                                     }
                                 }
                             },
@@ -799,14 +799,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             {
                                 Prompt = new ActivityTemplate("age?"),
                                 Property = "user.age",
-                                AllowInterruptions = AllowInterruptions.Never,
+                                AllowInterruptions = "false",
                                 MaxTurnCount = 2,
                             },
                             new NumberInput()
                             {
                                 Prompt = new ActivityTemplate("age?"),
                                 Property = "user.age",
-                                AllowInterruptions = AllowInterruptions.Always,
+                                AllowInterruptions = "true",
                             },
                             new SendActivity("{user.age}")
                         }
@@ -1192,7 +1192,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             {
                                 Prompt = new ActivityTemplate("What is your name?"),
                                 Property = "user.name",
-                                AllowInterruptions = AllowInterruptions.Always
+                                AllowInterruptions = "true"
                             },
                             new SendActivity("I have {user.name} as your name")
                         }
@@ -1288,7 +1288,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             {
                                 Prompt = new ActivityTemplate("What is your name?"),
                                 Property = "user.name",
-                                AllowInterruptions = AllowInterruptions.Always
+                                AllowInterruptions = "true"
                             },
                             new SendActivity("I have {user.name} as your name")
                         }
@@ -1346,14 +1346,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             {
                                 Prompt = new ActivityTemplate("What is your name?"),
                                 Property = "user.name",
-                                AllowInterruptions = AllowInterruptions.Always
+                                AllowInterruptions = "true"
                             },
                             new SendActivity("I have {user.name} as your name"),
                             new NumberInput()
                             {
                                 Prompt = new ActivityTemplate("What is your age?"),
                                 Property = "user.age",
-                                AllowInterruptions = AllowInterruptions.Always
+                                AllowInterruptions = "true"
                             },
                             new SendActivity("I have {user.age} as your age")
                         }
@@ -1428,7 +1428,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             {
                                 Prompt = new ActivityTemplate("What is your age?"),
                                 Property = "user.age",
-                                AllowInterruptions = AllowInterruptions.Always,
+                                AllowInterruptions = "true",
                                 Validations = new List<string>()
                                 {
                                     "int(this.value) >= 1",
@@ -1474,7 +1474,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
-        public async Task AdaptiveDialog_AllowInterruptionNotRecognizedWithFailedValidation()
+        public async Task AdaptiveDialog_ConditionallyAllowInterruptions()
         {
             var rootDialog = new AdaptiveDialog(nameof(AdaptiveDialog))
             {
@@ -1497,7 +1497,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             {
                                 Prompt = new ActivityTemplate("What is your age?"),
                                 Property = "user.age",
-                                AllowInterruptions = AllowInterruptions.NotRecognized,
+                                AllowInterruptions = "!#none",
                                 Validations = new List<string>()
                                 {
                                     "int(this.value) >= 1",
@@ -1519,8 +1519,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             // request the active input step to re-process user input. 
                             new SetProperty()
                             {
-                                Property = "turn.processInput",
-                                Value = "true"
+                                Property = "turn.interrupted",
+                                Value = "false"
                             }
                         }
                     },
@@ -1534,133 +1534,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                 .AssertReply("Sorry. 200 does not work. I'm looking for a value between 1-150. What is your age?")
             .Send("500")
                 .AssertReply("Sorry. 500 does not work. I'm looking for a value between 1-150. What is your age?")
-            .Send("36")
-                .AssertReply("I have 36 as your age")
-            .StartTestAsync();
-        }
-
-        [TestMethod]
-        public async Task AdaptiveDialog_AllowInterruptionAlwaysWithUnrecognizedInput()
-        {
-            var rootDialog = new AdaptiveDialog(nameof(AdaptiveDialog))
-            {
-                Generator = new TemplateEngineLanguageGenerator(),
-                Recognizer = new RegexRecognizer()
-                {
-                    Intents = new List<IntentPattern>()
-                    {
-                        new IntentPattern("Start", "(?i)start"),
-                    }
-                },
-                Triggers = new List<OnCondition>()
-                {
-                    new OnIntent()
-                    {
-                        Intent = "Start",
-                        Actions = new List<Dialog>()
-                        {
-                            new NumberInput()
-                            {
-                                Prompt = new ActivityTemplate("What is your age?"),
-                                Property = "user.age",
-                                AllowInterruptions = AllowInterruptions.Always,
-                                UnrecognizedPrompt = new ActivityTemplate("Sorry. I did not recognize a number. What is your age?")
-                            },
-                            new SendActivity("I have {user.age} as your age")
-                        }
-                    },
-                    new OnIntent()
-                    {
-                        Intent = "None",
-                        Actions = new List<Dialog>()
-                        {
-                            // short circuiting Interruption so consultation is terminated. 
-                            new SendActivity("In None..."),
-
-                            // request the active input step to re-process user input. 
-                            new SetProperty()
-                            {
-                                Property = "turn.processInput",
-                                Value = "true"
-                            }
-                        }
-                    },
-                }
-            };
-
-            await CreateFlow(rootDialog)
-            .Send("start")
-                .AssertReply("What is your age?")
-            .Send("santa")
-                .AssertReply("In None...")
-                .AssertReply("Sorry. I did not recognize a number. What is your age?")
-            .Send("red")
-                .AssertReply("In None...")
-                .AssertReply("Sorry. I did not recognize a number. What is your age?")
-            .Send("36")
-                .AssertReply("In None...")
-                .AssertReply("I have 36 as your age")
-            .StartTestAsync();
-        }
-
-        [TestMethod]
-        public async Task AdaptiveDialog_AllowInterruptionNotRecognizedWithUnrecognizedInput()
-        {
-            var rootDialog = new AdaptiveDialog(nameof(AdaptiveDialog))
-            {
-                Generator = new TemplateEngineLanguageGenerator(),
-                Recognizer = new RegexRecognizer()
-                {
-                    Intents = new List<IntentPattern>()
-                    {
-                        new IntentPattern("Start", "(?i)start"),
-                    }
-                },
-                Triggers = new List<OnCondition>()
-                {
-                    new OnIntent()
-                    {
-                        Intent = "Start",
-                        Actions = new List<Dialog>()
-                        {
-                            new NumberInput()
-                            {
-                                Prompt = new ActivityTemplate("What is your age?"),
-                                Property = "user.age",
-                                AllowInterruptions = AllowInterruptions.NotRecognized,
-                                UnrecognizedPrompt = new ActivityTemplate("Sorry. I did not recognize a number. What is your age?")
-                            },
-                            new SendActivity("I have {user.age} as your age")
-                        }
-                    },
-                    new OnIntent()
-                    {
-                        Intent = "None",
-                        Actions = new List<Dialog>()
-                        {
-                            // short circuiting Interruption so consultation is terminated. 
-                            new SendActivity("In None..."),
-
-                            // request the active input step to re-process user input. 
-                            new SetProperty()
-                            {
-                                Property = "turn.processInput",
-                                Value = "true"
-                            }
-                        }
-                    },
-                }
-            };
-
-            await CreateFlow(rootDialog)
-            .Send("start")
-                .AssertReply("What is your age?")
-            .Send("santa")
-                .AssertReply("In None...")
-                .AssertReply("Sorry. I did not recognize a number. What is your age?")
-            .Send("red")
-                .AssertReply("In None...")
-                .AssertReply("Sorry. I did not recognize a number. What is your age?")
             .Send("36")
                 .AssertReply("I have 36 as your age")
             .StartTestAsync();
@@ -1690,7 +1563,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             {
                                 Prompt = new ActivityTemplate("What is your age?"),
                                 Property = "user.age",
-                                AllowInterruptions = AllowInterruptions.Never,
+                                AllowInterruptions = "false",
                             },
                             new SendActivity("I have {user.age} as your age")
                         }
@@ -1750,7 +1623,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             {
                                 Prompt = new ActivityTemplate("What is your age?"),
                                 Property = "user.age",
-                                AllowInterruptions = AllowInterruptions.Never,
+                                AllowInterruptions = "false",
                                 UnrecognizedPrompt = new ActivityTemplate("Sorry. I did not recognize a number. What is your age?")
                             },
                             new SendActivity("I have {user.age} as your age")
@@ -1811,7 +1684,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             {
                                 Prompt = new ActivityTemplate("What is your age?"),
                                 Property = "user.age",
-                                AllowInterruptions = AllowInterruptions.Never,
+                                AllowInterruptions = "false",
                                 Validations = new List<string>()
                                 {
                                     "int(this.value) >= 1",
@@ -1878,7 +1751,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
                             {
                                 Prompt = new ActivityTemplate("What is your age?"),
                                 Property = "user.age",
-                                AllowInterruptions = AllowInterruptions.Never,
+                                AllowInterruptions = "false",
                                 MaxTurnCount = 2,
                                 DefaultValue = "30"
                             },

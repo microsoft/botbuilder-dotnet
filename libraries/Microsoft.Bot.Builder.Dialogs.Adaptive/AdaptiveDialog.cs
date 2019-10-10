@@ -236,9 +236,32 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
                     case AdaptiveEvents.ActivityReceived:
 
-                        var activity = sequenceContext.Context.Activity;
+                        if (sequenceContext.Context.Activity.Type == ActivityTypes.Message)
+                        {
+                            // Recognize utterance (ignore handled)
+                            var recognizeUtteranceEvent = new DialogEvent() { Name = AdaptiveEvents.RecognizeUtterance, Value = sequenceContext.Context.Activity, Bubble = false };
+                            await this.ProcessEventAsync(sequenceContext, dialogEvent: recognizeUtteranceEvent, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
 
-                        if (activity.Type == ActivityTypes.Message)
+                            // Emit leading RecognizedIntent event
+                            var recognized = sequenceContext.State.GetValue<RecognizerResult>(TurnPath.RECOGNIZED);
+                            var recognizedIntentEvent = new DialogEvent() { Name = AdaptiveEvents.RecognizedIntent, Value = recognized, Bubble = false };
+                            handled = await this.ProcessEventAsync(sequenceContext, dialogEvent: recognizedIntentEvent, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
+                        }
+
+                        // Has an interruption occured?
+                        // - Setting this value to true causes any running inputs to re-prompt when they're
+                        //   continued.  The developer can clear this flag if they want the input to instead
+                        //   process the users uterrance when its continued.
+                        if (handled)
+                        {
+                            sequenceContext.State.SetValue(TurnPath.INTERRUPTED, true);
+                        }
+
+                        break;
+
+                    case AdaptiveEvents.RecognizeUtterance:
+
+                        if (sequenceContext.Context.Activity.Type == ActivityTypes.Message)
                         {
                             // Recognize utterance
                             var recognized = await this.OnRecognize(sequenceContext, cancellationToken).ConfigureAwait(false);
@@ -251,21 +274,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
                             if (this.Recognizer != null)
                             {
-                                await sequenceContext.DebuggerStepAsync(Recognizer, AdaptiveEvents.RecognizedIntent, cancellationToken).ConfigureAwait(false);
+                                await sequenceContext.DebuggerStepAsync(Recognizer, AdaptiveEvents.RecognizeUtterance, cancellationToken).ConfigureAwait(false);
                             }
 
-                            // Emit leading RecognizedIntent event
-                            var recognizedIntentEvent = new DialogEvent() { Name = AdaptiveEvents.RecognizedIntent, Value = recognized, Bubble = false };
-                            handled = await this.ProcessEventAsync(sequenceContext, dialogEvent: recognizedIntentEvent, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
-                        }
-
-                        // Has an interruption occured?
-                        // - Setting this value to true causes any running inputs to re-prompt when they're
-                        //   continued.  The developer can clear this flag if they want the input to instead
-                        //   process the users uterrance when its continued.
-                        if (handled)
-                        {
-                            sequenceContext.State.SetValue(TurnPath.INTERRUPTED, true);
+                            handled = true;
                         }
 
                         break;

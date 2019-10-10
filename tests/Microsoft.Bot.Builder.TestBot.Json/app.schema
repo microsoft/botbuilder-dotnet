@@ -749,16 +749,11 @@
                 },
                 "allowInterruptions": {
                     "type": "string",
-                    "enum": [
-                        "always",
-                        "never",
-                        "notRecognized"
-                    ],
-                    "title": "Allow interruptions",
-                    "description": "Always will always consult parent dialogs first, never will not consult parent dialogs, notRecognized will consult parent only when it's not recognized",
-                    "default": "notRecognized",
+                    "title": "Allow Interruptions",
+                    "description": "A boolean expression that determines whether the parent should be allowed to interrupt the input.",
+                    "default": "true",
                     "examples": [
-                        "notRecognized"
+                        "true"
                     ]
                 },
                 "outputFormat": {
@@ -1067,11 +1062,11 @@
                         "never",
                         "notRecognized"
                     ],
-                    "title": "Allow interruptions",
+                    "title": "Allow Interruptions",
                     "description": "Always will always consult parent dialogs first, never will not consult parent dialogs, notRecognized will consult parent only when it's not recognized",
                     "default": "notRecognized",
                     "examples": [
-                        "notRecognized"
+                        "true"
                     ]
                 },
                 "outputFormat": {
@@ -1424,11 +1419,11 @@
                         "never",
                         "notRecognized"
                     ],
-                    "title": "Allow interruptions",
+                    "title": "Allow Interruptions",
                     "description": "Always will always consult parent dialogs first, never will not consult parent dialogs, notRecognized will consult parent only when it's not recognized",
                     "default": "notRecognized",
                     "examples": [
-                        "notRecognized"
+                        "true"
                     ]
                 },
                 "defaultLocale": {
@@ -1818,11 +1813,11 @@
                         "never",
                         "notRecognized"
                     ],
-                    "title": "Allow interruptions",
+                    "title": "Allow Interruptions",
                     "description": "Always will always consult parent dialogs first, never will not consult parent dialogs, notRecognized will consult parent only when it's not recognized",
                     "default": "notRecognized",
                     "examples": [
-                        "notRecognized"
+                        "true"
                     ]
                 },
                 "defaultLocale": {
@@ -4076,11 +4071,11 @@
                         "never",
                         "notRecognized"
                     ],
-                    "title": "Allow interruptions",
+                    "title": "Allow Interruptions",
                     "description": "Always will always consult parent dialogs first, never will not consult parent dialogs, notRecognized will consult parent only when it's not recognized",
                     "default": "notRecognized",
                     "examples": [
-                        "notRecognized"
+                        "true"
                     ]
                 },
                 "outputFormat": {
@@ -4305,11 +4300,11 @@
                         "never",
                         "notRecognized"
                     ],
-                    "title": "Allow interruptions",
+                    "title": "Allow Interruptions",
                     "description": "Always will always consult parent dialogs first, never will not consult parent dialogs, notRecognized will consult parent only when it's not recognized",
                     "default": "notRecognized",
                     "examples": [
-                        "notRecognized"
+                        "true"
                     ]
                 },
                 "connectionName": {
@@ -6866,11 +6861,11 @@
                         "never",
                         "notRecognized"
                     ],
-                    "title": "Allow interruptions",
+                    "title": "Allow Interruptions",
                     "description": "Always will always consult parent dialogs first, never will not consult parent dialogs, notRecognized will consult parent only when it's not recognized",
                     "default": "notRecognized",
                     "examples": [
-                        "notRecognized"
+                        "true"
                     ]
                 },
                 "outputFormat": {
