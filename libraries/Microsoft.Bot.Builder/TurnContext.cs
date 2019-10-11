@@ -271,8 +271,6 @@ namespace Microsoft.Bot.Builder
                 {
                     var activity = bufferedActivities[index];
 
-                    activity.Id = responses[index].Id;
-
                     sentNonTraceActivity |= activity.Type != ActivityTypes.Trace;
                 }
 
