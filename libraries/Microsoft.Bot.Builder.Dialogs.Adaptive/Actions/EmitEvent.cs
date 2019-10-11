@@ -13,10 +13,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
     /// </summary>
     public class EmitEvent : Dialog
     {
-        private const string EventValuePropertyValue = "eventValue";
-
         [JsonConstructor]
-        public EmitEvent(string eventName = null, object eventValue = null, bool bubble = true, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
+        public EmitEvent(string eventName = null, string eventValue = null, bool bubble = true, [CallerFilePath] string callerPath = "", [CallerLineNumber] int callerLine = 0)
             : base()
         {
             this.RegisterSourceLocation(callerPath, callerLine);
@@ -31,9 +29,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         public string EventName { get; set; }
 
         /// <summary>
-        /// Gets or sets the object to send with the event
+        /// Gets or sets the memory property path to use to get the value to send as part of the event
         /// </summary>
-        public object EventValue { get; set; }
+        public string EventValue { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether gets or sets whether the event should bubble or not
@@ -47,7 +45,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
-            var eventValue = (this.EventValue != null) ? dc.State.GetValue<object>(EventValuePropertyValue) : null;
+            var eventValue = (this.EventValue != null) ? dc.State.GetValue<object>(this.EventValue) : null;
             var handled = await dc.EmitEventAsync(EventName, eventValue, BubbleEvent, false, cancellationToken).ConfigureAwait(false);
             return await dc.EndDialogAsync(handled, cancellationToken).ConfigureAwait(false);
         }
