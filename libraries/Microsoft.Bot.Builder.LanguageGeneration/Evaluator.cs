@@ -396,7 +396,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 return new ExpressionEvaluator(name, BuiltInFunctions.Apply(this.TemplateEvaluator(name)), ReturnType.Object, this.ValidTemplateReference);
             }
 
-            const string lgTemplate = "lgTemplate";
+            const string lgTemplate = "template";
 
             if (name.Equals(lgTemplate))
             {
