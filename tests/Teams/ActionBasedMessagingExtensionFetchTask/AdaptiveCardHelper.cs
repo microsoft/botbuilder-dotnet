@@ -3,23 +3,18 @@
 
 using System.Collections.Generic;
 using AdaptiveCards;
-using Microsoft.Bot.Schema.Teams;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.BotBuilderSamples
 {
     public static class AdaptiveCardHelper
     {
-        public static SubmitExampleData ToSubmitExampleData(this MessagingExtensionAction action)
+        public static ExampleData CreateExampleData(AdaptiveCard adaptiveCard)
         {
-            var activityPreview = action.BotActivityPreview[0];
-            var attachmentContent = activityPreview.Attachments[0].Content;
-            var previewedCard = JsonConvert.DeserializeObject<AdaptiveCard>(attachmentContent.ToString(), new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
-            string userText = (previewedCard.Body[1] as AdaptiveTextBlock).Text;
-            var choiceSet = previewedCard.Body[3] as AdaptiveChoiceSetInput;
+            string userText = (adaptiveCard.Body[1] as AdaptiveTextBlock).Text;
+            var choiceSet = adaptiveCard.Body[3] as AdaptiveChoiceSetInput;
 
-            return new SubmitExampleData()
+            return new ExampleData
             {
                 Question = userText,
                 MultiSelect = choiceSet.IsMultiSelect ? "true" : "false",
@@ -29,37 +24,39 @@ namespace Microsoft.BotBuilderSamples
             };
         }
 
-        public static MessagingExtensionActionResponse CreateTaskModuleAdaptiveCardResponse(string userText = null, bool isMultiSelect = true, string option1 = null, string option2 = null, string option3 = null)
+        public static AdaptiveCard CreateAdaptiveCardEditor(ExampleData exampleData = null)
         {
-            return new AdaptiveCard()
+            var cardData = exampleData ?? new ExampleData();
+
+            return new AdaptiveCard
             {
-                Body = new List<AdaptiveElement>()
+                Body = new List<AdaptiveElement>
                 {
                     new AdaptiveTextBlock("This is an Adaptive Card within a Task Module")
                     {
                         Weight = AdaptiveTextWeight.Bolder,
                     },
                     new AdaptiveTextBlock("Enter text for Question:"),
-                    new AdaptiveTextInput() { Id = "Question", Placeholder = "Question text here", Value = userText },
+                    new AdaptiveTextInput() { Id = "Question", Placeholder = "Question text here", Value = cardData.Question },
                     new AdaptiveTextBlock("Options for Question:"),
                     new AdaptiveTextBlock("Is Multi-Select:"),
-                    new AdaptiveChoiceSetInput()
+                    new AdaptiveChoiceSetInput
                     {
                         Type = AdaptiveChoiceSetInput.TypeName,
                         Id = "MultiSelect",
-                        Value = isMultiSelect ? "true" : "false",
+                        Value = cardData.MultiSelect,
                         IsMultiSelect = false,
-                        Choices = new List<AdaptiveChoice>()
+                        Choices = new List<AdaptiveChoice>
                         {
                             new AdaptiveChoice() { Title = "True", Value = "true" },
                             new AdaptiveChoice() { Title = "False", Value = "false" },
                         },
                     },
-                    new AdaptiveTextInput() { Id = "Option1", Placeholder = "Option 1 here", Value = option1 },
-                    new AdaptiveTextInput() { Id = "Option2", Placeholder = "Option 2 here", Value = option2 },
-                    new AdaptiveTextInput() { Id = "Option3", Placeholder = "Option 3 here", Value = option3 },
+                    new AdaptiveTextInput() { Id = "Option1", Placeholder = "Option 1 here", Value = cardData.Option1 },
+                    new AdaptiveTextInput() { Id = "Option2", Placeholder = "Option 2 here", Value = cardData.Option2 },
+                    new AdaptiveTextInput() { Id = "Option3", Placeholder = "Option 3 here", Value = cardData.Option3 },
                 },
-                Actions = new List<AdaptiveAction>()
+                Actions = new List<AdaptiveAction>
                 {
                     new AdaptiveSubmitAction
                     {
@@ -68,24 +65,24 @@ namespace Microsoft.BotBuilderSamples
                         Data = new JObject { { "submitLocation", "messagingExtensionFetchTask" } },
                     },
                 },
-            }.ToTaskModuleResponse();
+            };
         }
 
-        public static AdaptiveCard ToAdaptiveCard(this SubmitExampleData data)
+        public static AdaptiveCard CreateAdaptiveCard(ExampleData data)
         {
-            return new AdaptiveCard()
+            return new AdaptiveCard
             {
-                Body = new List<AdaptiveElement>()
+                Body = new List<AdaptiveElement>
                 {
                     new AdaptiveTextBlock("Adaptive Card from Task Module") { Weight = AdaptiveTextWeight.Bolder },
-                    new AdaptiveTextBlock($"{ data.Question }") { Id = "Question" },
+                    new AdaptiveTextBlock($"{data.Question}") { Id = "Question" },
                     new AdaptiveTextInput() { Id = "Answer", Placeholder = "Answer here..." },
-                    new AdaptiveChoiceSetInput()
+                    new AdaptiveChoiceSetInput
                     {
                         Type = AdaptiveChoiceSetInput.TypeName,
                         Id = "Choices",
                         IsMultiSelect = bool.Parse(data.MultiSelect),
-                        Choices = new List<AdaptiveChoice>()
+                        Choices = new List<AdaptiveChoice>
                         {
                             new AdaptiveChoice() { Title = data.Option1, Value = data.Option1 },
                             new AdaptiveChoice() { Title = data.Option2, Value = data.Option2 },
@@ -93,7 +90,7 @@ namespace Microsoft.BotBuilderSamples
                         },
                     },
                 },
-                Actions = new List<AdaptiveAction>()
+                Actions = new List<AdaptiveAction>
                 {
                     new AdaptiveSubmitAction
                     {
