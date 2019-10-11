@@ -472,8 +472,6 @@ namespace Microsoft.Bot.Builder
                 // var skillConversation = new SkillConversation() { ServiceUrl = activity.ServiceUrl, ConverationId = activity.Conversation.Id };
                 // activity.Conversation.Id = skillConversation.GetSkillConverationId()
                 activity.Conversation.Id = Convert.ToBase64String(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new string[] { activity.Conversation.Id, activity.ServiceUrl })));
-                
-                // TODO: Gabo, figure out a better way
                 activity.ServiceUrl = SkillsCallbackUri.ToString();
 
                 // POST to skill 
@@ -487,15 +485,8 @@ namespace Microsoft.Bot.Builder
                         throw new NullReferenceException("Unable to get appcredentials to connect to the skill");
                     }
 
-                    //var token = await appCredentials.GetTokenAsync(skill.AppId).ConfigureAwait(false);
-                    //client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                    //var claimsIdentity = new ClaimsIdentity(new List<Claim>
-                    //{
-                    //    // Adding claims for both Emulator and Channel.
-                    //    new Claim(AuthenticationConstants.AudienceClaim, BotAppId),
-                    //    new Claim(AuthenticationConstants.AppIdClaim, BotAppId),
-                    //    new Claim(AuthenticationConstants.ServiceUrlClaim, skillConversation.ServiceUrl),
-                    //});
+                    var token = await appCredentials.GetTokenAsync(skill.AppId).ConfigureAwait(false);
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
                     var jsonContent = new StringContent(JsonConvert.SerializeObject(activity, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore }), Encoding.UTF8, "application/json");
                     var response = await client.PostAsync($"{skill.SkillEndpoint}", jsonContent, cancellationToken).ConfigureAwait(false);
