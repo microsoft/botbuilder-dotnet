@@ -32,8 +32,8 @@ namespace DialogRootBot
             // Register LUIS recognizer
             services.AddSingleton<FlightBookingRecognizer>();
 
-            // Register the RemoteDialog (remote skill).
-            services.AddSingleton<RemoteDialog>();
+            // Register the SkillDialog (remote skill).
+            services.AddSingleton<SkillDialog>();
 
             // The MainDialog that will be run by the bot.
             services.AddSingleton<MainDialog>();

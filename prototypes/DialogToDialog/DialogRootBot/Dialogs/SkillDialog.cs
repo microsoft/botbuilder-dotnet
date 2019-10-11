@@ -10,12 +10,12 @@ using Microsoft.Bot.Schema;
 
 namespace DialogRootBot.Dialogs
 {
-    public class RemoteDialog : Dialog
+    public class SkillDialog : Dialog
     {
         private readonly ConversationState _conversationState;
 
-        public RemoteDialog(ConversationState conversationState)
-            : base(nameof(RemoteDialog))
+        public SkillDialog(ConversationState conversationState)
+            : base(nameof(SkillDialog))
         {
             _conversationState = conversationState;
         }
@@ -23,7 +23,7 @@ namespace DialogRootBot.Dialogs
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
         {
             var remoteDialogArgs = (RemoteDialogArgs)options;
-            await dc.Context.SendActivityAsync($"RemoteDialog: InBeginDialog Action: {remoteDialogArgs.TargetAction}", cancellationToken: cancellationToken);
+            await dc.Context.SendActivityAsync($"SkillDialog: InBeginDialog Action: {remoteDialogArgs.TargetAction}", cancellationToken: cancellationToken);
             var turnContext = dc.Context;
             AddActionToActivity(turnContext.Activity, remoteDialogArgs.TargetAction, remoteDialogArgs.Entities);
 
@@ -33,11 +33,11 @@ namespace DialogRootBot.Dialogs
 
         public override async Task<DialogTurnResult> ContinueDialogAsync(DialogContext dc, CancellationToken cancellationToken = default)
         {
-            await dc.Context.SendActivityAsync($"RemoteDialog: InContinueDialog, ActivityType: {dc.Context.Activity.Type}", cancellationToken: cancellationToken);
+            await dc.Context.SendActivityAsync($"SkillDialog: InContinueDialog, ActivityType: {dc.Context.Activity.Type}", cancellationToken: cancellationToken);
             if (dc.Context.Activity.Type == ActivityTypes.EndOfConversation)
             {
                 // look at the dc.Context.Activity.Code for exit status.
-                await dc.Context.SendActivityAsync("RemoteDialog: got EndOfConversation", cancellationToken: cancellationToken);
+                await dc.Context.SendActivityAsync("SkillDialog: got EndOfConversation", cancellationToken: cancellationToken);
                 return await dc.EndDialogAsync(dc.Context.Activity.Value, cancellationToken);
             }
 
@@ -47,7 +47,7 @@ namespace DialogRootBot.Dialogs
 
         public override async Task EndDialogAsync(ITurnContext turnContext, DialogInstance instance, DialogReason reason, CancellationToken cancellationToken = default(CancellationToken))
         {
-            await turnContext.SendActivityAsync("RemoteDialog: In EndDialog", cancellationToken: cancellationToken);
+            await turnContext.SendActivityAsync("SkillDialog: In EndDialog", cancellationToken: cancellationToken);
             await base.EndDialogAsync(turnContext, instance, reason, cancellationToken);
         }
 

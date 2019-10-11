@@ -20,7 +20,7 @@ namespace DialogRootBot.Dialogs
         private readonly FlightBookingRecognizer _luisRecognizer;
 
         // Dependency injection uses this constructor to instantiate MainDialog
-        public MainDialog(FlightBookingRecognizer luisRecognizer, RemoteDialog bookingDialog)
+        public MainDialog(FlightBookingRecognizer luisRecognizer, SkillDialog bookingDialog)
             : base(nameof(MainDialog))
         {
             _luisRecognizer = luisRecognizer;
@@ -53,8 +53,8 @@ namespace DialogRootBot.Dialogs
         {
             if (!_luisRecognizer.IsConfigured)
             {
-                // LUIS is not configured, we just run the RemoteDialog path with an empty BookingDetailsInstance.
-                return await stepContext.BeginDialogAsync(nameof(RemoteDialog), new BookingDetails(), cancellationToken);
+                // LUIS is not configured, we just run the SkillDialog path with an empty BookingDetailsInstance.
+                return await stepContext.BeginDialogAsync(nameof(SkillDialog), new BookingDetails(), cancellationToken);
             }
 
             // Call LUIS and gather any potential booking details. (Note the TurnContext has the response to the prompt.)
@@ -79,8 +79,8 @@ namespace DialogRootBot.Dialogs
                     };
                     bookFlightArgs.Entities.Add("bookingInfo", bookingDetails);
 
-                    // Run the RemoteDialog giving it whatever details we have from the LUIS call, it will fill out the remainder.
-                    return await stepContext.BeginDialogAsync(nameof(RemoteDialog), bookFlightArgs, cancellationToken);
+                    // Run the SkillDialog giving it whatever details we have from the LUIS call, it will fill out the remainder.
+                    return await stepContext.BeginDialogAsync(nameof(SkillDialog), bookFlightArgs, cancellationToken);
 
                 case FlightBooking.Intent.GetWeather:
                     var getWeatherArgs = new RemoteDialogArgs
@@ -88,8 +88,8 @@ namespace DialogRootBot.Dialogs
                         TargetAction = "GetWeather",
                     };
 
-                    // Run the RemoteDialog
-                    return await stepContext.BeginDialogAsync(nameof(RemoteDialog), getWeatherArgs, cancellationToken);
+                    // Run the SkillDialog
+                    return await stepContext.BeginDialogAsync(nameof(SkillDialog), getWeatherArgs, cancellationToken);
 
                 default:
                     // Catch all for unhandled intents
@@ -131,7 +131,7 @@ namespace DialogRootBot.Dialogs
 
         private async Task<DialogTurnResult> FinalStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            // If the child dialog ("RemoteDialog") was cancelled, the user failed to confirm or if the intent wasn't BookFlight
+            // If the child dialog ("SkillDialog") was cancelled, the user failed to confirm or if the intent wasn't BookFlight
             // the Result here will be null.
             var bookingDetails = TryGetBookingDetailsFromResult(stepContext.Result);
             if (bookingDetails != null)
