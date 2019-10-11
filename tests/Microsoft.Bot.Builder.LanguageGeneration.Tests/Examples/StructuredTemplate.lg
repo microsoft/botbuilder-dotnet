@@ -24,8 +24,8 @@
 
 # T1
 [Activity
-    Text = {T2()}
-    Speak = foo bar {T3().speak}
+		Text = {T2()}
+		Speak = foo bar {T3().speak}
 ]
 
 # T2
