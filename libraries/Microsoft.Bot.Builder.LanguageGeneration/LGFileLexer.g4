@@ -134,7 +134,7 @@ IF
   ;
 
 ELSEIF
-  : E L S E I F WHITESPACE* ':' {expectKeywords}? { ignoreWS = true;}
+  : E L S E WHITESPACE* I F WHITESPACE* ':' {expectKeywords}? { ignoreWS = true;}
   ;
 
 ELSE

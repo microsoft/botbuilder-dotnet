@@ -808,5 +808,27 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Assert.IsTrue(
                 JToken.DeepEquals(JObject.Parse("{\"$type\":\"MyStruct\",\"text\":\"hi\"}"), evaled as JObject));
         }
+
+        [TestMethod]
+        public void TestConditionExpression()
+        {
+            var engine = new TemplateEngine().AddFile(GetExampleFilePath("ConditionExpression.lg"));
+
+            var evaled = engine.EvaluateTemplate("conditionTemplate", new { num = 1 });
+
+            Assert.AreEqual(evaled, "Your input is one");
+
+            evaled = engine.EvaluateTemplate("conditionTemplate", new { num = 2 });
+
+            Assert.AreEqual(evaled, "Your input is two");
+
+            evaled = engine.EvaluateTemplate("conditionTemplate", new { num = 3 });
+
+            Assert.AreEqual(evaled, "Your input is three");
+
+            evaled = engine.EvaluateTemplate("conditionTemplate", new { num = 4 });
+
+            Assert.AreEqual(evaled, "Your input is not one, two or three");
+        }
     }
 }
