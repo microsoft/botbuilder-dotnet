@@ -1848,6 +1848,69 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Tests
         }
 
         [TestMethod]
+        public async Task TestForeachWithPrompt()
+        {
+            var rootDialog = new AdaptiveDialog(nameof(AdaptiveDialog))
+            {
+                Generator = new TemplateEngineLanguageGenerator(),
+                Triggers = new List<OnCondition>()
+                {
+                    new OnBeginDialog() 
+                    {
+                        Actions = new List<Dialog>() 
+                        {
+                            new SetProperty() 
+                            {
+                                Property = "$colorChoices",
+                                Value = "createArray('red', 'blue', 'green')"
+                            },
+                            new InitProperty()
+                            {
+                                Property = "$userAnswers",
+                                Type = "array"
+                            },
+                            new Foreach()
+                            {
+                                ItemsProperty = "$colorChoices",
+                                Actions = new List<Dialog>()
+                                {
+                                    new TextInput()
+                                    {
+                                        AlwaysPrompt = true,
+                                        Prompt = new ActivityTemplate("Give me something that is '{$foreach.value}' in color"),
+                                        Property = "$answer"
+                                    },
+                                    new EditArray()
+                                    {
+                                        ItemsProperty = "$userAnswers",
+                                        ChangeType = EditArray.ArrayChangeType.Push,
+                                        Value = "$answer"
+                                    },
+                                    new SendActivity("You said '{$answer}' is '{$foreach.value}'.")
+                                }
+                            },
+                            new SendActivity("Here is all I have: {join($userAnswers, ', ')}.")
+                        }
+                    }
+                }
+            };
+
+            await CreateFlow(rootDialog)
+                .SendConversationUpdate()
+                    .AssertReply("Give me something that is 'red' in color")
+                .Send("fire")
+                    .AssertReply("You said 'fire' is 'red'.")
+                    .AssertReply("Give me something that is 'blue' in color")
+                .Send("sky")
+                    .AssertReply("You said 'sky' is 'blue'.")
+                    .AssertReply("Give me something that is 'green' in color")
+                .Send("grass")
+                    .AssertReply("You said 'grass' is 'green'.")
+                    .AssertReply("Here is all I have: fire, sky, grass.")
+                .StartTestAsync();
+        }
+
+        [TestMethod]
         public async Task TestBindingTwoWayAcrossAdaptiveDialogsDefaultResultProperty()
         {
             var rootDialog = new AdaptiveDialog(nameof(AdaptiveDialog))
