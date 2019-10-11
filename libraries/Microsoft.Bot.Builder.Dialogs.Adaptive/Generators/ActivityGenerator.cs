@@ -55,14 +55,22 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                 Trace.TraceWarning($"There is no ILanguageGenerator registered in the ITurnContext so no data binding was performed for template: {template}");
             }
 
-            try
+            var lgTrimmed = lgStringResult?.Trim();
+            if (lgTrimmed.StartsWith("{") && lgTrimmed.EndsWith("}"))
             {
-                var lgStructuredResult = JObject.Parse(lgStringResult);
-                return BuildActivityFromLGStructuredResult(lgStructuredResult);
+                try
+                {
+                    var lgStructuredResult = JObject.Parse(lgTrimmed);
+                    return BuildActivityFromLGStructuredResult(lgStructuredResult);
+                }
+                catch
+                {
+                    return BuildActivityFromText(lgTrimmed);
+                }
             }
-            catch
+            else
             {
-                return BuildActivityFromText(lgStringResult?.ToString()?.Trim());
+                return BuildActivityFromText(lgTrimmed);
             }
         }
 
