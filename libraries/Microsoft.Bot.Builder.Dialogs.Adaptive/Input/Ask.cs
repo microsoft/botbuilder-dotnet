@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Dialogs.Adaptive.Actions;
-using Microsoft.Bot.Builder.LanguageGeneration.Templates;
+using Microsoft.Bot.Builder.Dialogs.Adaptive.Templates;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
@@ -32,7 +31,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
         /// </value>
         public List<string> ExpectedProperties { get; set; } = new List<string>();
 
-        public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
         {
             dc.State.SetValue("dialog.expectedProperties", ExpectedProperties);
             var result = await base.BeginDialogAsync(dc, options, cancellationToken).ConfigureAwait(false);

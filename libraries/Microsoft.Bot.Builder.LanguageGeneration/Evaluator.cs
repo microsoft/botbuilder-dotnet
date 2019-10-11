@@ -314,11 +314,11 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             {
                 if (TemplateMap.ContainsKey(exp))
                 {
-                    exp = exp + "(" + string.Join(",", TemplateMap[exp].Parameters) + ")";
+                    exp += "(" + string.Join(",", TemplateMap[exp].Parameters) + ")";
                 }
                 else
                 {
-                    exp = exp + "()";
+                    exp += "()";
                 }
             }
 

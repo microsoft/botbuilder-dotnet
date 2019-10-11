@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
-using Microsoft.Bot.Builder.Expressions;
+using Microsoft.Bot.Expressions;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 {
@@ -30,6 +30,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         /// <param name="context">Dialog context for evaluation.</param>
         /// <param name="cancel">Cancellation token.</param>
         /// <returns>Best rule in original list to execute or -1 if none.</returns>
-        Task<IReadOnlyList<OnCondition>> Select(SequenceContext context, CancellationToken cancel = default(CancellationToken));
+        Task<IReadOnlyList<OnCondition>> Select(SequenceContext context, CancellationToken cancel = default);
     }
 }

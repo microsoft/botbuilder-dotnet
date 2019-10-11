@@ -15,6 +15,7 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
+using Microsoft.Bot.Builder.Dialogs.Memory.Scopes;
 using Microsoft.Bot.Builder.LanguageGeneration;
 using Microsoft.Bot.Expressions;
 using Microsoft.Bot.Schema;
@@ -219,8 +220,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         {
             // Save into turn
             sequenceContext.State.SetValue(TurnPath.DIALOGEVENT, dialogEvent);
-
-            this.EnsureDependenciesInstalled();
 
             // Count of events processed
             var count = sequenceContext.State.GetValue<uint>(EVENTCOUNTER);

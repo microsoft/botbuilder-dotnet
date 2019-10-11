@@ -1,6 +1,5 @@
 ﻿#pragma warning disable SA1401 // Fields should be private
 using System.Collections.Generic;
-using Microsoft.Bot.Builder.Expressions;
 
 namespace Microsoft.Bot.Expressions.TriggerTrees.Tests
 {
