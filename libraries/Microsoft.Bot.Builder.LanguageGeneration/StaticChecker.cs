@@ -6,8 +6,7 @@ using System.Text.RegularExpressions;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
-using Microsoft.Bot.Builder.Expressions;
-using Microsoft.Bot.Builder.Expressions.Parser;
+using Microsoft.Bot.Expressions;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
 {
@@ -199,7 +198,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
                     if (context.templateBody() == null)
                     {
-                        result.Add(BuildLGDiagnostic($"There is no template body in template {templateName}", context: context.templateNameLine()));
+                        result.Add(BuildLGDiagnostic($"There is no template body in template {templateName}", DiagnosticSeverity.Warning, context.templateNameLine()));
                     }
                     else
                     {
@@ -262,7 +261,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                         }
                     }
                 }
-
 
                 return result;
             }

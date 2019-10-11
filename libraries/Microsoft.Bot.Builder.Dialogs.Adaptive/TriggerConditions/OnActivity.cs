@@ -4,7 +4,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using Microsoft.Bot.Builder.Expressions;
+using Microsoft.Bot.Expressions;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions

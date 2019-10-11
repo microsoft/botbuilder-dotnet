@@ -20,22 +20,6 @@
     <ContentTargetFolders>content</ContentTargetFolders>
   </PropertyGroup>
 
-  <PropertyGroup>
-    <Company>Microsoft</Company>
-    <Authors>microsoft,BotFramework,nugetbotbuilder</Authors>
-    <Product>Microsoft Bot Builder SDK</Product>
-    <Copyright>© Microsoft Corporation. All rights reserved.</Copyright>
-    <PackageProjectUrl>https://github.com/Microsoft/botbuilder-dotnet</PackageProjectUrl>
-    <PackageIconUrl>http://docs.botframework.com/images/bot_icon.png</PackageIconUrl>
-    <PackageLicenseUrl>https://github.com/Microsoft/BotBuilder/blob/master/LICENSE</PackageLicenseUrl>
-    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <RepositoryUrl>https://github.com/Microsoft/botbuilder-dotnet</RepositoryUrl>
-    <LicenseUrl>https://github.com/Microsoft/BotBuilder-dotnet/blob/master/LICENSE</LicenseUrl>
-    <RepositoryType />
-    <PackageTags>bots;ai;botframework;botbuilder</PackageTags>
-    <NeutralLanguage />
-  </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Documentation|AnyCPU'">
     <DocumentationFile>bin\$(Configuration)\netstandard2.0\Microsoft.Bot.Builder.Dialogs.Declarative.xml</DocumentationFile>
   </PropertyGroup>
@@ -63,15 +47,15 @@
     <PackageReference Include="Microsoft.Bot.Builder.Dialogs" Condition=" '$(PackageVersion)' != '' " Version="$(PackageVersion)" />
     <PackageReference Include="Microsoft.Bot.Builder.AI.LUIS" Condition=" '$(PackageVersion)' == '' " Version="4.6.0-local" />
     <PackageReference Include="Microsoft.Bot.Builder.AI.LUIS" Condition=" '$(PackageVersion)' != '' " Version="$(PackageVersion)" />
-    <PackageReference Include="Microsoft.Bot.Builder.Expressions.Parser" Condition=" '$(PreviewPackageVersion)' == '' " Version="4.6.0-local" />
-    <PackageReference Include="Microsoft.Bot.Builder.Expressions.Parser" Condition=" '$(PreviewPackageVersion)' != '' " Version="$(PreviewPackageVersion)" />
+    <PackageReference Include="Microsoft.Bot.Expressions" Condition=" '$(PreviewPackageVersion)' == '' " Version="4.6.0-local" />
+    <PackageReference Include="Microsoft.Bot.Expressions" Condition=" '$(PreviewPackageVersion)' != '' " Version="$(PreviewPackageVersion)" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Microsoft.Bot.Builder\Microsoft.Bot.Builder.csproj" />
     <ProjectReference Include="..\Microsoft.Bot.Builder.Dialogs\Microsoft.Bot.Builder.Dialogs.csproj" />
     <ProjectReference Include="..\Microsoft.Bot.Builder.AI.LUIS\Microsoft.Bot.Builder.AI.Luis.csproj" />
-    <ProjectReference Include="..\Microsoft.Bot.Builder.Expressions.Parser\Microsoft.Bot.Builder.Expressions.Parser.csproj" />
+    <ProjectReference Include="..\Microsoft.Bot.Expressions\Microsoft.Bot.Expressions.csproj" />
   </ItemGroup>
 
 </Project>

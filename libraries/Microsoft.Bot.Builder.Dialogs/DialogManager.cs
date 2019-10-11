@@ -75,14 +75,14 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// </value>
         public IStorage Storage { get; set; }
 
-        public static async Task<PersistedState> LoadState(IStorage storage, PersistedStateKeys keys)
+        public static async Task<PersistedState> LoadStateAsync(IStorage storage, PersistedStateKeys keys)
         {
             var data = await storage.ReadAsync(keys.ToArray()).ConfigureAwait(false);
 
             return new PersistedState(keys, data);
         }
 
-        public static async Task SaveState(IStorage storage, PersistedStateKeys keys, PersistedState newState, PersistedState oldState = null, string eTag = null)
+        public static async Task SaveStateAsync(IStorage storage, PersistedStateKeys keys, PersistedState newState, PersistedState oldState = null, string eTag = null)
         {
             // Check for state changes
             var save = false;
@@ -222,7 +222,7 @@ namespace Microsoft.Bot.Builder.Dialogs
                     throw new Exception("DialogManager: unable to load the bots state.Bot.storage not assigned.");
                 }
 
-                state = await LoadState(storage, keys).ConfigureAwait(false);
+                state = await LoadStateAsync(storage, keys).ConfigureAwait(false);
                 saveState = true;
             }
 
@@ -261,7 +261,6 @@ namespace Microsoft.Bot.Builder.Dialogs
             namedScopes[ScopePath.USER] = newState.UserState;
             namedScopes[ScopePath.CONVERSATION] = newState.ConversationState;
             namedScopes[ScopePath.TURN] = new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
-            namedScopes[ScopePath.SETTINGS] = Configuration.LoadSettings(context.TurnState.Get<IConfiguration>()) ?? new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
 
             // Create DialogContext
             var dc = new DialogContext(
@@ -294,7 +293,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             // Save state if loaded from storage
             if (saveState)
             {
-                await DialogManager.SaveState(storage, keys: keys, newState: newState, oldState: state, eTag: "*").ConfigureAwait(false);
+                await DialogManager.SaveStateAsync(storage, keys: keys, newState: newState, oldState: state, eTag: "*").ConfigureAwait(false);
                 return new DialogManagerResult() { TurnResult = turnResult };
             }
             else

@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data;
 
 namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
 {
@@ -92,7 +93,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
         }
 
         /// <summary>
-        /// Gets whether this memory scope settable
+        /// Gets or sets a value indicating whether this memory scope mutable.
         /// </summary>
         public bool IsReadOnly { get; protected set; }
 
@@ -125,6 +126,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
         /// <param name="memory">memory</param>
         public virtual void SetMemory(DialogContext dc, object memory)
         {
+            if (this.IsReadOnly)
+            {
+                throw new NotSupportedException("You cannot set the memory for a readonly memory scope");
+            }
+
             if (dc == null)
             {
                 throw new ArgumentNullException(nameof(dc));

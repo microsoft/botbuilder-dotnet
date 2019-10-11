@@ -12,7 +12,6 @@ using Microsoft.Bot.Builder.Dialogs.Declarative;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Resources;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Tests.Recognizers;
 using Microsoft.Bot.Builder.Dialogs.Declarative.Types;
-using Microsoft.Bot.Builder.LanguageGeneration;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;

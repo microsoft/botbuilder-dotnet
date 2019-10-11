@@ -7,8 +7,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Expressions;
-using Microsoft.Bot.Builder.Expressions.Parser;
+using Microsoft.Bot.Expressions;
 using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions

@@ -53,7 +53,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
              new MemoryScope(ScopePath.USER),
              new MemoryScope(ScopePath.CONVERSATION),
              new MemoryScope(ScopePath.TURN),
-             new MemoryScope(ScopePath.SETTINGS, isReadOnly: true),
+             new SettingsMemoryScope(),
              new DialogMemoryScope(),
              new ClassMemoryScope(),
              new ThisMemoryScope()
@@ -142,11 +142,24 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         /// <returns>true if found, false if not</returns>
         public bool TryGetValue<T>(string path, out T value)
         {
+            value = default(T);
             path = this.TransformPath(path ?? throw new ArgumentNullException(nameof(path)));
+
             var memoryScope = this.ResolveMemoryScope(path, out var remainingPath);
             var memory = memoryScope.GetMemory(this.dialogContext);
-            return ObjectPath.TryGetPathValue<T>(memory, remainingPath, out value);
+
+            // HACK to support .First() retrieval on turn.recognized.entities.foo, replace with Expressions once expression ship
+            int iFirst = remainingPath.ToLower().LastIndexOf(".first()");
+            if (iFirst >= 0)
+            {
+                return TryGetFirstNestedValue(ref value, ref remainingPath, memory, iFirst);
+            }
+            else
+            {
+                return ObjectPath.TryGetPathValue<T>(memory, remainingPath, out value);
+            }
         }
+
 
         /// <summary>
         /// Get the value from memory using path expression (NOTE: This always returns clone of value)
@@ -245,7 +258,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
         {
             var result = new JObject();
 
-            foreach (var scope in DialogStateManager.MemoryScopes)
+            foreach (var scope in DialogStateManager.MemoryScopes.Where(ms => ms.IsReadOnly == false))
             {
                 var memory = scope.GetMemory(this.dialogContext);
                 if (memory != null)
@@ -322,7 +335,39 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory
             }
         }
 
+        private bool TryGetFirstNestedValue<T>(ref T value, ref string remainingPath, object memory, int iFirst)
+        {
+            remainingPath = remainingPath.Substring(0, iFirst);
+            if (ObjectPath.TryGetPathValue<JArray>(memory, $"{remainingPath}", out JArray array))
+            {
+                if (array != null && array.Count > 0)
+                {
+                    var first = array[0] as JArray;
+                    if (first != null)
+                    {
+                        if (first.Count > 0)
+                        {
+                            var second = first[0];
+                            value = ObjectPath.MapValueTo<T>(second);
+                            return true;
+                        }
+
+                        return false;
+                    }
+                    else
+                    {
+                        value = ObjectPath.MapValueTo<T>(array[0]);
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+#pragma warning disable SA1204 // Static elements should appear before instance elements
         private static string GetBadScopeMessage(string path)
+#pragma warning restore SA1204 // Static elements should appear before instance elements
         {
             return $"'{path}' does not match memory scopes:{string.Join(",", DialogStateManager.MemoryScopes.Select(ms => ms.Name))}";
         }

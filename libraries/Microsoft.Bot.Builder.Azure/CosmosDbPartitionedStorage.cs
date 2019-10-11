@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Azure.Cosmos;
@@ -93,19 +94,19 @@ namespace Microsoft.Bot.Builder.Azure
 
             foreach (var key in keys)
             {
-                var resultSetIterator = _container.GetItemQueryIterator<DocumentStoreItem>(
-                    requestOptions: new QueryRequestOptions() { PartitionKey = new PartitionKey(key), });
-
-                var documentStoreItems = new List<DocumentStoreItem>();
-                while (resultSetIterator.HasMoreResults)
+                try
                 {
-                    documentStoreItems.AddRange(await resultSetIterator.ReadNextAsync(cancellationToken)
-                        .ConfigureAwait(false));
-                }
+                    var escapedKey = CosmosDbKeyEscape.EscapeKey(key);
 
-                foreach (var documentStoreItem in documentStoreItems)
-                {
+                    var readItemResponse = await _container.ReadItemAsync<DocumentStoreItem>(
+                            escapedKey,
+                            new PartitionKey(escapedKey),
+                            cancellationToken: cancellationToken)
+                        .ConfigureAwait(false);
+
+                    var documentStoreItem = readItemResponse.Resource;
                     var item = documentStoreItem.Document.ToObject(typeof(object), _jsonSerializer);
+
                     if (item is IStoreItem storeItem)
                     {
                         storeItem.ETag = documentStoreItem.ETag;
@@ -115,6 +116,18 @@ namespace Microsoft.Bot.Builder.Azure
                     {
                         storeItems.Add(documentStoreItem.RealId, item);
                     }
+                }
+                catch (CosmosException exception)
+                {
+                    // When an item is not found a CosmosException is thrown, but we want to
+                    // return an empty collection so in this instance we catch and do not rethrow.
+                    // Throw for any other exception.
+                    if (exception.StatusCode == HttpStatusCode.NotFound)
+                    {
+                        break;
+                    }
+
+                    throw;
                 }
             }
 
@@ -189,11 +202,28 @@ namespace Microsoft.Bot.Builder.Azure
 
             foreach (var key in keys)
             {
-                await _container.DeleteItemAsync<DocumentStoreItem>(
-                    partitionKey: new PartitionKey(key),
-                    id: CosmosDbKeyEscape.EscapeKey(key),
-                    cancellationToken: cancellationToken)
-                    .ConfigureAwait(false);
+                var escapedKey = CosmosDbKeyEscape.EscapeKey(key);
+
+                try
+                {
+                    await _container.DeleteItemAsync<DocumentStoreItem>(
+                            partitionKey: new PartitionKey(escapedKey),
+                            id: escapedKey,
+                            cancellationToken: cancellationToken)
+                        .ConfigureAwait(false);
+                }
+                catch (CosmosException exception)
+                {
+                    // If we get a 404 status then the item we tried to delete was not found
+                    // To maintain consistency with other storage providers, we ignore this and return.
+                    // Any other exceptions are thrown.
+                    if (exception.StatusCode == HttpStatusCode.NotFound)
+                    {
+                        return;
+                    }
+
+                    throw;
+                }
             }
         }
 
@@ -216,13 +246,14 @@ namespace Microsoft.Bot.Builder.Azure
 
                 if (_container == null)
                 {
-                    _container = await _client
+                    var containerResponse = await _client
                         .GetDatabase(_cosmosDbStorageOptions.DatabaseId)
-                        .CreateContainerIfNotExistsAsync(
-                            _cosmosDbStorageOptions.ContainerId,
-                            DocumentStoreItem.PartitionKeyPath,
-                            _cosmosDbStorageOptions.ContainerThroughput)
+                        .DefineContainer(_cosmosDbStorageOptions.ContainerId, DocumentStoreItem.PartitionKeyPath)
+                        .WithIndexingPolicy().WithAutomaticIndexing(false).WithIndexingMode(IndexingMode.None).Attach()
+                        .CreateIfNotExistsAsync(_cosmosDbStorageOptions.ContainerThroughput)
                         .ConfigureAwait(false);
+
+                    _container = containerResponse.Container;
                 }
             }
         }
@@ -235,7 +266,7 @@ namespace Microsoft.Bot.Builder.Azure
             /// <summary>
             /// Gets the PartitionKey path to be used for this document type.
             /// </summary>
-            public static string PartitionKeyPath => "/realId";
+            public static string PartitionKeyPath => "/id";
 
             /// <summary>
             /// Gets or sets the sanitized Id/Key used as PrimaryKey.
@@ -246,10 +277,6 @@ namespace Microsoft.Bot.Builder.Azure
             /// <summary>
             /// Gets or sets the un-sanitized Id/Key.
             /// </summary>
-            /// <remarks>
-            /// Note: There is a Typo in the property name ("RealId"), that can't be changed due to compatability concerns. The
-            /// Json is correct due to the JsonProperty field, but the Typo needs to stay.
-            /// </remarks>
             [JsonProperty("realId")]
             public string RealId { get; internal set; }
 
@@ -268,7 +295,7 @@ namespace Microsoft.Bot.Builder.Azure
             /// <summary>
             /// Gets the PartitionKey value for the document.
             /// </summary>
-            public string PartitionKey => this.RealId;
+            public string PartitionKey => this.Id;
         }
     }
 }

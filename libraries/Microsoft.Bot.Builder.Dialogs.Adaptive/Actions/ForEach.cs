@@ -6,8 +6,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder.Expressions;
-using Microsoft.Bot.Builder.Expressions.Parser;
+using Microsoft.Bot.Expressions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -60,7 +59,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                 if (options != null && options is ForeachOptions)
                 {
                     var opt = options as ForeachOptions;
-                    itemsProperty = opt.List;
+                    if (!String.IsNullOrEmpty(opt.List))
+                    {
+                        itemsProperty = new ExpressionEngine().Parse(opt.List);
+                    }
                     offset = opt.Offset;
                 }
 
@@ -87,7 +89,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
                             DialogId = this.Id,
                             Options = new ForeachOptions()
                             {
-                                List = itemsProperty,
+                                List = ItemsProperty,
                                 Offset = offset + 1
                             }
                         });
@@ -128,7 +130,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Actions
 
         public class ForeachOptions
         {
-            public Expression List { get; set; }
+            public string List { get; set; }
 
             public int Offset { get; set; }
         }

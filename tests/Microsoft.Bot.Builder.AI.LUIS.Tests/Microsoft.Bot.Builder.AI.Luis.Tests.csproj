@@ -5,6 +5,8 @@
     <IsPackable>false</IsPackable>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
     <Configurations>Debug;Release</Configurations>
+    <!-- The MockHttp package isn't signed, so supress the warning. -->
+    <NoWarn>$(NoWarn),CS8002</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

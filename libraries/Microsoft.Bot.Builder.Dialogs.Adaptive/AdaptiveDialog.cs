@@ -15,10 +15,8 @@ using Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Input;
 using Microsoft.Bot.Builder.Dialogs.Adaptive.Selectors;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
-using Microsoft.Bot.Builder.Dialogs.Memory.Scopes;
-using Microsoft.Bot.Builder.Expressions;
-using Microsoft.Bot.Builder.Expressions.Parser;
 using Microsoft.Bot.Builder.LanguageGeneration;
+using Microsoft.Bot.Expressions;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging.Internal;
 using Newtonsoft.Json.Linq;
@@ -88,7 +86,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
         /// <summary>
         /// Gets or sets the property to return as the result when the dialog ends when there are no more Actions and AutoEndDialog = true.
-        /// </value>
+        /// </summary>
         public string DefaultResultProperty { get; set; } = "dialog.result";
 
         /// <summary>
@@ -201,7 +199,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             return null;
         }
 
-        protected override async Task<bool> OnPreBubbleEvent(DialogContext dc, DialogEvent dialogEvent, CancellationToken cancellationToken = default(CancellationToken))
+        protected override async Task<bool> OnPreBubbleEventAsync(DialogContext dc, DialogEvent dialogEvent, CancellationToken cancellationToken = default(CancellationToken))
         {
             var sequenceContext = this.ToSequenceContext(dc);
 
@@ -209,7 +207,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
             return await this.ProcessEventAsync(sequenceContext, dialogEvent, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
 
-        protected override async Task<bool> OnPostBubbleEvent(DialogContext dc, DialogEvent dialogEvent, CancellationToken cancellationToken = default(CancellationToken))
+        protected override async Task<bool> OnPostBubbleEventAsync(DialogContext dc, DialogEvent dialogEvent, CancellationToken cancellationToken = default(CancellationToken))
         {
             var sequenceContext = this.ToSequenceContext(dc);
 
@@ -221,6 +219,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
         {
             // Save into turn
             sequenceContext.State.SetValue(TurnPath.DIALOGEVENT, dialogEvent);
+
+            this.EnsureDependenciesInstalled();
 
             // Count of events processed
             var count = sequenceContext.State.GetValue<uint>(EVENTCOUNTER);
@@ -247,9 +247,32 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
                     case AdaptiveEvents.ActivityReceived:
 
-                        var activity = sequenceContext.Context.Activity;
+                        if (sequenceContext.Context.Activity.Type == ActivityTypes.Message)
+                        {
+                            // Recognize utterance (ignore handled)
+                            var recognizeUtteranceEvent = new DialogEvent() { Name = AdaptiveEvents.RecognizeUtterance, Value = sequenceContext.Context.Activity, Bubble = false };
+                            await this.ProcessEventAsync(sequenceContext, dialogEvent: recognizeUtteranceEvent, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
 
-                        if (activity.Type == ActivityTypes.Message)
+                            // Emit leading RecognizedIntent event
+                            var recognized = sequenceContext.State.GetValue<RecognizerResult>(TurnPath.RECOGNIZED);
+                            var recognizedIntentEvent = new DialogEvent() { Name = AdaptiveEvents.RecognizedIntent, Value = recognized, Bubble = false };
+                            handled = await this.ProcessEventAsync(sequenceContext, dialogEvent: recognizedIntentEvent, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
+                        }
+
+                        // Has an interruption occured?
+                        // - Setting this value to true causes any running inputs to re-prompt when they're
+                        //   continued.  The developer can clear this flag if they want the input to instead
+                        //   process the users uterrance when its continued.
+                        if (handled)
+                        {
+                            sequenceContext.State.SetValue(TurnPath.INTERRUPTED, true);
+                        }
+
+                        break;
+
+                    case AdaptiveEvents.RecognizeUtterance:
+
+                        if (sequenceContext.Context.Activity.Type == ActivityTypes.Message)
                         {
                             // Recognize utterance
                             var recognized = await this.OnRecognize(sequenceContext, cancellationToken).ConfigureAwait(false);
@@ -262,21 +285,10 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive
 
                             if (this.Recognizer != null)
                             {
-                                await sequenceContext.DebuggerStepAsync(Recognizer, AdaptiveEvents.RecognizedIntent, cancellationToken).ConfigureAwait(false);
+                                await sequenceContext.DebuggerStepAsync(Recognizer, AdaptiveEvents.RecognizeUtterance, cancellationToken).ConfigureAwait(false);
                             }
 
-                            // Emit leading RecognizedIntent event
-                            var recognizedIntentEvent = new DialogEvent() { Name = AdaptiveEvents.RecognizedIntent, Value = recognized, Bubble = false };
-                            handled = await this.ProcessEventAsync(sequenceContext, dialogEvent: recognizedIntentEvent, preBubble: true, cancellationToken: cancellationToken).ConfigureAwait(false);
-                        }
-
-                        // Has an interruption occured?
-                        // - Setting this value to true causes any running inputs to re-prompt when they're
-                        //   continued.  The developer can clear this flag if they want the input to instead
-                        //   process the users uterrance when its continued.
-                        if (handled)
-                        {
-                            sequenceContext.State.SetValue(TurnPath.INTERRUPTED, true);
+                            handled = true;
                         }
 
                         break;

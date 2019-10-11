@@ -7,8 +7,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using Antlr4.Runtime.Misc;
 using Antlr4.Runtime.Tree;
-using Microsoft.Bot.Builder.Expressions;
-using Microsoft.Bot.Builder.Expressions.Parser;
+using Microsoft.Bot.Expressions;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.Bot.Builder.LanguageGeneration
@@ -449,7 +448,6 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 }
             }
         }
-
 
         private Func<IReadOnlyList<object>, object> TemplateEvaluator(string templateName)
         => (IReadOnlyList<object> args) =>

@@ -1,11 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Version Condition=" '$(PackageVersion)' == '' ">4.6.0-local</Version>
-    <Version Condition=" '$(PackageVersion)' != '' ">$(PackageVersion)</Version>
-    <PackageVersion Condition=" '$(PackageVersion)' == '' ">4.6.0-local</PackageVersion>
-    <PackageVersion Condition=" '$(PackageVersion)' != '' ">$(PackageVersion)</PackageVersion>
-    <DefineConstants></DefineConstants>
+    <Version Condition=" '$(PreviewPackageVersion)' == '' ">4.6.0-local</Version>
+    <Version Condition=" '$(PreviewPackageVersion)' != '' ">$(PreviewPackageVersion)</Version>
+    <PackageVersion Condition=" '$(PreviewPackageVersion)' == '' ">4.6.0-local</PackageVersion>
+    <PackageVersion Condition=" '$(PreviewPackageVersion)' != '' ">$(PreviewPackageVersion)</PackageVersion>
     <Configurations>Debug;Release</Configurations>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>

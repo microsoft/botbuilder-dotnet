@@ -39,7 +39,9 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core.Tests
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+#pragma warning disable CS0618 // Type or member is obsolete
             app.UseBotApplicationInsights();
+#pragma warning restore CS0618 // Type or member is obsolete
             var telemetryClient = app.ApplicationServices.GetService<IBotTelemetryClient>();
             Assert.IsNotNull(telemetryClient);
             Assert.IsTrue(telemetryClient is BotTelemetryClient);

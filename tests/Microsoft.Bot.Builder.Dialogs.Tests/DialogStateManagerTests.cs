@@ -93,6 +93,27 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         }
 
         [TestMethod]
+        public void TestMemorySnapshot()
+        {
+            var dialogs = new DialogSet();
+            var dc = new DialogContext(dialogs, new TurnContext(new TestAdapter(), new Schema.Activity()), (DialogState)new DialogState());
+            DialogStateManager state = new DialogStateManager(dc);
+
+            JObject snapshot = state.GetMemorySnapshot();
+            foreach (var memoryScope in DialogStateManager.MemoryScopes.Where(ms => ms.Name != "dialog" && ms.Name != "this"))
+            {
+                if (memoryScope.IsReadOnly)
+                {
+                    Assert.IsNull(snapshot.Property(memoryScope.Name));
+                }
+                else
+                {
+                    Assert.IsNotNull(snapshot.Property(memoryScope.Name));
+                }
+            }
+        }
+
+        [TestMethod]
         public void TestPathResolverTransform()
         {
             // dollar tests
@@ -108,7 +129,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.AreEqual("turn.recognized.intents.foo.bar[0]", new HashPathResolver().TransformPath("#foo.bar[0]"));
 
             // @ test
-            Assert.AreEqual("turn.recognized.entities.foo[0]", new AtPathResolver().TransformPath("@foo"));
+            Assert.AreEqual("turn.recognized.entities.foo.first()", new AtPathResolver().TransformPath("@foo"));
 
             // @@ teest
             Assert.AreEqual("turn.recognized.entities.foo", new AtAtPathResolver().TransformPath("@@foo"));
@@ -154,6 +175,36 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             state.SetValue("tuRn.StR", "string1");
             state.SetValue("TuRn.STr", "string2");
             Assert.AreEqual("string2", state.GetValue<string>("turn.str"));
+        }
+
+        [TestMethod]
+        public void TestEntitiesRetrieval()
+        {
+            var dialogs = new DialogSet();
+            var dc = new DialogContext(dialogs, new TurnContext(new TestAdapter(), new Schema.Activity()), (DialogState)new DialogState());
+            DialogStateManager state = new DialogStateManager(dc);
+            
+            var array = new JArray();
+            array.Add("test1");
+            array.Add("test2");
+            array.Add("test3");
+            
+            var array2 = new JArray();
+            array2.Add("testx");
+            array2.Add("testy");
+            array2.Add("testz"); 
+            
+            var arrayarray = new JArray();
+            arrayarray.Add(array2);
+            arrayarray.Add(array);
+            
+            state.SetValue("turn.recognized.entities.single", array);
+            state.SetValue("turn.recognized.entities.double", arrayarray);
+
+            Assert.AreEqual("test1", state.GetValue<string>("@single"));
+            Assert.AreEqual("testx", state.GetValue<string>("@double"));
+            Assert.AreEqual("test1", state.GetValue<string>("turn.recognized.entities.single.First()"));
+            Assert.AreEqual("testx", state.GetValue<string>("turn.recognized.entities.double.First()"));
         }
 
         [TestMethod]

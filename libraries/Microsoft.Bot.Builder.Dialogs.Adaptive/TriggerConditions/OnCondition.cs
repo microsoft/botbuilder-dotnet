@@ -6,8 +6,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Memory;
@@ -181,7 +179,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Conditions
         /// <summary>
         /// Method called to execute the rule's actions.
         /// </summary>
-        /// <param name="planningContext">Context.</param>
         /// <returns>A <see cref="Task"/> with plan change list.</returns>
         public virtual string GetIdentity()
         {
