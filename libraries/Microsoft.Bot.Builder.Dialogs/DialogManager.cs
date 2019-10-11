@@ -262,7 +262,6 @@ namespace Microsoft.Bot.Builder.Dialogs
             namedScopes[ScopePath.USER] = newState.UserState;
             namedScopes[ScopePath.CONVERSATION] = newState.ConversationState;
             namedScopes[ScopePath.TURN] = new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
-            namedScopes[ScopePath.SETTINGS] = Configuration.LoadSettings(context.TurnState.Get<IConfiguration>()) ?? new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
 
             // Create DialogContext
             var dc = new DialogContext(
