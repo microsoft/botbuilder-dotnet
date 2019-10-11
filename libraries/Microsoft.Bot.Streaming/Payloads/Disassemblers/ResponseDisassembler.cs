@@ -9,7 +9,7 @@ using Microsoft.Bot.Streaming.PayloadTransport;
 
 namespace Microsoft.Bot.Streaming.Payloads
 {
-    internal class ResponseDisassembler : PayloadDisassembler
+    public class ResponseDisassembler : PayloadDisassembler
     {
         public ResponseDisassembler(IPayloadSender sender, Guid id, StreamingResponse response)
            : base(sender, id)

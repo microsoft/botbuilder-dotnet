@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Bot.Streaming.Transport.WebSockets
 {
-    internal class WebSocketTransport : ITransportSender, ITransportReceiver
+    public class WebSocketTransport : ITransportSender, ITransportReceiver
     {
         private readonly WebSocket _socket;
 

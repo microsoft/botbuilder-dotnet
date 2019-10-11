@@ -5,12 +5,7 @@ using System;
 
 namespace Microsoft.Bot.Streaming.Transport
 {
-#if DEBUG
-    public
-#else
-    internal
-#endif
-    interface ITransport : IDisposable
+    public interface ITransport : IDisposable
     {
         bool IsConnected { get; }
 

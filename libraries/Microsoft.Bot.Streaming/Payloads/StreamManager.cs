@@ -7,7 +7,7 @@ using System.IO;
 
 namespace Microsoft.Bot.Streaming.Payloads
 {
-    internal class StreamManager : IStreamManager
+    public class StreamManager : IStreamManager
     {
         private readonly ConcurrentDictionary<Guid, PayloadStreamAssembler> _activeAssemblers;
         private readonly Action<PayloadStreamAssembler> _onCancelStream;

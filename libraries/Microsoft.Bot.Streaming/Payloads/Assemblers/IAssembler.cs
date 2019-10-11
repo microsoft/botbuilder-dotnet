@@ -6,7 +6,7 @@ using System.IO;
 
 namespace Microsoft.Bot.Streaming.Payloads
 {
-    internal interface IAssembler
+    public interface IAssembler
     {
         bool End { get; }
 

@@ -10,7 +10,7 @@ using Microsoft.Bot.Streaming.Utilities;
 
 namespace Microsoft.Bot.Streaming.PayloadTransport
 {
-    internal class PayloadReceiver : IPayloadReceiver
+    public class PayloadReceiver : IPayloadReceiver
     {
         private Func<Header, Stream> _getStream;
         private Action<Header, Stream, int> _receiveAction;
