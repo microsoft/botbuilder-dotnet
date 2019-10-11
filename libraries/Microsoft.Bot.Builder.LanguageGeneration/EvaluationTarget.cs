@@ -18,8 +18,15 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             Scope = scope;
         }
 
+        public Dictionary<string, object> EvaluatedChildren { get; set; } = new Dictionary<string, object>();
+
         public string TemplateName { get; set; }
 
         public object Scope { get; set; }
+
+        public string GetId()
+        {
+            return TemplateName + Scope?.ToString();
+        }
     }
 }
