@@ -45,7 +45,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public async Task TestHerocard()
         {
-            var context = await GetTurnContext("NonAdaptiveCardActivity.lg");
+            var context = await GetLGContext();
             var mg = new ActivityGenerator();
             dynamic data = new JObject();
             data.type = "herocard";
@@ -67,14 +67,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             {
                 Assert.AreEqual($"Option {i + 1}", card.Buttons[i].Title, "card buttons should be set");
             }
-
-            // TODO add all of the other property types 
         }
 
         [TestMethod]
         public async Task TestThmbnailCard()
         {
-            var context = await GetTurnContext("NonAdaptiveCardActivity.lg");
+            var context = await GetLGContext();
             var mg = new ActivityGenerator();
             dynamic data = new JObject();
             data.type = "thumbnailcard";
@@ -101,7 +99,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public async Task TestCardAction()
         {
-            var context = await GetTurnContext("NonAdaptiveCardActivity.lg");
+            var context = await GetLGContext();
             var mg = new ActivityGenerator();
             dynamic data = new JObject();
             data.title = "titleContent";
@@ -125,11 +123,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public async Task TestAdaptiveCard()
         {
-            var context = await GetTurnContext("AdaptiveCardActivity.lg");
+            var context = await GetLGContext();
             var mg = new ActivityGenerator();
             dynamic data = new JObject();
             data.adaptiveCardTitle = "test";
-            IMessageActivity activity = await mg.Generate(context, "[prompt]", data: data) as Activity;
+            IMessageActivity activity = await mg.Generate(context, "[adaptivecardActivity]", data: data) as Activity;
             Assert.AreEqual(ActivityTypes.Message, activity.Type);
             Assert.IsTrue(string.IsNullOrEmpty(activity.Text));
             Assert.IsTrue(string.IsNullOrEmpty(activity.Speak));
@@ -141,7 +139,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         [TestMethod]
         public async Task TestEventActivity()
         {
-            var context = await GetTurnContext("NonAdaptiveCardActivity.lg");
+            var context = await GetLGContext();
             var mg = new ActivityGenerator();
             dynamic data = new JObject();
             data.text = "text content";
@@ -149,6 +147,77 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.AreEqual(ActivityTypes.Event, activity.Type);
             Assert.AreEqual("text content", activity.Name, "card name should be set");
             Assert.AreEqual("text content", activity.Value, "card value should be set");
+        }
+
+        [TestMethod]
+        public async Task TestActivityWithHerocardAttachment()
+        {
+            var context = await GetLGContext();
+            var mg = new ActivityGenerator();
+            dynamic data = new JObject();
+            data.title = "titleContent";
+            data.text = "textContent";
+            IMessageActivity activity = await mg.Generate(context, "[activityWithHeroCardAttachment]", data: data) as Activity;
+            Assert.AreEqual(ActivityTypes.Message, activity.Type);
+            Assert.IsTrue(string.IsNullOrEmpty(activity.Text));
+            Assert.IsTrue(string.IsNullOrEmpty(activity.Speak));
+            Assert.AreEqual(1, activity.Attachments.Count);
+            Assert.AreEqual(HeroCard.ContentType, activity.Attachments[0].ContentType);
+            var card = ((JObject)activity.Attachments[0].Content).ToObject<HeroCard>();
+            Assert.IsNotNull(card, "should have herocard");
+            Assert.AreEqual("titleContent", card.Title, "card title should be set");
+            Assert.AreEqual("textContent", card.Text, "card text should be set");
+            Assert.AreEqual(1, card.Buttons.Count, "card buttons should be set");
+            Assert.AreEqual($"imBack", card.Buttons[0].Type, "card buttons should be set");
+            Assert.AreEqual($"titleContent", card.Buttons[0].Title, "card buttons should be set");
+            Assert.AreEqual($"textContent", card.Buttons[0].Value, "card buttons should be set");
+        }
+
+        [TestMethod]
+        public async Task TestActivityWithMultiAttachments()
+        {
+            var context = await GetLGContext();
+            var mg = new ActivityGenerator();
+            dynamic data = new JObject();
+            data.title = "titleContent";
+            data.text = "textContent";
+            IMessageActivity activity = await mg.Generate(context, "[activityWithMultiAttachments]", data: data) as Activity;
+            Assert.AreEqual(ActivityTypes.Message, activity.Type);
+            Assert.IsTrue(string.IsNullOrEmpty(activity.Text));
+            Assert.IsTrue(string.IsNullOrEmpty(activity.Speak));
+            Assert.AreEqual(2, activity.Attachments.Count);
+            Assert.AreEqual(ThumbnailCard.ContentType, activity.Attachments[1].ContentType);
+            var card = ((JObject)activity.Attachments[1].Content).ToObject<ThumbnailCard>();
+            Assert.IsNotNull(card, "should have herocard");
+            Assert.AreEqual("Cheese gromit!", card.Title, "card title should be set");
+            Assert.AreEqual("type", card.Subtitle, "card subtitle should be data bound ");
+            Assert.AreEqual("This is some text describing the card, it's cool because it's cool", card.Text, "card text should be set");
+            Assert.AreEqual("https://memegenerator.net/img/instances/500x/73055378/cheese-gromit.jpg", card.Images[0].Url, "image should be set");
+            Assert.AreEqual("https://memegenerator.net/img/instances/500x/73055378/cheese-gromit.jpg", card.Images[1].Url, "image should be set");
+            Assert.AreEqual(3, card.Buttons.Count, "card buttons should be set");
+            for (int i = 0; i <= 2; i++)
+            {
+                Assert.AreEqual($"Option {i + 1}", card.Buttons[i].Title, "card buttons should be set");
+            }
+        }
+
+        [TestMethod]
+        public async Task TestActivityWithSuggestionActions()
+        {
+            var context = await GetLGContext();
+            var mg = new ActivityGenerator();
+            dynamic data = new JObject();
+            data.title = "titleContent";
+            data.text = "textContent";
+            IMessageActivity activity = await mg.Generate(context, "[activityWithSuggestionActions]", data: data) as Activity;
+            Assert.AreEqual(ActivityTypes.Message, activity.Type);
+            Assert.AreEqual("textContent", activity.Text);
+            Assert.AreEqual(activity.SuggestedActions.Actions.Count, 2);
+            Assert.AreEqual(activity.SuggestedActions.Actions[0].DisplayText, "firstItem");
+            Assert.AreEqual(activity.SuggestedActions.Actions[0].Title, "firstItem");
+            Assert.AreEqual(activity.SuggestedActions.Actions[0].Text, "firstItem");
+            Assert.AreEqual(activity.SuggestedActions.Actions[1].Title, "titleContent");
+            Assert.AreEqual(activity.SuggestedActions.Actions[1].Value, "textContent");
         }
 
         private static string GetProjectFolder()
@@ -169,6 +238,11 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             var lgText = await resourceExplorer.GetResource(lgFile).ReadTextAsync();
             context.TurnState.Add<ILanguageGenerator>(new TemplateEngineLanguageGenerator(lgText, "test", LanguageGeneratorManager.ResourceResolver(resourceExplorer)));
             return context;
+        }
+
+        private async Task<ITurnContext> GetLGContext()
+        {
+            return await GetTurnContext("NormalStructuredLG.lg");
         }
     }
 }
