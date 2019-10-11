@@ -93,6 +93,27 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
         }
 
         [TestMethod]
+        public void TestMemorySnapshot()
+        {
+            var dialogs = new DialogSet();
+            var dc = new DialogContext(dialogs, new TurnContext(new TestAdapter(), new Schema.Activity()), (DialogState)new DialogState());
+            DialogStateManager state = new DialogStateManager(dc);
+
+            JObject snapshot = state.GetMemorySnapshot();
+            foreach (var memoryScope in DialogStateManager.MemoryScopes.Where(ms => ms.Name != "dialog" && ms.Name != "this"))
+            {
+                if (memoryScope.IsReadOnly)
+                {
+                    Assert.IsNull(snapshot.Property(memoryScope.Name));
+                }
+                else
+                {
+                    Assert.IsNotNull(snapshot.Property(memoryScope.Name));
+                }
+            }
+        }
+
+        [TestMethod]
         public void TestPathResolverTransform()
         {
             // dollar tests
