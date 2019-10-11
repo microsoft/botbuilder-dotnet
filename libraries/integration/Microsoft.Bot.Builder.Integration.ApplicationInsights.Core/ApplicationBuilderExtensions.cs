@@ -15,6 +15,9 @@ namespace Microsoft.Bot.Builder.Integration.ApplicationInsights.Core
         /// </summary>
         /// <param name="applicationBuilder">The <see cref="IApplicationBuilder"/>.</param>
         /// <returns>A reference to this instance after the operation has completed.</returns>
+        // This class has been deprecated in favor of using TelemetryInitializerMiddleware in
+        // Microsoft.Bot.Integration.ApplicationInsights.Core and Microsoft.Bot.Integration.ApplicationInsights.WebApi
+        [Obsolete("This class is deprecated. Please add TelemetryInitializerMiddleware to your adapter's middleware pipeline instead.")]
         public static IApplicationBuilder UseBotApplicationInsights(this IApplicationBuilder applicationBuilder)
         {
             if (applicationBuilder == null)

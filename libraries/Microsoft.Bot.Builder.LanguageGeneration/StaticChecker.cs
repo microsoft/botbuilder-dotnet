@@ -37,6 +37,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     var resources = rootResource.DiscoverDependencies(importResolver);
                     totalLGResources.AddRange(resources);
                 }
+
                 var deduplicatedLGResources = totalLGResources.GroupBy(x => x.Id).Select(x => x.First()).ToList();
                 templates = deduplicatedLGResources.SelectMany(x => x.Templates).ToList();
             }
@@ -108,6 +109,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
             private string currentSource = string.Empty;
             private ExpressionEngine baseExpressionEngine;
+            private readonly Regex expressionRecognizeRegex = new Regex(@"@?(?<!\\)\{.+?(?<!\\)\}", RegexOptions.Compiled);
 
             private IExpressionParser _expressionParser;
 
@@ -130,6 +132,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                         var evaluator = new Evaluator(Templates, baseExpressionEngine);
                         _expressionParser = evaluator.ExpressionEngine;
                     }
+
                     return _expressionParser;
                 }
             }
@@ -234,6 +237,32 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                         result.AddRange(item);
                     }
                 }
+
+                return result;
+            }
+
+            public override List<Diagnostic> VisitStructuredTemplateBody([NotNull] LGFileParser.StructuredTemplateBodyContext context)
+            {
+                var result = new List<Diagnostic>();
+
+                var bodys = context.structuredBodyContentLine()?.STRUCTURED_CONTENT();
+                if (bodys == null || bodys.Length == 0 || bodys.All(u => string.IsNullOrEmpty(u.GetText())))
+                {
+                    result.Add(BuildLGDiagnostic($"Structured content is empty", context: context.structuredBodyContentLine()));
+                }
+                else
+                {
+                    foreach (var body in bodys)
+                    {
+                        var line = body.GetText().Trim();
+                        var start = line.IndexOf('=');
+                        if (start < 0 && !IsPureExpression(line))
+                        {
+                            result.Add(BuildLGDiagnostic($"Structured content does not support", context: context.structuredBodyContentLine()));
+                        }
+                    }
+                }
+
 
                 return result;
             }
@@ -452,6 +481,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     result.Add(BuildLGDiagnostic(e.Message + $" in template reference `{exp}`", context: context));
                     return result;
                 }
+
                 return result;
             }
 
@@ -519,6 +549,18 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                 var range = new Range(startPosition, stopPosition);
                 message = $"source: {currentSource}. error message: {message}";
                 return new Diagnostic(range, message, severity);
+            }
+
+            private bool IsPureExpression(string exp)
+            {
+                if (string.IsNullOrWhiteSpace(exp))
+                {
+                    return false;
+                }
+
+                exp = exp.Trim();
+                var expressions = expressionRecognizeRegex.Matches(exp);
+                return expressions.Count == 1 && expressions[0].Value == exp;
             }
         }
     }

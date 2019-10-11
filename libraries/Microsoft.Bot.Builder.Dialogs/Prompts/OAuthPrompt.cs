@@ -57,9 +57,6 @@ namespace Microsoft.Bot.Builder.Dialogs
         private const string PersistedState = "state";
         private const string PersistedExpires = "expires";
 
-        // Default prompt timeout of 15 minutes (in ms)
-        private const int DefaultPromptTimeout = 900000;
-
         // regex to check if code supplied is a 6 digit numerical code (hence, a magic code).
         private readonly Regex _magicCodeRegex = new Regex(@"(\d{6})");
 
@@ -133,7 +130,7 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
 
             // Initialize state
-            var timeout = _settings.Timeout ?? DefaultPromptTimeout;
+            var timeout = _settings.Timeout ?? (int)TurnStateConstants.OAuthLoginTimeoutValue.TotalMilliseconds;
             var state = dc.ActiveDialog.State;
             state[PersistedOptions] = opt;
             state[PersistedState] = new Dictionary<string, object>
@@ -317,6 +314,15 @@ namespace Microsoft.Bot.Builder.Dialogs
             }
             else if (!prompt.Attachments.Any(a => a.Content is OAuthCard))
             {
+                string signInLink = null;
+
+                // Streaming channels support rendering OAuthCards, but require the OAuthCard signin link to be pre-filled in
+                // Check if the incoming Activity is from a streaming connection, and if it is, fetch the sign-in link.
+                if (turnContext.Activity.IsFromStreamingConnection())
+                {
+                    signInLink = await adapter.GetOauthSignInLinkAsync(turnContext, _settings.ConnectionName, cancellationToken).ConfigureAwait(false);
+                }
+
                 prompt.Attachments.Add(new Attachment
                 {
                     ContentType = OAuthCard.ContentType,
@@ -331,10 +337,17 @@ namespace Microsoft.Bot.Builder.Dialogs
                                 Title = _settings.Title,
                                 Text = _settings.Text,
                                 Type = ActionTypes.Signin,
+                                Value = signInLink,
                             },
                         },
                     },
                 });
+            }
+
+            // Add the login timeout specified in OAuthPromptSettings to TurnState so it can be referenced if polling is needed
+            if (!turnContext.TurnState.ContainsKey(TurnStateConstants.OAuthLoginTimeoutKey) && _settings.Timeout.HasValue)
+            {
+                turnContext.TurnState.Add<object>(TurnStateConstants.OAuthLoginTimeoutKey, TimeSpan.FromMilliseconds(_settings.Timeout.Value));
             }
 
             // Set input hint

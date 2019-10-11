@@ -1,14 +1,14 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/botbuilder-dotnet/4.Future/schemas/component.schema",
     "$role": "unionType(Microsoft.IDialog)",
-    "title": "Foreach Action",
-    "description": "Action which executes actions per item in a collection.",
+    "title": "For each item",
+    "description": "Execute actions on each item in an a collection.",
     "type": "object",
     "properties": {
         "itemsProperty": {
             "$role": "expression",
-            "title": "Items Property",
-            "description": "Property path expression to the collection of items.",
+            "title": "Items property",
+            "description": "Property that holds the array.",
             "examples": [
                 "user.todoList"
             ]
@@ -19,7 +19,7 @@
                 "$type": "Microsoft.IDialog"
             },
             "title": "Actions",
-            "description": "Actions to execute"
+            "description": "Actions to execute for each item. Use '$foreach.value' to access the value of each item. Use '$foreach.index' to access the index of each item."
         }
     },
     "required": [

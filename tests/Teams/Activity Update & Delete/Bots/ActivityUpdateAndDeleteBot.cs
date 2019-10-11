@@ -11,6 +11,10 @@ using Microsoft.Bot.Schema;
 
 namespace Microsoft.BotBuilderSamples.Bots
 {
+    /*
+     * From the UI you can just @mention the bot from any channelwith any string EXCEPT for "delete". if you send the bot "delete" it will delete
+     * all of the previous bot responses and empty it's internal storage.
+     */
     public class ActivityUpdateAndDeleteBot : ActivityHandler
     {
         private List<string> _list;
@@ -22,43 +26,22 @@ namespace Microsoft.BotBuilderSamples.Bots
 
         protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
-            foreach (var mention in turnContext.Activity.GetMentions().Where(mention => mention.Mentioned.Id == turnContext.Activity.Recipient.Id))
-
-            {
-                if (mention.Text == null)
-                {
-                    turnContext.Activity.Text = Regex.Replace(turnContext.Activity.Text, "<at>" + mention.Mentioned.Name + "</at>", string.Empty, RegexOptions.IgnoreCase).Trim();
-                }
-                else
-                {
-                    turnContext.Activity.Text = Regex.Replace(turnContext.Activity.Text, mention.Text, string.Empty, RegexOptions.IgnoreCase).Trim();
-                }
-            }
-
-            
-
-          if (turnContext.Activity.Text == "delete")
+            turnContext.Activity.RemoveRecipientMention();
+            if (turnContext.Activity.Text == "delete")
             {
                 foreach (var activityId in _list)
                 {
                     await turnContext.DeleteActivityAsync(activityId, cancellationToken);
                 }
-                _list.Clear();   
+                _list.Clear();
             }
             else
             {
                 await SendMessageAndLogActivityId(turnContext, $"{turnContext.Activity.Text}", cancellationToken);
                 foreach (var activityId in _list)
                 {
-                    var newActivity = new Activity
-                    {
-                        Text = turnContext.Activity.Text,
-                        Id = activityId,
-                        ChannelId = "msteams",
-                        Conversation = turnContext.Activity.Conversation,
-                        Type = "message"
-                    };
-
+                    var newActivity = MessageFactory.Text(turnContext.Activity.Text);
+                    newActivity.Id = activityId;
                     await turnContext.UpdateActivityAsync(newActivity, cancellationToken);
                 }
             }
@@ -68,7 +51,6 @@ namespace Microsoft.BotBuilderSamples.Bots
         {
             // We need to record the Activity Id from the Activity just sent in order to understand what the reaction is a reaction too. 
             var replyActivity = MessageFactory.Text(text);
-            replyActivity.ApplyConversationReference(turnContext.Activity.GetConversationReference());
             var resourceResponse = await turnContext.SendActivityAsync(replyActivity, cancellationToken);
             _list.Add(resourceResponse.Id);
         }

@@ -23,7 +23,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
                 throw new ArgumentNullException(nameof(dc));
             }
 
-            return dc.Parent?.ActiveDialog?.State ?? dc.ActiveDialog.State;
+            // if active dialog is a container dialog then "dialog" binds to it
+            if (dc.ActiveDialog != null)
+            {
+                var dialog = dc.FindDialog(dc.ActiveDialog.Id);
+                if (dialog is DialogContainer)
+                {
+                    return dc.ActiveDialog.State;
+                }
+            }
+
+            // Otherwise we always bind to parent, or if there is no parent the active dialog
+            return dc.Parent?.ActiveDialog?.State ?? dc.ActiveDialog?.State;
         }
 
         public override void SetMemory(DialogContext dc, object memory)
@@ -38,9 +49,27 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
                 throw new ArgumentNullException(nameof(memory));
             }
 
-            // use parent, unless there is no parent, then use ActiveDialog
-            var activeDialog = dc.Parent?.ActiveDialog ?? dc.ActiveDialog;
-            activeDialog.State = (IDictionary<string, object>)memory;
+            // if active dialog is a container dialog then "dialog" binds to it
+            if (dc.ActiveDialog != null)
+            {
+                var dialog = dc.FindDialog(dc.ActiveDialog.Id);
+                if (dialog is DialogContainer)
+                {
+                    dc.ActiveDialog.State = (IDictionary<string, object>)memory;
+                    return;
+                }
+            }
+            else if (dc.Parent?.ActiveDialog != null)
+            {
+                dc.Parent.ActiveDialog.State = (IDictionary<string, object>)memory;
+                return;
+            }
+            else if (dc.ActiveDialog != null)
+            {
+                dc.ActiveDialog.State = (IDictionary<string, object>)memory;
+            }
+
+            throw new Exception("Cannot set DialogMemoryScope. There is no active dialog dialog or parent dialog in the context");
         }
     }
 }

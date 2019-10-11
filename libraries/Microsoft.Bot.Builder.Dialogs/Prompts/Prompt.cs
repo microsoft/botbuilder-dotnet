@@ -311,7 +311,14 @@ namespace Microsoft.Bot.Builder.Dialogs
 
                 if (msg.Attachments != null && msg.Attachments.Any())
                 {
-                    prompt.Attachments = msg.Attachments;
+                    if (prompt.Attachments == null)
+                    {
+                        prompt.Attachments = msg.Attachments;
+                    }
+                    else
+                    {
+                        prompt.Attachments = prompt.Attachments.Concat(msg.Attachments).ToList();
+                    }
                 }
 
                 return prompt;

@@ -142,6 +142,32 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
             Assert.Equal("botOpenIdMetadata", GovernmentChannelValidation.OpenIdMetadataUrl);
         }
 
+        [Fact]
+        public async Task BadRequest()
+        {
+            // Arrange
+            var headerDictionaryMock = new Mock<IHeaderDictionary>();
+            headerDictionaryMock.Setup(h => h[It.Is<string>(v => v == "Authorization")]).Returns<string>(null);
+
+            var httpRequestMock = new Mock<HttpRequest>();
+            httpRequestMock.Setup(r => r.Body).Returns(CreateBadRequestStream());
+            httpRequestMock.Setup(r => r.Headers).Returns(headerDictionaryMock.Object);
+
+            var httpResponseMock = new Mock<HttpResponse>();
+            httpResponseMock.SetupProperty(x => x.StatusCode);
+
+            var botMock = new Mock<IBot>();
+            botMock.Setup(b => b.OnTurnAsync(It.IsAny<TurnContext>(), It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
+
+            // Act
+            var adapter = new BotFrameworkHttpAdapter();
+            await adapter.ProcessAsync(httpRequestMock.Object, httpResponseMock.Object, botMock.Object);
+
+            // Assert
+            botMock.Verify(m => m.OnTurnAsync(It.Is<TurnContext>(tc => true), It.Is<CancellationToken>(ct => true)), Times.Never());
+            Assert.Equal((int)HttpStatusCode.BadRequest, httpResponseMock.Object.StatusCode);
+        }
+
         private static Stream CreateMessageActivityStream()
         {
             return CreateStream(new Activity
@@ -152,6 +178,16 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core.Tests
                 ChannelId = "ChannelId",
                 Conversation = new ConversationAccount { Id = "ConversationId" },
             });
+        }
+
+        private static Stream CreateBadRequestStream()
+        {
+            var stream = new MemoryStream();
+            var textWriter = new StreamWriter(stream);
+            textWriter.Write("this.is.not.json");
+            textWriter.Flush();
+            stream.Seek(0, SeekOrigin.Begin);
+            return stream;
         }
 
         private static HttpResponseMessage CreateInternalHttpResponse()

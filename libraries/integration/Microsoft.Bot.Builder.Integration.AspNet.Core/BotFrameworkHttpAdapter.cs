@@ -60,7 +60,13 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             }
 
             // deserialize the incoming Activity
-            var activity = HttpHelper.ReadRequest(httpRequest);
+            var activity = await HttpHelper.ReadRequestAsync(httpRequest).ConfigureAwait(false);
+
+            if (string.IsNullOrEmpty(activity?.Type))
+            {
+                httpResponse.StatusCode = (int)HttpStatusCode.BadRequest;
+                return;
+            }
 
             // grab the auth header from the inbound http request
             var authHeader = httpRequest.Headers["Authorization"];
@@ -71,7 +77,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                 var invokeResponse = await ProcessActivityAsync(authHeader, activity, bot.OnTurnAsync, cancellationToken).ConfigureAwait(false);
 
                 // write the response, potentially serializing the InvokeResponse
-                HttpHelper.WriteResponse(httpResponse, invokeResponse);
+                await HttpHelper.WriteResponseAsync(httpResponse, invokeResponse).ConfigureAwait(false);
             }
             catch (UnauthorizedAccessException)
             {

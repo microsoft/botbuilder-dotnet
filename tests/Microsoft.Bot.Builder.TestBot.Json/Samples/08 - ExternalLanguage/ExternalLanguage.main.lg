@@ -1,9 +1,9 @@
 # help
-- ```
-    I can tell jokes and also forsee the future!
-    [Suggestions=Joke|Fortune|Help]
-    ```
-   
+[Activity
+    text = I can tell jokes and also forsee the future!
+    suggestedActions = Joke|Fortune|Help
+]
+
 # welcome-user
 - Hello {user.name}, nice talking to you!
 - Howdy {user.name}!

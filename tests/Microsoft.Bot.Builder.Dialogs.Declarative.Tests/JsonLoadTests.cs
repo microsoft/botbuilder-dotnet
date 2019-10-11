@@ -157,6 +157,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
                 .AssertReply(activity =>
                 {
                     var trace = (Activity)activity;
+                    Assert.AreEqual("https://www.botframework.com/schemas/botState", trace.ValueType, "value type should be memory");
+                    Assert.AreEqual(ActivityTypes.Trace, trace.Type, "should be trace of memory dumpactivity");
+                })
+                .AssertReply(activity =>
+                {
+                    var trace = (Activity)activity;
                     Assert.AreEqual(ActivityTypes.Trace, trace.Type, "should be trace activity");
                     Assert.AreEqual("memory", trace.ValueType, "value type should be memory");
                     Assert.AreEqual("Carlos", ((IDictionary<string, object>)trace.Value)["name"].ToString(), "value should be user object with name='Carlos'");
@@ -270,11 +276,19 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
             .Send("third")
                 .AssertReply("Successfully added a todo named \"third\"")
             .Send("show todos")
-                .AssertReply("Your most recent 3 tasks are\n* first\n* second\n* third\n")
+                .AssertReplyOneOf(new string[]
+                {
+                    "Your most recent 3 tasks are\n* first\n* second\n* third",
+                    "Your most recent 3 tasks are\r\n* first\n* second\n* third",
+                })
             .Send("delete todo named second")
                 .AssertReply("Successfully removed a todo named \"second\"")
             .Send("show todos")
-                .AssertReply("Your most recent 2 tasks are\n* first\n* third\n")
+                .AssertReplyOneOf(new string[]
+                {
+                    "Your most recent 2 tasks are\r\n* first\n* third",
+                    "Your most recent 2 tasks are\n* first\n* third",
+                })
             .Send("add a todo")
                 .AssertReply("OK, please enter the title of your todo.")
             .Send("cancel")

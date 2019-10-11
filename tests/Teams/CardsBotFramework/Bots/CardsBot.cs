@@ -15,6 +15,9 @@ namespace Cards.Bots
     {
         // NOT SUPPORTED ON TEAMS: AnimationCard, AudioCard, VideoCard, OAuthCard
 
+        /*
+         * From the UI you can @mention the bot, from any scope, any of the strings listed below to get that card back.
+         */
         const string HeroCard = "Hero";
         const string ThumbnailCard = "Thumbnail";
         const string ReceiptCard = "Receipt";
@@ -23,13 +26,10 @@ namespace Cards.Bots
         const string List = "List";
 
         static string[] CardTypes = new [] { HeroCard, ThumbnailCard, ReceiptCard, SigninCard, Carousel, List };
-        
+
         protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
             await turnContext.SendActivityAsync(MessageFactory.Text($"Echo: {turnContext.Activity.Text}"), cancellationToken);
-
-            //var teamsContext = new TeamsContext(turnContext, null);
-            //string actualText = teamsContext.GetActivityTextWithoutMentions();
 
             turnContext.Activity.RemoveRecipientMention();
             IMessageActivity reply = null;
@@ -59,10 +59,10 @@ namespace Cards.Bots
                     reply = MessageFactory.Attachment(GetChoices());
                     break;
             }
-            
+
             await turnContext.SendActivityAsync(reply);
         }
-        
+
         private Attachment GetChoices()
         {
             var card = new HeroCard();
