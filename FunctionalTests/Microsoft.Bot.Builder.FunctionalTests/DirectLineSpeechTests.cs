@@ -94,9 +94,6 @@ namespace Microsoft.Bot.Builder.FunctionalTests
         {
             GetEnvironmentVars();
 
-            echoGuid = Guid.NewGuid().ToString();
-            input += echoGuid;
-
             // Create a Dialog Service Config for use with the Direct Line Speech Connector
             var config = DialogServiceConfig.FromBotSecret(speechBotSecret, speechSubscription, speechRegion);
             config.SpeechRecognitionLanguage = "en-us";
