@@ -65,7 +65,9 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
             await client.ConnectAsync();
             try
             {
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                 adapter.AddNamedPipeConnection(pipeName, mockBot);
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             }
             catch (Exception ex)
             {
@@ -98,8 +100,12 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
             await client.ConnectAsync();
             try
             {
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                 adapter.AddNamedPipeConnection(pipeNameA, mockBot);
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                 adapter.AddNamedPipeConnection(pipeNameB, mockBot);
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             }
             catch (Exception ex)
             {
@@ -132,10 +138,16 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
             await client.ConnectAsync();
             try
             {
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                 adapter.AddNamedPipeConnection(pipeNameA, mockBot);
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                 adapter.AddNamedPipeConnection(pipeNameB, mockBot);
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                 client.ConnectAsync();
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                 result = await client.SendAsync(TestHelper.GetStreamingRequestWithoutAttachments(conversation.ConversationId));
             }
             catch (Exception ex)
@@ -169,10 +181,16 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
             await client.ConnectAsync();
             try
             {
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                 adapter.AddNamedPipeConnection(pipeNameA, mockBot);
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                 adapter.AddNamedPipeConnection(pipeNameB, mockBot);
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                 client.ConnectAsync();
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                 result = await client.SendAsync(TestHelper.GetStreamingRequestWithAttachment(conversation.ConversationId));
             }
             catch (Exception ex)

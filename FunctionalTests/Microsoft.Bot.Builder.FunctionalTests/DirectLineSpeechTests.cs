@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveCards;
 using Microsoft.Bot.Schema;
@@ -20,6 +17,8 @@ namespace Microsoft.Bot.Builder.FunctionalTests
     [TestClass]
 #if !FUNCTIONALTESTS
     [Ignore("These integration tests run only when FUNCTIONALTESTS is defined")]
+#endif
+
     public class DirectLineSpeechTests
     {
         private static string speechBotSecret = null;
@@ -43,10 +42,6 @@ namespace Microsoft.Bot.Builder.FunctionalTests
         }
 
         [TestMethod]
-        /// <summary>
-        /// Starts a conversation with a bot. Sends a text message and waits for the response.
-        /// </summary>
-        /// <returns>Returns the bot's answer.</returns>
         public async Task SendDirectLineSpeechTextMessage()
         {
             GetEnvironmentVars();
@@ -63,8 +58,10 @@ namespace Microsoft.Bot.Builder.FunctionalTests
             var connector = new DialogServiceConnector(config, AudioConfig.FromWavFileInput(soundFilePath));
             connector.ActivityReceived += Connector_ActivityReceived;
 
-            // Open a connection to Direct Line Speech channel
+            // Open a connection to Direct Line Speech channel. No await because the call will block until the connection closes.
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             connector.ConnectAsync();
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 
             // Create a message activity with the input text.
             var userMessage = new Activity
@@ -77,8 +74,15 @@ namespace Microsoft.Bot.Builder.FunctionalTests
             // Send the message activity to the bot.
             await connector.SendActivityAsync(JsonConvert.SerializeObject(userMessage));
 
+            // Give the bot time to respond.
+            System.Threading.Thread.Sleep(1000);
+
             // Read the bot's message.
             var botAnswer = messages.LastOrDefault();
+
+            // Cleanup
+            await connector.DisconnectAsync();
+            connector.Dispose();
 
             // Assert
             Assert.IsNotNull(botAnswer);
@@ -86,10 +90,6 @@ namespace Microsoft.Bot.Builder.FunctionalTests
         }
 
         [TestMethod]
-        /// <summary>
-        /// Starts a conversation with a bot. Sends an audio message and waits for the response.
-        /// </summary>
-        /// <returns>Returns the bot's answer.</returns>
         public async Task SendDirectLineSpeechVoiceMessage()
         {
             GetEnvironmentVars();
@@ -103,14 +103,23 @@ namespace Microsoft.Bot.Builder.FunctionalTests
             var connector = new DialogServiceConnector(config, AudioConfig.FromWavFileInput(soundFilePath));
             connector.ActivityReceived += Connector_ActivityReceived;
 
-            // Open a connection to Direct Line Speech channel
+            // Open a connection to Direct Line Speech channel. No await because the call will block until the connection closes.
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             connector.ConnectAsync();
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 
             // Send the message activity to the bot.
             await connector.ListenOnceAsync();
 
+            // Give the bot time to respond.
+            System.Threading.Thread.Sleep(1000);
+
             // Read the bot's message.
             var botAnswer = messages.LastOrDefault();
+
+            // Cleanup
+            await connector.DisconnectAsync();
+            connector.Dispose();
 
             // Assert
             Assert.IsNotNull(botAnswer);
@@ -420,4 +429,3 @@ namespace Microsoft.Bot.Builder.FunctionalTests
         }
     }
 }
-#endif
