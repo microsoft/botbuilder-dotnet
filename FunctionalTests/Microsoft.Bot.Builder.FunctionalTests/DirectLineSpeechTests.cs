@@ -22,7 +22,6 @@ namespace Microsoft.Bot.Builder.FunctionalTests
     [Ignore("These integration tests run only when FUNCTIONALTESTS is defined")]
     public class DirectLineSpeechTests
     {
-        private static string directLineSpeechSecret = null;
         private static string speechBotSecret = null;
         private static readonly string FromUser = "DirectLineSpeechTestUser";
         private static string speechSubscription = null;
@@ -45,10 +44,10 @@ namespace Microsoft.Bot.Builder.FunctionalTests
 
         [TestMethod]
         /// <summary>
-        /// Starts a conversation with a bot. Sends a message and waits for the response.
+        /// Starts a conversation with a bot. Sends a text message and waits for the response.
         /// </summary>
         /// <returns>Returns the bot's answer.</returns>
-        public async Task SendDirectLineSpeechMessage()
+        public async Task SendDirectLineSpeechTextMessage()
         {
             GetEnvironmentVars();
 
@@ -83,7 +82,42 @@ namespace Microsoft.Bot.Builder.FunctionalTests
 
             // Assert
             Assert.IsNotNull(botAnswer);
-            Assert.AreEqual(soundFileMessage, botAnswer.Message);
+            Assert.AreEqual(string.Format("You said '{0}'", input), botAnswer.Message);
+        }
+
+        [TestMethod]
+        /// <summary>
+        /// Starts a conversation with a bot. Sends an audio message and waits for the response.
+        /// </summary>
+        /// <returns>Returns the bot's answer.</returns>
+        public async Task SendDirectLineSpeechVoiceMessage()
+        {
+            GetEnvironmentVars();
+
+            echoGuid = Guid.NewGuid().ToString();
+            input += echoGuid;
+
+            // Create a Dialog Service Config for use with the Direct Line Speech Connector
+            var config = DialogServiceConfig.FromBotSecret(speechBotSecret, speechSubscription, speechRegion);
+            config.SpeechRecognitionLanguage = "en-us";
+            config.SetProperty(PropertyId.Conversation_From_Id, FromUser);
+
+            // Create a new Dialog Service Connector for the above configuration and register to receive events
+            var connector = new DialogServiceConnector(config, AudioConfig.FromWavFileInput(soundFilePath));
+            connector.ActivityReceived += Connector_ActivityReceived;
+
+            // Open a connection to Direct Line Speech channel
+            connector.ConnectAsync();
+
+            // Send the message activity to the bot.
+            await connector.ListenOnceAsync();
+
+            // Read the bot's message.
+            var botAnswer = messages.LastOrDefault();
+
+            // Assert
+            Assert.IsNotNull(botAnswer);
+            Assert.AreEqual(string.Format("You said '{0}'", soundFileMessage), botAnswer.Message);
         }
 
         /// <summary>
@@ -91,43 +125,39 @@ namespace Microsoft.Bot.Builder.FunctionalTests
         /// </summary>
         private void GetEnvironmentVars()
         {
-            if (string.IsNullOrWhiteSpace(directLineSpeechSecret) || string.IsNullOrWhiteSpace(speechBotSecret))
+            // The secret for the test bot and DLS channel.
+            speechBotSecret = Environment.GetEnvironmentVariable("SPEECHBOTSECRET");
+            if (string.IsNullOrWhiteSpace(speechBotSecret))
             {
-                directLineSpeechSecret = Environment.GetEnvironmentVariable("DIRECTLINESPEECH");
-                if (string.IsNullOrWhiteSpace(directLineSpeechSecret))
-                {
-                    throw new Exception("Environment variable 'DIRECTLINESPEECH' not found.");
-                }
+                throw new Exception("Environment variable 'SPEECHBOTSECRET' not found.");
+            }
 
-                speechBotSecret = Environment.GetEnvironmentVariable("SPEECHBOTSECRET");
-                if (string.IsNullOrWhiteSpace(speechBotSecret))
-                {
-                    throw new Exception("Environment variable 'SPEECHBOTSECRET' not found.");
-                }
+            // The cog services key for use with DLS.
+            speechSubscription = Environment.GetEnvironmentVariable("SPEECHSUBSCRIPTION");
+            if (string.IsNullOrWhiteSpace(speechSubscription))
+            {
+                throw new Exception("Environment variable 'SPEECHSUBSCRIPTION' not found.");
+            }
 
-                speechSubscription = Environment.GetEnvironmentVariable("SPEECHSUBSCRIPTION");
-                if (string.IsNullOrWhiteSpace(speechSubscription))
-                {
-                    throw new Exception("Environment variable 'SPEECHSUBSCRIPTION' not found.");
-                }
+            // The region to test DLS in.
+            speechRegion = Environment.GetEnvironmentVariable("SPEECHREGION");
+            if (string.IsNullOrWhiteSpace(speechRegion))
+            {
+                throw new Exception("Environment variable 'SPEECHREGION' not found.");
+            }
 
-                speechRegion = Environment.GetEnvironmentVariable("SPEECHREGION");
-                if (string.IsNullOrWhiteSpace(speechRegion))
-                {
-                    throw new Exception("Environment variable 'SPEECHREGION' not found.");
-                }
+            // The path to an audio file to send to DLS.
+            soundFilePath = Environment.GetEnvironmentVariable("SPEECHSOURCE");
+            if (string.IsNullOrWhiteSpace(soundFilePath))
+            {
+                throw new Exception("Environment variable 'SPEECHSOURCE' not found.");
+            }
 
-                soundFilePath = Environment.GetEnvironmentVariable("SPEECHSOURCE");
-                if (string.IsNullOrWhiteSpace(soundFilePath))
-                {
-                    throw new Exception("Environment variable 'SPEECHSOURCE' not found.");
-                }
-
-                soundFileMessage = Environment.GetEnvironmentVariable("SPEECHTEXT");
-                if (string.IsNullOrWhiteSpace(soundFileMessage))
-                {
-                    throw new Exception("Environment variable 'SPEECHTEXT' not found.");
-                }
+            // Text transcript of the audio file.
+            soundFileMessage = Environment.GetEnvironmentVariable("SPEECHTEXT");
+            if (string.IsNullOrWhiteSpace(soundFileMessage))
+            {
+                throw new Exception("Environment variable 'SPEECHTEXT' not found.");
             }
         }
 
