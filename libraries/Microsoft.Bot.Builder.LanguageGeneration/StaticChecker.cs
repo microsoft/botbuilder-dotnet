@@ -198,7 +198,7 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
 
                     if (context.templateBody() == null)
                     {
-                        result.Add(BuildLGDiagnostic($"There is no template body in template {templateName}", context: context.templateNameLine()));
+                        result.Add(BuildLGDiagnostic($"There is no template body in template {templateName}", DiagnosticSeverity.Warning, context.templateNameLine()));
                     }
                     else
                     {
