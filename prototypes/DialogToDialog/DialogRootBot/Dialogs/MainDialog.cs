@@ -73,7 +73,7 @@ namespace DialogRootBot.Dialogs
                         TravelDate = luisResult.TravelDate,
                     };
 
-                    var bookFlightArgs = new RemoteDialogArgs
+                    var bookFlightArgs = new SkillDialogArgs
                     {
                         TargetAction = "BookFlight",
                     };
@@ -83,7 +83,7 @@ namespace DialogRootBot.Dialogs
                     return await stepContext.BeginDialogAsync(nameof(SkillDialog), bookFlightArgs, cancellationToken);
 
                 case FlightBooking.Intent.GetWeather:
-                    var getWeatherArgs = new RemoteDialogArgs
+                    var getWeatherArgs = new SkillDialogArgs
                     {
                         TargetAction = "GetWeather",
                     };

@@ -22,7 +22,7 @@ namespace DialogRootBot.Dialogs
 
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default)
         {
-            var remoteDialogArgs = (RemoteDialogArgs)options;
+            var remoteDialogArgs = (SkillDialogArgs)options;
             await dc.Context.SendActivityAsync($"SkillDialog: InBeginDialog Action: {remoteDialogArgs.TargetAction}", cancellationToken: cancellationToken);
             var turnContext = dc.Context;
             AddActionToActivity(turnContext.Activity, remoteDialogArgs.TargetAction, remoteDialogArgs.Entities);

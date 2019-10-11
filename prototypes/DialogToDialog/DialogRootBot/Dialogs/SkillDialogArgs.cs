@@ -6,7 +6,7 @@ using Microsoft.Bot.Schema;
 
 namespace DialogRootBot.Dialogs
 {
-    public class RemoteDialogArgs
+    public class SkillDialogArgs
     {
         public string TargetAction { get; set; }
 
