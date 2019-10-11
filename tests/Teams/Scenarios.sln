@@ -53,8 +53,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MessagingExtensionAuth", "M
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MessagingExtensionConfig", "MessagingExtensionConfig\MessagingExtensionConfig.csproj", "{5229C085-69B6-4D69-8BAE-907CED173616}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ActionBasedMessagingExtensionFetchTaskPreview", "ActionBasedMessagingExtensionFetchTaskPreview\ActionBasedMessagingExtensionFetchTaskPreview.csproj", "{E174C23A-3E7E-47EB-9CB5-2A925E62F4F3}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug - NuGet Packages|Any CPU = Debug - NuGet Packages|Any CPU
@@ -206,12 +204,6 @@ Global
 		{5229C085-69B6-4D69-8BAE-907CED173616}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5229C085-69B6-4D69-8BAE-907CED173616}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5229C085-69B6-4D69-8BAE-907CED173616}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E174C23A-3E7E-47EB-9CB5-2A925E62F4F3}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{E174C23A-3E7E-47EB-9CB5-2A925E62F4F3}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
-		{E174C23A-3E7E-47EB-9CB5-2A925E62F4F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E174C23A-3E7E-47EB-9CB5-2A925E62F4F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E174C23A-3E7E-47EB-9CB5-2A925E62F4F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E174C23A-3E7E-47EB-9CB5-2A925E62F4F3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
