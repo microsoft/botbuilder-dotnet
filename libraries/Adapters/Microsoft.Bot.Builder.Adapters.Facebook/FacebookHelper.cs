@@ -94,12 +94,12 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
                 Timestamp = new DateTime(),
                 Conversation = new ConversationAccount()
                 {
-                    Id = message.Sender.Id,
+                    Id = message.Sender?.Id,
                 },
                 From = new ChannelAccount()
                 {
-                    Id = message.Sender.Id,
-                    Name = message.Sender.Id,
+                    Id = message.Sender?.Id,
+                    Name = message.Sender?.Id,
                 },
                 Recipient = new ChannelAccount()
                 {

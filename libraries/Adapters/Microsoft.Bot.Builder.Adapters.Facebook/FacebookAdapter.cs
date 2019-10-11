@@ -183,7 +183,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook
                 var payload = new List<FacebookMessage>();
 
                 // handle normal incoming stuff
-                payload = entry.Changes != null ? entry.Changes : entry.Messaging;
+                payload = entry.Changes ?? entry.Messaging;
 
                 foreach (var message in payload)
                 {

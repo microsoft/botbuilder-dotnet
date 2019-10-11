@@ -24,6 +24,7 @@
                 <ModulePath>.*\Microsoft.Bot.Builder.TemplateManager.dll$</ModulePath>
                 <ModulePath>.*\Microsoft.Bot.Builder.Testing.dll$</ModulePath>
                 <ModulePath>.*\Microsoft.Bot.Builder.Adapters.Webex.dll$</ModulePath>
+                <ModulePath>.*\Microsoft.Bot.Builder.Adapters.Facebook.dll$</ModulePath>
                 <!-- <ModulePath>Microsoft.Bot.Builder.Schema.dll$</ModulePath> -->
               </Include>
             </ModulePaths>
@@ -31,6 +32,20 @@
               <Exclude>
                 <Source>.*\\WebexMessageRequest.cs</Source>
                 <Source>.*\\WebexClientWrapper.cs</Source>
+                <Source>.*\\FacebookAdapterOptions.cs</Source>
+                <Source>.*\\FacebookMessage.cs</Source>
+                <Source>.*\\Button.cs</Source>
+                <Source>.*\\DefaultAction.cs</Source>
+                <Source>.*\\Element.cs</Source>
+                <Source>.*\\FacebookAttachment.cs</Source>
+                <Source>.*\\FacebookBotUser.cs</Source>
+                <Source>.*\\FacebookEntry.cs</Source>
+                <Source>.*\\FacebookPostback.cs</Source>
+                <Source>.*\\FacebookRecipient.cs</Source>
+                <Source>.*\\FacebookResponseEvent.cs</Source>
+                <Source>.*\\FacebookResponseOk.cs</Source>
+                <Source>.*\\MessagePayload.cs</Source>
+                <Source>.*\\Message.cs</Source>
               </Exclude>
             </Sources>
           </CodeCoverage>
