@@ -5,8 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
-using System.Security.Authentication;
-using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -24,16 +22,16 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
         public const int AttachmentCountTest = 3;
 
         [Fact]
-        public void ActivityToFacebookShouldReturnMessageOptionsWithMediaUrl()
+        public void ActivityToFacebookShouldReturnMessageWithAttachment()
         {
             var activityJson = File.ReadAllText(Directory.GetCurrentDirectory() + @"\Files\Activities.json");
             var activity = JsonConvert.DeserializeObject<Activity>(activityJson);
-            activity.Attachments = new List<Attachment> { new Attachment(contentUrl: ExampleUrl) };
+
             var messageOption = FacebookHelper.ActivityToFacebook(activity);
 
             Assert.Equal(activity.Conversation.Id, messageOption.Recipient.Id);
             Assert.Equal(activity.Text, messageOption.Message.Text);
-            Assert.Equal(new Uri(activity.Attachments[0].ContentUrl), messageOption.Message.Attachment.Payload.Url);
+            Assert.Equal(activity.Attachments[0].ContentType, messageOption.Message.Attachment.Type);
         }
 
         [Fact]

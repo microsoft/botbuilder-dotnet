@@ -8,7 +8,6 @@ using System.Net;
 using System.Text;
 using System.Threading;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Bot.Schema;
 using Moq;
 using Newtonsoft.Json;
 using Xunit;
@@ -99,7 +98,7 @@ namespace Microsoft.Bot.Builder.Adapters.Facebook.Tests
         }
 
         [Fact]
-        public async void VerifyWebhookAsyncShouldSendOKWhenVerified()
+        public async void VerifyWebhookAsyncShouldSendOkWhenVerified()
         {
             var facebookClientWrapper = new FacebookClientWrapper(_testOptions);
             var httpRequest = new Mock<HttpRequest>();
