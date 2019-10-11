@@ -26,7 +26,7 @@ namespace Microsoft.Bot.Builder.Streaming
     public class StreamingRequestHandler : RequestHandler
     {
         private readonly ILogger _logger;
-        private readonly DirectLineAdapter _adapter;
+        private readonly IStreamingActivityProcessor _activityProcessor;
         private readonly string _userAgent;
         private readonly IDictionary<string, DateTime> _conversations;
 
@@ -39,12 +39,12 @@ namespace Microsoft.Bot.Builder.Streaming
         /// establishes a connection over a WebSocket to a streaming channel.
         /// </summary>
         /// <param name="logger">A logger.</param>
-        /// <param name="adapter">The adapter for use when processing incoming requests.</param>
+        /// <param name="activityProcessor">The procesor for incoming requests.</param>
         /// <param name="socket">The base socket to use when connecting to the channel.</param>
-        public StreamingRequestHandler(ILogger logger, DirectLineAdapter adapter, WebSocket socket)
+        public StreamingRequestHandler(ILogger logger, IStreamingActivityProcessor activityProcessor, WebSocket socket)
         {
             _logger = logger ?? NullLogger.Instance;
-            _adapter = adapter ?? throw new ArgumentNullException(nameof(adapter));
+            _activityProcessor = activityProcessor ?? throw new ArgumentNullException(nameof(activityProcessor));
 
             if (socket == null)
             {
@@ -63,12 +63,12 @@ namespace Microsoft.Bot.Builder.Streaming
         /// establishes a connection over a Named Pipe to a streaming channel.
         /// </summary>
         /// <param name="logger">A logger.</param>
-        /// <param name="adapter">The adapter for use when processing incoming requests.</param>
+        /// <param name="activityProcessor">The processor for incoming requests.</param>
         /// <param name="pipeName">The name of the Named Pipe to use when connecting to the channel.</param>
-        public StreamingRequestHandler(ILogger logger, DirectLineAdapter adapter, string pipeName)
+        public StreamingRequestHandler(ILogger logger, IStreamingActivityProcessor activityProcessor, string pipeName)
         {
             _logger = logger ?? NullLogger.Instance;
-            _adapter = adapter ?? throw new ArgumentNullException(nameof(adapter));
+            _activityProcessor = activityProcessor ?? throw new ArgumentNullException(nameof(activityProcessor));
 
             if (string.IsNullOrWhiteSpace(pipeName))
             {
@@ -206,7 +206,7 @@ namespace Microsoft.Bot.Builder.Streaming
                 }
 
                 // Now that the request has been converted into an activity we can send it to the adapter.
-                var adapterResponse = await _adapter.ProcessActivityForStreamingChannelAsync(activity, cancellationToken).ConfigureAwait(false);
+                var adapterResponse = await _activityProcessor.ProcessStreamingActivityAsync(activity, cancellationToken).ConfigureAwait(false);
 
                 // Now we convert the invokeResponse returned by the adapter into a StreamingResponse we can send back to the channel.
                 if (adapterResponse == null)
@@ -265,7 +265,7 @@ namespace Microsoft.Bot.Builder.Streaming
             {
                 if (!ServerIsConnected)
                 {
-                    await Reconnect();
+                    await Reconnect().ConfigureAwait(false);
                 }
 
                 var serverResponse = await _server.SendAsync(request, cancellationToken).ConfigureAwait(false);
@@ -295,7 +295,7 @@ namespace Microsoft.Bot.Builder.Streaming
             {
                 if (!ServerIsConnected)
                 {
-                    await Reconnect();
+                    await Reconnect().ConfigureAwait(false);
                 }
 
                 var serverResponse = await _server.SendAsync(request, cancellationToken).ConfigureAwait(false);

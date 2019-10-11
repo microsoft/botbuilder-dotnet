@@ -2,12 +2,15 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Builder.BotFramework;
+using Microsoft.Bot.Builder.Streaming;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -19,18 +22,21 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
     /// </summary>
     public class BotFrameworkHttpAdapter : BotFrameworkAdapter, IBotFrameworkHttpAdapter
     {
+        private const string AuthHeaderName = "authorization";
+        private const string ChannelIdHeaderName = "channelid";
+
         public BotFrameworkHttpAdapter(ICredentialProvider credentialProvider = null, IChannelProvider channelProvider = null, ILogger<BotFrameworkHttpAdapter> logger = null)
-            : base(credentialProvider ?? new SimpleCredentialProvider(), channelProvider, null, null, null, logger)
+            : base(credentialProvider ?? new SimpleCredentialProvider(), channelProvider, logger: logger)
         {
         }
 
         public BotFrameworkHttpAdapter(ICredentialProvider credentialProvider, IChannelProvider channelProvider, HttpClient httpClient, ILogger<BotFrameworkHttpAdapter> logger)
-            : base(credentialProvider ?? new SimpleCredentialProvider(), channelProvider, null, httpClient, null, logger)
+            : base(credentialProvider ?? new SimpleCredentialProvider(), channelProvider, customHttpClient: httpClient, logger: logger)
         {
         }
 
         protected BotFrameworkHttpAdapter(IConfiguration configuration, ILogger<BotFrameworkHttpAdapter> logger = null)
-            : base(new ConfigurationCredentialProvider(configuration), new ConfigurationChannelProvider(configuration), customHttpClient: null, middleware: null, logger: logger)
+            : base(new ConfigurationCredentialProvider(configuration), new ConfigurationChannelProvider(configuration), logger: logger)
         {
             var openIdEndpoint = configuration.GetSection(AuthenticationConstants.BotOpenIdMetadataKey)?.Value;
 
@@ -42,7 +48,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             }
         }
 
-        public async Task ProcessAsync(HttpRequest httpRequest, HttpResponse httpResponse, IBot bot, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task ProcessAsync(HttpRequest httpRequest, HttpResponse httpResponse, IBot bot, CancellationToken cancellationToken = default)
         {
             if (httpRequest == null)
             {
@@ -54,30 +60,139 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                 throw new ArgumentNullException(nameof(httpResponse));
             }
 
-            if (bot == null)
+            _bot = bot ?? throw new ArgumentNullException(nameof(bot));
+
+            if (httpRequest.Method == HttpMethods.Get)
             {
-                throw new ArgumentNullException(nameof(bot));
+                await ConnectWebSocket(httpRequest, httpResponse).ConfigureAwait(false);
+            }
+            else
+            {
+                // deserialize the incoming Activity
+                var activity = HttpHelper.ReadRequest(httpRequest);
+
+                // grab the auth header from the inbound http request
+                var authHeader = httpRequest.Headers["Authorization"];
+
+                try
+                {
+                    // process the inbound activity with the bot
+                    var invokeResponse = await ProcessActivityAsync(authHeader, activity, bot.OnTurnAsync, cancellationToken).ConfigureAwait(false);
+
+                    // write the response, potentially serializing the InvokeResponse
+                    HttpHelper.WriteResponse(httpResponse, invokeResponse);
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    // handle unauthorized here as this layer creates the http response
+                    httpResponse.StatusCode = (int)HttpStatusCode.Unauthorized;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Process the initial request to establish a long lived connection via a streaming server.
+        /// </summary>
+        /// <param name="httpRequest">The connection request.</param>
+        /// <param name="httpResponse">The response sent on error or connection termination.</param>
+        /// <returns>Returns on task completion.</returns>
+        private async Task ConnectWebSocket(HttpRequest httpRequest, HttpResponse httpResponse)
+        {
+            if (httpRequest == null)
+            {
+                throw new ArgumentNullException(nameof(httpRequest));
             }
 
-            // deserialize the incoming Activity
-            var activity = HttpHelper.ReadRequest(httpRequest);
+            if (httpResponse == null)
+            {
+                throw new ArgumentNullException(nameof(httpResponse));
+            }
 
-            // grab the auth header from the inbound http request
-            var authHeader = httpRequest.Headers["Authorization"];
+            if (!httpRequest.HttpContext.WebSockets.IsWebSocketRequest)
+            {
+                httpRequest.HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                await httpRequest.HttpContext.Response.WriteAsync("Upgrade to WebSocket is required.").ConfigureAwait(false);
+
+                return;
+            }
+
+            if (!await AuthCheck(httpRequest).ConfigureAwait(false))
+            {
+                return;
+            }
 
             try
             {
-                // process the inbound activity with the bot
-                var invokeResponse = await ProcessActivityAsync(authHeader, activity, bot.OnTurnAsync, cancellationToken).ConfigureAwait(false);
+                var socket = await httpRequest.HttpContext.WebSockets.AcceptWebSocketAsync().ConfigureAwait(false);
+                var requestHandler = new StreamingRequestHandler(_logger, this, socket);
 
-                // write the response, potentially serializing the InvokeResponse
-                HttpHelper.WriteResponse(httpResponse, invokeResponse);
+                if (_requestHandlers == null)
+                {
+                    _requestHandlers = new List<StreamingRequestHandler>();
+                }
+
+                _requestHandlers.Add(requestHandler);
+
+                await requestHandler.StartListening().ConfigureAwait(false);
             }
-            catch (UnauthorizedAccessException)
+            catch (Exception ex)
             {
-                // handle unauthorized here as this layer creates the http response
-                httpResponse.StatusCode = (int)HttpStatusCode.Unauthorized;
+                httpRequest.HttpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                await httpRequest.HttpContext.Response.WriteAsync("Unable to create transport server.").ConfigureAwait(false);
+
+                throw ex;
             }
+        }
+
+        private async Task<bool> AuthCheck(HttpRequest httpRequest)
+        {
+            try
+            {
+                if (!await _credentialProvider.IsAuthenticationDisabledAsync().ConfigureAwait(false))
+                {
+                    var authHeader = httpRequest.Headers.Where(x => x.Key.ToLower() == AuthHeaderName).FirstOrDefault().Value.FirstOrDefault();
+                    var channelId = httpRequest.Headers.Where(x => x.Key.ToLower() == ChannelIdHeaderName).FirstOrDefault().Value.FirstOrDefault();
+
+                    if (string.IsNullOrWhiteSpace(authHeader))
+                    {
+                        await MissingAuthHeaderHelperAsync(AuthHeaderName, httpRequest).ConfigureAwait(false);
+
+                        return false;
+                    }
+
+                    if (string.IsNullOrWhiteSpace(channelId))
+                    {
+                        await MissingAuthHeaderHelperAsync(ChannelIdHeaderName, httpRequest).ConfigureAwait(false);
+
+                        return false;
+                    }
+
+                    var claimsIdentity = await JwtTokenValidation.ValidateAuthHeader(authHeader, _credentialProvider, _channelProvider, channelId).ConfigureAwait(false);
+                    if (!claimsIdentity.IsAuthenticated)
+                    {
+                        httpRequest.HttpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+
+                        return false;
+                    }
+
+                    _claimsIdentity = claimsIdentity;
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                httpRequest.HttpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                await httpRequest.HttpContext.Response.WriteAsync("Error while attempting to authorize connection.").ConfigureAwait(false);
+
+                throw ex;
+            }
+        }
+
+        private async Task MissingAuthHeaderHelperAsync(string headerName, HttpRequest httpRequest)
+        {
+            httpRequest.HttpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+            await httpRequest.HttpContext.Response.WriteAsync($"Unable to authentiate. Missing header: {headerName}").ConfigureAwait(false);
         }
     }
 }

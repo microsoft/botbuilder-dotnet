@@ -33,6 +33,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Microsoft.Bot.Connector\Microsoft.Bot.Connector.csproj" />
+    <ProjectReference Include="..\Microsoft.Bot.Streaming\Microsoft.Bot.Streaming.csproj" />
   </ItemGroup>
 
   <ItemGroup>

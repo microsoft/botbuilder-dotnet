@@ -20,7 +20,6 @@
   </ItemGroup>
 
   <ItemGroup>        
-    <ProjectReference Include="..\..\libraries\Microsoft.Bot.Builder.Streaming\Microsoft.Bot.Builder.Streaming.csproj" />        
     <ProjectReference Include="..\..\libraries\Microsoft.Bot.Streaming\Microsoft.Bot.Streaming.csproj" />
   </ItemGroup>
 </Project>

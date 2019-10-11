@@ -49,6 +49,7 @@ namespace Microsoft.Bot.Builder.Streaming
             {
                 var serverResponse = await _requestHandler.SendStreamingRequestAsync(request, cancellation).ConfigureAwait(false);
 
+                // TODO ccastro serverResponse could be null
                 if (serverResponse.StatusCode == (int)HttpStatusCode.OK)
                 {
                     return serverResponse.ReadBodyAsJson<T>();

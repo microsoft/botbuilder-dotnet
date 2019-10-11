@@ -71,5 +71,24 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
 
             return applicationBuilder;
         }
+
+        /// <summary>
+        /// Maps various endpoint handlers for the registered bot into the request execution pipeline using the V4 protocol.
+        /// </summary>
+        /// <param name="applicationBuilder">The application builder that defines the bot's pipeline.<see cref="IApplicationBuilder"/>.</param>
+        /// <param name="pipeName">The name of the named pipe to use when creating the server.</param>
+        /// <returns>A reference to this instance after the operation has completed.</returns>
+        public static IApplicationBuilder UseNamedPipes(this IApplicationBuilder applicationBuilder, string pipeName = "bfv4.pipes")
+        {
+            if (applicationBuilder == null)
+            {
+                throw new ArgumentNullException(nameof(applicationBuilder));
+            }
+
+            var bot = applicationBuilder.ApplicationServices.GetService(typeof(IBot)) as IBot;
+            _ = (applicationBuilder.ApplicationServices.GetService(typeof(IBotFrameworkHttpAdapter)) as BotFrameworkHttpAdapter).AddNamedPipeConnection(pipeName, bot);
+
+            return applicationBuilder;
+        }
     }
 }

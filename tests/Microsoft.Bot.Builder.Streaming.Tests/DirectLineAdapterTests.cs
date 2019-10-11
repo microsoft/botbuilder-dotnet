@@ -41,7 +41,7 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
             botMock.Setup(b => b.OnTurnAsync(It.IsAny<TurnContext>(), It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
 
             // Act
-            var adapter = new DirectLineAdapter();
+            var adapter = new BotFrameworkHttpAdapter();
             await adapter.ProcessAsync(httpRequestMock.Object, httpResponseMock.Object, botMock.Object);
 
             // Assert
@@ -178,7 +178,7 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
             return stream;
         }
 
-        private class MyAdapter : DirectLineAdapter
+        private class MyAdapter : BotFrameworkHttpAdapter
         {
             public MyAdapter(IConfiguration configuration)
                 : base(configuration)
