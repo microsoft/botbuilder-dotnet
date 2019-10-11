@@ -595,7 +595,10 @@ namespace Microsoft.Bot.Expressions.Tests
             Test("lastIndexOf(newGuid(), '-')", 23),
             Test("lastIndexOf(hello, '-')", -1),
             Test("length(newGuid())", 36),
-
+            Test("orderBy(items)", new List<object> { "one", "two", "zero" }),
+            Test("orderBy(nestedItems, 'x')[0].x", 1),
+            Test("orderByDescending(items)", new List<object> { "zero", "two", "one" }),
+            Test("orderByDescending(nestedItems, 'x')[0].x", 3),
             #endregion
 
             #region  Object manipulation and construction functions
@@ -719,13 +722,44 @@ namespace Microsoft.Bot.Expressions.Tests
                 Assert.AreEqual(expectedList.Count, actualList.Count);
                 for (var i = 0; i < expectedList.Count; i++)
                 {
-                    Assert.AreEqual(expectedList[i], actualList[i]);
+                    Assert.AreEqual(ResolveValue(expectedList[i]), ResolveValue(actualList[i]));
                 }
             }
             else
             {
                 Assert.AreEqual(expected, actual);
             }
+        }
+
+        private object ResolveValue(object obj)
+        {
+            object value;
+            if (!(obj is JValue jval))
+            {
+                value = obj;
+            }
+            else
+            {
+                value = jval.Value;
+                if (jval.Type == JTokenType.Integer)
+                {
+                    value = jval.ToObject<int>();
+                }
+                else if (jval.Type == JTokenType.String)
+                {
+                    value = jval.ToObject<string>();
+                }
+                else if (jval.Type == JTokenType.Boolean)
+                {
+                    value = jval.ToObject<bool>();
+                }
+                else if (jval.Type == JTokenType.Float)
+                {
+                    value = jval.ToObject<float>();
+                }
+            }
+
+            return value;
         }
     }
 }
