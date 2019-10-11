@@ -12,7 +12,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
     /// </summary>
     public class SettingsMemoryScope : MemoryScope
     {
-        private Dictionary<string, object> settings = null;
         private Dictionary<string, object> emptySettings = new Dictionary<string, object>();
 
         public SettingsMemoryScope()
@@ -27,19 +26,18 @@ namespace Microsoft.Bot.Builder.Dialogs.Memory.Scopes
                 throw new ArgumentNullException(nameof(dc));
             }
 
-            lock (this.emptySettings)
+            var namedScopes = GetScopesMemory(dc.Context);
+            if (!namedScopes.TryGetValue(ScopePath.SETTINGS, out object settings))
             {
-                if (this.settings == null)
+                var configuration = dc.Context.TurnState.Get<IConfiguration>();
+                if (configuration != null)
                 {
-                    var configuration = dc.Context.TurnState.Get<IConfiguration>();
-                    if (configuration != null)
-                    {
-                        this.settings = Configuration.LoadSettings(configuration);
-                    }
+                    settings = Configuration.LoadSettings(configuration);
+                    namedScopes[ScopePath.SETTINGS] = settings;
                 }
             }
 
-            return this.settings ?? this.emptySettings;
+            return settings ?? emptySettings;
         }
     }
 }
