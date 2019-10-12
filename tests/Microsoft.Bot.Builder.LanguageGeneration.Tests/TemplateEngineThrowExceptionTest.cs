@@ -11,7 +11,6 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
     {
         public static IEnumerable<object[]> StaticCheckExceptionData => new[]
         {
-            Test("EmptyTemplate.lg"),
             Test("ErrorTemplateParameters.lg"),
             Test("NoNormalTemplateBody.lg"),
             Test("ConditionFormatError.lg"),
@@ -35,7 +34,8 @@ namespace Microsoft.Bot.Builder.AI.LanguageGeneration.Tests
             Test("EmptyLGFile.lg"),
             Test("OnlyNoMatchRule.lg"),
             Test("NoMatchRule.lg"),
-            Test("SwitchCaseWarning.lg")
+            Test("SwitchCaseWarning.lg"),
+            Test("EmptyTemplate.lg"),
         };
 
         public static IEnumerable<object[]> AnalyzerExceptionData => new[]

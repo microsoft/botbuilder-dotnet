@@ -93,6 +93,12 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
             foreach (var body in bodys)
             {
                 var line = body.GetText().Trim();
+
+                if (string.IsNullOrWhiteSpace(line))
+                {
+                    continue;
+                }
+
                 var start = line.IndexOf('=');
                 if (start > 0)
                 {

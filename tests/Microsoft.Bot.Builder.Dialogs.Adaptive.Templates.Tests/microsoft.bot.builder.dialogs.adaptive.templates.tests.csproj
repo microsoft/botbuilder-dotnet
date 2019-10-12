@@ -29,6 +29,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="lg\NormalStructuredLG.lg" />
+  </ItemGroup>
+  <ItemGroup>
     <None Update="lg\adaptiveCard.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -36,5 +39,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-
+  <ItemGroup>
+    <Content Include="lg\NormalStructuredLG.lg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 </Project>
