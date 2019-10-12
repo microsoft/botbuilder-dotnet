@@ -72,6 +72,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             activity = await mg.Generate(context, "[activityWithSuggestionActions]", data: data) as Activity;
             AssertActivityWithSuggestionActions(activity);
 
+            activity = await mg.Generate(context, "[messageActivityAll]", data: data) as Activity;
+            AssertMessageActivityAll(activity);
+
             data.type = "herocard";
             activity = await mg.Generate(context, "[HeroCardTemplate]", data: data) as Activity;
             AssertHeroCardActivity(activity);
@@ -79,6 +82,23 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             data.type = "thumbnailcard";
             activity = await mg.Generate(context, "[ThumbnailCardTemplate]", data: data) as Activity;
             AssertThumbnailCardActivity(activity);
+
+            data.type = "audiocard";
+            activity = await mg.Generate(context, "[AudioCardTemplate]", data: data) as Activity;
+            AssertAudioCardActivity(activity);
+
+            data.type = "videocard";
+            activity = await mg.Generate(context, "[VideoCardTemplate]", data: data) as Activity;
+            AssertVideoCardActivity(activity);
+
+            data.signinlabel = "Sign in";
+            data.url = "https://login.microsoftonline.com/";
+            activity = await mg.Generate(context, "[SigninCardTemplate]", data: data) as Activity;
+            AssertSigninCardActivity(activity);
+
+            data.connectionName = "MyConnection";
+            activity = await mg.Generate(context, "[OAuthCardTemplate]", data: data) as Activity;
+            AssertOAuthCardActivity(activity);
         }
 
         [TestMethod]
@@ -110,6 +130,9 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             activity = ActivityGenerator.GenerateFromLG(engine.EvaluateTemplate("activityWithSuggestionActions", data));
             AssertActivityWithSuggestionActions(activity);
 
+            activity = ActivityGenerator.GenerateFromLG(engine.EvaluateTemplate("messageActivityAll", data));
+            AssertMessageActivityAll(activity);
+
             data.type = "herocard";
             activity = ActivityGenerator.GenerateFromLG(engine.EvaluateTemplate("HeroCardTemplate", data));
             AssertHeroCardActivity(activity);
@@ -117,6 +140,48 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             data.type = "thumbnailcard";
             activity = ActivityGenerator.GenerateFromLG(engine.EvaluateTemplate("ThumbnailCardTemplate", data));
             AssertThumbnailCardActivity(activity);
+
+            data.type = "audiocard";
+            activity = ActivityGenerator.GenerateFromLG(engine.EvaluateTemplate("AudioCardTemplate", data));
+            AssertAudioCardActivity(activity);
+
+            data.type = "videocard";
+            activity = ActivityGenerator.GenerateFromLG(engine.EvaluateTemplate("VideoCardTemplate", data));
+            AssertVideoCardActivity(activity);
+
+            data.signinlabel = "Sign in";
+            data.url = "https://login.microsoftonline.com/";
+            activity = ActivityGenerator.GenerateFromLG(engine.EvaluateTemplate("SigninCardTemplate", data));
+            AssertSigninCardActivity(activity);
+
+            data.connectionName = "MyConnection";
+            activity = ActivityGenerator.GenerateFromLG(engine.EvaluateTemplate("OAuthCardTemplate", data));
+            AssertOAuthCardActivity(activity);
+        }
+
+        private void AssertMessageActivityAll(Activity activity)
+        {
+            Assert.AreEqual(ActivityTypes.Message, activity.Type);
+            Assert.AreEqual("textContent", activity.Text);
+            Assert.AreEqual("textContent", activity.Speak);
+            Assert.AreEqual("accepting", activity.InputHint);
+            Assert.AreEqual(1, activity.Attachments.Count);
+            Assert.AreEqual(AttachmentLayoutTypes.List, activity.AttachmentLayout);
+            Assert.AreEqual(HeroCard.ContentType, activity.Attachments[0].ContentType);
+            var card = ((JObject)activity.Attachments[0].Content).ToObject<HeroCard>();
+            Assert.IsNotNull(card, "should have herocard");
+            Assert.AreEqual("titleContent", card.Title, "card title should be set");
+            Assert.AreEqual("textContent", card.Text, "card text should be set");
+            Assert.AreEqual(1, card.Buttons.Count, "card buttons should be set");
+            Assert.AreEqual($"imBack", card.Buttons[0].Type, "card buttons should be set");
+            Assert.AreEqual($"titleContent", card.Buttons[0].Title, "card buttons should be set");
+            Assert.AreEqual($"textContent", card.Buttons[0].Value, "card buttons should be set");
+            Assert.AreEqual(activity.SuggestedActions.Actions.Count, 2);
+            Assert.AreEqual(activity.SuggestedActions.Actions[0].DisplayText, "firstItem");
+            Assert.AreEqual(activity.SuggestedActions.Actions[0].Title, "firstItem");
+            Assert.AreEqual(activity.SuggestedActions.Actions[0].Text, "firstItem");
+            Assert.AreEqual(activity.SuggestedActions.Actions[1].Title, "titleContent");
+            Assert.AreEqual(activity.SuggestedActions.Actions[1].Value, "textContent");
         }
 
         private void AssertActivityWithSuggestionActions(Activity activity)
@@ -243,6 +308,89 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             {
                 Assert.AreEqual($"Option {i + 1}", card.Buttons[i].Title, "card buttons should be set");
             }
+        }
+
+        private void AssertAudioCardActivity(Activity activity)
+        {
+            Assert.AreEqual(ActivityTypes.Message, activity.Type);
+            Assert.IsTrue(string.IsNullOrEmpty(activity.Text));
+            Assert.IsTrue(string.IsNullOrEmpty(activity.Speak));
+            Assert.AreEqual(1, activity.Attachments.Count);
+            Assert.AreEqual(AudioCard.ContentType, activity.Attachments[0].ContentType);
+            var card = ((JObject)activity.Attachments[0].Content).ToObject<AudioCard>();
+            Assert.IsNotNull(card, "should have audiocard");
+            Assert.AreEqual("Cheese gromit!", card.Title, "card title should be set");
+            Assert.AreEqual("audiocard", card.Subtitle, "card subtitle should be data bound ");
+            Assert.AreEqual("This is some text describing the card, it's cool because it's cool", card.Text, "card text should be set");
+            Assert.AreEqual("https://memegenerator.net/img/instances/500x/73055378/cheese-gromit.jpg", card.Image.Url, "image should be set");
+            Assert.AreEqual("https://contoso.com/media/AllegrofromDuetinCMajor.mp3", card.Media[0].Url);
+            Assert.AreEqual(false, card.Shareable);
+            Assert.AreEqual(true, card.Autoloop);
+            Assert.AreEqual(true, card.Autostart);
+            Assert.AreEqual("16:9", card.Aspect);
+            Assert.AreEqual(3, card.Buttons.Count, "card buttons should be set");
+            for (int i = 0; i <= 2; i++)
+            {
+                Assert.AreEqual($"Option {i + 1}", card.Buttons[i].Title, "card buttons should be set");
+            }
+        }
+
+        private void AssertVideoCardActivity(Activity activity)
+        {
+            Assert.AreEqual(ActivityTypes.Message, activity.Type);
+            Assert.IsTrue(string.IsNullOrEmpty(activity.Text));
+            Assert.IsTrue(string.IsNullOrEmpty(activity.Speak));
+            Assert.AreEqual(1, activity.Attachments.Count);
+            Assert.AreEqual(VideoCard.ContentType, activity.Attachments[0].ContentType);
+            var card = ((JObject)activity.Attachments[0].Content).ToObject<VideoCard>();
+            Assert.IsNotNull(card, "should have videocard");
+            Assert.AreEqual("Cheese gromit!", card.Title, "card title should be set");
+            Assert.AreEqual("videocard", card.Subtitle, "card subtitle should be data bound ");
+            Assert.AreEqual("This is some text describing the card, it's cool because it's cool", card.Text, "card text should be set");
+            Assert.AreEqual("https://memegenerator.net/img/instances/500x/73055378/cheese-gromit.jpg", card.Image.Url, "image should be set");
+            Assert.AreEqual("https://youtu.be/530FEFogfBQ", card.Media[0].Url);
+            Assert.AreEqual(false, card.Shareable);
+            Assert.AreEqual(true, card.Autoloop);
+            Assert.AreEqual(true, card.Autostart);
+            Assert.AreEqual("16:9", card.Aspect);
+            Assert.AreEqual(3, card.Buttons.Count, "card buttons should be set");
+            for (int i = 0; i <= 2; i++)
+            {
+                Assert.AreEqual($"Option {i + 1}", card.Buttons[i].Title, "card buttons should be set");
+            }
+        }
+
+        private void AssertSigninCardActivity(Activity activity)
+        {
+            Assert.AreEqual(ActivityTypes.Message, activity.Type);
+            Assert.IsTrue(string.IsNullOrEmpty(activity.Text));
+            Assert.IsTrue(string.IsNullOrEmpty(activity.Speak));
+            Assert.AreEqual(1, activity.Attachments.Count);
+            Assert.AreEqual(SigninCard.ContentType, activity.Attachments[0].ContentType);
+            var card = ((JObject)activity.Attachments[0].Content).ToObject<SigninCard>();
+            Assert.IsNotNull(card, "should have signincard");
+            Assert.AreEqual("This is some text describing the card, it's cool because it's cool", card.Text, "card text should be set");
+            Assert.AreEqual(1, card.Buttons.Count, "card buttons should be set");
+            Assert.AreEqual($"Sign in", card.Buttons[0].Title);
+            Assert.AreEqual(ActionTypes.Signin, card.Buttons[0].Type);
+            Assert.AreEqual($"https://login.microsoftonline.com/", card.Buttons[0].Value);
+        }
+
+        private void AssertOAuthCardActivity(Activity activity)
+        {
+            Assert.AreEqual(ActivityTypes.Message, activity.Type);
+            Assert.IsTrue(string.IsNullOrEmpty(activity.Text));
+            Assert.IsTrue(string.IsNullOrEmpty(activity.Speak));
+            Assert.AreEqual(1, activity.Attachments.Count);
+            Assert.AreEqual(OAuthCard.ContentType, activity.Attachments[0].ContentType);
+            var card = ((JObject)activity.Attachments[0].Content).ToObject<OAuthCard>();
+            Assert.IsNotNull(card, "should have signincard");
+            Assert.AreEqual("This is some text describing the card, it's cool because it's cool", card.Text, "card text should be set");
+            Assert.AreEqual("MyConnection", card.ConnectionName);
+            Assert.AreEqual(1, card.Buttons.Count, "card buttons should be set");
+            Assert.AreEqual($"Sign in", card.Buttons[0].Title);
+            Assert.AreEqual(ActionTypes.Signin, card.Buttons[0].Type);
+            Assert.AreEqual($"https://login.microsoftonline.com/", card.Buttons[0].Value);
         }
 
         private static string GetProjectFolder()

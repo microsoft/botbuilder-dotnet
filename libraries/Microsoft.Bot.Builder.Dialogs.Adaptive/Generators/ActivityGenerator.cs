@@ -26,8 +26,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
             { nameof(VideoCard), VideoCard.ContentType },
             { nameof(AnimationCard), AnimationCard.ContentType },
             { nameof(SigninCard), SigninCard.ContentType },
-            { nameof(OAuthCard), OAuthCard.ContentType },
-            { nameof(ReceiptCard), ReceiptCard.ContentType }
+            { nameof(OAuthCard), OAuthCard.ContentType }
         };
 
         public ActivityGenerator()
@@ -111,15 +110,14 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
         private static Activity BuildActivityFromLGStructuredResult(JObject lgJObj)
         {
             Activity activity;
+            var type = GetStructureType(lgJObj);
 
-            if (GetAttachment(lgJObj, out var attachment))
+            if (genericCardTypeMapping.ContainsKey(type) && GetAttachment(lgJObj, out var attachment))
             {
                 activity = MessageFactory.Attachment(attachment) as Activity;
             }
             else
             {
-                var type = GetStructureType(lgJObj);
-
                 if (type == nameof(Activity))
                 {
                     activity = BuildActivityFromObject(lgJObj);
@@ -207,10 +205,6 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
 
                     case "attachments":
                         activity.Attachments = GetAttachments(value);
-                        break;
-
-                    case "value":
-                        activity.Value = value;
                         break;
 
                     case "suggestedactions":
@@ -405,7 +399,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                     case "text":
                     case "aspect":
                     case "value":
-                    case "connectionName":
+                    case "connectionname":
                         card[property] = value;
                         break;
 
@@ -452,9 +446,17 @@ namespace Microsoft.Bot.Builder.Dialogs.Adaptive.Generators
                         break;
 
                     case "autostart":
-                    case "sharable":
+                    case "shareable":
                     case "autoloop":
-                        card[property] = value.ToString().ToLower() == "true";
+                        if (value.ToString().ToLower() == "true")
+                        {
+                            card[property] = true;
+                        }
+                        else if (value.ToString().ToLower() == "false")
+                        {
+                            card[property] = false;
+                        }
+
                         break;
                     case "":
                         break;
