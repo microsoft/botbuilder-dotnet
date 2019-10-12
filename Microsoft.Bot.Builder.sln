@@ -113,6 +113,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Strea
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Streaming.Tests", "tests\Microsoft.Bot.Streaming.Tests\Microsoft.Bot.Streaming.Tests.csproj", "{D243AC2D-7823-4177-9D8A-23FDFDA274D2}"
+	ProjectSection(ProjectDependencies) = postProject
+		{ADA8AB8B-2066-4193-B8F7-985669B23E00} = {ADA8AB8B-2066-4193-B8F7-985669B23E00}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -28,26 +28,31 @@ namespace Microsoft.Bot.Builder.Streaming
 {
     public class StreamingRequestHandler : RequestHandler
     {
+        private const string _reconnectPath = "api/reconnect";
+
+        private readonly IBot _bot;
         private readonly ILogger _logger;
         private readonly IStreamingActivityProcessor _activityProcessor;
         private readonly string _userAgent;
         private readonly IDictionary<string, DateTime> _conversations;
 
-        // TODO: this is a placeholder until the well defined reconnection path is determined.
-        private string _reconnectPath = "api/reconnect";
         private IStreamingTransportServer _server;
+        private bool _serverIsConnected;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="StreamingRequestHandler"/> class and
         /// establishes a connection over a WebSocket to a streaming channel.
         /// </summary>
-        /// <param name="logger">A logger.</param>
+        /// <param name="bot">The bot for which we handle requests.</param>
         /// <param name="activityProcessor">The procesor for incoming requests.</param>
         /// <param name="socket">The base socket to use when connecting to the channel.</param>
-        public StreamingRequestHandler(ILogger logger, IStreamingActivityProcessor activityProcessor, WebSocket socket)
+        /// <param name="logger">Logger implementation for tracing and debugging information.</param>
+        public StreamingRequestHandler(IBot bot, IStreamingActivityProcessor activityProcessor, WebSocket socket, ILogger logger = null)
         {
-            _logger = logger ?? NullLogger.Instance;
+            _bot = bot ?? throw new ArgumentNullException(nameof(bot));
             _activityProcessor = activityProcessor ?? throw new ArgumentNullException(nameof(activityProcessor));
+
+            _logger = logger ?? NullLogger.Instance;
 
             if (socket == null)
             {
@@ -57,7 +62,7 @@ namespace Microsoft.Bot.Builder.Streaming
             _conversations = new ConcurrentDictionary<string, DateTime>();
             _userAgent = GetUserAgent();
             _server = new WebSocketServer(socket, this);
-            ServerIsConnected = true;
+            _serverIsConnected = true;
             _server.Disconnected += Server_Disconnected;
         }
 
@@ -65,13 +70,16 @@ namespace Microsoft.Bot.Builder.Streaming
         /// Initializes a new instance of the <see cref="StreamingRequestHandler"/> class and
         /// establishes a connection over a Named Pipe to a streaming channel.
         /// </summary>
-        /// <param name="logger">A logger.</param>
+        /// <param name="bot">The bot for which we handle requests.</param>
         /// <param name="activityProcessor">The processor for incoming requests.</param>
         /// <param name="pipeName">The name of the Named Pipe to use when connecting to the channel.</param>
-        public StreamingRequestHandler(ILogger logger, IStreamingActivityProcessor activityProcessor, string pipeName)
+        /// <param name="logger">Logger implementation for tracing and debugging information.</param>
+        public StreamingRequestHandler(IBot bot, IStreamingActivityProcessor activityProcessor, string pipeName, ILogger logger = null)
         {
-            _logger = logger ?? NullLogger.Instance;
+            _bot = bot ?? throw new ArgumentNullException(nameof(bot));
             _activityProcessor = activityProcessor ?? throw new ArgumentNullException(nameof(activityProcessor));
+
+            _logger = logger ?? NullLogger.Instance;
 
             if (string.IsNullOrWhiteSpace(pipeName))
             {
@@ -81,7 +89,7 @@ namespace Microsoft.Bot.Builder.Streaming
             _conversations = new ConcurrentDictionary<string, DateTime>();
             _userAgent = GetUserAgent();
             _server = new NamedPipeServer(pipeName, this);
-            ServerIsConnected = true;
+            _serverIsConnected = true;
             _server.Disconnected += Server_Disconnected;
         }
 
@@ -92,8 +100,6 @@ namespace Microsoft.Bot.Builder.Streaming
         /// The URL of the channel endpoint this StreamingRequestHandler receives requests from.
         /// </value>
         public string ServiceUrl { get; private set; }
-
-        private bool ServerIsConnected { get; set; }
 
         /// <summary>
         /// Begins listening for incoming requests over this StreamingRequestHandler's server.
@@ -209,7 +215,7 @@ namespace Microsoft.Bot.Builder.Streaming
                 }
 
                 // Now that the request has been converted into an activity we can send it to the adapter.
-                var adapterResponse = await _activityProcessor.ProcessStreamingActivityAsync(activity, cancellationToken).ConfigureAwait(false);
+                var adapterResponse = await _activityProcessor.ProcessStreamingActivityAsync(activity, _bot.OnTurnAsync, cancellationToken).ConfigureAwait(false);
 
                 // Now we convert the invokeResponse returned by the adapter into a StreamingResponse we can send back to the channel.
                 if (adapterResponse == null)
@@ -266,7 +272,7 @@ namespace Microsoft.Bot.Builder.Streaming
 
             try
             {
-                if (!ServerIsConnected)
+                if (!_serverIsConnected)
                 {
                     await Reconnect().ConfigureAwait(false);
                 }
@@ -296,7 +302,7 @@ namespace Microsoft.Bot.Builder.Streaming
         {
             try
             {
-                if (!ServerIsConnected)
+                if (!_serverIsConnected)
                 {
                     await Reconnect().ConfigureAwait(false);
                 }
@@ -358,7 +364,7 @@ namespace Microsoft.Bot.Builder.Streaming
 
         private void Server_Disconnected(object sender, DisconnectedEventArgs e)
         {
-            ServerIsConnected = false;
+            _serverIsConnected = false;
         }
 
         private async Task Reconnect(IDictionary<string, string> requestHeaders = null)

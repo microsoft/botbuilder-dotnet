@@ -12,6 +12,6 @@ namespace Microsoft.Bot.Builder.Streaming
     /// </summary>
     public interface IStreamingActivityProcessor
     {
-        Task<InvokeResponse> ProcessStreamingActivityAsync(Activity activity, CancellationToken cancellationToken = default);
+        Task<InvokeResponse> ProcessStreamingActivityAsync(Activity activity, BotCallbackHandler botCallbackHandler, CancellationToken cancellationToken = default);
     }
 }

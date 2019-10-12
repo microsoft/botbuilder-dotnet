@@ -56,7 +56,6 @@ namespace Microsoft.Bot.Builder
         protected readonly IChannelProvider _channelProvider;
         protected readonly ILogger _logger;
 
-        protected IBot _bot;
         protected ClaimsIdentity _claimsIdentity;
         protected IList<StreamingRequestHandler> _requestHandlers;
 
@@ -866,6 +865,7 @@ namespace Microsoft.Bot.Builder
         /// Throws <see cref="ArgumentNullException"/> on null arguments.
         /// </summary>
         /// <param name="activity">The <see cref="Activity"/> to process.</param>
+        /// <param name="callbackHandler">The <see cref="BotCallbackHandler"/> that will handle the activity.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
         /// or threads to receive notice of cancellation.</param>
         /// <returns>A task that represents the work queued to execute. If the activity type
@@ -878,7 +878,7 @@ namespace Microsoft.Bot.Builder
         /// then an <see cref="InvokeResponse"/> is returned, otherwise null is returned.
         /// <para>This method registers the following services for the turn.<list type="bullet"/></para>
         /// </remarks>
-        public async Task<InvokeResponse> ProcessStreamingActivityAsync(Activity activity, CancellationToken cancellationToken = default)
+        public async Task<InvokeResponse> ProcessStreamingActivityAsync(Activity activity, BotCallbackHandler callbackHandler, CancellationToken cancellationToken = default)
         {
             BotAssert.ActivityNotNull(activity);
 
@@ -899,7 +899,7 @@ namespace Microsoft.Bot.Builder
                 var connectorClient = CreateStreamingConnectorClient(activity, requestHandler);
                 context.TurnState.Add(connectorClient);
 
-                await RunPipelineAsync(context, _bot.OnTurnAsync, cancellationToken).ConfigureAwait(false);
+                await RunPipelineAsync(context, callbackHandler, cancellationToken).ConfigureAwait(false);
 
                 if (activity.Type == ActivityTypes.Invoke)
                 {
@@ -928,13 +928,22 @@ namespace Microsoft.Bot.Builder
         /// for incoming requests on the Named Pipe.</returns>
         public async Task AddNamedPipeConnection(string pipeName, IBot bot)
         {
+            if (string.IsNullOrEmpty(pipeName))
+            {
+                throw new ArgumentNullException(nameof(pipeName));
+            }
+
+            if (bot == null)
+            {
+                throw new ArgumentNullException(nameof(bot));
+            }
+
             if (_requestHandlers == null)
             {
                 _requestHandlers = new List<StreamingRequestHandler>();
             }
 
-            _bot = bot ?? throw new ArgumentNullException(nameof(bot));
-            var requestHandler = new StreamingRequestHandler(_logger, this, pipeName);
+            var requestHandler = new StreamingRequestHandler(bot, this, pipeName, _logger);
             _requestHandlers.Add(requestHandler);
 
             await requestHandler.StartListening().ConfigureAwait(false);
@@ -1001,7 +1010,7 @@ namespace Microsoft.Bot.Builder
                     return await correctHandler.SendActivityAsync(activity, cancellationToken).ConfigureAwait(false);
                 }
 
-                return await possibleHandlers.FirstOrDefault().SendActivityAsync(activity, cancellationToken).ConfigureAwait(false);
+                return await possibleHandlers.First().SendActivityAsync(activity, cancellationToken).ConfigureAwait(false);
             }
             else
             {
@@ -1013,7 +1022,9 @@ namespace Microsoft.Bot.Builder
                 var protocol = uri[uri.Length - 2];
                 var host = uri[uri.Length - 1];
                 await connection.ConnectAsync(new Uri(protocol + host + "/api/messages"), cancellationToken).ConfigureAwait(false);
-                var handler = new StreamingRequestHandler(_logger, this, connection);
+
+                // TODO: [ccastro] this is wrong
+                var handler = new StreamingRequestHandler(null, this, connection, _logger);
 
                 if (_requestHandlers == null)
                 {

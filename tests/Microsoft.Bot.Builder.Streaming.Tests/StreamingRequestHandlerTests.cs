@@ -10,6 +10,7 @@ using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Schema;
 using Microsoft.Bot.Streaming;
 using Microsoft.Bot.Streaming.Payloads;
+using Microsoft.Bot.Streaming.UnitTests.Mocks;
 using Newtonsoft.Json;
 using Xunit;
 
@@ -36,7 +37,7 @@ namespace Microsoft.Bot.Builder.Streaming.Tests
             // Act
             try
             {
-                var handler = new StreamingRequestHandler(logger: null, activityProcessor: new BotFrameworkHttpAdapter(), socket: null);
+                var handler = new StreamingRequestHandler(bot: new MockBot(), activityProcessor: new BotFrameworkHttpAdapter(), socket: null);
             }
             catch (Exception ex)
             {

@@ -60,26 +60,29 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
                 throw new ArgumentNullException(nameof(httpResponse));
             }
 
-            _bot = bot ?? throw new ArgumentNullException(nameof(bot));
+            if (bot == null)
+            {
+                throw new ArgumentNullException(nameof(bot));
+            }
 
             if (httpRequest.Method == HttpMethods.Get)
             {
-                await ConnectWebSocket(httpRequest, httpResponse).ConfigureAwait(false);
+                await ConnectWebSocket(bot, httpRequest, httpResponse).ConfigureAwait(false);
             }
             else
             {
-                // deserialize the incoming Activity
+                // Deserialize the incoming Activity
                 var activity = HttpHelper.ReadRequest(httpRequest);
 
-                // grab the auth header from the inbound http request
+                // Grab the auth header from the inbound http request
                 var authHeader = httpRequest.Headers["Authorization"];
 
                 try
                 {
-                    // process the inbound activity with the bot
+                    // Process the inbound activity with the bot
                     var invokeResponse = await ProcessActivityAsync(authHeader, activity, bot.OnTurnAsync, cancellationToken).ConfigureAwait(false);
 
-                    // write the response, potentially serializing the InvokeResponse
+                    // Write the response, potentially serializing the InvokeResponse
                     HttpHelper.WriteResponse(httpResponse, invokeResponse);
                 }
                 catch (UnauthorizedAccessException)
@@ -93,10 +96,11 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
         /// <summary>
         /// Process the initial request to establish a long lived connection via a streaming server.
         /// </summary>
+        /// <param name="bot">The <see cref="IBot"/> instance.</param>
         /// <param name="httpRequest">The connection request.</param>
         /// <param name="httpResponse">The response sent on error or connection termination.</param>
         /// <returns>Returns on task completion.</returns>
-        private async Task ConnectWebSocket(HttpRequest httpRequest, HttpResponse httpResponse)
+        private async Task ConnectWebSocket(IBot bot, HttpRequest httpRequest, HttpResponse httpResponse)
         {
             if (httpRequest == null)
             {
@@ -124,7 +128,7 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             try
             {
                 var socket = await httpRequest.HttpContext.WebSockets.AcceptWebSocketAsync().ConfigureAwait(false);
-                var requestHandler = new StreamingRequestHandler(_logger, this, socket);
+                var requestHandler = new StreamingRequestHandler(bot, this, socket, _logger);
 
                 if (_requestHandlers == null)
                 {
