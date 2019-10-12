@@ -192,5 +192,5 @@ STRUCTURED_TEMPLATE_BODY_END
   ;
 
 STRUCTURED_CONTENT
-  : ~[\r\n]+
+  : ~[\r\n[\]]+
   ;

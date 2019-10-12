@@ -254,10 +254,13 @@ namespace Microsoft.Bot.Builder.LanguageGeneration
                     foreach (var body in bodys)
                     {
                         var line = body.GetText().Trim();
-                        var start = line.IndexOf('=');
-                        if (start < 0 && !IsPureExpression(line))
+                        if (!string.IsNullOrWhiteSpace(line))
                         {
-                            result.Add(BuildLGDiagnostic($"Structured content does not support", context: context.structuredBodyContentLine()));
+                            var start = line.IndexOf('=');
+                            if (start < 0 && !IsPureExpression(line))
+                            {
+                                result.Add(BuildLGDiagnostic($"Structured content does not support", context: context.structuredBodyContentLine()));
+                            }
                         }
                     }
                 }
