@@ -647,6 +647,11 @@ namespace Microsoft.Bot.Expressions.Tests
             Test(@"isMatch('a', '\\w{1}')", true), // "\w" (match [a-zA-Z0-9_])
             Test(@"isMatch('1', '\\d{1}')", true), // "\d" (match [0-9])
             #endregion
+
+            #region Empty expression
+            Test(string.Empty, string.Empty),
+            Test("", ""),
+            #endregion
         };
 
         public static object[] Test(string input, object value, HashSet<string> paths = null) => new object[] { input, value, paths };
