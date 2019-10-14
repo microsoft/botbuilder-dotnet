@@ -419,8 +419,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.AreEqual(activity.SuggestedActions.Actions[1].Text, "second suggestion");
             Assert.AreEqual(activity.SuggestedActions.Actions[2].Value, "third suggestion");
             Assert.AreEqual(activity.SuggestedActions.Actions[2].Title, "third suggestion");
-            Assert.AreEqual(activity.SuggestedActions.Actions[3].Text, "third suggestion");
-
+            Assert.AreEqual(activity.SuggestedActions.Actions[2].Text, "third suggestion");
         }
 
         private void AssertActivityWithMultiStringSuggestionActions(Activity activity)
@@ -436,8 +435,7 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.AreEqual(activity.SuggestedActions.Actions[1].Text, "second suggestion");
             Assert.AreEqual(activity.SuggestedActions.Actions[2].DisplayText, "third suggestion");
             Assert.AreEqual(activity.SuggestedActions.Actions[2].Title, "third suggestion");
-            Assert.AreEqual(activity.SuggestedActions.Actions[3].Text, "third suggestion");
-
+            Assert.AreEqual(activity.SuggestedActions.Actions[2].Text, "third suggestion");
         }
 
         private static string GetProjectFolder()
