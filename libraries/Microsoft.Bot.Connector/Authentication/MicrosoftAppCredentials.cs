@@ -42,7 +42,18 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <param name="appId">The Microsoft app ID.</param>
         /// <param name="password">The Microsoft app password.</param>
         public MicrosoftAppCredentials(string appId, string password)
-            : this(appId, password, null)
+            : this(appId, password, null, null, null, null)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MicrosoftAppCredentials"/> class.
+        /// </summary>
+        /// <param name="appId">The Microsoft app ID.</param>
+        /// <param name="password">The Microsoft app password.</param>
+        /// <param name="oAuthScope">The scope for the token.</param>
+        public MicrosoftAppCredentials(string appId, string password, string oAuthScope)
+            : this(appId, password, null, null, null, oAuthScope)
         {
         }
 
@@ -74,6 +85,19 @@ namespace Microsoft.Bot.Connector.Authentication
         /// </summary>
         /// <param name="appId">The Microsoft app ID.</param>
         /// <param name="password">The Microsoft app password.</param>
+        /// <param name="customHttpClient">Optional <see cref="HttpClient"/> to be used when acquiring tokens.</param>
+        /// <param name="logger">Optional <see cref="ILogger"/> to gather telemetry data while acquiring and managing credentials.</param>
+        /// <param name="oAuthScope">The scope for the token.</param>
+        public MicrosoftAppCredentials(string appId, string password, HttpClient customHttpClient, ILogger logger,  string oAuthScope)
+            : this(appId, password, null, customHttpClient, logger, oAuthScope)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MicrosoftAppCredentials"/> class.
+        /// </summary>
+        /// <param name="appId">The Microsoft app ID.</param>
+        /// <param name="password">The Microsoft app password.</param>
         /// <param name="channelAuthTenant">Optional. The oauth token tenant.</param>
         /// <param name="customHttpClient">Optional <see cref="HttpClient"/> to be used when acquiring tokens.</param>
         public MicrosoftAppCredentials(string appId, string password, string channelAuthTenant, HttpClient customHttpClient)
@@ -90,10 +114,24 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <param name="customHttpClient">Optional <see cref="HttpClient"/> to be used when acquiring tokens.</param>
         /// <param name="logger">Optional <see cref="ILogger"/> to gather telemetry data while acquiring and managing credentials.</param>
         public MicrosoftAppCredentials(string appId, string password, string channelAuthTenant, HttpClient customHttpClient, ILogger logger = null)
-            : base(channelAuthTenant)
+            : this(appId, password, channelAuthTenant, customHttpClient, logger, null)
         {
-            this.MicrosoftAppId = appId;
-            this.MicrosoftAppPassword = password;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MicrosoftAppCredentials"/> class.
+        /// </summary>
+        /// <param name="appId">The Microsoft app ID.</param>
+        /// <param name="password">The Microsoft app password.</param>
+        /// <param name="channelAuthTenant">Optional. The oauth token tenant.</param>
+        /// <param name="customHttpClient">Optional <see cref="HttpClient"/> to be used when acquiring tokens.</param>
+        /// <param name="logger">Optional <see cref="ILogger"/> to gather telemetry data while acquiring and managing credentials.</param>
+        /// <param name="oAuthScope">The scope for the token.</param>
+        public MicrosoftAppCredentials(string appId, string password, string channelAuthTenant, HttpClient customHttpClient, ILogger logger = null, string oAuthScope = null)
+            : base(channelAuthTenant, customHttpClient, logger, oAuthScope)
+        {
+            MicrosoftAppId = appId;
+            MicrosoftAppPassword = password;
         }
 
         /// <summary>

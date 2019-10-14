@@ -2,17 +2,13 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Microsoft.Rest;
-using Newtonsoft.Json;
 
 namespace Microsoft.Bot.Connector.Authentication
 {
@@ -42,11 +38,24 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <param name="customHttpClient">Optional <see cref="HttpClient"/> to be used when acquiring tokens.</param>
         /// <param name="logger">Optional <see cref="ILogger"/> to gather telemetry data while acquiring and managing credentials.</param>
         public AppCredentials(string channelAuthTenant = null, HttpClient customHttpClient = null, ILogger logger = null)
+        : this(channelAuthTenant, customHttpClient, logger, null)
         {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AppCredentials"/> class.
+        /// </summary>
+        /// <param name="channelAuthTenant">Optional. The oauth token tenant.</param>
+        /// <param name="customHttpClient">Optional <see cref="HttpClient"/> to be used when acquiring tokens.</param>
+        /// <param name="logger">Optional <see cref="ILogger"/> to gather telemetry data while acquiring and managing credentials.</param>
+        /// <param name="oAuthScope">The scope for the token.</param>
+        public AppCredentials(string channelAuthTenant = null, HttpClient customHttpClient = null, ILogger logger = null, string oAuthScope = null)
+        {
+            OAuthScope = string.IsNullOrWhiteSpace(oAuthScope) ? AuthenticationConstants.ToChannelFromBotOAuthScope : oAuthScope;
             authenticator = BuildAuthenticator();
-            this.ChannelAuthTenant = channelAuthTenant;
-            this.CustomHttpClient = customHttpClient;
-            this.Logger = logger;
+            ChannelAuthTenant = channelAuthTenant;
+            CustomHttpClient = customHttpClient;
+            Logger = logger;
         }
 
         /// <summary>
@@ -102,7 +111,7 @@ namespace Microsoft.Bot.Connector.Authentication
         /// <value>
         /// The OAuth scope to use.
         /// </value>
-        public virtual string OAuthScope => AuthenticationConstants.ToChannelFromBotOAuthScope;
+        public virtual string OAuthScope { get; }
 
         /// <summary>
         /// Gets or sets the channel auth token tenant for this credential.
@@ -180,12 +189,6 @@ namespace Microsoft.Bot.Connector.Authentication
             }
 
             await base.ProcessHttpRequestAsync(request, cancellationToken).ConfigureAwait(false);
-        }
-
-        public async Task<string> GetTokenAsync(string resource, bool forceRefresh = false)
-        {
-            var token = await authenticator.Value.GetTokenAsync(resource, forceRefresh).ConfigureAwait(false);
-            return token.AccessToken;
         }
 
         /// <summary>
