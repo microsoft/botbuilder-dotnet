@@ -63,3 +63,13 @@
 [MyStruct
     Text = hi
 ]
+
+# MultiStructuredRef
+[MyStruct
+    list = {foreach(createArray('hello','world'), x, T5(x))}
+]
+
+# T5(text)
+[SubStruct
+    Text = {text}
+]

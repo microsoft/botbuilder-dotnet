@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
@@ -75,6 +76,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             activity = await mg.Generate(context, "[messageActivityAll]", data: data) as Activity;
             AssertMessageActivityAll(activity);
 
+            activity = await mg.Generate(context, "[activityWithMultiStructuredSuggestionActions]", data: data) as Activity;
+            AssertActivityWithMultiStructuredSuggestionActions(activity);
+
+            activity = await mg.Generate(context, "[activityWithMultiStringSuggestionActions]", data: data) as Activity;
+            AssertActivityWithMultiStringSuggestionActions(activity);
+
             data.type = "herocard";
             activity = await mg.Generate(context, "[HeroCardTemplate]", data: data) as Activity;
             AssertHeroCardActivity(activity);
@@ -132,6 +139,12 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
 
             activity = ActivityGenerator.GenerateFromLG(engine.EvaluateTemplate("messageActivityAll", data));
             AssertMessageActivityAll(activity);
+
+            activity = ActivityGenerator.GenerateFromLG(engine.EvaluateTemplate("activityWithMultiStructuredSuggestionActions", data));
+            AssertActivityWithMultiStructuredSuggestionActions(activity);
+
+            activity = ActivityGenerator.GenerateFromLG(engine.EvaluateTemplate("activityWithMultiStringSuggestionActions", data));
+            AssertActivityWithMultiStringSuggestionActions(activity);
 
             data.type = "herocard";
             activity = ActivityGenerator.GenerateFromLG(engine.EvaluateTemplate("HeroCardTemplate", data));
@@ -391,6 +404,40 @@ namespace Microsoft.Bot.Builder.Dialogs.Tests
             Assert.AreEqual($"Sign in", card.Buttons[0].Title);
             Assert.AreEqual(ActionTypes.Signin, card.Buttons[0].Type);
             Assert.AreEqual($"https://login.microsoftonline.com/", card.Buttons[0].Value);
+        }
+
+        private void AssertActivityWithMultiStructuredSuggestionActions(Activity activity)
+        {
+            Assert.AreEqual(ActivityTypes.Message, activity.Type);
+            Assert.AreEqual("textContent", activity.Text);
+            Assert.AreEqual(activity.SuggestedActions.Actions.Count, 3);
+            Assert.AreEqual(activity.SuggestedActions.Actions[0].Value, "first suggestion");
+            Assert.AreEqual(activity.SuggestedActions.Actions[0].Title, "first suggestion");
+            Assert.AreEqual(activity.SuggestedActions.Actions[0].Text, "first suggestion");
+            Assert.AreEqual(activity.SuggestedActions.Actions[1].Value, "second suggestion");
+            Assert.AreEqual(activity.SuggestedActions.Actions[1].Title, "second suggestion");
+            Assert.AreEqual(activity.SuggestedActions.Actions[1].Text, "second suggestion");
+            Assert.AreEqual(activity.SuggestedActions.Actions[2].Value, "third suggestion");
+            Assert.AreEqual(activity.SuggestedActions.Actions[2].Title, "third suggestion");
+            Assert.AreEqual(activity.SuggestedActions.Actions[3].Text, "third suggestion");
+
+        }
+
+        private void AssertActivityWithMultiStringSuggestionActions(Activity activity)
+        {
+            Assert.AreEqual(ActivityTypes.Message, activity.Type);
+            Assert.AreEqual("textContent", activity.Text);
+            Assert.AreEqual(activity.SuggestedActions.Actions.Count, 3);
+            Assert.AreEqual(activity.SuggestedActions.Actions[0].DisplayText, "first suggestion");
+            Assert.AreEqual(activity.SuggestedActions.Actions[0].Title, "first suggestion");
+            Assert.AreEqual(activity.SuggestedActions.Actions[0].Text, "first suggestion");
+            Assert.AreEqual(activity.SuggestedActions.Actions[1].DisplayText, "second suggestion");
+            Assert.AreEqual(activity.SuggestedActions.Actions[1].Title, "second suggestion");
+            Assert.AreEqual(activity.SuggestedActions.Actions[1].Text, "second suggestion");
+            Assert.AreEqual(activity.SuggestedActions.Actions[2].DisplayText, "third suggestion");
+            Assert.AreEqual(activity.SuggestedActions.Actions[2].Title, "third suggestion");
+            Assert.AreEqual(activity.SuggestedActions.Actions[3].Text, "third suggestion");
+
         }
 
         private static string GetProjectFolder()

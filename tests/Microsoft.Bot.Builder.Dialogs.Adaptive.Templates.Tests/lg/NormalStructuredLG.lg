@@ -110,6 +110,24 @@
     SuggestedActions = firstItem | {cardActionTemplate(null, title, text)}
 ]
 
+# activityWithMultiStringSuggestionActions(title, text)
+[Activity
+    Text = @{text}
+    SuggestedActions = {getSuggestions()}
+]
+
+# getSuggestions
+- {foreach(split(stringSuggestions(), '$'), x, trim(x))}
+
+# stringSuggestions
+- first suggestion $ second suggestion $ third suggestion
+
+# activityWithMultiStructuredSuggestionActions(text)
+[Activity
+    Text = @{text}
+    SuggestedActions = {foreach(getSuggestions(), x, cardActionTemplate(null, x, x))}
+]
+
 # adaptivecardActivity
 [Activity
     Attachments = {json(adaptivecardjson())}
