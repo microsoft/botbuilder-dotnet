@@ -84,7 +84,7 @@ namespace Microsoft.Bot.Builder.Testing
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         /// <typeparam name="T">An <see cref="IActivity"/> derived type.</typeparam>
-        public virtual async Task<T> SendActivityAsync<T>(Activity activity, CancellationToken cancellationToken = default)
+        public virtual async Task<T> SendActivityAsync<T>(Activity activity, CancellationToken cancellationToken = default(CancellationToken))
             where T : IActivity
         {
             await _testAdapter.ProcessActivityAsync(activity, _callback, cancellationToken).ConfigureAwait(false);
@@ -98,7 +98,7 @@ namespace Microsoft.Bot.Builder.Testing
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
         /// <typeparam name="T">An <see cref="IActivity"/> derived type.</typeparam>
-        public virtual async Task<T> SendActivityAsync<T>(string text, CancellationToken cancellationToken = default)
+        public virtual async Task<T> SendActivityAsync<T>(string text, CancellationToken cancellationToken = default(CancellationToken))
             where T : IActivity
         {
             await _testAdapter.SendTextToBotAsync(text, _callback, cancellationToken).ConfigureAwait(false);

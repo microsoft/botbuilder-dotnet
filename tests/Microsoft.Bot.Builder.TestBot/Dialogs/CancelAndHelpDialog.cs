@@ -53,7 +53,7 @@ namespace Microsoft.BotBuilderSamples
                     case "cancel":
                     case "quit":
                         await innerDc.Context.SendActivityAsync("Cancelling", cancellationToken: cancellationToken);
-                        return await innerDc.CancelAllDialogsAsync(cancellationToken);
+                        return await innerDc.CancelAllDialogsAsync(cancellationToken: cancellationToken);
                 }
             }
 

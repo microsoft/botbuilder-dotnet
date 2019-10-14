@@ -15,7 +15,11 @@ namespace Microsoft.Bot.Builder
     /// </summary>
     public class MemoryStorage : IStorage
     {
-        private static readonly JsonSerializer StateJsonSerializer = new JsonSerializer() { TypeNameHandling = TypeNameHandling.All };
+        private static readonly JsonSerializer StateJsonSerializer = new JsonSerializer()
+        {
+            TypeNameHandling = TypeNameHandling.All,
+            ReferenceLoopHandling = ReferenceLoopHandling.Error,
+        };
 
         private readonly Dictionary<string, JObject> _memory;
         private readonly object _syncroot = new object();
@@ -84,7 +88,9 @@ namespace Microsoft.Bot.Builder
                     {
                         if (state != null)
                         {
-                            storeItems.Add(key, state.ToObject<object>(StateJsonSerializer));
+                            var str = state.ToString();
+                            var deserialized = state.ToObject<object>(StateJsonSerializer);
+                            storeItems.Add(key, deserialized);
                         }
                     }
                 }
@@ -119,13 +125,13 @@ namespace Microsoft.Bot.Builder
 
                     if (_memory.TryGetValue(change.Key, out var oldState))
                     {
-                        if (oldState.TryGetValue("eTag", out var etag))
+                        if (oldState != null && oldState.TryGetValue("eTag", out var etag))
                         {
                             oldStateETag = etag.Value<string>();
                         }
                     }
 
-                    var newState = JObject.FromObject(newValue, StateJsonSerializer);
+                    var newState = newValue != null ? JObject.FromObject(newValue, StateJsonSerializer) : null;
 
                     // Set ETag if applicable
                     if (newValue is IStoreItem newStoreItem)

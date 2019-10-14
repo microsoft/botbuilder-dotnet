@@ -1,0 +1,37 @@
+{
+    "name": "BotBuilderTestBot",
+    "description": "",
+    "services": [
+        {
+            "type": "endpoint",
+            "appId": "",
+            "appPassword": "",
+            "endpoint": "http://localhost:54082/api/messages",
+            "id": "98fd9150-a278-11e8-90fe-f92f88ed2f78",
+            "name": "VS (port:54082)"
+        },
+        {
+            "type": "endpoint",
+            "endpoint": "http://localhost:54084/api/messages",
+            "id": "189",
+            "name": "VS Code (Port:54084)"
+        },
+        {
+            "type": "endpoint",
+            "endpoint": "http://localhost:3979/api/messages",
+            "name": "http://localhost:3979/api/messages",
+            "id": "98"
+        },
+        {
+            "type": "endpoint",
+            "endpoint": "http://localhost:3978/api/messages",
+            "name": "http://localhost:3978/api/messages",
+            "id": "161"
+        }
+    ],
+    "padlock": "",
+    "version": "2.0",
+    "path": "C:\\source\\GitHub\\botbuilder-dotnet\\samples\\Microsoft.Bot.Builder.TestBot.Json\\BotBuilderTestBot.bot",
+    "overrides": null,
+    "secretKey": ""
+}

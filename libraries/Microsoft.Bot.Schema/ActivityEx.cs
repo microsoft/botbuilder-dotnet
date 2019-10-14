@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using Newtonsoft.Json;
@@ -17,6 +18,7 @@ namespace Microsoft.Bot.Schema
     /// The Activity class contains all properties that individual, more specific activities
     /// could contain. It is a superset type.
     /// </remarks>
+    [DebuggerDisplay("[{Type}] {Text ?? System.String.Empty}")]
     public partial class Activity :
         IActivity,
         IConversationUpdateActivity,
@@ -505,6 +507,19 @@ namespace Microsoft.Bot.Schema
             }
 
             return this;
+        }
+
+        /// <summary>
+        /// Determine if the Activity was sent via an Http/Https connection or Streaming
+        /// This can be determined by looking at the ServiceUrl property:
+        /// (1) All channels that send messages via http/https are not streaming
+        /// (2) Channels that send messages via streaming have a ServiceUrl that does not begin with http/https.
+        /// </summary>
+        /// <returns>True if the Activity originated from a streaming connection.</returns>
+        public bool IsFromStreamingConnection()
+        {
+            var isHttp = ServiceUrl?.StartsWith("http", StringComparison.InvariantCultureIgnoreCase);
+            return isHttp.HasValue ? !isHttp.Value : false;
         }
 
         /// <summary>

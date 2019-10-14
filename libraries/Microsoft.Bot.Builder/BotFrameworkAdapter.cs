@@ -19,6 +19,7 @@ using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Rest;
 using Microsoft.Rest.TransientFaultHandling;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -45,8 +46,8 @@ namespace Microsoft.Bot.Builder
     /// <seealso cref="IMiddleware"/>
     public class BotFrameworkAdapter : BotAdapter, IAdapterIntegration, IUserTokenProvider
     {
+        internal const string BotIdentityKey = "BotIdentity";
         private const string InvokeResponseKey = "BotFrameworkAdapter.InvokeResponse";
-        private const string BotIdentityKey = "BotIdentity";
 
         private static readonly HttpClient _defaultHttpClient = new HttpClient();
         private readonly ICredentialProvider _credentialProvider;
@@ -150,8 +151,7 @@ namespace Microsoft.Bot.Builder
         /// <param name="customHttpClient">The HTTP client.</param>
         /// <param name="middleware">The middleware to initially add to the adapter.</param>
         /// <param name="logger">The ILogger implementation this adapter should use.</param>
-        /// <exception cref="ArgumentNullException">
-        /// <paramref name="credentialProvider"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentNullException">throw ArgumentNullException</exception>
         /// <remarks>Use a <see cref="MiddlewareSet"/> object to add multiple middleware
         /// components in the constructor. Use the <see cref="Use(IMiddleware)"/> method to
         /// add additional middleware to the adapter after construction.
@@ -333,6 +333,7 @@ namespace Microsoft.Bot.Builder
             using (var context = new TurnContext(this, activity))
             {
                 context.TurnState.Add<IIdentity>(BotIdentityKey, identity);
+                context.TurnState.Add<BotCallbackHandler>(callback);
 
                 var connectorClient = await CreateConnectorClientAsync(activity.ServiceUrl, identity, cancellationToken).ConfigureAwait(false);
                 context.TurnState.Add(connectorClient);
@@ -419,15 +420,25 @@ namespace Microsoft.Bot.Builder
                 {
                     // if it is a Trace activity we only send to the channel if it's the emulator.
                 }
-                else if (!string.IsNullOrWhiteSpace(activity.ReplyToId))
-                {
-                    var connectorClient = turnContext.TurnState.Get<IConnectorClient>();
-                    response = await connectorClient.Conversations.ReplyToActivityAsync(activity, cancellationToken).ConfigureAwait(false);
-                }
                 else
                 {
-                    var connectorClient = turnContext.TurnState.Get<IConnectorClient>();
-                    response = await connectorClient.Conversations.SendToConversationAsync(activity, cancellationToken).ConfigureAwait(false);
+                    if (activity.IsFromStreamingConnection())
+                    {
+                        // Streaming connection post-processing
+                        TokenResolver.CheckForOAuthCards(this, _logger, turnContext, activity, cancellationToken);
+                    }
+
+                    // If there is a replyToId, then reply to the conversation, otherwise send it as a new message.
+                    if (!string.IsNullOrWhiteSpace(activity.ReplyToId))
+                    {
+                        var connectorClient = turnContext.TurnState.Get<IConnectorClient>();
+                        response = await connectorClient.Conversations.ReplyToActivityAsync(activity, cancellationToken).ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        var connectorClient = turnContext.TurnState.Get<IConnectorClient>();
+                        response = await connectorClient.Conversations.SendToConversationAsync(activity, cancellationToken).ConfigureAwait(false);
+                    }
                 }
 
                 // If No response is set, then default to a "simple" response. This can't really be done

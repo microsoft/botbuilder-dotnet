@@ -45,6 +45,11 @@ namespace Microsoft.Bot.Builder.Dialogs
         public Prompt(string dialogId, PromptValidator<T> validator = null)
             : base(dialogId)
         {
+            if (string.IsNullOrWhiteSpace(dialogId))
+            {
+                throw new ArgumentNullException(nameof(dialogId));
+            }
+
             _validator = validator;
         }
 
@@ -63,6 +68,11 @@ namespace Microsoft.Bot.Builder.Dialogs
             if (dc == null)
             {
                 throw new ArgumentNullException(nameof(dc));
+            }
+
+            if (options is CancellationToken)
+            {
+                throw new ArgumentException($"{nameof(options)} cannot be a cancellation token");
             }
 
             if (!(options is PromptOptions))
@@ -160,7 +170,7 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// when the previous active dialog on the stack completes.
         /// </summary>
         /// <param name="dc">The dialog context for the current turn of the conversation.</param>
-        /// <param name="reason">An enumeration values that indicates why the dialog resumed.</param>
+        /// <param name="reason">An enum indicating why the dialog resumed.</param>
         /// <param name="result">Optional, value returned from the previous dialog on the stack.
         /// The type of the value returned is dependent on the previous dialog.</param>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects
@@ -170,6 +180,11 @@ namespace Microsoft.Bot.Builder.Dialogs
         /// active after the turn has been processed by the dialog.</remarks>
         public override async Task<DialogTurnResult> ResumeDialogAsync(DialogContext dc, DialogReason reason, object result = null, CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (result is CancellationToken)
+            {
+                throw new ArgumentException($"{nameof(result)} cannot be a cancellation token");
+            }
+
             // Prompts are typically leaf nodes on the stack but the dev is free to push other dialogs
             // on top of the stack which will result in the prompt receiving an unexpected call to
             // dialogResume() when the pushed on dialog ends.
@@ -192,6 +207,19 @@ namespace Microsoft.Bot.Builder.Dialogs
             var state = (IDictionary<string, object>)instance.State[PersistedState];
             var options = (PromptOptions)instance.State[PersistedOptions];
             await OnPromptAsync(turnContext, state, options, false, cancellationToken).ConfigureAwait(false);
+        }
+
+        protected override async Task<bool> OnPreBubbleEventAsync(DialogContext dc, DialogEvent e, CancellationToken cancellationToken)
+        {
+            if (e.Name == DialogEvents.ActivityReceived && dc.Context.Activity.Type == ActivityTypes.Message)
+            {
+                // Perform base recognition
+                var state = dc.ActiveDialog.State;
+                var recognized = await this.OnRecognizeAsync(dc.Context, (IDictionary<string, object>)state[PersistedState], (PromptOptions)state[PersistedOptions]).ConfigureAwait(false);
+                return recognized.Succeeded;
+            }
+
+            return false;
         }
 
         /// <summary>

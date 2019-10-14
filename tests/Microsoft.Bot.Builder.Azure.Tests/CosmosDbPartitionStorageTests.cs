@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
 
 using System;
 using System.Collections.Generic;
@@ -185,6 +186,16 @@ namespace Microsoft.Bot.Builder.Azure.Tests
             if (CheckEmulator())
             {
                 await DeleteObjectTest(_storage);
+            }
+        }
+
+        // NOTE: THESE TESTS REQUIRE THAT THE COSMOS DB EMULATOR IS INSTALLED AND STARTED !!!!!!!!!!!!!!!!!
+        [TestMethod]
+        public async Task DeleteUnknownObjectTest()
+        {
+            if (CheckEmulator())
+            {
+                await _storage.DeleteAsync(new[] { "unknown_delete" });
             }
         }
 
