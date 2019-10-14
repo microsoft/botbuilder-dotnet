@@ -472,7 +472,7 @@ namespace Microsoft.Bot.Builder
 
             // Pull the current claims identity from TurnState (it is stored there on the way in).
             var identity = (ClaimsIdentity)turnContext.TurnState.Get<IIdentity>(BotIdentityKey);
-            if (identity.AuthenticationType == "Anonymous")
+            if (identity.AuthenticationType.Equals("anonymous", StringComparison.InvariantCultureIgnoreCase))
             {
                 // TODO: validate that we won't support anonymous with skills (sort of like OAuth). Gabo
                 throw new NotSupportedException("Anonymous calls are not supported for skills, please ensure your bot is configured with a MicrosoftAppId and Password).");
@@ -499,7 +499,7 @@ namespace Microsoft.Bot.Builder
             {
                 // TODO use SkillConversation class here instead of hard coded encoding...
                 // Encode original bot service URL and ConversationId in the new conversation ID so we can unpack it later.
-                // var skillConversation = new SkillConversation() { ServiceUrl = activity.ServiceUrl, ConverationId = activity.Conversation.Id };
+                // var skillConversation = new SkillConversation() { ServiceUrl = activity.ServiceUrl, ConversationId = activity.Conversation.Id };
                 // activity.Conversation.Id = skillConversation.GetSkillConversationId()
                 activity.Conversation.Id = Convert.ToBase64String(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new string[]
                 {

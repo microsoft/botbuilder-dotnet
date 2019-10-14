@@ -76,7 +76,7 @@ namespace Microsoft.Bot.Connector.Authentication
             return result;
         }
 
-        public async Task<AuthenticationResult> AcquireTokenAsync(bool forceRefresh = false)
+        private async Task<AuthenticationResult> AcquireTokenAsync(bool forceRefresh = false)
         {
             bool acquired = false;
 
