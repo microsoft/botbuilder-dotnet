@@ -23,7 +23,6 @@ namespace Microsoft.Bot.Builder.AI.QnA
     public class QnAMakerDialog : Dialog
     {
         private IQnAMakerClient qnaMakerClient;
-        private readonly HttpClient httpClient;
         private Expression knowledgebaseId;
         private Expression endpointkey;
         private Expression hostname;
@@ -52,7 +51,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
             this.ActiveLearningCardTitle = activeLearningCardTitle;
             this.CardNoMatchText = cardNoMatchText;
             this.StrictFilters = strictFilters;
-            this.httpClient = httpClient;
+            this.HttpClient = httpClient;
             this.NoAnswer = new StaticActivityTemplate(noAnswer);
             this.CardNoMatchResponse = new StaticActivityTemplate(cardNoMatchResponse);
             this.qnaMakerClient = qnaMakerClient;
@@ -104,6 +103,9 @@ namespace Microsoft.Bot.Builder.AI.QnA
         [JsonProperty("strictFilters")]
         public Metadata[] StrictFilters { get; set; }
 
+        [JsonIgnore]
+        public HttpClient HttpClient { get; set; }
+
         public override async Task<DialogTurnResult> BeginDialogAsync(DialogContext dc, object options = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (dc == null)
@@ -126,7 +128,7 @@ namespace Microsoft.Bot.Builder.AI.QnA
 
             if (qnaMakerClient == null)
             {
-                qnaMakerClient = new QnAMaker(endpoint, qnamakerOptions, httpClient);
+                qnaMakerClient = new QnAMaker(endpoint, qnamakerOptions, HttpClient);
             }
 
             if (dc.Context?.Activity?.Type != ActivityTypes.Message)
@@ -144,10 +146,10 @@ namespace Microsoft.Bot.Builder.AI.QnA
             // Set values for active dialog.
             var qnaDialogResponseOptions = new QnADialogResponseOptions
             {
-                NoAnswer = NoAnswer,
-                ActiveLearningCardTitle = ActiveLearningCardTitle,
-                CardNoMatchText = CardNoMatchText,
-                CardNoMatchResponse = CardNoMatchResponse
+                NoAnswer = NoAnswer ?? new StaticActivityTemplate(null),
+                ActiveLearningCardTitle = ActiveLearningCardTitle ?? QnAMakerActionBuilder.DefaultCardTitle,
+                CardNoMatchText = CardNoMatchText ?? QnAMakerActionBuilder.DefaultCardNoMatchText,
+                CardNoMatchResponse = CardNoMatchResponse ?? new StaticActivityTemplate(null)
             };
 
             var dialogOptions = new Dictionary<string, object>

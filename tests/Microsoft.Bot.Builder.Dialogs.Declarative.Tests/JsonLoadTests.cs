@@ -5,8 +5,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Adapters;
+using Microsoft.Bot.Builder.AI.QnA;
 using Microsoft.Bot.Builder.Dialogs.Adaptive;
 using Microsoft.Bot.Builder.Dialogs.Debugging;
 using Microsoft.Bot.Builder.Dialogs.Declarative;
@@ -17,6 +20,7 @@ using Microsoft.Bot.Builder.LanguageGeneration;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using RichardSzalay.MockHttp;
 
 namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
 {
@@ -26,6 +30,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         private static ResourceExplorer resourceExplorer;
 
         private readonly string samplesDirectory = PathUtils.NormalizePath(@"..\..\..\..\..\tests\Microsoft.Bot.Builder.TestBot.Json\Samples\");
+        private readonly string requestUrl = "https://dummy-hostname.azurewebsites.net/qnamaker/knowledgebases/dummy-id/generateanswer";
+        private readonly string trainRequestUrl = "https://dummy-hostname.azurewebsites.net/qnamaker/knowledgebases/dummy-id/train";
 
         public TestContext TestContext { get; set; }
 
@@ -34,7 +40,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
         {
             TypeFactory.Configuration = new ConfigurationBuilder().AddInMemoryCollection().Build();
             DeclarativeTypeLoader.AddComponent(new AdaptiveComponentRegistration());
-            DeclarativeTypeLoader.AddComponent(new LanguageGenerationComponentRegistration());
+            DeclarativeTypeLoader.AddComponent(new LanguageGenerationComponentRegistration()); 
+            DeclarativeTypeLoader.AddComponent(new QnAMakerComponentRegistration());
             TypeFactory.Register("Microsoft.RuleRecognizer", typeof(RuleRecognizer));
             string projPath = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, PathUtils.NormalizePath($@"..\..\..\..\..\tests\Microsoft.Bot.Builder.TestBot.Json\Microsoft.Bot.Builder.TestBot.Json.csproj")));
             resourceExplorer = ResourceExplorer.LoadProject(projPath);
@@ -313,7 +320,90 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
             .StartTestAsync();
         }
 
-        private TestFlow BuildTestFlow(string resourceName, bool sendTrace = false)
+        [TestMethod]
+        public async Task JsonDialogLoad_QnAMakerDialog_ActiveLearning_WithProperResponse()
+        {
+            var suggestionList = new List<string> { "Q1", "Q2", "Q3" };
+            var suggestionActivity = QnACardBuilder.GetSuggestionsCard(suggestionList, "Did you mean:", "None of the above.");
+            var qnAMakerCardEqualityComparer = new QnAMakerCardEqualityComparer();
+
+            await BuildQnAMakerTestFlow(QnAMakerActiveLearningHttpClient())
+            .Send("Q11")
+                .AssertReply(suggestionActivity, equalityComparer: qnAMakerCardEqualityComparer)
+            .Send("Q1")
+                .AssertReply("A1")
+            .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task JsonDialogLoad_QnAMakerDialog_ActiveLearning_WithNoResponse()
+        {
+            var suggestionList = new List<string> { "Q1", "Q2", "Q3" };
+            var suggestionActivity = QnACardBuilder.GetSuggestionsCard(suggestionList, "Did you mean:", "None of the above.");
+            var qnAMakerCardEqualityComparer = new QnAMakerCardEqualityComparer();
+            var noAnswerActivity = "Answers not found in kb.";
+
+            await BuildQnAMakerTestFlow(QnAMakerActiveLearningHttpClient())
+            .Send("Q11")
+                .AssertReply(suggestionActivity, equalityComparer: qnAMakerCardEqualityComparer)
+            .Send("Q12")
+                .AssertReply(noAnswerActivity)
+            .StartTestAsync();
+        }
+
+        [TestMethod]
+        public async Task JsonDialogLoad_QnAMakerDialog_ActiveLearning_WithNoneOfAboveQuery()
+        {
+            var suggestionList = new List<string> { "Q1", "Q2", "Q3" };
+            var suggestionActivity = QnACardBuilder.GetSuggestionsCard(suggestionList, "Did you mean:", "None of the above.");
+            var qnAMakerCardEqualityComparer = new QnAMakerCardEqualityComparer();
+
+            await BuildQnAMakerTestFlow(QnAMakerActiveLearningHttpClient())
+            .Send("Q11")
+                .AssertReply(suggestionActivity, equalityComparer: qnAMakerCardEqualityComparer)
+            .Send("None of the above.")
+                .AssertReply("Thanks for the feedback.")
+            .StartTestAsync();
+        }
+
+        private HttpClient QnAMakerActiveLearningHttpClient()
+        {
+            // Mock Http client
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When(HttpMethod.Post, requestUrl).WithContent("{\"question\":\"Q11\",\"top\":3,\"strictFilters\":[],\"metadataBoost\":[],\"scoreThreshold\":0.3,\"context\":null,\"qnaId\":0}")
+                .Respond("application/json", GetResponse("QnaMaker_TopNAnswer.json"));
+            mockHttp.When(HttpMethod.Post, trainRequestUrl)
+                .Respond(HttpStatusCode.NoContent, "application/json", "{ }");
+            mockHttp.When(HttpMethod.Post, requestUrl).WithContent("{\"question\":\"Q12\",\"top\":3,\"strictFilters\":[],\"metadataBoost\":[],\"scoreThreshold\":0.3,\"context\":null,\"qnaId\":0}")
+               .Respond("application/json", GetResponse("QnaMaker_ReturnsAnswer_WhenNoAnswerFoundInKb.json"));
+
+            return new HttpClient(mockHttp);
+        }
+
+        private TestFlow BuildQnAMakerTestFlow(HttpClient httpClient)
+        {
+            var adapter = InitializeAdapter();
+            var resource = resourceExplorer.GetResource("QnAMakerBot.main.dialog");
+            var dialog = DeclarativeTypeLoader.Load<AdaptiveDialog>(resource, resourceExplorer, DebugSupport.SourceMap);
+            var qnaMakerDialog = (QnAMakerDialog)dialog.Triggers[0].Actions[0];
+            qnaMakerDialog.HttpClient = httpClient;
+            dialog.Triggers[0].Actions[0] = qnaMakerDialog;
+
+            return GetTestAdapter(dialog, adapter);
+        }
+
+        private Stream GetResponse(string fileName)
+        {
+            var path = GetFilePath(fileName);
+            return File.OpenRead(path);
+        }
+
+        private string GetFilePath(string fileName)
+        {
+            return Path.Combine(Environment.CurrentDirectory, "resources", fileName);
+        }
+
+        private TestAdapter InitializeAdapter(bool sendTrace = false)
         {
             TypeFactory.Configuration = new ConfigurationBuilder().Build();
             var storage = new MemoryStorage();
@@ -328,14 +418,30 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
                 .UseLanguageGeneration(resourceExplorer)
                 .Use(new TranscriptLoggerMiddleware(new FileTranscriptLogger()));
 
+            return adapter;
+        }
+
+        private Dialog FetchDialogFromResource(string resourceName)
+        {
             var resource = resourceExplorer.GetResource(resourceName);
-            var dialog = DeclarativeTypeLoader.Load<Dialog>(resource, resourceExplorer, DebugSupport.SourceMap);
-            DialogManager dm = new DialogManager(dialog);
+            return DeclarativeTypeLoader.Load<Dialog>(resource, resourceExplorer, DebugSupport.SourceMap);
+        }
+
+        private TestFlow GetTestAdapter(Dialog dialog, TestAdapter adapter)
+        {
+            var dm = new DialogManager(dialog);
 
             return new TestFlow(adapter, async (turnContext, cancellationToken) =>
             {
                 await dm.OnTurnAsync(turnContext, cancellationToken: cancellationToken).ConfigureAwait(false);
             });
+        }
+
+        private TestFlow BuildTestFlow(string resourceName, bool sendTrace = false)
+        {
+            var adapter = InitializeAdapter(sendTrace);
+            var dialog = FetchDialogFromResource(resourceName);
+            return GetTestAdapter(dialog, adapter);
         }
     }
 }
