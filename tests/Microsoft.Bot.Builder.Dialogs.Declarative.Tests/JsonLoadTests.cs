@@ -394,13 +394,8 @@ namespace Microsoft.Bot.Builder.Dialogs.Loader.Tests
 
         private Stream GetResponse(string fileName)
         {
-            var path = GetFilePath(fileName);
+            var path = Path.Combine(Environment.CurrentDirectory, "resources", fileName);
             return File.OpenRead(path);
-        }
-
-        private string GetFilePath(string fileName)
-        {
-            return Path.Combine(Environment.CurrentDirectory, "resources", fileName);
         }
 
         private TestAdapter InitializeAdapter(bool sendTrace = false)
