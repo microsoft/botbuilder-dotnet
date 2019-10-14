@@ -95,6 +95,12 @@ namespace Microsoft.Bot.Connector.Authentication
 
             var appId = GetAppId(claimsList);
             var audience = claimsList.FirstOrDefault(claim => claim.Type == AuthenticationConstants.AudienceClaim)?.Value;
+            
+            if (AuthenticationConstants.ToBotFromChannelTokenIssuer.Equals(audience, StringComparison.InvariantCulture))
+            {
+                // The audience is https://api.botframework.com and not an appId.
+                return false;
+            }
 
             // Skill claims must contain and app ID and the AppID must be different than the audience.
             return !string.IsNullOrWhiteSpace(appId) && !string.IsNullOrWhiteSpace(audience) && appId != audience;
