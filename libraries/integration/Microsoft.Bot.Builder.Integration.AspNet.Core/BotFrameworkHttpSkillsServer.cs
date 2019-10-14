@@ -130,9 +130,8 @@ namespace Microsoft.Bot.Builder.Integration.AspNet.Core
             {
                 // grab the auth header from the inbound http request
                 var authHeader = httpRequest.Headers["Authorization"];
-
-                // TODO: authenticate header here
-                //var claimsIdentity = await JwtTokenValidation.ValidateAuthHeader(authHeader, _credentialProvider, _channelProvider, _authConfiguration, _httpClient).ConfigureAwait(false);
+                var claimsIdentity = await JwtTokenValidation.ValidateAuthHeader(authHeader, _credentialsProvider, _channelProvider, "unknown").ConfigureAwait(false);
+                
                 switch (route.Method)
                 {
                     // [Route("/v3/conversations")]
